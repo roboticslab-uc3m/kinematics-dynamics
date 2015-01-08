@@ -1,0 +1,14 @@
+# Authors: Juan G Victores
+# CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
+# Evident yet unstandarized names
+
+IF (NOT TEO_FOUND)
+
+  SET(TEO_LIBRARIES "@TEO_LIBRARIES@")
+  SET(TEO_INCLUDE_DIRS "@TEO_INCLUDE_DIRS@")
+  SET(TEO_LINK_DIRS "@TEO_LINK_DIRS@")
+  SET(TEO_DEFINES "@TEO_DEFINES@")
+  SET(TEO_MODULE_PATH "@TEO_MODULE_PATH@")
+
+  SET (TEO_FOUND TRUE)
+ENDIF (NOT TEO_FOUND)

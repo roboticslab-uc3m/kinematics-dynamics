@@ -1,0 +1,123 @@
+<Robot name="chest_robot">
+
+<Robot file="left_arm.xml"></Robot>
+<Robot file="right_arm.xml"></Robot>
+
+  <KinBody name="chest" makejoinedlinksadjacent="false">
+
+<!--This link added for static joint-->
+    <body name="chest/hip_bone">
+	<Translation>0 0 0</Translation>
+      <geom type="box">
+        <extents>0.001 0.001 0.001</extents>
+      </geom>
+    </body>
+ <!--......................................................-->
+    <Body name="chest/backbone" type="dynamic">
+	<Translation>0 0 0</Translation>
+	<RotationAxis>0 0 1 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/chest/backbone.wrl</Render>
+	<collision>wrls/chest/backbone.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="13" type="hinge">
+      <Body>chest/hip_bone</Body>
+      <Body>chest/backbone</Body>
+      <offsetfrom>chest/hip_bone</offsetfrom>
+      <limitsdeg>-45 45</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>0 1 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+ <!--......................................................-->
+
+    <Body name="chest/chest" type="dynamic">
+	<offsetfrom>chest/backbone</offsetfrom>
+	<Translation>0 0 0</Translation>
+	
+      <Geom type="trimesh">
+        <Render>wrls/chest/chest_white.wrl</Render>
+	<collision>wrls/chest/chest_white.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="14" type="hinge">
+      <Body>chest/backbone</Body>
+      <Body>chest/chest</Body>
+      <offsetfrom>chest/backbone</offsetfrom>
+      <limitsdeg>-10 10</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>1 0 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+ <!--......................................................-->
+
+    <Body name="chest/head" type="dynamic">
+	<offsetfrom>chest/chest</offsetfrom>
+	<Translation>0 0 0.5</Translation>
+	
+      <Geom type="trimesh">
+        <Render>wrls/head/xtion.wrl</Render>
+	<collision>wrls/head/xtion.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="pan" type="hinge">
+      <Body>chest/chest</Body>
+      <Body>chest/head</Body>
+      <offsetfrom>chest/chest</offsetfrom>
+      <limitsdeg>-80 80</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>0 1 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+
+	<!--Dummy joints and parts for robot connection from here-->
+ <!--......................................................-->
+    <body name="left_arm/clavicle">
+	<Translation>0 +0.335 0.304</Translation>
+	<rotationaxis>0 0 1 0</rotationaxis>
+      <geom type="box">
+        <extents>0.001 0.001 0.001</extents>
+      </geom>
+    </body>
+
+    <Joint name="dummy1" type="hinge" enable="false">
+      <Body>left_arm/clavicle</Body>
+      <Body>chest/chest</Body>
+      <offsetfrom>chest/chest</offsetfrom>
+      <axis>0 0 1</axis>
+      <limitsdeg>0 0</limitsdeg>
+    </Joint>
+ <!--......................................................-->
+
+    <body name="right_arm/clavicle">
+	<Translation>0 -0.335 0.304</Translation>
+	<rotationaxis>0 0 1 0</rotationaxis>
+      <geom type="box">
+        <extents>0.001 0.001 0.001</extents>
+      </geom>
+    </body>
+
+    <Joint name="dummy1" type="hinge" enable="false">
+      <Body>right_arm/clavicle</Body>
+      <Body>chest/chest</Body>
+      <offsetfrom>chest/chest</offsetfrom>
+      <axis>0 0 1</axis>
+      <limitsdeg>0 0</limitsdeg>
+    </Joint>
+
+
+  </KinBody>
+</Robot>

@@ -1,0 +1,33 @@
+
+/**
+@brief A catch-all namespace for TEO programs and libraries.
+ */
+namespace teo {}
+
+/**
+ * \defgroup teo_applications TEO Applications
+ * @brief TEO applications (collections of modules).
+ */
+
+/**
+ * \defgroup teo_libraries TEO Libraries
+ * @brief TEO libraries.
+ */
+
+/**
+ * @ingroup teo_libraries
+ * \defgroup teo_yarp TEO Yarp Plugins
+ * @brief TEO Yarp Plugins.
+ */
+
+/**
+ * 
+ * \defgroup teo_programs TEO Programs
+ * @brief TEO programs.
+ */
+
+/**
+ * \defgroup teo_examples TEO Examples
+ * @brief TEO examples.
+ */
+

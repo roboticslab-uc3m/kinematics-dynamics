@@ -1,0 +1,44 @@
+----------------------------------
+
+TEONET
+teochallenge
+note: wifi disabled in lab.
+
+----------------------------------
+
+router
+163.117.150.108 (external)
+2.2.2.1 (internal)
+admin
+admin
+----------------------------------
+
+teo-desktop
+eth0  00:13:8f:df:d7:9e  2.2.2.50
+
+----------------------------------
+
+manipulation
+teo right side
+eth0  00:18:7d:0b:2d:9d  2.2.2.51
+wlan1  5c:d9:98:9a:94:5b  2.2.2.61
+
+----------------------------------
+
+locomotion 
+teo left side
+eth0  00:18:7d:0b:2d:71  2.2.2.52
+wlan1  5c:d9:98:9a:94:5c  2.2.2.62
+
+----------------------------------
+
+head
+eth1  00:01:2e:51:9c:c1  2.2.2.53
+
+----------------------------------
+
+//problematic rtai ndiswrapper: wlan0  5c:d9:98:9a:94:5d  2.2.2.53
+//superseeded: eth0 163.117.150.108
+//superseeded: eth0 163.117.150.115
+//superseeded: eth0 163.117.150.56
+

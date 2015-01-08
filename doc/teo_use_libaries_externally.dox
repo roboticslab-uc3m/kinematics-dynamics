@@ -1,0 +1,30 @@
+/**
+ * \page teo_use_libraries_externally How to use TEO libraries externally (Ubuntu 14.10)
+
+Do not forget to set the TEO_ROOT environment variable to ''teo'' and the TEO_DIR environment variable to ''teo/main/build''. There are two ways of doing this. Please perform only one of these two options:
+
+ 1) Through ~/.profile (parsed on init, so would require reboot). For this option, type:
+ 
+\verbatim
+echo "export TEO_ROOT=$PWD/teo" >> ~/.profile
+echo "export TEO_DIR=$PWD/teo/main/build" >> ~/.profile
+echo "export YARP_DATA_DIRS=$YARP_DATA_DIRS:$PWD/teo/main/build/share/teo"
+source ~/.profile
+\endverbatim
+
+ 2) Through ~/.bashrc (parsed inside each terminal, so not available if launched from GUI). For this other option, type:
+ 
+\verbatim
+echo "export TEO_ROOT=$PWD/teo" >> ~/.bashrc
+echo "export TEO_DIR=$PWD/teo/main/build" >> ~/.bashrc
+echo "export YARP_DATA_DIRS=$YARP_DATA_DIRS:$PWD/teo/main/build/share/teo"
+source ~/.bashrc
+\endverbatim
+
+<hr>
+
+This page can be edited at $TEO_ROOT/main/doc/teo_use_libraries_externally.dox.
+
+*
+*/
+
