@@ -13,8 +13,8 @@ First install the depencencies:
 Our software integrates the previous dependencies. Note that you will be prompted for your password upon using '''sudo''' a couple of times:
 
 \verbatim
-svn co http://robots.uc3m.es/svn/TEOrepo/software teo  # Download the TEO software from the repository
-cd teo/main; mkdir build; cd build; cmake ..  # Configure the TEO software
+svn co http://robots.uc3m.es/svn/TEOrepo/software/teo-main  # Download teo-main software from the repository
+cd teo-main; mkdir build; cd build; cmake ..  # Configure the teo-main software
 make  # Compile
 sudo make install  # Install :-)
 \endverbatim
