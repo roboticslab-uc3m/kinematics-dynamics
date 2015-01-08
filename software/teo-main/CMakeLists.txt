@@ -17,7 +17,7 @@ project(TEO)
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp modules
-option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" FALSE)
+option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
 option(ENABLE_teoSim "Choose if you want to compile teoSim" FALSE)
 option(ENABLE_testTeoYarp "Choose if you want to compile testTeoYarp" TRUE)
 
