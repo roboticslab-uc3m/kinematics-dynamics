@@ -1,0 +1,89 @@
+<Robot name="teoSim">
+
+    <Robot file="left_leg.xml"></Robot>
+    <Robot file="right_leg.xml"></Robot>
+    <Robot file="chest.xml"></Robot>
+
+    <KinBody>
+        <Body name="hip" type="dynamic">
+            <Geom type="trimesh">
+                <Translation>0 0 0</Translation>
+                <rotationaxis>0 0 1 180</rotationaxis>
+                <Render>wrls/hip/hip.wrl</Render>
+                <collision>wrls/hip/hip.wrl</collision>
+            </Geom>
+        </Body>
+
+        <!--Dummy joints and parts for robot connection from here-->
+
+        <body name="left_leg/hip_bone">
+            <Translation>0 +0.146 -0.106</Translation>
+            <geom type="box">
+                <extents>0.001 0.001 0.001</extents>
+            </geom>
+        </body>
+
+        <Joint name="dummy1" type="hinge" enable="false">
+            <Body>left_leg/hip_bone</Body>
+            <Body>hip</Body>
+            <offsetfrom>hip</offsetfrom>
+            <axis>0 0 1</axis>
+            <limitsdeg>0 0</limitsdeg>
+        </Joint>
+
+        <body name="right_leg/hip_bone">
+        <Translation>0 -0.146 -0.106</Translation>
+        <rotationaxis>0 0 1 0</rotationaxis>
+            <geom type="box">
+                <extents>0.001 0.001 0.001</extents>
+            </geom>
+        </body>
+
+        <Joint name="dummy2" type="hinge" enable="false">
+            <Body>right_leg/hip_bone</Body>
+            <Body>hip</Body>
+            <offsetfrom>hip</offsetfrom>
+            <axis>0 0 1</axis>
+            <limitsdeg>0 0</limitsdeg>
+        </Joint>
+
+        <body name="chest/hip_bone">
+        <Translation>0 0 +0.18</Translation>
+            <geom type="box">
+                <extents>0.001 0.001 0.001</extents>
+            </geom>
+        </body>
+
+        <Joint name="dummy2" type="hinge" enable="false">
+            <Body>chest/hip_bone</Body>
+            <Body>hip</Body>
+            <offsetfrom>hip</offsetfrom>
+            <axis>0 0 1</axis>
+            <limitsdeg>0 0</limitsdeg>
+        </Joint>
+
+    </KinBody>
+
+    <Manipulator name="rightArm">
+        <base>right_arm/clavicle</base>
+        <effector>right_arm/wrist</effector>
+    </Manipulator>
+    <Manipulator name="leftArm">
+        <base>left_arm/clavicle</base>
+        <effector>left_arm/wrist</effector>
+    </Manipulator>
+    <Manipulator name="rightLeg">
+        <base>right_leg/hip_bone</base>
+        <effector>right_leg/foot</effector>
+    </Manipulator>
+    <Manipulator name="leftLeg">
+        <base>left_leg/hip_bone</base>
+        <effector>left_leg/foot</effector>
+    </Manipulator>
+    <Manipulator name="hip">
+        <base>chest/backbone</base>
+        <effector>chest/chest</effector>
+    </Manipulator>
+
+</Robot>
+

@@ -1,0 +1,154 @@
+<Robot name="left_arm_robot">
+
+<KinBody name="left_arm" makejoinedlinksadjacent="false">
+<!--This link added for static joint-->
+    <body name="left_arm/clavicle">
+	<Translation>0 0 0</Translation>
+      <geom type="box">
+        <extents>0.001 0.001 0.001</extents>
+      </geom>
+    </body>
+
+ <!--......................................................-->
+
+    <Body name="left_arm/shoulder_pitch" type="dynamic">
+	<Translation>0 0 0</Translation>
+	<RotationAxis>0 0 1 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/left_arm/shoulder_pitch.wrl</Render>
+	<collision>wrls/left_arm/shoulder_pitch.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="21" type="hinge">
+      <Body>left_arm/clavicle</Body>
+      <Body>left_arm/shoulder_pitch</Body>
+      <offsetfrom>left_arm/clavicle</offsetfrom>
+      <limitsdeg>-70 45</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>1 0 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+ <!--......................................................-->
+
+    <Body name="left_arm/shoulder_roll" type="dynamic">
+	<Translation>0 0 0</Translation>
+	<RotationAxis>0 0 1 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/left_arm/shoulder_roll.wrl</Render>
+	<collision>wrls/left_arm/shoulder_roll.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="22" type="hinge">
+      <Body>left_arm/shoulder_pitch</Body>
+      <Body>left_arm/shoulder_roll</Body>
+      <offsetfrom>left_arm/shoulder_pitch</offsetfrom>
+      <limitsdeg>-15 70</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>0 0 1</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+ <!--......................................................-->
+
+    <Body name="left_arm/arm" type="dynamic">
+	<Translation>0 0 -0.337</Translation>
+	<RotationAxis>0 0 1 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/left_arm/arm.wrl</Render>
+	<collision>wrls/left_arm/arm.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="23" type="hinge">
+      <Body>left_arm/shoulder_roll</Body>
+      <Body>left_arm/arm</Body>
+      <offsetfrom>left_arm/shoulder_roll</offsetfrom>
+      <limitsdeg>-10 75</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>0 -1 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+
+ <!--......................................................-->
+
+    <Body name="left_arm/forearm" type="dynamic">
+	<Translation>0 0 -0.337</Translation>
+	<RotationAxis>0 1 0 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/left_arm/forearm.wrl</Render>
+	<collision>wrls/left_arm/forearm.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="24" type="hinge">
+      <Body>left_arm/arm</Body>
+      <Body>left_arm/forearm</Body>
+      <offsetfrom>left_arm/arm</offsetfrom>
+      <limitsdeg>-100 10</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>1 0 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+ <!--......................................................-->
+
+    <Body name="left_arm/prewrist" type="dynamic">
+	<Translation>0 0 -0.547</Translation>
+	<RotationAxis>0 0 1 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/left_arm/prewrist.wrl</Render>
+	<collision>wrls/left_arm/prewrist.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="25" type="hinge">
+      <Body>left_arm/forearm</Body>
+      <Body>left_arm/prewrist</Body>
+      <offsetfrom>left_arm/forearm</offsetfrom>
+      <limitsdeg>-90 90</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>0 -1 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+
+ <!--......................................................-->
+
+    <Body name="left_arm/wrist" type="dynamic">
+	<Translation>0 0 -0.547</Translation>
+	<RotationAxis>0 0 1 0</RotationAxis>
+      <Geom type="trimesh">
+        <Render>wrls/left_arm/wrist.wrl</Render>
+	<collision>wrls/left_arm/wrist.wrl</collision>
+      </Geom>
+    </Body>
+
+    <Joint circular="true" name="26" type="hinge">
+      <Body>left_arm/prewrist</Body>
+      <Body>left_arm/wrist</Body>
+      <offsetfrom>left_arm/prewrist</offsetfrom>
+      <limitsdeg>-100 10</limitsdeg>
+ <!--   Openrave: X(frontal) Y(axial) Z(sagital) --> 
+      <axis>1 0 0</axis>
+<!--   maxvel - dof floats
+        maxveldeg - dof floats   --> 
+        <maxveldeg>7.5</maxveldeg>
+      <resolution>1</resolution>
+    </Joint>
+
+  </KinBody>
+</Robot>

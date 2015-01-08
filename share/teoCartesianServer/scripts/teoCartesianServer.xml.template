@@ -1,0 +1,13 @@
+<application>
+    <name>teoCartesianServer App</name>
+    <!--module> // LAUNCH MANUALLY //
+        <name>manipulationbot</name>
+        <node>/teo</node>
+    </module-->
+    <module>
+        <name>teoCartesianServer</name>
+        <node>localhost</node>
+    </module>
+
+</application>
+
