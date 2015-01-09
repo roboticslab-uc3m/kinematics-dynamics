@@ -16,8 +16,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "ManipulatorWrapper.hpp"
 #include "ColorDebug.hpp"
+#include "ManipulatorWrapper.hpp"
 #include "TeoSimRateThread.hpp"
 
 #define DEFAULT_ENV "models/teoWhite/teoFull.robot.xml"
