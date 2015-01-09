@@ -42,7 +42,6 @@
 #define DEFAULT_DURATION 20     // For Trajectory
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
-#define DEFAULT_CMC_NUM_MOTORS 4
 #define DEFAULT_ROBOT_DEVICE "remote_controlboard"
 #define DEFAULT_ROBOT_SUBDEVICE "N/A"
 #define DEFAULT_ROBOT_NAME "N/A"
@@ -736,7 +735,7 @@ class KdlController : public DeviceDriver, public RateThread, public ICartesianC
 
         double startTime;
 
-        unsigned int cmcNumMotors;
+        int cmcNumMotors;
         std::string angleRepr;
         double epsilon, duration, maxVel, maxAcc, cmcMs;
 
