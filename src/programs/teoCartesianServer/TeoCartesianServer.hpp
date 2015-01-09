@@ -13,6 +13,7 @@
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
+#include "ColorDebug.hpp"
 #include "TeoXRpcResponder.hpp"
 #include "TeoXCallbackPort.hpp"
 
@@ -25,18 +26,9 @@ using namespace yarp::os;
 using namespace yarp::dev;
 
 /**
- * @ingroup asibot_libraries
+ * @ingroup TeoCartesianServer
  *
- * \defgroup CartesianServerLib
- *
- * The \ref CartesianServerLib library is composed by a single class, CartesianServer.
- *
- */
-
-/**
- * @ingroup CartesianServer
- *
- * The CartesianServer class implements a server part that receives a connection from a remote
+ * The TeoCartesianServer class implements a server part that receives a connection from a remote
  * \ref cartesianServer module.
  * 
  */
