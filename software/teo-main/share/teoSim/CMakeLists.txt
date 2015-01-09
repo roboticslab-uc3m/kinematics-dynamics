@@ -4,11 +4,8 @@
 
 set(appname teoSim)
 
+file(GLOB conf ${CMAKE_CURRENT_SOURCE_DIR}/conf/*.ini)
 #file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.template)
-#file(GLOB conf ${CMAKE_CURRENT_SOURCE_DIR}/conf/*.ini)
-
-#yarp_install(FILES ${conf} DESTINATION ${ICUB_CONTEXTS_INSTALL_DIR}/${appname})
-#yarp_install(FILES ${scripts} DESTINATION ${ICUB_APPLICATIONS_TEMPLATES_INSTALL_DIR})
 
 file(GLOB models/teoWhite ${CMAKE_CURRENT_SOURCE_DIR}/models/teoWhite/*.xml)
 file(GLOB models/teoWhite/wrls/chest ${CMAKE_CURRENT_SOURCE_DIR}/models/teoWhite/wrls/chest/*.wrl)
@@ -18,6 +15,10 @@ file(GLOB models/teoWhite/wrls/left_arm ${CMAKE_CURRENT_SOURCE_DIR}/models/teoWh
 file(GLOB models/teoWhite/wrls/left_leg ${CMAKE_CURRENT_SOURCE_DIR}/models/teoWhite/wrls/left_leg/*.wrl)
 file(GLOB models/teoWhite/wrls/right_arm ${CMAKE_CURRENT_SOURCE_DIR}/models/teoWhite/wrls/right_arm/*.wrl)
 file(GLOB models/teoWhite/wrls/right_leg ${CMAKE_CURRENT_SOURCE_DIR}/models/teoWhite/wrls/right_leg/*.wrl)
+
+
+yarp_install(FILES ${conf} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname})
+#yarp_install(FILES ${scripts} DESTINATION ${TEO_APPLICATIONS_TEMPLATES_INSTALL_DIR})
 
 yarp_install(FILES ${models/teoWhite} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/models/teoWhite)
 yarp_install(FILES ${models/teoWhite/wrls/chest} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/models/teoWhite/wrls/chest)
