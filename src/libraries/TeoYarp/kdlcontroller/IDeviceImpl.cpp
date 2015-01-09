@@ -12,7 +12,6 @@ bool teo::KdlController::open(Searchable& config) {
     epsilon = config.check("epsilon",DEFAULT_EPSILON,"epsilon for tolerance").asDouble();
     maxVel = config.check("maxVel",DEFAULT_MAXVEL,"[units/s^2] maximum joint acceleration").asDouble();
     maxAcc = config.check("maxAcc",DEFAULT_MAXACC,"[units/s] maximum joint velocity").asDouble();
-    cmcNumMotors = config.check("cmcNumMotors",DEFAULT_CMC_NUM_MOTORS,"").asInt(); // unsigned int
 
     std::string strRobotDevice = config.check("robotDevice",Value(DEFAULT_ROBOT_DEVICE),"device we create").asString();
     std::string strRobotSubDevice = config.check("robotSubdevice",Value(DEFAULT_ROBOT_SUBDEVICE),"library we use").asString();
@@ -157,14 +156,26 @@ bool teo::KdlController::open(Searchable& config) {
     }
     CD_SUCCESS("Acquired robot devices interfaces.\n");
 
-    int ax; 
-    pos->getAxes(&ax);
+    pos->getAxes(&cmcNumMotors);
+    CD_SUCCESS("Attending to %d motors from robot device.\n",cmcNumMotors);
     double min,max;
-    for (int i=0;i<ax;i++){
+    for (int i=0;i<cmcNumMotors;i++){
         lim->getLimits(i,&min,&max);
-        CD_INFO("q%d: %f to %f\n",i+1,min,max);
+        CD_INFO("limits of q%d: %f to %f\n",i+1,min,max);
     }
     CD_SUCCESS("Pulled joint limits.\n");
+
+    std::vector<double> v(cmcNumMotors);
+    bool oks = enc->getEncoders(v.data());
+    for (int i=0;i<cmcNumMotors;i++){
+        CD_INFO("position of q%d: %f\n",i+1,v[i]);
+    }
+    if (!oks)
+    {
+        CD_ERROR("Note that failed\n");
+    } else {
+        CD_SUCCESS("was good.\n");
+    }
 
     cmc_status = 0;
     _orient = new RotationalInterpolation_SingleAxis();
