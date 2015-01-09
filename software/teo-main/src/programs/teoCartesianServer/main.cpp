@@ -103,7 +103,7 @@ Response: (0.0 0.0 1.4 0.0 0.0) [ok]
 using namespace yarp::os;
 using namespace yarp::dev;
 
-YARP_DECLARE_PLUGINS(TeoYarp);
+YARP_DECLARE_PLUGINS(TeoYarp)
 
 int main(int argc, char *argv[]) {
 

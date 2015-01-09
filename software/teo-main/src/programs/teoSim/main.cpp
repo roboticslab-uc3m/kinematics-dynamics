@@ -61,7 +61,7 @@
 
 using namespace yarp::os;
 
-YARP_DECLARE_PLUGINS(TeoYarp);
+YARP_DECLARE_PLUGINS(TeoYarp)
 
 int main(int argc, char *argv[]) {
 
