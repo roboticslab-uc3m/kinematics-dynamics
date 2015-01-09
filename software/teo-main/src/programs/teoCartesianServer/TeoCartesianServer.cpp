@@ -39,7 +39,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     options.put("device",controller);
     cartesianDevice.open(options);
     if (!cartesianDevice.isValid()) {
-        printf("[error] Class instantiation not worked.\n\n");
+        CD_ERROR("Could not open controller: %s\n",controller.c_str());
         printf("Be sure CMake \"ENABLE_RlPlugins_%s\" variable is set \"ON\"\n",controller.c_str());
         printf("\"SKIP_%s is set\" --> should be --> \"ENABLE_%s is set\"\n\n",controller.c_str(),controller.c_str());
         return false;
@@ -58,8 +58,8 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     robotOptions.put("local",movjLocal);
     robotDevice.open(robotOptions);
     if (!robotDevice.isValid()) {
-        printf("[error] Class instantiation not worked.\n\n");
-        printf("[error] movjRemote not valid, has a remotely accessible device been open?\n\n");
+        CD_ERROR("Could not open robot device: remote_controlboard\n\n");
+        CD_ERROR("movjRemote not valid, has a remotely accessible device been open?\n\n");
         return false;
     }
     bool ok2 = robotDevice.view(ipos);
