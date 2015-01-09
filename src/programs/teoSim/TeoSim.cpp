@@ -28,7 +28,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     if (rf.check("physics")) physics = rf.find("physics").asString();
     if (rf.check("viewer")) viewer = rf.find("viewer").asInt();
 
-    printf("TeoSim using context: %s.\n",rf.getContextPath().c_str());
+    printf("TeoSim using context: %s.\n",rf.getContext().c_str());
     printf("TeoSim using env: %s, jmcMs: %f, physics: %s, viewer: %d.\n", env.c_str(), jmcMs, physics.c_str(), viewer);
 
     if(rf.check("help")) {
@@ -44,17 +44,12 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     orThreads.add_thread(&thviewer);
     Time::delay(0.4); // wait for the viewer to init, in [s]
 
-    ConstString envFull(rf.getContextPath());
-    envFull += "/../models/";
-    envFull += env;
-    if (!environmentPtr->Load(envFull.c_str())) {
-        fprintf(stderr,"[TeoSim] error: Could not load %s environment.\n",envFull.c_str());
-        if (!environmentPtr->Load(env.c_str())) {
-            fprintf(stderr,"[TeoSim] error: Could not load %s environment.\n",env.c_str());
-            return false;
-        }
+    std::string envFull( rf.findFileByName(env) );
+    if (! environmentPtr->Load(envFull.c_str()) ) {
+        CD_ERROR("Could not load environment: %s\n",envFull.c_str());
+        return false;
     }
-    printf("[TeoSim] success: Loaded environment.\n");
+    CD_SUCCESS("Loaded environment: %s\n",envFull.c_str());
 
     // Attach a physics engine
     if(physics=="ode"){
