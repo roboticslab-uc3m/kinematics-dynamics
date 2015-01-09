@@ -9,16 +9,16 @@ void SetViewer(EnvironmentBasePtr penv, const std::string& viewername, int _view
 bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
 
     const double defautTr = M_PI/180.0;
-    ConstString env = DEFAULT_ENV;
+    std::string env = DEFAULT_ENV;
     double jmcMs = DEFAULT_JMC_MS;
-    ConstString physics = DEFAULT_PHYSICS;
+    std::string physics = DEFAULT_PHYSICS;
     int viewer = DEFAULT_VIEWER;
 
     if(rf.check("help")) {
         printf("TeoSim options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
 
-        printf("\t--env [xml] (env in abs, default: \"%s\")\n",env.c_str());
+        printf("\t--env [xml] (env name within context, default: \"%s\")\n",env.c_str());
         printf("\t--physics [type] (type of physics, default: \"%s\")\n",physics.c_str());
         printf("\t--viewer [type] (set to 0 for none, default: \"%d\")\n",viewer);
     }
