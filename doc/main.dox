@@ -1,7 +1,7 @@
 /**
   * \mainpage The TEO Software Repository documentation (teo-main)
 
-Welcome to the TEO Software Repository documentation for the main PC (teo-main). <a class=el href="http://robots.uc3m.es" target="_blank">Click here to return to Wiki.</a>
+Welcome to the TEO Software Repository documentation for the main PC. <a class=el href="http://robots.uc3m.es" target="_blank">Click here to return to Wiki.</a>
 
  \li \ref teo_install_on_ubuntu_14_10
 
@@ -11,6 +11,10 @@ Other internal links of interest:
  \li \ref teo_applications
  \li \ref teo_examples
 
+Even more internal links of interest:
+ \li <a class=el href="http://robots.uc3m.es/dox-teo-body/index.html" target="_blank">teo-body</a>
+ \li <a class=el href="http://robots.uc3m.es/dox-teo-head/index.html" target="_blank">teo-head</a>
+
 External links (related projects):
  \li <a class=el href="http://roboticslab.sourceforge.net/asibot" target="_blank">ASIBOT</a>
  \li <a class=el href="http://eris.liralab.it/yarpdoc/index.html" target="_blank">YARP</a>
@@ -18,6 +22,6 @@ External links (related projects):
 
 <hr>
 
-This page can be edited at $TEO_ROOT/main/doc/main.dox (\ref modify_teo_main).
+This page can be edited at teo-main/doc/main.dox.
 
 */
