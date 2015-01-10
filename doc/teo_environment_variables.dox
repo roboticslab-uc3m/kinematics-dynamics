@@ -11,9 +11,9 @@ You will need TEO_DIR for CMake to find the TEO configuration file.
 
 There are two ways of doing this. Please __select only one of these two options__:
 
- 1) Through ~/.profile (parsed on init, so would require reboot).
+ 1) Through the ~/.profile file (parsed on init, so would require reboot).
  
- 2) Through ~/.bashrc (parsed inside each _new_ terminal, so not available if launched directly from GUI).
+ 2) Through the ~/.bashrc file (parsed inside each _new_ terminal, so not available if launched directly from GUI).
 
 __Add the following line__ at the end of the selected file, __substituting '/your/full/path/to/teo-main/'  for your full path__:
 \verbatim
@@ -27,11 +27,11 @@ You will need YARP_DATA_DIRS for finding the share folder. You also probably wan
 
 There are two ways of doing this. Please __select only one of these two options__:
 
- 1) Through ~/.profile (parsed on init, so would require reboot).
-
- 2) Through ~/.bashrc (parsed inside each _new_ terminal, so not available if launched directly from GUI).
+ 1) Through the ~/.profile file (parsed on init, so would require reboot).
  
-__Add the following lines__ at the end of the selected file, __substituting '/your/full/path/to/teo-main/' for your full path__:
+ 2) Through the ~/.bashrc file (parsed inside each _new_ terminal, so not available if launched directly from GUI).
+ 
+__Add the following lines__ at the end of the __selected file, substituting '/your/full/path/to/teo-main/' for your full path__:
 
 \verbatim
 export YARP_DATA_DIRS=$YARP_DATA_DIRS:/your/full/path/to/teo-main/build/share/teo
