@@ -13,9 +13,9 @@ There are two ways of doing this. Please __select only one of these two options_
 
  1) Through ~/.profile (parsed on init, so would require reboot).
  
- 2) Through ~/.bashrc (parsed inside each terminal, so not available if launched from GUI).
+ 2) Through ~/.bashrc (parsed inside each _new_ terminal, so not available if launched directly from GUI).
 
-__Add the following line__ to the selected file, substituting '/your/full/path/to/teo-main/':
+__Add the following line__ at the end of the selected file, substituting '/your/full/path/to/teo-main/':
 \verbatim
 export TEO_DIR=/your/full/path/to/teo-main/build
 \endverbatim
@@ -25,22 +25,17 @@ export TEO_DIR=/your/full/path/to/teo-main/build
 
 You will need YARP_DATA_DIRS for finding the share folder. You also probably want build/bin in your PATH.
 
-There are two ways of doing this. Please perform only one of these two options, substituting '/your/full/path/to/teo-main/':
+There are two ways of doing this. Please __select only one of these two options__:
 
- 1) Through ~/.profile (parsed on init, so would require reboot). For this option, type:
- 
-\verbatim
-echo "export YARP_DATA_DIRS=$YARP_DATA_DIRS:/your/full/path/to/teo-main/build/share/teo" >> ~/.profile
-echo "export PATH=$PATH:/your/full/path/to/teo-main/build/bin" >> ~/.profile
-source ~/.profile
-\endverbatim
+ 1) Through ~/.profile (parsed on init, so would require reboot).
 
- 2) Through ~/.bashrc (parsed inside each terminal, so not available if launched from GUI). For this other option, type:
+ 2) Through ~/.bashrc (parsed inside each _new_ terminal, so not available if launched directly from GUI).
  
+__Add the following lines__ at the end of the selected file, substituting '/your/full/path/to/teo-main/':
+
 \verbatim
-echo "export YARP_DATA_DIRS=$YARP_DATA_DIRS:/your/full/path/to/teo-main/build/share/teo" >> ~/.bashrc
-echo "export PATH=$PATH:/your/full/path/to/teo-main/build/bin" >> ~/.bashrc
-source ~/.bashrc
+export YARP_DATA_DIRS=$YARP_DATA_DIRS:/your/full/path/to/teo-main/build/share/teo
+export PATH=$PATH:/your/full/path/to/teo-main/build/bin
 \endverbatim
 
 <hr>
