@@ -41,7 +41,7 @@ export PATH=$PATH:/your/full/path/to/teo-main/build/bin
 
 <hr>
 
-This page can be edited at $TEO_ROOT/main/doc/teo_environment_variables.dox.
+This page can be edited at teo-main/doc/teo_environment_variables.dox.
 
 *
 */
