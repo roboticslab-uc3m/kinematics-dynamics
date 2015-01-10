@@ -11,7 +11,7 @@ sudo apt-get install cmake-curses-gui  # Recommended, as it contains ccmake.
 
 <br><hr>
 
-This page can be edited at $TEO_ROOT/main/doc/teo_install_cmake_on_ubuntu_14_10.dox.
+This page can be edited at teo-main/doc/teo_install_cmake_on_ubuntu_14_10.dox.
 
 *
 */
