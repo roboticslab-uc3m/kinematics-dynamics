@@ -1,6 +1,6 @@
 
 /**
- * \page teo_install_on_ubuntu_14_10 teo-main - Simulation and Basic Control: Installation from Source Code (Ubuntu 14.10)
+ * \page teo_install_on_ubuntu_14_10 Simulation and Basic Control: Installation from Source Code (Ubuntu 14.10)
 
 First install the depencencies:
   \li \ref teo_install_cmake_on_ubuntu_14_10
