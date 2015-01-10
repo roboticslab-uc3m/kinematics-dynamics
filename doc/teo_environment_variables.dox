@@ -9,19 +9,19 @@ There are two cases where you will want to:
 
 You will need TEO_DIR for CMake to find the TEO configuration file.
 
-There are two ways of doing this. Please perform only one of these two options:
+There are two ways of doing this. Please perform only one of these two options, substituting '/your/full/path/to/teo-main/':
 
  1) Through ~/.profile (parsed on init, so would require reboot). For this option, type:
  
 \verbatim
-echo "export TEO_DIR=/path/to/teo-main/build" >> ~/.profile
+echo "export TEO_DIR=/your/full/path/to/teo-main/build" >> ~/.profile
 source ~/.profile
 \endverbatim
 
  2) Through ~/.bashrc (parsed inside each terminal, so not available if launched from GUI). For this other option, type:
  
 \verbatim
-echo "export TEO_DIR=/path/to/teo-main/build" >> ~/.bashrc
+echo "export TEO_DIR=/your/full/path/to/teo-main/build" >> ~/.bashrc
 source ~/.bashrc
 \endverbatim
 
