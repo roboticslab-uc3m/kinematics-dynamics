@@ -1,6 +1,6 @@
 
 /**
-@brief A catch-all namespace for TEO programs and libraries.
+@brief The main, catch-all namespace for TEO programs and libraries.
  */
 namespace teo {}
 
