@@ -62,9 +62,8 @@ void teo::ManipulatorWrapper::push_back_tr(double robotJointTr) {
 bool teo::ManipulatorWrapper::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
     Property options;
-    //options.put("device","controlboard");
-    options.put("device","controlboardwrapper2");
-    options.put("subdevice","ravepart");  // ravepart provides more interfaces than test_motor
+    options.put("device","controlboardwrapper2");  // was controlboard, now this for ravepart2
+    options.put("subdevice","ravepart2");  // ravepart provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
     dd.open(options);
