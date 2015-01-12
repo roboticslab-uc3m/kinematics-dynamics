@@ -39,3 +39,32 @@ bool teo::RavePart2::velocityMove(const double *sp) {
 
 // ----------------------------------------------------------------------------
 
+bool teo::RavePart2::velocityMove(const int n_joint, const int *joints, const double *spds) {
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool teo::RavePart2::setVelPid(int j, const yarp::dev::Pid &pid) {
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool teo::RavePart2::setVelPids(const yarp::dev::Pid *pids) {
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool teo::RavePart2::getVelPid(int j, yarp::dev::Pid *pid) {
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool teo::RavePart2::getVelPids(yarp::dev::Pid *pids) {
+    return true;
+}
+
+// ----------------------------------------------------------------------------
