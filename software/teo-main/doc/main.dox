@@ -1,7 +1,7 @@
 /**
   * \mainpage The TEO Software Repository documentation (teo-main)
 
-Welcome to the TEO Software Repository documentation for the main PC. <a class=el href="http://robots.uc3m.es" target="_blank">Click here to return to Wiki.</a>
+Welcome to the TEO Software Repository documentation for the main PC. <a class=el href="http://robots.uc3m.es" target="_blank">Click here to return to Wiki.</a> <a class=el href="http://robots.uc3m.es/svn/TEOrepo/software/teo-main" target="_blank">Click here to see teo-main on repo.</a>
 
  \li \ref teo_install_on_ubuntu_14_10
 
