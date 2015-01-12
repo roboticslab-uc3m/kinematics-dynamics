@@ -58,7 +58,7 @@ namespace teo
  * @brief The RavePart2 class implements the YARP_dev IPositionControl, IVelocityControl, IEncoders, etc.
  * interface class member functions.
  */
-class RavePart2 : public DeviceDriver, public IPositionControl2, public IVelocityControl, public IEncoders,
+class RavePart2 : public DeviceDriver, public IPositionControl2, public IVelocityControl2, public IEncoders,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
