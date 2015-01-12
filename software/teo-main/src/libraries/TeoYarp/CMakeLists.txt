@@ -9,6 +9,7 @@ list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 include(YarpPlugin)
 yarp_begin_plugin_library(TeoYarp)
 add_subdirectory(ravepart)
+add_subdirectory(ravepart2)
 add_subdirectory(kdlcontroller)
 yarp_end_plugin_library(TeoYarp)
 
