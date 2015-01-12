@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS})  # kdl name
 
 LINK_DIRECTORIES(${TEO_LINK_DIRS})
 
-YARP_ADD_PLUGIN(ravepart2 RavePart2.hpp IDeviceImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncoderImpl.cpp IPositionImpl.cpp IVelocityImpl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
+YARP_ADD_PLUGIN(ravepart2 RavePart2.hpp IDeviceImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncoderImpl.cpp IPosition2Impl.cpp IVelocity2Impl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
 TARGET_LINK_LIBRARIES(ravepart2 ${YARP_LIBRARIES})
 
 install(TARGETS ravepart2 DESTINATION lib)
