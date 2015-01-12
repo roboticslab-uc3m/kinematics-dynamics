@@ -8,6 +8,7 @@
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/IVelocityControl2.h>
 #include <yarp/sig/all.h>
 
 #include <iostream>
@@ -58,7 +59,7 @@ namespace teo
  * @brief The RavePart2 class implements the YARP_dev IPositionControl, IVelocityControl, IEncoders, etc.
  * interface class member functions.
  */
-class RavePart2 : public DeviceDriver, public IPositionControl2, public IVelocityControl, public IEncoders,
+class RavePart2 : public DeviceDriver, public IPositionControl2, public IVelocityControl2, public IEncoders,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
@@ -325,7 +326,7 @@ class RavePart2 : public DeviceDriver, public IPositionControl2, public IVelocit
          */
         virtual bool getEncoderAccelerations(double *accs);
 
-    //  --------- IVelocityControl Declarations. Implementation in IVelocityImpl.cpp ---------
+    //  --------- IVelocityControl2 Declarations. Implementation in IVelocity2Impl.cpp ---------
 
         /**
          * Set velocity mode. This command
@@ -350,6 +351,47 @@ class RavePart2 : public DeviceDriver, public IPositionControl2, public IVelocit
          * @return true/false upon success/failure
          */
         virtual bool velocityMove(const double *sp);
+
+        //-- v2 starts here
+
+        /** Start motion at a given speed for a subset of joints..
+         * @param n_joint how many joints this command is referring to
+         * @param joints of joints controlled. The size of this array is n_joints
+         * @param spds pointer to the array containing the new speed values, one value for each joint, the size of the array is n_joints.
+         * The first value will be the new reference fot the joint joints[0].
+         *          for example:
+         *          n_joint  3
+         *          joints   0  2  4
+         *          spds    10 30 40
+         * @return true/false on success/failure
+         */
+        virtual bool velocityMove(const int n_joint, const int *joints, const double *spds);
+
+        /** Set new velocity pid value for a joint
+         * @param j joint number
+         * @param pid new pid value
+         * @return true/false on success/failure
+         */
+        virtual bool setVelPid(int j, const yarp::dev::Pid &pid);
+
+        /** Set new velocity pid value on multiple joints
+         * @param pids pointer to a vector of pids
+         * @return true/false upon success/failure
+         */
+        virtual bool setVelPids(const yarp::dev::Pid *pids);
+
+        /** Get current velocity pid value for a specific joint.
+         * @param j joint number
+         * @param pid pointer to storage for the return value.
+         * @return success/failure
+         */
+        virtual bool getVelPid(int j, yarp::dev::Pid *pid);
+
+        /** Get current velocity pid value for a specific subset of joints.
+         * @param pids vector that will store the values of the pids.
+         * @return success/failure
+         */
+        virtual bool getVelPids(yarp::dev::Pid *pids);
 
     //  --------- IControlLimits Declarations. Implementation in IControlLimitsImpl.cpp ---------
 
