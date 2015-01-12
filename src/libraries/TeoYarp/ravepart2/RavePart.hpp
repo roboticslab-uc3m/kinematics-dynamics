@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __RAVE_PART_HPP__
-#define __RAVE_PART_HPP__
+#ifndef __RAVE_PART2_HPP__
+#define __RAVE_PART2_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/os/Semaphore.h>
@@ -44,26 +44,26 @@ namespace teo
 
 /**
  * @ingroup teo_yarp
- * \defgroup RavePart
- * @brief \ref The RavePart library is composed by a single class, RavePart.
+ * \defgroup RavePart2
+ * @brief \ref The RavePart2 library is composed by a single class, RavePart2.
  *
- * @section ravepart_install Installation
+ * @section ravepart2_install Installation
  *
- * The plugin is compiled when ENABLE_TeoYarp_ravepart is activated (not default). For further
+ * The plugin is compiled when ENABLE_TeoYarp_ravepart2 is activated (not default). For further
  * installation steps refer to <a class="el" href="pages.html">your own system installation guidelines</a>.
  */
 
 /**
- * @ingroup RavePart
- * @brief The RavePart class implements the YARP_dev IPositionControl, IVelocityControl, IEncoders, etc.
+ * @ingroup RavePart2
+ * @brief The RavePart2 class implements the YARP_dev IPositionControl, IVelocityControl, IEncoders, etc.
  * interface class member functions.
  */
-class RavePart : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncoders,
+class RavePart2 : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncoders,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
         // Set the Thread Rate in the class constructor
-        RavePart() : RateThread(DEFAULT_JMC_MS) {}  // In ms
+        RavePart2() : RateThread(DEFAULT_JMC_MS) {}  // In ms
 
     // ------- IPositionControl declarations. Implementation in IPositionImpl.cpp -------
 
