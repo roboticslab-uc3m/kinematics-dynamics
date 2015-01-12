@@ -253,3 +253,51 @@ bool teo::RavePart2::stop() {
 
 // -----------------------------------------------------------------------------
 
+bool teo::RavePart2::positionMove(const int n_joint, const int *joints, const double *refs) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::relativeMove(const int n_joint, const int *joints, const double *deltas) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::checkMotionDone(const int n_joint, const int *joints, bool *flags) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::setRefSpeeds(const int n_joint, const int *joints, const double *spds) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::setRefAccelerations(const int n_joint, const int *joints, const double *accs) {
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::getRefSpeeds(const int n_joint, const int *joints, double *spds) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::getRefAccelerations(const int n_joint, const int *joints, double *accs) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::RavePart2::stop(const int n_joint, const int *joints) {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
