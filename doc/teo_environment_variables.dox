@@ -35,7 +35,7 @@ There are two ways of doing this. Please __select only one of these two options_
 __Add the following lines__ at the end of __the selected file, substituting '/your/full/path/to/teo-main/' for your full path__:
 
 \verbatim
-export YARP_DATA_DIRS=$YARP_DATA_DIRS:/your/full/path/to/teo-main/build/share/teo
+export YARP_DATA_DIRS=/your/full/path/to/teo-main/build/share/teo:$YARP_DATA_DIRS:/usr/local/share/yarp
 export PATH=$PATH:/your/full/path/to/teo-main/build/bin
 \endverbatim
 
