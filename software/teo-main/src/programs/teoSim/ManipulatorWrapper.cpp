@@ -61,9 +61,9 @@ void teo::ManipulatorWrapper::push_back_tr(double robotJointTr) {
 
 bool teo::ManipulatorWrapper::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
-    /*Property options;
+    Property options;
     options.put("device","controlboard");  //
-    options.put("subdevice","ravepart2");  // ravepart provides more interfaces than test_motor
+    options.put("subdevice","ravepart");  // ravepart provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
     dd.open(options);
@@ -72,36 +72,7 @@ bool teo::ManipulatorWrapper::start() {
         dd.close();
         return false;
     }
-    dd.view(encs);*/
-
-    Property parameters;
-    parameters.put("device", "ravepart");
-    parameters.put("axes", (int)this->vectorOfJointIdx.size() );
-    dd.open(parameters);
-    if(!dd.isValid()) {
-        CD_ERROR("ManipulatorWrapper device \"%s\" not available.\n", parameters.find("device").asString().c_str());
-        dd.close();
-        return false;
-    }
     dd.view(encs);
-
-    PolyDriver wrapperHead;
-    Property paramsHead;
-    paramsHead.put("device", "controlboardwrapper2");
-    paramsHead.put("name", this->manipulatorWrapperName );
-    Value tmp;
-    tmp.fromString("(ravepart)");
-    paramsHead.put("joints", 3);
-    paramsHead.put("networks", tmp);
-    //map joints 0-2 from fakebot to 0-2 of part robot/head
-    tmp.fromString("(0 2 0 2)");
-    paramsHead.put("ravepart", tmp);
-
-    IMultipleWrapper *iwrapperHead;
-    wrapperHead.view(iwrapperHead);
-    PolyDriverList list;
-    list.push(&dd, "ravepart");
-    iwrapperHead->attachAll(list);
 
     return true;
 }
