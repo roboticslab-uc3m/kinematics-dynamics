@@ -4,10 +4,6 @@
 <KinBody name="rightArm">
     <!--Body type="dynamic" name="rightArm0"-->
     <Body type="static" name="rightArm0">
-        <Geom type="trimesh">
-            <data>./rightArm0.wrl 0.001 </data>
-            <render>./rightArm0.wrl 0.001 </render>
-        </Geom>
         <mass type="sphere">
             <total>.1</total>
             <radius>1</radius>
@@ -23,7 +19,7 @@
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="canId13" type="hinge">
+    <Joint name="canId15" type="hinge">
         <offsetfrom>rightArm0</offsetfrom>
         <body>rightArm0</body>
         <body>rightArm1</body>
@@ -41,7 +37,7 @@
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="canId14" type="hinge">
+    <Joint name="canId16" type="hinge">
         <offsetfrom>rightArm0</offsetfrom>
         <body>rightArm1</body>
         <body>rightArm2</body>
