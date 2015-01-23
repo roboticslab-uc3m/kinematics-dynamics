@@ -1,22 +1,22 @@
-<!-- hip.kinbody.xml  -->
+<!-- trunk.kinbody.xml  -->
 
 <!-- no joint limits -->
-<KinBody name="hip">
-    <!--Body type="dynamic" name="hip0"-->
-    <Body type="static" name="hip0">
+<KinBody name="trunk">
+    <!--Body type="dynamic" name="trunk0"-->
+    <Body type="static" name="trunk0">
         <Geom type="trimesh">
-            <data>./hip0.wrl 0.001 </data>
-            <render>./hip0.wrl 0.001 </render>
+            <data>./trunk0.wrl 0.001 </data>
+            <render>./trunk0.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
             <radius>1</radius>
         </mass>
     </Body>
-    <Body name="hip1">
+    <Body name="trunk1">
         <Geom type="trimesh">
-            <data>./hip1.wrl 0.001 </data>
-            <render>./hip1.wrl 0.001 </render>
+            <data>./trunk1.wrl 0.001 </data>
+            <render>./trunk1.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
@@ -24,17 +24,17 @@
         </mass>
     </Body>
     <Joint name="canId13" type="hinge">
-        <offsetfrom>hip0</offsetfrom>
-        <body>hip0</body>
-        <body>hip1</body>
+        <offsetfrom>trunk0</offsetfrom>
+        <body>trunk0</body>
+        <body>trunk1</body>
         <axis>0 1 0</axis>
         <maxvel>2</maxvel>
     </Joint>
 
-    <Body name="hip2">
+    <Body name="trunk2">
         <Geom type="trimesh">
-            <data>./hip2.wrl 0.001 </data>
-            <render>./hip2.wrl 0.001 </render>
+            <data>./trunk2.wrl 0.001 </data>
+            <render>./trunk2.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
@@ -42,9 +42,9 @@
         </mass>
     </Body>
     <Joint name="canId14" type="hinge">
-        <offsetfrom>hip0</offsetfrom>
-        <body>hip1</body>
-        <body>hip2</body>
+        <offsetfrom>trunk0</offsetfrom>
+        <body>trunk1</body>
+        <body>trunk2</body>
         <axis>0 0 1</axis>
         <anchor></anchor>
         <maxvel>2</maxvel>
