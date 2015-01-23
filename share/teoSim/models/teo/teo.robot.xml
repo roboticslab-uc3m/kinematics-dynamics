@@ -2,6 +2,6 @@
 
 <Robot name="teoSim">
 
-    <KinBody file="hip/hip.kinbody.xml" />
+    <KinBody file="trunk/trunk.kinbody.xml" />
 
 </Robot>
