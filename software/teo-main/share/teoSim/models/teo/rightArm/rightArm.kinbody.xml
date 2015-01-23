@@ -1,22 +1,22 @@
-<!-- trunk.kinbody.xml  -->
+<!-- rightArm.kinbody.xml  -->
 
 <!-- no joint limits -->
-<KinBody name="trunk">
-    <!--Body type="dynamic" name="trunk0"-->
-    <Body type="static" name="trunk0">
+<KinBody name="rightArm">
+    <!--Body type="dynamic" name="rightArm0"-->
+    <Body type="static" name="rightArm0">
         <Geom type="trimesh">
-            <data>./trunk0.wrl 0.001 </data>
-            <render>./trunk0.wrl 0.001 </render>
+            <data>./rightArm0.wrl 0.001 </data>
+            <render>./rightArm0.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
             <radius>1</radius>
         </mass>
     </Body>
-    <Body name="trunk1">
+    <Body name="rightArm1">
         <Geom type="trimesh">
-            <data>./trunk1.wrl 0.001 </data>
-            <render>./trunk1.wrl 0.001 </render>
+            <data>./rightArm1.wrl 0.001 </data>
+            <render>./rightArm1.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
@@ -24,17 +24,17 @@
         </mass>
     </Body>
     <Joint name="canId13" type="hinge">
-        <offsetfrom>trunk0</offsetfrom>
-        <body>trunk0</body>
-        <body>trunk1</body>
+        <offsetfrom>rightArm0</offsetfrom>
+        <body>rightArm0</body>
+        <body>rightArm1</body>
         <axis>0 1 0</axis>
         <maxvel>2</maxvel>
     </Joint>
 
-    <Body name="trunk2">
+    <Body name="rightArm2">
         <Geom type="trimesh">
-            <data>./trunk2.wrl 0.001 </data>
-            <render>./trunk2.wrl 0.001 </render>
+            <data>./rightArm2.wrl 0.001 </data>
+            <render>./rightArm2.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
@@ -42,9 +42,9 @@
         </mass>
     </Body>
     <Joint name="canId14" type="hinge">
-        <offsetfrom>trunk0</offsetfrom>
-        <body>trunk1</body>
-        <body>trunk2</body>
+        <offsetfrom>rightArm0</offsetfrom>
+        <body>rightArm1</body>
+        <body>rightArm2</body>
         <axis>0 0 1</axis>
         <anchor>0 0.1917 0</anchor>
         <maxvel>2</maxvel>
