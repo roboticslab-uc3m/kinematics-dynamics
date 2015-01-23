@@ -2,7 +2,13 @@
 
 <Robot name="teoSim">
 
-    <KinBody file="trunk/trunk.kinbody.xml" />
-    <KinBody file="rightArm/rightArm.kinbody.xml" />
+    <KinBody file="trunk/trunk.kinbody.xml">
+        <KinBody file="rightArm/rightArm.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk2</body>
+            <body>rightArm0</body>
+            <limits>0 0</limits>
+        </Joint>
+    </KinBody>
 
 </Robot>
