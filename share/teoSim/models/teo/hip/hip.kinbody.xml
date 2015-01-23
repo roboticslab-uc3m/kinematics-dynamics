@@ -1,5 +1,6 @@
 <!-- hip.kinbody.xml  -->
 
+<!-- no joint limits -->
 <KinBody name="hip">
     <!--Body type="dynamic" name="hip0"-->
     <Body type="static" name="hip0">
@@ -29,6 +30,24 @@
         <axis>0 1 0</axis>
         <maxvel>2</maxvel>
     </Joint>
-    <!-- no joint limits -->
+
+    <Body name="hip2">
+        <Geom type="trimesh">
+            <data>./hip2.wrl 0.001 </data>
+            <render>./hip2.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="canId14" type="hinge">
+        <offsetfrom>hip0</offsetfrom>
+        <body>hip1</body>
+        <body>hip2</body>
+        <axis>0 0 1</axis>
+        <maxvel>2</maxvel>
+    </Joint>
+
 </KinBody>
 
