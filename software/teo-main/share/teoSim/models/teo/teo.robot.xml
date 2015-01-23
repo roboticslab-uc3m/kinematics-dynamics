@@ -1,0 +1,7 @@
+<!-- teo.kinbody.xml  -->
+
+<Robot name="teoSim">
+
+    <KinBody file="hip/hip.kinbody.xml" />
+
+</Robot>
