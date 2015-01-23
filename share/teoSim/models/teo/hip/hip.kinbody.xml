@@ -1,0 +1,34 @@
+<!-- hip.kinbody.xml  -->
+
+<KinBody name="hip">
+    <!--Body type="dynamic" name="hip0"-->
+    <Body type="static" name="hip0">
+        <Geom type="trimesh">
+            <data>./hip0.wrl 1 </data>
+            <render>./hip0.wrl 1 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Body name="hip1">
+        <Geom type="trimesh">
+            <data>./hip1.wrl 1 </data>
+            <render>./hip1.wrl 1 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="canId13" type="hinge">
+        <offsetfrom>hip0</offsetfrom>
+        <body>hip0</body>
+        <body>hip1</body>
+        <axis>0 1 0</axis>
+        <maxvel>2</maxvel>
+    </Joint>
+    <!-- no joint limits -->
+</KinBody>
+
