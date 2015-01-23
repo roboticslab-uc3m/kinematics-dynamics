@@ -46,7 +46,7 @@
         <body>trunk1</body>
         <body>trunk2</body>
         <axis>0 0 1</axis>
-        <anchor></anchor>
+        <anchor>0 0.156 0</anchor>
         <maxvel>2</maxvel>
     </Joint>
 
