@@ -46,6 +46,7 @@
         <body>hip1</body>
         <body>hip2</body>
         <axis>0 0 1</axis>
+        <anchor></anchor>
         <maxvel>2</maxvel>
     </Joint>
 
