@@ -3,5 +3,6 @@
 <Robot name="teoSim">
 
     <KinBody file="trunk/trunk.kinbody.xml" />
+    <KinBody file="rightArm/rightArm.kinbody.xml" />
 
 </Robot>
