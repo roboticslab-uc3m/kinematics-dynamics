@@ -109,7 +109,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       In non-tracking mode the controller releases the limb as
     *       soon as the desired pose is reached.
     */
-    virtual bool setTrackingMode(const bool f);
+    virtual bool setTrackingMode(const bool f) { return true; }
 
     /**
     * Get the current controller mode. [wait for reply]
