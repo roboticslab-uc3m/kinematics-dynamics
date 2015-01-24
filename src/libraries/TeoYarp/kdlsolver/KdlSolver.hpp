@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __KDL_CONTROLLER_HPP__
-#define __KDL_CONTROLLER_HPP__
+#ifndef __KDL_SOLVER_HPP__
+#define __KDL_SOLVER_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
@@ -45,7 +45,7 @@
 #define DEFAULT_ROBOT_DEVICE "remote_controlboard"
 #define DEFAULT_ROBOT_SUBDEVICE "N/A"
 #define DEFAULT_ROBOT_NAME "N/A"
-#define DEFAULT_ROBOT_LOCAL "/KdlController/rightArm"
+#define DEFAULT_ROBOT_LOCAL "/KdlSolver/rightArm"
 #define DEFAULT_ROBOT_REMOTE "/teoSim/rightArm"
 
 using namespace yarp::os;
@@ -58,29 +58,29 @@ namespace teo
 
 /**
  * @ingroup teo_yarp
- * \defgroup KdlController
+ * \defgroup KdlSolver
  *
- * The \ref KdlController library is composed by a single class, KdlController.
+ * The \ref KdlSolver library is composed by a single class, KdlSolver.
  *
- * @section kdlcontroller_install Installation
+ * @section kdlsolver_install Installation
  *
  * The plugin is compiled when ENABLE_TeoYarp_cartesianbot is activated (not default). For further
  * installation steps refer to <a class="el" href="pages.html">your own system installation guidelines</a>.
  */
 
 /**
- * @ingroup KdlController
- * @brief The KdlController class connects to a robot (the IPositionControl, IVelocityControl and
+ * @ingroup KdlSolver
+ * @brief The KdlSolver class connects to a robot (the IPositionControl, IVelocityControl and
  * IEncoders interfaces) and exposes a YARP_dev cartesian interface (implements
  * <a href="http://eris.liralab.it/yarpdoc/classyarp_1_1dev_1_1ICartesianControl.html">ICartesianControl</a>).
  * It is used by the \ref cartesianServer module.
  */
 
-class KdlController : public DeviceDriver, public RateThread, public ICartesianControl {
+class KdlSolver : public DeviceDriver, public RateThread, public ICartesianControl {
  public:
 
   // Set the Thread Rate in the class constructor
-  KdlController() : RateThread(DEFAULT_CMC_MS) {}  // In ms
+  KdlSolver() : RateThread(DEFAULT_CMC_MS) {}  // In ms
 
 // -- Helper Funcion declarations. Implementation in HelperFuncs.cpp--
 
@@ -766,5 +766,5 @@ class KdlController : public DeviceDriver, public RateThread, public ICartesianC
 
 }  // namespace teo
 
-#endif  // __KDL_CONTROLLER_HPP__
+#endif  // __KDL_SOLVER_HPP__
 
