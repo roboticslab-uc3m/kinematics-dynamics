@@ -31,13 +31,48 @@ bool teo::KdlController::open(Searchable& config) {
         CD_WARNING("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
     }
 
+    //-- Must connect to robot to figure out how many joints
+    Property robotOptions;
+    robotOptions.fromString(config.toString());  //-- Good to pass on axes, etc.
+    robotOptions.put("device",strRobotDevice);
+    robotOptions.put("subdevice",strRobotSubDevice);
+    robotOptions.put("name",strRobotName);
+    robotOptions.put("local",strRobotLocal);
+    robotOptions.put("remote",strRobotRemote);
+
+    robotDevice.open(robotOptions);
+    if (!robotDevice.isValid()) {
+        CD_WARNING("Robot device not available: %s\n",strRobotDevice.c_str());
+        return false;
+    }
+    CD_SUCCESS("Robot device available: %s\n",strRobotDevice.c_str());
+
+    bool ok = robotDevice.view(pos);
+    ok &= robotDevice.view(vel);
+    ok &= robotDevice.view(enc);
+    ok &= robotDevice.view(lim);
+    if (!ok) {
+        CD_ERROR("Problems acquiring at least one of the robot interfaces.\n");
+        return false;
+    }
+    CD_SUCCESS("Acquired robot devices interfaces.\n");
+
+    pos->getAxes(&cmcNumMotors);
+    CD_SUCCESS("Attending to %d motors from robot device.\n",cmcNumMotors);
+    double min,max;
+    for (int i=0;i<cmcNumMotors;i++){
+        lim->getLimits(i,&min,&max);
+        CD_INFO("limits of q%d: %f to %f\n",i+1,min,max);
+    }
+    CD_SUCCESS("Pulled joint limits.\n");
+
     if (config.check("usedCmcMotorIdxs")) {
         Bottle* ptrBottleOfCmcMotorIdxs = config.find("usedCmcMotorIdxs").asList();
         printf("KdlController using overriden usedCmcMotorIdxs: %s.\n",ptrBottleOfCmcMotorIdxs->toString().c_str());
         for (int i=0;i<ptrBottleOfCmcMotorIdxs->size();i++)
             vectorOfCmcMotorIdxs.push_back( ptrBottleOfCmcMotorIdxs->get(i).asInt() );
     } else {
-        printf("KdlController using default usedCmcMotorIdxs (all).\n");
+        printf("KdlController using default usedCmcMotorIdxs (all %d).\n",cmcNumMotors);
         for (int i=0;i<cmcNumMotors;i++)
             vectorOfCmcMotorIdxs.push_back( i );
     }
@@ -147,39 +182,7 @@ bool teo::KdlController::open(Searchable& config) {
     cmc_status = 0;
     startTime = 0;
 
-    Property robotOptions;
-    robotOptions.fromString(config.toString());  //-- Needed?
-    robotOptions.put("device",strRobotDevice);
-    robotOptions.put("subdevice",strRobotSubDevice);
-    robotOptions.put("name",strRobotName);
-    robotOptions.put("local",strRobotLocal);
-    robotOptions.put("remote",strRobotRemote);
 
-    robotDevice.open(robotOptions);
-    if (!robotDevice.isValid()) {
-        CD_WARNING("Robot device not available: %s\n",strRobotDevice.c_str());
-        return false;
-    }
-    CD_SUCCESS("Robot device available: %s\n",strRobotDevice.c_str());
-
-    bool ok = robotDevice.view(pos);
-    ok &= robotDevice.view(vel);
-    ok &= robotDevice.view(enc);
-    ok &= robotDevice.view(lim);
-    if (!ok) {
-        CD_ERROR("Problems acquiring at least one of the robot interfaces.\n");
-        return false;
-    }
-    CD_SUCCESS("Acquired robot devices interfaces.\n");
-
-    pos->getAxes(&cmcNumMotors);
-    CD_SUCCESS("Attending to %d motors from robot device.\n",cmcNumMotors);
-    double min,max;
-    for (int i=0;i<cmcNumMotors;i++){
-        lim->getLimits(i,&min,&max);
-        CD_INFO("limits of q%d: %f to %f\n",i+1,min,max);
-    }
-    CD_SUCCESS("Pulled joint limits.\n");
 
     std::vector<double> v(cmcNumMotors);
     bool oks = enc->getEncoders(v.data());
@@ -201,6 +204,7 @@ bool teo::KdlController::open(Searchable& config) {
     // Start the RateThread
     this->setRate(cmcMs);
     this->start();
+
     return true;
 }
 
