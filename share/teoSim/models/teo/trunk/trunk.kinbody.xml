@@ -27,7 +27,7 @@
         <offsetfrom>trunk0</offsetfrom>
         <body>trunk0</body>
         <body>trunk1</body>
-        <axis>0 1 0</axis>
+        <axis>0 0 1</axis>
         <maxvel>2</maxvel>
     </Joint>
 
@@ -45,8 +45,8 @@
         <offsetfrom>trunk0</offsetfrom>
         <body>trunk1</body>
         <body>trunk2</body>
-        <axis>0 0 1</axis>
-        <anchor>0 0.1917 0</anchor>
+        <axis>0 1 0</axis>
+        <anchor>0 0 0.1917</anchor>
         <maxvel>2</maxvel>
     </Joint>
 
