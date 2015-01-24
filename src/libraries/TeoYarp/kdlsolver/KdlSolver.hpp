@@ -117,7 +117,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *         mode, false otherwise.
     * @return true/false on success/failure. 
     */
-    virtual bool getTrackingMode(bool *f);
+    virtual bool getTrackingMode(bool *f) { return true; }
 
     /*!
      * Ask the controller to weigh more either the position or the
@@ -125,14 +125,14 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
      * \param p can be "position" or "orientation".
      * \return true/false on success/failure.
      */
-    virtual bool setPosePriority(const yarp::os::ConstString &p);
+    virtual bool setPosePriority(const yarp::os::ConstString &p) { return true; }
 
     /*!
      * Get the current pose priority. [wait for reply]
      * \param p here is returned either as "position" or "orientation".
      * \return true/false on success/failure.
      */
-    virtual bool getPosePriority(yarp::os::ConstString &p);
+    virtual bool getPosePriority(yarp::os::ConstString &p) { return true; }
 
     /**
     * Ask the controller to close the loop with the low-level joints
@@ -149,7 +149,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       executed by the control boards with resort to torque
     *       actuation.
     */
-    virtual bool setReferenceMode(const bool f);
+    virtual bool setReferenceMode(const bool f) { return true; }
 
     /**
     * Get the current controller reference mode. [wait for reply]
@@ -158,7 +158,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *         actual encoders feedback.
     * @return true/false on success/failure. 
     */
-    virtual bool getReferenceMode(bool *f);
+    virtual bool getReferenceMode(bool *f) { return true; }
 
     /**
     * Get the current pose of the end-effector. [do not wait for 
@@ -173,7 +173,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @return true/false on success/failure.
     */
     virtual bool getPose(yarp::sig::Vector &x, yarp::sig::Vector &o,
-                         yarp::os::Stamp *stamp=NULL);
+                         yarp::os::Stamp *stamp=NULL) { return true; }
 
     /**
     * Get the current pose of the specified link belonging to the 
@@ -190,7 +190,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @return true/false on success/failure.
     */
     virtual bool getPose(const int axis, yarp::sig::Vector &x, yarp::sig::Vector &o,
-                         yarp::os::Stamp *stamp=NULL);
+                         yarp::os::Stamp *stamp=NULL) { return true; }
 
     /**
     * Move the end-effector to a specified pose (position
@@ -206,7 +206,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note Intended for streaming mode. 
     */
     virtual bool goToPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
-                          const double t=0);
+                          const double t=0) { return true; }
 
     /**
     * Move the end-effector to a specified position in cartesian 
@@ -219,7 +219,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *  
     * @note Intended for streaming mode. 
     */
-    virtual bool goToPosition(const yarp::sig::Vector &xd, const double t=0.0);
+    virtual bool goToPosition(const yarp::sig::Vector &xd, const double t=0.0) { return true; }
 
     /**
     * Move the end-effector to a specified pose (position
@@ -233,7 +233,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @return true/false on success/failure.
     */
     virtual bool goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
-                              const double t=0.0);
+                              const double t=0.0) { return true; }
 
     /**
     * Move the end-effector to a specified position in cartesian 
@@ -244,7 +244,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *         (as by default) the current execution time is kept. 
     * @return true/false on success/failure.
     */
-    virtual bool goToPositionSync(const yarp::sig::Vector &xd, const double t=0.0);
+    virtual bool goToPositionSync(const yarp::sig::Vector &xd, const double t=0.0) { return true; }
 
     /**
     * Get the actual desired pose and joints configuration as result
@@ -261,7 +261,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @return true/false on success/failure.
     */
     virtual bool getDesired(yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat);
+                            yarp::sig::Vector &qdhat) { return true; }
 
     /**
     * Ask for inverting a given pose without actually moving there.
@@ -284,7 +284,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     */
     virtual bool askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                             yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat);
+                            yarp::sig::Vector &qdhat) { return true; }
 
     /**
     * Ask for inverting a given pose without actually moving there.
@@ -311,7 +311,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     virtual bool askForPose(const yarp::sig::Vector &q0,
                             const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                             yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat);
+                            yarp::sig::Vector &qdhat) { return true; }
 
     /**
     * Ask for inverting a given position without actually moving 
@@ -331,7 +331,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     */
     virtual bool askForPosition(const yarp::sig::Vector &xd,
                                 yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                                yarp::sig::Vector &qdhat);
+                                yarp::sig::Vector &qdhat) { return true; }
 
     /**
     * Ask for inverting a given position without actually moving 
@@ -355,7 +355,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     virtual bool askForPosition(const yarp::sig::Vector &q0,
                                 const yarp::sig::Vector &xd,
                                 yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                                yarp::sig::Vector &qdhat);
+                                yarp::sig::Vector &qdhat) { return true; }
 
     /**
     * Get the current DOF configuration of the limb. [wait for
@@ -369,7 +369,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       associated joint is controlled (i.e. it is an actuated
     *       DOF), 0 otherwise.
     */
-    virtual bool getDOF(yarp::sig::Vector &curDof);
+    virtual bool getDOF(yarp::sig::Vector &curDof) { return true; }
 
     /**
     * Set a new DOF configuration for the limb. [wait for reply]
@@ -386,7 +386,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       special value 2 indicates that the joint status won't be
     *       modified (useful as a placeholder).
     */
-    virtual bool setDOF(const yarp::sig::Vector &newDof, yarp::sig::Vector &curDof);
+    virtual bool setDOF(const yarp::sig::Vector &newDof, yarp::sig::Vector &curDof) { return true; }
 
     /**
     * Get the current joints rest position. [wait for reply]
@@ -399,7 +399,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       rest position; further, each rest component may be
     *       weighted differently providing the weights vector.
     */
-    virtual bool getRestPos(yarp::sig::Vector &curRestPos);
+    virtual bool getRestPos(yarp::sig::Vector &curRestPos) { return true; }
 
     /**
     * Set a new joints rest position. [wait for reply] 
@@ -415,7 +415,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       rest position; further, each rest component may be
     *       weighted differently providing the weights vector.
     */
-    virtual bool setRestPos(const yarp::sig::Vector &newRestPos, yarp::sig::Vector &curRestPos);
+    virtual bool setRestPos(const yarp::sig::Vector &newRestPos, yarp::sig::Vector &curRestPos) { return true; }
 
     /**
     * Get the current joints rest weights. [wait for reply]
@@ -428,7 +428,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       rest position; further, each rest component may be
     *       weighted differently providing the weights vector.
     */
-    virtual bool getRestWeights(yarp::sig::Vector &curRestWeights);
+    virtual bool getRestWeights(yarp::sig::Vector &curRestWeights) { return true; }
 
     /**
     * Set a new joints rest position. [wait for reply] 
@@ -444,7 +444,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       rest position; further, each rest component may be
     *       weighted differently providing the weights vector.
     */
-    virtual bool setRestWeights(const yarp::sig::Vector &newRestWeights, yarp::sig::Vector &curRestWeights);
+    virtual bool setRestWeights(const yarp::sig::Vector &newRestWeights, yarp::sig::Vector &curRestWeights) { return true; }
 
     /**
     * Get the current range for the axis. [wait for reply]
@@ -454,7 +454,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @param max where the maximum value is returned [deg].
     * @return true/false on success/failure. 
     */
-    virtual bool getLimits(const int axis, double *min, double *max);
+    virtual bool getLimits(const int axis, double *min, double *max) { return true; }
 
     /**
     * Set new range for the axis. Allowed range shall be a valid 
@@ -465,7 +465,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @param max the new maximum value [deg]. 
     * @return true/false on success/failure. 
     */
-    virtual bool setLimits(const int axis, const double min, const double max);
+    virtual bool setLimits(const int axis, const double min, const double max) { return true; }
 
     /**
     * Get the current trajectory duration. [wait for reply]
@@ -473,14 +473,14 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *         (seconds).
     * @return true/false on success/failure. 
     */
-    virtual bool getTrajTime(double *t);
+    virtual bool getTrajTime(double *t) { return true; }
 
     /**
     * Set the duration of the trajectory. [wait for reply]
     * @param t time (seconds).
     * @return true/false on success/failure. 
     */
-    virtual bool setTrajTime(const double t);
+    virtual bool setTrajTime(const double t) { return true; }
 
     /**
     * Return tolerance for in-target check. [wait for reply]
@@ -490,7 +490,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note The trajectory is supposed to be completed as soon as 
     *       norm(xd-end_effector)<tol.
     */
-    virtual bool getInTargetTol(double *tol);
+    virtual bool getInTargetTol(double *tol) { return true; }
 
     /**
     * Set tolerance for in-target check. [wait for reply]
@@ -500,7 +500,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note The trajectory is supposed to be completed as soon as 
     *       norm(xd-end_effector)<tol.
     */
-    virtual bool setInTargetTol(const double tol);
+    virtual bool setInTargetTol(const double tol) { return true; }
 
     /**
     * Return joints velocities. [wait for reply] 
@@ -508,7 +508,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *             [deg/s] sent to the robot by the controller.
     * @return true/false on success/failure.
     */
-    virtual bool getJointsVelocities(yarp::sig::Vector &qdot);
+    virtual bool getJointsVelocities(yarp::sig::Vector &qdot) { return true; }
 
     /**
     * Return velocities of the end-effector in the task space. [wait
@@ -523,7 +523,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *             velocities.
     * @return true/false on success/failure.
     */
-    virtual bool getTaskVelocities(yarp::sig::Vector &xdot, yarp::sig::Vector &odot);
+    virtual bool getTaskVelocities(yarp::sig::Vector &xdot, yarp::sig::Vector &odot) { return true; }
 
     /**
     * Set the reference velocities of the end-effector in the task 
@@ -534,7 +534,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *             reference velocity [rad/s] of the end-effector
     * @return true/false on success/failure.
     */
-    virtual bool setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot);
+    virtual bool setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot) { return true; }
 
     /**
     * Attach a tip frame to the end-effector. 
@@ -547,7 +547,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note By attaching a tip to the end-effector, the specified 
     *       tip will be the new end-effector for the controller.
     */
-    virtual bool attachTipFrame(const yarp::sig::Vector &x, const yarp::sig::Vector &o);
+    virtual bool attachTipFrame(const yarp::sig::Vector &x, const yarp::sig::Vector &o) { return true; }
 
     /**
     * Retrieve the tip frame currently attached to the end-effector.
@@ -557,7 +557,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *          frame wrt the end-effector (axis-angle notation).
     * @return true/false if successful/failed.
     */
-    virtual bool getTipFrame(yarp::sig::Vector &x, yarp::sig::Vector &o);
+    virtual bool getTipFrame(yarp::sig::Vector &x, yarp::sig::Vector &o) { return true; }
 
     /**
     * Remove the tip frame currently attached to the end-effector.  
@@ -565,14 +565,14 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *  
     * @note The actual end-effector is again under control.
     */
-    virtual bool removeTipFrame();
+    virtual bool removeTipFrame() { return true; }
 
     /** Check once if the current trajectory is terminated. [wait for
     *   reply]
     * @param f where the result is returned.
     * @return true/false on success/failure.
     */
-    virtual bool checkMotionDone(bool *f);
+    virtual bool checkMotionDone(bool *f) { return true; }
 
     /** Wait until the current trajectory is terminated. [wait for
     *   reply]
@@ -583,7 +583,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @return true for success, false for failure and timeout 
     *         expired.
     */
-    virtual bool waitMotionDone(const double period=0.1, const double timeout=0.0);
+    virtual bool waitMotionDone(const double period=0.1, const double timeout=0.0) { return true; }
 
     /** Ask for an immediate stop motion. [wait for reply]
     * @return true/false on success/failure. 
@@ -591,7 +591,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note The control is completely released, i.e. a direct switch
     *       to non-tracking mode is executed.     
     */
-    virtual bool stopControl();
+    virtual bool stopControl() { return true; }
 
     /** Store the controller context. [wait for reply]
     * @param id specify where to store the returned context id. 
@@ -601,7 +601,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       variables, such as the tracking mode, the active dofs,
     *       the trajectory time and so on.
     */
-    virtual bool storeContext(int *id);
+    virtual bool storeContext(int *id) { return true; }
 
     /** Restore the controller context previously stored. [wait for
     *   reply]
@@ -612,7 +612,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     *       variables, such as the tracking mode, the active dofs,
     *       the trajectory time and so on.
     */
-    virtual bool restoreContext(const int id);
+    virtual bool restoreContext(const int id) { return true; }
 
     /**
     * Returns useful info on the operating state of the controller. 
@@ -620,7 +620,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @param info is a property-like bottle containing the info.
     * @return true/false on success/failure. 
     */
-    virtual bool getInfo(yarp::os::Bottle &info);
+    virtual bool getInfo(yarp::os::Bottle &info) { return true; }
 
     /**
     * Register an event. 
@@ -630,14 +630,14 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note the special type "*" can be used to attach a callback to
     *       all the available events.
     */
-    virtual bool registerEvent(yarp::dev::CartesianEvent &event);
+    virtual bool registerEvent(yarp::dev::CartesianEvent &event) { return true; }
 
     /**
     * Unregister an event.
     * @param event the event to be unregistered.
     * @return true/false on success/failure. 
     */
-    virtual bool unregisterEvent(yarp::dev::CartesianEvent &event);
+    virtual bool unregisterEvent(yarp::dev::CartesianEvent &event) { return true; }
 
     /**
     * Tweak low-level controller's parameters. [wait for reply]
@@ -648,7 +648,7 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note This method is intended for accessing low-level 
     *       controller's configuration.
     */
-    virtual bool tweakSet(const yarp::os::Bottle &options);
+    virtual bool tweakSet(const yarp::os::Bottle &options) { return true; }
 
     /**
     * Return low-level controller's parameters. [wait for reply]
@@ -660,13 +660,13 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
     * @note This method is intended for accessing low-level 
     *       controller's configuration.
     */
-    virtual bool tweakGet(yarp::os::Bottle &options);
+    virtual bool tweakGet(yarp::os::Bottle &options) { return true; }
 
     /** Delete a specified controller context. [wait for reply]
     * @param id specify the context id to be removed.
     * @return true/false on success/failure. 
     */
-    virtual bool deleteContext(const int id);
+    virtual bool deleteContext(const int id) { return true; }
 
 // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
