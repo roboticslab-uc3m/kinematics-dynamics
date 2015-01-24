@@ -76,13 +76,13 @@ namespace teo
  * It is used by the \ref cartesianServer module.
  */
 
-class KdlSolver : public DeviceDriver, public RateThread, public ICartesianControl {
+class KdlSolver : public DeviceDriver, public ICartesianControl {
  public:
 
   // Set the Thread Rate in the class constructor
-  KdlSolver() : RateThread(DEFAULT_CMC_MS) {}  // In ms
+  KdlSolver() {}  // In ms
 
-// -- Helper Funcion declarations. Implementation in HelperFuncs.cpp--
+// -- Helper Funcion declarations. Implementation in KdlSolver.cpp--
 
     /**
     * [thanks Ugo Pattacini!]
@@ -690,26 +690,6 @@ class KdlSolver : public DeviceDriver, public RateThread, public ICartesianContr
         * @return true/false on success/failure.
         */
         virtual bool close();
-
-// -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
-
-        /**
-         * Initialization method. The thread executes this function
-         * when it starts and before "run". This is a good place to
-         * perform initialization tasks that need to be done by the
-         * thread itself (device drivers initialization, memory
-         * allocation etc). If the function returns false the thread
-         * quits and never calls "run". The return value of threadInit()
-         * is notified to the class and passed as a parameter
-         * to afterStart(). Note that aftetfrStart() is called by the
-         * same thread that is executing the "start" method.
-         */
-        bool threadInit();
-
-        /**
-         * Loop function. This is the thread itself.
-         */
-        void run();
 
     private:
         Property options;
