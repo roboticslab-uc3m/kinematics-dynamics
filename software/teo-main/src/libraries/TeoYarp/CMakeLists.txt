@@ -10,6 +10,7 @@ include(YarpPlugin)
 yarp_begin_plugin_library(TeoYarp)
 add_subdirectory(ravepart)
 add_subdirectory(kdlcontroller)
+add_subdirectory(kdlsolver)
 yarp_end_plugin_library(TeoYarp)
 
 install(TARGETS TeoYarp DESTINATION lib)
