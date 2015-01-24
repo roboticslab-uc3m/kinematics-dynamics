@@ -51,26 +51,43 @@ bool teo::KdlController::open(Searchable& config) {
     else printf("KdlController using custom H0:\n%s\n",ymH0.toString().c_str());
     Vector kdlVec0(ymH0(0,3),ymH0(1,3),ymH0(2,3));
     Rotation kdlRot0( ymH0(0,0),ymH0(0,1),ymH0(0,2),ymH0(1,0),ymH0(1,1),ymH0(1,2),ymH0(2,0),ymH0(2,1),ymH0(2,2));
-    // H0 = Frame(kdlRot0,kdlVec0);
-    //theChain.addSegment(Segment((Joint::None), Frame(kdlRot0,kdlVec0)));
     theChain.addSegment(Segment(Joint(Joint::None), Frame(kdlRot0,kdlVec0)));
 
     for(int motor=0;motor<vectorOfCmcMotorIdxs.size();motor++) {
-        ConstString link("link_");
-        std::ostringstream s;  // link+=ConstString::toString(motor);
+
+        std::string link("link_");
+        std::ostringstream s;
         s << motor;
         link += s.str();
-        Bottle &bLink=config.findGroup(link);
-        if( bLink.isNull() ) {
-            CD_ERROR("No args at: %s\n", link.c_str());
+        Bottle &bLink = config.findGroup(link);
+        if( ! bLink.isNull() ) {
+            printf("KdlController using %s: ", link.c_str());
+            double linkOffset = bLink.check("offset",Value(0.0)).asDouble();
+            double linkD = bLink.check("D",Value(0.0)).asDouble();
+            double linkA = bLink.check("A",Value(0.0)).asDouble();
+            double linkAlpha = bLink.check("alpha",Value(0.0)).asDouble();
+            theChain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,linkAlpha,linkD,linkOffset)));
+            isPrismatic.push_back(0);
+            printf(", offset: %f, D: %f, A: %f, alpha: %f.\n",linkOffset,linkD,linkA,linkAlpha);
+            continue;
+        }
+
+        std::string xyzLink("xyzLink_");
+        std::ostringstream xyzS;
+        xyzS << motor;
+        xyzLink += xyzS.str();
+        CD_WARNING("Not found: \"%s\", looking for \"%s\" instead.\n", link.c_str(), xyzLink.c_str());
+        Bottle &bXyzLink = config.findGroup(xyzLink);
+        if( bXyzLink.isNull() ) {
+            CD_ERROR("Not found: \"%s\" either.\n", xyzLink.c_str());
             return false;
         }
-        printf("KdlController using %s: ", link.c_str());
-        double linkX = bLink.check("x",Value(0.0)).asDouble();
-        double linkY = bLink.check("y",Value(0.0)).asDouble();
-        double linkZ = bLink.check("z",Value(0.0)).asDouble();
+        printf("KdlController using %s: ", xyzLink.c_str());
+        double linkX = bXyzLink.check("x",Value(0.0)).asDouble();
+        double linkY = bXyzLink.check("y",Value(0.0)).asDouble();
+        double linkZ = bXyzLink.check("z",Value(0.0)).asDouble();
 
-        ConstString linkType = bLink.check("Type",Value("NULL")).asString();
+        std::string linkType = bXyzLink.check("Type",Value("NULL")).asString();
         if(linkType == "RotX") {
             theChain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
@@ -123,7 +140,6 @@ bool teo::KdlController::open(Searchable& config) {
     else printf("KdlController using custom HN:\n%s\n",ymHN.toString().c_str());
     Vector kdlVecN(ymHN(0,3),ymHN(1,3),ymHN(2,3));
     Rotation kdlRotN( ymHN(0,0),ymHN(0,1),ymHN(0,2),ymHN(1,0),ymHN(1,1),ymHN(1,2),ymHN(2,0),ymHN(2,1),ymHN(2,2));
-    // HN = Frame(kdlRotN,kdlVecN);
     theChain.addSegment(Segment(Joint(Joint::None), Frame(kdlRotN,kdlVecN)));
     
     printf("KdlController chain number of segments including none-joint (H0 and HN): %d\n",theChain.getNrOfSegments());
