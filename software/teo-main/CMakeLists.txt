@@ -26,7 +26,7 @@ option(ENABLE_TeoYarp_kdlsolver "Enable/disable compilation of TeoYarp_kdlsolver
 option(ENABLE_TeoYarp_ravepart "Enable/disable compilation of TeoYarp_ravepart" TRUE)
 
 ##### tests options
-option(ENABLE_tests "Choose if you want to compile tests" FALSE)
+option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    
