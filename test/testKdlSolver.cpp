@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
 
-#include "KdlController.hpp"
-
 using namespace teo;
 
 YARP_DECLARE_PLUGINS(TeoYarp)
@@ -31,9 +29,7 @@ TEST_F( KdlControllerTest, KdlControllerFwdKin)
     //ASSERT_EQ(true, yarp.checkNetwork() );  //-- This test can be performed without the network.
 
     Property options;
-    options.put("device","kdlcontroller");
-    options.put("robotDevice","ravepart");  //-- ravepart because test_motor lacks joint limit interface.
-    options.put("axes",1);  //-- Gets passed on to ravepart.
+    options.put("device","kdlserver");
     Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
     psub.put("A",1);
     dd.open(options);
