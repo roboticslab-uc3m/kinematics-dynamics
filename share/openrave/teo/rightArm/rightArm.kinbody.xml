@@ -2,7 +2,7 @@
 
 <!-- no joint limits -->
 <KinBody name="rightArm">
-    <Body name="rightArm0">
+    <Body name="rightArm0" type="dynamic">
         <Geom type="trimesh">
             <data>./rightArm0.wrl 0.001 </data>
             <render>./rightArm0.wrl 0.001 </render>
