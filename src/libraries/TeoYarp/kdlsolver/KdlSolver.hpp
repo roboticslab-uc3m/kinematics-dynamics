@@ -86,11 +86,6 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
 // -- Helper Funcion declarations. Implementation in KdlSolver.cpp--
 
     /**
-    * [thanks Ugo Pattacini!]
-    */
-    bool getMatrixFromProperties(Searchable &options, ConstString &tag, yarp::sig::Matrix &H);
-
-    /**
     * Perform forward kinematics.
     */
     bool fwdKin(const yarp::sig::Vector &inUnits, yarp::sig::Vector &x, yarp::sig::Vector &o);
