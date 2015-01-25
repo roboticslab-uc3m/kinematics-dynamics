@@ -1,6 +1,10 @@
 #include "gtest/gtest.h"
 
-using namespace teo;
+#include <yarp/os/all.h>
+#include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/Drivers.h>
+#include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/CartesianControl.h>
 
 YARP_DECLARE_PLUGINS(TeoYarp)
 
@@ -17,26 +21,23 @@ class KdlControllerTest : public testing::Test
         }
 
     protected:
-        PolyDriver dd;
-        ICartesianControl *icart;
-        //Network yarp;  //-- This test can be performed without the network.
+        yarp::dev::PolyDriver dd;
+        yarp::dev::ICartesianControl *icart;
 };
 
-TEST_F( KdlControllerTest, KdlControllerFwdKin)
+TEST_F( KdlControllerTest, KdlSolverFwdKin)
 {
     YARP_REGISTER_PLUGINS(TeoYarp);
 
-    //ASSERT_EQ(true, yarp.checkNetwork() );  //-- This test can be performed without the network.
-
-    Property options;
-    options.put("device","kdlserver");
-    Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
+    yarp::os::Property options;
+    options.put("device","kdlsolver");
+    yarp::os::Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
     psub.put("A",1);
     dd.open(options);
 
     ASSERT_EQ(true, dd.isValid() );
     dd.view(icart);
-    ASSERT_NE((ICartesianControl*)NULL, icart );
+    ASSERT_NE((yarp::dev::ICartesianControl*)NULL, icart );
     yarp::sig::Vector x,o;
     icart->getPose(x,o);
     ASSERT_EQ(x[0], 1 );
