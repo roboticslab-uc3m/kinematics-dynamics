@@ -26,7 +26,7 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &inUnits, std::vector<doub
         o[0] = rotVector[0];
         o[1] = rotVector[1];
         o[2] = rotVector[2];
-        CD_INFO("KDL computed current cart: %f %f %f | %f %f %f %f.\n",
+        CD_INFO("KDL computed cart: %f %f %f | %f %f %f %f.\n",
             fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1],o[2],o[3]);
     } else if (angleRepr == "eulerYZ") {  // ASIBOT
         double alfa, beta, gamma;
@@ -34,7 +34,7 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &inUnits, std::vector<doub
         o.clear();
         o.push_back(toDeg(beta));  // pushed on as [0]
         o.push_back(toDeg(gamma));  // pushed on as [1]
-        CD_INFO("KDL computed current cart: %f %f %f | %f %f.\n",
+        CD_INFO("KDL computed cart: %f %f %f | %f %f.\n",
             fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1]);
     } else if (angleRepr == "eulerZYZ") {
         double alfa, beta, gamma;
@@ -52,10 +52,10 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &inUnits, std::vector<doub
         o.push_back(toDeg(alfa));  // pushed on as [0]
         o.push_back(toDeg(beta));  // pushed on as [1]
         o.push_back(toDeg(gamma));  // pushed on as [2]
-        CD_INFO("KDL computed current cart: %f %f %f | %f %f %f.\n",
+        CD_INFO("KDL computed cart: %f %f %f | %f %f %f.\n",
             fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1],o[2]);
     } else {
-        CD_INFO("KDL computed current cart: %f %f %f\n",fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2]);
+        CD_INFO("KDL computed cart: %f %f %f\n",fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2]);
     }
 
     return true;
