@@ -71,10 +71,8 @@ namespace teo
 
 /**
  * @ingroup KdlSolver
- * @brief The KdlSolver class connects to a robot (the IPositionControl, IVelocityControl and
- * IEncoders interfaces) and exposes a YARP_dev cartesian interface (implements
+ * @brief The KdlSolver class exposes a YARP_dev cartesian interface (implements
  * <a href="http://eris.liralab.it/yarpdoc/classyarp_1_1dev_1_1ICartesianControl.html">ICartesianControl</a>).
- * It is used by the \ref cartesianServer module.
  */
 
 class KdlSolver : public DeviceDriver, public ICartesianControl {
