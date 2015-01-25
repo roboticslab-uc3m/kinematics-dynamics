@@ -33,7 +33,7 @@ bool teo::KdlSolver::open(Searchable& config) {
             double linkD = bLink.check("D",Value(0.0)).asDouble();
             double linkA = bLink.check("A",Value(0.0)).asDouble();
             double linkAlpha = bLink.check("alpha",Value(0.0)).asDouble();
-            theChain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,linkAlpha,linkD,linkOffset)));
+            theChain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
             isPrismatic.push_back(0);
             CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
             continue;
@@ -99,10 +99,12 @@ bool teo::KdlSolver::open(Searchable& config) {
 
     printf("KdlSolver chain number of segments: %d\n",theChain.getNrOfSegments());
 
-
     _orient = new RotationalInterpolation_SingleAxis();
     _eqradius = 1; //0.000001;
     _aggregate = false;
+
+    std::vector<double> q(numLinks,0),x,o;
+    this->fwdKin(q,x,o);
 
     return true;
 }
