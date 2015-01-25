@@ -39,7 +39,7 @@ TEST_F( KdlControllerTest, KdlSolverFwdKin)
     dd.view(icart);
     ASSERT_NE((yarp::dev::ICartesianControl*)NULL, icart );
     yarp::sig::Vector x,o;
-    icart->getPose(x,o);
+    icart->getPose(x,o);  // Ask for inverting a given pose without actually moving there.
     ASSERT_EQ(x.size(), 3 );
     ASSERT_EQ(x[0], 1 );
     ASSERT_EQ(x[1], 0 );
