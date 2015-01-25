@@ -86,7 +86,7 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         /**
         * Perform forward kinematics.
         */
-        bool fwdKin(const yarp::sig::Vector &inUnits, yarp::sig::Vector &x, yarp::sig::Vector &o);
+        bool fwdKin(const std::vector<double> &inUnits, std::vector<double> &x, std::vector<double> &o);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

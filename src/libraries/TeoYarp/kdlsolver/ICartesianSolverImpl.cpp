@@ -4,7 +4,7 @@
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::fwdKin(const yarp::sig::Vector &inUnits, yarp::sig::Vector &x, yarp::sig::Vector &o) {
+bool teo::KdlSolver::fwdKin(const std::vector<double> &inUnits, std::vector<double> &x, std::vector<double> &o) {
 
     JntArray inRad = JntArray(numLinks);
     Frame fOutCart;
