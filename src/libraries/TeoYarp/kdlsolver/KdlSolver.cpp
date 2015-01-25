@@ -25,13 +25,11 @@ bool teo::KdlSolver::getMatrixFromProperties(Searchable &options, ConstString &t
 // -----------------------------------------------------------------------------
 
 bool teo::KdlSolver::fwdKin(const yarp::sig::Vector &inUnits, yarp::sig::Vector &x, yarp::sig::Vector &o) {
-    //JntArray inRad = JntArray(cmcNumMotors);
-    JntArray inRad = JntArray(vectorOfCmcMotorIdxs.size());
+
+    JntArray inRad = JntArray(numLinks);
     Frame fOutCart;
-    for (int idxIdx=0; idxIdx<vectorOfCmcMotorIdxs.size(); idxIdx++) {
-        int motor = vectorOfCmcMotorIdxs[idxIdx];
-        if(isPrismatic[idxIdx]) inRad(idxIdx)=inUnits[motor];
-        else inRad(idxIdx)=toRad(inUnits[motor]);
+    for (int motor=0; motor<numLinks; motor++) {
+        inRad(motor)=toRad(inUnits[motor]);
     }
     ChainFkSolverPos_recursive fksolver = ChainFkSolverPos_recursive(theChain);
     fksolver.JntToCart(inRad,fOutCart);

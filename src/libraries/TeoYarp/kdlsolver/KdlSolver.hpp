@@ -37,7 +37,8 @@
 #define GAIN 0.25  /// 75 good for unstabilized sim and common real. 25 ok with stable sim.
 
 #define DEFAULT_ANGLE_REPR "RPY"  // string
-#define DEFAULT_CMC_MS 30       // ms
+#define DEFAULT_NUM_LINKS 1  // int
+
 #define DEFAULT_EPSILON 0.005     // Precision tolerance
 #define DEFAULT_DURATION 20     // For Trajectory
 #define DEFAULT_MAXVEL 7.5      // unit/s
@@ -699,7 +700,6 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
         IVelocityControl *vel;
         IControlLimits *lim;
 
-        int cmc_status;
         bool withOri;
 
         Trajectory_Segment* currentTrajectory;
@@ -715,13 +715,9 @@ class KdlSolver : public DeviceDriver, public ICartesianControl {
 
         double startTime;
 
-        int cmcNumMotors;
+        int numLinks;
         std::string angleRepr;
         double epsilon, duration, maxVel, maxAcc, cmcMs;
-
-        std::vector<int> vectorOfCmcMotorIdxs;
-    //    Frame H0, HN;
-    //    Frame HN;
 
     protected:
         /**
