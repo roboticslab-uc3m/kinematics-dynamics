@@ -20,7 +20,7 @@
 #include "ManipulatorWrapper.hpp"
 #include "TeoSimRateThread.hpp"
 
-#define DEFAULT_ENV "models/teoWhite/teoFull.robot.xml"
+#define DEFAULT_ENV "../openrave/teo.robot.xml"
 #define DEFAULT_JMC_MS 20.0  // [ms]
 #define DEFAULT_PHYSICS "none"
 #define DEFAULT_VIEWER 1
