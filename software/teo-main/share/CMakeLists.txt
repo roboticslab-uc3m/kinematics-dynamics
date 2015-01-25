@@ -10,7 +10,8 @@ yarp_configure_external_installation(teo)
 
 ### Go through single applications
 
+add_subdirectory(3dmodels)
+add_subdirectory(kinematics)
+
 add_subdirectory(teoSim)
-add_subdirectory(kdlcontroller)
-add_subdirectory(teoCartesianServer)
 
