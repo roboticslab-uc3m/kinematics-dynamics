@@ -4,16 +4,17 @@
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/CartesianControl.h>
+
+#include "ICartesianSolver.h"
 
 YARP_DECLARE_PLUGINS(TeoYarp)
 
-class KdlControllerTest : public testing::Test
+class KdlSolverTest : public testing::Test
 {
 
     public:
         virtual void SetUp() {
-            icart = NULL;
+            iCartesianSolver = NULL;
         }
 
         virtual void TearDown()
@@ -22,10 +23,10 @@ class KdlControllerTest : public testing::Test
 
     protected:
         yarp::dev::PolyDriver dd;
-        yarp::dev::ICartesianControl *icart;
+        teo::ICartesianSolver *iCartesianSolver;
 };
 
-TEST_F( KdlControllerTest, KdlSolverFwdKin)
+TEST_F( KdlSolverTest, KdlSolverFwdKin)
 {
     YARP_REGISTER_PLUGINS(TeoYarp);
 
@@ -36,10 +37,11 @@ TEST_F( KdlControllerTest, KdlSolverFwdKin)
     dd.open(options);
 
     ASSERT_EQ(true, dd.isValid() );
-    dd.view(icart);
-    ASSERT_NE((yarp::dev::ICartesianControl*)NULL, icart );
-    yarp::sig::Vector x,o;
-    icart->getPose(x,o);  // Ask for inverting a given pose without actually moving there.
+    dd.view(iCartesianSolver);
+    ASSERT_NE((teo::ICartesianSolver*)NULL, iCartesianSolver );
+    std::vector<double> q,x,o;
+    q.push_back(0.0);
+    iCartesianSolver->fwdKin(q,x,o);
     ASSERT_EQ(x.size(), 3 );
     ASSERT_EQ(x[0], 1 );
     ASSERT_EQ(x[1], 0 );

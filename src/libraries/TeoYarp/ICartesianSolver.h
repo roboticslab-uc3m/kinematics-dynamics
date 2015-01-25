@@ -14,7 +14,7 @@ public:
      */
     virtual ~ICartesianSolver() {}
 
-    virtual bool fwdKin(const yarp::sig::Vector &inUnits, yarp::sig::Vector &x, yarp::sig::Vector &o) = 0;
+    virtual bool fwdKin(const std::vector<double> &inUnits, std::vector<double> &x, std::vector<double> &o) = 0;
 
 };
 
