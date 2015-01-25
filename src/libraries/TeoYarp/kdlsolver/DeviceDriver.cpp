@@ -7,17 +7,6 @@
 bool teo::KdlSolver::open(Searchable& config) {
 
     angleRepr = config.check("angleRepr",Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
-    cmcMs = config.check("cmcMs",DEFAULT_CMC_MS,"rate of Cartesian Motion Controller thread").asDouble();
-    duration = config.check("duration",DEFAULT_DURATION,"duration of movl movements").asDouble();
-    epsilon = config.check("epsilon",DEFAULT_EPSILON,"epsilon for tolerance").asDouble();
-    maxVel = config.check("maxVel",DEFAULT_MAXVEL,"[units/s^2] maximum joint acceleration").asDouble();
-    maxAcc = config.check("maxAcc",DEFAULT_MAXACC,"[units/s] maximum joint velocity").asDouble();
-
-    std::string strRobotDevice = config.check("robotDevice",Value(DEFAULT_ROBOT_DEVICE),"device we create").asString();
-    std::string strRobotSubDevice = config.check("robotSubdevice",Value(DEFAULT_ROBOT_SUBDEVICE),"library we use").asString();
-    std::string strRobotName = config.check("robotName",Value(DEFAULT_ROBOT_NAME),"if created device, port name").asString();
-    std::string strRobotLocal = config.check("robotLocal",Value(DEFAULT_ROBOT_LOCAL),"if accesing remote, local port name").asString();
-    std::string strRobotRemote = config.check("robotRemote",Value(DEFAULT_ROBOT_REMOTE),"if accesing remote, remote port name").asString();
 
     if(angleRepr == "axisAngle") {
         targetO.resize(4);
@@ -31,55 +20,9 @@ bool teo::KdlSolver::open(Searchable& config) {
         CD_WARNING("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
     }
 
-    //-- Must connect to robot to figure out how many joints
-    Property robotOptions;
-    robotOptions.fromString(config.toString());  //-- Good to pass on axes, etc.
-    robotOptions.put("device",strRobotDevice);
-    robotOptions.put("subdevice",strRobotSubDevice);
-    robotOptions.put("name",strRobotName);
-    robotOptions.put("local",strRobotLocal);
-    robotOptions.put("remote",strRobotRemote);
-
-    robotDevice.open(robotOptions);
-    if (!robotDevice.isValid()) {
-        CD_WARNING("Robot device not available: %s\n",strRobotDevice.c_str());
-        return false;
-    }
-    CD_SUCCESS("Robot device available: %s\n",strRobotDevice.c_str());
-
-    bool ok = robotDevice.view(pos);
-    ok &= robotDevice.view(vel);
-    ok &= robotDevice.view(enc);
-    ok &= robotDevice.view(lim);
-    if (!ok) {
-        CD_ERROR("Problems acquiring at least one of the robot interfaces.\n");
-        return false;
-    }
-    CD_SUCCESS("Acquired robot devices interfaces.\n");
-
-    pos->getAxes(&cmcNumMotors);
-    CD_SUCCESS("Attending to %d motors from robot device.\n",cmcNumMotors);
-    double min,max;
-    for (int i=0;i<cmcNumMotors;i++){
-        lim->getLimits(i,&min,&max);
-        CD_INFO("limits of q%d: %f to %f\n",i+1,min,max);
-    }
-    CD_SUCCESS("Pulled joint limits.\n");
-
-    if (config.check("usedCmcMotorIdxs")) {
-        Bottle* ptrBottleOfCmcMotorIdxs = config.find("usedCmcMotorIdxs").asList();
-        printf("KdlSolver using overriden usedCmcMotorIdxs: %s.\n",ptrBottleOfCmcMotorIdxs->toString().c_str());
-        for (int i=0;i<ptrBottleOfCmcMotorIdxs->size();i++)
-            vectorOfCmcMotorIdxs.push_back( ptrBottleOfCmcMotorIdxs->get(i).asInt() );
-    } else {
-        printf("KdlSolver using default usedCmcMotorIdxs (all %d).\n",cmcNumMotors);
-        for (int i=0;i<cmcNumMotors;i++)
-            vectorOfCmcMotorIdxs.push_back( i );
-    }
-
     yarp::sig::Matrix ymH0(4,4);
     ConstString ycsH0("H0");
-    if(!getMatrixFromProperties(config,ycsH0,ymH0)){
+    if( ! getMatrixFromProperties(config,ycsH0,ymH0) ){
         ymH0.eye();
         printf("KdlSolver using default H0: H0 = I\n");
     }
@@ -168,7 +111,7 @@ bool teo::KdlSolver::open(Searchable& config) {
 
     yarp::sig::Matrix ymHN(4,4);
     ConstString ycsHN("HN");
-    if(!getMatrixFromProperties(config,ycsHN,ymHN)){
+    if( ! getMatrixFromProperties(config,ycsHN,ymHN) ){
         ymHN.eye();
         printf("KdlSolver using default HN: HN = I\n");
     }
@@ -179,24 +122,6 @@ bool teo::KdlSolver::open(Searchable& config) {
     
     printf("KdlSolver chain number of segments including none-joint (H0 and HN): %d\n",theChain.getNrOfSegments());
 
-    cmc_status = 0;
-    startTime = 0;
-
-
-
-    std::vector<double> v(cmcNumMotors);
-    bool oks = enc->getEncoders(v.data());
-    for (int i=0;i<cmcNumMotors;i++){
-        CD_INFO("position of q%d: %f\n",i+1,v[i]);
-    }
-    if (!oks)
-    {
-        CD_ERROR("Note that failed\n");
-    } else {
-        CD_SUCCESS("was good.\n");
-    }
-
-    cmc_status = 0;
     _orient = new RotationalInterpolation_SingleAxis();
     _eqradius = 1; //0.000001;
     _aggregate = false;

@@ -10,7 +10,7 @@ yarp_configure_external_installation(teo)
 
 ### Go through single applications
 
-add_subdirectory(3dmodels)
+add_subdirectory(openrave)
 add_subdirectory(kinematics)
 
 add_subdirectory(teoSim)
