@@ -11,4 +11,14 @@
         </Joint>
     </KinBody>
 
+    <Manipulator name="trunk">
+        <base>trunk0</base>
+        <effector>trunk2</effector>
+    </Manipulator>
+
+    <Manipulator name="rightArm">
+        <base>rightArm0</base>
+        <effector>rightArm6</effector>
+    </Manipulator>
+
 </Robot>
