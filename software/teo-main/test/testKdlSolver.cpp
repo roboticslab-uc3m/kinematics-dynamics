@@ -40,6 +40,7 @@ TEST_F( KdlControllerTest, KdlSolverFwdKin)
     ASSERT_NE((yarp::dev::ICartesianControl*)NULL, icart );
     yarp::sig::Vector x,o;
     icart->getPose(x,o);
+    ASSERT_EQ(x.size(), 3 );
     ASSERT_EQ(x[0], 1 );
     ASSERT_EQ(x[1], 0 );
     ASSERT_EQ(x[2], 0 );
