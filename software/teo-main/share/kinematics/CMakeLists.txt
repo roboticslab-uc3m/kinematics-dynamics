@@ -2,13 +2,9 @@
 # Author: Juan G Victores
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-set(appname openrave)
+set(appname kinematics)
 
-file(GLOB teo ${CMAKE_CURRENT_SOURCE_DIR}/teo/*.xml)
-file(GLOB teo/trunk ${CMAKE_CURRENT_SOURCE_DIR}/teo/trunk *.xml)
-file(GLOB teo/rightArm ${CMAKE_CURRENT_SOURCE_DIR}/teo/rightArm *.xml)
+file(GLOB conf ${CMAKE_CURRENT_SOURCE_DIR}/*.ini)
 
-yarp_install(FILES ${teo} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo)
-yarp_install(FILES ${teo/trunk} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/trunk)
-yarp_install(FILES ${teo/rightArm} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightArm)
+yarp_install(FILES ${conf} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname})
 
