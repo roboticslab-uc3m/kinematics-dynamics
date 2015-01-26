@@ -26,6 +26,7 @@
         <body>head0</body>
         <body>head1</body>
         <axis>0 0 1</axis>
+        <limitsdeg>-90 90</limitsdeg>
         <maxveldeg>7.5</maxveldeg>
     </Joint>
 
@@ -43,8 +44,9 @@
         <offsetfrom>head0</offsetfrom>
         <body>head1</body>
         <body>head2</body>
-        <axis>0 1 0</axis>
-        <anchor>0 0 0.1917</anchor>
+        <axis>0 -1 0</axis>
+        <anchor>0 0 0.658</anchor>
+        <limitsdeg>-10 10</limitsdeg>
         <maxveldeg>7.5</maxveldeg>
     </Joint>
 
