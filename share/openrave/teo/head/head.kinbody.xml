@@ -15,15 +15,13 @@
     </Body>
     <Body name="head1">
         <Geom type="trimesh">
-            <data>./head1.wrl 0.001 </data>
-            <render>./head1.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="q13" type="hinge">
+    <Joint name="qh1" type="hinge">
         <offsetfrom>head0</offsetfrom>
         <body>head0</body>
         <body>head1</body>
@@ -41,7 +39,7 @@
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="q14" type="hinge">
+    <Joint name="qh2" type="hinge">
         <offsetfrom>head0</offsetfrom>
         <body>head1</body>
         <body>head2</body>
