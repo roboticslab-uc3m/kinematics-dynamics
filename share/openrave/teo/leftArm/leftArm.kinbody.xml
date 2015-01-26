@@ -1,0 +1,136 @@
+<!-- leftArm.kinbody.xml  -->
+
+<KinBody name="leftArm">
+    <Body name="leftArm0" type="dynamic">
+        <Geom type="trimesh">
+            <data>./leftArm0.wrl 0.001 </data>
+            <render>./leftArm0.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Body name="leftArm1">
+        <Geom type="trimesh">
+            <data>./leftArm1.wrl 0.001 </data>
+            <render>./leftArm1.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q15" type="hinge">
+        <offsetfrom>leftArm0</offsetfrom>
+        <body>leftArm0</body>
+        <body>leftArm1</body>
+        <axis>0 -1 0</axis>
+        <anchor>0 0 0.4967</anchor><!-- (z 0.1917+0.305) -->
+        <limitsdeg>-45 70</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <Body name="leftArm2">
+        <Geom type="trimesh">
+            <data>./leftArm2.wrl 0.001 </data>
+            <render>./leftArm2.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q16" type="hinge">
+        <offsetfrom>leftArm0</offsetfrom>
+        <body>leftArm1</body>
+        <body>leftArm2</body>
+        <axis>1 0 0</axis>
+        <anchor>0 -0.34692 0.4967</anchor><!-- (z 0.1917+0.305) -->
+        <limitsdeg>-70 15</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <Body name="leftArm3">
+        <Geom type="trimesh">
+            <data>./leftArm3.wrl 0.001 </data>
+            <render>./leftArm3.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q17" type="hinge">
+        <offsetfrom>leftArm0</offsetfrom>
+        <body>leftArm2</body>
+        <body>leftArm3</body>
+        <axis>0 0 -1</axis>
+        <anchor>0.00337 -0.34692 0</anchor>
+        <limitsdeg>-10 75</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <Body name="leftArm4">
+        <Geom type="trimesh">
+            <data>./leftArm4.wrl 0.001 </data>
+            <render>./leftArm4.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q18" type="hinge">
+        <offsetfrom>leftArm0</offsetfrom>
+        <body>leftArm3</body>
+        <body>leftArm4</body>
+        <axis>0 -1 0</axis>
+        <anchor>0.00373 0 0.16769</anchor><!-- (z 0.1917+0.305-0.32901) -->
+        <limitsdeg>-10 100</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <Body name="leftArm5">
+        <Geom type="trimesh">
+            <data>./leftArm5.wrl 0.001 </data>
+            <render>./leftArm5.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q19" type="hinge">
+        <offsetfrom>leftArm0</offsetfrom>
+        <body>leftArm4</body>
+        <body>leftArm5</body>
+        <axis>0 0 -1</axis>
+        <anchor>0.00373 -0.34692 0</anchor>
+        <limitsdeg>-90 90</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <Body name="leftArm6">
+        <Geom type="trimesh">
+            <data>./leftArm6.wrl 0.001 </data>
+            <render>./leftArm6.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q20" type="hinge">
+        <offsetfrom>leftArm0</offsetfrom>
+        <body>leftArm5</body>
+        <body>leftArm6</body>
+        <axis>0 -1 0</axis>
+        <anchor>0.00373 0 -0.03431</anchor><!-- (z 0.1917+0.305-0.32901-0.202) -->
+        <limitsdeg>-10 100</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <!--effector 0.00373 0 -0.201806-0.020=-0.221806: (z -0.03431-0.187496) -->
+</KinBody>
+
