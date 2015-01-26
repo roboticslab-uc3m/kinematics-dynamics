@@ -32,6 +32,13 @@
             <limits>0 0</limits>
         </Joint>
 
+        <KinBody file="head/head.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk2</body>
+            <body>head0</body>
+            <limits>0 0</limits>
+        </Joint>
+
     </KinBody>
 
     <Manipulator name="trunk">
@@ -57,6 +64,11 @@
     <Manipulator name="rightLeg">
         <base>rightLeg0</base>
         <effector>rightLeg6</effector>
+    </Manipulator>
+
+    <Manipulator name="head">
+        <base>head0</base>
+        <effector>head2</effector>
     </Manipulator>
 
 </Robot>
