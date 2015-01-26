@@ -3,8 +3,6 @@
 <KinBody name="leftLeg">
     <Body name="leftLeg0" type="dynamic">
         <Geom type="trimesh">
-            <data>./leftLeg0.wrl 0.001 </data>
-            <render>./leftLeg0.wrl 0.001 </render>
         </Geom>
         <mass type="sphere">
             <total>.1</total>
@@ -21,116 +19,15 @@
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="q21" type="hinge">
+    <Joint name="q7" type="hinge">
         <offsetfrom>leftLeg0</offsetfrom>
         <body>leftLeg0</body>
         <body>leftLeg1</body>
-        <axis>0 1 0</axis>
-        <anchor>0 0 0.4967</anchor><!-- (z 0.1917+0.305) -->
-        <limitsdeg>-70 45</limitsdeg>
-        <maxveldeg>7.5</maxveldeg>
-    </Joint>
-
-    <Body name="leftLeg2">
-        <Geom type="trimesh">
-            <data>./leftLeg2.wrl 0.001 </data>
-            <render>./leftLeg2.wrl 0.001 </render>
-        </Geom>
-        <mass type="sphere">
-            <total>.1</total>
-            <radius>1</radius>
-        </mass>
-    </Body>
-    <Joint name="q22" type="hinge">
-        <offsetfrom>leftLeg0</offsetfrom>
-        <body>leftLeg1</body>
-        <body>leftLeg2</body>
-        <axis>1 0 0</axis>
-        <anchor>0 0.34692 0.4967</anchor><!-- (z 0.1917+0.305) -->
-        <limitsdeg>-15 70</limitsdeg>
-        <maxveldeg>7.5</maxveldeg>
-    </Joint>
-
-    <Body name="leftLeg3">
-        <Geom type="trimesh">
-            <data>./leftLeg3.wrl 0.001 </data>
-            <render>./leftLeg3.wrl 0.001 </render>
-        </Geom>
-        <mass type="sphere">
-            <total>.1</total>
-            <radius>1</radius>
-        </mass>
-    </Body>
-    <Joint name="q23" type="hinge">
-        <offsetfrom>leftLeg0</offsetfrom>
-        <body>leftLeg2</body>
-        <body>leftLeg3</body>
         <axis>0 0 -1</axis>
-        <anchor>0.00337 0.34692 0</anchor>
-        <limitsdeg>-10 75</limitsdeg>
-        <maxveldeg>7.5</maxveldeg>
-    </Joint>
-
-    <Body name="leftLeg4">
-        <Geom type="trimesh">
-            <data>./leftLeg4.wrl 0.001 </data>
-            <render>./leftLeg4.wrl 0.001 </render>
-        </Geom>
-        <mass type="sphere">
-            <total>.1</total>
-            <radius>1</radius>
-        </mass>
-    </Body>
-    <Joint name="q24" type="hinge">
-        <offsetfrom>leftLeg0</offsetfrom>
-        <body>leftLeg3</body>
-        <body>leftLeg4</body>
-        <axis>0 1 0</axis>
-        <anchor>0.00373 0 0.16769</anchor><!-- (z 0.1917+0.305-0.32901) -->
-        <limitsdeg>-100 10</limitsdeg>
-        <maxveldeg>7.5</maxveldeg>
-    </Joint>
-
-    <Body name="leftLeg5">
-        <Geom type="trimesh">
-            <data>./leftLeg5.wrl 0.001 </data>
-            <render>./leftLeg5.wrl 0.001 </render>
-        </Geom>
-        <mass type="sphere">
-            <total>.1</total>
-            <radius>1</radius>
-        </mass>
-    </Body>
-    <Joint name="q25" type="hinge">
-        <offsetfrom>leftLeg0</offsetfrom>
-        <body>leftLeg4</body>
-        <body>leftLeg5</body>
-        <axis>0 0 -1</axis>
-        <anchor>0.00373 0.34692 0</anchor>
+        <anchor>0 0.146 0</anchor>
         <limitsdeg>-90 90</limitsdeg>
         <maxveldeg>7.5</maxveldeg>
     </Joint>
 
-    <Body name="leftLeg6">
-        <Geom type="trimesh">
-            <data>./leftLeg6.wrl 0.001 </data>
-            <render>./leftLeg6.wrl 0.001 </render>
-        </Geom>
-        <mass type="sphere">
-            <total>.1</total>
-            <radius>1</radius>
-        </mass>
-    </Body>
-    <Joint name="q26" type="hinge">
-        <offsetfrom>leftLeg0</offsetfrom>
-        <body>leftLeg5</body>
-        <body>leftLeg6</body>
-        <axis>0 1 0</axis>
-        <anchor>0.00373 0 -0.03431</anchor><!-- (z 0.1917+0.305-0.32901-0.202) -->
-        <limitsdeg>-100 10</limitsdeg>
-        <maxveldeg>7.5</maxveldeg>
-    </Joint>
-
-    <!--effector 0.00373 0 -0.201806-0.020=-0.221806: (z -0.03431-0.187496) -->
 </KinBody>
 
