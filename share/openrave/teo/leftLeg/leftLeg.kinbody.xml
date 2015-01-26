@@ -81,8 +81,8 @@
     </Body>
     <Joint name="q10" type="hinge">
         <offsetfrom>leftLeg0</offsetfrom>
-        <body>leftLeg2</body>
-        <body>leftLeg3</body>
+        <body>leftLeg4</body>
+        <body>leftLeg5</body>
         <axis>0 1 0</axis>
         <anchor>0 0 -0.392</anchor>
         <limitsdeg>-5 80</limitsdeg>
