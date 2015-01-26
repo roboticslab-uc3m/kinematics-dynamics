@@ -21,6 +21,6 @@ yarp_install(FILES ${teo/leftArm/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${
 yarp_install(FILES ${teo/leftArm/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/leftArm)
 yarp_install(FILES ${teo/rightArm/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightArm)
 yarp_install(FILES ${teo/rightArm/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightArm)
-yarp_install(FILES ${teo/rightLeg/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightLeg)
-yarp_install(FILES ${teo/rightLeg/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightLeg)
+yarp_install(FILES ${teo/leftLeg/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/leftLeg)
+yarp_install(FILES ${teo/leftLeg/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/leftLeg)
 
