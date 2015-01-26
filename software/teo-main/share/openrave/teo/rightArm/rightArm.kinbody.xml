@@ -22,11 +22,11 @@
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="canId15" type="hinge">
+    <Joint name="q15" type="hinge">
         <offsetfrom>rightArm0</offsetfrom>
         <body>rightArm0</body>
         <body>rightArm1</body>
-        <axis>0 1 0</axis>
+        <axis>0 -1 0</axis>
         <anchor>0 0 0.497</anchor><!-- 0.1917+0.305 -->
         <maxvel>2</maxvel>
     </Joint>
@@ -60,12 +60,31 @@
             <radius>1</radius>
         </mass>
     </Body>
-    <Joint name="canId17" type="hinge">
+    <Joint name="q17" type="hinge">
         <offsetfrom>rightArm0</offsetfrom>
         <body>rightArm2</body>
         <body>rightArm3</body>
-        <axis>0 0 1</axis>
+        <axis>0 0 -1</axis>
         <anchor>0.00337 -0.34692 0</anchor>
+        <maxvel>2</maxvel>
+    </Joint>
+
+    <Body name="rightArm4">
+        <Geom type="trimesh">
+            <data>./rightArm4.wrl 0.001 </data>
+            <render>./rightArm4.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q18" type="hinge">
+        <offsetfrom>rightArm0</offsetfrom>
+        <body>rightArm3</body>
+        <body>rightArm4</body>
+        <axis>0 -1 0</axis>
+        <anchor>0.00373 0 0.16769</anchor>
         <maxvel>2</maxvel>
     </Joint>
 
