@@ -69,5 +69,25 @@
         <maxveldeg>7.5</maxveldeg>
     </Joint>
 
+    <Body name="leftLeg4">
+        <Geom type="trimesh">
+            <data>./leftLeg4.wrl 0.001 </data>
+            <render>./leftLeg4.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q10" type="hinge">
+        <offsetfrom>leftLeg0</offsetfrom>
+        <body>leftLeg2</body>
+        <body>leftLeg3</body>
+        <axis>0 1 0</axis>
+        <anchor>0 0 -0.392</anchor>
+        <limitsdeg>-5 80</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
 </KinBody>
 
