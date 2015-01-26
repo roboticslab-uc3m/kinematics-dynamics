@@ -15,6 +15,8 @@ file(GLOB teo/leftLeg/xml ${CMAKE_CURRENT_SOURCE_DIR}/teo/leftLeg/*.xml)
 file(GLOB teo/leftLeg/wrl ${CMAKE_CURRENT_SOURCE_DIR}/teo/leftLeg/*.wrl)
 file(GLOB teo/rightLeg/xml ${CMAKE_CURRENT_SOURCE_DIR}/teo/rightLeg/*.xml)
 file(GLOB teo/rightLeg/wrl ${CMAKE_CURRENT_SOURCE_DIR}/teo/rightLeg/*.wrl)
+file(GLOB teo/head/xml ${CMAKE_CURRENT_SOURCE_DIR}/teo/head/*.xml)
+file(GLOB teo/head/wrl ${CMAKE_CURRENT_SOURCE_DIR}/teo/head/*.wrl)
 
 yarp_install(FILES ${teo} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo)
 yarp_install(FILES ${teo/trunk/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/trunk)
@@ -27,4 +29,6 @@ yarp_install(FILES ${teo/leftLeg/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${
 yarp_install(FILES ${teo/leftLeg/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/leftLeg)
 yarp_install(FILES ${teo/rightLeg/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightLeg)
 yarp_install(FILES ${teo/rightLeg/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/rightLeg)
+yarp_install(FILES ${teo/head/xml} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/head)
+yarp_install(FILES ${teo/head/wrl} DESTINATION ${TEO_CONTEXTS_INSTALL_DIR}/${appname}/teo/head)
 
