@@ -45,7 +45,7 @@
     <Manipulator name="leftLeg">
         <base>leftLeg0</base>
         <!--effector>leftLeg6</effector-->
-        <effector>leftLeg3</effector>
+        <effector>leftLeg4</effector>
     </Manipulator>
 
 </Robot>
