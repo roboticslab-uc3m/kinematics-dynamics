@@ -1,7 +1,7 @@
 <!-- leftLeg.kinbody.xml  -->
 
 <KinBody name="leftLeg">
-    <Body name="leftLeg0" type="dynamic">
+    <Body name="leftLeg0">
         <Geom type="trimesh">
         </Geom>
         <mass type="sphere">

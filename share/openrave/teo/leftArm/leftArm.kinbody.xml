@@ -1,7 +1,7 @@
 <!-- leftArm.kinbody.xml  -->
 
 <KinBody name="leftArm">
-    <Body name="leftArm0" type="dynamic">
+    <Body name="leftArm0">
         <Geom type="trimesh">
             <data>./leftArm0.wrl 0.001 </data>
             <render>./leftArm0.wrl 0.001 </render>

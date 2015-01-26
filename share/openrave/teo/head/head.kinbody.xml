@@ -2,8 +2,7 @@
 
 <!-- no joint limits -->
 <KinBody name="head">
-    <!--Body type="dynamic" name="head0"-->
-    <Body type="static" name="head0">
+    <Body name="head0">
         <Geom type="trimesh">
             <data>./head0.wrl 0.001 </data>
             <render>./head0.wrl 0.001 </render>
