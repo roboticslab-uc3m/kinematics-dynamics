@@ -88,5 +88,43 @@
         <maxvel>2</maxvel>
     </Joint>
 
+    <Body name="rightArm5">
+        <Geom type="trimesh">
+            <data>./rightArm5.wrl 0.001 </data>
+            <render>./rightArm5.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q18" type="hinge">
+        <offsetfrom>rightArm0</offsetfrom>
+        <body>rightArm4</body>
+        <body>rightArm5</body>
+        <axis>0 0 -1</axis>
+        <anchor>0 0 0</anchor>
+        <maxvel>2</maxvel>
+    </Joint>
+
+    <Body name="rightArm6">
+        <Geom type="trimesh">
+            <data>./rightArm6.wrl 0.001 </data>
+            <render>./rightArm6.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q18" type="hinge">
+        <offsetfrom>rightArm0</offsetfrom>
+        <body>rightArm5</body>
+        <body>rightArm6</body>
+        <axis>0 -1 0</axis>
+        <anchor>0 0 0</anchor>
+        <maxvel>2</maxvel>
+    </Joint>
+
 </KinBody>
 
