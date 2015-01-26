@@ -18,8 +18,7 @@
 
     <Manipulator name="rightArm">
         <base>rightArm0</base>
-        <!--effector>rightArm6</effector-->
-        <effector>rightArm4</effector>
+        <effector>rightArm6</effector>
     </Manipulator>
 
 </Robot>
