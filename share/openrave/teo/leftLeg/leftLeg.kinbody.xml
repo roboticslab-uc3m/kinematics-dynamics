@@ -104,8 +104,28 @@
         <body>leftLeg4</body>
         <body>leftLeg5</body>
         <axis>0 1 0</axis>
-        <anchor>0 0 -0.722</anchor>
+        <anchor>-0.007853 0 -0.721897</anchor>
         <limitsdeg>-18 20</limitsdeg>
+        <maxveldeg>7.5</maxveldeg>
+    </Joint>
+
+    <Body name="leftLeg6">
+        <Geom type="trimesh">
+            <data>./leftLeg6.wrl 0.001 </data>
+            <render>./leftLeg6.wrl 0.001 </render>
+        </Geom>
+        <mass type="sphere">
+            <total>.1</total>
+            <radius>1</radius>
+        </mass>
+    </Body>
+    <Joint name="q12" type="hinge">
+        <offsetfrom>leftLeg0</offsetfrom>
+        <body>leftLeg5</body>
+        <body>leftLeg6</body>
+        <axis>1 0 0</axis>
+        <anchor>0 0.128480 -0.721897</anchor>
+        <limitsdeg>-25 25</limitsdeg>
         <maxveldeg>7.5</maxveldeg>
     </Joint>
 
