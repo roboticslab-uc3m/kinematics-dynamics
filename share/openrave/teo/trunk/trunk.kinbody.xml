@@ -3,7 +3,7 @@
 <!-- no joint limits -->
 <KinBody name="trunk">
     <!--Body type="dynamic" name="trunk0"-->
-    <Body type="static" name="trunk0">
+    <Body name="trunk0">
         <Geom type="trimesh">
             <data>./trunk0.wrl 0.001 </data>
             <render>./trunk0.wrl 0.001 </render>
