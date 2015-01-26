@@ -46,7 +46,7 @@
         <body>rightArm1</body>
         <body>rightArm2</body>
         <axis>1 0 0</axis>
-        <anchor>0 -0.34692 0.497</anchor>
+        <anchor>0 -0.34692 0.4967</anchor>
         <limitsdeg>-70 15</limitsdeg>
         <maxveldeg>7.5</maxveldeg>
     </Joint>
