@@ -22,8 +22,8 @@
     </Body>
     <Joint name="qh1" type="hinge">
         <offsetfrom>head0</offsetfrom>
+        <body>head0</body>
         <body>head1</body>
-        <body>head2</body>
         <axis>0 -1 0</axis>
         <anchor>0 0 0.658</anchor>
         <limitsdeg>-29 8.4</limitsdeg>
@@ -42,8 +42,8 @@
     </Body>
     <Joint name="qh2" type="hinge">
         <offsetfrom>head0</offsetfrom>
-        <body>head0</body>
         <body>head1</body>
+        <body>head2</body>
         <axis>0 0 1</axis>
         <limitsdeg>-73 73</limitsdeg>
         <maxveldeg>7.5</maxveldeg>
