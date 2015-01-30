@@ -129,5 +129,6 @@
         <maxveldeg>7.5</maxveldeg>
     </Joint>
 
+    <!--effector ??? -->
 </KinBody>
 
