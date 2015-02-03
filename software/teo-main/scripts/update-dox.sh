@@ -5,10 +5,9 @@
 # crontab -e
 # 30 2 * * * /your/command
 
-echo "Update TEOrepo..."
-cd $TEO_ROOT
+echo "Update teo-main..."
+cd $HOME/teo-main
 svn up --username wikirobots
-
 echo "Doxy teo-main..."
 cd teo-main/doc
 rm -r html
