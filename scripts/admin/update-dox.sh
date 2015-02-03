@@ -7,7 +7,7 @@
 
 echo "Update teo-main..."
 cd $HOME/teo-main
-svn up --username wikirobots
+git pull
 echo "Doxy teo-main..."
 cd doc
 rm -r html
