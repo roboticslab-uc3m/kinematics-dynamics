@@ -1,0 +1,5 @@
+*~
+*.swp
+*.orig
+tags
+/build*/
