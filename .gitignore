@@ -2,4 +2,5 @@
 *.swp
 *.orig
 tags
+CMakeLists.txt.user
 /build*/
