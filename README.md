@@ -1,4 +1,4 @@
-[![Image](share/images/teo-lab2014-215px.jpg)]
+![TEO Humanoid Robot](share/images/teo-lab2014-215px.jpg)
 
 Main TEO humanoid robot source code intended for use on any PC.
 
