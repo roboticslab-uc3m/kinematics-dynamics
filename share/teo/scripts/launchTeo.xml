@@ -1,0 +1,13 @@
+<application>
+<name>launchTeo App</name>
+        <module>
+                <name>launchManipulation</name>
+                <node>/manipulation</node>
+        </module>
+        <module>
+                <name>launchLocomotion</name>
+                <node>/locomotion</node>
+        </module>
+
+</application>
+
