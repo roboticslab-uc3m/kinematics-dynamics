@@ -1,0 +1,15 @@
+<application>
+<name>playbackTeo App</name>
+        <module>
+                <name>playbackManipulation</name>
+                <parameters>--home --reset --ptModeMs 50 --file manipulationRecording.txt</parameters>
+                <node>/manipulation</node>
+        </module>
+        <module>
+                <name>playbackLocomotion</name>
+                <parameters>--home --reset --ptModeMs 50 --file locomotionRecording.txt</parameters>
+                <node>/locomotion</node>
+        </module>
+
+</application>
+

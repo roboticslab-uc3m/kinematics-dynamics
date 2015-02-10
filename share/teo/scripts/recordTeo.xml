@@ -1,0 +1,15 @@
+<application>
+<name>recordTeo App</name>
+        <module>
+                <name>recordManipulation</name>
+                <parameters>--ptModeMs 50 --file manipulationRecording.txt</parameters>
+                <node>/manipulation</node>
+        </module>
+        <module>
+                <name>recordLocomotion</name>
+                <parameters>--ptModeMs 50 --file locomotionRecording.txt</parameters>
+                <node>/locomotion</node>
+        </module>
+
+</application>
+
