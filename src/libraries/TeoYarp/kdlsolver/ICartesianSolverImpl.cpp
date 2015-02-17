@@ -11,7 +11,7 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x
     for (int motor=0; motor<numLinks; motor++)
         inRad(motor)=toRad(q[motor]);
 
-    ChainFkSolverPos_recursive fksolver = ChainFkSolverPos_recursive(theChain);
+    ChainFkSolverPos_recursive fksolver = ChainFkSolverPos_recursive(chain);
     fksolver.JntToCart(inRad,fOutCart);
 
     x.resize(3);

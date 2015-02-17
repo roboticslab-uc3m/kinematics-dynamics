@@ -132,7 +132,7 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         KDL::Frame targetF;
         yarp::sig::Vector targetO;
 
-        Chain theChain;
+        Chain chain;
 
         double startTime;
 
