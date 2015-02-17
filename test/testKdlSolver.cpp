@@ -72,6 +72,7 @@ TEST_F( KdlSolverTest, KdlSolverInvKin1)
     xd[2] = 0;
     qGuess[0] = 0;
     iCartesianSolver->invKin(xd,od,qGuess,q);
+    ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 0, 1e-3);
 }
 
@@ -83,5 +84,6 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
     xd[2] = 0;
     qGuess[0] = 0;
     iCartesianSolver->invKin(xd,od,qGuess,q);
+    ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
