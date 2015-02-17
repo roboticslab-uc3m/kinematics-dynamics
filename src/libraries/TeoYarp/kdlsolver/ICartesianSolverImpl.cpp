@@ -135,3 +135,8 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 }
 
 // -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::invDyn(const std::vector<double> &qd, std::vector<double> &t) {
+
+    return true;
+}
