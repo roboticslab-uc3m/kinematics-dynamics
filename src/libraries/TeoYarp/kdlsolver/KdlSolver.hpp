@@ -17,6 +17,7 @@
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainidsolver_recursive_newton_euler.hpp>
 #include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/path_line.hpp>
@@ -89,7 +90,7 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q);
 
         /** Perform inverse dynamics. */
-        virtual bool invDyn(const std::vector<double> &qd, std::vector<double> &t);
+        virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
