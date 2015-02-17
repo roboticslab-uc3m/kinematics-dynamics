@@ -33,7 +33,7 @@ bool teo::KdlSolver::open(Searchable& config) {
             double linkD = bLink.check("D",Value(0.0)).asDouble();
             double linkA = bLink.check("A",Value(0.0)).asDouble();
             double linkAlpha = bLink.check("alpha",Value(0.0)).asDouble();
-            theChain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
+            chain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
             isPrismatic.push_back(0);
             CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
             continue;
@@ -55,40 +55,40 @@ bool teo::KdlSolver::open(Searchable& config) {
 
         std::string linkType = bXyzLink.check("Type",Value("NULL")).asString();
         if(linkType == "RotX") {
-            theChain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::RotX),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
         } else if(linkType == "RotY") {
-            theChain.addSegment(Segment(Joint(Joint::RotY),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::RotY),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
         } else if(linkType == "RotZ") {
-            theChain.addSegment(Segment(Joint(Joint::RotZ),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::RotZ),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
         } else if(linkType == "InvRotX") {
-            theChain.addSegment(Segment(Joint(Joint::RotX,-1.0),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::RotX,-1.0),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
         } else if(linkType == "InvRotY") {
-            theChain.addSegment(Segment(Joint(Joint::RotY,-1.0),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::RotY,-1.0),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
         } else if(linkType == "InvRotZ") {
-            theChain.addSegment(Segment(Joint(Joint::RotZ,-1.0),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::RotZ,-1.0),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(0);
         } else if(linkType == "TransX") {
-            theChain.addSegment(Segment(Joint(Joint::TransX),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::TransX),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(1);
         } else if(linkType == "TransY") {
-            theChain.addSegment(Segment(Joint(Joint::TransY),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::TransY),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(1);
         } else if(linkType == "TransZ") {
-            theChain.addSegment(Segment(Joint(Joint::TransZ),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::TransZ),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(1);
         } else if(linkType == "InvTransX") {
-            theChain.addSegment(Segment(Joint(Joint::TransX,-1.0),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::TransX,-1.0),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(1);
         } else if(linkType == "InvTransY") {
-            theChain.addSegment(Segment(Joint(Joint::TransY,-1.0),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::TransY,-1.0),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(1);
         } else if(linkType == "InvTransZ") {
-            theChain.addSegment(Segment(Joint(Joint::TransZ,-1.0),Frame(Vector(linkX,linkY,linkZ))));
+            chain.addSegment(Segment(Joint(Joint::TransZ,-1.0),Frame(Vector(linkX,linkY,linkZ))));
             isPrismatic.push_back(1);
         } else {
             CD_WARNING("Link joint type \"%s\" unrecognized!\n",linkType.c_str());
@@ -97,7 +97,7 @@ bool teo::KdlSolver::open(Searchable& config) {
         CD_SUCCESS("Added: %s (Type %s) (x %f) (y %f) (z %f)\n",xyzLink.c_str(),linkType.c_str(),linkX,linkY,linkZ);
     }
 
-    printf("KdlSolver chain number of segments: %d\n",theChain.getNrOfSegments());
+    printf("KdlSolver chain number of segments: %d\n",chain.getNrOfSegments());
 
     _orient = new RotationalInterpolation_SingleAxis();
     _eqradius = 1; //0.000001;
