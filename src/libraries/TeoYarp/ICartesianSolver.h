@@ -18,7 +18,7 @@ public:
     virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) = 0;
 
     /** Perform inverse kinematics. */
-    virtual bool invKin(const std::vector<double> &x, const std::vector<double> &o, std::vector<double> &q) = 0;
+    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
 
 };
 

@@ -6,13 +6,14 @@
 
 bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) {
 
-    JntArray inRad = JntArray(numLinks);
-    Frame fOutCart;
+    JntArray qInRad = JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
-        inRad(motor)=toRad(q[motor]);
+        qInRad(motor)=toRad(q[motor]);
 
+    //-- Main fwdKin (pos) solver lines
+    Frame fOutCart;
     ChainFkSolverPos_recursive fksolver = ChainFkSolverPos_recursive(chain);
-    fksolver.JntToCart(inRad,fOutCart);
+    fksolver.JntToCart(qInRad,fOutCart);
 
     x.resize(3);
     x[0] = fOutCart.p.data[0];
@@ -72,8 +73,61 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::invKin(const std::vector<double> &x, const std::vector<double> &o, std::vector<double> &q) {
-    return true;
+bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) {
+
+    Frame frameXd;
+    frameXd.p.data[0]=xd[0];
+    frameXd.p.data[1]=xd[1];
+    frameXd.p.data[2]=xd[2];
+
+    if (angleRepr == "axisAngle") {
+        frameXd.M = Rotation::Rot(Vector(od[0],od[1],od[2]),od[3]);
+    }
+    else if (angleRepr == "eulerYZ")  //-- like ASIBOT
+    {
+        frameXd.M = Rotation::EulerZYZ(::atan2(xd[1],xd[0]),toRad(od[0]), toRad(od[1]));
+    }
+    else if (angleRepr == "eulerZYZ")
+    {
+        frameXd.M = Rotation::EulerZYZ(toRad(od[0]), toRad(od[1]), toRad(od[2]));
+    }
+    else if (angleRepr == "RPY")
+    {
+        frameXd.M = Rotation::RPY(toRad(od[0]), toRad(od[1]), toRad(od[2]));
+    }
+    else  //-- No known angle repr.
+    {
+        CD_WARNING("Not compatible angleRepr: %s\n",angleRepr.c_str());
+    }
+
+    Eigen::Matrix<double,6,1> L;
+    L(0)=1;L(1)=1;L(2)=1;
+    L(3)=0;L(4)=0;L(5)=0;
+
+    JntArray qGuessInRad = JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qGuessInRad(motor)=toRad(qGuess[motor]);
+
+    //-- Main invKin (pos) solver lines
+    ChainIkSolverPos_LMA iksolver_pos(chain,L);
+    JntArray kdlqd = JntArray(numLinks);
+    int ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlqd);
+
+    if (ret == 0) return true;
+
+    if (ret == -1)
+    {
+        CD_WARNING("The gradient of E towards the joints is to small.\n");
+    }
+    else if (ret == -2)
+    {
+        CD_WARNING("The joint position increments are to small.\n");
+    }
+    else if (ret == -3)
+    {
+        CD_WARNING("The number of iterations is exceeded.\n");
+    }
+    return false;
 }
 
 // -----------------------------------------------------------------------------
