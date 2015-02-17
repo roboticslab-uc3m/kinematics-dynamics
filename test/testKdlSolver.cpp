@@ -6,6 +6,7 @@
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianSolver.h"
+#include "ColorDebug.hpp"
 
 YARP_DECLARE_PLUGINS(TeoYarp)
 
@@ -14,11 +15,26 @@ class KdlSolverTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            iCartesianSolver = NULL;
+            YARP_REGISTER_PLUGINS(TeoYarp);
+
+            yarp::os::Property options;
+            options.put("device","kdlsolver");
+            yarp::os::Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
+            psub.put("A",1);
+            dd.open(options);
+            if( ! dd.isValid() ) {
+                CD_ERROR("\n");
+                return;
+            }
+            if( ! dd.view(iCartesianSolver) ) {
+                CD_ERROR("\n");
+                return;
+            }
         }
 
         virtual void TearDown()
         {
+            dd.close();
         }
 
     protected:
@@ -28,33 +44,41 @@ class KdlSolverTest : public testing::Test
 
 TEST_F( KdlSolverTest, KdlSolverFwdKin)
 {
-    YARP_REGISTER_PLUGINS(TeoYarp);
-
-    yarp::os::Property options;
-    options.put("device","kdlsolver");
-    yarp::os::Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
-    psub.put("A",1);
-    dd.open(options);
-
-    ASSERT_EQ(true, dd.isValid() );
-    dd.view(iCartesianSolver);
-    ASSERT_NE((teo::ICartesianSolver*)NULL, iCartesianSolver );
     std::vector<double> q(1),x,o;
 
     //-- Cast to int to allow e-16 deviations
     q[0]=0.0;
     iCartesianSolver->fwdKin(q,x,o);
     ASSERT_EQ(x.size(), 3 );
-    ASSERT_EQ((int)x[0], 1 );
-    ASSERT_EQ((int)x[1], 0 );
-    ASSERT_EQ((int)x[2], 0 );
+    ASSERT_NEAR(x[0], 1, 1e-9);
+    ASSERT_NEAR(x[1], 0, 1e-9);
+    ASSERT_NEAR(x[2], 0, 1e-9);
 
     q[0]=90.0;
     iCartesianSolver->fwdKin(q,x,o);
     ASSERT_EQ(x.size(), 3 );
-    ASSERT_EQ((int)x[0], 0  );
-    ASSERT_EQ((int)x[1], 1 );
-    ASSERT_EQ((int)x[2], 0 );
+    ASSERT_NEAR(x[0], 0, 1e-9);
+    ASSERT_NEAR(x[1], 1, 1e-9);
+    ASSERT_NEAR(x[2], 0, 1e-9);
+
 }
 
+TEST_F( KdlSolverTest, KdlSolverInvKin)
+{
+    std::vector<double> xd(3),od(4),qGuess(1),q;
 
+    xd[0] = 1;
+    xd[1] = 0;
+    xd[2] = 0;
+    qGuess[0] = 0;
+    iCartesianSolver->invKin(xd,od,qGuess,q);
+    ASSERT_NEAR(q[0], 0, 1e-3);
+
+    xd[0] = 0;
+    xd[1] = 1;
+    xd[2] = 0;
+    qGuess[0] = 0;
+    iCartesianSolver->invKin(xd,od,qGuess,q);
+    ASSERT_NEAR(q[0], 90, 1e-3);
+
+}
