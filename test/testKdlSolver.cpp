@@ -93,11 +93,28 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvDyn)
+TEST_F( KdlSolverTest, KdlSolverInvDyn1)
 {
-    std::vector<double> qd(1),t;
-    qd[0] = -90;
-    iCartesianSolver->invDyn(qd,t);
+    std::vector<double> q(1),qdot(1),qdotdot(1),fext(6,0.0),t;
+    q[0] = -90;
+    qdot[0] = 0;
+    qdotdot[0] = 0;
+    std::vector< std::vector<double> > fexts;
+    fexts.push_back(fext);
+    iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
     ASSERT_EQ(t.size(), 1 );
     ASSERT_NEAR(t[0], 0, 1e-3);
+}
+
+TEST_F( KdlSolverTest, KdlSolverInvDyn2)
+{
+    std::vector<double> q(1),qdot(1),qdotdot(1),fext(6,0.0),t;
+    q[0] = 0;
+    qdot[0] = 0;
+    qdotdot[0] = 0;
+    std::vector< std::vector<double> > fexts;
+    fexts.push_back(fext);
+    iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
+    ASSERT_EQ(t.size(), 1 );
+    ASSERT_NEAR(t[0], 0.5, 1e-3);
 }

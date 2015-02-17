@@ -136,7 +136,38 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::invDyn(const std::vector<double> &qd, std::vector<double> &t) {
+bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) {
+
+    JntArray qInRad = JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qInRad(motor)=toRad(q[motor]);
+
+    JntArray qdotInRad = JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qdotInRad(motor)=toRad(qdot[motor]);
+
+    JntArray qdotdotInRad = JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qdotdotInRad(motor)=toRad(qdotdot[motor]);
+
+    //Wrench fextInWrench(Vector(fext[0],fext[1],fext[2]),Vector(fext[3],fext[4],fext[5]));
+    Wrenches wrenches;
+    for (int i=0; i<numLinks; i++)
+    {
+        Wrench wrench( Vector(fexts[i][0],fexts[i][1],fexts[i][2]), Vector(fexts[i][3],fexts[i][4],fexts[i][5]) );
+        wrenches.push_back(wrench);
+    }
+
+    //-- Main invDyn solver lines
+    ChainIdSolver_RNE idsolver(chain,Vector(0.0,0.0,-9.81));
+    JntArray kdlt = JntArray(numLinks);
+    idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
+
+    t.resize(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        t[motor]=kdlt(motor);
 
     return true;
 }
+
+// -----------------------------------------------------------------------------
