@@ -4,7 +4,6 @@
 #define __KDL_SOLVER_HPP__
 
 #include <yarp/os/all.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
@@ -113,13 +112,6 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         virtual bool close();
 
     private:
-
-        Property options;
-        PolyDriver robotDevice;
-        IEncoders *enc;
-        IPositionControl *pos;
-        IVelocityControl *vel;
-        IControlLimits *lim;
 
         bool withOri;
 
