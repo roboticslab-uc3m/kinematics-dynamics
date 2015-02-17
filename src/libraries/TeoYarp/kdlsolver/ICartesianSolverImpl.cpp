@@ -110,8 +110,12 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
     //-- Main invKin (pos) solver lines
     ChainIkSolverPos_LMA iksolver_pos(chain,L);
-    JntArray kdlqd = JntArray(numLinks);
-    int ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlqd);
+    JntArray kdlq = JntArray(numLinks);
+    int ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
+
+    q.resize(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        q[motor]=toDeg(kdlq(motor));
 
     if (ret == 0) return true;
 
