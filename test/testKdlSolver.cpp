@@ -17,11 +17,16 @@ class KdlSolverTest : public testing::Test
         virtual void SetUp() {
             YARP_REGISTER_PLUGINS(TeoYarp);
 
-            yarp::os::Property options;
-            options.put("device","kdlsolver");
-            yarp::os::Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
-            psub.put("A",1);
-            dd.open(options);
+            //-- Compact definition
+            yarp::os::Property p("(device kdlsolver) (link_0 (A 1) (mass 1) (cog 0.5 0 0) (inertia 0 0 0))");
+
+            //-- Commented out lengthly definition
+            //yarp::os::Property p;
+            //p.put("device","kdlsolver");
+            //yarp::os::Property& psub = p.addGroup("link_0");  //-- A nested Property, easier syntax from file.
+            //psub.put("A",1);
+
+            dd.open(p);
             if( ! dd.isValid() ) {
                 CD_ERROR("\n");
                 return;
@@ -87,3 +92,4 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
     ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
+
