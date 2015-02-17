@@ -46,7 +46,6 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin)
 {
     std::vector<double> q(1),x,o;
 
-    //-- Cast to int to allow e-16 deviations
     q[0]=0.0;
     iCartesianSolver->fwdKin(q,x,o);
     ASSERT_EQ(x.size(), 3 );
