@@ -4,24 +4,24 @@
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::fwdKin(const std::vector<double> &inUnits, std::vector<double> &x, std::vector<double> &o) {
+bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) {
 
     JntArray inRad = JntArray(numLinks);
     Frame fOutCart;
     for (int motor=0; motor<numLinks; motor++) {
-        inRad(motor)=toRad(inUnits[motor]);
+        inRad(motor)=toRad(q[motor]);
     }
     ChainFkSolverPos_recursive fksolver = ChainFkSolverPos_recursive(theChain);
     fksolver.JntToCart(inRad,fOutCart);
 
-    x.clear();
-    x.push_back(fOutCart.p.data[0]);  // pushed on as [0]
-    x.push_back(fOutCart.p.data[1]);  // pushed on as [1]
-    x.push_back(fOutCart.p.data[2]);  // pushed on as [2]
+    x.resize(3);
+    x[0] = fOutCart.p.data[0];
+    x[1] = fOutCart.p.data[1];
+    x[2] = fOutCart.p.data[2];
 
     if (angleRepr == "axisAngle") {
-        o.resize(4);
         KDL::Vector rotVector = fOutCart.M.GetRot();
+        o.resize(4);
         o[3] = fOutCart.M.GetRotAngle(rotVector);  // Normalizes as colateral effect
         o[0] = rotVector[0];
         o[1] = rotVector[1];
@@ -55,6 +55,7 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &inUnits, std::vector<doub
         CD_INFO("KDL computed cart: %f %f %f | %f %f %f.\n",
             fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1],o[2]);
     } else {
+        //-- No known angle repr.
         CD_INFO("KDL computed cart: %f %f %f\n",fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2]);
     }
 

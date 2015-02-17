@@ -14,7 +14,7 @@ public:
      */
     virtual ~ICartesianSolver() {}
 
-    virtual bool fwdKin(const std::vector<double> &inUnits, std::vector<double> &x, std::vector<double> &o) = 0;
+    virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) = 0;
 
 };
 
