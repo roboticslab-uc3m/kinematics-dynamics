@@ -88,6 +88,9 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         /** Perform inverse kinematics. */
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q);
 
+        /** Perform inverse dynamics. */
+        virtual bool invDyn(const std::vector<double> &qd, std::vector<double> &t);
+
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
         /**

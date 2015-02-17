@@ -93,3 +93,11 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
 
+TEST_F( KdlSolverTest, KdlSolverInvDyn)
+{
+    std::vector<double> qd(1),t;
+    qd[0] = -90;
+    iCartesianSolver->invDyn(qd,t);
+    ASSERT_EQ(t.size(), 1 );
+    ASSERT_NEAR(t[0], 0, 1e-3);
+}

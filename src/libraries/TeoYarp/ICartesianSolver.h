@@ -20,6 +20,9 @@ public:
     /** Perform inverse kinematics. */
     virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
 
+    /** Perform inverse dynamics. */
+    virtual bool invDyn(const std::vector<double> &qd, std::vector<double> &t) = 0;
+
 };
 
 }  // namespace teo
