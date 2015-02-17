@@ -150,7 +150,6 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
     for (int motor=0; motor<numLinks; motor++)
         qdotdotInRad(motor)=toRad(qdotdot[motor]);
 
-    //Wrench fextInWrench(Vector(fext[0],fext[1],fext[2]),Vector(fext[3],fext[4],fext[5]));
     Wrenches wrenches;
     for (int i=0; i<numLinks; i++)
     {
@@ -158,16 +157,30 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
         wrenches.push_back(wrench);
     }
 
+    CD_DEBUG("mass: %f\n",chain.getSegment(0).getInertia().getMass());
+    CD_DEBUG("cogX: %f\n",chain.getSegment(0).getInertia().getCOG().data[0]);
+    CD_DEBUG("cogX: %f\n",chain.getSegment(0).getInertia().getCOG().data[1]);
+    CD_DEBUG("cogX: %f\n",chain.getSegment(0).getInertia().getCOG().data[2]);
+    CD_DEBUG("inertiaXX: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[0]);
+    CD_DEBUG("inertiaYY: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[1]);
+    CD_DEBUG("inertiaZZ: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[2]);
+    CD_DEBUG("inertiaXY: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[3]);
+    CD_DEBUG("inertiaXZ: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[4]);
+    CD_DEBUG("inertiaYZ: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[5]);
+
     //-- Main invDyn solver lines
     ChainIdSolver_RNE idsolver(chain,Vector(0.0,0.0,-9.81));
     JntArray kdlt = JntArray(numLinks);
-    idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
+    int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
 
     t.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         t[motor]=kdlt(motor);
 
-    return true;
+    if (ret == 0) return true;
+
+    CD_WARNING("Something went wrong.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
