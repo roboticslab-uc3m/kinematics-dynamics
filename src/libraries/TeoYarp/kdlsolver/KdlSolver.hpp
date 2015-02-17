@@ -83,10 +83,11 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         KdlSolver() {}  // In ms
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
-        /**
-        * Perform forward kinematics.
-        */
-        bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o);
+        /** Perform forward kinematics. */
+        virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o);
+
+        /** Perform inverse kinematics. */
+        virtual bool invKin(const std::vector<double> &x, const std::vector<double> &o, std::vector<double> &q);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
