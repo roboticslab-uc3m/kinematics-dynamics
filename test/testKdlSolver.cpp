@@ -18,7 +18,7 @@ class KdlSolverTest : public testing::Test
             YARP_REGISTER_PLUGINS(TeoYarp);
 
             //-- Compact definition
-            yarp::os::Property p("(device kdlsolver) (link_0 (A 1) (mass 1) (cog 0.5 0 0) (inertia 0 0 0))");
+            yarp::os::Property p("(device kdlsolver) (link_0 (A 1) (mass 1) (cog 2 3 4) (inertia 5 4 3))");
 
             //-- Commented out lengthly definition
             //yarp::os::Property p;
@@ -106,10 +106,10 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn1)
     ASSERT_NEAR(t[0], 0, 1e-3);
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvDyn2)
+TEST_F( KdlSolverTest, KdlSolverInvDyn3)
 {
     std::vector<double> q(1),qdot(1),qdotdot(1),fext(6,0.0),t;
-    q[0] = 0;
+    q[0] = 45.0;
     qdot[0] = 0;
     qdotdot[0] = 0;
     std::vector< std::vector<double> > fexts;

@@ -39,7 +39,9 @@ bool teo::KdlSolver::open(Searchable& config) {
                 double linkMass = bLink.check("mass",Value(0.0)).asDouble();
                 Bottle linkCog = bLink.findGroup("cog").tail();
                 Bottle linkInertia = bLink.findGroup("inertia").tail();
-                chain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
+                chain.addSegment(Segment(Joint(Joint::RotZ), Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset)),
+                                         RigidBodyInertia(linkMass,Vector(linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble()),
+                                                          RotationalInertia(linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble(),0,0,0))));
                 CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
                            link.c_str(), linkOffset,linkD,linkA,linkAlpha,linkMass,
                            linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble(),
