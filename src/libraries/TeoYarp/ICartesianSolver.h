@@ -14,7 +14,11 @@ public:
      */
     virtual ~ICartesianSolver() {}
 
+    /** Perform forward kinematics. */
     virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) = 0;
+
+    /** Perform inverse kinematics. */
+    virtual bool invKin(const std::vector<double> &x, const std::vector<double> &o, std::vector<double> &q) = 0;
 
 };
 
