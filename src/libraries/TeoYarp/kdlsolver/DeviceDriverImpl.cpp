@@ -29,13 +29,27 @@ bool teo::KdlSolver::open(Searchable& config) {
         link += s.str();
         Bottle &bLink = config.findGroup(link);
         if( ! bLink.isNull() ) {
+            //-- Kinematic
             double linkOffset = bLink.check("offset",Value(0.0)).asDouble();
             double linkD = bLink.check("D",Value(0.0)).asDouble();
             double linkA = bLink.check("A",Value(0.0)).asDouble();
             double linkAlpha = bLink.check("alpha",Value(0.0)).asDouble();
-            chain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
-            isPrismatic.push_back(0);
-            CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
+            //-- Dynamic
+            if( bLink.check("mass") && bLink.check("cog") && bLink.check("inertia")) {
+                double linkMass = bLink.check("mass",Value(0.0)).asDouble();
+                Bottle linkCog = bLink.findGroup("cog").tail();
+                Bottle linkInertia = bLink.findGroup("inertia").tail();
+                chain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
+                CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
+                           link.c_str(), linkOffset,linkD,linkA,linkAlpha,linkMass,
+                           linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble(),
+                           linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble());
+            }
+            else //-- No mass -> skip dynamics
+            {
+                chain.addSegment(Segment(Joint(Joint::RotZ),Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
+                CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
+            }
             continue;
         }
 
