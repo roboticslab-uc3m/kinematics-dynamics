@@ -3,6 +3,8 @@
 #ifndef __I_CARTESIAN_SOLVER__
 #define __I_CARTESIAN_SOLVER__
 
+#include <vector>
+
 namespace teo
 {
 
