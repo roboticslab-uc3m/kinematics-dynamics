@@ -8,7 +8,6 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
-#include <yarp/math/SVD.h>
 
 #include <kdl/segment.hpp>
 #include <kdl/chain.hpp>
@@ -16,7 +15,9 @@
 #include <kdl/chainiksolverpos_nr.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolverpos_lma.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainidsolver_recursive_newton_euler.hpp>
 #include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/path_line.hpp>
@@ -25,15 +26,11 @@
 #include <kdl/velocityprofile_trap.hpp>
 #include <kdl/trajectory_segment.hpp>
 
-#include <kdl/chainiksolverpos_lma.hpp>
-
 #include <iostream> // only windows
 #include <stdlib.h> // for exit()
 
 #include "ColorDebug.hpp"
 #include "../ICartesianSolver.h"
-
-#define GAIN 0.25  /// 75 good for unstabilized sim and common real. 25 ok with stable sim.
 
 #define DEFAULT_ANGLE_REPR "RPY"  // string
 #define DEFAULT_NUM_LINKS 1  // int
@@ -42,16 +39,8 @@
 #define DEFAULT_DURATION 20     // For Trajectory
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
-#define DEFAULT_ROBOT_DEVICE "remote_controlboard"
-#define DEFAULT_ROBOT_SUBDEVICE "N/A"
-#define DEFAULT_ROBOT_NAME "N/A"
-#define DEFAULT_ROBOT_LOCAL "/KdlSolver/rightArm"
-#define DEFAULT_ROBOT_REMOTE "/teoSim/rightArm"
 
-using namespace yarp::os;
-using namespace yarp::dev;
-using namespace yarp::math;
-using namespace KDL;
+//using namespace yarp::math;
 
 namespace teo
 {
@@ -74,7 +63,7 @@ namespace teo
  * <a href="http://eris.liralab.it/yarpdoc/classyarp_1_1dev_1_1ICartesianControl.html">ICartesianControl</a>).
  */
 
-class KdlSolver : public DeviceDriver, public ICartesianSolver {
+class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
     public:
 
@@ -87,6 +76,9 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
 
         /** Perform inverse kinematics. */
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q);
+
+        /** Perform inverse dynamics. */
+        virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
@@ -103,7 +95,7 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         * yarp developers to add documentation for your device).
         * @return true/false upon success/failure
         */
-        virtual bool open(Searchable& config);
+        virtual bool open(yarp::os::Searchable& config);
 
         /**
         * Close the DeviceDriver.
@@ -111,28 +103,17 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         */
         virtual bool close();
 
-    private:
-
-        bool withOri;
-
-        Trajectory_Segment* currentTrajectory;
-        RotationalInterpolation_SingleAxis* _orient;
-        double _eqradius;
-        bool _aggregate;
-
-        yarp::sig::Vector isPrismatic;
-        KDL::Frame targetF;
-        yarp::sig::Vector targetO;
-
-        Chain chain;
-
-        double startTime;
-
-        int numLinks;
-        std::string angleRepr;
-        double epsilon, duration, maxVel, maxAcc, cmcMs;
-
     protected:
+
+        /** The chain. **/
+        KDL::Chain chain;
+
+        /** Number of links of the chain. **/
+        int numLinks;
+
+        /** Define used gravity for the chain, important to think of DH. **/
+        KDL::Vector gravity;
+
         /**
         * Simple function to pass from radians to degrees.
         * @param inRad angle value in radians.
@@ -150,6 +131,24 @@ class KdlSolver : public DeviceDriver, public ICartesianSolver {
         double toRad(const double inDeg) {
             return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
         }
+
+    private:
+
+        bool withOri;
+
+        KDL::Trajectory_Segment* currentTrajectory;
+        KDL::RotationalInterpolation_SingleAxis* _orient;
+        double _eqradius;
+        bool _aggregate;
+
+        yarp::sig::Vector isPrismatic;
+        KDL::Frame targetF;
+        yarp::sig::Vector targetO;
+
+        double startTime;
+
+        std::string angleRepr;
+        double epsilon, duration, maxVel, maxAcc, cmcMs;
 
 };
 
