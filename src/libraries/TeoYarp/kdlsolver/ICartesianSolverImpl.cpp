@@ -6,13 +6,13 @@
 
 bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) {
 
-    JntArray qInRad = JntArray(numLinks);
+    KDL::JntArray qInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qInRad(motor)=toRad(q[motor]);
 
     //-- Main fwdKin (pos) solver lines
-    Frame fOutCart;
-    ChainFkSolverPos_recursive fksolver = ChainFkSolverPos_recursive(chain);
+    KDL::Frame fOutCart;
+    KDL::ChainFkSolverPos_recursive fksolver = KDL::ChainFkSolverPos_recursive(chain);
     fksolver.JntToCart(qInRad,fOutCart);
 
     x.resize(3);
@@ -75,25 +75,25 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x
 
 bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) {
 
-    Frame frameXd;
+    KDL::Frame frameXd;
     frameXd.p.data[0]=xd[0];
     frameXd.p.data[1]=xd[1];
     frameXd.p.data[2]=xd[2];
 
     if (angleRepr == "axisAngle") {
-        frameXd.M = Rotation::Rot(Vector(od[0],od[1],od[2]),od[3]);
+        frameXd.M = KDL::Rotation::Rot(KDL::Vector(od[0],od[1],od[2]),od[3]);
     }
     else if (angleRepr == "eulerYZ")  //-- like ASIBOT
     {
-        frameXd.M = Rotation::EulerZYZ(::atan2(xd[1],xd[0]),toRad(od[0]), toRad(od[1]));
+        frameXd.M = KDL::Rotation::EulerZYZ(::atan2(xd[1],xd[0]),toRad(od[0]), toRad(od[1]));
     }
     else if (angleRepr == "eulerZYZ")
     {
-        frameXd.M = Rotation::EulerZYZ(toRad(od[0]), toRad(od[1]), toRad(od[2]));
+        frameXd.M = KDL::Rotation::EulerZYZ(toRad(od[0]), toRad(od[1]), toRad(od[2]));
     }
     else if (angleRepr == "RPY")
     {
-        frameXd.M = Rotation::RPY(toRad(od[0]), toRad(od[1]), toRad(od[2]));
+        frameXd.M = KDL::Rotation::RPY(toRad(od[0]), toRad(od[1]), toRad(od[2]));
     }
     else  //-- No known angle repr.
     {
@@ -104,13 +104,13 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     L(0)=1;L(1)=1;L(2)=1;
     L(3)=0;L(4)=0;L(5)=0;
 
-    JntArray qGuessInRad = JntArray(numLinks);
+    KDL::JntArray qGuessInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qGuessInRad(motor)=toRad(qGuess[motor]);
 
     //-- Main invKin (pos) solver lines
-    ChainIkSolverPos_LMA iksolver_pos(chain,L);
-    JntArray kdlq = JntArray(numLinks);
+    KDL::ChainIkSolverPos_LMA iksolver_pos(chain,L);
+    KDL::JntArray kdlq = KDL::JntArray(numLinks);
     int ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
 
     q.resize(numLinks);
@@ -138,35 +138,30 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
 bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) {
 
-    JntArray qInRad = JntArray(numLinks);
+    KDL::JntArray qInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qInRad(motor)=toRad(q[motor]);
 
-    JntArray qdotInRad = JntArray(numLinks);
+    KDL::JntArray qdotInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qdotInRad(motor)=toRad(qdot[motor]);
 
-    JntArray qdotdotInRad = JntArray(numLinks);
+    KDL::JntArray qdotdotInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qdotdotInRad(motor)=toRad(qdotdot[motor]);
 
-    Wrenches wrenches;
+    KDL::Wrenches wrenches;
     for (int i=0; i<numLinks; i++)
     {
-        Wrench wrench( Vector(fexts[i][0],fexts[i][1],fexts[i][2]), Vector(fexts[i][3],fexts[i][4],fexts[i][5]) );
+        KDL::Wrench wrench( KDL::Vector(fexts[i][0],fexts[i][1],fexts[i][2]), KDL::Vector(fexts[i][3],fexts[i][4],fexts[i][5]) );
         wrenches.push_back(wrench);
     }
 
-    JntArray kdlt = JntArray(numLinks);
+    KDL::JntArray kdlt = KDL::JntArray(numLinks);
 
     //-- Main invDyn solver lines
-    //ChainIdSolver_RNE idsolver(chain,Vector(0.0,0.0,-9.81));
-    ChainIdSolver_RNE idsolver(chain,Vector(0.0,-10,0.0));
+    KDL::ChainIdSolver_RNE idsolver(chain,gravity);
     int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
-
-    //-- Main invDyn solver lines (alternative; actually uses ChainIdSolver_RNE)
-    // ChainDynParam chainDynParam(chain,Vector(0.0,0.0,-9.81));
-    // int ret = chainDynParam.JntToGravity(qInRad,kdlt);
 
     t.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
