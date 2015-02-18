@@ -67,8 +67,7 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
     public:
 
-        // Set the Thread Rate in the class constructor
-        KdlSolver() {}  // In ms
+        KdlSolver() {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
         /** Perform forward kinematics. */

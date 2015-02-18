@@ -4,21 +4,16 @@
 #define __TEO_GRAVITY_COMPENSATOR__
 
 #include <yarp/os/RFModule.h>
-#include <yarp/os/Module.h>
-#include <yarp/os/Network.h>
-#include <yarp/os/Port.h>
-#include <yarp/os/BufferedPort.h>
 
-#include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/CartesianControl.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/all.h>
 
 #include "ColorDebug.hpp"
+#include "ICartesianSolver.h"
 
 #define DEFAULT_SOLVER "kdlsolver"
 
-using namespace yarp::os;
-using namespace yarp::dev;
+namespace teo
+{
 
 /**
  * @ingroup TeoGravityCompensator
@@ -27,20 +22,28 @@ using namespace yarp::dev;
  * \ref cartesianServer module.
  * 
  */
-class TeoGravityCompensator : public RFModule {
-protected:
-    yarp::dev::PolyDriver robotDevice;
+class TeoGravityCompensator : public yarp::os::RFModule {
 
-    yarp::dev::IPositionControl *ipos;
+    public:
 
-    bool updateModule();
-    bool interruptModule();
-    // double getPeriod();
+        TeoGravityCompensator() {}
+        bool configure(yarp::os::ResourceFinder &rf);
 
-public:
-    TeoGravityCompensator();
-    bool configure(ResourceFinder &rf);
+    protected:
+        yarp::dev::PolyDriver rightArmSolverDevice;
+        teo::ICartesianSolver *iCartesianSolver;
+
+        yarp::dev::PolyDriver rightArmDevice;
+        yarp::dev::IPositionControl *rightArmPos;
+
+        bool updateModule();
+        bool interruptModule();
+        // double getPeriod();
+
+
 };
+
+}  // namespace teo
 
 #endif  // __TEO_GRAVITY_COMPENSATOR__
 

@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     rf.setDefaultConfigFile("teoGravityCompensator.ini");
     rf.configure(argc,argv);
 
-    TeoGravityCompensator mod;
+    teo::TeoGravityCompensator mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
