@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include <yarp/os/all.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
@@ -17,17 +16,15 @@ class KdlSolverTest : public testing::Test
         virtual void SetUp() {
             YARP_REGISTER_PLUGINS(TeoYarp);
 
-            yarp::os::Property options;
-            options.put("device","kdlsolver");
-            yarp::os::Property& psub = options.addGroup("link_0");  //-- A nested Property, easier syntax from file.
-            psub.put("A",1);
-            dd.open(options);
+            yarp::os::Property p("(device kdlsolver) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+
+            dd.open(p);
             if( ! dd.isValid() ) {
-                CD_ERROR("\n");
+                CD_ERROR("Device not valid.\n");
                 return;
             }
             if( ! dd.view(iCartesianSolver) ) {
-                CD_ERROR("\n");
+                CD_ERROR("Could not view ICartesianSolver.\n");
                 return;
             }
         }
@@ -86,4 +83,26 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
     iCartesianSolver->invKin(xd,od,qGuess,q);
     ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 90, 1e-3);
+}
+
+TEST_F( KdlSolverTest, KdlSolverInvDyn1)
+{
+    std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
+    q[0] = -90.0;
+    std::vector< std::vector<double> > fexts;
+    fexts.push_back(fext);
+    iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
+    ASSERT_EQ(t.size(), 1 );
+    ASSERT_NEAR(t[0], 0, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0m = 0 N*m
+}
+
+TEST_F( KdlSolverTest, KdlSolverInvDyn2)
+{
+    std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
+    q[0] = 0.0;
+    std::vector< std::vector<double> > fexts;
+    fexts.push_back(fext);
+    iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
+    ASSERT_EQ(t.size(), 1 );
+    ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
