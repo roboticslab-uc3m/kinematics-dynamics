@@ -18,7 +18,7 @@ class KdlSolverTest : public testing::Test
             YARP_REGISTER_PLUGINS(TeoYarp);
 
             //-- Compact definition
-            yarp::os::Property p("(device kdlsolver) (link_0 (A 1) (mass 10) (cog 0.5 0.5 0.5) (inertia 1 1 1))");
+            yarp::os::Property p("(device kdlsolver) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
             //-- Commented out lengthly definition
             //yarp::os::Property p;
@@ -95,26 +95,22 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
 
 TEST_F( KdlSolverTest, KdlSolverInvDyn1)
 {
-    std::vector<double> q(1),qdot(1),qdotdot(1),fext(6,0.0),t;
-    q[0] = -90;
-    qdot[0] = 0;
-    qdotdot[0] = 0;
+    std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
+    q[0] = -90.0;
     std::vector< std::vector<double> > fexts;
     fexts.push_back(fext);
     iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
     ASSERT_EQ(t.size(), 1 );
-    ASSERT_NEAR(t[0], 0, 1e-3);
+    ASSERT_NEAR(t[0], 0, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0m = 0 N*m
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvDyn3)
+TEST_F( KdlSolverTest, KdlSolverInvDyn2)
 {
-    std::vector<double> q(1),qdot(1),qdotdot(1),fext(6,0.0),t;
+    std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
     q[0] = 0.0;
-    qdot[0] = 0;
-    qdotdot[0] = 0;
     std::vector< std::vector<double> > fexts;
     fexts.push_back(fext);
     iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
     ASSERT_EQ(t.size(), 1 );
-    ASSERT_NEAR(t[0], 0.5, 1e-3);
+    ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
