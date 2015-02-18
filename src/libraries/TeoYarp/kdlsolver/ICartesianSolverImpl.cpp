@@ -157,27 +157,16 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
         wrenches.push_back(wrench);
     }
 
-    CD_DEBUG("mass: %f\n",chain.getSegment(0).getInertia().getMass());
-    CD_DEBUG("cogX: %f\n",chain.getSegment(0).getInertia().getCOG().data[0]);
-    CD_DEBUG("cogX: %f\n",chain.getSegment(0).getInertia().getCOG().data[1]);
-    CD_DEBUG("cogX: %f\n",chain.getSegment(0).getInertia().getCOG().data[2]);
-    CD_DEBUG("inertiaXX: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[0]);
-    CD_DEBUG("inertiaYY: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[4]);
-    CD_DEBUG("inertiaZZ: %f\n",chain.getSegment(0).getInertia().getRotationalInertia().data[8]);
-
     JntArray kdlt = JntArray(numLinks);
 
     //-- Main invDyn solver lines
-    ChainIdSolver_RNE idsolver(chain,Vector(0.0,0.0,-9.81));
-    qInRad(0) = 0.0;
-    qdotInRad(0) = 0.0;
-    qdotdotInRad(0) = 0.0000000000000001;
+    //ChainIdSolver_RNE idsolver(chain,Vector(0.0,0.0,-9.81));
+    ChainIdSolver_RNE idsolver(chain,Vector(0.0,-10,0.0));
     int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
 
-//    qInRad(0) = 0.1;
-//    ChainDynParam chainDynParam(chain,Vector(0.0,0.0,-9.81));
-//    int ret = chainDynParam.JntToGravity(qInRad,kdlt);
-    CD_DEBUG("kdlt0: %f\n",kdlt(0));
+    //-- Main invDyn solver lines (alternative; actually uses ChainIdSolver_RNE)
+    // ChainDynParam chainDynParam(chain,Vector(0.0,0.0,-9.81));
+    // int ret = chainDynParam.JntToGravity(qInRad,kdlt);
 
     t.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
