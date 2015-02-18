@@ -17,7 +17,8 @@
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
-#include <kdl/chainidsolver_recursive_newton_euler.hpp>
+//#include <kdl/chainidsolver_recursive_newton_euler.hpp>
+#include <kdl/chaindynparam.hpp>
 #include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/path_line.hpp>
