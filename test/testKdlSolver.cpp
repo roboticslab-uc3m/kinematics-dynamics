@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include <yarp/os/all.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
@@ -17,22 +16,15 @@ class KdlSolverTest : public testing::Test
         virtual void SetUp() {
             YARP_REGISTER_PLUGINS(TeoYarp);
 
-            //-- Compact definition
-            yarp::os::Property p("(device kdlsolver) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
-
-            //-- Commented out lengthly definition
-            //yarp::os::Property p;
-            //p.put("device","kdlsolver");
-            //yarp::os::Property& psub = p.addGroup("link_0");  //-- A nested Property, easier syntax from file.
-            //psub.put("A",1);
+            yarp::os::Property p("(device kdlsolver) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
             dd.open(p);
             if( ! dd.isValid() ) {
-                CD_ERROR("\n");
+                CD_ERROR("Device not valid.\n");
                 return;
             }
             if( ! dd.view(iCartesianSolver) ) {
-                CD_ERROR("\n");
+                CD_ERROR("Could not view ICartesianSolver.\n");
                 return;
             }
         }
