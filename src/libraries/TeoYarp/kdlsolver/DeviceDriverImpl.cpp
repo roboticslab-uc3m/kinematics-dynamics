@@ -8,13 +8,18 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
     numLinks = config.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
     angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
-    yarp::os::Bottle gravityBottle = config.findGroup("g").tail();
 
-    //Vector(0.0,-10,0.0)
+    if( config.check("gravity") ) {
+        yarp::os::Bottle gravityBottle = config.findGroup("gravity").tail();
+        gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
+    } else {
+        CD_INFO("No gravity parameter, defaulting to -9.81 on Z axis.\n");
+        gravity = KDL::Vector(0.0,0.0,-9.81);
+    }
 
-    if(angleRepr == "axisAngle") {
+    if(angleRepr == "axisAngle"){
         targetO.resize(4);
-    } else if(angleRepr == "eulerYZ") {
+    } else if(angleRepr == "eulerYZ") {  //-- For asibot.
         targetO.resize(2);
     } else if(angleRepr == "eulerZYZ") {
         targetO.resize(3);
