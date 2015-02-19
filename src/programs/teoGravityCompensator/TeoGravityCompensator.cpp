@@ -56,7 +56,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
 
 /************************************************************************/
 bool teo::TeoGravityCompensator::updateModule() {
-    CD_INFO("Alive\n");
+    //CD_INFO("Alive\n");
     return true;
 }
 

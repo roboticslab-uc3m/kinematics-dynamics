@@ -35,8 +35,8 @@ void teo::GravityRateThread::run() {
 
     CD_INFO("--> ");
     for(int i=0;i<solverNumLinksRA;i++)
-        CD_DEBUG_NO_HEADER("%f ",tRA[i]);
-    CD_DEBUG_NO_HEADER("\n");
+        CD_INFO_NO_HEADER("%f ",tRA[i]);
+    CD_INFO_NO_HEADER("\n");
 
 }
 
