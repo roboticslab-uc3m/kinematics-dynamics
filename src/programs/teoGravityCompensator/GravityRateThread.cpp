@@ -34,7 +34,7 @@ void teo::GravityRateThread::run() {
     solverRA->invDyn(qRA,tRA);
 
     if( numMotorsRA > numMotorsRA )
-        tRA.resize( numMotorsRA );  //-- Extra motors won't care about what they get.
+        tRA.resize( numMotorsRA );  //-- Extra motors won't care about torques.
 
     CD_INFO("--> ");
     for(int i=0;i<numMotorsRA;i++) {
