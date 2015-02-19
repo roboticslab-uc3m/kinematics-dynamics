@@ -41,9 +41,8 @@ class GravityRateThread : public yarp::os::RateThread {
         /** Robot stuff */
         int numMotorsRA;
         yarp::dev::IEncoders *iEncodersRA;
-        std::vector< double > qRA;
         yarp::dev::ITorqueControl *iTorqueControlRA;
-
+        std::vector< double > qRA;
 
     protected:
 

@@ -26,6 +26,7 @@ class ICartesianSolver
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
 
         /** Perform inverse dynamics. */
+        virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t) = 0;
         virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) = 0;
 
 };

@@ -143,6 +143,38 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
 // -----------------------------------------------------------------------------
 
+bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
+
+    KDL::JntArray qInRad = KDL::JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qInRad(motor)=toRad(q[motor]);
+
+    KDL::JntArray qdotInRad = KDL::JntArray(numLinks);
+    qdotInRad.data.setZero();
+
+    KDL::JntArray qdotdotInRad = KDL::JntArray(numLinks);
+    qdotdotInRad.data.setZero();
+
+    KDL::Wrenches wrenches(numLinks,KDL::Wrench::Zero());
+
+    KDL::JntArray kdlt = KDL::JntArray(numLinks);
+
+    //-- Main invDyn solver lines
+    KDL::ChainIdSolver_RNE idsolver(chain,gravity);
+    int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
+
+    t.resize(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        t[motor]=kdlt(motor);
+
+    if (ret == 0) return true;
+
+    CD_WARNING("Something went wrong.\n");
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) {
 
     KDL::JntArray qInRad = KDL::JntArray(numLinks);

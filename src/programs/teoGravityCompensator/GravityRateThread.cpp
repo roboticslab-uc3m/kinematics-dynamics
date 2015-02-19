@@ -31,7 +31,7 @@ void teo::GravityRateThread::run() {
         CD_DEBUG_NO_HEADER("%f ",qRA[i]);
     CD_DEBUG_NO_HEADER("\n");
 
-    //rightArmSolver->invDyn()
+    //solverRA->invDyn();
 
 }
 
