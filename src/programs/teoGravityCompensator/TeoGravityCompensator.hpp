@@ -8,7 +8,6 @@
 #include <yarp/dev/all.h>
 
 #include "ColorDebug.hpp"
-#include "ICartesianSolver.h"
 
 #include "GravityRateThread.hpp"
 
@@ -36,7 +35,6 @@ class TeoGravityCompensator : public yarp::os::RFModule {
         GravityRateThread gravityRateThread;
 
         yarp::dev::PolyDriver rightArmSolverDevice;
-        teo::ICartesianSolver *rightArmSolver;
 
         yarp::dev::PolyDriver rightArmDevice;
 

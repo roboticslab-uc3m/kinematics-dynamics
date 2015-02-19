@@ -27,7 +27,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
-    if ( ! rightArmSolverDevice.view( rightArmSolver ) ) {
+    if ( ! rightArmSolverDevice.view( gravityRateThread.rightArmSolver ) ) {
         CD_ERROR("Could not obtain solver interface.\n");
         return false;
     }
@@ -50,14 +50,8 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
-    //-- Do stuff.
-    gravityRateThread.rightArmEnc->getAxes( &(gravityRateThread.rightArmNumMotors) );
-    CD_INFO("rightArmNumMotors: %d.\n",gravityRateThread.rightArmNumMotors);
-
     //-- Start the thread.
-    gravityRateThread.start();
-
-    return true;
+    return gravityRateThread.start();
 }
 
 /************************************************************************/

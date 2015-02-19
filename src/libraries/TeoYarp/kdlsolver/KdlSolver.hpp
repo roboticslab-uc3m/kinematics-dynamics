@@ -70,6 +70,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         KdlSolver() {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
+        /** Get number of links for which the solver has been configured. */
+        virtual bool getNumLinks(int* numLinks);
+
         /** Perform forward kinematics. */
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o);
 
