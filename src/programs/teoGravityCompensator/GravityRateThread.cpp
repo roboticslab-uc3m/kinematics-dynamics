@@ -5,18 +5,18 @@
 /************************************************************************/
 bool teo::GravityRateThread::threadInit() {
 
-    rightArmEnc->getAxes( &rightArmNumMotors );
-    CD_INFO("rightArmNumMotors: %d.\n",rightArmNumMotors);
+    iEncodersRA->getAxes( &numMotorsRA );
+    CD_INFO("rightArmNumMotors: %d.\n",numMotorsRA);
 
-    rightArmSolver->getNumLinks( &solverRightArmNumLinks );
-    CD_INFO("solverRightArmNumLinks: %d.\n",solverRightArmNumLinks);
+    solverRA->getNumLinks( &solverNumLinksRA );
+    CD_INFO("solverRightArmNumLinks: %d.\n",solverNumLinksRA);
 
-    if( rightArmNumMotors < solverRightArmNumLinks ) {
+    if( numMotorsRA < solverNumLinksRA ) {
         CD_ERROR("rightArmNumMotors < solverRightArmNumLinks !!! (must be >=)\n");
         return false;
     }
 
-    vRightArmAngles.resize( rightArmNumMotors );
+    qRA.resize( numMotorsRA );
 
     return true;
 }
@@ -24,11 +24,11 @@ bool teo::GravityRateThread::threadInit() {
 /************************************************************************/
 void teo::GravityRateThread::run() {
 
-    rightArmEnc->getEncoders( vRightArmAngles.data() );
+    iEncodersRA->getEncoders( qRA.data() );
 
     CD_DEBUG("--> ");
-    for(int i=0;i<rightArmNumMotors;i++)
-        CD_DEBUG_NO_HEADER("%f ",vRightArmAngles[i]);
+    for(int i=0;i<numMotorsRA;i++)
+        CD_DEBUG_NO_HEADER("%f ",qRA[i]);
     CD_DEBUG_NO_HEADER("\n");
 
     //rightArmSolver->invDyn()
