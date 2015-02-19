@@ -87,16 +87,23 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
 
 TEST_F( KdlSolverTest, KdlSolverInvDyn1)
 {
-    std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
+    std::vector<double> q(1),t;
     q[0] = -90.0;
-    std::vector< std::vector<double> > fexts;
-    fexts.push_back(fext);
-    iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
+    iCartesianSolver->invDyn(q,t);
     ASSERT_EQ(t.size(), 1 );
     ASSERT_NEAR(t[0], 0, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0m = 0 N*m
 }
 
 TEST_F( KdlSolverTest, KdlSolverInvDyn2)
+{
+    std::vector<double> q(1),t;
+    q[0] = 0.0;
+    iCartesianSolver->invDyn(q,t);
+    ASSERT_EQ(t.size(), 1 );
+    ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
+}
+
+TEST_F( KdlSolverTest, KdlSolverInvDyn3)
 {
     std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
     q[0] = 0.0;
