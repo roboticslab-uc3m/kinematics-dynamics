@@ -10,7 +10,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         CD_INFO("Using solver: %s\n",solver.c_str());
     }
 
-    //-- right arm --
+    //-- right arm solver --
     std::string rightArmIni = rf.findFileByName("../kinematics/rightArmKinematics.ini");
 
     yarp::os::Property rightArmSolverOptions;
@@ -27,6 +27,34 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
+    if ( ! rightArmSolverDevice.view( rightArmSolver ) ) {
+        CD_ERROR("Could not obtain solver interface.\n");
+        return false;
+    }
+
+    //-- right arm device --
+    yarp::os::Property rightArmDeviceOptions;
+    rightArmDeviceOptions.put("device","remote_controlboard");
+    rightArmDeviceOptions.put("local","/teoGravityCompensator/rightArm");
+    rightArmDeviceOptions.put("remote","/controlboard");
+    rightArmDevice.open(rightArmDeviceOptions);
+
+    if (!rightArmDevice.isValid()) {
+        CD_ERROR("rightArmDevice instantiation not worked.\n");
+        // rightArmSolverDevice.close();  // un-needed?
+        return false;
+    }
+
+    if ( ! rightArmDevice.view( rightArmEnc ) ) {
+        CD_ERROR("Could not obtain encoder interface.\n");
+        return false;
+    }
+
+    //-- Do stuff.
+    int rightArmNumMotors;
+    rightArmEnc->getAxes( &rightArmNumMotors );
+    CD_INFO("rightArmNumMotors: %d.\n",rightArmNumMotors);
+
     return true;
 }
 
@@ -38,6 +66,10 @@ bool teo::TeoGravityCompensator::updateModule() {
 
 /************************************************************************/
 bool teo::TeoGravityCompensator::interruptModule() {
+
+    rightArmDevice.close();
+    rightArmSolverDevice.close();
+
     return true;
 }
 

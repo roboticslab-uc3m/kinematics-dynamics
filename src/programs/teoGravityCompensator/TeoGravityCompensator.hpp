@@ -31,10 +31,10 @@ class TeoGravityCompensator : public yarp::os::RFModule {
 
     protected:
         yarp::dev::PolyDriver rightArmSolverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        teo::ICartesianSolver *rightArmSolver;
 
         yarp::dev::PolyDriver rightArmDevice;
-        yarp::dev::IPositionControl *rightArmPos;
+        yarp::dev::IEncoders *rightArmEnc;
 
         bool updateModule();
         bool interruptModule();
