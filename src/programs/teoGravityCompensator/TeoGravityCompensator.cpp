@@ -50,6 +50,11 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
+    if ( ! robotDeviceRA.view( gravityRateThread.iTorqueControlRA ) ) {
+        CD_ERROR("Could not obtain right arm torque interface.\n");
+        return false;
+    }
+
     //-- Start the thread.
     return gravityRateThread.start();
 }
