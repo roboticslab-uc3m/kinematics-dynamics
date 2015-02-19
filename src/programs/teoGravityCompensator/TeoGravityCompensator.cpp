@@ -45,15 +45,17 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
-    if ( ! rightArmDevice.view( rightArmEnc ) ) {
+    if ( ! rightArmDevice.view( gravityRateThread.rightArmEnc ) ) {
         CD_ERROR("Could not obtain encoder interface.\n");
         return false;
     }
 
     //-- Do stuff.
-    int rightArmNumMotors;
-    rightArmEnc->getAxes( &rightArmNumMotors );
-    CD_INFO("rightArmNumMotors: %d.\n",rightArmNumMotors);
+    gravityRateThread.rightArmEnc->getAxes( &(gravityRateThread.rightArmNumMotors) );
+    CD_INFO("rightArmNumMotors: %d.\n",gravityRateThread.rightArmNumMotors);
+
+    //-- Start the thread.
+    gravityRateThread.start();
 
     return true;
 }
@@ -66,6 +68,8 @@ bool teo::TeoGravityCompensator::updateModule() {
 
 /************************************************************************/
 bool teo::TeoGravityCompensator::interruptModule() {
+
+    gravityRateThread.stop();
 
     rightArmDevice.close();
     rightArmSolverDevice.close();

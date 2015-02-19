@@ -10,6 +10,8 @@
 #include "ColorDebug.hpp"
 #include "ICartesianSolver.h"
 
+#include "GravityRateThread.hpp"
+
 #define DEFAULT_SOLVER "kdlsolver"
 
 namespace teo
@@ -30,11 +32,13 @@ class TeoGravityCompensator : public yarp::os::RFModule {
         bool configure(yarp::os::ResourceFinder &rf);
 
     protected:
+
+        GravityRateThread gravityRateThread;
+
         yarp::dev::PolyDriver rightArmSolverDevice;
         teo::ICartesianSolver *rightArmSolver;
 
         yarp::dev::PolyDriver rightArmDevice;
-        yarp::dev::IEncoders *rightArmEnc;
 
         bool updateModule();
         bool interruptModule();
