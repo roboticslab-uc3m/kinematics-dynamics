@@ -43,6 +43,7 @@ class GravityRateThread : public yarp::os::RateThread {
         yarp::dev::IEncoders *iEncodersRA;
         yarp::dev::ITorqueControl *iTorqueControlRA;
         std::vector< double > qRA;
+        std::vector< double > tRA;
 
     protected:
 

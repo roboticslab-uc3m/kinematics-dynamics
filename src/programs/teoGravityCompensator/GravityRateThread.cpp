@@ -26,12 +26,17 @@ void teo::GravityRateThread::run() {
 
     iEncodersRA->getEncoders( qRA.data() );
 
-    CD_DEBUG("--> ");
+    CD_DEBUG("<-- ");
     for(int i=0;i<numMotorsRA;i++)
         CD_DEBUG_NO_HEADER("%f ",qRA[i]);
     CD_DEBUG_NO_HEADER("\n");
 
-    //solverRA->invDyn();
+    solverRA->invDyn(qRA,tRA);
+
+    CD_INFO("--> ");
+    for(int i=0;i<solverNumLinksRA;i++)
+        CD_DEBUG_NO_HEADER("%f ",tRA[i]);
+    CD_DEBUG_NO_HEADER("\n");
 
 }
 
