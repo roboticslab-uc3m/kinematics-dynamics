@@ -72,9 +72,6 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
-    //-- set 0,0 torque for testing
-    gravityRateThread.iTorqueControlRA->setRefTorque(0,0);
-
     //-- Start the thread.
     return gravityRateThread.start();
 }
