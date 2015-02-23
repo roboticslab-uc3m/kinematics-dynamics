@@ -10,8 +10,11 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         CD_INFO("Using solver: %s\n",solver.c_str());
     }
 
-    //-- right arm solver --
-    std::string iniRA = rf.findFileByName("../kinematics/rightArmKinematics.ini");
+    //-- full right arm solver --
+    //std::string iniRA = rf.findFileByName("../kinematics/rightArmKinematics.ini");
+
+    //-- id22 left arm solver --
+    std::string iniRA = rf.findFileByName("../kinematics/leftArm22Kinematics.ini");
 
     yarp::os::Property solverOptionsRA;
     if (! solverOptionsRA.fromConfigFile(iniRA) ) {  //-- Put first because defaults to wiping out.
@@ -32,12 +35,24 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
-    //-- right arm device --
-    yarp::os::Property robotOptionsRA;
+    //-- full right arm device (remote) --
+    //yarp::os::Property robotOptionsRA;
     //robotOptionsRA.put("device","remote_controlboard");
     //robotOptionsRA.put("local","/teoGravityCompensator/rightArm");
     //robotOptionsRA.put("remote","/controlboard");
+
+    //-- id22 left arm device (local) --
+    yarp::os::Property robotOptionsRA;
     robotOptionsRA.put("device","bodybot");
+    robotOptionsRA.put("canDevice","/dev/can1");
+    robotOptionsRA.put("types","motoripos");
+    robotOptionsRA.put("ids",22);
+    robotOptionsRA.put("maxs",360);
+    robotOptionsRA.put("mins",-360);
+    robotOptionsRA.put("refAccelerations",0.575437);
+    robotOptionsRA.put("refSpeeds",737.2798);
+    robotOptionsRA.put("trs",160);
+
     robotDeviceRA.open(robotOptionsRA);
 
     if (!robotDeviceRA.isValid()) {
