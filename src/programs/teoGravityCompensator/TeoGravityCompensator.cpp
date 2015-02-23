@@ -34,9 +34,10 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
 
     //-- right arm device --
     yarp::os::Property robotOptionsRA;
-    robotOptionsRA.put("device","remote_controlboard");
-    robotOptionsRA.put("local","/teoGravityCompensator/rightArm");
-    robotOptionsRA.put("remote","/controlboard");
+    //robotOptionsRA.put("device","remote_controlboard");
+    //robotOptionsRA.put("local","/teoGravityCompensator/rightArm");
+    //robotOptionsRA.put("remote","/controlboard");
+    robotOptionsRA.put("device","bodybot");
     robotDeviceRA.open(robotOptionsRA);
 
     if (!robotDeviceRA.isValid()) {

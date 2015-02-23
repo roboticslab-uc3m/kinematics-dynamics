@@ -44,11 +44,13 @@
 using namespace yarp::os;
 using namespace yarp::dev;
 
-YARP_DECLARE_PLUGINS(TeoYarp)
+YARP_DECLARE_PLUGINS(TeoYarp)  //-- Provides "kdlsolver".
+YARP_DECLARE_PLUGINS(BodyYarp)  //-- Provides "kdlsolver".
 
 int main(int argc, char *argv[]) {
 
-    YARP_REGISTER_PLUGINS(TeoYarp);
+    YARP_REGISTER_PLUGINS(TeoYarp);  //-- Provides "kdlsolver".
+    YARP_REGISTER_PLUGINS(BodyYarp);  //-- Provides "kdlsolver".
 
     ResourceFinder rf;
     rf.setVerbose(true);
