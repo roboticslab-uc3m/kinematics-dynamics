@@ -44,6 +44,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
     //-- id22 left arm device (local) --
     yarp::os::Property robotOptionsRA;
     robotOptionsRA.put("device","bodybot");
+    robotOptionsRA.put("mode","torque");
     robotOptionsRA.put("canDevice","/dev/can1");
     robotOptionsRA.put("types","motoripos");
     robotOptionsRA.put("ids",22);
