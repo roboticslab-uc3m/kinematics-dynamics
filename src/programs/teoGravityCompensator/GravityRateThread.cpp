@@ -42,7 +42,7 @@ void teo::GravityRateThread::run() {
     }
     CD_INFO_NO_HEADER("\n");
 
-    iTorqueControlRA->setRefTorques( tRA.data() );
+    //iTorqueControlRA->setRefTorques( tRA.data() );
 
 }
 
