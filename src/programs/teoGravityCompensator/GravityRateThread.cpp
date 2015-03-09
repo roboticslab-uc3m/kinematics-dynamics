@@ -31,7 +31,7 @@ void teo::GravityRateThread::run() {
     CD_DEBUG("<-- ");
     for(int i=0;i<numMotorsRA;i++)
         CD_DEBUG_NO_HEADER("%f ",qRA[i]);
-    CD_DEBUG_NO_HEADER("\n");
+    CD_DEBUG_NO_HEADER("[deg]\n");
 
     solverRA->invDyn(qRA,tRA);
 
@@ -42,7 +42,7 @@ void teo::GravityRateThread::run() {
     for(int i=0;i<numMotorsRA;i++) {
         CD_INFO_NO_HEADER("%f ",tRA[i]);
     }
-    CD_INFO_NO_HEADER("\n");
+    CD_INFO_NO_HEADER("[Nm]\n");
 
     //--tRA[0] = 0.0;  //-- Release... let's do this!
     iTorqueControlRA->setRefTorques( tRA.data() );
