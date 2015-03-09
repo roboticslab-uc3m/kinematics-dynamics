@@ -1,6 +1,13 @@
-// -----------------------------------------------------------------------------
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 #include "KdlSolver.hpp"
+
+// -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::getNumLinks(int* numLinks) {
+    *numLinks = this->numLinks;
+    return true;
+}
 
 // -----------------------------------------------------------------------------
 
@@ -131,6 +138,38 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     {
         CD_WARNING("The number of iterations is exceeded.\n");
     }
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
+
+    KDL::JntArray qInRad = KDL::JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qInRad(motor)=toRad(q[motor]);
+
+    KDL::JntArray qdotInRad = KDL::JntArray(numLinks);
+    qdotInRad.data.setZero();
+
+    KDL::JntArray qdotdotInRad = KDL::JntArray(numLinks);
+    qdotdotInRad.data.setZero();
+
+    KDL::Wrenches wrenches(numLinks,KDL::Wrench::Zero());
+
+    KDL::JntArray kdlt = KDL::JntArray(numLinks);
+
+    //-- Main invDyn solver lines
+    KDL::ChainIdSolver_RNE idsolver(chain,gravity);
+    int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
+
+    t.resize(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        t[motor]=kdlt(motor);
+
+    if (ret == 0) return true;
+
+    CD_WARNING("Something went wrong.\n");
     return false;
 }
 

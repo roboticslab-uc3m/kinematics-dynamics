@@ -12,6 +12,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     if( config.check("gravity") ) {
         yarp::os::Bottle gravityBottle = config.findGroup("gravity").tail();
         gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
+        CD_INFO("Found gravity parameter, using: %f %f %f.\n", gravity[0], gravity[1], gravity[2]);
     } else {
         CD_INFO("No gravity parameter, defaulting to -9.81 on Z axis.\n");
         gravity = KDL::Vector(0.0,0.0,-9.81);

@@ -16,5 +16,6 @@ add_subdirectory(teo)
 add_subdirectory(openrave)
 add_subdirectory(kinematics)
 
+add_subdirectory(teoGravityCompensator)
 add_subdirectory(teoSim)
 
