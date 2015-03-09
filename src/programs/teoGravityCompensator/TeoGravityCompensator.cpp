@@ -50,6 +50,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
     robotOptionsRA.put("ids",22);
     robotOptionsRA.put("maxs",360);
     robotOptionsRA.put("mins",-360);
+    robotOptionsRA.put("ks",0.0706);
     robotOptionsRA.put("refAccelerations",0.575437);
     robotOptionsRA.put("refSpeeds",737.2798);
     robotOptionsRA.put("trs",160);
