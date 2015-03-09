@@ -18,6 +18,7 @@ option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp modules
 option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
+option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCompensator" TRUE)
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 option(ENABLE_testTeoYarp "Choose if you want to compile testTeoYarp" TRUE)
 

@@ -67,10 +67,12 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
     public:
 
-        // Set the Thread Rate in the class constructor
-        KdlSolver() {}  // In ms
+        KdlSolver() {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
+        /** Get number of links for which the solver has been configured. */
+        virtual bool getNumLinks(int* numLinks);
+
         /** Perform forward kinematics. */
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o);
 
@@ -78,6 +80,7 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q);
 
         /** Perform inverse dynamics. */
+        virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
         virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
