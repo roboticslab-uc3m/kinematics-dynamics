@@ -18,6 +18,8 @@ bool teo::GravityRateThread::threadInit() {
 
     qRA.resize( numMotorsRA );
 
+    iTorqueControlRA->setTorqueMode();
+
     return true;
 }
 
