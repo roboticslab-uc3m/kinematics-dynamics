@@ -5,7 +5,7 @@
  *
  * \defgroup teoCartesianServer teoCartesianServer
  *
- * @brief The \ref teoCartesianServer module creates an instance of TeoCartesianServer.
+ * @brief Creates an instance of TeoCartesianServer.
  *
  * Used by (1): \ref teo_teoWebInterface.
  *
