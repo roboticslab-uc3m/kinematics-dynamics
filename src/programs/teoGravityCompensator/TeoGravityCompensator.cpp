@@ -6,13 +6,16 @@
 bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
 
     std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
+    std::string kinematics = rf.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
     std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot").asString();
     if( rf.check("help") ) {
         CD_INFO("Using solver: %s\n",solver.c_str());
     }
 
     //-- canId 22 (left arm shoulder) solver --
-    std::string ini = rf.findFileByName("../kinematics/leftArm22Kinematics.ini");
+    std::string kinematicsFull("../kinematics/");
+    kinematicsFull += kinematics;
+    std::string ini = rf.findFileByName( kinematicsFull );
 
     yarp::os::Property solverOptions;
     if (! solverOptions.fromConfigFile(ini) ) {  //-- Put first because defaults to wiping out.
