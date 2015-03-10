@@ -9,8 +9,11 @@
 
 YARP_DECLARE_PLUGINS(TeoYarp)
 
+namespace teo
+{
+
 /**
- * @brief Tests KdlSolver ikin and idyn on a simple mechanism.
+ * @brief Tests \ref KdlSolver ikin and idyn on a simple mechanism.
  */
 class KdlSolverTest : public testing::Test
 {
@@ -116,3 +119,6 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn3)
     ASSERT_EQ(t.size(), 1 );
     ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
+
+}  // namespace teo
+
