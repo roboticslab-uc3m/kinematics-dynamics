@@ -37,6 +37,9 @@ using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
+namespace teo
+{
+
 /**
  * @ingroup xCallbackPort
  *
@@ -65,6 +68,8 @@ class TeoXCallbackPort : public BufferedPort<Bottle> {
         void setCsStatus(int* _csStatus);
 
 };
+
+}  // namespace teo
 
 #endif
 

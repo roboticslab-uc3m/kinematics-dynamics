@@ -1,6 +1,9 @@
 
 #include "TeoXCallbackPort.hpp"
 
+namespace teo
+{
+
 /************************************************************************/
 
 void TeoXCallbackPort::onRead(Bottle& b) {
@@ -143,3 +146,4 @@ void TeoXCallbackPort::setCsStatus(int* _csStatus) {
 
 /************************************************************************/
 
+}  // namespace teo

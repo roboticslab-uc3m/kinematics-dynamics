@@ -2,6 +2,9 @@
 
 #include "TeoCartesianServer.hpp"
 
+namespace teo
+{
+
 /************************************************************************/
 TeoCartesianServer::TeoCartesianServer() { }
 
@@ -106,3 +109,4 @@ bool TeoCartesianServer::interruptModule() {
 
 /************************************************************************/
 
+}  // namespace teo

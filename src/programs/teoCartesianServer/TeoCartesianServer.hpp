@@ -25,6 +25,9 @@
 using namespace yarp::os;
 using namespace yarp::dev;
 
+namespace teo
+{
+
 /**
  * @ingroup TeoCartesianServer
  *
@@ -54,6 +57,8 @@ public:
     TeoCartesianServer();
     bool configure(ResourceFinder &rf);
 };
+
+}  // namespace teo
 
 #endif
 

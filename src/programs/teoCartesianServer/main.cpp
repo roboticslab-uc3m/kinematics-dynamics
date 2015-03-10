@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
     rf.setDefaultConfigFile("teoCartesianServer.ini");
     rf.configure(argc,argv);
 
-    TeoCartesianServer mod;
+    teo::TeoCartesianServer mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
