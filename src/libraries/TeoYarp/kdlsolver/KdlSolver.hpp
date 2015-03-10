@@ -49,7 +49,7 @@ namespace teo
  * @ingroup teo_yarp
  * \defgroup KdlSolver
  *
- * The \ref Library composed by a single class, KdlSolver.
+ * @brief Library composed by a single class, KdlSolver.
  *
  * @section kdlsolver_install Installation
  *
