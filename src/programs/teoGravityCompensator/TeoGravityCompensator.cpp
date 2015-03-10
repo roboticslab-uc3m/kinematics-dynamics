@@ -10,51 +10,48 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         CD_INFO("Using solver: %s\n",solver.c_str());
     }
 
-    //-- full right arm solver --
-    //std::string iniRA = rf.findFileByName("../kinematics/rightArmKinematics.ini");
+    //-- canId 22 (left arm shoulder) solver --
+    std::string ini = rf.findFileByName("../kinematics/leftArm22Kinematics.ini");
 
-    //-- id22 left arm solver --
-    std::string iniRA = rf.findFileByName("../kinematics/leftArm22Kinematics.ini");
-
-    yarp::os::Property solverOptionsRA;
-    if (! solverOptionsRA.fromConfigFile(iniRA) ) {  //-- Put first because defaults to wiping out.
+    yarp::os::Property solverOptions;
+    if (! solverOptions.fromConfigFile(ini) ) {  //-- Put first because defaults to wiping out.
         CD_ERROR("Could not configure from \"rightArmKinematics.ini\".\n");
         return false;
     }
-    solverOptionsRA.put("device",solver);
-    solverDeviceRA.open(solverOptionsRA);
+    solverOptions.put("device",solver);
+    solverDevice.open(solverOptions);
 
-    if (!solverDeviceRA.isValid()) {
+    if (!solverDevice.isValid()) {
         CD_ERROR("Right arm solver device instantiation not worked.\n");
         // rightArmSolverDevice.close();  // un-needed?
         return false;
     }
 
-    if ( ! solverDeviceRA.view( gravityRateThread.solverRA ) ) {
+    if ( ! solverDevice.view( gravityRateThread.solver ) ) {
         CD_ERROR("Could not obtain solver interface.\n");
         return false;
     }
 
     //-- robot arm device (remote) --
-    yarp::os::Property robotOptionsRA;
-    robotOptionsRA.put("device","remote_controlboard");
-    robotOptionsRA.put("local","/teoGravityCompensator");
-    robotOptionsRA.put("remote","/testBodyBot");
+    yarp::os::Property robotOptions;
+    robotOptions.put("device","remote_controlboard");
+    robotOptions.put("local","/teoGravityCompensator");
+    robotOptions.put("remote","/testBodyBot");
 
-    robotDeviceRA.open(robotOptionsRA);
+    robotDevice.open(robotOptions);
 
-    if (!robotDeviceRA.isValid()) {
-        CD_ERROR("robotDeviceRA instantiation not worked.\n");
+    if (!robotDevice.isValid()) {
+        CD_ERROR("robotDevice instantiation not worked.\n");
         // robotDeviceRA.close();  // un-needed?
         return false;
     }
 
-    if ( ! robotDeviceRA.view( gravityRateThread.iEncodersRA ) ) {
+    if ( ! robotDevice.view( gravityRateThread.iEncoders ) ) {
         CD_ERROR("Could not obtain right arm encoders interface.\n");
         return false;
     }
 
-    if ( ! robotDeviceRA.view( gravityRateThread.iTorqueControlRA ) ) {
+    if ( ! robotDevice.view( gravityRateThread.iTorqueControl ) ) {
         CD_ERROR("Could not obtain right arm torque interface.\n");
         return false;
     }
@@ -74,8 +71,8 @@ bool teo::TeoGravityCompensator::interruptModule() {
 
     gravityRateThread.stop();
 
-    robotDeviceRA.close();
-    solverDeviceRA.close();
+    robotDevice.close();
+    solverDevice.close();
 
     return true;
 }

@@ -35,15 +35,15 @@ class GravityRateThread : public yarp::os::RateThread {
         virtual void run();
 
         /** Solver stuff */
-        int solverNumLinksRA;
-        teo::ICartesianSolver *solverRA;
+        int solverNumLinks;
+        teo::ICartesianSolver *solver;
 
         /** Robot stuff */
-        int numMotorsRA;
-        yarp::dev::IEncoders *iEncodersRA;
-        yarp::dev::ITorqueControl *iTorqueControlRA;
-        std::vector< double > qRA;
-        std::vector< double > tRA;
+        int numMotors;
+        yarp::dev::IEncoders *iEncoders;
+        yarp::dev::ITorqueControl *iTorqueControl;
+        std::vector< double > q;
+        std::vector< double > t;
 
     protected:
 
