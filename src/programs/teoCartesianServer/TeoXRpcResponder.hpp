@@ -33,7 +33,7 @@ namespace teo
 /**
  * @ingroup xRpcResponder
  *
- * TeoXRpcResponder class implements an xRpcPort responder (callback on RPC).
+ * @brief TeoXRpcResponder class implements an xRpcPort responder (callback on RPC).
  */
 class TeoXRpcResponder : public PortReader {
 

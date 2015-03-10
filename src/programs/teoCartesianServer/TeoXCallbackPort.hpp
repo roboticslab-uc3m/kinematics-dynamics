@@ -43,7 +43,7 @@ namespace teo
 /**
  * @ingroup xCallbackPort
  *
- * TeoXCallbackPort class implements a port with x callbacks.
+ * @brief TeoXCallbackPort class implements a port with x callbacks.
  */
 class TeoXCallbackPort : public BufferedPort<Bottle> {
     protected:
