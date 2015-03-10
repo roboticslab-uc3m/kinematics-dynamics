@@ -21,8 +21,7 @@ namespace teo
 /**
  * @ingroup TeoGravityCompensator
  *
- * The TeoGravityCompensator class implements a server part that receives a connection from a remote
- * \ref cartesianServer module.
+ * @brief Uses an inverse dynamics solver to perform gravity compensation on a robot limb.
  * 
  */
 class TeoGravityCompensator : public yarp::os::RFModule {
