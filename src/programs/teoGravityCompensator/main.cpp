@@ -5,7 +5,7 @@
  *
  * \defgroup teoGravityCompensator teoGravityCompensator
  *
- * @brief The \ref teoGravityCompensator module creates an instance of TeoGravityCompensator.
+ * @brief Creates an instance of TeoGravityCompensator.
  *
  * <b> Legal </b>
  *
