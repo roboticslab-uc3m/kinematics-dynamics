@@ -6,6 +6,7 @@
 bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
 
     std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
+    std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot").asString();
     if( rf.check("help") ) {
         CD_INFO("Using solver: %s\n",solver.c_str());
     }
@@ -36,7 +37,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
     yarp::os::Property robotOptions;
     robotOptions.put("device","remote_controlboard");
     robotOptions.put("local","/teoGravityCompensator");
-    robotOptions.put("remote","/testBodyBot");
+    robotOptions.put("remote",remote);
 
     robotDevice.open(robotOptions);
 

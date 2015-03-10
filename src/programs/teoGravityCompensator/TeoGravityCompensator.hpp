@@ -12,6 +12,7 @@
 #include "GravityRateThread.hpp"
 
 #define DEFAULT_SOLVER "kdlsolver"
+#define DEFAULT_REMOTE "/controlboard"
 
 namespace teo
 {
