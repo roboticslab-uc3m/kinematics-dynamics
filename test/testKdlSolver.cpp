@@ -9,6 +9,9 @@
 
 YARP_DECLARE_PLUGINS(TeoYarp)
 
+/**
+ * @brief Tests KdlSolver ikin and idyn on a simple mechanism.
+ */
 class KdlSolverTest : public testing::Test
 {
 
