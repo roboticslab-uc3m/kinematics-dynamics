@@ -5,9 +5,7 @@
  *
  * \defgroup teoSim teoSim
  *
- * @brief Basic TEO simulation.
- *
- * The \ref Creates an instance of the \ref TeoSim class.
+ * @brief Basic TEO simulation, creates an instance of the \ref TeoSim class.
  *
  * @section teoSim_legal Legal
  *
