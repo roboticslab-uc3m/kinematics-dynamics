@@ -58,7 +58,7 @@ namespace teo
  * @brief The RavePart class implements the YARP_dev IPositionControl, IVelocityControl, IEncoders, etc.
  * interface class member functions.
  */
-class RavePart : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncoders,
+class RavePart : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncodersTimed,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
@@ -190,7 +190,7 @@ class RavePart : public DeviceDriver, public IPositionControl, public IVelocityC
          */
         virtual bool stop();
 
-    //  ---------- IEncoder Declarations. Implementation in IEncoderImpl.cpp ----------
+    //  ---------- IEncodersTimed Declarations. Implementation in IEncoderImpl.cpp ----------
 
         /**
          * Reset encoder, single joint. Set the encoder value to zero
@@ -263,6 +263,23 @@ class RavePart : public DeviceDriver, public IPositionControl, public IVelocityC
          * @return true if all goes well, false if anything bad happens.
          */
         virtual bool getEncoderAccelerations(double *accs);
+
+        /**
+        * Read the instantaneous acceleration of all axes.
+        * \param encs pointer to the array that will contain the output
+        * \param time pointer to the array that will contain individual timestamps
+        * \return true if all goes well, false if anything bad happens.
+        */
+       virtual bool getEncodersTimed(double *encs, double *time);
+
+       /**
+       * Read the instantaneous acceleration of all axes.
+       * \param j axis index
+       * \param encs encoder value (pointer to)
+       * \param time corresponding timestamp (pointer to)
+       * \return true if all goes well, false if anything bad happens.
+       */
+       virtual bool getEncoderTimed(int j, double *encs, double *time);
 
     //  --------- IVelocityControl Declarations. Implementation in IVelocityImpl.cpp ---------
 

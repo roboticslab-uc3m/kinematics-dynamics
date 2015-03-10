@@ -6,7 +6,7 @@
 
 
 bool teo::RavePart::setTorqueMode() {
-    CD_INFO("setPositionMode()\n");
+    CD_INFO("setTorqueMode()\n");
     return true;
 }
 
@@ -57,7 +57,8 @@ bool teo::RavePart::setTorquePid(int j, const Pid &pid) {
 // -----------------------------------------------------------------------------
 
 bool teo::RavePart::getTorque(int j, double *t) {
-    CD_INFO("joint: %d.\n",j);
+    //CD_INFO("joint: %d.\n",j);  //-- Way too verbose
+    *t = 0;
     return true;
 }
 
