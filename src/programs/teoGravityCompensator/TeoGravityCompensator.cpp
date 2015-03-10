@@ -36,13 +36,13 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
     }
 
     //-- full right arm device (remote) --
-    //yarp::os::Property robotOptionsRA;
-    //robotOptionsRA.put("device","remote_controlboard");
-    //robotOptionsRA.put("local","/teoGravityCompensator/rightArm");
-    //robotOptionsRA.put("remote","/controlboard");
+    yarp::os::Property robotOptionsRA;
+    robotOptionsRA.put("device","remote_controlboard");
+    robotOptionsRA.put("local","/teoGravityCompensator/rightArm");
+    robotOptionsRA.put("remote","/teoSim/rightArm");
 
     //-- id22 left arm device (local) --
-    yarp::os::Property robotOptionsRA;
+    /*yarp::os::Property robotOptionsRA;
     robotOptionsRA.put("device","bodybot");
     robotOptionsRA.put("mode","torque");
     robotOptionsRA.put("canDevice","/dev/can1");
@@ -53,7 +53,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
     robotOptionsRA.put("ks",0.0706);
     robotOptionsRA.put("refAccelerations",0.575437);
     robotOptionsRA.put("refSpeeds",737.2798);
-    robotOptionsRA.put("trs",160);
+    robotOptionsRA.put("trs",160);*/
 
     robotDeviceRA.open(robotOptionsRA);
 
