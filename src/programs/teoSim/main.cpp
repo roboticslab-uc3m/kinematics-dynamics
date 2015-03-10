@@ -7,7 +7,7 @@
  *
  * @brief Basic TEO simulation.
  *
- * The \ref Creates an instance of the TeoSim class.
+ * The \ref Creates an instance of the \ref TeoSim class.
  *
  * @section teoSim_legal Legal
  *
