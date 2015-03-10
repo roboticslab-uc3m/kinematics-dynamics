@@ -5,7 +5,7 @@
  *
  * \defgroup teoCartesianServer teoCartesianServer
  *
- * @brief Creates an instance of TeoCartesianServer.
+ * @brief Creates an instance of the \ref TeoCartesianServer class.
  *
  * Used by (1): \ref teo_teoWebInterface.
  *
