@@ -5,20 +5,20 @@
 /************************************************************************/
 bool teo::GravityRateThread::threadInit() {
 
-    iEncodersRA->getAxes( &numMotorsRA );
-    CD_INFO("numMotorsRA: %d.\n",numMotorsRA);
+    iEncoders->getAxes( &numMotors );
+    CD_INFO("numMotorsRA: %d.\n",numMotors);
 
-    solverRA->getNumLinks( &solverNumLinksRA );
-    CD_INFO("solverNumLinksRA: %d.\n",solverNumLinksRA);
+    solver->getNumLinks( &solverNumLinks );
+    CD_INFO("solverNumLinksRA: %d.\n",solverNumLinks);
 
-    if( numMotorsRA < solverNumLinksRA ) {
+    if( numMotors < solverNumLinks ) {
         CD_ERROR("numMotorsRA < solverNumLinksRA !!! (must be >=) (RA=rightArm)\n");
         return false;
     }
 
-    qRA.resize( numMotorsRA );
+    q.resize( numMotors );
 
-    iTorqueControlRA->setTorqueMode();
+    iTorqueControl->setTorqueMode();
 
     return true;
 }
@@ -26,26 +26,26 @@ bool teo::GravityRateThread::threadInit() {
 /************************************************************************/
 void teo::GravityRateThread::run() {
 
-    iEncodersRA->getEncoders( qRA.data() );
+    iEncoders->getEncoders( q.data() );
 
     CD_DEBUG("<-- ");
-    for(int i=0;i<numMotorsRA;i++)
-        CD_DEBUG_NO_HEADER("%f ",qRA[i]);
+    for(int i=0;i<numMotors;i++)
+        CD_DEBUG_NO_HEADER("%f ",q[i]);
     CD_DEBUG_NO_HEADER("[deg]\n");
 
-    solverRA->invDyn(qRA,tRA);
+    solver->invDyn(q,t);
 
-    if( numMotorsRA > numMotorsRA )
-        tRA.resize( numMotorsRA );  //-- Extra motors won't care about torques.
+    if( numMotors > numMotors )
+        t.resize( numMotors );  //-- Extra motors won't care about torques.
 
     CD_INFO("--> ");
-    for(int i=0;i<numMotorsRA;i++) {
-        CD_INFO_NO_HEADER("%f ",tRA[i]);
+    for(int i=0;i<numMotors;i++) {
+        CD_INFO_NO_HEADER("%f ",t[i]);
     }
     CD_INFO_NO_HEADER("[Nm]\n");
 
     //--tRA[0] = 0.0;  //-- Release... let's do this!
-    iTorqueControlRA->setRefTorques( tRA.data() );
+    iTorqueControl->setRefTorques( t.data() );
 
 }
 

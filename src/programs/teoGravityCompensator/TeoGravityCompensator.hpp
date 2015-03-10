@@ -34,9 +34,9 @@ class TeoGravityCompensator : public yarp::os::RFModule {
 
         GravityRateThread gravityRateThread;
 
-        yarp::dev::PolyDriver solverDeviceRA;
+        yarp::dev::PolyDriver solverDevice;
 
-        yarp::dev::PolyDriver robotDeviceRA;
+        yarp::dev::PolyDriver robotDevice;
 
         bool updateModule();
         bool interruptModule();
