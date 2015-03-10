@@ -19,7 +19,7 @@ namespace teo
 /**
  * @ingroup teoGravityCompensation
  *
- * The GravityRateThread class.
+ * @brief The actual teoGravityCompensation periodical thread.
  *
  */
 class GravityRateThread : public yarp::os::RateThread {
