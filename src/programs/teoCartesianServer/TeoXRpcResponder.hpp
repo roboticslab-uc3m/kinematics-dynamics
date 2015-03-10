@@ -27,6 +27,9 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using yarp::sig::Vector;
 
+namespace teo
+{
+
 /**
  * @ingroup xRpcResponder
  *
@@ -56,6 +59,8 @@ class TeoXRpcResponder : public PortReader {
         void setCsStatus(int* _csStatus);
 
 };
+
+}  // namespace teo
 
 #endif
 

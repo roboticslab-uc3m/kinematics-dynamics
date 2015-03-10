@@ -2,6 +2,9 @@
 
 #include "TeoXRpcResponder.hpp"
 
+namespace teo
+{
+
 /************************************************************************/
 
 bool TeoXRpcResponder::read(ConnectionReader& connection) {
@@ -154,3 +157,4 @@ void TeoXRpcResponder::setCsStatus(int* _csStatus) {
 
 /************************************************************************/
 
+}  // namespace teo
