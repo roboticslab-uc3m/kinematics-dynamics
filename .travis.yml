@@ -1,60 +1,39 @@
-language: cpp
-
-os: 
+os:
   - linux
-  - osx
+
+language:
+  - cpp
 
 compiler:
   - gcc
   - clang
-  
-matrix:
-  allow_failures:
-  - os: osx
-  
-before_script:
-  #ubuntu dependencies
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install cmake libace-dev; fi
 
-  #OS X dependencies
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export XQUARTZ_VERSION=2.7.6;fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then curl -L -O http://xquartz.macosforge.org/downloads/SL/XQuartz-${XQUARTZ_VERSION}.dmg; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then hdiutil mount XQuartz-${XQUARTZ_VERSION}.dmg; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo installer -store -pkg /Volumes/XQuartz-${XQUARTZ_VERSION}/XQuartz.pkg -target / ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then hdiutil unmount /Volumes/XQuartz-${XQUARTZ_VERSION}; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install `brew deps --1 yarp | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g'`; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install cmake goocanvas  sdl sdl_gfx sdl_image gfortran; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install ode --enable-double-precision; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install --with-qt3support qt; fi
-  #use the same set of cmake options used in the dashboard build
-  # - source ./admin/scripts/generate-cmake-options.sh # no special cmake options for now.
-  #install yarp from master
+before_install:
+  - sudo add-apt-repository --yes ppa:kalakris/cmake
+  - sudo apt-get update -qq  # -qq No output except for errors
+
+install:
+  - sudo apt-get install cmake
   - git clone https://github.com/robotology/yarp
-  - cd yarp
-  - mkdir build
-  - cd build
-  - cmake ../ 
+  - cd yarp && mkdir build && cd build
+  - cmake ..
   - make
   - sudo make install
   - cd ../..
-
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
   - if [ "$CXX" = "g++" ]; then wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz; fi
   - if [ "$CXX" = "g++" ]; then tar xf lcov_1.11.orig.tar.gz; fi
   - if [ "$CXX" = "g++" ]; then sudo make -C lcov-1.11/ install; fi
   - if [ "$CXX" = "g++" ]; then gem install coveralls-lcov; fi
 
-  - mkdir build
-  - cd build 
-  - cmake ../ ${CMAKE_OPTIONS}
-  
-script:
+before_script:
+  - mkdir -p build && cd build
 
-  - cmake --build .
+script:
+  - cmake ..
+  - make
   - sudo make install
-  - bin/testKdlSolver
+  - testKdlSolver
 
 after_success:
   #  - cd ${TRAVIS_BUILD_DIR}
