@@ -7,7 +7,6 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
-#include <yarp/math/Math.h>
 
 #include <kdl/segment.hpp>
 #include <kdl/chain.hpp>
