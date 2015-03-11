@@ -16,7 +16,7 @@ install:
   - sudo apt-get install cmake
   - git clone https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
-  - cmake ..
+  - cmake .. -DSKIP_ACE=ON
   - make
   - sudo make install
   - cd ../..
