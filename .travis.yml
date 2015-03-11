@@ -53,7 +53,7 @@ script:
   - cmake ..
   - make
   - sudo make install
-  - testKdlSolver
+  - bin/testKdlSolver
 
 after_success:
   #  - cd ${TRAVIS_BUILD_DIR}
