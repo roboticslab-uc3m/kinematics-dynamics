@@ -85,18 +85,6 @@ set(TEO_LINK_DIRS ${TEO_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
 configure_file(${CMAKE_SOURCE_DIR}/cmake/template/TEOConfig.cmake.in
                ${CMAKE_BINARY_DIR}/TEOConfig.cmake @ONLY)
 
-#-- Forget about app directory for now.
-# create a symbolic link to the shared directory (as contains models and may be heavy)
-# If you want a deep copy, you can use the copy_directory command instead of create_symlink.
-#add_custom_target(install_applications COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/app ${CMAKE_SOURCE_DIR}/../app)
-
-#endif(MSVC)
-##add_custom_target(nuke
-##  "${CMAKE_COMMAND}" -E "remove_directory" "${CMAKE_SOURCE_DIR}/bin" ";"
-##  "${CMAKE_COMMAND}" -E "remove_directory" "${CMAKE_SOURCE_DIR}/lib")
-
-#MESSAGE("\nDon't forget to set: " ${CMAKE_BINARY_DIR} " as your \${TEO_DIR} !!!\n")
-
 # uninstall target
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/TEOConfigUninstall.cmake.in"
