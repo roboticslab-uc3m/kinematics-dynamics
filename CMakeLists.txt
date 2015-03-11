@@ -27,8 +27,9 @@ option(ENABLE_testTeoYarp "Choose if you want to compile testTeoYarp" TRUE)
 option(ENABLE_TeoYarp_kdlsolver "Enable/disable compilation of TeoYarp_kdlsolver" TRUE)
 option(ENABLE_TeoYarp_ravepart "Enable/disable compilation of TeoYarp_ravepart" TRUE)
 
-##### tests options
+##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
+option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    
@@ -73,6 +74,12 @@ list(APPEND CMAKE_MODULE_PATH ${TEO_MODULE_PATH})
 set(TEO_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
 set(TEO_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
 set(TEO_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+
+if(ENABLE_coverage)
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
+  endif(CMAKE_COMPILER_IS_GNUCXX)
+endif(ENABLE_coverage)
 
 # add main contents
 add_subdirectory(share)
