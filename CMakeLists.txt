@@ -31,6 +31,32 @@ option(ENABLE_TeoYarp_ravepart "Enable/disable compilation of TeoYarp_ravepart" 
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
 
+# ColorDebug options
+option(ColorDebug_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
+if(ColorDebug_HIDE_ERROR)
+    add_definitions(-DCD_HIDE_ERROR)
+endif(ColorDebug_HIDE_ERROR)
+
+option(ColorDebug_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
+if(ColorDebug_HIDE_WARNING)
+    add_definitions(-DCD_HIDE_WARNING)
+endif(ColorDebug_HIDE_WARNING)
+
+option(ColorDebug_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
+if(ColorDebug_HIDE_SUCCESS)
+    add_definitions(-DCD_HIDE_SUCCESS)
+endif(ColorDebug_HIDE_SUCCESS)
+
+option(ColorDebug_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
+if(ColorDebug_HIDE_INFO)
+    add_definitions(-DCD_HIDE_INFO)
+endif(ColorDebug_HIDE_INFO)
+
+option(ColorDebug_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
+if(ColorDebug_HIDE_DEBUG)
+    add_definitions(-DCD_HIDE_DEBUG)
+endif(ColorDebug_HIDE_DEBUG)
+
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    
   set(CMAKE_DEBUG_POSTFIX "d")
