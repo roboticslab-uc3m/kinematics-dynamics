@@ -32,6 +32,11 @@ option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
 
 # ColorDebug options
+option(ColorDebug_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
+if(ColorDebug_FULL_FILE)
+    add_definitions(-DCD_FULL_FILE)
+endif(ColorDebug_FULL_FILE)
+
 option(ColorDebug_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
 if(ColorDebug_HIDE_ERROR)
     add_definitions(-DCD_HIDE_ERROR)
