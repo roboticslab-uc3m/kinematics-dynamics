@@ -37,9 +37,11 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
     }
 
     //-- robot arm device (remote) --
+    std::string local("/teoGravityCompensator");
+    local += remote;
     yarp::os::Property robotOptions;
     robotOptions.put("device","remote_controlboard");
-    robotOptions.put("local","/teoGravityCompensator");
+    robotOptions.put("local",local);
     robotOptions.put("remote",remote);
 
     robotDevice.open(robotOptions);
