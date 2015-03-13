@@ -48,7 +48,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
 
     if (!robotDevice.isValid()) {
         CD_ERROR("robotDevice instantiation not worked.\n");
-        // robotDeviceRA.close();  // un-needed?
+        // robotDevice.close();  // un-needed?
         return false;
     }
 
