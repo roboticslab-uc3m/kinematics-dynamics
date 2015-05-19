@@ -114,7 +114,8 @@ endif(ENABLE_coverage)
 
 # add main contents
 add_subdirectory(share)
-add_subdirectory(src)
+add_subdirectory(libraries)
+add_subdirectory(programs)
 if (ENABLE_tests)
     add_subdirectory(test)
 endif (ENABLE_tests)
