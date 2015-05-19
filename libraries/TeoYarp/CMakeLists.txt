@@ -3,23 +3,31 @@
 
 IF (ENABLE_TeoYarp)
 
-find_package(YARP REQUIRED)
-include_directories(${YARP_INCLUDE_DIRS})
-list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
-include(YarpPlugin)
-yarp_begin_plugin_library(TeoYarp)
-add_subdirectory(ravepart)
-add_subdirectory(kdlcontroller)
-add_subdirectory(kdlsolver)
-yarp_end_plugin_library(TeoYarp)
+  option(ENABLE_launchTeoYarp "Choose if you want to compile launchTeoYarp" TRUE)
 
-install(TARGETS TeoYarp DESTINATION lib)
+  find_package(YARP REQUIRED)
+  include_directories(${YARP_INCLUDE_DIRS})
+  list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+  include(YarpPlugin)
+
+  # Exporting dependencies for TEOConfig.cmake quite manually for now... 
+  set(TEO_BODY_LIBRARIES ${TEO_LIBRARIES} TeoYarp CACHE INTERNAL "appended libraries") 
+
+  yarp_begin_plugin_library(TeoYarp)
+    add_subdirectory(ravepart)
+    add_subdirectory(kdlcontroller)
+    add_subdirectory(kdlsolver)
+  yarp_end_plugin_library(TeoYarp)
+
+  install(TARGETS TeoYarp DESTINATION lib)
+
+  IF (ENABLE_launchTeoYarp)
+
+    yarp_add_plugin_library_executable(launchTeoYarp TeoYarp)
+    install(TARGETS launchTeoYarp DESTINATION bin)
+
+  ENDIF (ENABLE_launchTeoYarp)
 
 ENDIF (ENABLE_TeoYarp)
 
-IF (ENABLE_testTeoYarp)
-  yarp_add_plugin_library_executable(testTeoYarp TeoYarp)
-  target_link_libraries(testTeoYarp ${YARP_LIBRARIES})
-  install(TARGETS testTeoYarp DESTINATION bin)
-ENDIF (ENABLE_testTeoYarp)
 
