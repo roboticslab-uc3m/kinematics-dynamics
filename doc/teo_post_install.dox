@@ -31,7 +31,7 @@ Each layer of TEO programs has parameters that can be modified three different w
 
   \li Default parameters defined in the class header files (*.h or *.hpp extension). You must recompile the project if you change any of these parameters.
   \li Configuration files (*.ini or *.xml extension). These files are downloaded from teo-main/share and installed to teo-main/build/share/teo with the <i>cmake</i> command we issued. Within this folder, separate folders are maintained for programs and program layers.
-  \li Command line (on program execution). Parameters may be modified executing a program using the following format: <i>./program --parameter new_value</i>.
+  \li Command line (on program execution). Parameters may be modified executing a program using the following format: <i>./program \--parameter new_value</i>.
 
 Let's say, for example, our graphic card supports offscreen rendering and we want \ref teoSim to load an enviroment that has cameras in the simulated environment. We can execute the program touching the parameters at the command line level which, as we have said, are parsed last:
 
@@ -43,7 +43,7 @@ This specific environment contains simulated cameras that Figure 2. You can lear
 
 \image html ravebotCompare.png
 
-We can actually see the default parameters, and the final selected ones, with the <b>--help</b> parameter:
+We can actually see the default parameters, and the final selected ones, with the <b>\--help</b> parameter:
 
 \verbatim
 [terminal 2] teoSim --env teo_kitchen_cameras.env.xml --help
