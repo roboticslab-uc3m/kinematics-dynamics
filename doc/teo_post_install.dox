@@ -14,10 +14,10 @@ Our current implementation uses <a class="el" href="http://eris.liralab.it/yarpd
 
 @section post_install_launch_simulator Launching the simulator
 
-The simulator we use for TEO is versatile and multi-layered. You'll learn how to change parameters and implementations of entire layers throughout these tutorials. However, for commodity, we've boundled up a basic pack of robotic joint-space simulator + inverse kinematic solver + inverse kinematic controller with default parameters you can launch with a single command: 
+Launch with a single command: 
 
 \verbatim
-[terminal 2] cartesianServer
+[terminal 2] teoSim
 \endverbatim
 
 You should get a window similar to the one depicted on Figure 1.
