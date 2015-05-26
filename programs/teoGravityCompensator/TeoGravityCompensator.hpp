@@ -11,7 +11,7 @@
 
 #include "GravityRateThread.hpp"
 
-#define DEFAULT_SOLVER "kdlsolver"
+#define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_KINEMATICS "leftArmKinematics.ini"
 #define DEFAULT_REMOTE "/teo/leftArm"
 
