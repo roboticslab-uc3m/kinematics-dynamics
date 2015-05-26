@@ -14,7 +14,7 @@ IF (ENABLE_TeoYarp)
   set(TEO_BODY_LIBRARIES ${TEO_LIBRARIES} TeoYarp CACHE INTERNAL "appended libraries") 
 
   yarp_begin_plugin_library(TeoYarp)
-    add_subdirectory(RavePart)
+    add_subdirectory(FakeControlboard)
     add_subdirectory(KdlController)
     add_subdirectory(KdlSolver)
   yarp_end_plugin_library(TeoYarp)
