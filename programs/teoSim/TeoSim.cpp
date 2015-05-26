@@ -74,29 +74,29 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             manipulatorPortName += vectorOfManipulatorPtr[j]->GetName();
             CD_INFO( "* manipulatorPortName: %s\n",manipulatorPortName.c_str() );
             //-- Create the manipulator wrapper object
-            size_t index = vectorOfManipulatorWrapperPtr.size();
-            vectorOfManipulatorWrapperPtr.push_back( new ControlboardContainer() );  //! \todo Delete objects stored in vectorOfManipulatorWrapperPtr
+            size_t index = vectorOfControlboardContainerPtr.size();
+            vectorOfControlboardContainerPtr.push_back( new ControlboardContainer() );  //! \todo Delete objects stored in vectorOfManipulatorWrapperPtr
             //-- Give it its name
-            vectorOfManipulatorWrapperPtr[index]->setManipulatorWrapperName(manipulatorPortName);
+            vectorOfControlboardContainerPtr[index]->setManipulatorWrapperName(manipulatorPortName);
             //-- Give it its father's index
-            vectorOfManipulatorWrapperPtr[index]->setFatherRobotIdx(robotPtrIdx);
+            vectorOfControlboardContainerPtr[index]->setFatherRobotIdx(robotPtrIdx);
             //-- Check if there are overrides
             if(rf.check(manipulatorPortName)) {
                 Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();
                 Bottle manipulatorIDs = manipulatorDescription.findGroup("IDs").tail();
                 for(int i = 0; i<manipulatorIDs.size(); i++) {
-                    vectorOfManipulatorWrapperPtr[index]->push_back( manipulatorIDs.get(i).asInt() );
+                    vectorOfControlboardContainerPtr[index]->push_back( manipulatorIDs.get(i).asInt() );
                 }
                 CD_INFO( "* Using overriden IDs: %s.\n",manipulatorIDs.toString().c_str());
                 if (manipulatorDescription.check("TRs")){
                     Bottle manipulatorTRs = manipulatorDescription.findGroup("TRs").tail();
                     for(int i = 0; i<manipulatorTRs.size(); i++) {
-                        vectorOfManipulatorWrapperPtr[index]->push_back_tr( manipulatorTRs.get(i).asDouble() );
+                        vectorOfControlboardContainerPtr[index]->push_back_tr( manipulatorTRs.get(i).asDouble() );
                     }
                     CD_INFO( "* Using overriden TRs: %s.\n",manipulatorTRs.toString().c_str());
                 } else {
                     for(int i = 0; i<manipulatorIDs.size(); i++) {
-                        vectorOfManipulatorWrapperPtr[index]->push_back_tr( defautTr );
+                        vectorOfControlboardContainerPtr[index]->push_back_tr( defautTr );
                     }CD_INFO( "* Using default general TR: %f.\n", defautTr);
                 }
             } else { //-- Use existing IDs otherwise
@@ -104,13 +104,13 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 CD_INFO( "* Using xml IDs: ");
                 for(size_t i=0;i<manipulatorIDs.size();i++) {
                     printf(" %d", manipulatorIDs[i]);
-                    vectorOfManipulatorWrapperPtr[index]->push_back( (int)manipulatorIDs[i] );
-                    vectorOfManipulatorWrapperPtr[index]->push_back_tr ( defautTr );
+                    vectorOfControlboardContainerPtr[index]->push_back( (int)manipulatorIDs[i] );
+                    vectorOfControlboardContainerPtr[index]->push_back_tr ( defautTr );
                 }
                 printf(".\n");
                 CD_INFO( "* Using default general TR: %f.\n",defautTr);
             }
-            if(!vectorOfManipulatorWrapperPtr[index]->start()){
+            if(!vectorOfControlboardContainerPtr[index]->start()){
                 CD_ERROR("Could not start ManipulatorWrapper[%zu].\n",index);
                 return false;
             }
@@ -189,7 +189,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     teoSimRateThread.setRate(jmcMs);
     teoSimRateThread.setEnvironmentPtr(environmentPtr);
     teoSimRateThread.setPtrVectorOfRobotPtr(&vectorOfRobotPtr);
-    teoSimRateThread.setPtrVectorOfManipulatorWrapperPtr(&vectorOfManipulatorWrapperPtr);
+    teoSimRateThread.setPtrVectorOfControlboardContainerPtr(&vectorOfControlboardContainerPtr);
 
     teoSimRateThread.setPtrVectorOfSensorPtrForCameras(&vectorOfSensorPtrForCameras);
     teoSimRateThread.setPtrVectorOfCameraSensorDataPtr(&vectorOfCameraSensorDataPtr);
@@ -224,10 +224,10 @@ bool teo::TeoSim::close() {
     printf("[TeoSim] begin: close(). Ask thread to stop...\n");
     teoSimRateThread.askToStop();
     printf("[TeoSim] Done. Closing devices...\n");
-    for (size_t i=0;i<vectorOfManipulatorWrapperPtr.size();i++) {
-        vectorOfManipulatorWrapperPtr[i]->stop();
-        delete vectorOfManipulatorWrapperPtr[i];
-        vectorOfManipulatorWrapperPtr[i] = 0;
+    for (size_t i=0;i<vectorOfControlboardContainerPtr.size();i++) {
+        vectorOfControlboardContainerPtr[i]->stop();
+        delete vectorOfControlboardContainerPtr[i];
+        vectorOfControlboardContainerPtr[i] = 0;
     }
     //penv->StopSimulation();  // NEEDED??
     printf("[TeoSim] Devices closed. Closing environment...\n");
