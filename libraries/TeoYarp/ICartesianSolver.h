@@ -8,6 +8,11 @@
 namespace teo
 {
 
+/**
+ *
+ * @brief Abstract base for a cartesian solver.
+ *
+ */
 class ICartesianSolver
 {
     public:
