@@ -63,7 +63,7 @@ bool teo::ManipulatorWrapper::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
     Property options;
     options.put("device","controlboardwrapper2");  //
-    options.put("subdevice","ravepart");  // ravepart provides more interfaces than test_motor
+    options.put("subdevice","FakeControlboard");  // FakeControlboard provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
     dd.open(options);
