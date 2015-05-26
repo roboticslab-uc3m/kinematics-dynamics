@@ -31,8 +31,6 @@
 #define DEFAULT_JMC_MS 20  // [ms]
 #define DEFAULT_JMC_MS_ACC 1  // multiplier
 #define DEFAULT_MODE_POS_VEL 0  // 0=Position, 1=Velocity.
-#define DEFAULT_PHYSICS "none"
-#define DEFAULT_VIEWER 1
 
 using namespace std;
 
@@ -56,9 +54,10 @@ namespace teo
 
 /**
  * @ingroup RavePart
- * @brief The RavePart class implements the YARP_dev IPositionControl, IVelocityControl, IEncoders, etc.
+ * @brief The RavePart class implements the YARP_dev IPositionControl, IVelocityControl, IEncodersTimed, etc.
  * interface class member functions.
  */
+// Note: IEncodersTimed inherits from IEncoders
 class RavePart : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncodersTimed,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
