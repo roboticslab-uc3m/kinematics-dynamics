@@ -5,7 +5,7 @@
  *
  * \defgroup teoSim teoSim
  *
- * @brief Basic TEO simulation, creates an instance of the \ref TeoSim class.
+ * @brief Basic TEO simulation, creates an instance of the teo::TeoSim class.
  *
  * @section teoSim_legal Legal
  *
@@ -35,7 +35,7 @@
  *
  * You should get a window similar to the one depicted on Figure 1.
 
-\image html teoSim-300px.png
+\image html teoSim.png
 <center>Fig. 1 - An instance of the \ref teoSim module.</center>
 
  * @section teoSim_interfacing Interfacing with the teoSim module

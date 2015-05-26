@@ -29,6 +29,10 @@ using namespace OpenRAVE;
 namespace teo
 {
 
+/**
+ * @ingroup teoSim
+ * @brief Helper class, contains a controlboard that should correspond to a given manipulator.
+ */
 class ControlboardContainer {
 
     public:

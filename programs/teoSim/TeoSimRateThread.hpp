@@ -34,10 +34,8 @@ namespace teo
 {
 
 /**
- *
- * @ingroup TeoSimRateThread
- * The TeoSim class creates an instance of OpenRAVE-core (qtcoin viewer included) and implements...
- *
+ * @ingroup teoSim
+ * @brief Helper class, implements the yarp::os::RateThread.
  */
 class TeoSimRateThread : public RateThread {
      public:
