@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/testColorDebug.dir/testColorDebug.cpp.o  -o testColorDebug -rdynamic 
