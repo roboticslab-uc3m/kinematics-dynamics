@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __MANIPULATOR_WRAPPER_HPP__
-#define __MANIPULATOR_WRAPPER_HPP__
+#ifndef __CONTROLBOARD_CONTAINER_HPP__
+#define __CONTROLBOARD_CONTAINER_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/os/Semaphore.h>
@@ -58,5 +58,5 @@ protected:
 
 }  // namsepace teo
 
-#endif  // __MANIPULATOR_WRAPPER_HPP__
+#endif  // __CONTROLBOARD_CONTAINER_HPP__
 
