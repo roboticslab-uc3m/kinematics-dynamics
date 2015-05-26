@@ -128,8 +128,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
             return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
         }
 
-    private:
-
         KDL::RotationalInterpolation_SingleAxis* _orient;
         double _eqradius;
         bool _aggregate;
