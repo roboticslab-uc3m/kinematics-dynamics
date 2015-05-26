@@ -130,22 +130,14 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
     private:
 
-        bool withOri;
-
-        KDL::Trajectory_Segment* currentTrajectory;
         KDL::RotationalInterpolation_SingleAxis* _orient;
         double _eqradius;
         bool _aggregate;
 
         yarp::sig::Vector isPrismatic;
-        KDL::Frame targetF;
         yarp::sig::Vector targetO;
 
-        double startTime;
-
         std::string angleRepr;
-        double epsilon, duration, maxVel, maxAcc, cmcMs;
-
 };
 
 }  // namespace teo
