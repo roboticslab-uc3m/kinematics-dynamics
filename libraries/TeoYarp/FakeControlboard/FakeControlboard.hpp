@@ -46,9 +46,9 @@ namespace teo
  *
  * @brief Contains teo::FakeControlboard.
  *
- * @section ravepart_install Installation
+ * @section FakeControlboard_install Installation
  *
- * The plugin is compiled when ENABLE_TeoYarp_ravepart is activated (not default). For further
+ * The plugin is compiled when ENABLE_TeoYarp_FakeControlboard is activated (not default). For further
  * installation steps refer to <a class="el" href="pages.html">your own system installation guidelines</a>.
  */
 

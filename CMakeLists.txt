@@ -24,7 +24,7 @@ option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 ### options: force default
 #-- kdlcontroller OFF for now
 option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
-option(ENABLE_TeoYarp_ravepart "Enable/disable compilation of TeoYarp_ravepart" TRUE)
+option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
