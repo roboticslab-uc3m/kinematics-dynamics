@@ -53,8 +53,7 @@ namespace teo
 
 /**
  * @ingroup KdlSolver
- * @brief The KdlSolver class exposes a YARP_dev cartesian interface (implements
- * <a href="http://eris.liralab.it/yarpdoc/classyarp_1_1dev_1_1ICartesianControl.html">ICartesianControl</a>).
+ * @brief The KdlSolver class implements ICartesianSolver.
  */
 
 class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
