@@ -39,8 +39,6 @@
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
 
-//using namespace yarp::math;
-
 namespace teo
 {
 
