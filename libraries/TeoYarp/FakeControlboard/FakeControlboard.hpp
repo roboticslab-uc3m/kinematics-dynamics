@@ -54,7 +54,7 @@ namespace teo
 
 /**
  * @ingroup FakeControlboard
- * @brief The FakeControlboard class implements the YARP_dev IPositionControl, IVelocityControl, IEncodersTimed, etc.
+ * @brief Implements the YARP_dev IPositionControl, IVelocityControl, IEncodersTimed, etc.
  * interface class member functions.
  */
 // Note: IEncodersTimed inherits from IEncoders
