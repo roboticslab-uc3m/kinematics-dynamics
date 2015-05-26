@@ -1,1 +1,0 @@
-/home/teo/git/ColorDebug/example/build/CMakeFiles/testColorDebug.dir
