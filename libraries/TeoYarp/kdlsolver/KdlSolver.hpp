@@ -29,7 +29,7 @@
 #include <stdlib.h> // for exit()
 
 #include "ColorDebug.hpp"
-#include "../ICartesianSolver.h"
+#include "ICartesianSolver.h"
 
 #define DEFAULT_ANGLE_REPR "RPY"  // string
 #define DEFAULT_NUM_LINKS 1  // int
