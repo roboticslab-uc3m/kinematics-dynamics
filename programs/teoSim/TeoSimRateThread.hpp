@@ -47,7 +47,7 @@ class TeoSimRateThread : public RateThread {
             this->environmentPtr = environmentPtr;
         }
 
-        void setPtrVectorOfManipulatorWrapperPtr(vector< ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr) {
+        void setPtrVectorOfControlboardContainerPtr(vector< ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr) {
             this->ptrVectorOfManipulatorWrapperPtr = ptrVectorOfManipulatorWrapperPtr;
         }
 
