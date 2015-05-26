@@ -6,18 +6,26 @@ namespace teo {}
 
 /**
  * \defgroup teo_applications TEO Applications
+ *
  * @brief TEO applications (collections of programs).
  */
 
 /**
  * \defgroup teo_libraries TEO Libraries
+ *
  * @brief TEO libraries.
  */
 
 /**
  * @ingroup teo_libraries
- * \defgroup teo_yarp TEO Yarp Plugins
- * @brief TEO Yarp Plugins.
+ * \defgroup TeoYarp
+ *
+ * @brief Contains TEO libraries that implement YARP device interfaces
+ * and therefore can be invoked as YARP plugins.
+ *
+ * @section BodyYarp_install Installation
+ *
+ * Compiled when ENABLE_TeoYarp is activated.
  */
 
 /**

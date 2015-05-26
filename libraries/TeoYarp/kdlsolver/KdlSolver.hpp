@@ -45,15 +45,10 @@ namespace teo
 {
 
 /**
- * @ingroup teo_yarp
+ * @ingroup TeoYarp
  * \defgroup KdlSolver
  *
- * @brief Library composed by a single class, KdlSolver.
- *
- * @section kdlsolver_install Installation
- *
- * The plugin is compiled when ENABLE_TeoYarp_cartesianbot is activated (not default). For further
- * installation steps refer to <a class="el" href="pages.html">your own system installation guidelines</a>.
+ * @brief Contains teo::KdlSolver.
  */
 
 /**
