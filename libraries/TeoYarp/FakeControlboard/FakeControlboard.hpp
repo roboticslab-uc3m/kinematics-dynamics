@@ -42,9 +42,9 @@ namespace teo
 
 /**
  * @ingroup TeoYarp
- * \defgroup RavePart
+ * \defgroup FakeControlboard
  *
- * @brief Contains teo::RavePart.
+ * @brief Contains teo::FakeControlboard.
  *
  * @section ravepart_install Installation
  *
@@ -53,17 +53,17 @@ namespace teo
  */
 
 /**
- * @ingroup RavePart
- * @brief The RavePart class implements the YARP_dev IPositionControl, IVelocityControl, IEncodersTimed, etc.
+ * @ingroup FakeControlboard
+ * @brief The FakeControlboard class implements the YARP_dev IPositionControl, IVelocityControl, IEncodersTimed, etc.
  * interface class member functions.
  */
 // Note: IEncodersTimed inherits from IEncoders
-class RavePart : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncodersTimed,
+class FakeControlboard : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncodersTimed,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
         // Set the Thread Rate in the class constructor
-        RavePart() : RateThread(DEFAULT_JMC_MS) {}  // In ms
+        FakeControlboard() : RateThread(DEFAULT_JMC_MS) {}  // In ms
 
     // ------- IPositionControl declarations. Implementation in IPositionImpl.cpp -------
 

@@ -4,56 +4,56 @@
 
 // ------------------- IControlLimits Related ------------------------------------
 
-bool teo::RavePart::setPositionMode(int j) {
+bool teo::FakeControlboard::setPositionMode(int j) {
     CD_INFO("(%d)\n",j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setVelocityMode(int j) {
+bool teo::FakeControlboard::setVelocityMode(int j) {
     CD_INFO("(%d)\n",j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setTorqueMode(int j)  {
+bool teo::FakeControlboard::setTorqueMode(int j)  {
     CD_INFO("(%d)\n",j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setImpedancePositionMode(int j) {
+bool teo::FakeControlboard::setImpedancePositionMode(int j) {
     CD_INFO("(%d)\n",j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setImpedanceVelocityMode(int j) {
+bool teo::FakeControlboard::setImpedanceVelocityMode(int j) {
     CD_INFO("(%d)\n",j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setOpenLoopMode(int j) {
+bool teo::FakeControlboard::setOpenLoopMode(int j) {
     CD_INFO("(%d)\n",j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getControlMode(int j, int *mode) {
+bool teo::FakeControlboard::getControlMode(int j, int *mode) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
 
-bool teo::RavePart::getControlModes(int *modes) {
+bool teo::FakeControlboard::getControlModes(int *modes) {
     return true;
 }
 
