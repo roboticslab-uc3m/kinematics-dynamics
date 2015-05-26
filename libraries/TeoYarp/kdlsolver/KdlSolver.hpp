@@ -72,6 +72,8 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
         /** Perform inverse dynamics. */
         virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
+
+        /** Perform inverse dynamics. */
         virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
