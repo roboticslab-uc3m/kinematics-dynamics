@@ -4,7 +4,7 @@
 
 // ----------------------------------------------------------------------------
 
-void teo::RavePart::setEncRaw(const int Index, const double Position) {
+void teo::FakeControlboard::setEncRaw(const int Index, const double Position) {
     // printf("[SharedArea] setEncRaw.\n");
     encRawMutex.wait();
     encRaw[Index] = Position;
@@ -13,7 +13,7 @@ void teo::RavePart::setEncRaw(const int Index, const double Position) {
 
 // ----------------------------------------------------------------------------
 
-double teo::RavePart::getEncRaw(const int Index) {
+double teo::FakeControlboard::getEncRaw(const int Index) {
     // printf("[SharedArea] getEncRaw.\n");
     double Position;
     encRawMutex.wait();
@@ -24,7 +24,7 @@ double teo::RavePart::getEncRaw(const int Index) {
 
 // ----------------------------------------------------------------------------
 
-double teo::RavePart::getEncExposed(const int Index) {
+double teo::FakeControlboard::getEncExposed(const int Index) {
     double RawPosition;
     encRawMutex.wait();
     RawPosition = encRaw[Index];

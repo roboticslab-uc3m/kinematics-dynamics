@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::RavePart::open(Searchable& config) {
+bool teo::FakeControlboard::open(Searchable& config) {
 
     axes = config.check("axes",DEFAULT_AXES,"number of axes to control").asInt();
     double genInitPos = config.check("genInitPos",DEFAULT_GEN_INIT_POS,"general initialization positions").asDouble();
@@ -19,65 +19,65 @@ bool teo::RavePart::open(Searchable& config) {
     Bottle* initPoss;
     if (config.check("initPoss")) {
         initPoss = config.find("initPoss").asList();
-        printf("RavePart using individual initPoss: %s\n",initPoss->toString().c_str());
+        printf("FakeControlboard using individual initPoss: %s\n",initPoss->toString().c_str());
         if(initPoss->size() != axes) printf("[warning] initPoss->size() != axes\n");
     } else {
         initPoss = 0;
-        printf("RavePart not using individual initPoss, defaulting to genInitPos.\n");
+        printf("FakeControlboard not using individual initPoss, defaulting to genInitPos.\n");
     }
     Bottle* jointTols;
     if (config.check("jointTols")) {
         jointTols = config.find("jointTols").asList();
-        printf("RavePart using individual jointTols: %s\n",jointTols->toString().c_str());
+        printf("FakeControlboard using individual jointTols: %s\n",jointTols->toString().c_str());
         if(jointTols->size() != axes) printf("[warning] jointTols->size() != axes\n");
     } else {
         jointTols = 0;
-        printf("RavePart not using individual jointTols, defaulting to genJointTol.\n");
+        printf("FakeControlboard not using individual jointTols, defaulting to genJointTol.\n");
     }
     Bottle* maxLimits;
     if (config.check("maxLimits")) {
         maxLimits = config.find("maxLimits").asList();
-        printf("RavePart using individual maxLimits: %s\n",maxLimits->toString().c_str());
+        printf("FakeControlboard using individual maxLimits: %s\n",maxLimits->toString().c_str());
         if(maxLimits->size() != axes) printf("[warning] maxLimits->size() != axes\n");
     } else {
         maxLimits = 0;
-        printf("RavePart not using individual maxLimits, defaulting to genMaxLimit.\n");
+        printf("FakeControlboard not using individual maxLimits, defaulting to genMaxLimit.\n");
     }
     Bottle* minLimits;
     if (config.check("minLimits")) {
         minLimits = config.find("minLimits").asList();
-        printf("RavePart using individual minLimits: %s\n",minLimits->toString().c_str());
+        printf("FakeControlboard using individual minLimits: %s\n",minLimits->toString().c_str());
         if(minLimits->size() != axes) printf("[warning] minLimits->size() != axes\n");
     } else {
         minLimits = 0;
-        printf("RavePart not using individual minLimits, defaulting to genMinLimit.\n");
+        printf("FakeControlboard not using individual minLimits, defaulting to genMinLimit.\n");
     }
     Bottle* refSpeeds;
     if (config.check("refSpeeds")) {
         refSpeeds = config.find("refSpeeds").asList();
-        printf("RavePart using individual refSpeeds: %s\n",refSpeeds->toString().c_str());
+        printf("FakeControlboard using individual refSpeeds: %s\n",refSpeeds->toString().c_str());
         if(refSpeeds->size() != axes) printf("[warning] refSpeeds->size() != axes\n");
     } else {
         refSpeeds = 0;
-        printf("RavePart not using individual refSpeeds, defaulting to genRefSpeed.\n");
+        printf("FakeControlboard not using individual refSpeeds, defaulting to genRefSpeed.\n");
     }
     Bottle* encRawExposeds;
     if (config.check("encRawExposeds")) {
         encRawExposeds = config.find("encRawExposeds").asList();
-        printf("RavePart using individual encRawExposeds: %s\n",encRawExposeds->toString().c_str());
+        printf("FakeControlboard using individual encRawExposeds: %s\n",encRawExposeds->toString().c_str());
         if(encRawExposeds->size() != axes) printf("[warning] encRawExposeds->size() != axes\n");
     } else {
         encRawExposeds = 0;
-        printf("RavePart not using individual encRawExposeds, defaulting to genEncRawExposed.\n");
+        printf("FakeControlboard not using individual encRawExposeds, defaulting to genEncRawExposed.\n");
     }
     Bottle* velRawExposeds;
     if (config.check("velRawExposeds")) {
         velRawExposeds = config.find("velRawExposeds").asList();
-        printf("RavePart using individual velRawExposeds: %s\n",velRawExposeds->toString().c_str());
+        printf("FakeControlboard using individual velRawExposeds: %s\n",velRawExposeds->toString().c_str());
         if(velRawExposeds->size() != axes) printf("[warning] velRawExposeds->size() != axes\n");
     } else {
         velRawExposeds = 0;
-        printf("RavePart not using individual velRawExposeds, defaulting to genVelRawExposed.\n");
+        printf("FakeControlboard not using individual velRawExposeds, defaulting to genVelRawExposed.\n");
     }
 
     encRawExposed.resize(axes);
@@ -123,8 +123,8 @@ bool teo::RavePart::open(Searchable& config) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::close() {
-    printf("[RavePart] close()\n");
+bool teo::FakeControlboard::close() {
+    printf("[FakeControlboard] close()\n");
     return true;
 }
 

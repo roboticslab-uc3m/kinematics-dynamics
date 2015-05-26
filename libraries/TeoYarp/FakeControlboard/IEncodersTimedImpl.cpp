@@ -4,7 +4,7 @@
 
 // ------------------ IEncodersTimed Related -----------------------------------------
 
-bool teo::RavePart::getEncodersTimed(double *encs, double *time) {
+bool teo::FakeControlboard::getEncodersTimed(double *encs, double *time) {
     //CD_INFO("\n");  //-- Way too verbose
 
     bool ok = true;
@@ -15,7 +15,7 @@ bool teo::RavePart::getEncodersTimed(double *encs, double *time) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoderTimed(int j, double *encs, double *time) {
+bool teo::FakeControlboard::getEncoderTimed(int j, double *encs, double *time) {
     //CD_INFO("(%d)\n",j);  //-- Way too verbose
 
     getEncoder(j, encs);

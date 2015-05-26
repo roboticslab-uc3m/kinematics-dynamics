@@ -4,7 +4,7 @@
 
 // ------------------ IVelocity Related ----------------------------------------
 
-bool teo::RavePart::setVelocityMode() {
+bool teo::FakeControlboard::setVelocityMode() {
     CD_INFO("\n");
     if (modePosVel==1) return true;  // Simply return true if we were already in vel mode.
     // Do anything additional before setting flag to vel...
@@ -14,10 +14,10 @@ bool teo::RavePart::setVelocityMode() {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::velocityMove(int j, double sp) {  // velExposed = sp;
+bool teo::FakeControlboard::velocityMove(int j, double sp) {  // velExposed = sp;
     if ((unsigned int)j>axes) return false;
     if(modePosVel!=1) {  // Check if we are in velocity mode.
-        fprintf(stderr,"[RavePart] fail: RavePart will not velocityMove as not in velocityMode\n");
+        fprintf(stderr,"[FakeControlboard] fail: FakeControlboard will not velocityMove as not in velocityMode\n");
         return false;
     }
     velRaw[j] = (sp * velRawExposed[j]);
@@ -27,8 +27,8 @@ bool teo::RavePart::velocityMove(int j, double sp) {  // velExposed = sp;
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::velocityMove(const double *sp) {
-    printf("[RavePart] Vel:");
+bool teo::FakeControlboard::velocityMove(const double *sp) {
+    printf("[FakeControlboard] Vel:");
     for (unsigned int i=0; i<axes; i++) printf(" %+.6f",velRaw[i]);
     printf("\n");
     bool ok = true;

@@ -4,14 +4,14 @@
 
 // ------------------ IEncoders Related -----------------------------------------
 
-bool teo::RavePart::resetEncoder(int j) {
+bool teo::FakeControlboard::resetEncoder(int j) {
     if ((unsigned int)j>axes) return false;
     return setEncoder(j,0.0);
   }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::resetEncoders() {
+bool teo::FakeControlboard::resetEncoders() {
     bool ok = true;
     for(unsigned int i=0;i<axes;i++)
         ok &= resetEncoder(i);
@@ -20,14 +20,14 @@ bool teo::RavePart::resetEncoders() {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setEncoder(int j, double val) {  // encExposed = val;
+bool teo::FakeControlboard::setEncoder(int j, double val) {  // encExposed = val;
     setEncRaw(j, val * encRawExposed[j]);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setEncoders(const double *vals) {
+bool teo::FakeControlboard::setEncoders(const double *vals) {
     bool ok = true;
     for(unsigned int i=0;i<axes;i++)
         ok &= setEncoder(i,vals[i]);
@@ -36,14 +36,14 @@ bool teo::RavePart::setEncoders(const double *vals) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoder(int j, double *v) {
+bool teo::FakeControlboard::getEncoder(int j, double *v) {
     *v = getEncExposed(j);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoders(double *encs) {
+bool teo::FakeControlboard::getEncoders(double *encs) {
     bool ok = true;
     for(unsigned int i=0;i<axes;i++)
         ok &= getEncoder(i,&encs[i]);
@@ -52,7 +52,7 @@ bool teo::RavePart::getEncoders(double *encs) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoderSpeed(int j, double *sp) {
+bool teo::FakeControlboard::getEncoderSpeed(int j, double *sp) {
     // Make it easy, give the current reference speed.
     *sp = velRaw[j] / velRawExposed[j];  // begins to look like we should use semaphores.
     return true;
@@ -60,7 +60,7 @@ bool teo::RavePart::getEncoderSpeed(int j, double *sp) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoderSpeeds(double *spds) {
+bool teo::FakeControlboard::getEncoderSpeeds(double *spds) {
     bool ok = true;
     for(unsigned int i=0;i<axes;i++)
         ok &= getEncoderSpeed(i,&spds[i]);
@@ -69,13 +69,13 @@ bool teo::RavePart::getEncoderSpeeds(double *spds) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoderAcceleration(int j, double *spds) {
+bool teo::FakeControlboard::getEncoderAcceleration(int j, double *spds) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getEncoderAccelerations(double *accs) {
+bool teo::FakeControlboard::getEncoderAccelerations(double *accs) {
     return false;
 }
 

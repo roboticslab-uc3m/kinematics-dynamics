@@ -5,58 +5,58 @@
 // ------------------- IForceControl Related ------------------------------------
 
 
-bool teo::RavePart::setTorqueMode() {
+bool teo::FakeControlboard::setTorqueMode() {
     CD_INFO("setTorqueMode()\n");
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getRefTorques(double *t){
+bool teo::FakeControlboard::getRefTorques(double *t){
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getRefTorque(int j, double *t) {
+bool teo::FakeControlboard::getRefTorque(int j, double *t) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setRefTorques(const double *t) {
+bool teo::FakeControlboard::setRefTorques(const double *t) {
     return true;
 }
 
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setRefTorque(int j, double t) {
+bool teo::FakeControlboard::setRefTorque(int j, double t) {
     CD_INFO("joint: %d, refTorque: %f.\n",j,t);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getBemfParam(int j, double *bemf) {
+bool teo::FakeControlboard::getBemfParam(int j, double *bemf) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setBemfParam(int j, double bemf) {
+bool teo::FakeControlboard::setBemfParam(int j, double bemf) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setTorquePid(int j, const Pid &pid) {
+bool teo::FakeControlboard::setTorquePid(int j, const Pid &pid) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorque(int j, double *t) {
+bool teo::FakeControlboard::getTorque(int j, double *t) {
     //CD_INFO("joint: %d.\n",j);  //-- Way too verbose
     *t = 0;
     return true;
@@ -64,109 +64,109 @@ bool teo::RavePart::getTorque(int j, double *t) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorques(double *t) {
+bool teo::FakeControlboard::getTorques(double *t) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorqueRange(int j, double *min, double *max) {
+bool teo::FakeControlboard::getTorqueRange(int j, double *min, double *max) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorqueRanges(double *min, double *max) {
+bool teo::FakeControlboard::getTorqueRanges(double *min, double *max) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setTorquePids(const Pid *pids) {
+bool teo::FakeControlboard::setTorquePids(const Pid *pids) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setTorqueErrorLimit(int j, double limit) {
+bool teo::FakeControlboard::setTorqueErrorLimit(int j, double limit) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setTorqueErrorLimits(const double *limits) {
+bool teo::FakeControlboard::setTorqueErrorLimits(const double *limits) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorqueError(int j, double *err) {
+bool teo::FakeControlboard::getTorqueError(int j, double *err) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorqueErrors(double *errs) {
+bool teo::FakeControlboard::getTorqueErrors(double *errs) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorquePidOutput(int j, double *out) {
+bool teo::FakeControlboard::getTorquePidOutput(int j, double *out) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorquePidOutputs(double *outs) {
+bool teo::FakeControlboard::getTorquePidOutputs(double *outs) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorquePid(int j, Pid *pid) {
+bool teo::FakeControlboard::getTorquePid(int j, Pid *pid) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorquePids(Pid *pids){
+bool teo::FakeControlboard::getTorquePids(Pid *pids){
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorqueErrorLimit(int j, double *limit) {
+bool teo::FakeControlboard::getTorqueErrorLimit(int j, double *limit) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::getTorqueErrorLimits(double *limits) {
+bool teo::FakeControlboard::getTorqueErrorLimits(double *limits) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::resetTorquePid(int j) {
+bool teo::FakeControlboard::resetTorquePid(int j) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::disableTorquePid(int j) {
+bool teo::FakeControlboard::disableTorquePid(int j) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::enableTorquePid(int j) {
+bool teo::FakeControlboard::enableTorquePid(int j) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::RavePart::setTorqueOffset(int j, double v) {
+bool teo::FakeControlboard::setTorqueOffset(int j, double v) {
     return true;
 }
 
