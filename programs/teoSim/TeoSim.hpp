@@ -112,7 +112,7 @@ class TeoSim : public RFModule {
         TeoSimRateThread teoSimRateThread;
 
         /** Vector to store pointers to ManipulatorWrapper objects */
-        std::vector < ManipulatorWrapper* > vectorOfManipulatorWrapperPtr;
+        std::vector < ControlboardContainer* > vectorOfManipulatorWrapperPtr;
 };
 
 }  // namespace teo
