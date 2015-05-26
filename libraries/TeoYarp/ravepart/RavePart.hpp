@@ -43,10 +43,10 @@ namespace teo
 {
 
 /**
- * @ingroup teo_yarp
+ * @ingroup TeoYarp
  * \defgroup RavePart
  *
- * @brief \ref Library composed by a single class, RavePart.
+ * @brief Contains teo::RavePart.
  *
  * @section ravepart_install Installation
  *
