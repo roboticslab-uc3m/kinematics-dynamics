@@ -34,7 +34,7 @@
  * <b>Modify</b>
  *
  * This file can be edited at 
- * teo-main/src/modules/teoGravityCompensator/main.cpp
+ * programs/teoGravityCompensator/main.cpp
  *
  */
 

@@ -45,12 +45,12 @@
 [on terminal 3] yarp rpc /teoSim/rightArm/rpc:i
 \endverbatim
  *
- * Note 1: Change 'teoSim' for 'sim' for the real robot!
+ * Note 1: Change '/teoSim' to '/teo' for the real robot!
  *
  * @section teoSim_modify Modify
  *
  * This file can be edited at 
- * src/modules/teoSim/main.cpp
+ * programs/teoSim/main.cpp
  *
  */
 
