@@ -1,7 +1,7 @@
 # Copyright: (C) 2013 Universidad Carlos III de Madrid
 # Author: Juan G. Victores
 
-YARP_PREPARE_DEVICE(ravepart TYPE teo::RavePart INCLUDE RavePart.hpp WRAPPER controlboard)
+YARP_PREPARE_DEVICE(ravepart TYPE teo::RavePart INCLUDE FakeControlboard.hpp WRAPPER controlboard)
 
 IF (NOT SKIP_ravepart)
 
@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS})  # kdl name
 
 LINK_DIRECTORIES(${TEO_LINK_DIRS})
 
-YARP_ADD_PLUGIN(ravepart RavePart.hpp DeviceDriverImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncodersImpl.cpp IEncodersTimedImpl.cpp IPositionImpl.cpp IVelocityImpl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
+YARP_ADD_PLUGIN(ravepart FakeControlboard.hpp DeviceDriverImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncodersImpl.cpp IEncodersTimedImpl.cpp IPositionImpl.cpp IVelocityImpl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
 TARGET_LINK_LIBRARIES(ravepart ${YARP_LIBRARIES})
 
 install(TARGETS ravepart DESTINATION lib)
