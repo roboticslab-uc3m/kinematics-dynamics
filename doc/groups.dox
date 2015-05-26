@@ -6,7 +6,7 @@ namespace teo {}
 
 /**
  * \defgroup teo_applications TEO Applications
- * @brief TEO applications (collections of modules).
+ * @brief TEO applications (collections of programs).
  */
 
 /**
