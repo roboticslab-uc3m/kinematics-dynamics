@@ -75,7 +75,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             CD_INFO( "* manipulatorPortName: %s\n",manipulatorPortName.c_str() );
             //-- Create the manipulator wrapper object
             size_t index = vectorOfManipulatorWrapperPtr.size();
-            vectorOfManipulatorWrapperPtr.push_back( new ManipulatorWrapper() );  //! \todo Delete objects stored in vectorOfManipulatorWrapperPtr
+            vectorOfManipulatorWrapperPtr.push_back( new ControlboardContainer() );  //! \todo Delete objects stored in vectorOfManipulatorWrapperPtr
             //-- Give it its name
             vectorOfManipulatorWrapperPtr[index]->setManipulatorWrapperName(manipulatorPortName);
             //-- Give it its father's index

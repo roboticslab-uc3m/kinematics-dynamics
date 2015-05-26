@@ -29,7 +29,7 @@ using namespace OpenRAVE;
 namespace teo
 {
 
-class ManipulatorWrapper {
+class ControlboardContainer {
 
     public:
 

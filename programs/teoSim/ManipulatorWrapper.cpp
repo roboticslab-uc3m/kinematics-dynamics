@@ -4,25 +4,25 @@
 
 // -----------------------------------------------------------------------------
 
-const int teo::ManipulatorWrapper::getFatherRobotIdx() {
+const int teo::ControlboardContainer::getFatherRobotIdx() {
     return fatherRobotIdx;
 }
 
 // -----------------------------------------------------------------------------
 
- std::vector<int>& teo::ManipulatorWrapper::getVectorOfJointIdxRef() {
+ std::vector<int>& teo::ControlboardContainer::getVectorOfJointIdxRef() {
     return vectorOfJointIdx;
 }
 
  // -----------------------------------------------------------------------------
 
-  std::vector<double>& teo::ManipulatorWrapper::getVectorOfJointTrRef() {
+  std::vector<double>& teo::ControlboardContainer::getVectorOfJointTrRef() {
      return vectorOfJointTr;
  }
 
 // -----------------------------------------------------------------------------
 
-std::vector<double>& teo::ManipulatorWrapper::getVectorOfJointPosRef() {
+std::vector<double>& teo::ControlboardContainer::getVectorOfJointPosRef() {
     if(encs) {
         double vals[vectorOfJointIdx.size()];
         encs->getEncoders(vals);
@@ -35,31 +35,31 @@ std::vector<double>& teo::ManipulatorWrapper::getVectorOfJointPosRef() {
 }
 // -----------------------------------------------------------------------------
 
-void teo::ManipulatorWrapper::setFatherRobotIdx(int value) {
+void teo::ControlboardContainer::setFatherRobotIdx(int value) {
     fatherRobotIdx = value;
 }
 
 // -----------------------------------------------------------------------------
 
-void teo::ManipulatorWrapper::setManipulatorWrapperName(const std::string &value) {
+void teo::ControlboardContainer::setManipulatorWrapperName(const std::string &value) {
     manipulatorWrapperName = value;
 }
 
 // -----------------------------------------------------------------------------
 
-void teo::ManipulatorWrapper::push_back(int robotJointIdx) {
+void teo::ControlboardContainer::push_back(int robotJointIdx) {
     vectorOfJointIdx.push_back( robotJointIdx );
 }
 
 // -----------------------------------------------------------------------------
 
-void teo::ManipulatorWrapper::push_back_tr(double robotJointTr) {
+void teo::ControlboardContainer::push_back_tr(double robotJointTr) {
     vectorOfJointTr.push_back( robotJointTr );
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::ManipulatorWrapper::start() {
+bool teo::ControlboardContainer::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
     Property options;
     options.put("device","controlboardwrapper2");  //
@@ -79,7 +79,7 @@ bool teo::ManipulatorWrapper::start() {
 
 // -----------------------------------------------------------------------------
 
-bool teo::ManipulatorWrapper::stop() {
+bool teo::ControlboardContainer::stop() {
     dd.close();
     return true;
 }

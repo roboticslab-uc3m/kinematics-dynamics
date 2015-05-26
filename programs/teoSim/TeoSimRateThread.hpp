@@ -49,7 +49,7 @@ class TeoSimRateThread : public RateThread {
             this->environmentPtr = environmentPtr;
         }
 
-        void setPtrVectorOfManipulatorWrapperPtr(vector< ManipulatorWrapper* > * ptrVectorOfManipulatorWrapperPtr) {
+        void setPtrVectorOfManipulatorWrapperPtr(vector< ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr) {
             this->ptrVectorOfManipulatorWrapperPtr = ptrVectorOfManipulatorWrapperPtr;
         }
 
@@ -129,7 +129,7 @@ class TeoSimRateThread : public RateThread {
         std::vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr;
         //
         /** Vector to store pointers to ManipulatorWrapper objects */
-        std::vector < ManipulatorWrapper* > * ptrVectorOfManipulatorWrapperPtr;
+        std::vector < ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr;
 };
 
 }  // namespace teo
