@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __RAVE_PART_HPP__
-#define __RAVE_PART_HPP__
+#ifndef __FAKE_CONTROLBOARD_HPP__
+#define __FAKE_CONTROLBOARD_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/os/Semaphore.h>
@@ -650,5 +650,4 @@ class FakeControlboard : public DeviceDriver, public IPositionControl, public IV
 
 }  // namespace teo
 
-#endif
-
+#endif  // __FAKE_CONTROLBOARD_HPP__
