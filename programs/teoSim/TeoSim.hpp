@@ -17,7 +17,7 @@
 #include <sstream>
 
 #include "ColorDebug.hpp"
-#include "ManipulatorWrapper.hpp"
+#include "ControlboardContainer.hpp"
 #include "TeoSimRateThread.hpp"
 
 #define DEFAULT_ENV "../openrave/teo/teo.robot.xml"
