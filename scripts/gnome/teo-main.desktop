@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=teo-main yarpmanager
+Type=Application
+MimeType=application/vnd.ms-htmlhelp;
+Exec=yarpmanager
+NoDisplay=true
+StartupNotify=true
+Icon=A35F_hh.0
+Path=/home/teo/teo-main/share
