@@ -1,0 +1,8 @@
+<application>
+<name>launchTeoSim App</name>
+        <module>
+                <name>teoSim</name>
+        </module>
+
+</application>
+
