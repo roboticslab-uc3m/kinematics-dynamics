@@ -1,8 +1,10 @@
 <application>
-<name>launchTeoSim App</name>
-        <module>
-                <name>teoSim</name>
-        </module>
+    <name>launchTeoSim App</name>
+
+    <module>
+        <name>teoSim</name>
+        <node>localhost</node>
+    </module>
 
 </application>
 
