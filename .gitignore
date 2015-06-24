@@ -1,6 +1,8 @@
 *~
 *.swp
 *.orig
+*.pyc
+.Rhistory
 tags
 CMakeLists.txt.user
 /build*/
