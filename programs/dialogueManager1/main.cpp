@@ -5,10 +5,8 @@
  * @ingroup teo_programs
  * \defgroup dialogueManager1 dialogueManager1
  *
- * @brief The dialogueManager1 program.
+ * @brief Creates an instance DialogueManager1.
  *
- * The dialogueManager1 program.
- * 
  * @section dialogueManager1_legal Legal
  *
  * Copyright: 2013 (C) Universidad Carlos III de Madrid
