@@ -15,6 +15,9 @@
 
 using namespace yarp::os;
 
+namespace teo
+{
+
 class DialogueManager1 : public RFModule {
   private:
     StateMachine stateMachine;
@@ -29,5 +32,7 @@ class DialogueManager1 : public RFModule {
   public:
     bool configure(ResourceFinder &rf);
 };
+
+}  // namespace teo
 
 #endif  // __DIALOGUE_MANAGER1_HPP__

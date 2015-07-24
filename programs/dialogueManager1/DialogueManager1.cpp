@@ -2,6 +2,9 @@
 
 #include "DialogueManager1.hpp"
 
+namespace teo
+{
+
 /************************************************************************/
 
 bool DialogueManager1::configure(ResourceFinder &rf) {
@@ -63,3 +66,4 @@ bool DialogueManager1::interruptModule() {
 
 /************************************************************************/
 
+}  // namespace teo
