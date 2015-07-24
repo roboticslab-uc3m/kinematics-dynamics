@@ -1,8 +1,8 @@
 <application>
 <name>followMe App</name>
     <module>
-        <name>dm1</name>
-        <node>/head</node>
+        <name>dialogueManager1</name>
+        <node>localhost</node>
     </module>
 
     <module>
