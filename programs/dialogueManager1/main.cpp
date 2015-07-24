@@ -3,13 +3,13 @@
 /**
  * 
  * @ingroup teo_programs
- * \defgroup dm1 dm1
+ * \defgroup dialogueManager1 dialogueManager1
  *
- * @brief The dm1 program.
+ * @brief The dialogueManager1 program.
  *
- * The dm1 program.
+ * The dialogueManager1 program.
  * 
- * @section dm1_legal Legal
+ * @section dialogueManager1_legal Legal
  *
  * Copyright: 2013 (C) Universidad Carlos III de Madrid
  *
@@ -20,13 +20,13 @@
  *
  * <hr>
  *
- * This file can be edited at dm1
+ * This file can be edited at dialogueManager1
  *
  */
 
 #include <yarp/os/all.h>
 
-#include "Dm1.hpp"
+#include "DialogueManager1.hpp"
 
 using namespace yarp::os;
 
@@ -34,11 +34,11 @@ int main(int argc, char **argv) {
 
     ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultContext("dm1");
-    rf.setDefaultConfigFile("dm1.ini");
+    rf.setDefaultContext("dialogueManager1");
+    rf.setDefaultConfigFile("dialogueManager1.ini");
     rf.configure(argc, argv);
 
-    Dm1 mod;
+    DialogueManager1 mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
