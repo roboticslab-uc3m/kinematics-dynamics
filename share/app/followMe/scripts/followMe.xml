@@ -15,8 +15,8 @@
         <node>/manipulation</node>
     </module>
     <connection>
-        <from>/dm1/command:o</from>
-        <to>/ec1/dm/command:i</to>
+        <from>/dialogueManager1/command:o</from>
+        <to>/executionCore1/dialogueManager/command:i</to>
     </connection>
 
     <module>
@@ -31,17 +31,17 @@
     </module>
     <connection>
         <from>/cvFaces/state:o</from>
-        <to>/ec1/cv/state:i</to>
+        <to>/executionCore1/cv/state:i</to>
     </connection>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /faces/yarpview/img:i</parameters>
+        <parameters>--name /yarpview/cvFaces/img:i</parameters>
         <node>localhost</node>
     </module>
     <connection>
         <from>/cvFaces/img:o</from>
-        <to>/faces/yarpview/img:i</to>
+        <to>/yarpview/cvFaces/img:i</to>
     </connection>
 
     <module>
@@ -50,8 +50,8 @@
         <node>/head</node>
     </module>
     <connection>
-        <from>/sr1:o</from>
-        <to>/dm1/sr:i</to>
+        <from>/speechRecognition1:o</from>
+        <to>/dialogueManager1/speechRecognition:i</to>
     </connection>
 
     <module>
@@ -60,7 +60,7 @@
         <node>/head</node>
     </module>
     <connection>
-        <from>/dm1/tts:o</from>
+        <from>/dialogueManager1/iSpeak:o</from>
         <to>/iSpeak</to>
     </connection>
 
