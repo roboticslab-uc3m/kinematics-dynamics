@@ -31,6 +31,9 @@ using namespace yarp::math;
 
 using std::vector;
 
+namespace teo
+{
+
 /**
  * @ingroup StateMachine
  *
@@ -85,6 +88,8 @@ public:
     void setOutTtsPort(yarp::os::Port* outTtsPort);
 
 };
+
+}  // namespace teo
 
 #endif
 

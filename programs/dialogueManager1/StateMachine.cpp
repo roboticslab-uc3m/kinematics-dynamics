@@ -2,6 +2,9 @@
 
 #include "StateMachine.hpp"
 
+namespace teo
+{
+
 /************************************************************************/
 
 bool StateMachine::threadInit() {
@@ -87,3 +90,5 @@ void StateMachine::setOutTtsPort(yarp::os::Port* outTtsPort) {
 }
 
 /************************************************************************/
+
+}  // namespace teo

@@ -5,7 +5,7 @@
  * @ingroup teo_programs
  * \defgroup dialogueManager1 dialogueManager1
  *
- * @brief Creates an instance DialogueManager1.
+ * @brief Creates an instance teo::DialogueManager1.
  *
  * @section dialogueManager1_legal Legal
  *
@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     rf.setDefaultConfigFile("dialogueManager1.ini");
     rf.configure(argc, argv);
 
-    DialogueManager1 mod;
+    teo::DialogueManager1 mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
