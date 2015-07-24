@@ -35,9 +35,9 @@ namespace teo
 {
 
 /**
- * @ingroup StateMachine
+ * @ingroup dialogueManager1
  *
- * StateMachine class implements a specific state machine.
+ * @brief implements a specific state machine for dialogueManager1.
  */
 class StateMachine : public Thread {
 protected:
