@@ -5,7 +5,7 @@
  *
  * \defgroup teoSim teoSim
  *
- * @brief Basic TEO simulation, creates an instance of the teo::TeoSim class.
+ * @brief Basic TEO simulation, creates an instance teo::TeoSim.
  *
  * @section teoSim_legal Legal
  *
