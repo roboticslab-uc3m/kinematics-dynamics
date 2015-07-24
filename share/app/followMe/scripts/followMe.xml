@@ -11,7 +11,7 @@
         <node>/manipulation</node>
     </module>
     <module>
-        <name>ec1</name>
+        <name>executionCore1</name>
         <node>/manipulation</node>
     </module>
     <connection>
