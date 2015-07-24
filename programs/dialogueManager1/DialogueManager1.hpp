@@ -18,6 +18,10 @@ using namespace yarp::os;
 namespace teo
 {
 
+/**
+ * @ingroup dialogueManager1
+ * @brief Dialogue Manager 1.
+ */
 class DialogueManager1 : public RFModule {
   private:
     StateMachine stateMachine;
