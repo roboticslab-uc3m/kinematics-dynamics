@@ -46,7 +46,7 @@
 
     <module>
         <name>/sbin/runuser</name>
-        <parameters>-l teo -c speechRecognition1</parameters>
+        <parameters>-l teo -c speechRecognition1.py</parameters>
         <node>/head</node>
     </module>
     <connection>
