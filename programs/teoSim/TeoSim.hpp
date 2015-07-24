@@ -37,6 +37,7 @@ namespace teo
 
 /**
  * @ingroup teoSim
+ *
  * @brief Main class, creates an instance of OpenRAVE-core (qtcoin viewer included) and corresponding controlboard wrappers.
  */
 class TeoSim : public RFModule {

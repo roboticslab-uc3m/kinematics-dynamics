@@ -35,6 +35,7 @@ namespace teo
 
 /**
  * @ingroup teoSim
+ *
  * @brief Helper class, implements the yarp::os::RateThread.
  */
 class TeoSimRateThread : public RateThread {
