@@ -19,7 +19,7 @@ namespace teo
 {
 
 /**
- * @ingroup TeoGravityCompensator
+ * @ingroup teoGravityCompensator
  *
  * @brief Uses an inverse dynamics solver to perform gravity compensation on a robot limb.
  * 
