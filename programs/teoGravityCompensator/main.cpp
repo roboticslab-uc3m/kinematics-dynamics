@@ -5,7 +5,7 @@
  *
  * \defgroup teoGravityCompensator teoGravityCompensator
  *
- * @brief Basic TEO gravity compensation, creates an instance of the teo::TeoGravityCompensator class.
+ * @brief Basic TEO gravity compensation, creates an instance teo::TeoGravityCompensator.
  *
  * <b> Legal </b>
  *
