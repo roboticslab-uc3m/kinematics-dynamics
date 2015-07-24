@@ -27,8 +27,8 @@ bool DialogueManager1::configure(ResourceFinder &rf) {
 
     //-----------------OPEN LOCAL PORTS------------//
     outCmdPort.open("/dialogueManager1/command:o");
-    outTtsPort.open("/dialogueManager1/tts:o");
-    inSrPort.open("/dialogueManager1/sr:i");
+    outTtsPort.open("/dialogueManager1/iSpeak:o");
+    inSrPort.open("/dialogueManager1/speechRecognition:i");
     stateMachine.setOutCmdPort(&outCmdPort);
     stateMachine.setOutTtsPort(&outTtsPort);
     stateMachine.setInSrPort(&inSrPort);
