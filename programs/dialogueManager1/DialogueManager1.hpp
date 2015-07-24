@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __DM1_HPP__
-#define __DM1_HPP__
+#ifndef __DIALOGUE_MANAGER1_HPP__
+#define __DIALOGUE_MANAGER1_HPP__
 
 #include <yarp/os/all.h>
 #include <stdlib.h>
@@ -15,7 +15,7 @@
 
 using namespace yarp::os;
 
-class Dm1 : public RFModule {
+class DialogueManager1 : public RFModule {
   private:
     StateMachine stateMachine;
     BufferedPort<Bottle> inSrPort;
@@ -30,4 +30,4 @@ class Dm1 : public RFModule {
     bool configure(ResourceFinder &rf);
 };
 
-#endif  // __DM1_HPP__
+#endif  // __DIALOGUE_MANAGER1_HPP__
