@@ -6,6 +6,7 @@
 
 bool teo::FakeControlboard::setPositionMode(int j) {
     CD_INFO("(%d)\n",j);
+    modePosVel = 0;
     return true;
 }
 
@@ -13,6 +14,7 @@ bool teo::FakeControlboard::setPositionMode(int j) {
 
 bool teo::FakeControlboard::setVelocityMode(int j) {
     CD_INFO("(%d)\n",j);
+    modePosVel = 1;  // Set flag to vel.
     return true;
 }
 
