@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __CARTESIAN_SERVER__
-#define __CARTESIAN_SERVER__
+#ifndef __TEO_CARTESIAN_SERVER__
+#define __TEO_CARTESIAN_SERVER__
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/Module.h>
@@ -42,7 +42,7 @@ protected:
 
     yarp::dev::ICartesianControl *icart;
     yarp::dev::IPositionControl *ipos;
-    int *csStatus;
+    int csStatus;
 
     RpcServer xRpcServer;
 	TeoXRpcResponder xResponder;
@@ -60,5 +60,5 @@ public:
 
 }  // namespace teo
 
-#endif
+#endif  // __TEO_CARTESIAN_SERVER__
 
