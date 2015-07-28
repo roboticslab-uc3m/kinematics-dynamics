@@ -61,9 +61,15 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     robotDevice.open(robotOptions);
     if (!robotDevice.isValid()) {
         CD_ERROR("Could not open robot device: remote_controlboard\n\n");
-        CD_ERROR("movjRemote not valid, has a remotely accessible device been open?\n\n");
+        CD_ERROR("device not valid, has a remotely accessible device been open?\n\n");
         return false;
     }
+    if ( ! robotDevice.view( cartesianRateThread.iEncoders ) ) {
+        CD_ERROR("Could not obtain iEncoders.\n");
+        return false;
+    }
+    CD_SUCCESS("Obtained iEncoders.\n");
+
     if ( ! robotDevice.view( cartesianRateThread.iEncoders ) ) {
         CD_ERROR("Could not obtain iEncoders.\n");
         return false;
