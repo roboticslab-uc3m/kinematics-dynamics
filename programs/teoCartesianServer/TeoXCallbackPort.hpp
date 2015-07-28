@@ -41,9 +41,9 @@ namespace teo
 {
 
 /**
- * @ingroup xCallbackPort
+ * @ingroup teoCartesianServer
  *
- * @brief TeoXCallbackPort class implements a port with x callbacks.
+ * @brief Implements a port with x callbacks.
  */
 class TeoXCallbackPort : public BufferedPort<Bottle> {
     protected:

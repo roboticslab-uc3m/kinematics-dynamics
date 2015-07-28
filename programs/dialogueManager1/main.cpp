@@ -5,7 +5,7 @@
  * @ingroup teo_programs
  * \defgroup dialogueManager1 dialogueManager1
  *
- * @brief Creates an instance teo::DialogueManager1.
+ * @brief Creates an instance of teo::DialogueManager1.
  *
  * @section dialogueManager1_legal Legal
  *

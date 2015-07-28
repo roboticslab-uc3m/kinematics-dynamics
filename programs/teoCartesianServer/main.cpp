@@ -5,20 +5,17 @@
  *
  * \defgroup teoCartesianServer teoCartesianServer
  *
- * @brief Creates an instance of the \ref TeoCartesianServer class.
+ * @brief Creates an instance of teo::TeoCartesianServer.
  *
- * Used by (1): \ref teo_teoWebInterface.
+ * @section teoCartesianServer_legal Legal
  *
- * <b> Legal </b>
- *
- * Copyright: 2012 (C) Universidad Carlos III de Madrid
+ * Copyright: 2015 (C) Universidad Carlos III de Madrid
  *
  * Author: <a href="http://roboticslab.uc3m.es/roboticslab/persona.php?id_pers=72">Juan G. Victores</a>
  *
  * Contrib: Paul Fitzpatrick (YARP sample code, email responses);
  *          Ugo Pattacini (author of <a href="http://eris.liralab.it/iCub/main/dox/html/icub_anyrobot_cartesian_interface.html">Customizing the Cartesian Interface for a Generic Robot</a>, email responses)
  *
-
  *
  * CopyPolicy: Released under the terms of the LGPLv2.1 or later, see license/LGPL.TXT
  *
@@ -35,7 +32,7 @@
 \endverbatim
  * And then launch the actual module:
 \verbatim
-[on terminal 2] $PUNCION_DIR/bin/teoCartesianServer
+[on terminal 2] teoCartesianServer
 \endverbatim
  *
  * <b>Interfacing with the teoCartesianServer module</b> (or try using the new \ref CartesianClient library)
@@ -45,7 +42,7 @@
  * The implementation maps certain YARP rpc's to CartesianBot function calls. Therefore, we can interface
  * with the class from the command-line by typing (change 'ravebot' for 'canbot' for the real robot):
 \verbatim
-[on terminal 3] yarp rpc /ravebot/cartesianServer/rpc:i
+[on terminal 3] yarp rpc /cartesianServer/rpc:i
 \endverbatim
  *
  * Remember that the use of [brackets] means we are sending a VOCAB.
