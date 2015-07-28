@@ -11,12 +11,11 @@ TeoCartesianServer::TeoCartesianServer() { }
 /************************************************************************/
 bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
-    ConstString controller = DEFAULT_CONTROLLER;
-    ConstString prefix = DEFAULT_PREFIX;
-    ConstString movjLocal = DEFAULT_MOVJ_LOCAL;
-    ConstString movjRemote = DEFAULT_MOVJ_REMOTE;
-    csStatus = new int;
-    *csStatus = 0;
+    std::string controller = DEFAULT_CONTROLLER;
+    std::string prefix = DEFAULT_PREFIX;
+    std::string movjLocal = DEFAULT_MOVJ_LOCAL;
+    std::string movjRemote = DEFAULT_MOVJ_REMOTE;
+    csStatus = 0;
 
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
@@ -74,14 +73,14 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setPositionInterface(ipos);
     xResponder.setCartesianInterface(icart);
-    xResponder.setCsStatus(csStatus);
+    xResponder.setCsStatus(&csStatus);
     ConstString xRpcServerStr(prefix);
     xRpcServerStr += "/cartesianServer/rpc:i";
     xRpcServer.open(xRpcServerStr);
     xRpcServer.setReader(xResponder);
     xPort.setPositionInterface(ipos);
     xPort.setCartesianInterface(icart);
-    xPort.setCsStatus(csStatus);
+    xPort.setCsStatus(&csStatus);
     ConstString xPortStr(prefix);
     xPortStr += "/cartesianServer/command:i";
     xPort.open(xPortStr);
@@ -102,8 +101,6 @@ bool TeoCartesianServer::interruptModule() {
     cartesianDevice.close();
     xRpcServer.close();
     xPort.close();
-    delete csStatus;
-    csStatus = 0;
     return true;
 }
 
