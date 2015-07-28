@@ -11,7 +11,7 @@ TeoCartesianServer::TeoCartesianServer() { }
 /************************************************************************/
 bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
-    std::string controller = DEFAULT_CONTROLLER;
+    std::string solver = DEFAULT_SOLVER;
     std::string prefix = DEFAULT_PREFIX;
     std::string movjLocal = DEFAULT_MOVJ_LOCAL;
     std::string movjRemote = DEFAULT_MOVJ_REMOTE;
@@ -21,34 +21,34 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     if (rf.check("help")) {
         printf("CartesianServer options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        printf("\t--controller (cartesian controller device, default: \"%s\")\n",controller.c_str());
+        printf("\t--solver (cartesian solver device, default: \"%s\")\n",solver.c_str());
         printf("\t--prefix (port name prefix, default: \"%s\")\n",prefix.c_str());
         printf("\t--movjLocal (port we open to connect for movj, default: \"%s\")\n",movjLocal.c_str());
         printf("\t--movjRemote (port to whom we connect for movj, default: \"%s\")\n",movjRemote.c_str());
         // Do not exit: let last layer exit so we get help from the complete chain.
     }
 
-    if (rf.check("controller")) controller = rf.find("controller").asString();
+    if (rf.check("solver")) solver = rf.find("solver").asString();
     if (rf.check("prefix")) prefix = rf.find("prefix").asString();
     if (rf.check("movjRemote")) movjRemote = rf.find("movjRemote").asString();
     if (rf.check("movjLocal")) movjLocal = rf.find("movjLocal").asString();
-    printf("CartesianServer using controller: %s,  prefix: %s.\n",controller.c_str(),prefix.c_str());
+    printf("CartesianServer using solver: %s,  prefix: %s.\n",solver.c_str(),prefix.c_str());
     printf("CartesianServer using movjLocal: %s, movjRemote: %s.\n",movjLocal.c_str(),movjRemote.c_str());
 
     //------------------------------CARTESIAN--------------------------------//
     Property options;
     options.fromString(rf.toString());  // Get rf stuff to the cartesian device
-    options.put("device",controller);
-    cartesianDevice.open(options);
-    if (!cartesianDevice.isValid()) {
-        CD_ERROR("Could not open controller: %s\n",controller.c_str());
-        printf("Be sure CMake \"ENABLE_RlPlugins_%s\" variable is set \"ON\"\n",controller.c_str());
-        printf("\"SKIP_%s is set\" --> should be --> \"ENABLE_%s is set\"\n\n",controller.c_str(),controller.c_str());
+    options.put("device",solver);
+    solverDevice.open(options);
+    if (!solverDevice.isValid()) {
+        CD_ERROR("Could not open solver: %s\n",solver.c_str());
+        printf("Be sure CMake \"ENABLE_RlPlugins_%s\" variable is set \"ON\"\n",solver.c_str());
+        printf("\"SKIP_%s is set\" --> should be --> \"ENABLE_%s is set\"\n\n",solver.c_str(),solver.c_str());
         return false;
     }
-    bool ok = cartesianDevice.view(icart);
+    bool ok = solverDevice.view(icart);
     if (!ok) {
-        fprintf(stderr, "[CartesianServer] warning: Problems acquiring cartesian interface.\n");
+        fprintf(stderr, "[CartesianServer] warning: Problems acquiring solver interface.\n");
         return false;
     } else printf("[CartesianServer] success: Acquired cartesian interface.\n");
 
@@ -98,7 +98,7 @@ bool TeoCartesianServer::updateModule() {
 bool TeoCartesianServer::interruptModule() {
     xRpcServer.interrupt();
     xPort.disableCallback();
-    cartesianDevice.close();
+    solverDevice.close();
     xRpcServer.close();
     xPort.close();
     return true;

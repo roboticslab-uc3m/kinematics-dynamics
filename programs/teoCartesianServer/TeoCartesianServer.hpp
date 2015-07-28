@@ -17,7 +17,7 @@
 #include "TeoXRpcResponder.hpp"
 #include "TeoXCallbackPort.hpp"
 
-#define DEFAULT_CONTROLLER "kdlcontroller"
+#define DEFAULT_SOLVER "kdlsolver"
 #define DEFAULT_PREFIX "/teoSim/rightArm"
 #define DEFAULT_MOVJ_LOCAL "/teoSim/rightArm/movjCartesianServer"
 #define DEFAULT_MOVJ_REMOTE "/teoSim/rightArm"
@@ -37,7 +37,7 @@ namespace teo
  */
 class TeoCartesianServer : public RFModule {
 protected:
-    yarp::dev::PolyDriver cartesianDevice;
+    yarp::dev::PolyDriver solverDevice;
     yarp::dev::PolyDriver robotDevice;
 
     yarp::dev::ICartesianControl *icart;
