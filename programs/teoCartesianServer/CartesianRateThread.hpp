@@ -43,10 +43,10 @@ class CartesianRateThread : public yarp::os::RateThread {
         int numMotors;
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IVelocityControl *iVelocityControl;
-        std::vector< double > q;
-        std::vector< double > qdot;
-        std::vector< double > x;
-        std::vector< double > o;
+        std::vector< double > qReal;
+        std::vector< double > qDotCmd;
+        std::vector< double > xReal;
+        std::vector< double > oReal;
 
         /** File stuff */
         std::ifstream ifs;

@@ -16,7 +16,8 @@ bool teo::CartesianRateThread::threadInit() {
         return false;
     }
 
-    q.resize( numMotors );
+    qReal.resize( numMotors );
+    qDotCmd.resize( numMotors );
 
     iVelocityControl->setVelocityMode();
 
@@ -26,28 +27,26 @@ bool teo::CartesianRateThread::threadInit() {
 /************************************************************************/
 void teo::CartesianRateThread::run() {
 
-    iEncoders->getEncoders( q.data() );
+    iEncoders->getEncoders( qReal.data() );
 
     CD_DEBUG("<-- ");
-    for(int i=0;i<q.size();i++)
-        CD_DEBUG_NO_HEADER("%f ",q[i]);
+    for(int i=0; i<qReal.size(); i++)
+        CD_DEBUG_NO_HEADER("%f ",qReal[i]);
     CD_DEBUG_NO_HEADER("[deg]\n");
 
-    solver->fwdKin(q,x,o);
+    solver->fwdKin(qReal, xReal,oReal);
 
-    solver->invDyn(q,qdot);
-
-    if( numMotors > numMotors )
-        qdot.resize( numMotors );  //-- Extra motors won't care about torques.
+    //xError = xDesired - xReal;
+    //xDotCmd = xDotDesired + GAIN * xError * (cmcMs/1000.0);  // GAIN=0 => xCmd = xDotDesired
+    //solver->invDiffKin(xDotCmd, qDotCmd);
 
     CD_INFO("--> ");
-    for(int i=0;i<numMotors;i++) {
-        CD_INFO_NO_HEADER("%f ",qdot[i]);
+    for(int i=0; i<qDotCmd.size(); i++) {
+        CD_INFO_NO_HEADER("%f ",qDotCmd[i]);
     }
     CD_INFO_NO_HEADER("[Nm]\n");
 
-    //--tRA[0] = 0.0;  //-- Release... let's do this!
-    iVelocityControl->velocityMove( qdot.data() );
+    iVelocityControl->velocityMove( qDotCmd.data() );
 
 }
 
