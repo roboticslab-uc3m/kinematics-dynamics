@@ -73,13 +73,10 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setPositionInterface(ipos);
-    xResponder.setCsStatus(&csStatus);
     std::string xRpcServerStr(local);
     xRpcServerStr += "/rpc:i";
     xRpcServer.open(xRpcServerStr);
     xRpcServer.setReader(xResponder);
-    xPort.setPositionInterface(ipos);
-    xPort.setCsStatus(&csStatus);
     std::string xPortStr(local);
     xPortStr += "/command:i";
     xPort.open(xPortStr);

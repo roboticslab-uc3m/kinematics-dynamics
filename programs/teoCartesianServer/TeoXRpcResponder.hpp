@@ -14,14 +14,7 @@
 #define MAX_NUM_MOTORS 100
 
 #define VOCAB_HELP VOCAB4('h','e','l','p')
-#define VOCAB_MY_STOP VOCAB4('s','t','o','p')
-#define VOCAB_STAT VOCAB4('s','t','a','t')
-#define VOCAB_MOVL VOCAB4('m','o','v','l')
-#define VOCAB_MOVJ VOCAB4('m','o','v','j')
-#define VOCAB_INV VOCAB3('i','n','v')
-#define VOCAB_MOVE VOCAB4('m','o','v','e')
-#define VOCAB_WAIT VOCAB4('w','a','i','t')
-#define VOCAB_TOOL VOCAB4('t','o','o','l')
+#define VOCAB_LOAD VOCAB4('l','o','a','d')
 
 using namespace yarp::os;
 using namespace yarp::dev;
@@ -44,15 +37,11 @@ class TeoXRpcResponder : public PortReader {
         virtual bool read(ConnectionReader& connection);
 
         yarp::dev::IPositionControl *ipos;
-        int *csStatus;
 
     public:
 
         /** Register a position interface for the PortReader. */
         void setPositionInterface(yarp::dev::IPositionControl* _ipos);
-
-        /** Register. */
-        void setCsStatus(int* _csStatus);
 
 };
 

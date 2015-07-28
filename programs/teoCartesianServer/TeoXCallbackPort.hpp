@@ -17,21 +17,6 @@
 #include <yarp/sig/Matrix.h>
 #include <yarp/math/Math.h>
 
-#define VPOINT_DIST 0.05  // [m]
-
-#define VOCAB_MY_STOP VOCAB4('s','t','o','p')
-
-#define VOCAB_STAT VOCAB4('s','t','a','t')
-#define VOCAB_MOVL VOCAB4('m','o','v','l')
-#define VOCAB_MOVJ VOCAB4('m','o','v','j')
-#define VOCAB_INV VOCAB3('i','n','v')
-
-#define VOCAB_FWD VOCAB3('f','w','d')
-#define VOCAB_BKWD VOCAB4('b','k','w','d')
-#define VOCAB_POSE VOCAB4('p','o','s','e')
-#define VOCAB_ROT VOCAB3('r','o','t')
-#define VOCAB_VMOS VOCAB4('v','m','o','s')
-
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
@@ -50,19 +35,9 @@ class TeoXCallbackPort : public BufferedPort<Bottle> {
         /** Implement the actual callback. */
         void onRead(Bottle& b);
 
-        yarp::dev::ICartesianControl *icart;
-        yarp::dev::IPositionControl *ipos;
-        int *csStatus;
-
     public:
 
         TeoXCallbackPort() {}
-
-        /** Register a position interface for the PortReader. */
-        void setPositionInterface(yarp::dev::IPositionControl* _ipos);
-
-        /** Register a position interface for the PortReader. */
-        void setCsStatus(int* _csStatus);
 
 };
 
