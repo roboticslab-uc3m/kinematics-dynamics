@@ -23,7 +23,6 @@ option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCom
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 
 ### options: force default
-#-- kdlcontroller OFF for now
 option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
 option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 
