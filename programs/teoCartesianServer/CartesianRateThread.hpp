@@ -47,13 +47,15 @@ class CartesianRateThread : public yarp::os::RateThread {
         std::vector< double > qDotCmd;
         std::vector< double > xReal;
         std::vector< double > oReal;
+        std::vector< double > xDesired;
+        std::vector< double > xDotDesired;
 
         /** File stuff */
         std::ifstream ifs;
 
     protected:
 
-
+        int lineCount;
 };
 
 }  // namespace teo

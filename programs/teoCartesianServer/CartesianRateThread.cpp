@@ -18,14 +18,35 @@ bool teo::CartesianRateThread::threadInit() {
 
     qReal.resize( numMotors );
     qDotCmd.resize( numMotors );
+    xDesired.resize( 3 + 3 );  // x y z + r p y
+    xDotDesired.resize( 3 + 3 );  // x y z + r p y
 
     iVelocityControl->setVelocityMode();
 
+    lineCount = 1;
     return true;
 }
 
 /************************************************************************/
 void teo::CartesianRateThread::run() {
+
+    std::string line;
+    if (! getline( ifs, line) )
+    {
+        this->stop();
+        CD_INFO("[L:%d] file ended\n", lineCount );
+        return;
+    }
+
+    CD_DEBUG("[L:%d] %s\n", lineCount,line.c_str() );
+    lineCount++;
+    yarp::os::Bottle lineBottle(line);  //-- yes, using a bottle to parse a string
+
+    for(int i=0; i<xDesired.size(); i++)
+        xDesired[i] = lineBottle.get( i ).asDouble();
+
+    for(int i=0; i<xDotDesired.size(); i++)
+        xDotDesired[i] = lineBottle.get( i+xDesired.size() ).asDouble();
 
     iEncoders->getEncoders( qReal.data() );
 
