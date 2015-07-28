@@ -2,6 +2,5 @@
 # Authors: Juan G. Victores
 
 add_subdirectory(dialogueManager1)
-add_subdirectory(teoCartesianServer)
 add_subdirectory(teoGravityCompensator)
 add_subdirectory(teoSim)
