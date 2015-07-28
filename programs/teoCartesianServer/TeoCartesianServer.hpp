@@ -19,8 +19,8 @@
 #include "CartesianRateThread.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
-#define DEFAULT_KINEMATICS "rightArmKinematics.ini"
-#define DEFAULT_REMOTE "/teoSim/rightArm"
+#define DEFAULT_KINEMATICS "leftLegKinematics.ini"
+#define DEFAULT_REMOTE "/teoSim/leftLeg"
 
 using namespace yarp::os;
 using namespace yarp::dev;
