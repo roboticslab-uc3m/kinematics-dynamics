@@ -6,13 +6,13 @@
 bool teo::GravityRateThread::threadInit() {
 
     iEncoders->getAxes( &numMotors );
-    CD_INFO("numMotorsRA: %d.\n",numMotors);
+    CD_INFO("numMotors: %d.\n",numMotors);
 
     solver->getNumLinks( &solverNumLinks );
-    CD_INFO("solverNumLinksRA: %d.\n",solverNumLinks);
+    CD_INFO("solverNumLinks: %d.\n",solverNumLinks);
 
     if( numMotors < solverNumLinks ) {
-        CD_ERROR("numMotorsRA < solverNumLinksRA !!! (must be >=) (RA=rightArm)\n");
+        CD_ERROR("numMotors < solverNumLinks !!! (must be >=)\n");
         return false;
     }
 
@@ -35,7 +35,7 @@ void teo::GravityRateThread::run() {
 
     solver->invDyn(q,t);
 
-    if( numMotors > numMotors )
+    if( numMotors > numMotors )  //-- ??????????????????????????
         t.resize( numMotors );  //-- Extra motors won't care about torques.
 
     CD_INFO("--> ");
