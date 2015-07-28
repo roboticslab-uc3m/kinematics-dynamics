@@ -45,6 +45,8 @@ class CartesianRateThread : public yarp::os::RateThread {
         yarp::dev::IVelocityControl *iVelocityControl;
         std::vector< double > q;
         std::vector< double > qdot;
+        std::vector< double > x;
+        std::vector< double > o;
 
         /** File stuff */
         std::ifstream ifs;
