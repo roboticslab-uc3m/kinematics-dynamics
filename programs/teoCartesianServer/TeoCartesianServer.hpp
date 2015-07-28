@@ -18,7 +18,7 @@
 #include "TeoXCallbackPort.hpp"
 #include "CartesianRateThread.hpp"
 
-#define DEFAULT_SOLVER "kdlsolver"
+#define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_KINEMATICS "rightArmKinematics.ini"
 #define DEFAULT_PREFIX "/teoSim/rightArm"
 #define DEFAULT_MOVJ_LOCAL "/teoSim/rightArm/movjCartesianServer"
