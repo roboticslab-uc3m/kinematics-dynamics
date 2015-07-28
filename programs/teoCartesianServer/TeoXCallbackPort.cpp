@@ -13,16 +13,4 @@ void TeoXCallbackPort::onRead(Bottle& b) {
 
 /************************************************************************/
 
-void TeoXCallbackPort::setPositionInterface(yarp::dev::IPositionControl* _ipos) {
-    ipos = _ipos;
-}
-
-/************************************************************************/
-
-void TeoXCallbackPort::setCsStatus(int* _csStatus) {
-    csStatus = _csStatus;
-}
-
-/************************************************************************/
-
 }  // namespace teo

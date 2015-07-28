@@ -34,10 +34,4 @@ void TeoXRpcResponder::setPositionInterface(yarp::dev::IPositionControl* _ipos) 
 
 /************************************************************************/
 
-void TeoXRpcResponder::setCsStatus(int* _csStatus) {
-    csStatus = _csStatus;
-}
-
-/************************************************************************/
-
 }  // namespace teo
