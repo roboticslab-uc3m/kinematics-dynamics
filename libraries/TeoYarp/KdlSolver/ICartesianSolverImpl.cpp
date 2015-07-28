@@ -143,6 +143,20 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
 // -----------------------------------------------------------------------------
 
+bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) {
+
+    KDL::JntArray qInRad = KDL::JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qInRad(motor)=toRad(q[motor]);
+
+    KDL::ChainIkSolverVel_pinv iksolverv(chain);
+    //int ret = iksolverv.CartToJnt(qInRad,kdlxdot,kdlqdot);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
 
     KDL::JntArray qInRad = KDL::JntArray(numLinks);

@@ -49,6 +49,7 @@ class CartesianRateThread : public yarp::os::RateThread {
         std::vector< double > oReal;
         std::vector< double > xDesired;
         std::vector< double > xDotDesired;
+        std::vector< double > xDotCmd;
 
         /** File stuff */
         std::ifstream ifs;

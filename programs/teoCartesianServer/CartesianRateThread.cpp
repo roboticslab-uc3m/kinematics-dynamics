@@ -59,13 +59,14 @@ void teo::CartesianRateThread::run() {
 
     //xError = xDesired - xReal;
     //xDotCmd = xDotDesired + GAIN * xError * (cmcMs/1000.0);  // GAIN=0 => xCmd = xDotDesired
-    //solver->invDiffKin(xDotCmd, qDotCmd);
+    //solver->diffInvKin(qReal,xDotCmd, qDotCmd);
+    solver->diffInvKin(qReal,xDotDesired, qDotCmd); // hack GAIN = 0
 
     CD_INFO("--> ");
     for(int i=0; i<qDotCmd.size(); i++) {
         CD_INFO_NO_HEADER("%f ",qDotCmd[i]);
     }
-    CD_INFO_NO_HEADER("[Nm]\n");
+    CD_INFO_NO_HEADER("[deg/s]\n");
 
     iVelocityControl->velocityMove( qDotCmd.data() );
 
