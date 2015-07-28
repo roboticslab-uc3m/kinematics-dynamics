@@ -19,7 +19,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
-        printf("CartesianServer options:\n");
+        printf("TeoCartesianServer options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         printf("\t--solver (cartesian solver device, default: \"%s\")\n",solver.c_str());
         printf("\t--prefix (port name prefix, default: \"%s\")\n",prefix.c_str());
