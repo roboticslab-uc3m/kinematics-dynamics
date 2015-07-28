@@ -45,7 +45,7 @@ void teo::CartesianRateThread::run() {
     CD_INFO_NO_HEADER("[Nm]\n");
 
     //--tRA[0] = 0.0;  //-- Release... let's do this!
-    iTorqueControl->setRefTorques( t.data() );
+    iVelocityControl->velocityMove( t.data() );
 
 }
 
