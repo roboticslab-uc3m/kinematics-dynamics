@@ -150,6 +150,12 @@ bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<
         qInRad(motor)=toRad(q[motor]);
 
     KDL::Twist kdlxdot;
+    kdlxdot.vel.x(xdot[0]);
+    kdlxdot.vel.y(xdot[1]);
+    kdlxdot.vel.z(xdot[2]);
+    kdlxdot.rot.x(xdot[0]);
+    kdlxdot.rot.y(xdot[1]);
+    kdlxdot.rot.z(xdot[2]);
 
     KDL::JntArray qDotOutRadS = KDL::JntArray(numLinks);
     KDL::ChainIkSolverVel_pinv iksolverv(chain);
