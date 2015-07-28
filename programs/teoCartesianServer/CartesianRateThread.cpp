@@ -18,7 +18,7 @@ bool teo::CartesianRateThread::threadInit() {
 
     q.resize( numMotors );
 
-    iTorqueControl->setTorqueMode();
+    iVelocityControl->setVelocityMode();
 
     return true;
 }

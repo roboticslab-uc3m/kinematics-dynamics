@@ -36,6 +36,11 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
             return out.write(*returnToSender);
         }
         CD_SUCCESS("Opened file: %s.\n",fileName.c_str());
+
+        //-- Start the thread.
+        CD_INFO("Start thread...\n");
+        cartesianRateThread->start();
+
         out.addVocab(VOCAB_OK);
         return out.write(*returnToSender);
     }
