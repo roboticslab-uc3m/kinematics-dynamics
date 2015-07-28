@@ -40,8 +40,6 @@ protected:
     yarp::dev::PolyDriver solverDevice;
     yarp::dev::PolyDriver robotDevice;
 
-    yarp::dev::IPositionControl *ipos;
-
     RpcServer xRpcServer;
 	TeoXRpcResponder xResponder;
 

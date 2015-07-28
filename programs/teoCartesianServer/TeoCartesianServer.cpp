@@ -64,11 +64,11 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
         CD_ERROR("movjRemote not valid, has a remotely accessible device been open?\n\n");
         return false;
     }
-    bool ok2 = robotDevice.view(ipos);
-    if (!ok2) {
-        fprintf(stderr, "[CartesianServer] warning: Problems acquiring robot interfaces.\n");
+    if ( ! robotDevice.view( cartesianRateThread.iEncoders ) ) {
+        CD_ERROR("Could not obtain iEncoders.\n");
         return false;
-    } else printf("[CartesianServer] success: Acquired robot interfaces.\n");
+    }
+    CD_SUCCESS("Obtained iEncoders.\n");
 
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setCartesianRateThread(&cartesianRateThread);
