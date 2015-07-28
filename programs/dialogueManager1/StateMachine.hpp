@@ -12,24 +12,11 @@
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
-#include <yarp/sig/Matrix.h>
-#include <yarp/math/Math.h>
-
-#include <math.h>
-
-#include <vector>
-#include <algorithm>
-#include <limits>
-
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
 #define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
 
 using namespace yarp::os;
 using namespace yarp::dev;
-using namespace yarp::sig;
-using namespace yarp::math;
-
-using std::vector;
 
 namespace teo
 {
