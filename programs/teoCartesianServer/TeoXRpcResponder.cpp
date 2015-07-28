@@ -34,10 +34,4 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
 
 /************************************************************************/
 
-void TeoXRpcResponder::setPositionInterface(yarp::dev::IPositionControl* _ipos) {
-    ipos = _ipos;
-}
-
-/************************************************************************/
-
 }  // namespace teo

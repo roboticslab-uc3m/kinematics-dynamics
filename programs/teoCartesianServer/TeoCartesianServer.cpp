@@ -72,7 +72,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     } else printf("[CartesianServer] success: Acquired robot interfaces.\n");
 
     //---------------------CONFIGURE PORTs------------------------
-    xResponder.setPositionInterface(ipos);
+    xResponder.setCartesianRateThread(&cartesianRateThread);
     std::string xRpcServerStr(local);
     xRpcServerStr += "/rpc:i";
     xRpcServer.open(xRpcServerStr);

@@ -4,6 +4,7 @@
 #define __CARTESIAN_RATE_THREAD__
 
 #include <vector>
+#include <fstream>
 
 #include <yarp/os/RateThread.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
@@ -44,6 +45,9 @@ class CartesianRateThread : public yarp::os::RateThread {
         yarp::dev::ITorqueControl *iTorqueControl;
         std::vector< double > q;
         std::vector< double > t;
+
+        /** File stuff */
+        std::ifstream ifs;
 
     protected:
 
