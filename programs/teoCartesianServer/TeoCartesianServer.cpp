@@ -75,13 +75,13 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     xResponder.setPositionInterface(ipos);
     xResponder.setCsStatus(&csStatus);
     std::string xRpcServerStr(local);
-    xRpcServerStr += "/cartesianServer/rpc:i";
+    xRpcServerStr += "/rpc:i";
     xRpcServer.open(xRpcServerStr);
     xRpcServer.setReader(xResponder);
     xPort.setPositionInterface(ipos);
     xPort.setCsStatus(&csStatus);
     std::string xPortStr(local);
-    xPortStr += "/cartesianServer/command:i";
+    xPortStr += "/command:i";
     xPort.open(xPortStr);
     xPort.useCallback();
     return true;
