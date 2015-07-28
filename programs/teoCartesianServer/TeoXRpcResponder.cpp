@@ -15,7 +15,7 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
     ConnectionWriter *returnToSender = connection.getWriter();
     if (returnToSender==NULL) return false;
     if ((in.get(0).asString() == "help")||(in.get(0).asVocab() == VOCAB_HELP)) {  // help //
-        out.addString("Available commands: [help] [inv] [movj] [movl] [stat] [stop] [wait] [tool] more info at [http://roboticslab.sourceforge.net/asibot/group__cartesianServer.html]");
+        out.addString("Available commands: [help]");
         return out.write(*returnToSender);
     }
     else
