@@ -29,9 +29,9 @@ namespace teo
 {
 
 /**
- * @ingroup TeoCartesianServer
+ * @ingroup teoCartesianServer
  *
- * @brief The TeoCartesianServer class implements a server part that receives a connection from a remote
+ * @brief Implements a server part that receives a connection from a remote
  * \ref cartesianServer module.
  * 
  */

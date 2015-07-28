@@ -31,9 +31,9 @@ namespace teo
 {
 
 /**
- * @ingroup xRpcResponder
+ * @ingroup teoCartesianServer
  *
- * @brief TeoXRpcResponder class implements an xRpcPort responder (callback on RPC).
+ * @brief Implements an xRpcPort responder (callback on RPC).
  */
 class TeoXRpcResponder : public PortReader {
 
