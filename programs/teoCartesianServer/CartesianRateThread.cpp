@@ -29,9 +29,15 @@ void teo::CartesianRateThread::run() {
     iEncoders->getEncoders( q.data() );
 
     CD_DEBUG("<-- ");
-    for(int i=0;i<numMotors;i++)
+    for(int i=0;i<q.size();i++)
         CD_DEBUG_NO_HEADER("%f ",q[i]);
     CD_DEBUG_NO_HEADER("[deg]\n");
+
+    solver->fwdKin(q,x,o);
+    CD_DEBUG("<-- ");
+    for(int i=0;i<x.size();i++)
+        CD_DEBUG_NO_HEADER("%f ",x[i]);
+    CD_DEBUG_NO_HEADER("[m]\n");
 
     solver->invDyn(q,qdot);
 
