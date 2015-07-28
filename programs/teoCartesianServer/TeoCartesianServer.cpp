@@ -70,11 +70,11 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     }
     CD_SUCCESS("Obtained iEncoders.\n");
 
-    if ( ! robotDevice.view( cartesianRateThread.iEncoders ) ) {
-        CD_ERROR("Could not obtain iEncoders.\n");
+    if ( ! robotDevice.view( cartesianRateThread.iVelocityControl ) ) {
+        CD_ERROR("Could not obtain iVelocityControl.\n");
         return false;
     }
-    CD_SUCCESS("Obtained iEncoders.\n");
+    CD_SUCCESS("Obtained iVelocityControl.\n");
 
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setCartesianRateThread(&cartesianRateThread);
