@@ -18,10 +18,12 @@ option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 
 ### options: cpp programs
 option(ENABLE_dialogueManager1 "Choose if you want to compile dialogueManager1" TRUE)
+option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" FALSE)  #-- teoCartesianServer OFF for now
 option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCompensator" TRUE)
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 
 ### options: force default
+#-- kdlcontroller OFF for now
 option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
 option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 
