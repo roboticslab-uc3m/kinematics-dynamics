@@ -41,7 +41,6 @@ protected:
     yarp::dev::PolyDriver robotDevice;
 
     yarp::dev::IPositionControl *ipos;
-    int csStatus;
 
     RpcServer xRpcServer;
 	TeoXRpcResponder xResponder;
