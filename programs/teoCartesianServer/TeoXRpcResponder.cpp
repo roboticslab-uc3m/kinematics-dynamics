@@ -14,8 +14,14 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
     out.clear();
     ConnectionWriter *returnToSender = connection.getWriter();
     if (returnToSender==NULL) return false;
-    if ((in.get(0).asString() == "help")||(in.get(0).asVocab() == VOCAB_HELP)) {  // help //
-        out.addString("Available commands: [help]");
+    if ((in.get(0).asString() == "help")||(in.get(0).asVocab() == VOCAB_HELP))  // help //
+    {
+        out.addString("Available commands: [help] [load]");
+        return out.write(*returnToSender);
+    }
+    else if ((in.get(0).asString() == "load")||(in.get(0).asVocab() == VOCAB_LOAD))  // load //
+    {
+        out.addVocab(VOCAB_OK);
         return out.write(*returnToSender);
     }
     else
