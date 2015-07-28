@@ -11,6 +11,8 @@
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
+#include "CartesianRateThread.hpp"
+
 #define MAX_NUM_MOTORS 100
 
 #define VOCAB_HELP VOCAB4('h','e','l','p')
@@ -36,12 +38,13 @@ class TeoXRpcResponder : public PortReader {
         */
         virtual bool read(ConnectionReader& connection);
 
-        yarp::dev::IPositionControl *ipos;
+        CartesianRateThread *cartesianRateThread;
 
     public:
 
-        /** Register a position interface for the PortReader. */
-        void setPositionInterface(yarp::dev::IPositionControl* _ipos);
+        void setCartesianRateThread(CartesianRateThread* cartesianRateThread) {
+            this->cartesianRateThread = cartesianRateThread;
+        }
 
 };
 
