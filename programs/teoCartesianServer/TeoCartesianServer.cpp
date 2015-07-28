@@ -13,9 +13,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
     std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
     std::string kinematics = rf.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
-    std::string prefix = DEFAULT_PREFIX;
-    std::string movjLocal = DEFAULT_MOVJ_LOCAL;
-    std::string movjRemote = DEFAULT_MOVJ_REMOTE;
+    std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot").asString();
     csStatus = 0;
 
     printf("--------------------------------------------------------------\n");
@@ -24,17 +22,11 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         printf("\t--solver (solver device type, default: \"%s\")\n",DEFAULT_SOLVER);
         printf("\t--kinematics (limb kinematic description, default: \"%s\")\n",DEFAULT_KINEMATICS);
-        printf("\t--prefix (port name prefix, default: \"%s\")\n",prefix.c_str());
-        printf("\t--movjLocal (port we open to connect for movj, default: \"%s\")\n",movjLocal.c_str());
-        printf("\t--movjRemote (port to whom we connect for movj, default: \"%s\")\n",movjRemote.c_str());
+        printf("\t--remote (port to whom we connect, default: \"%s\")\n",DEFAULT_REMOTE);
         // Do not exit: let last layer exit so we get help from the complete chain.
     }
 
-    if (rf.check("prefix")) prefix = rf.find("prefix").asString();
-    if (rf.check("movjRemote")) movjRemote = rf.find("movjRemote").asString();
-    if (rf.check("movjLocal")) movjLocal = rf.find("movjLocal").asString();
-    printf("TeoCartesianServer using solver: %s,  kinematics: %s, prefix: %s.\n",solver.c_str(),kinematics.c_str(),prefix.c_str());
-    printf("TeoCartesianServer using movjLocal: %s, movjRemote: %s.\n",movjLocal.c_str(),movjRemote.c_str());
+    printf("TeoCartesianServer using solver: %s,  kinematics: %s, remote: %s.\n",solver.c_str(),kinematics.c_str(),remote.c_str());
 
     //------------------------------CARTESIAN--------------------------------//
     std::string kinematicsFull("../kinematics/");
@@ -62,10 +54,11 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
     //--------------------------------JOINT----------------------------------//
     Property robotOptions;
-    robotOptions.fromString(rf.toString());  // Get rf stuff to the module
     robotOptions.put("device","remote_controlboard");
-    robotOptions.put("remote",movjRemote);
-    robotOptions.put("local",movjLocal);
+    robotOptions.put("remote",remote);
+    std::string local("/teoCartesianServer");
+    local += remote;
+    robotOptions.put("local",local);
     robotDevice.open(robotOptions);
     if (!robotDevice.isValid()) {
         CD_ERROR("Could not open robot device: remote_controlboard\n\n");
@@ -81,13 +74,13 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setPositionInterface(ipos);
     xResponder.setCsStatus(&csStatus);
-    ConstString xRpcServerStr(prefix);
+    std::string xRpcServerStr(local);
     xRpcServerStr += "/cartesianServer/rpc:i";
     xRpcServer.open(xRpcServerStr);
     xRpcServer.setReader(xResponder);
     xPort.setPositionInterface(ipos);
     xPort.setCsStatus(&csStatus);
-    ConstString xPortStr(prefix);
+    std::string xPortStr(local);
     xPortStr += "/cartesianServer/command:i";
     xPort.open(xPortStr);
     xPort.useCallback();

@@ -20,9 +20,7 @@
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_KINEMATICS "rightArmKinematics.ini"
-#define DEFAULT_PREFIX "/teoSim/rightArm"
-#define DEFAULT_MOVJ_LOCAL "/teoSim/rightArm/movjCartesianServer"
-#define DEFAULT_MOVJ_REMOTE "/teoSim/rightArm"
+#define DEFAULT_REMOTE "/teoSim/rightArm"
 
 using namespace yarp::os;
 using namespace yarp::dev;
