@@ -15,7 +15,6 @@ IF (ENABLE_TeoYarp)
 
   yarp_begin_plugin_library(TeoYarp)
     add_subdirectory(FakeControlboard)
-    add_subdirectory(KdlController)
     add_subdirectory(KdlSolver)
   yarp_end_plugin_library(TeoYarp)
 
