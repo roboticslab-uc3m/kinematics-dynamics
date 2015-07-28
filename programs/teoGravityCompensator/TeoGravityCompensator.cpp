@@ -12,22 +12,21 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
         CD_INFO("Using solver: %s\n",solver.c_str());
     }
 
-    //-- canId 22 (left arm shoulder) solver --
     std::string kinematicsFull("../kinematics/");
     kinematicsFull += kinematics;
     std::string ini = rf.findFileByName( kinematicsFull );
 
     yarp::os::Property solverOptions;
     if (! solverOptions.fromConfigFile(ini) ) {  //-- Put first because defaults to wiping out.
-        CD_ERROR("Could not configure from \"rightArmKinematics.ini\".\n");
+        CD_ERROR("Could not configure from \"%s\".\n",kinematics.c_str());
         return false;
     }
     solverOptions.put("device",solver);
     solverDevice.open(solverOptions);
 
     if (!solverDevice.isValid()) {
-        CD_ERROR("Right arm solver device instantiation not worked.\n");
-        // rightArmSolverDevice.close();  // un-needed?
+        CD_ERROR("solver device instantiation not worked.\n");
+        // solverDevice.close();  // un-needed?
         return false;
     }
 
