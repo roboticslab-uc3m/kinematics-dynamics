@@ -18,7 +18,7 @@ bool teo::TeoGravityCompensator::configure(yarp::os::ResourceFinder &rf) {
 
     yarp::os::Property solverOptions;
     if (! solverOptions.fromConfigFile(ini) ) {  //-- Put first because defaults to wiping out.
-        CD_ERROR("Could not configure from \"%s\".\n",kinematics.c_str());
+        CD_ERROR("Could not configure from \"%s\".\n",ini.c_str());
         return false;
     }
     solverOptions.put("device",solver);
