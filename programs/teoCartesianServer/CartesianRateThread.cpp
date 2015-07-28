@@ -6,13 +6,13 @@
 bool teo::CartesianRateThread::threadInit() {
 
     iEncoders->getAxes( &numMotors );
-    CD_INFO("numMotorsRA: %d.\n",numMotors);
+    CD_INFO("numMotors: %d.\n",numMotors);
 
     solver->getNumLinks( &solverNumLinks );
-    CD_INFO("solverNumLinksRA: %d.\n",solverNumLinks);
+    CD_INFO("solverNumLinks: %d.\n",solverNumLinks);
 
     if( numMotors < solverNumLinks ) {
-        CD_ERROR("numMotorsRA < solverNumLinksRA !!! (must be >=) (RA=rightArm)\n");
+        CD_ERROR("numMotors < solverNumLinks !!! (must be >=)\n");
         return false;
     }
 
@@ -34,10 +34,6 @@ void teo::CartesianRateThread::run() {
     CD_DEBUG_NO_HEADER("[deg]\n");
 
     solver->fwdKin(q,x,o);
-    CD_DEBUG("<-- ");
-    for(int i=0;i<x.size();i++)
-        CD_DEBUG_NO_HEADER("%f ",x[i]);
-    CD_DEBUG_NO_HEADER("[m]\n");
 
     solver->invDyn(q,qdot);
 
