@@ -14,7 +14,6 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
     std::string kinematics = rf.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
     std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot").asString();
-    csStatus = 0;
 
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
