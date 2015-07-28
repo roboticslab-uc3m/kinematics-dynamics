@@ -30,6 +30,9 @@ class ICartesianSolver
         /** Perform inverse kinematics. */
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
 
+        /** Perform differential inverse kinematics. */
+        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) = 0;
+
         /** Perform inverse dynamics. */
         virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t) = 0;
 

@@ -16,6 +16,7 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_lma.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
 #include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
@@ -69,6 +70,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
         /** Perform inverse kinematics. */
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q);
+
+        /** Perform differential inverse kinematics. */
+        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
 
         /** Perform inverse dynamics. */
         virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
