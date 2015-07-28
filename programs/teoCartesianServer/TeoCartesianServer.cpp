@@ -55,10 +55,10 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
         return false;
     }
 
-    /*if ( ! solverDevice.view( cartesianRateThread.solver ) ) {
+    if ( ! solverDevice.view( cartesianRateThread.solver ) ) {
         CD_ERROR("Could not obtain solver interface.\n");
         return false;
-    }*/
+    }
 
     //--------------------------------JOINT----------------------------------//
     Property robotOptions;
