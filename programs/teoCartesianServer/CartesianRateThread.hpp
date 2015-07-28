@@ -42,6 +42,7 @@ class CartesianRateThread : public yarp::os::RateThread {
         /** Robot stuff */
         int numMotors;
         yarp::dev::IEncoders *iEncoders;
+        yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::ITorqueControl *iTorqueControl;
         std::vector< double > q;
         std::vector< double > t;
