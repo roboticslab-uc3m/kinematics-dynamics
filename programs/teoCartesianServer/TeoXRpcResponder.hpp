@@ -43,14 +43,10 @@ class TeoXRpcResponder : public PortReader {
         */
         virtual bool read(ConnectionReader& connection);
 
-        yarp::dev::ICartesianControl *icart;
         yarp::dev::IPositionControl *ipos;
         int *csStatus;
 
     public:
-
-        /** Register a cartesian interface for the PortReader. */
-        void setCartesianInterface(yarp::dev::ICartesianControl* _icart);
 
         /** Register a position interface for the PortReader. */
         void setPositionInterface(yarp::dev::IPositionControl* _ipos);

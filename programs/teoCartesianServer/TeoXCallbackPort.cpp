@@ -128,12 +128,6 @@ void TeoXCallbackPort::onRead(Bottle& b) {
 
 /************************************************************************/
 
-void TeoXCallbackPort::setCartesianInterface(yarp::dev::ICartesianControl* _icart) {
-    icart = _icart;
-}
-
-/************************************************************************/
-
 void TeoXCallbackPort::setPositionInterface(yarp::dev::IPositionControl* _ipos) {
     ipos = _ipos;
 }
