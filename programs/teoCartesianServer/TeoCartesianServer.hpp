@@ -16,6 +16,7 @@
 #include "ColorDebug.hpp"
 #include "TeoXRpcResponder.hpp"
 #include "TeoXCallbackPort.hpp"
+#include "CartesianRateThread.hpp"
 
 #define DEFAULT_SOLVER "kdlsolver"
 #define DEFAULT_KINEMATICS "rightArmKinematics.ini"
@@ -52,6 +53,8 @@ protected:
     bool updateModule();
     bool interruptModule();
     // double getPeriod();
+
+    CartesianRateThread cartesianRateThread;
 
 public:
     TeoCartesianServer();
