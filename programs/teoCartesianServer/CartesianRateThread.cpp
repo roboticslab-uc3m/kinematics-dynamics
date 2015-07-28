@@ -33,19 +33,19 @@ void teo::CartesianRateThread::run() {
         CD_DEBUG_NO_HEADER("%f ",q[i]);
     CD_DEBUG_NO_HEADER("[deg]\n");
 
-    solver->invDyn(q,t);
+    solver->invDyn(q,qdot);
 
     if( numMotors > numMotors )
-        t.resize( numMotors );  //-- Extra motors won't care about torques.
+        qdot.resize( numMotors );  //-- Extra motors won't care about torques.
 
     CD_INFO("--> ");
     for(int i=0;i<numMotors;i++) {
-        CD_INFO_NO_HEADER("%f ",t[i]);
+        CD_INFO_NO_HEADER("%f ",qdot[i]);
     }
     CD_INFO_NO_HEADER("[Nm]\n");
 
     //--tRA[0] = 0.0;  //-- Release... let's do this!
-    iVelocityControl->velocityMove( t.data() );
+    iVelocityControl->velocityMove( qdot.data() );
 
 }
 
