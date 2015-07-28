@@ -58,9 +58,6 @@ class TeoXCallbackPort : public BufferedPort<Bottle> {
 
         TeoXCallbackPort() {}
 
-        /** Register a cartesian interface for the PortReader. */
-        void setCartesianInterface(yarp::dev::ICartesianControl* _icart);
-
         /** Register a position interface for the PortReader. */
         void setPositionInterface(yarp::dev::IPositionControl* _ipos);
 

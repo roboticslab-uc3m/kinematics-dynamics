@@ -11,7 +11,8 @@ TeoCartesianServer::TeoCartesianServer() { }
 /************************************************************************/
 bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
-    std::string solver = DEFAULT_SOLVER;
+    std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
+    std::string kinematics = rf.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
     std::string prefix = DEFAULT_PREFIX;
     std::string movjLocal = DEFAULT_MOVJ_LOCAL;
     std::string movjRemote = DEFAULT_MOVJ_REMOTE;
@@ -21,36 +22,43 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     if (rf.check("help")) {
         printf("TeoCartesianServer options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        printf("\t--solver (cartesian solver device, default: \"%s\")\n",solver.c_str());
+        printf("\t--solver (solver device type, default: \"%s\")\n",DEFAULT_SOLVER);
+        printf("\t--kinematics (limb kinematic description, default: \"%s\")\n",DEFAULT_KINEMATICS);
         printf("\t--prefix (port name prefix, default: \"%s\")\n",prefix.c_str());
         printf("\t--movjLocal (port we open to connect for movj, default: \"%s\")\n",movjLocal.c_str());
         printf("\t--movjRemote (port to whom we connect for movj, default: \"%s\")\n",movjRemote.c_str());
         // Do not exit: let last layer exit so we get help from the complete chain.
     }
 
-    if (rf.check("solver")) solver = rf.find("solver").asString();
     if (rf.check("prefix")) prefix = rf.find("prefix").asString();
     if (rf.check("movjRemote")) movjRemote = rf.find("movjRemote").asString();
     if (rf.check("movjLocal")) movjLocal = rf.find("movjLocal").asString();
-    printf("CartesianServer using solver: %s,  prefix: %s.\n",solver.c_str(),prefix.c_str());
-    printf("CartesianServer using movjLocal: %s, movjRemote: %s.\n",movjLocal.c_str(),movjRemote.c_str());
+    printf("TeoCartesianServer using solver: %s,  kinematics: %s, prefix: %s.\n",solver.c_str(),kinematics.c_str(),prefix.c_str());
+    printf("TeoCartesianServer using movjLocal: %s, movjRemote: %s.\n",movjLocal.c_str(),movjRemote.c_str());
 
     //------------------------------CARTESIAN--------------------------------//
-    Property options;
-    options.fromString(rf.toString());  // Get rf stuff to the cartesian device
-    options.put("device",solver);
-    solverDevice.open(options);
-    if (!solverDevice.isValid()) {
-        CD_ERROR("Could not open solver: %s\n",solver.c_str());
-        printf("Be sure CMake \"ENABLE_RlPlugins_%s\" variable is set \"ON\"\n",solver.c_str());
-        printf("\"SKIP_%s is set\" --> should be --> \"ENABLE_%s is set\"\n\n",solver.c_str(),solver.c_str());
+    std::string kinematicsFull("../kinematics/");
+    kinematicsFull += kinematics;
+    std::string ini = rf.findFileByName( kinematicsFull );
+
+    yarp::os::Property solverOptions;
+    if (! solverOptions.fromConfigFile(ini) ) {  //-- Put first because defaults to wiping out.
+        CD_ERROR("Could not configure from \"%s\".\n",ini.c_str());
         return false;
     }
-    bool ok = solverDevice.view(icart);
-    if (!ok) {
-        fprintf(stderr, "[CartesianServer] warning: Problems acquiring solver interface.\n");
+    solverOptions.put("device",solver);
+    solverDevice.open(solverOptions);
+
+    if (!solverDevice.isValid()) {
+        CD_ERROR("solver device instantiation not worked.\n");
+        // solverDevice.close();  // un-needed?
         return false;
-    } else printf("[CartesianServer] success: Acquired cartesian interface.\n");
+    }
+
+    /*if ( ! solverDevice.view( cartesianRateThread.solver ) ) {
+        CD_ERROR("Could not obtain solver interface.\n");
+        return false;
+    }*/
 
     //--------------------------------JOINT----------------------------------//
     Property robotOptions;
@@ -72,14 +80,12 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setPositionInterface(ipos);
-    xResponder.setCartesianInterface(icart);
     xResponder.setCsStatus(&csStatus);
     ConstString xRpcServerStr(prefix);
     xRpcServerStr += "/cartesianServer/rpc:i";
     xRpcServer.open(xRpcServerStr);
     xRpcServer.setReader(xResponder);
     xPort.setPositionInterface(ipos);
-    xPort.setCartesianInterface(icart);
     xPort.setCsStatus(&csStatus);
     ConstString xPortStr(prefix);
     xPortStr += "/cartesianServer/command:i";

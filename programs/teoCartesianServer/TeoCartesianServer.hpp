@@ -18,6 +18,7 @@
 #include "TeoXCallbackPort.hpp"
 
 #define DEFAULT_SOLVER "kdlsolver"
+#define DEFAULT_KINEMATICS "rightArmKinematics.ini"
 #define DEFAULT_PREFIX "/teoSim/rightArm"
 #define DEFAULT_MOVJ_LOCAL "/teoSim/rightArm/movjCartesianServer"
 #define DEFAULT_MOVJ_REMOTE "/teoSim/rightArm"
@@ -40,7 +41,6 @@ protected:
     yarp::dev::PolyDriver solverDevice;
     yarp::dev::PolyDriver robotDevice;
 
-    yarp::dev::ICartesianControl *icart;
     yarp::dev::IPositionControl *ipos;
     int csStatus;
 
