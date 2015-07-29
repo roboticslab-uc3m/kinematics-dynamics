@@ -66,10 +66,13 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         virtual bool getNumLinks(int* numLinks);
 
         /** Perform forward kinematics. */
-        virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o);
+        virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
+
+        /** Obtain error with respect to forward kinematics. */
+        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
 
         /** Perform inverse kinematics. */
-        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q);
+        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q);
 
         /** Perform differential inverse kinematics. */
         virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
@@ -131,6 +134,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         double toRad(const double inDeg) {
             return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
         }
+
+        bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
+        bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
 
         KDL::RotationalInterpolation_SingleAxis* _orient;
         double _eqradius;

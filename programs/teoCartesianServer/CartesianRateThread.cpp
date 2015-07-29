@@ -42,25 +42,26 @@ void teo::CartesianRateThread::run() {
     lineCount++;
     yarp::os::Bottle lineBottle(line);  //-- yes, using a bottle to parse a string
 
+    //-- xDesired from file
     for(int i=0; i<xDesired.size(); i++)
         xDesired[i] = lineBottle.get( i ).asDouble();
 
+    //-- xDotDesired from file
     for(int i=0; i<xDotDesired.size(); i++)
         xDotDesired[i] = lineBottle.get( i+xDesired.size() ).asDouble();
 
+    //-- qReal from encoders
     iEncoders->getEncoders( qReal.data() );
 
-    CD_DEBUG("<-- ");
-    for(int i=0; i<qReal.size(); i++)
-        CD_DEBUG_NO_HEADER("%f ",qReal[i]);
-    CD_DEBUG_NO_HEADER("[deg]\n");
+    //-- xError = xDesired - xReal, where xReal is fwdKin of qReal
+    solver->fwdKinError(xDesired,qReal, xError);
 
-    solver->fwdKin(qReal, xReal,oReal);
+    //-- control law in cartesian space
+    for(int i=0; i<xDotCmd.size(); i++)
+        xDotCmd[i] = xDotDesired[i] + DEFAULT_GAIN * xError[i];
 
-    //xError = xDesired - xReal;
-    //xDotCmd = xDotDesired + GAIN * xError * (cmcMs/1000.0);  // GAIN=0 => xCmd = xDotDesired
-    //solver->diffInvKin(qReal,xDotCmd, qDotCmd);
-    solver->diffInvKin(qReal,xDotDesired, qDotCmd); // hack GAIN = 0
+    //-- final command to joint space
+    solver->diffInvKin(qReal,xDotCmd, qDotCmd);
 
     CD_INFO("--> ");
     for(int i=0; i<qDotCmd.size(); i++) {

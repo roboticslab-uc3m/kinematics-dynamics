@@ -13,6 +13,7 @@
 #include "ICartesianSolver.h"
 
 #define DEFAULT_MS 50  // [ms], overwritten by parent DEFAULT_PT_MODE_MS.
+#define DEFAULT_GAIN 0
 
 namespace teo
 {
@@ -50,6 +51,7 @@ class CartesianRateThread : public yarp::os::RateThread {
         std::vector< double > xDesired;
         std::vector< double > xDotDesired;
         std::vector< double > xDotCmd;
+        std::vector< double > xError;
 
         /** File stuff */
         std::ifstream ifs;
