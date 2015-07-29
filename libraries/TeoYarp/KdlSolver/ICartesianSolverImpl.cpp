@@ -11,7 +11,7 @@ bool teo::KdlSolver::getNumLinks(int* numLinks) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) {
+bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x) {
 
     KDL::JntArray qInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
@@ -22,90 +22,44 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x
     KDL::ChainFkSolverPos_recursive fksolver = KDL::ChainFkSolverPos_recursive(chain);
     fksolver.JntToCart(qInRad,fOutCart);
 
-    x.resize(3);
-    x[0] = fOutCart.p.data[0];
-    x[1] = fOutCart.p.data[1];
-    x[2] = fOutCart.p.data[2];
+    frameToVector(fOutCart,x);
+    return true;
+}
 
-    if (angleRepr == "axisAngle")
-    {
-        KDL::Vector rotVector = fOutCart.M.GetRot();
-        o.resize(4);
-        o[3] = fOutCart.M.GetRotAngle(rotVector);  // Normalizes as colateral effect
-        o[0] = rotVector[0];
-        o[1] = rotVector[1];
-        o[2] = rotVector[2];
-        CD_INFO("KDL computed cart: %f %f %f | %f %f %f %f.\n",
-            fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1],o[2],o[3]);
-    }
-    else if (angleRepr == "eulerYZ") //-- like ASIBOT
-    {
-        double alfa, beta, gamma;
-        fOutCart.M.GetEulerZYZ(alfa, beta, gamma);
-        o.resize(2);
-        o[0] = toDeg(beta);
-        o[1] = toDeg(gamma);
-        CD_INFO("KDL computed cart: %f %f %f | %f %f.\n",
-            fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1]);
-    }
-    else if (angleRepr == "eulerZYZ")
-    {
-        double alfa, beta, gamma;
-        fOutCart.M.GetEulerZYZ(alfa, beta, gamma);
-        o.resize(3);
-        o[0] = toDeg(alfa);
-        o[1] = toDeg(beta);
-        o[2] = toDeg(gamma);
-        CD_INFO("KDL computed current cart: %f %f %f | %f %f %f.\n",
-            fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1],o[2]);
-    }
-    else if (angleRepr == "RPY")
-    {
-        double alfa, beta, gamma;
-        fOutCart.M.GetRPY(alfa, beta, gamma);
-        o.resize(3);
-        o[0] = toDeg(alfa);
-        o[1] = toDeg(beta);
-        o[2] = toDeg(gamma);
-        CD_INFO("KDL computed cart: %f %f %f | %f %f %f.\n",
-            fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2],o[0],o[1],o[2]);
-    }
-    else  //-- No known angle repr.
-    {
-        CD_INFO("KDL computed cart: %f %f %f\n",fOutCart.p.data[0],fOutCart.p.data[1],fOutCart.p.data[2]);
-    }
+// -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) {
+
+    KDL::Frame frameXd;
+    vectorToFrame(xd,frameXd);
+
+    KDL::JntArray qInRad = KDL::JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qInRad(motor)=toRad(q[motor]);
+
+    //-- Main fwdKin (pos) solver lines
+    KDL::Frame f;
+    KDL::ChainFkSolverPos_recursive fksolver = KDL::ChainFkSolverPos_recursive(chain);
+    fksolver.JntToCart(qInRad,f);
+
+    KDL::Twist d = KDL::diff(frameXd,f);
+    x.resize(6);
+    x[0] = d.vel.x();
+    x[1] = d.vel.y();
+    x[2] = d.vel.z();
+    x[3] = d.rot.x();
+    x[4] = d.vel.y();
+    x[5] = d.vel.z();
 
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) {
+bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q) {
 
     KDL::Frame frameXd;
-    frameXd.p.data[0]=xd[0];
-    frameXd.p.data[1]=xd[1];
-    frameXd.p.data[2]=xd[2];
-
-    if (angleRepr == "axisAngle") {
-        frameXd.M = KDL::Rotation::Rot(KDL::Vector(od[0],od[1],od[2]),od[3]);
-    }
-    else if (angleRepr == "eulerYZ")  //-- like ASIBOT
-    {
-        frameXd.M = KDL::Rotation::EulerZYZ(::atan2(xd[1],xd[0]),toRad(od[0]), toRad(od[1]));
-    }
-    else if (angleRepr == "eulerZYZ")
-    {
-        frameXd.M = KDL::Rotation::EulerZYZ(toRad(od[0]), toRad(od[1]), toRad(od[2]));
-    }
-    else if (angleRepr == "RPY")
-    {
-        frameXd.M = KDL::Rotation::RPY(toRad(od[0]), toRad(od[1]), toRad(od[2]));
-    }
-    else  //-- No known angle repr.
-    {
-        CD_WARNING("Not compatible angleRepr: %s\n",angleRepr.c_str());
-    }
+    vectorToFrame(xd,frameXd);
 
     Eigen::Matrix<double,6,1> L;
     L(0)=1;L(1)=1;L(2)=1;
@@ -237,6 +191,90 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
 
     CD_WARNING("Something went wrong.\n");
     return false;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::vectorToFrame(const std::vector<double> &x, KDL::Frame& f) {
+
+    f.p.data[0]=x[0];
+    f.p.data[1]=x[1];
+    f.p.data[2]=x[2];
+
+    if (angleRepr == "axisAngle") {
+        f.M = KDL::Rotation::Rot(KDL::Vector(x[3],x[4],x[5]),x[6]);
+    }
+    else if (angleRepr == "eulerYZ")  //-- like ASIBOT
+    {
+        f.M = KDL::Rotation::EulerZYZ(::atan2(x[1],x[0]),toRad(x[3]), toRad(x[4]));
+    }
+    else if (angleRepr == "eulerZYZ")
+    {
+        f.M = KDL::Rotation::EulerZYZ(toRad(x[3]), toRad(x[4]), toRad(x[5]));
+    }
+    else if (angleRepr == "RPY")
+    {
+        f.M = KDL::Rotation::RPY(toRad(x[3]), toRad(x[4]), toRad(x[5]));
+    }
+    else  //-- No known angle repr.
+    {
+        CD_WARNING("angleRepr unknown %s\n",angleRepr.c_str());
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::frameToVector(const KDL::Frame& f, std::vector<double> &x) {
+
+    //-- Fill angle first, then 0-2 for position.
+
+    if (angleRepr == "axisAngle")
+    {
+        KDL::Vector rotVector = f.M.GetRot();
+        x.resize(7);
+        x[6] = f.M.GetRotAngle(rotVector);  // Normalizes as colateral effect
+        x[3] = rotVector[0];
+        x[4] = rotVector[1];
+        x[5] = rotVector[2];
+    }
+    else if (angleRepr == "eulerYZ") //-- like ASIBOT
+    {
+        double alfa, beta, gamma;
+        f.M.GetEulerZYZ(alfa, beta, gamma);
+        x.resize(5);
+        x[3] = toDeg(beta);
+        x[4] = toDeg(gamma);
+    }
+    else if (angleRepr == "eulerZYZ")
+    {
+        double alfa, beta, gamma;
+        f.M.GetEulerZYZ(alfa, beta, gamma);
+        x.resize(6);
+        x[3] = toDeg(alfa);
+        x[4] = toDeg(beta);
+        x[5] = toDeg(gamma);
+    }
+    else if (angleRepr == "RPY")
+    {
+        double alfa, beta, gamma;
+        f.M.GetRPY(alfa, beta, gamma);
+        x.resize(6);
+        x[3] = toDeg(alfa);
+        x[4] = toDeg(beta);
+        x[5] = toDeg(gamma);
+    }
+    else  //-- No known angle repr.
+    {
+        CD_WARNING("angleRepr unknown %s\n",angleRepr.c_str());
+    }
+
+    x[0] = f.p.data[0];
+    x[1] = f.p.data[1];
+    x[2] = f.p.data[2];
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------

@@ -128,8 +128,8 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     _eqradius = 1; //0.000001;
     _aggregate = false;
 
-    std::vector<double> q(numLinks,0),x,o;
-    this->fwdKin(q,x,o);
+    std::vector<double> q(numLinks,0),x;
+    this->fwdKin(q,x);
 
     return true;
 }

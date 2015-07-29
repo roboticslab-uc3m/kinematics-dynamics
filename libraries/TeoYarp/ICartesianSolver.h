@@ -25,10 +25,13 @@ class ICartesianSolver
         virtual bool getNumLinks(int* numLinks) = 0;
 
         /** Perform forward kinematics. */
-        virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x, std::vector<double> &o) = 0;
+        virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
+
+        /** Obtain error with respect to forward kinematics. */
+        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) = 0;
 
         /** Perform inverse kinematics. */
-        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &od, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
+        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
 
         /** Perform differential inverse kinematics. */
         virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) = 0;
