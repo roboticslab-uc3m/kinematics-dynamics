@@ -19,7 +19,8 @@ bool teo::CartesianRateThread::threadInit() {
     qReal.resize( numMotors );
     qDotCmd.resize( numMotors );
     xDesired.resize( 3 + 3 );  // x y z + r p y
-    xDotDesired.resize( 3 + 3 );  // x y z + r p y
+    xDotDesired.resize( 6 );
+    xDotCmd.resize( 6 );
 
     iVelocityControl->setVelocityMode();
 
