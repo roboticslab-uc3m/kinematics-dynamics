@@ -47,9 +47,9 @@ class KdlSolverTest : public testing::Test
 
 TEST_F( KdlSolverTest, KdlSolverFwdKin1)
 {
-    std::vector<double> q(1),x,o;
+    std::vector<double> q(1),x;
     q[0]=0.0;
-    iCartesianSolver->fwdKin(q,x,o);
+    iCartesianSolver->fwdKin(q,x);
     ASSERT_EQ(x.size(), 3 );
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
@@ -58,9 +58,9 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin1)
 
 TEST_F( KdlSolverTest, KdlSolverFwdKin2)
 {
-    std::vector<double> q(1),x,o;
+    std::vector<double> q(1),x;
     q[0]=90.0;
-    iCartesianSolver->fwdKin(q,x,o);
+    iCartesianSolver->fwdKin(q,x);
     ASSERT_EQ(x.size(), 3 );
     ASSERT_NEAR(x[0], 0, 1e-9);
     ASSERT_NEAR(x[1], 1, 1e-9);
@@ -69,24 +69,24 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin2)
 
 TEST_F( KdlSolverTest, KdlSolverInvKin1)
 {
-    std::vector<double> xd(3),od(4),qGuess(1),q;
+    std::vector<double> xd(3),qGuess(1),q;
     xd[0] = 1;
     xd[1] = 0;
     xd[2] = 0;
     qGuess[0] = 0;
-    iCartesianSolver->invKin(xd,od,qGuess,q);
+    iCartesianSolver->invKin(xd,qGuess,q);
     ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 0, 1e-3);
 }
 
 TEST_F( KdlSolverTest, KdlSolverInvKin2)
 {
-    std::vector<double> xd(3),od(4),qGuess(1),q;
+    std::vector<double> xd(3),qGuess(1),q;
     xd[0] = 0;
     xd[1] = 1;
     xd[2] = 0;
     qGuess[0] = 0;
-    iCartesianSolver->invKin(xd,od,qGuess,q);
+    iCartesianSolver->invKin(xd,qGuess,q);
     ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
