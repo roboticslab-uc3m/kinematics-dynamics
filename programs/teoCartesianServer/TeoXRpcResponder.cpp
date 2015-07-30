@@ -27,20 +27,12 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
             out.addVocab(VOCAB_FAILED);
             return out.write(*returnToSender);
         }
-        std::string fileName = rf->findFileByName(in.get(1).asString());
-        cartesianRateThread->ifs.open( fileName.c_str() );
-        if( ! cartesianRateThread->ifs.is_open() )
+        if( ! cartesianRateThread->load( in.get(1).asString() ) )
         {
-            CD_ERROR("Could not open read file: %s.\n",fileName.c_str());
+            CD_ERROR("cartesianRateThread->load failed\n");
             out.addVocab(VOCAB_FAILED);
             return out.write(*returnToSender);
         }
-        CD_SUCCESS("Opened file: %s.\n",fileName.c_str());
-
-        //-- Start the thread.
-        CD_INFO("Start thread...\n");
-        cartesianRateThread->start();
-
         out.addVocab(VOCAB_OK);
         return out.write(*returnToSender);
     }
