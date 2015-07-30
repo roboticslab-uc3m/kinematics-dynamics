@@ -27,21 +27,19 @@ namespace teo
  *
  * @brief Implements an xRpcPort responder (callback on RPC).
  */
-class TeoXRpcResponder : public PortReader {
+class TeoXRpcResponder : public PortReader
+{
+public:
+    void setCartesianRateThread(CartesianRateThread* cartesianRateThread)
+    {
+        this->cartesianRateThread = cartesianRateThread;
+    }
 
-    protected:
-        /**
-        * Implement the actual responder (callback on RPC).
-        */
-        virtual bool read(ConnectionReader& connection);
+protected:
+    /** Implement the actual responder (callback on RPC). */
+    virtual bool read(ConnectionReader& connection);
 
-        CartesianRateThread *cartesianRateThread;
-
-    public:
-
-        void setCartesianRateThread(CartesianRateThread* cartesianRateThread) {
-            this->cartesianRateThread = cartesianRateThread;
-        }
+    CartesianRateThread *cartesianRateThread;
 };
 
 }  // namespace teo
