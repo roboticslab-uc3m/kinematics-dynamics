@@ -30,6 +30,17 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         CD_WARNING("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
     }
 
+    yarp::sig::Matrix ymH0(4,4);
+    std::string ycsH0("H0");
+    if( ! getMatrixFromProperties(config, ycsH0, ymH0)){
+        ymH0.eye();
+        CD_SUCCESS("Using default H0: H0 = I\n");
+    }
+    else CD_SUCCESS("Using custom H0:\n%s\n",ymH0.toString().c_str());
+    KDL::Vector kdlVec0(ymH0(0,3),ymH0(1,3),ymH0(2,3));
+    KDL::Rotation kdlRot0( ymH0(0,0),ymH0(0,1),ymH0(0,2),ymH0(1,0),ymH0(1,1),ymH0(1,2),ymH0(2,0),ymH0(2,1),ymH0(2,2));
+    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0,kdlVec0)));  //-- H0 = Frame(kdlRot0,kdlVec0);
+
     for(int linkIndex=0;linkIndex<numLinks;linkIndex++) {
 
         std::string link("link_");
@@ -144,3 +155,22 @@ bool teo::KdlSolver::close() {
 
 // -----------------------------------------------------------------------------
 
+bool teo::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H) {
+
+    yarp::os::Bottle *bH=options.find(tag).asList();
+    if (!bH) return false;
+
+    int i=0;
+    int j=0;
+    H.zero();
+    for (int cnt=0; (cnt<bH->size()) && (cnt<H.rows()*H.cols()); cnt++) {
+        H(i,j)=bH->get(cnt).asDouble();
+        if (++j>=H.cols()) {
+            i++;
+            j=0;
+        }
+    }
+    return true;
+}
+
+// -----------------------------------------------------------------------------

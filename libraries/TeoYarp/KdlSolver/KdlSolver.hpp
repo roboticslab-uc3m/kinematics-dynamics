@@ -138,6 +138,8 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
         bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
 
+        bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
+
         KDL::RotationalInterpolation_SingleAxis* _orient;
         double _eqradius;
         bool _aggregate;
