@@ -25,50 +25,50 @@ namespace teo
  * @brief The actual \ref teoCartesianServer periodical thread.
  *
  */
-class CartesianRateThread : public yarp::os::RateThread {
+class CartesianRateThread : public yarp::os::RateThread
+{
+public:
+    //-- Set the Thread Rate in the class constructor
+    CartesianRateThread() : RateThread(DEFAULT_MS) {}  // In ms
 
-    public:
-        // Set the Thread Rate in the class constructor
-        CartesianRateThread() : RateThread(DEFAULT_MS) {}  // In ms
+    /** Initialization method. */
+    virtual bool threadInit();
 
-        /** Initialization method. */
-        virtual bool threadInit();
+    /** Loop function. This is the thread itself. */
+    virtual void run();
 
-        /** Loop function. This is the thread itself. */
-        virtual void run();
+    /** Load function.*/
+    bool load(const std::string& fileName);
 
-        /** Load function.*/
-        bool load(const std::string& fileName);
+    /** Solver stuff */
+    int solverNumLinks;
+    teo::ICartesianSolver *solver;
 
-        /** Solver stuff */
-        int solverNumLinks;
-        teo::ICartesianSolver *solver;
+    /** Robot stuff */
+    int numMotors;
+    yarp::dev::IEncoders *iEncoders;
+    yarp::dev::IVelocityControl *iVelocityControl;
 
-        /** Robot stuff */
-        int numMotors;
-        yarp::dev::IEncoders *iEncoders;
-        yarp::dev::IVelocityControl *iVelocityControl;
+    void setRf(yarp::os::ResourceFinder* rf) {
+        this->rf = rf;
+    }
 
-        void setRf(yarp::os::ResourceFinder* rf) {
-            this->rf = rf;
-        }
+protected:
+    yarp::os::ResourceFinder *rf;
 
-    protected:
+    /** File stuff */
+    std::ifstream ifs;
+    int lineCount;
 
-        yarp::os::ResourceFinder *rf;
-
-        /** File stuff */
-        std::ifstream ifs;
-        int lineCount;
-
-        std::vector< double > qReal;
-        std::vector< double > qDotCmd;
-        std::vector< double > xReal;
-        std::vector< double > oReal;
-        std::vector< double > xDesired;
-        std::vector< double > xDotDesired;
-        std::vector< double > xDotCmd;
-        std::vector< double > xError;
+    /** Robot control stuff */
+    std::vector< double > qReal;
+    std::vector< double > qDotCmd;
+    std::vector< double > xReal;
+    std::vector< double > oReal;
+    std::vector< double > xDesired;
+    std::vector< double > xDotDesired;
+    std::vector< double > xDotCmd;
+    std::vector< double > xError;
 };
 
 }  // namespace teo
