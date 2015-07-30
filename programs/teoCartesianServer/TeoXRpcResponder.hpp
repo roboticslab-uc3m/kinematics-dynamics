@@ -14,8 +14,6 @@
 
 #include "CartesianRateThread.hpp"
 
-#define MAX_NUM_MOTORS 100
-
 #define VOCAB_HELP VOCAB4('h','e','l','p')
 #define VOCAB_LOAD VOCAB4('l','o','a','d')
 
