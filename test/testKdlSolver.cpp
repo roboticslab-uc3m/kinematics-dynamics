@@ -50,7 +50,6 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin1)
     std::vector<double> q(1),x;
     q[0]=0.0;
     iCartesianSolver->fwdKin(q,x);
-    ASSERT_EQ(x.size(), 3 );
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
     ASSERT_NEAR(x[2], 0, 1e-9);
@@ -61,7 +60,6 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin2)
     std::vector<double> q(1),x;
     q[0]=90.0;
     iCartesianSolver->fwdKin(q,x);
-    ASSERT_EQ(x.size(), 3 );
     ASSERT_NEAR(x[0], 0, 1e-9);
     ASSERT_NEAR(x[1], 1, 1e-9);
     ASSERT_NEAR(x[2], 0, 1e-9);
