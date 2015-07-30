@@ -28,8 +28,12 @@ namespace teo
 class CartesianRateThread : public yarp::os::RateThread
 {
 public:
-    //-- Set the Thread Rate in the class constructor
-    CartesianRateThread() : RateThread(DEFAULT_MS) {}  // In ms
+    /** Set the Thread Rate in the class constructor. */
+    CartesianRateThread() : RateThread(DEFAULT_MS)
+    {
+        play = false;
+        this->start();
+    }
 
     /** Initialization method. */
     virtual bool threadInit();
@@ -59,6 +63,8 @@ protected:
     /** File stuff */
     std::ifstream ifs;
     int lineCount;
+
+    bool play;
 
     /** Robot control stuff */
     std::vector< double > qReal;
