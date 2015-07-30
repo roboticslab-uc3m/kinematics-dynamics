@@ -7,6 +7,14 @@ namespace teo
 
 /************************************************************************/
 
+CartesianRateThread::CartesianRateThread() : RateThread(DEFAULT_MS)
+{
+    play = false;
+    this->start();
+}
+
+/************************************************************************/
+
 bool CartesianRateThread::threadInit()
 {
     iEncoders->getAxes( &numMotors );
