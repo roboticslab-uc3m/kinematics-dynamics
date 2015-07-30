@@ -40,6 +40,9 @@ public:
     /** Load function.*/
     bool load(const std::string& fileName);
 
+    /** Stat */
+    bool stat(std::vector<double>& stat);
+
     /** Solver stuff */
     int solverNumLinks;
     teo::ICartesianSolver *solver;

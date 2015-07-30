@@ -15,6 +15,7 @@
 
 #define VOCAB_HELP VOCAB4('h','e','l','p')
 #define VOCAB_LOAD VOCAB4('l','o','a','d')
+#define VOCAB_STAT VOCAB4('s','t','a','t')
 
 using namespace yarp::os;
 using namespace yarp::dev;
