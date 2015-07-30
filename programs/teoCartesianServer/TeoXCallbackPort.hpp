@@ -14,13 +14,8 @@
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
-#include <yarp/sig/Matrix.h>
-#include <yarp/math/Math.h>
-
 using namespace yarp::os;
 using namespace yarp::dev;
-using namespace yarp::sig;
-using namespace yarp::math;
 
 namespace teo
 {
