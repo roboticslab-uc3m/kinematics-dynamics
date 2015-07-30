@@ -16,7 +16,7 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
     if (returnToSender==NULL) return false;
     if ((in.get(0).asString() == "help")||(in.get(0).asVocab() == VOCAB_HELP))  // help //
     {
-        out.addString("Available commands: [help] [load]");
+        out.addString("Available commands: [help] [load] [stat]");
         return out.write(*returnToSender);
     }
     else if ((in.get(0).asString() == "load")||(in.get(0).asVocab() == VOCAB_LOAD))  // load //
@@ -34,6 +34,14 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
             return out.write(*returnToSender);
         }
         out.addVocab(VOCAB_OK);
+        return out.write(*returnToSender);
+    }
+    else if ((in.get(0).asString() == "stat")||(in.get(0).asVocab() == VOCAB_STAT))  // stat //
+    {
+        std::vector<double> stat;
+        cartesianRateThread->stat(stat);
+        for(int i=0;i<stat.size();i++)
+            out.addDouble(stat[i]);
         return out.write(*returnToSender);
     }
     else

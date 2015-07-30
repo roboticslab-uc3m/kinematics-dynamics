@@ -108,4 +108,15 @@ void CartesianRateThread::run()
 
 /************************************************************************/
 
+bool CartesianRateThread::stat(std::vector<double>& stat)
+{
+    //-- qReal from encoders
+    iEncoders->getEncoders( qReal.data() );
+
+    solver->fwdKin(qReal, stat);
+    return true;
+}
+
+/************************************************************************/
+
 }  // namespace teo
