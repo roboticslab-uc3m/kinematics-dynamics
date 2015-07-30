@@ -29,11 +29,7 @@ class CartesianRateThread : public yarp::os::RateThread
 {
 public:
     /** Set the Thread Rate in the class constructor. */
-    CartesianRateThread() : RateThread(DEFAULT_MS)
-    {
-        play = false;
-        this->start();
-    }
+    CartesianRateThread();
 
     /** Initialization method. */
     virtual bool threadInit();
