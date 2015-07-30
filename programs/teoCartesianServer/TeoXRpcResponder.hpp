@@ -6,7 +6,6 @@
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Time.h>
-#include <yarp/os/ResourceFinder.h>
 
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/CartesianControl.h>
@@ -37,15 +36,11 @@ class TeoXRpcResponder : public PortReader {
         virtual bool read(ConnectionReader& connection);
 
         CartesianRateThread *cartesianRateThread;
-        ResourceFinder *rf;
 
     public:
 
         void setCartesianRateThread(CartesianRateThread* cartesianRateThread) {
             this->cartesianRateThread = cartesianRateThread;
-        }
-        void setRf(ResourceFinder* rf) {
-            this->rf = rf;
         }
 };
 

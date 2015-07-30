@@ -3,8 +3,9 @@
 #include "CartesianRateThread.hpp"
 
 /************************************************************************/
-bool teo::CartesianRateThread::threadInit() {
 
+bool teo::CartesianRateThread::threadInit()
+{
     iEncoders->getAxes( &numMotors );
     CD_INFO("numMotors: %d.\n",numMotors);
 
@@ -29,8 +30,9 @@ bool teo::CartesianRateThread::threadInit() {
 }
 
 /************************************************************************/
-void teo::CartesianRateThread::run() {
 
+void teo::CartesianRateThread::run()
+{
     std::string line;
     if (! getline( ifs, line) )
     {
@@ -71,7 +73,25 @@ void teo::CartesianRateThread::run() {
     CD_INFO_NO_HEADER("[deg/s]\n");
 
     iVelocityControl->velocityMove( qDotCmd.data() );
+}
 
+/************************************************************************/
+
+bool teo::CartesianRateThread::load(const std::string& fileName)
+{
+    std::string fullFileName = rf->findFileByName( fileName );
+    this->ifs.open( fullFileName.c_str() );
+    if( ! this->ifs.is_open() )
+    {
+        CD_ERROR("Could not open read file: %s.\n",fullFileName.c_str());
+        return false;
+    }
+    CD_SUCCESS("Opened file: %s.\n",fileName.c_str());
+
+    //-- Start the thread.
+    CD_INFO("Start thread...\n");
+    this->start();
+    return true;
 }
 
 /************************************************************************/

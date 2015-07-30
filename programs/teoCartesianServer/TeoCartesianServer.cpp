@@ -78,7 +78,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
 
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setCartesianRateThread(&cartesianRateThread);
-    xResponder.setRf(&rf);
+    cartesianRateThread.setRf(&rf);
     std::string xRpcServerStr(local);
     xRpcServerStr += "/rpc:i";
     xRpcServer.open(xRpcServerStr);

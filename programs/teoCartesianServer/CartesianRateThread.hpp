@@ -8,6 +8,7 @@
 
 #include <yarp/os/RateThread.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/os/ResourceFinder.h>
 
 #include "ColorDebug.hpp"
 #include "ICartesianSolver.h"
@@ -36,6 +37,9 @@ class CartesianRateThread : public yarp::os::RateThread {
         /** Loop function. This is the thread itself. */
         virtual void run();
 
+        /** Load function.*/
+        bool load(const std::string& fileName);
+
         /** Solver stuff */
         int solverNumLinks;
         teo::ICartesianSolver *solver;
@@ -44,6 +48,19 @@ class CartesianRateThread : public yarp::os::RateThread {
         int numMotors;
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IVelocityControl *iVelocityControl;
+
+        void setRf(yarp::os::ResourceFinder* rf) {
+            this->rf = rf;
+        }
+
+    protected:
+
+        yarp::os::ResourceFinder *rf;
+
+        /** File stuff */
+        std::ifstream ifs;
+        int lineCount;
+
         std::vector< double > qReal;
         std::vector< double > qDotCmd;
         std::vector< double > xReal;
@@ -52,13 +69,6 @@ class CartesianRateThread : public yarp::os::RateThread {
         std::vector< double > xDotDesired;
         std::vector< double > xDotCmd;
         std::vector< double > xError;
-
-        /** File stuff */
-        std::ifstream ifs;
-
-    protected:
-
-        int lineCount;
 };
 
 }  // namespace teo
