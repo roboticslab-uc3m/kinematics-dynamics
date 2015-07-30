@@ -79,6 +79,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     //---------------------CONFIGURE PORTs------------------------
     xResponder.setCartesianRateThread(&cartesianRateThread);
     cartesianRateThread.setRf(&rf);
+    cartesianRateThread.start();
     std::string xRpcServerStr(local);
     xRpcServerStr += "/rpc:i";
     xRpcServer.open(xRpcServerStr);
@@ -98,6 +99,7 @@ bool TeoCartesianServer::updateModule() {
 
 /************************************************************************/
 bool TeoCartesianServer::interruptModule() {
+    cartesianRateThread.stop();
     xRpcServer.interrupt();
     xPort.disableCallback();
     solverDevice.close();
