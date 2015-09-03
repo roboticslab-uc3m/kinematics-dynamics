@@ -133,14 +133,22 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         CD_SUCCESS("Added: %s (Type %s) (x %f) (y %f) (z %f)\n",xyzLink.c_str(),linkType.c_str(),linkX,linkY,linkZ);
     }
 
-    printf("KdlSolver chain number of segments: %d\n",chain.getNrOfSegments());
+    yarp::sig::Matrix ymHN(4,4);
+    std::string ycsHN("HN");
+    if(!getMatrixFromProperties(config,ycsHN,ymHN)){
+        ymHN.eye();
+        CD_SUCCESS("Using default HN: HN = I\n");
+    }
+    else CD_SUCCESS("Using custom HN:\n%s\n",ymHN.toString().c_str());
+    KDL::Vector kdlVecN(ymHN(0,3),ymHN(1,3),ymHN(2,3));
+    KDL::Rotation kdlRotN( ymHN(0,0),ymHN(0,1),ymHN(0,2),ymHN(1,0),ymHN(1,1),ymHN(1,2),ymHN(2,0),ymHN(2,1),ymHN(2,2));
+    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN,kdlVecN)));
+
+    CD_INFO("Chain number of segments including none-joint (H0 and HN): %d\n",chain.getNrOfSegments());
 
     _orient = new KDL::RotationalInterpolation_SingleAxis();
     _eqradius = 1; //0.000001;
     _aggregate = false;
-
-    std::vector<double> q(numLinks,0),x;
-    this->fwdKin(q,x);
 
     return true;
 }
