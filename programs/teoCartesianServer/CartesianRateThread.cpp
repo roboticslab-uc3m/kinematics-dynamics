@@ -114,22 +114,24 @@ void CartesianRateThread::run()
 
 bool CartesianRateThread::stat(std::vector<double>& stat)
 {
+    bool ok = true;
     //-- qReal from encoders
-    iEncoders->getEncoders( qReal.data() );
+    ok &= iEncoders->getEncoders( qReal.data() );
 
-    solver->fwdKin(qReal, stat);
-    return true;
+    ok &= solver->fwdKin(qReal, stat);
+    return ok;
 }
 
 /************************************************************************/
 
 bool CartesianRateThread::inv(std::vector<double> &xd, std::vector<double> &q)
 {
+    bool ok = true;
     //-- qReal from encoders
-    iEncoders->getEncoders( qReal.data() );
+    ok &= iEncoders->getEncoders( qReal.data() );
 
-    solver->invKin(xd, qReal, q);
-    return true;
+    ok &= solver->invKin(xd, qReal, q);
+    return ok;
 }
 
 /************************************************************************/
