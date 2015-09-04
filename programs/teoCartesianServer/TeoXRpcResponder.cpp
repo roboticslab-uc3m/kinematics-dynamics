@@ -44,6 +44,16 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
             out.addDouble(stat[i]);
         return out.write(*returnToSender);
     }
+    else if  ((in.get(0).asString() == "inv")||(in.get(0).asVocab() == VOCAB_INV))  // inv //
+    {
+        std::vector<double> xd, q;
+        for(int i=1;i<in.size();i++)
+            xd.push_back(in.get(i).asDouble());
+        cartesianRateThread->inv(xd,q);
+        for(int i=0;i<q.size();i++)
+            out.addDouble(q[i]);
+        return out.write(*returnToSender);
+    }
     else
     {
         fprintf(stderr,"[xRpcResponder] fail: Unknown command (use 'help' if needed).\n");

@@ -123,4 +123,15 @@ bool CartesianRateThread::stat(std::vector<double>& stat)
 
 /************************************************************************/
 
+bool CartesianRateThread::inv(std::vector<double> &xd, std::vector<double> &q)
+{
+    //-- qReal from encoders
+    iEncoders->getEncoders( qReal.data() );
+
+    solver->invKin(xd, qReal, q);
+    return true;
+}
+
+/************************************************************************/
+
 }  // namespace teo

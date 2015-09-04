@@ -43,6 +43,9 @@ public:
     /** Stat */
     bool stat(std::vector<double>& stat);
 
+    /** Inv */
+    bool inv(std::vector<double> &xd, std::vector<double> &q);
+
     /** Solver stuff */
     int solverNumLinks;
     teo::ICartesianSolver *solver;
