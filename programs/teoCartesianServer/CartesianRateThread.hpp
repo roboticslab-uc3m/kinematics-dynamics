@@ -37,14 +37,17 @@ public:
     /** Loop function. This is the thread itself. */
     virtual void run();
 
-    /** Load function.*/
+    /** load */
     bool load(const std::string& fileName);
 
-    /** Stat */
+    /** stat */
     bool stat(std::vector<double>& stat);
 
-    /** Inv */
+    /** inv */
     bool inv(std::vector<double> &xd, std::vector<double> &q);
+
+    /** movj */
+    bool movj(std::vector<double> &xd);
 
     /** Solver stuff */
     int solverNumLinks;
@@ -54,6 +57,7 @@ public:
     int numMotors;
     yarp::dev::IEncoders *iEncoders;
     yarp::dev::IVelocityControl *iVelocityControl;
+    yarp::dev::IPositionControl *iPositionControl;
 
     void setRf(yarp::os::ResourceFinder* rf) {
         this->rf = rf;
@@ -70,8 +74,7 @@ protected:
     {
         STOPPED,
         PTMODE,
-        MOVEJ,
-        MOVEL
+        MOVJ
     };
     State currentState;
 

@@ -134,4 +134,18 @@ bool CartesianRateThread::inv(std::vector<double> &xd, std::vector<double> &q)
 
 /************************************************************************/
 
+bool CartesianRateThread::movj(std::vector<double> &xd)
+{
+    //-- qReal from encoders
+    iEncoders->getEncoders( qReal.data() );
+
+    std::vector<double> q;
+    solver->invKin(xd, qReal, q);
+
+    iPositionControl->positionMove(q.data());
+    return true;
+}
+
+/************************************************************************/
+
 }  // namespace teo
