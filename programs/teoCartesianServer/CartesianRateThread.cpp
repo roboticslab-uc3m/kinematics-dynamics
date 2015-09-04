@@ -136,14 +136,33 @@ bool CartesianRateThread::inv(std::vector<double> &xd, std::vector<double> &q)
 
 bool CartesianRateThread::movj(std::vector<double> &xd)
 {
+    bool ok = true;
     //-- qReal from encoders
-    iEncoders->getEncoders( qReal.data() );
+    ok &= iEncoders->getEncoders( qReal.data() );
 
     std::vector<double> q;
-    solver->invKin(xd, qReal, q);
+    ok &= solver->invKin(xd, qReal, q);
 
-    iPositionControl->positionMove(q.data());
-    return true;
+    // Find out the maximum time to move
+    double max_time = 0;
+    for(unsigned int motor=0;motor<numMotors;motor++) {
+        CD_INFO("dist[%d]: %f\n",motor,fabs(q[motor]-qReal[motor]));
+        if (fabs((q[motor]-qReal[motor]) / MAX_ANG_VEL) > max_time)
+        {
+            max_time = fabs( (q[motor]-qReal[motor]) / MAX_ANG_VEL);
+            CD_INFO(" -->candidate: %f\n",max_time);
+        }
+    }
+    CD_INFO("max_time[final]: %f\n",max_time);
+
+    std::vector<double> vmo;
+    for(unsigned int motor=0;motor<numMotors;motor++) {
+        vmo.push_back( fabs(q[motor] - qReal[motor])/max_time );
+        CD_INFO("vmo[%d]: %f\n",motor,vmo[motor]);
+    }
+    ok &= iPositionControl->setRefSpeeds(vmo.data());
+    ok &= iPositionControl->positionMove(q.data());
+    return ok;
 }
 
 /************************************************************************/
