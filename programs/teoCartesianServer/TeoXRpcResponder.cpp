@@ -39,9 +39,11 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
     else if ((in.get(0).asString() == "stat")||(in.get(0).asVocab() == VOCAB_STAT))  // stat //
     {
         std::vector<double> stat;
-        cartesianRateThread->stat(stat);
-        for(int i=0;i<stat.size();i++)
-            out.addDouble(stat[i]);
+        if( ! cartesianRateThread->stat(stat) )
+            out.addVocab(VOCAB_FAILED);
+        else
+            for(int i=0;i<stat.size();i++)
+                out.addDouble(stat[i]);
         return out.write(*returnToSender);
     }
     else if  ((in.get(0).asString() == "inv")||(in.get(0).asVocab() == VOCAB_INV))  // inv //
@@ -49,9 +51,11 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
         std::vector<double> xd, q;
         for(int i=1;i<in.size();i++)
             xd.push_back(in.get(i).asDouble());
-        cartesianRateThread->inv(xd,q);
-        for(int i=0;i<q.size();i++)
-            out.addDouble(q[i]);
+        if( ! cartesianRateThread->inv(xd,q) )
+            out.addVocab(VOCAB_FAILED);
+        else
+            for(int i=0;i<q.size();i++)
+                out.addDouble(q[i]);
         return out.write(*returnToSender);
     }
     else if  ((in.get(0).asString() == "movj")||(in.get(0).asVocab() == VOCAB_MOVJ))  // movj //
