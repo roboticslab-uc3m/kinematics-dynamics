@@ -59,8 +59,10 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
         std::vector<double> xd, q;
         for(int i=1;i<in.size();i++)
             xd.push_back(in.get(i).asDouble());
-        cartesianRateThread->movj(xd);
-        out.addVocab(VOCAB_OK);
+        if( ! cartesianRateThread->movj(xd) )
+            out.addVocab(VOCAB_FAILED);
+        else
+            out.addVocab(VOCAB_OK);
         return out.write(*returnToSender);
     }
     else

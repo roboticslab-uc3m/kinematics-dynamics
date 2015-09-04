@@ -6,6 +6,8 @@
 #include <vector>
 #include <fstream>
 
+#include <math.h>  //-- fabs
+
 #include <yarp/os/RateThread.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/os/ResourceFinder.h>
@@ -15,6 +17,7 @@
 
 #define DEFAULT_MS 50  // [ms], overwritten by parent DEFAULT_PT_MODE_MS.
 #define DEFAULT_GAIN 0
+#define MAX_ANG_VEL 7.5
 
 namespace teo
 {
