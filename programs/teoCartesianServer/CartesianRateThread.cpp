@@ -9,7 +9,7 @@ namespace teo
 
 CartesianRateThread::CartesianRateThread() : RateThread(DEFAULT_MS)
 {
-    play = false;
+    currentState = STOPPED;
 }
 
 /************************************************************************/
@@ -50,7 +50,7 @@ bool CartesianRateThread::load(const std::string& fileName)
     CD_SUCCESS("Opened file: %s.\n",fileName.c_str());
 
     lineCount = 1;
-    play = true;
+    currentState = PTMODE;
 
     iVelocityControl->setVelocityMode();
 
@@ -61,7 +61,7 @@ bool CartesianRateThread::load(const std::string& fileName)
 
 void CartesianRateThread::run()
 {
-    if (play)
+    if (currentState == PTMODE)
     {
         std::string line;
         if (! getline( ifs, line) )
@@ -103,7 +103,11 @@ void CartesianRateThread::run()
         CD_INFO_NO_HEADER("[deg/s]\n");
 
         iVelocityControl->velocityMove( qDotCmd.data() );
-    } //end{if(play)}
+    } //end{if(currentState == PTMODE)}
+    /*else if (currentState == MOVL)
+    {
+
+    }*/
 }
 
 /************************************************************************/
