@@ -17,6 +17,7 @@
 #define VOCAB_LOAD VOCAB4('l','o','a','d')
 #define VOCAB_STAT VOCAB4('s','t','a','t')
 #define VOCAB_INV VOCAB3('i','n','v')
+#define VOCAB_MOVJ VOCAB4('m','o','v','j')
 
 using namespace yarp::os;
 using namespace yarp::dev;

@@ -54,6 +54,15 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
             out.addDouble(q[i]);
         return out.write(*returnToSender);
     }
+    else if  ((in.get(0).asString() == "movj")||(in.get(0).asVocab() == VOCAB_MOVJ))  // movj //
+    {
+        std::vector<double> xd, q;
+        for(int i=1;i<in.size();i++)
+            xd.push_back(in.get(i).asDouble());
+        cartesianRateThread->movj(xd);
+        out.addVocab(VOCAB_OK);
+        return out.write(*returnToSender);
+    }
     else
     {
         fprintf(stderr,"[xRpcResponder] fail: Unknown command (use 'help' if needed).\n");
