@@ -63,7 +63,14 @@ protected:
     std::ifstream ifs;
     int lineCount;
 
-    bool play;
+    enum State
+    {
+        STOPPED,
+        PTMODE,
+        MOVEJ,
+        MOVEL
+    };
+    State currentState;
 
     /** Robot control stuff */
     std::vector< double > qReal;
