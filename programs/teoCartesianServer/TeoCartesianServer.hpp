@@ -21,6 +21,7 @@
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_KINEMATICS "leftLegKinematics.ini"
 #define DEFAULT_REMOTE "/teoSim/leftLeg"
+#define DEFAULT_ANG_REPR "axisAngle"
 
 using namespace yarp::os;
 using namespace yarp::dev;

@@ -14,6 +14,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
     std::string kinematics = rf.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
     std::string remote = rf.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote robot").asString();
+    std::string angleRepr = rf.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
 
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
@@ -38,6 +39,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
         return false;
     }
     solverOptions.put("device",solver);
+    solverOptions.put("angleRepr",angleRepr);
     solverDevice.open(solverOptions);
 
     if (!solverDevice.isValid()) {
