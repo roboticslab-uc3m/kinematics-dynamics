@@ -66,7 +66,19 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
         if( ! cartesianRateThread->movj(xd) )
             out.addVocab(VOCAB_FAILED);
         else
+        {
+            if(in.check("wait"))
+            {
+                bool done = false;
+                while(!done) {
+                    cartesianRateThread->checkMotionDone(&done);
+                    printf(".");
+                    fflush(stdout);
+                    Time::delay(0.5);
+                }
+            }
             out.addVocab(VOCAB_OK);
+        }
         return out.write(*returnToSender);
     }
     else
