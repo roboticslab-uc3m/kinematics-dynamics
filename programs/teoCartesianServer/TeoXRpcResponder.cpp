@@ -69,7 +69,7 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
         {
             if(in.check("wait"))
             {
-                CD_SUCCESS("[wait]\n");
+                CD_SUCCESS("Waiting\n");
                 bool done = false;
                 while(!done) {
                     cartesianRateThread->checkMotionDone(&done);
@@ -77,6 +77,7 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
                     fflush(stdout);
                     Time::delay(0.5);
                 }
+                printf("\n");
             }
             out.addVocab(VOCAB_OK);
         }
