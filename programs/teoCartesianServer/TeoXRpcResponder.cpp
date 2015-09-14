@@ -69,6 +69,7 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
         {
             if(in.check("wait"))
             {
+                CD_SUCCESS("[wait]\n");
                 bool done = false;
                 while(!done) {
                     cartesianRateThread->checkMotionDone(&done);
