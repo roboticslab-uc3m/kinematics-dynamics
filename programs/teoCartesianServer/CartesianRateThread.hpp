@@ -52,6 +52,11 @@ public:
     /** movj */
     bool movj(std::vector<double> &xd);
 
+    /** checkMotionDone */
+    bool checkMotionDone(bool* flag)     {
+        iPositionControl->checkMotionDone(flag);
+    }
+
     /** Solver stuff */
     int solverNumLinks;
     teo::ICartesianSolver *solver;
