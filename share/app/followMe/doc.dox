@@ -5,6 +5,8 @@
 @brief An application that launches a \ref cartesianServer module providing a simulated ASIBOT and camera
 environment, a \ref followMe module which provides basic segmentation, and a viewer.
 
+\image html followMe-app.png
+
 \section Legal
 
 Copyright: 2015 (C) Universidad Carlos III de Madrid
@@ -41,7 +43,6 @@ Browse to app and run the (g)yarmanager. The followMeSim App should be available
 [on terminal 2] cd app
 [on terminal 2] yarpmanager
 \endverbatim
-
 
 */
 
