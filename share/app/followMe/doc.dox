@@ -1,0 +1,47 @@
+/**
+@ingroup  teo_applications
+\defgroup teo_followMeSim followMe App
+
+@brief An application that launches a \ref cartesianServer module providing a simulated ASIBOT and camera
+environment, a \ref followMe module which provides basic segmentation, and a viewer.
+
+\section Legal
+
+Copyright: 2015 (C) Universidad Carlos III de Madrid
+
+Author: <a href="http://roboticslab.uc3m.es/roboticslab/persona_publ.php?id_pers=72">Juan G. Victores</a>
+
+CopyPolicy: Released under the terms of the LGPLv2.1 or later, see license/LGPL.TXT
+
+\section Installation
+
+The application is installed when you install the applications, which for Ubuntu is done by:
+\verbatim
+make install_applications  # In-project install: No super-user permissions are required.
+\endverbatim
+
+Adapt app/followMe/scripts/followMeSim.xml.template to your needs or just:
+\verbatim
+cd app/followMe/scripts
+cp followMeSim.xml.template followMeSim.xml
+\endverbatim
+
+You will also need the \ref cartesianServer module and \ref followMe module. For further installation
+steps refer to <a class="el" href="pages.html">your own system installation guidelines</a>.
+
+\section running_followMe_App Running (assuming correct installation)
+
+First we must run a YARP name server if it is not running in our current namespace:
+\verbatim
+[on terminal 1] yarp server
+\endverbatim
+
+Browse to app and run the (g)yarmanager. The followMeSim App should be available.
+\verbatim
+[on terminal 2] cd app
+[on terminal 2] yarpmanager
+\endverbatim
+
+
+*/
+
