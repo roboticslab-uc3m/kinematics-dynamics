@@ -2,7 +2,7 @@
 @ingroup  teo_applications
 \defgroup teo_followMeSim followMe App
 
-@brief An application that launches dialogueManager1 and followMe programs.
+@brief An application that launches \ref dialogueManager1 and followMe programs.
 
 \image html followMe-app.png
 
