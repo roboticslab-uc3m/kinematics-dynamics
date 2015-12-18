@@ -35,7 +35,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="81.75" y="211.75"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" modelName="custom" textColor="#000000" visible="true" width="122.41064453125" x="31.294677734375" y="14.26953125">executionCore1<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -52,7 +52,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="81.75" y="138.75"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" modelName="custom" textColor="#000000" visible="true" width="72.29833984375" x="56.350830078125" y="14.26953125">yarpview<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -69,7 +69,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="-391.25" y="138.75"/>
-          <y:Fill color="#FFCCCC" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" modelName="custom" textColor="#000000" visible="true" width="64.234375" x="60.3828125" y="14.26953125">cvFaces<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -86,7 +86,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="81.75" y="284.75"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" modelName="custom" textColor="#000000" visible="true" width="54.3173828125" x="65.34130859375" y="14.26953125">iSpeak<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -103,7 +103,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="-391.25" y="284.75"/>
-          <y:Fill color="#FFCCCC" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" modelName="custom" textColor="#000000" visible="true" width="179.26123046875" x="2.869384765625" y="14.26953125">speechRecognition1.py<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -122,6 +122,7 @@
           <y:Geometry height="30.0" width="185.0" x="-391.25" y="94.75"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#FFFFFF" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="90.5" y="13.0"/>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
@@ -130,7 +131,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="293.75" y="211.75"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" modelName="custom" textColor="#000000" visible="true" width="151.0556640625" x="16.97216796875" y="14.26953125">launchManipulation<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -147,7 +148,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="50.0" width="185.0" x="-604.7578125" y="138.75"/>
-          <y:Fill color="#FFCCCC" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" modelName="custom" textColor="#000000" visible="true" width="130.14501953125" x="27.427490234375" y="5.5390625">yarpdev
 (OpenNI2Server)<y:LabelModel>
@@ -202,7 +203,6 @@
       </data>
     </edge>
     <edge id="e4" source="n1" target="n7">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -213,7 +213,6 @@
       </data>
     </edge>
     <edge id="e5" source="n8" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -224,7 +223,6 @@
       </data>
     </edge>
     <edge id="e6" source="n3" target="n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
