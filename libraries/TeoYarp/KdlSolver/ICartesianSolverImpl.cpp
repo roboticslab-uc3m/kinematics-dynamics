@@ -144,14 +144,20 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
     KDL::ChainIdSolver_RNE idsolver(chain,gravity);
     int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
 
+    if(ret < 1)
+    {
+        CD_ERROR("%s\n",idsolver.strError(ret));
+        return false;
+    }
+
+    if(ret > 1)
+        CD_WARNING("%s\n",idsolver.strError(ret));
+
     t.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         t[motor]=kdlt(motor);
 
-    if (ret == 0) return true;
-
-    CD_WARNING("Something went wrong.\n");
-    return false;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -183,14 +189,20 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
     KDL::ChainIdSolver_RNE idsolver(chain,gravity);
     int ret = idsolver.CartToJnt(qInRad,qdotInRad,qdotdotInRad,wrenches,kdlt);
 
+    if(ret < 1)
+    {
+        CD_ERROR("%s\n",idsolver.strError(ret));
+        return false;
+    }
+
+    if(ret > 1)
+        CD_WARNING("%s\n",idsolver.strError(ret));
+
     t.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         t[motor]=kdlt(motor);
 
-    if (ret == 0) return true;
-
-    CD_WARNING("Something went wrong.\n");
-    return false;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
