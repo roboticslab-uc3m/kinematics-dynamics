@@ -19,8 +19,8 @@ sudo apt-get install libqt4-dev qt4-dev-tools libxml2-dev libode-dev
 sudo apt-get install libsoqt4-dev libcoin80-dev
 cd  # go home
 mkdir -p repos; cd repos  # make $HOME/repos if it doesn't exist; then, enter it
-git clone --branch master https://github.com/rdiankov/openrave.git  # openravepy broken on latest_stable as of dic/2014
-cd openrave; mkdir build; cd build; cmake .. -DOPT_VIDEORECORDING=OFF  # OPT_VIDEORECORDING broken as of dic/2014
+git clone --branch latest_stable https://github.com/rdiankov/openrave.git
+cd openrave; mkdir build; cd build; cmake ..  # Use -DOPT_VIDEORECORDING=OFF if there are AV errors.
 make -j3; sudo make install; cd  # go home
 \endverbatim
  
