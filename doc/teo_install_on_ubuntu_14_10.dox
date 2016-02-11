@@ -19,6 +19,7 @@ git clone https://github.com/roboticslab-uc3m/teo-main.git  # Download teo-main 
 cd teo-main; mkdir build; cd build; cmake ..  # Configure the teo-main software
 make  # Compile
 sudo make install  # Install :-)
+cp ../scripts/gnome/teo-main.desktop $HOME/Desktop
 \endverbatim
 
 For additional TEO options use ccmake instead of cmake.
