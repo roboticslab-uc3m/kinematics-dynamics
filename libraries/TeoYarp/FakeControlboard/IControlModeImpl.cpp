@@ -65,7 +65,10 @@ bool teo::FakeControlboard::getControlMode(int j, int *mode) {
 
 
 bool teo::FakeControlboard::getControlModes(int *modes) {
-    return true;
+    bool ok = true;
+    for(unsigned int i=0; i < axes; i++)
+        ok &= getControlMode(i,&(modes[i]));
+    return ok;
 }
 
 // -----------------------------------------------------------------------------
