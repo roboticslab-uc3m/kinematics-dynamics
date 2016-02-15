@@ -58,7 +58,8 @@ namespace teo
  * interface class member functions.
  */
 // Note: IEncodersTimed inherits from IEncoders
-class FakeControlboard : public DeviceDriver, public IPositionControl, public IVelocityControl, public IEncodersTimed,
+// Note: IPositionControl2 inherits from IPositionControl
+class FakeControlboard : public DeviceDriver, public IPositionControl2, public IVelocityControl, public IEncodersTimed,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
@@ -189,6 +190,68 @@ class FakeControlboard : public DeviceDriver, public IPositionControl, public IV
          * @return true/false on success/failure
          */
         virtual bool stop();
+
+    // ------- IPositionControl2 declarations. Implementation in IPosition2Impl.cpp -------
+
+        /** Set new reference point for a subset of joints.
+         * @param joints pointer to the array of joint numbers
+         * @param refs   pointer to the array specifing the new reference points
+         * @return true/false on success/failure
+         */
+        virtual bool positionMove(const int n_joint, const int *joints, const double *refs);
+
+        /** Set relative position for a subset of joints.
+         * @param joints pointer to the array of joint numbers
+         * @param deltas pointer to the array of relative commands
+         * @return true/false on success/failure
+         */
+        virtual bool relativeMove(const int n_joint, const int *joints, const double *deltas);
+
+        /** Check if the current trajectory is terminated. Non blocking.
+         * @param joints pointer to the array of joint numbers
+         * @param flags  pointer to return value (logical "and" of all set of joints)
+         * @return true/false if network communication went well.
+         */
+        virtual bool checkMotionDone(const int n_joint, const int *joints, bool *flags);
+
+        /** Set reference speed on all joints. These values are used during the
+         * interpolation of the trajectory.
+         * @param joints pointer to the array of joint numbers
+         * @param spds   pointer to the array with speed values.
+         * @return true/false upon success/failure
+         */
+        virtual bool setRefSpeeds(const int n_joint, const int *joints, const double *spds);
+
+        /** Set reference acceleration on all joints. This is the valure that is
+         * used during the generation of the trajectory.
+         * @param joints pointer to the array of joint numbers
+         * @param accs   pointer to the array with acceleration values
+         * @return true/false upon success/failure
+         */
+        virtual bool setRefAccelerations(const int n_joint, const int *joints, const double *accs);
+
+        /** Get reference speed of all joints. These are the  values used during the
+         * interpolation of the trajectory.
+         * @param joints pointer to the array of joint numbers
+         * @param spds   pointer to the array that will store the speed values.
+         * @return true/false upon success/failure
+         */
+        virtual bool getRefSpeeds(const int n_joint, const int *joints, double *spds);
+
+        /** Get reference acceleration for a joint. Returns the acceleration used to
+         * generate the trajectory profile.
+         * @param joints pointer to the array of joint numbers
+         * @param accs   pointer to the array that will store the acceleration values
+         * @return true/false on success/failure
+         */
+        virtual bool getRefAccelerations(const int n_joint, const int *joints, double *accs);
+
+        /** Stop motion for subset of joints
+         * @param joints pointer to the array of joint numbers
+         * @return true/false on success/failure
+         */
+        virtual bool stop(const int n_joint, const int *joints);
+
 
     //  ---------- IEncodersTimed Declarations. Implementation in IEncoderImpl.cpp ----------
 
