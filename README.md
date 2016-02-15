@@ -1,8 +1,11 @@
-[![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/teo-main.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/teo-main/tags)
+[![Teo-main Homepage](https://img.shields.io/badge/teo-main-orange.svg)](http://robots.uc3m.es/dox-teo-main) [![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/teo-main.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/teo-main/tags)
 
 Main TEO humanoid robot source code intended for use on any PC.
 
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-teo-main
+
+Status
+------
 
 [![Build Status (Linux/OSX)](https://img.shields.io/travis/roboticslab-uc3m/teo-main/master.svg?label=Build Status (Linux/OSX))](https://travis-ci.org/roboticslab-uc3m/teo-main)
 
