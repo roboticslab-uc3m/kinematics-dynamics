@@ -6,7 +6,8 @@
 
 bool teo::FakeControlboard::positionMove(const int n_joint, const int *joints, const double *refs)
 {
-    return true;
+    // must implement mask!
+    return positionMove(refs);
 }
 
 // -----------------------------------------------------------------------------
