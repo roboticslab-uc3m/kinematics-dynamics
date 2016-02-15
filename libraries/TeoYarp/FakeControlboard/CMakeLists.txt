@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS})  # kdl name
 
 LINK_DIRECTORIES(${TEO_LINK_DIRS})
 
-YARP_ADD_PLUGIN(FakeControlboard FakeControlboard.hpp DeviceDriverImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncodersImpl.cpp IEncodersTimedImpl.cpp IPositionImpl.cpp IVelocityImpl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
+YARP_ADD_PLUGIN(FakeControlboard FakeControlboard.hpp DeviceDriverImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncodersImpl.cpp IEncodersTimedImpl.cpp IPositionImpl.cpp IPosition2Impl.cpp IVelocityImpl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
 TARGET_LINK_LIBRARIES(FakeControlboard ${YARP_LIBRARIES})
 
 install(TARGETS FakeControlboard DESTINATION lib)
