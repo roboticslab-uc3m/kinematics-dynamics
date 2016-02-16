@@ -51,9 +51,9 @@ bool teo::FakeControlboard::setOpenLoopMode(int j) {
 bool teo::FakeControlboard::getControlMode(int j, int *mode) {
     // CD_DEBUG("\n");  //-- Way too verbose.
     if(modePosVel == 0)
-        *mode = VOCAB_POSITION_MODE;
+        *mode = VOCAB_CM_POSITION;
     else if (modePosVel == 1)
-        *mode = VOCAB_VELOCITY_MODE;
+        *mode = VOCAB_CM_VELOCITY;
     else
     {
         CD_ERROR("Currently unsupported mode.\n");
