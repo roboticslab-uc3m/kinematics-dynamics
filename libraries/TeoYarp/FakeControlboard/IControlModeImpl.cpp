@@ -49,6 +49,7 @@ bool teo::FakeControlboard::setOpenLoopMode(int j) {
 // -----------------------------------------------------------------------------
 
 bool teo::FakeControlboard::getControlMode(int j, int *mode) {
+    // CD_DEBUG("\n");  //-- Way too verbose.
     if(modePosVel == 0)
         *mode = VOCAB_POSITION_MODE;
     else if (modePosVel == 1)
@@ -65,6 +66,7 @@ bool teo::FakeControlboard::getControlMode(int j, int *mode) {
 
 
 bool teo::FakeControlboard::getControlModes(int *modes) {
+    CD_DEBUG("\n");
     bool ok = true;
     for(unsigned int i=0; i < axes; i++)
         ok &= getControlMode(i,&(modes[i]));
