@@ -252,6 +252,38 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
          */
         virtual bool stop(const int n_joint, const int *joints);
 
+        /** Get the last position reference for the specified axis.
+         *  This is the dual of PositionMove and shall return only values sent using
+         *  IPositionControl interface.
+         *  If other interfaces like IPositionDirect are implemented by the device, this call
+         *  must ignore their values, i.e. this call must never return a reference sent using
+         *  IPositionDirect::SetPosition
+         * @param ref last reference sent using PositionMove functions
+         * @return true/false on success/failure
+         */
+        virtual bool getTargetPosition(const int joint, double *ref);
+
+        /** Get the last position reference for all axes.
+         *  This is the dual of PositionMove and shall return only values sent using
+         *  IPositionControl interface.
+         *  If other interfaces like IPositionDirect are implemented by the device, this call
+         *  must ignore their values, i.e. this call must never return a reference sent using
+         *  IPositionDirect::SetPosition
+         * @param ref last reference sent using PositionMove functions
+         * @return true/false on success/failure
+         */
+        virtual bool getTargetPositions(double *refs);
+
+        /** Get the last position reference for the specified group of axes.
+         *  This is the dual of PositionMove and shall return only values sent using
+         *  IPositionControl interface.
+         *  If other interfaces like IPositionDirect are implemented by the device, this call
+         *  must ignore their values, i.e. this call must never return a reference sent using
+         *  IPositionDirect::SetPosition
+         * @param ref last reference sent using PositionMove functions
+         * @return true/false on success/failure
+         */
+        virtual bool getTargetPositions(const int n_joint, const int *joints, double *refs);
 
     //  ---------- IEncodersTimed Declarations. Implementation in IEncoderImpl.cpp ----------
 
