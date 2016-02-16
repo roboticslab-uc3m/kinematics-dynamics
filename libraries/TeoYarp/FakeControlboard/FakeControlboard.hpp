@@ -59,7 +59,8 @@ namespace teo
  */
 // Note: IEncodersTimed inherits from IEncoders
 // Note: IPositionControl2 inherits from IPositionControl
-class FakeControlboard : public DeviceDriver, public IPositionControl2, public IVelocityControl, public IEncodersTimed,
+// Note: IVelocityControl2 inherits from IVelocityControl
+class FakeControlboard : public DeviceDriver, public IPositionControl2, public IVelocityControl2, public IEncodersTimed,
                  public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
     public:
 
@@ -401,6 +402,69 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
          * @return true/false upon success/failure
          */
         virtual bool velocityMove(const double *sp);
+
+    //  --------- IVelocityControl2 Declarations. Implementation in IVelocity2Impl.cpp ---------
+
+        /** Start motion at a given speed for a subset of joints.
+         * @param n_joint how many joints this command is referring to
+         * @param joints of joints controlled. The size of this array is n_joints
+         * @param spds pointer to the array containing the new speed values, one value for each joint, the size of the array is n_joints.
+         * The first value will be the new reference fot the joint joints[0].
+         *          for example:
+         *          n_joint  3
+         *          joints   0  2  4
+         *          spds    10 30 40
+         * @return true/false on success/failure
+         */
+        virtual bool velocityMove(const int n_joint, const int *joints, const double *spds);
+
+        /** Get the last reference speed set by velocityMove for single joint.
+         * @param j joint number
+         * @param vel returns the requested reference.
+         * @return true/false on success/failure
+         */
+        virtual bool getRefVelocity(const int joint, double *vel);
+
+        /** Get the last reference speed set by velocityMove for all joints.
+         * @param vels pointer to the array containing the new speed values, one value for each joint
+         * @return true/false on success/failure
+         */
+        virtual bool getRefVelocities(double *vels);
+
+        /** Get the last reference speed set by velocityMove for a group of joints.
+         * @param n_joint how many joints this command is referring to
+         * @param joints of joints controlled. The size of this array is n_joints
+         * @param vels pointer to the array containing the requested values, one value for each joint.
+         *  The size of the array is n_joints.
+         * @return true/false on success/failure
+         */
+        virtual bool getRefVelocities(const int n_joint, const int *joints, double *vels);
+
+        /** Set new velocity pid value for a joint
+         * @param j joint number
+         * @param pid new pid value
+         * @return true/false on success/failure
+         */
+        virtual bool setVelPid(int j, const yarp::dev::Pid &pid);
+
+        /** Set new velocity pid value on multiple joints
+         * @param pids pointer to a vector of pids
+         * @return true/false upon success/failure
+         */
+        virtual bool setVelPids(const yarp::dev::Pid *pids);
+
+        /** Get current velocity pid value for a specific joint.
+         * @param j joint number
+         * @param pid pointer to storage for the return value.
+         * @return success/failure
+         */
+        virtual bool getVelPid(int j, yarp::dev::Pid *pid);
+
+        /** Get current velocity pid value for a specific subset of joints.
+         * @param pids vector that will store the values of the pids.
+         * @return success/failure
+         */
+        virtual bool getVelPids(yarp::dev::Pid *pids);
 
     //  --------- IControlLimits Declarations. Implementation in IControlLimitsImpl.cpp ---------
 
