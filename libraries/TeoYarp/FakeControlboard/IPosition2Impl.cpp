@@ -60,3 +60,24 @@ bool teo::FakeControlboard::stop(const int n_joint, const int *joints)
 }
 
 // -----------------------------------------------------------------------------
+
+bool teo::FakeControlboard::getTargetPosition(const int joint, double *ref)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::FakeControlboard::getTargetPositions(double *refs)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::FakeControlboard::getTargetPositions(const int n_joint, const int *joints, double *refs)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
