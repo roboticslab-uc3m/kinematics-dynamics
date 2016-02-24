@@ -6,5 +6,10 @@
         <node>localhost</node>
     </module>
 
+    <module>
+        <name>teoCartesianServer</name>
+        <node>localhost</node>
+    </module>
+
 </application>
 
