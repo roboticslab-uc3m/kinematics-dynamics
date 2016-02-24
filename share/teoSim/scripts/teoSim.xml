@@ -8,6 +8,25 @@
 
     <module>
         <name>teoCartesianServer</name>
+        <parameters>--kinematics rightLegKinematics.ini --remote /teoSim/rightLeg</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>teoCartesianServer</name>
+        <parameters>--kinematics leftLegKinematics.ini --remote /teoSim/leftLeg</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>teoCartesianServer</name>
+        <parameters>--kinematics rightArmKinematics.ini --remote /teoSim/rightArm</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>teoCartesianServer</name>
+        <parameters>--kinematics leftArmKinematics.ini --remote /teoSim/leftArm</parameters>
         <node>localhost</node>
     </module>
 
