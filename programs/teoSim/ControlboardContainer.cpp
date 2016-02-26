@@ -61,7 +61,7 @@ void teo::ControlboardContainer::push_back_tr(double robotJointTr) {
 
 bool teo::ControlboardContainer::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
-    Property options;
+    yarp::os::Property options;
     options.put("device","controlboardwrapper2");  //
     options.put("subdevice","FakeControlboard");  // FakeControlboard provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );

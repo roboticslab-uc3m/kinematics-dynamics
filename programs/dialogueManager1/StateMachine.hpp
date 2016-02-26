@@ -15,8 +15,6 @@
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
 #define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
 
-using namespace yarp::os;
-using namespace yarp::dev;
 
 namespace teo
 {
@@ -26,7 +24,7 @@ namespace teo
  *
  * @brief implements a specific state machine for dialogueManager1.
  */
-class StateMachine : public Thread {
+class StateMachine : public yarp::os::Thread {
 protected:
 
     yarp::os::BufferedPort<yarp::os::Bottle> *inSrPort;
@@ -35,10 +33,10 @@ protected:
 
     int _machineState;
 
-    ConstString _inStrState1;
+    yarp::os::ConstString _inStrState1;
 
-    void ttsSay(const ConstString& sayConstString);
-    ConstString asrListen();
+    void ttsSay(const yarp::os::ConstString& sayConstString);
+    yarp::os::ConstString asrListen();
 
 public:
 

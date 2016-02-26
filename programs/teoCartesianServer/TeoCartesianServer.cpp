@@ -9,7 +9,7 @@ namespace teo
 TeoCartesianServer::TeoCartesianServer() { }
 
 /************************************************************************/
-bool TeoCartesianServer::configure(ResourceFinder &rf) {
+bool TeoCartesianServer::configure(yarp::os::ResourceFinder &rf) {
 
     std::string solver = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
     std::string kinematics = rf.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
@@ -54,7 +54,7 @@ bool TeoCartesianServer::configure(ResourceFinder &rf) {
     }
 
     //--------------------------------JOINT----------------------------------//
-    Property robotOptions;
+    yarp::os::Property robotOptions;
     robotOptions.put("device","remote_controlboard");
     robotOptions.put("remote",remote);
     std::string local("/teoCartesianServer");

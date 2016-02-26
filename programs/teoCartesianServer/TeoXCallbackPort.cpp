@@ -7,7 +7,7 @@ namespace teo
 
 /************************************************************************/
 
-void TeoXCallbackPort::onRead(Bottle& b) {
+void TeoXCallbackPort::onRead(yarp::os::Bottle& b) {
     printf("[CartesianServerLib] xCallbackPort Got %s\n", b.toString().c_str());
 }
 

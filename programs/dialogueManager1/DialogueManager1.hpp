@@ -13,7 +13,6 @@
 #define VOCAB_FOLLOW_ME VOCAB4('f','o','l','l')
 #define VOCAB_STOP_FOLLOWING VOCAB4('s','f','o','l')
 
-using namespace yarp::os;
 
 namespace teo
 {
@@ -23,19 +22,19 @@ namespace teo
  *
  * @brief Dialogue Manager 1.
  */
-class DialogueManager1 : public RFModule {
+class DialogueManager1 : public yarp::os::RFModule {
   private:
     StateMachine stateMachine;
-    BufferedPort<Bottle> inSrPort;
-    Port outTtsPort;
-    Port outCmdPort;
+    yarp::os::BufferedPort<yarp::os::Bottle> inSrPort;
+    yarp::os::Port outTtsPort;
+    yarp::os::Port outCmdPort;
 
     bool interruptModule();
     double getPeriod();
     bool updateModule();
 
   public:
-    bool configure(ResourceFinder &rf);
+    bool configure(yarp::os::ResourceFinder &rf);
 };
 
 }  // namespace teo

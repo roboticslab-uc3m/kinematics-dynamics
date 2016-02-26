@@ -23,13 +23,6 @@
 #define DEFAULT_EXTERN_OBJ "none"
 //#define DEFAULT_EXTERN_OBJ "redCan"  // loads plugin
 
-using namespace std;
-
-using namespace yarp::os;
-using namespace yarp::dev;
-
-using namespace OpenRAVE;
-
 namespace teo
 {
 
@@ -38,53 +31,53 @@ namespace teo
  *
  * @brief Helper class, implements the yarp::os::RateThread.
  */
-class TeoSimRateThread : public RateThread {
+class TeoSimRateThread : public yarp::os::RateThread {
      public:
 
         // Set the Thread Rate in the class constructor
         TeoSimRateThread() : RateThread(NULL_JMC_MS) {}  // In ms
 
-        void setEnvironmentPtr(const EnvironmentBasePtr& environmentPtr) {
+        void setEnvironmentPtr(const OpenRAVE::EnvironmentBasePtr& environmentPtr) {
             this->environmentPtr = environmentPtr;
         }
 
-        void setPtrVectorOfControlboardContainerPtr(vector< ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr) {
+        void setPtrVectorOfControlboardContainerPtr(std::vector< ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr) {
             this->ptrVectorOfManipulatorWrapperPtr = ptrVectorOfManipulatorWrapperPtr;
         }
 
-        void setPtrVectorOfRobotPtr(vector< RobotBasePtr > * ptrVectorOfRobotPtr) {
+        void setPtrVectorOfRobotPtr(std::vector< OpenRAVE::RobotBasePtr > * ptrVectorOfRobotPtr) {
             this->ptrVectorOfRobotPtr = ptrVectorOfRobotPtr;
         }
 
-        void setPtrVectorOfSensorPtrForCameras(vector< SensorBasePtr > * ptrVectorOfSensorPtrForCameras) {
+        void setPtrVectorOfSensorPtrForCameras(std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForCameras) {
             this->ptrVectorOfSensorPtrForCameras = ptrVectorOfSensorPtrForCameras;
         }
 
-        void setPtrVectorOfSensorPtrForLasers(vector< SensorBasePtr > * ptrVectorOfSensorPtrForLasers) {
+        void setPtrVectorOfSensorPtrForLasers(std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForLasers) {
             this->ptrVectorOfSensorPtrForLasers = ptrVectorOfSensorPtrForLasers;
         }
 
-        void setPtrVectorOfCameraSensorDataPtr(vector< boost::shared_ptr<SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr) {
+        void setPtrVectorOfCameraSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr) {
             this->ptrVectorOfCameraSensorDataPtr = ptrVectorOfCameraSensorDataPtr;
         }
 
-        void setPtrVectorOfLaserSensorDataPtr(vector< boost::shared_ptr<SensorBase::LaserSensorData> > * setPtrVectorOfLaserSensorDataPtr) {
+        void setPtrVectorOfLaserSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> > * setPtrVectorOfLaserSensorDataPtr) {
             this->ptrVectorOfLaserSensorDataPtr = setPtrVectorOfLaserSensorDataPtr;
         }
 
-        void setPtrVectorOfCameraWidth(vector<int> * ptrVectorOfCameraWidth) {
+        void setPtrVectorOfCameraWidth(std::vector<int> * ptrVectorOfCameraWidth) {
             this->ptrVectorOfCameraWidth = ptrVectorOfCameraWidth;
         }
 
-        void setPtrVectorOfCameraHeight(vector<int> * ptrVectorOfCameraHeight) {
+        void setPtrVectorOfCameraHeight(std::vector<int> * ptrVectorOfCameraHeight) {
             this->ptrVectorOfCameraHeight = ptrVectorOfCameraHeight;
         }
 
-        void setPtrVectorOfRgbPortPtr(vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr) {
+        void setPtrVectorOfRgbPortPtr(std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr) {
             this->ptrVectorOfRgbPortPtr = ptrVectorOfRgbPortPtr;
         }
 
-        void setPtrVectorOfIntPortPtr(vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr) {
+        void setPtrVectorOfIntPortPtr(std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr) {
             this->ptrVectorOfIntPortPtr = ptrVectorOfIntPortPtr;
         }
 
@@ -115,17 +108,17 @@ class TeoSimRateThread : public RateThread {
         double lastTime;
         //
         // Rave-specific //
-        EnvironmentBasePtr environmentPtr;
-        vector<RobotBasePtr> * ptrVectorOfRobotPtr;
+        OpenRAVE::EnvironmentBasePtr environmentPtr;
+        std::vector<OpenRAVE::RobotBasePtr> * ptrVectorOfRobotPtr;
         //
-        std::vector< SensorBasePtr > * ptrVectorOfSensorPtrForCameras;
-        std::vector< SensorBasePtr > * ptrVectorOfSensorPtrForLasers;
-        std::vector< boost::shared_ptr<SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr;
-        std::vector< boost::shared_ptr<SensorBase::LaserSensorData> > * ptrVectorOfLaserSensorDataPtr;
+        std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForCameras;
+        std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForLasers;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> > * ptrVectorOfLaserSensorDataPtr;
         std::vector<int> * ptrVectorOfCameraWidth;
         std::vector<int> * ptrVectorOfCameraHeight;
-        std::vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr;
-        std::vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr;
         //
         /** Vector to store pointers to ManipulatorWrapper objects */
         std::vector < ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr;
