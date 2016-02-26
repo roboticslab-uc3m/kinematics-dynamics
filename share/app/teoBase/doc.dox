@@ -2,7 +2,7 @@
 @ingroup  teo_applications
 \defgroup teo_teoBase teoBase App
 
-@brief An application that launches \ref dialogueManager1 and teoBase programs.
+@brief An application that launches teoBase programs: launchManipulation, launchLocomotion, yarpdev --device OpenNI2DeviceServer, speechRecognition1, iSpeak.
 
 \image html teoBase-app.png
 
