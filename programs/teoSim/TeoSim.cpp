@@ -2,7 +2,7 @@
 
 #include "TeoSim.hpp"
 
-void SetViewer(EnvironmentBasePtr penv, const std::string& viewername, int _viewer);
+void SetViewer(OpenRAVE::EnvironmentBasePtr penv, const std::string& viewername, int _viewer);
 
 // ------------------- RFModule Related ------------------------------------
 
@@ -36,13 +36,13 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     }
 
     // Initialize OpenRAVE-core
-    RaveInitialize(true);  // Start openrave core
-    environmentPtr = RaveCreateEnvironment();  // Create the main OpenRAVE environment, set the EnvironmentBasePtr
-    environmentPtr->SetDebugLevel(Level_Debug);  // Relatively new function
+    OpenRAVE::RaveInitialize(true);  // Start openrave core
+    environmentPtr = OpenRAVE::RaveCreateEnvironment();  // Create the main OpenRAVE environment, set the EnvironmentBasePtr
+    environmentPtr->SetDebugLevel(OpenRAVE::Level_Debug);  // Relatively new function
     environmentPtr->StopSimulation();  // NEEDED??
     boost::thread thviewer(boost::bind(SetViewer,environmentPtr,"qtcoin",viewer));
     orThreads.add_thread(&thviewer);
-    Time::delay(0.4); // wait for the viewer to init, in [s]
+    yarp::os::Time::delay(0.4); // wait for the viewer to init, in [s]
 
     std::string envFull( rf.findFileByName(env) );
     if (! environmentPtr->Load(envFull.c_str()) ) {
@@ -63,12 +63,12 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     for(size_t robotPtrIdx=0;robotPtrIdx<vectorOfRobotPtr.size();robotPtrIdx++) {
         CD_INFO( "Robots[%zu]: %s\n",robotPtrIdx,vectorOfRobotPtr[robotPtrIdx]->GetName().c_str());
         //-- Get manupilators
-        vector<RobotBase::ManipulatorPtr> vectorOfManipulatorPtr = vectorOfRobotPtr[robotPtrIdx]->GetManipulators();
+        std::vector<OpenRAVE::RobotBase::ManipulatorPtr> vectorOfManipulatorPtr = vectorOfRobotPtr[robotPtrIdx]->GetManipulators();
         //-- For each manipulator
         for(size_t j=0;j<vectorOfManipulatorPtr.size();j++) {
             CD_INFO( "* Manipulators[%zu]: %s\n",j,vectorOfManipulatorPtr[j]->GetName().c_str() );
             //-- Formulate the manipulator port name
-            ConstString manipulatorPortName("/");
+            yarp::os::ConstString manipulatorPortName("/");
             manipulatorPortName += vectorOfRobotPtr[robotPtrIdx]->GetName();
             manipulatorPortName += "/";
             manipulatorPortName += vectorOfManipulatorPtr[j]->GetName();
@@ -82,14 +82,14 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             vectorOfControlboardContainerPtr[index]->setFatherRobotIdx(robotPtrIdx);
             //-- Check if there are overrides
             if(rf.check(manipulatorPortName)) {
-                Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();
-                Bottle manipulatorIDs = manipulatorDescription.findGroup("IDs").tail();
+                yarp::os::Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();
+                yarp::os::Bottle manipulatorIDs = manipulatorDescription.findGroup("IDs").tail();
                 for(int i = 0; i<manipulatorIDs.size(); i++) {
                     vectorOfControlboardContainerPtr[index]->push_back( manipulatorIDs.get(i).asInt() );
                 }
                 CD_INFO( "* Using overriden IDs: %s.\n",manipulatorIDs.toString().c_str());
                 if (manipulatorDescription.check("TRs")){
-                    Bottle manipulatorTRs = manipulatorDescription.findGroup("TRs").tail();
+                    yarp::os::Bottle manipulatorTRs = manipulatorDescription.findGroup("TRs").tail();
                     for(int i = 0; i<manipulatorTRs.size(); i++) {
                         vectorOfControlboardContainerPtr[index]->push_back_tr( manipulatorTRs.get(i).asDouble() );
                     }
@@ -120,30 +120,30 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     }
 
     for ( unsigned int robotIter = 0; robotIter<vectorOfRobotPtr.size(); robotIter++ ) {
-        std::vector<RobotBase::AttachedSensorPtr> sensors = vectorOfRobotPtr.at(robotIter)->GetAttachedSensors();
+        std::vector<OpenRAVE::RobotBase::AttachedSensorPtr> sensors = vectorOfRobotPtr.at(robotIter)->GetAttachedSensors();
         printf("Sensors found on robot %d (%s): %d.\n",robotIter,vectorOfRobotPtr.at(robotIter)->GetName().c_str(),(int)sensors.size());
         for ( unsigned int sensorIter = 0; sensorIter<sensors.size(); sensorIter++ ) {
-            SensorBasePtr psensorbase = sensors.at(sensorIter)->GetSensor();
+            OpenRAVE::SensorBasePtr psensorbase = sensors.at(sensorIter)->GetSensor();
             std::string tipo = psensorbase->GetName();
             printf("Sensor %d name: %s\n",sensorIter,tipo.c_str());
             // printf("Sensor %d description: %s\n",sensorIter,psensorbase->GetDescription().c_str());
-            if (psensorbase->Supports(SensorBase::ST_Camera)) {
+            if (psensorbase->Supports(OpenRAVE::SensorBase::ST_Camera)) {
                 printf("Sensor %d supports ST_Camera.\n", sensorIter);
                 // Activate the camera
-                psensorbase->Configure(SensorBase::CC_PowerOn);
+                psensorbase->Configure(OpenRAVE::SensorBase::CC_PowerOn);
                 // Show the camera image in a separate window
                 // pcamerasensorbase->Configure(SensorBase::CC_RenderDataOn);
                 // Get some camera parameter info
-                boost::shared_ptr<SensorBase::CameraGeomData const> pcamerageomdata = boost::dynamic_pointer_cast<SensorBase::CameraGeomData const>(psensorbase->GetSensorGeometry(SensorBase::ST_Camera));
+                boost::shared_ptr<OpenRAVE::SensorBase::CameraGeomData const> pcamerageomdata = boost::dynamic_pointer_cast<OpenRAVE::SensorBase::CameraGeomData const>(psensorbase->GetSensorGeometry(OpenRAVE::SensorBase::ST_Camera));
                 // printf("Camera width: %d, height: %d.\n",pcamerageomdata->width,pcamerageomdata->height);
                 vectorOfCameraWidth.push_back(pcamerageomdata->width);
                 vectorOfCameraHeight.push_back(pcamerageomdata->height);
                 // Get a pointer to access the camera data stream
-                vectorOfCameraSensorDataPtr.push_back(boost::dynamic_pointer_cast<SensorBase::CameraSensorData>(psensorbase->CreateSensorData(SensorBase::ST_Camera)));
+                vectorOfCameraSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::CameraSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Camera)));
                 vectorOfSensorPtrForCameras.push_back(psensorbase);  // "save"
-                BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* tmpPort = new BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >;
-                ConstString tmpName("/");
-                ConstString cameraSensorString(psensorbase->GetName());
+                yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* tmpPort = new yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >;
+                yarp::os::ConstString tmpName("/");
+                yarp::os::ConstString cameraSensorString(psensorbase->GetName());
                 size_t pos = cameraSensorString.find("imageMap");
                 if ( pos != std::string::npos) {
                     tmpName += cameraSensorString.substr (0,pos-1);
@@ -154,23 +154,23 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 }
                 tmpPort->open(tmpName);
                 vectorOfRgbPortPtr.push_back(tmpPort);
-            } else if (psensorbase->Supports(SensorBase::ST_Laser)) {
+            } else if (psensorbase->Supports(OpenRAVE::SensorBase::ST_Laser)) {
                 printf("Sensor %d supports ST_Laser.\n", sensorIter);
                 // Activate the sensor
-                psensorbase->Configure(SensorBase::CC_PowerOn);
+                psensorbase->Configure(OpenRAVE::SensorBase::CC_PowerOn);
                 // Paint the rays in the OpenRAVE viewer
-                psensorbase->Configure(SensorBase::CC_RenderDataOn);
+                psensorbase->Configure(OpenRAVE::SensorBase::CC_RenderDataOn);
                 // Get some laser parameter info
                 // boost::shared_ptr<SensorBase::LaserGeomData> plasergeomdata = boost::dynamic_pointer_cast<SensorBase::LaserGeomData>(psensorbase->GetSensorGeometry(SensorBase::ST_Laser));
                 // printf("Laser resolution: %f   %f.\n",plasergeomdata->resolution[0],plasergeomdata->resolution[1]);
                 // printf("Laser min_angle: %f   %f.\n",plasergeomdata->min_angle[0],plasergeomdata->min_angle[1]);
                 // printf("Laser max_angle: %f   %f.\n",plasergeomdata->max_angle[0],plasergeomdata->max_angle[1]);
                 // Get a pointer to access the laser data stream
-                vectorOfLaserSensorDataPtr.push_back(boost::dynamic_pointer_cast<SensorBase::LaserSensorData>(psensorbase->CreateSensorData(SensorBase::ST_Laser)));
+                vectorOfLaserSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::LaserSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Laser)));
                 vectorOfSensorPtrForLasers.push_back(psensorbase);  // "save"
-                BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* tmpPort = new BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >;
-                ConstString tmpName("/");
-                ConstString depthSensorString(psensorbase->GetName());
+                yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* tmpPort = new yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >;
+                yarp::os::ConstString tmpName("/");
+                yarp::os::ConstString depthSensorString(psensorbase->GetName());
                 size_t pos = depthSensorString.find("depthMap");
                 if ( pos != std::string::npos) {
                     tmpName += depthSensorString.substr (0,pos-1);
@@ -232,7 +232,7 @@ bool teo::TeoSim::close() {
     //penv->StopSimulation();  // NEEDED??
     printf("[TeoSim] Devices closed. Closing environment...\n");
     environmentPtr->Destroy(); // destroy
-    Time::delay(0.4);
+    yarp::os::Time::delay(0.4);
     printf("[TeoSim] close() joining...\n");
     orThreads.join_all(); // wait for the viewer thread to exit
     printf("[TeoSim] success: join_all ended.\n");
@@ -242,9 +242,9 @@ bool teo::TeoSim::close() {
 
 // -----------------------------------------------------------------------------
 
-void SetViewer(EnvironmentBasePtr penv, const std::string& viewername, int _viewer)
+void SetViewer(OpenRAVE::EnvironmentBasePtr penv, const std::string& viewername, int _viewer)
 {
-    ViewerBasePtr viewer = RaveCreateViewer(penv,viewername);
+    OpenRAVE::ViewerBasePtr viewer = RaveCreateViewer(penv,viewername);
     BOOST_ASSERT(!!viewer);
 
     // attach it to the environment:

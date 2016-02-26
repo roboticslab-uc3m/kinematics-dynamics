@@ -14,8 +14,6 @@
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
-using namespace yarp::os;
-using namespace yarp::dev;
 
 namespace teo
 {
@@ -25,10 +23,10 @@ namespace teo
  *
  * @brief Implements a port with x callbacks.
  */
-class TeoXCallbackPort : public BufferedPort<Bottle> {
+class TeoXCallbackPort : public yarp::os::BufferedPort<yarp::os::Bottle> {
     protected:
         /** Implement the actual callback. */
-        void onRead(Bottle& b);
+        void onRead(yarp::os::Bottle& b);
 
     public:
 

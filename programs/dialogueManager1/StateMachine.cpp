@@ -17,32 +17,32 @@ bool StateMachine::threadInit() {
 void StateMachine::run() {
     while(!isStopping()) {
         if(_machineState==-1) {
-            ttsSay( ConstString("Sorry, I do not know what that is.") );
+            ttsSay( yarp::os::ConstString("Sorry, I do not know what that is.") );
             _machineState=0;
         } else if(_machineState==0) {
-            ttsSay( ConstString("I am ready. Please tell me.") );
+            ttsSay( yarp::os::ConstString("I am ready. Please tell me.") );
             _machineState=1;
         } else if(_machineState==1) {
-            ConstString inStr = asrListen();
+            yarp::os::ConstString inStr = asrListen();
             // Blocking
             _inStrState1 = inStr;
-            if( _inStrState1.find("follow me") != ConstString::npos ) _machineState=2;
-            else if ( _inStrState1.find("stop following") != ConstString::npos ) _machineState=3;
+            if( _inStrState1.find("follow me") != yarp::os::ConstString::npos ) _machineState=2;
+            else if ( _inStrState1.find("stop following") != yarp::os::ConstString::npos ) _machineState=3;
             else _machineState=-1;
         } else if (_machineState==2) {
-            ttsSay( ConstString("Okay, I will follow you.") );
-            Bottle cmd;
+            ttsSay( yarp::os::ConstString("Okay, I will follow you.") );
+            yarp::os::Bottle cmd;
             cmd.addVocab(VOCAB_FOLLOW_ME);
             outCmdPort->write(cmd);
             _machineState=0;
         } else if (_machineState==3) {
-            ttsSay( ConstString("Okay, I will stop following you") );
-            Bottle cmd;
+            ttsSay( yarp::os::ConstString("Okay, I will stop following you") );
+            yarp::os::Bottle cmd;
             cmd.addVocab(VOCAB_STOP_FOLLOWING);
             outCmdPort->write(cmd);
             _machineState=0;
         } else {
-            ttsSay( ConstString("ANOMALY") );
+            ttsSay( yarp::os::ConstString("ANOMALY") );
             _machineState=0;
         }
     }
@@ -50,8 +50,8 @@ void StateMachine::run() {
 
 /************************************************************************/
 
-void StateMachine::ttsSay(const ConstString& sayConstString) {
-    Bottle bOut;
+void StateMachine::ttsSay(const yarp::os::ConstString& sayConstString) {
+    yarp::os::Bottle bOut;
     bOut.addString(sayConstString);
     outTtsPort->write(bOut);
     printf("[StateMachine] Said: %s\n", sayConstString.c_str());
@@ -59,8 +59,8 @@ void StateMachine::ttsSay(const ConstString& sayConstString) {
 
 /************************************************************************/
 
-ConstString StateMachine::asrListen() {
-    Bottle* bIn = inSrPort->read(true);  // shouldWait
+yarp::os::ConstString StateMachine::asrListen() {
+    yarp::os::Bottle* bIn = inSrPort->read(true);  // shouldWait
     printf("[StateMachine] Listened: %s\n", bIn->toString().c_str());
     return bIn->get(0).asString();
 }

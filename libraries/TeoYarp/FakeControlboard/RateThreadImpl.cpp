@@ -6,7 +6,7 @@
 
 bool teo::FakeControlboard::threadInit() {
     printf("[FakeControlboard] success: threadInit()\n");
-    lastTime = Time::now();
+    lastTime = yarp::os::Time::now();
     return true;
 }
 
@@ -14,7 +14,7 @@ bool teo::FakeControlboard::threadInit() {
 
 void teo::FakeControlboard::run() {
     for(unsigned int motor=0;motor<axes;motor++){
-        setEncRaw(motor, getEncRaw(motor)+(velRaw[motor])*(Time::now()-lastTime));
+        setEncRaw(motor, getEncRaw(motor)+(velRaw[motor])*(yarp::os::Time::now()-lastTime));
         if((jointStatus[motor]==1)||(jointStatus[motor]==2)||(jointStatus[motor]==3)) {  // if set to move...
             if ((getEncExposed(motor) > maxLimit[motor])  && (velRaw[motor]>0)) {  // SW max JL
                 stop(motor);  // puts jointStatus[motor]=0;
@@ -35,7 +35,7 @@ void teo::FakeControlboard::run() {
             }
         }
     }
-    lastTime = Time::now();
+    lastTime = yarp::os::Time::now();
 
 }
 

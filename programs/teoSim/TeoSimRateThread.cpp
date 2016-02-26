@@ -8,11 +8,11 @@ bool teo::TeoSimRateThread::threadInit() {
     printf("[TeoSimRateThread] begin: threadInit()\n");
     jmcMs = this->getRate();
 
-    ConstString externObj = DEFAULT_EXTERN_OBJ;
+    yarp::os::ConstString externObj = DEFAULT_EXTERN_OBJ;
 
     if(externObj=="redCan") {
-        RaveLoadPlugin("ExternObj");
-        ModuleBasePtr pExternObj = RaveCreateModule(environmentPtr,"ExternObj"); // create the module
+        OpenRAVE::RaveLoadPlugin("ExternObj");
+        OpenRAVE::ModuleBasePtr pExternObj = RaveCreateModule(environmentPtr,"ExternObj"); // create the module
         environmentPtr->Add(pExternObj,true); // load the module, calls main and also enables good destroy.
         std::stringstream cmdin,cmdout;
         cmdin << "Open";  // default maxiter:4000
@@ -23,7 +23,7 @@ bool teo::TeoSimRateThread::threadInit() {
         printf("Sent Open command.\n");
     }
 
-    lastTime = Time::now();
+    lastTime = yarp::os::Time::now();
     printf("[TeoSimRateThread] end: threadInit()\n");
     return true;
 }
@@ -35,7 +35,7 @@ void teo::TeoSimRateThread::run() {
 
     for(size_t i=0;i<ptrVectorOfRobotPtr->size();i++) {  // For each robot
         int dof = ptrVectorOfRobotPtr->at(i)->GetDOF();  // Create a vector sized
-        std::vector<dReal> dEncRaw(dof);                 // its number of joints.
+        std::vector<OpenRAVE::dReal> dEncRaw(dof);                 // its number of joints.
         //-- Iterate through manipulator wrappers
         for(size_t j=0;j<ptrVectorOfManipulatorWrapperPtr->size();j++) {
             //-- If indexes belong to father
@@ -74,9 +74,9 @@ void teo::TeoSimRateThread::run() {
     
     for(unsigned int laserIter = 0; laserIter<ptrVectorOfSensorPtrForLasers->size(); laserIter++ ) {
         ptrVectorOfSensorPtrForLasers->at(laserIter)->GetSensorData(ptrVectorOfLaserSensorDataPtr->at(laserIter));
-        std::vector< RaveVector< dReal > > sensorRanges = ptrVectorOfLaserSensorDataPtr->at(laserIter)->ranges;
-        std::vector< RaveVector< dReal > > sensorPositions = ptrVectorOfLaserSensorDataPtr->at(laserIter)->positions;
-        Transform tinv = ptrVectorOfLaserSensorDataPtr->at(laserIter)->__trans.inverse();
+        std::vector< OpenRAVE::RaveVector< OpenRAVE::dReal > > sensorRanges = ptrVectorOfLaserSensorDataPtr->at(laserIter)->ranges;
+        std::vector< OpenRAVE::RaveVector< OpenRAVE::dReal > > sensorPositions = ptrVectorOfLaserSensorDataPtr->at(laserIter)->positions;
+        OpenRAVE::Transform tinv = ptrVectorOfLaserSensorDataPtr->at(laserIter)->__trans.inverse();
         // std::vector< dReal > sensorIntensity = plasersensordata[laserIter]->intensity;
         // printf("[%d] sensorPositions size: %d ",laserIter,sensorPositions.size()); // = 1; xyz of the fixed 3d sensor position.
         // printf("sensorRanges size: %d ",sensorRanges.size()); // 64 * 48 = 3072;
@@ -120,10 +120,10 @@ void teo::TeoSimRateThread::run() {
                 //double p = sensorRanges[i_y+(i_x*i_depth.height())].z;
                 double p;
                 if( sensorPositions.size() > 0 ) {
-                    Vector v = tinv*(sensorRanges[i_y+(i_x*i_depth.height())] + sensorPositions[0]);
+                    OpenRAVE::Vector v = tinv*(sensorRanges[i_y+(i_x*i_depth.height())] + sensorPositions[0]);
                     p = (float)v.z;
                 } else {
-                    Vector v = tinv*(sensorRanges[i_y+(i_x*i_depth.height())]);
+                    OpenRAVE::Vector v = tinv*(sensorRanges[i_y+(i_x*i_depth.height())]);
                     p = (float)v.z;
                 }
                 i_depth(i_x,i_y) = p*1000.0;  // give mm

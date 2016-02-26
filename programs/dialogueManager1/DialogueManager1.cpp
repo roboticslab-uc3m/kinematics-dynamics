@@ -7,7 +7,7 @@ namespace teo
 
 /************************************************************************/
 
-bool DialogueManager1::configure(ResourceFinder &rf) {
+bool DialogueManager1::configure(yarp::os::ResourceFinder &rf) {
 
     //ConstString fileName(DEFAULT_FILE_NAME);
     
@@ -35,7 +35,7 @@ bool DialogueManager1::configure(ResourceFinder &rf) {
     while(1){
         if(outTtsPort.getOutputCount() > 0) break;
         printf("Waiting for \"/dialogueManager1/tts:o\" to be connected to something...\n");
-        Time::delay(0.5);
+        yarp::os::Time::delay(0.5);
     }    
     stateMachine.start();
     return true;
