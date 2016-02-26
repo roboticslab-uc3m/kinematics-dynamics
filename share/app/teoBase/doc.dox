@@ -2,9 +2,10 @@
 @ingroup  teo_applications
 \defgroup teo_teoBase teoBase App
 
-@brief An application that launches teoBase programs: launchManipulation, launchLocomotion, yarpdev --device OpenNI2DeviceServer, speechRecognition1, iSpeak.
+@brief An application that launches teoBase programs.
 
-\image html teoBase-app.png
+An application that launches teoBase programs: launchManipulation, launchLocomotion, yarpdev --device OpenNI2DeviceServer, speechRecognition1, iSpeak.
+
 
 \section Legal
 
