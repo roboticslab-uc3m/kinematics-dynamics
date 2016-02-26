@@ -1,0 +1,34 @@
+<application>
+<name>teoBase App</name>
+    <module>
+        <name>launchManipulation</name>
+        <parameters></parameters>
+        <node>/manipulation</node>
+    </module>
+
+    <module>
+        <name>launchLocomotion</name>
+        <parameters></parameters>
+        <node>/locomotion</node>
+    </module>
+
+    <module>
+        <name>yarpdev</name>
+        <parameters>--device OpenNI2DeviceServer --depthVideoMode 4 --colorVideoMode 9</parameters>
+        <node>/head</node>
+    </module>
+
+    <module>
+        <name>/sbin/runuser</name>
+        <parameters>-l teo -c speechRecognition1.py</parameters>
+        <node>/head</node>
+    </module>
+
+    <module>
+        <name>/sbin/runuser</name>
+        <parameters>-l teo -c iSpeak</parameters>
+        <node>/head</node>
+    </module>
+
+</application>
+

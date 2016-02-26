@@ -6,11 +6,6 @@
     </module>
 
     <module>
-        <name>launchManipulation</name>
-        <parameters>--from launchManipulation-fakeArms.ini</parameters>
-        <node>/manipulation</node>
-    </module>
-    <module>
         <name>executionCore1</name>
         <node>/manipulation</node>
     </module>
@@ -20,15 +15,11 @@
     </connection>
 
     <module>
-        <name>yarpdev</name>
-        <parameters>--device OpenNI2DeviceServer --noMirror --depthVideoMode 4 --colorVideoMode 9</parameters>
-        <node>/head</node>
-    </module>
-    <module>
         <name>cvFaces</name>
         <parameters>--kinectDevice OpenNI2DeviceClient --kinectLocal /cvFaces</parameters>
         <node>/head</node>
     </module>
+
     <connection>
         <from>/cvFaces/state:o</from>
         <to>/executionCore1/cv/state:i</to>
@@ -44,21 +35,11 @@
         <to>/yarpview/cvFaces/img:i</to>
     </connection>
 
-    <module>
-        <name>/sbin/runuser</name>
-        <parameters>-l teo -c speechRecognition1.py</parameters>
-        <node>/head</node>
-    </module>
     <connection>
         <from>/speechRecognition1:o</from>
         <to>/dialogueManager1/speechRecognition:i</to>
     </connection>
 
-    <module>
-        <name>/sbin/runuser</name>
-        <parameters>-l teo -c iSpeak</parameters>
-        <node>/head</node>
-    </module>
     <connection>
         <from>/dialogueManager1/iSpeak:o</from>
         <to>/iSpeak</to>
