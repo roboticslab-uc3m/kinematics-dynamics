@@ -50,7 +50,7 @@ bool teo::FakeControlboard::setBemfParam(int j, double bemf) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::FakeControlboard::setTorquePid(int j, const Pid &pid) {
+bool teo::FakeControlboard::setTorquePid(int j, const yarp::dev::Pid &pid) {
     return true;
 }
 
@@ -82,7 +82,7 @@ bool teo::FakeControlboard::getTorqueRanges(double *min, double *max) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::FakeControlboard::setTorquePids(const Pid *pids) {
+bool teo::FakeControlboard::setTorquePids(const yarp::dev::Pid *pids) {
     return true;
 }
 
@@ -124,13 +124,13 @@ bool teo::FakeControlboard::getTorquePidOutputs(double *outs) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::FakeControlboard::getTorquePid(int j, Pid *pid) {
+bool teo::FakeControlboard::getTorquePid(int j, yarp::dev::Pid *pid) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::FakeControlboard::getTorquePids(Pid *pids){
+bool teo::FakeControlboard::getTorquePids(yarp::dev::Pid *pids){
     return true;
 }
 

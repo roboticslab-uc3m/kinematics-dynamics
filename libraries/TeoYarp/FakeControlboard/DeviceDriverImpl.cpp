@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::FakeControlboard::open(Searchable& config) {
+bool teo::FakeControlboard::open(yarp::os::Searchable& config) {
 
     axes = config.check("axes",DEFAULT_AXES,"number of axes to control").asInt();
     double genInitPos = config.check("genInitPos",DEFAULT_GEN_INIT_POS,"general initialization positions").asDouble();
@@ -16,7 +16,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
     double genVelRawExposed = config.check("genVelRawExposed",DEFAULT_GEN_VEL_RAW_EXPOSED,"general VelRawExposed").asDouble();
     modePosVel = config.check("modePosVel",DEFAULT_MODE_POS_VEL,"0:pos, 1:vel").asInt();
 
-    Bottle* initPoss;
+    yarp::os::Bottle* initPoss;
     if (config.check("initPoss")) {
         initPoss = config.find("initPoss").asList();
         printf("FakeControlboard using individual initPoss: %s\n",initPoss->toString().c_str());
@@ -25,7 +25,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
         initPoss = 0;
         printf("FakeControlboard not using individual initPoss, defaulting to genInitPos.\n");
     }
-    Bottle* jointTols;
+    yarp::os::Bottle* jointTols;
     if (config.check("jointTols")) {
         jointTols = config.find("jointTols").asList();
         printf("FakeControlboard using individual jointTols: %s\n",jointTols->toString().c_str());
@@ -34,7 +34,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
         jointTols = 0;
         printf("FakeControlboard not using individual jointTols, defaulting to genJointTol.\n");
     }
-    Bottle* maxLimits;
+    yarp::os::Bottle* maxLimits;
     if (config.check("maxLimits")) {
         maxLimits = config.find("maxLimits").asList();
         printf("FakeControlboard using individual maxLimits: %s\n",maxLimits->toString().c_str());
@@ -43,7 +43,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
         maxLimits = 0;
         printf("FakeControlboard not using individual maxLimits, defaulting to genMaxLimit.\n");
     }
-    Bottle* minLimits;
+    yarp::os::Bottle* minLimits;
     if (config.check("minLimits")) {
         minLimits = config.find("minLimits").asList();
         printf("FakeControlboard using individual minLimits: %s\n",minLimits->toString().c_str());
@@ -52,7 +52,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
         minLimits = 0;
         printf("FakeControlboard not using individual minLimits, defaulting to genMinLimit.\n");
     }
-    Bottle* refSpeeds;
+    yarp::os::Bottle* refSpeeds;
     if (config.check("refSpeeds")) {
         refSpeeds = config.find("refSpeeds").asList();
         printf("FakeControlboard using individual refSpeeds: %s\n",refSpeeds->toString().c_str());
@@ -61,7 +61,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
         refSpeeds = 0;
         printf("FakeControlboard not using individual refSpeeds, defaulting to genRefSpeed.\n");
     }
-    Bottle* encRawExposeds;
+    yarp::os::Bottle* encRawExposeds;
     if (config.check("encRawExposeds")) {
         encRawExposeds = config.find("encRawExposeds").asList();
         printf("FakeControlboard using individual encRawExposeds: %s\n",encRawExposeds->toString().c_str());
@@ -70,7 +70,7 @@ bool teo::FakeControlboard::open(Searchable& config) {
         encRawExposeds = 0;
         printf("FakeControlboard not using individual encRawExposeds, defaulting to genEncRawExposed.\n");
     }
-    Bottle* velRawExposeds;
+    yarp::os::Bottle* velRawExposeds;
     if (config.check("velRawExposeds")) {
         velRawExposeds = config.find("velRawExposeds").asList();
         printf("FakeControlboard using individual velRawExposeds: %s\n",velRawExposeds->toString().c_str());

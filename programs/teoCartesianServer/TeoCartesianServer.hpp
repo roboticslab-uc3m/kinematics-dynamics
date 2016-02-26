@@ -23,8 +23,6 @@
 #define DEFAULT_REMOTE "/teoSim/leftLeg"
 #define DEFAULT_ANG_REPR "axisAngle"
 
-using namespace yarp::os;
-using namespace yarp::dev;
 
 namespace teo
 {
@@ -36,12 +34,12 @@ namespace teo
  * \ref cartesianServer module.
  * 
  */
-class TeoCartesianServer : public RFModule {
+class TeoCartesianServer : public yarp::os::RFModule {
 protected:
     yarp::dev::PolyDriver solverDevice;
     yarp::dev::PolyDriver robotDevice;
 
-    RpcServer xRpcServer;
+    yarp::os::RpcServer xRpcServer;
 	TeoXRpcResponder xResponder;
 
     TeoXCallbackPort xPort;
@@ -54,7 +52,7 @@ protected:
 
 public:
     TeoCartesianServer();
-    bool configure(ResourceFinder &rf);
+    bool configure(yarp::os::ResourceFinder &rf);
 };
 
 }  // namespace teo

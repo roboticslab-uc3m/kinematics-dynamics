@@ -32,10 +32,7 @@
 #define DEFAULT_JMC_MS_ACC 1  // multiplier
 #define DEFAULT_MODE_POS_VEL 0  // 0=Position, 1=Velocity.
 
-using namespace std;
 
-using namespace yarp::os;
-using namespace yarp::dev;
 
 namespace teo
 {
@@ -60,8 +57,8 @@ namespace teo
 // Note: IEncodersTimed inherits from IEncoders
 // Note: IPositionControl2 inherits from IPositionControl
 // Note: IVelocityControl2 inherits from IVelocityControl
-class FakeControlboard : public DeviceDriver, public IPositionControl2, public IVelocityControl2, public IEncodersTimed,
-                 public IControlLimits, public IControlMode, public ITorqueControl, public RateThread {
+class FakeControlboard : public yarp::dev::DeviceDriver, public yarp::dev::IPositionControl2, public yarp::dev::IVelocityControl2, public yarp::dev::IEncodersTimed,
+                 public yarp::dev::IControlLimits, public yarp::dev::IControlMode, public yarp::dev::ITorqueControl, public yarp::os::RateThread {
     public:
 
         // Set the Thread Rate in the class constructor
@@ -603,7 +600,7 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
          * @param pid new pid value
          * @return true/false on success/failure
          */
-        virtual bool setTorquePid(int j, const Pid &pid);
+        virtual bool setTorquePid(int j, const yarp::dev::Pid &pid);
 
         /** Get the value of the torque on a given joint (this is the
          * feedback if you have a torque sensor).
@@ -639,7 +636,7 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
          * @param pids pointer to a vector of pids
          * @return true/false upon success/failure
          */
-        virtual bool setTorquePids(const Pid *pids);
+        virtual bool setTorquePids(const yarp::dev::Pid *pids);
 
         /** Set the torque error limit for the controller on a specific joint
          * @param j joint number
@@ -685,13 +682,13 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
          * @param pid pointer to storage for the return value.
          * @return true/false on success/failure
          */
-        virtual bool getTorquePid(int j, Pid *pid);
+        virtual bool getTorquePid(int j, yarp::dev::Pid *pid);
 
         /** Get current pid value for a specific joint.
          * @param pids vector that will store the values of the pids.
          * @return true/false on success/failure
          */
-        virtual bool getTorquePids(Pid *pids);
+        virtual bool getTorquePids(yarp::dev::Pid *pids);
 
         /** Get the torque error limit for the controller on a specific joint
          * @param j joint number
@@ -748,7 +745,7 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
          * yarp developers to add documentation for your device).
          * @return true/false upon success/failure
          */
-        virtual bool open(Searchable& config);
+        virtual bool open(yarp::os::Searchable& config);
 
         /**
          * Close the DeviceDriver.
@@ -791,7 +788,7 @@ class FakeControlboard : public DeviceDriver, public IPositionControl2, public I
         //
         int modePosVel;
         double lastTime;
-        Semaphore encRawMutex;  // SharedArea
+        yarp::os::Semaphore encRawMutex;  // SharedArea
         std::vector<double> encRaw;
         std::vector<double> encRawExposed;  // For conversion.
         std::vector<int> jointStatus;

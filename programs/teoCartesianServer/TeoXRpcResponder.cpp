@@ -7,12 +7,12 @@ namespace teo
 
 /************************************************************************/
 
-bool TeoXRpcResponder::read(ConnectionReader& connection) {
-    Bottle in, out;
+bool TeoXRpcResponder::read(yarp::os::ConnectionReader& connection) {
+    yarp::os::Bottle in, out;
     in.read(connection);
     printf("[xRpcResponder] Got %s\n", in.toString().c_str());
     out.clear();
-    ConnectionWriter *returnToSender = connection.getWriter();
+    yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
     if (returnToSender==NULL) return false;
     if ((in.get(0).asString() == "help")||(in.get(0).asVocab() == VOCAB_HELP))  // help //
     {
@@ -75,7 +75,7 @@ bool TeoXRpcResponder::read(ConnectionReader& connection) {
                     cartesianRateThread->checkMotionDone(&done);
                     printf(".");
                     fflush(stdout);
-                    Time::delay(0.5);
+                    yarp::os::Time::delay(0.5);
                 }
                 printf("\n");
             }
