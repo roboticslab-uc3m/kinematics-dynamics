@@ -19,12 +19,6 @@
 
 #include "ColorDebug.hpp"
 
-using namespace std;
-
-using namespace yarp::os;
-using namespace yarp::dev;
-
-using namespace OpenRAVE;
 
 namespace teo
 {
@@ -56,8 +50,8 @@ protected:
         std::vector<int> vectorOfJointIdx;
         std::vector<double> vectorOfJointPos;
         std::vector<double> vectorOfJointTr;
-        PolyDriver dd;
-        IEncoders *encs;
+        yarp::dev::PolyDriver dd;
+        yarp::dev::IEncoders *encs;
         std::string manipulatorWrapperName;
 };
 

@@ -25,13 +25,6 @@
 #define DEFAULT_PHYSICS "none"
 #define DEFAULT_VIEWER 1
 
-using namespace std;
-
-using namespace yarp::os;
-using namespace yarp::dev;
-
-using namespace OpenRAVE;
-
 namespace teo
 {
 
@@ -40,7 +33,7 @@ namespace teo
  *
  * @brief Main class, creates an instance of OpenRAVE-core (qtcoin viewer included) and corresponding controlboard wrappers.
  */
-class TeoSim : public RFModule {
+class TeoSim : public yarp::os::RFModule {
 
     public:
 
@@ -93,20 +86,20 @@ class TeoSim : public RFModule {
     protected:
 
         // Rave-specific parameters //
-        EnvironmentBasePtr environmentPtr;
-        PhysicsEngineBasePtr physicsEnginePtr;
-        vector<RobotBasePtr> vectorOfRobotPtr;
+        OpenRAVE::EnvironmentBasePtr environmentPtr;
+        OpenRAVE::PhysicsEngineBasePtr physicsEnginePtr;
+        std::vector<OpenRAVE::RobotBasePtr> vectorOfRobotPtr;
         //
         boost::thread_group orThreads;
         //
-        std::vector< SensorBasePtr > vectorOfSensorPtrForCameras;
-        std::vector< SensorBasePtr > vectorOfSensorPtrForLasers;
-        std::vector< boost::shared_ptr<SensorBase::CameraSensorData> > vectorOfCameraSensorDataPtr;
-        std::vector< boost::shared_ptr<SensorBase::LaserSensorData> >  vectorOfLaserSensorDataPtr;
+        std::vector< OpenRAVE::SensorBasePtr > vectorOfSensorPtrForCameras;
+        std::vector< OpenRAVE::SensorBasePtr > vectorOfSensorPtrForLasers;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > vectorOfCameraSensorDataPtr;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> >  vectorOfLaserSensorDataPtr;
         std::vector<int> vectorOfCameraWidth;
         std::vector<int> vectorOfCameraHeight;
-        std::vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > vectorOfRgbPortPtr;
-        std::vector< BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > vectorOfIntPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > vectorOfRgbPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > vectorOfIntPortPtr;
         //
         TeoSimRateThread teoSimRateThread;
 

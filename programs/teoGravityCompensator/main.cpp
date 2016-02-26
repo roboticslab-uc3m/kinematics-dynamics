@@ -41,8 +41,7 @@
 #include "ColorDebug.hpp"
 #include "TeoGravityCompensator.hpp"
 
-using namespace yarp::os;
-using namespace yarp::dev;
+
 
 YARP_DECLARE_PLUGINS(TeoYarp)  //-- Provides "KdlSolver".
 
@@ -50,7 +49,7 @@ int main(int argc, char *argv[]) {
 
     YARP_REGISTER_PLUGINS(TeoYarp);  //-- Provides "KdlSolver".
 
-    ResourceFinder rf;
+    yarp::os::ResourceFinder rf;
     rf.setVerbose(true);
     rf.setDefaultContext("teoGravityCompensator");
     rf.setDefaultConfigFile("teoGravityCompensator.ini");
@@ -63,7 +62,7 @@ int main(int argc, char *argv[]) {
 
     CD_INFO("Run \"teoGravityCompensator --help\" for options.\n");
     CD_INFO("teoGravityCompensator checking for yarp network...\n");
-    Network yarp;
+    yarp::os::Network yarp;
     if (!yarp.checkNetwork()) {
         CD_ERROR("Found no yarp network (try running \"yarpserver &\"), bye!\n");
         return -1;

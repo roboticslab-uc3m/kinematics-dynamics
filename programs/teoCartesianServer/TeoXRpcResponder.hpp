@@ -19,8 +19,6 @@
 #define VOCAB_INV VOCAB3('i','n','v')
 #define VOCAB_MOVJ VOCAB4('m','o','v','j')
 
-using namespace yarp::os;
-using namespace yarp::dev;
 
 namespace teo
 {
@@ -30,7 +28,7 @@ namespace teo
  *
  * @brief Implements an xRpcPort responder (callback on RPC).
  */
-class TeoXRpcResponder : public PortReader
+class TeoXRpcResponder : public yarp::os::PortReader
 {
 public:
     void setCartesianRateThread(CartesianRateThread* cartesianRateThread)
@@ -40,7 +38,7 @@ public:
 
 protected:
     /** Implement the actual responder (callback on RPC). */
-    virtual bool read(ConnectionReader& connection);
+    virtual bool read(yarp::os::ConnectionReader& connection);
 
     CartesianRateThread *cartesianRateThread;
 };

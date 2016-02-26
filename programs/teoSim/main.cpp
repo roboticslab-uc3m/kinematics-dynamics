@@ -57,7 +57,6 @@
 #include "ColorDebug.hpp"
 #include "TeoSim.hpp"
 
-using namespace yarp::os;
 
 YARP_DECLARE_PLUGINS(TeoYarp)
 
@@ -65,7 +64,7 @@ int main(int argc, char *argv[]) {
 
     YARP_REGISTER_PLUGINS(TeoYarp);
 
-    ResourceFinder rf;
+    yarp::os::ResourceFinder rf;
     rf.setVerbose(true);
     rf.setDefaultContext("teoSim");
     rf.setDefaultConfigFile("teoSim.ini");
@@ -78,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     CD_INFO("Run \"teoSim --help\" for options.\n");
     CD_INFO("Checking for yarp network...\n");
-    Network yarp;
+    yarp::os::Network yarp;
     if (!yarp.checkNetwork()) {
         CD_ERROR("Found no yarp network (try running \"yarpserver &\"), bye!\n");
         return -1;
