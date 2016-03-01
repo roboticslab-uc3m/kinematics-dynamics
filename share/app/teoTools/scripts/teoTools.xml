@@ -20,5 +20,10 @@
         <to>/yarpview/OpenNI2/depthFrame:i</to>
     </connection>
 
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp write ... /iSpeak"</parameters>
+        <node>localhost</node>
+    </module>
 </application>
 
