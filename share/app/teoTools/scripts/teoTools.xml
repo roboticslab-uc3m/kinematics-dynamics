@@ -25,5 +25,12 @@
         <parameters>-e "yarp write ... /iSpeak"</parameters>
         <node>localhost</node>
     </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp read ... /speechRecognition1:o"</parameters>
+        <node>localhost</node>
+    </module>
+
 </application>
 
