@@ -1,16 +1,29 @@
 <application>
 <name>teoBase App</name>
+
+<!-- manipulation -->
+
     <module>
         <name>launchManipulation</name>
         <parameters></parameters>
         <node>/manipulation</node>
     </module>
 
+<!-- locomotion -->
+
     <module>
         <name>launchLocomotion</name>
         <parameters></parameters>
         <node>/locomotion</node>
     </module>
+
+    <module>
+        <name>yarpdev</name>
+        <parameters>--subdevice xsensmtx --device inertial --name /inertial</parameters>
+        <node>/locomotion</node>
+    </module>
+
+<!-- head -->
 
     <module>
         <name>yarpdev</name>
