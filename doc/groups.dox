@@ -5,13 +5,13 @@
 namespace teo {}
 
 /**
- * \defgroup teo_applications TEO Applications (Collections of Programs)
+ * \defgroup teo_applications TEO Main Applications (Collections of Programs)
  *
  * @brief TEO applications (collections of programs).
  */
 
 /**
- * \defgroup teo_libraries TEO Libraries
+ * \defgroup teo_libraries TEO Main Libraries
  *
  * @brief TEO libraries.
  */
@@ -20,7 +20,7 @@ namespace teo {}
  * @ingroup teo_libraries
  * \defgroup TeoYarp
  *
- * @brief Contains TEO libraries that implement YARP device interfaces
+ * @brief Contains TEO Main libraries that implement YARP device interfaces
  * and therefore can be invoked as YARP plugins.
  *
  * @section BodyYarp_install Installation
@@ -30,12 +30,12 @@ namespace teo {}
 
 /**
  * 
- * \defgroup teo_programs TEO Programs
+ * \defgroup teo_programs TEO Main Programs
  * @brief TEO programs.
  */
 
 /**
- * \defgroup teo_examples TEO Examples
+ * \defgroup teo_examples TEO Main Examples
  * @brief TEO examples.
  */
 
