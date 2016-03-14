@@ -1,0 +1,742 @@
+<Robot name="TEO">
+
+
+<KinBody name="base">
+<Body name="cintura" type="dynamic">
+<Geom type="trimesh">
+<Translation>0 0 0</Translation>
+<rotationaxis>0 0 1 0</rotationaxis>
+<Render>models/cintura_links.wrl</Render>
+<collision>models/cintura_links.wrl</collision>
+</Geom>
+</Body>
+
+
+</KinBody>
+
+
+
+<!-- torso robot -->
+
+	<Robot name="r3">
+        <KinBody name="torso" makejoinedlinksadjacent="1">
+
+
+            <Body name="r30" type="dynamic">
+            <offsetfrom>cintura</offsetfrom>
+            <Translation>0 0 0.1932</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/3.0^torso_simple_links.wrl</Render>
+            <collision>models/3.0^torso_simple_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q30" type="hinge">
+            <Body>cintura</Body>
+            <Body>r30</Body>
+            <offsetfrom>r30</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-20 20</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r31" type="dynamic">
+            <offsetfrom>r30</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <Geom type="trimesh">
+            <Render>models/3.1^torso_simple_links.wrl</Render>
+            <collision>models/3.1^torso_simple_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q31" type="hinge">
+            <Body>r30</Body>
+            <Body>r31</Body>
+            <offsetfrom>r30</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	  </KinBody>
+          </Robot>
+
+
+<!-- head robot -->
+
+	<Robot name="r0">
+        <KinBody name="head" makejoinedlinksadjacent="1">
+
+
+	    <Body name="r00" type="dynamic">
+            <offsetfrom>r31</offsetfrom>
+            <Translation>0 0 0.435</Translation>
+            <Geom type="trimesh">
+            <Render>models/0.0^cabeza_links.wrl</Render>
+            <collision>models/0.0^cabeza_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q00" type="hinge">
+            <Body>r31</Body>
+            <Body>r00</Body>
+            <offsetfrom>r00</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+	    <Body name="r01" type="dynamic">
+            <offsetfrom>r00</offsetfrom>
+            <Translation>0 0 0.0325</Translation>
+            <Geom type="trimesh">
+            <Render>models/0.1^cabeza_links.wrl</Render>
+            <collision>models/0.1^cabeza_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q01" type="hinge">
+            <Body>r00</Body>
+            <Body>r01</Body>
+            <offsetfrom>r01</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+            <!---->
+            </KinBody>
+
+	</Robot>
+
+
+<!-- right arm robot -->
+
+	<Robot name="r1">
+
+        <KinBody name="right_arm" makejoinedlinksadjacent="1">
+
+	    <Body name="r10" type="dynamic">
+            <offsetfrom>r31</offsetfrom>
+            <Translation>0 -0.26292 0.305</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.0^brazo_derecho_links.wrl</Render>
+            <collision>models/1.0^brazo_derecho_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q10" type="hinge">
+            <Body>r31</Body>
+            <Body>r10</Body>
+            <offsetfrom>r10</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-180 180</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r11" type="dynamic">
+            <offsetfrom>r10</offsetfrom>
+            <Translation>0 -0.084 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.1^brazo_derecho_links.wrl</Render>
+            <collision>models/1.1^brazo_derecho_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q11" type="hinge">
+            <Body>r10</Body>
+            <Body>r11</Body>
+            <offsetfrom>r11</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-10 100</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r12" type="dynamic">
+            <offsetfrom>r11</offsetfrom>
+            <Translation>0 0 -0.329</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.2^brazo_derecho_links.wrl</Render>
+            <collision>models/1.2^brazo_derecho_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q12" type="hinge">
+            <Body>r11</Body>
+            <Body>r12</Body>
+            <offsetfrom>r12</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-30 30</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r13" type="dynamic">
+            <offsetfrom>r12</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 1 0 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.3^brazo_derecho_links.wrl</Render>
+            <collision>models/1.3^brazo_derecho_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q13" type="hinge">
+            <Body>r12</Body>
+            <Body>r13</Body>
+            <offsetfrom>r13</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>0 135</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r14" type="dynamic">
+            <offsetfrom>r13</offsetfrom>
+            <Translation>0 0 -0.202</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.4^brazo_derecho_links.wrl</Render>
+            <collision>models/1.4^brazo_derecho_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q14" type="hinge">
+            <Body>r13</Body>
+            <Body>r14</Body>
+            <offsetfrom>r14</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-90 90</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r15" type="dynamic">
+            <offsetfrom>r14</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.5^brazo_derecho_links.wrl</Render>
+            <collision>models/1.5^brazo_derecho_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="q15" type="hinge">
+            <Body>r14</Body>
+            <Body>r15</Body>
+            <offsetfrom>r15</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-90 90</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	  </KinBody>
+
+	</Robot>
+
+
+
+<!-- left arm robot -->
+
+        <Robot name="r2">
+
+        <KinBody name="left_arm" makejoinedlinksadjacent="1">
+
+            <Body name="r20" type="dynamic">
+            <offsetfrom>r31</offsetfrom>
+            <Translation>0 0.26292 0.305</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/2.0^brazo_izquierdo_links.wrl</Render>
+            <collision>models/2.0^brazo_izquierdo_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q20" type="hinge">
+            <Body>r31</Body>
+            <Body>r20</Body>
+            <offsetfrom>r20</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-180 180</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r21" type="dynamic">
+            <offsetfrom>r20</offsetfrom>
+            <Translation>0 0.084 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/2.1^brazo_izquierdo_links.wrl</Render>
+            <collision>models/2.1^brazo_izquierdo_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q21" type="hinge">
+            <Body>r20</Body>
+            <Body>r21</Body>
+            <offsetfrom>r21</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-10 100</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r22" type="dynamic">
+            <offsetfrom>r21</offsetfrom>
+            <Translation>0 0 -0.329</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/2.2^brazo_izquierdo_links.wrl</Render>
+            <collision>models/2.2^brazo_izquierdo_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q22" type="hinge">
+            <Body>r21</Body>
+            <Body>r22</Body>
+            <offsetfrom>r22</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-30 30</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r23" type="dynamic">
+            <offsetfrom>r22</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 1 0 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/2.3^brazo_izquierdo_links.wrl</Render>
+            <collision>models/2.3^brazo_izquierdo_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q23" type="hinge">
+            <Body>r22</Body>
+            <Body>r23</Body>
+            <offsetfrom>r23</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>0 135</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r24" type="dynamic">
+            <offsetfrom>r23</offsetfrom>
+            <Translation>0 0 -0.202</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/2.4^brazo_izquierdo_links.wrl</Render>
+            <collision>models/2.4^brazo_izquierdo_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q24" type="hinge">
+            <Body>r23</Body>
+            <Body>r24</Body>
+            <offsetfrom>r24</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-90 90</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r25" type="dynamic">
+            <offsetfrom>r24</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/2.5^brazo_izquierdo_links.wrl</Render>
+            <collision>models/2.5^brazo_izquierdo_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q25" type="hinge">
+            <Body>r24</Body>
+            <Body>r25</Body>
+            <offsetfrom>r25</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-90 90</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+          </KinBody>
+
+        </Robot>
+
+
+
+
+<!-- right leg robot -->
+<Robot name="4">
+<KinBody name="right_leg" makejoinedlinksadjacent="1">
+
+            <Body name="r40" type="dynamic">
+            <offsetfrom>cintura</offsetfrom>
+            <Translation>0 -0.146 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/4.0^pierna_der_links.wrl</Render>
+            <collision>models/4.0^pierna_der_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q40" type="hinge">
+            <Body>cintura</Body>
+            <Body>r40</Body>
+            <offsetfrom>r40</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-20 20</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r41" type="dynamic">
+            <offsetfrom>r40</offsetfrom>
+            <Translation>0 0 -0.092</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/4.1^pierna_der_links.wrl</Render>
+            <collision>models/4.1^pierna_der_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q41" type="hinge">
+            <Body>r40</Body>
+            <Body>r41</Body>
+            <offsetfrom>r41</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+            <Body name="r42" type="dynamic">
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <offsetfrom>r41</offsetfrom>
+            <Geom type="trimesh">
+            <Render>models/4.2^pierna_der_links.wrl</Render>
+            <collision>models/4.2^pierna_der_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q42" type="hinge">
+            <Body>r41</Body>
+            <Body>r42</Body>
+            <offsetfrom>r42</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r43" type="dynamic">
+            <offsetfrom>r42</offsetfrom>
+            <Translation>0 0 -0.33</Translation>
+            <rotationaxis>0 0 1 0</rotationaxis>
+            <Geom type="trimesh">
+            <Render>models/4.3^pierna_der_links.wrl</Render>
+            <collision>models/4.3^pierna_der_links.wrl</collision>
+            </Geom>
+            </Body>
+
+
+            <Joint circular="true" name="q43" type="hinge">
+            <Body>r42</Body>
+            <Body>r43</Body>
+            <offsetfrom>r43</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+           <Body name="r44" type="dynamic">
+           <offsetfrom>r43</offsetfrom>
+           <Translation>0 +0.0175 -0.3</Translation>
+           <rotationaxis>0 0 1 0</rotationaxis>
+           <Geom type="trimesh">
+           <Render>models/4.4^pierna_der_links.wrl</Render>
+           <collision>models/4.4^pierna_der_links.wrl</collision>
+           </Geom>
+           </Body>
+
+            <Joint circular="true" name="q44" type="hinge">
+            <Body>r43</Body>
+            <Body>r44</Body>
+            <offsetfrom>r44</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-45 45</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r45" type="dynamic">
+            <offsetfrom>r44</offsetfrom>
+            <Geom type="trimesh">
+            <Render>models/4.5^pierna_der_links.wrl</Render>
+            <collision>models/4.5^pierna_der_links.wrl</collision>
+            </Geom>
+            </Body>
+
+            <Joint circular="true" name="q45" type="hinge">
+            <Body>r44</Body>
+            <Body>r45</Body>
+            <offsetfrom>r45</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-45 45</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+	  </KinBody>
+          </Robot>
+
+
+
+<!-- left leg robot -->
+
+	<Robot name="5">
+
+          <KinBody name="left_leg" makejoinedlinksadjacent="1">
+
+            <Body name="r50" type="dynamic">
+            <offsetfrom>cintura</offsetfrom>
+            <Translation>0 0.146 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/5.0^pierna_izq_links.wrl</Render>
+            <collision>models/5.0^pierna_izq_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="left_leg/hip_yaw" type="hinge">
+            <Body>cintura</Body>
+            <Body>r50</Body>
+            <offsetfrom>r50</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-20 20</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r51" type="dynamic">
+            <offsetfrom>r50</offsetfrom>
+            <Translation>0 0 -0.092</Translation>
+            <Geom type="trimesh">
+            <Render>models/5.1^pierna_izq_links.wrl</Render>
+            <collision>models/5.1^pierna_izq_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="left_leg/hip_roll" type="hinge">
+            <Body>r50</Body>
+            <Body>r51</Body>
+            <offsetfrom>r51</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+            <Body name="r52" type="dynamic">
+            <Translation>0 0 0</Translation>
+            <offsetfrom>r51</offsetfrom>
+            <Geom type="trimesh">
+            <Render>models/5.2^pierna_izq_links.wrl</Render>
+            <collision>models/5.2^pierna_izq_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="left_leg/hip_pitch" type="hinge">
+            <Body>r51</Body>
+            <Body>r52</Body>
+            <offsetfrom>r52</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r53" type="dynamic">
+            <offsetfrom>r52</offsetfrom>
+            <Translation>0 0 -0.33</Translation>
+            <Geom type="trimesh">
+            <Render>models/5.3^pierna_izq_links.wrl</Render>
+            <collision>models/5.3^pierna_izq_links.wrl</collision>
+            </Geom>
+            </Body>
+
+
+	    <Joint circular="true" name="left_leg/knee" type="hinge">
+            <Body>r52</Body>
+            <Body>r53</Body>
+            <offsetfrom>r53</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+           <Body name="r54" type="dynamic">
+           <offsetfrom>r53</offsetfrom>
+           <Translation>0 -0.0175 -0.3</Translation>
+           <Geom type="trimesh">
+           <Render>models/5.4^pierna_izq_links.wrl</Render>
+           <collision>models/5.4^pierna_izq_links.wrl</collision>
+           </Geom>
+           </Body>
+
+	    <Joint circular="true" name="left_leg/ankle" type="hinge">
+            <Body>r53</Body>
+            <Body>r54</Body>
+            <offsetfrom>r54</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-45 45</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r55" type="dynamic">
+            <offsetfrom>r54</offsetfrom>
+            <Geom type="trimesh">
+            <Render>models/5.5^pierna_izq_links.wrl</Render>
+            <collision>models/5.5^pierna_izq_links.wrl</collision>
+            </Geom>
+            </Body>
+
+	    <Joint circular="true" name="left_leg/foot" type="hinge">
+            <Body>r54</Body>
+            <Body>r55</Body>
+            <offsetfrom>r55</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-45 45</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>-->
+
+
+	  </KinBody>
+          </Robot>
+
+
+<!-- Manipulators defined from here -->
+
+  <Manipulator name="headGaze">
+    <effector>r01</effector>   <!-- last link where end effector is attached-->
+    <base>r00</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 0</Translation>-->
+  </Manipulator>
+
+  <Manipulator name="rightHand">
+    <effector>r15</effector>   <!-- last link where end effector is attached-->
+    <base>r10</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 -0.2</Translation>-->
+  </Manipulator>
+
+  <Manipulator name="leftHand">
+    <effector>r25</effector>   <!-- last link where end effector is attached-->
+    <base>r20</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 -0.2</Translation>
+  </Manipulator>
+
+  <Manipulator name="torso">
+    <effector>r31</effector>   <!-- last link where end effector is attached-->
+    <base>r30</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 0</Translation>
+  </Manipulator>
+
+<!--TODO: correct feet effector translation (-0.175)-->
+  <Manipulator name="rightFoot">
+    <effector>r45</effector>   <!-- last link where end effector is attached-->
+    <base>r40</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 -0.125</Translation>
+  </Manipulator>
+
+  <Manipulator name="leftFoot">
+    <effector>r55</effector>   <!-- last link where end effector is attached-->
+    <base>r50</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 -0.125</Translation>
+  </Manipulator>
+
+
+
+
+</Robot>

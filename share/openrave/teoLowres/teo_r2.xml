@@ -1,0 +1,170 @@
+
+<!-- right arm robot -->
+
+	<Robot name="r1">
+
+        <KinBody name="right_arm" makejoinedlinksadjacent="1">
+
+	    <Body name="r10" type="dynamic">
+            <offsetfrom>r31</offsetfrom>
+            <Translation>0 -0.26292 0.305</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.0^brazo_derecho_links.wrl</Render>
+            <collision>models/1.0^brazo_derecho_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q10" type="hinge">
+            <Body>r31</Body>
+            <Body>r10</Body>
+            <offsetfrom>r10</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-180 180</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r11" type="dynamic">
+            <offsetfrom>r10</offsetfrom>
+            <Translation>0 -0.084 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.1^brazo_derecho_links.wrl</Render>
+            <collision>models/1.1^brazo_derecho_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q11" type="hinge">
+            <Body>r10</Body>
+            <Body>r11</Body>
+            <offsetfrom>r11</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-10 100</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r12" type="dynamic">
+            <offsetfrom>r11</offsetfrom>
+            <Translation>0 0 -0.329</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.2^brazo_derecho_links.wrl</Render>
+            <collision>models/1.2^brazo_derecho_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q12" type="hinge">
+            <Body>r11</Body>
+            <Body>r12</Body>
+            <offsetfrom>r12</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-30 30</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r13" type="dynamic">
+            <offsetfrom>r12</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 1 0 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.3^brazo_derecho_links.wrl</Render>
+            <collision>models/1.3^brazo_derecho_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q13" type="hinge">
+            <Body>r12</Body>
+            <Body>r13</Body>
+            <offsetfrom>r13</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>0 135</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r14" type="dynamic">
+            <offsetfrom>r13</offsetfrom>
+            <Translation>0 0 -0.202</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.4^brazo_derecho_links.wrl</Render>
+            <collision>models/1.4^brazo_derecho_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q14" type="hinge">
+            <Body>r13</Body>
+            <Body>r14</Body>
+            <offsetfrom>r14</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-90 90</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	    <Body name="r15" type="dynamic">
+            <offsetfrom>r14</offsetfrom>
+            <Translation>0 0 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/1.5^brazo_derecho_links.wrl</Render>
+            <collision>models/1.5^brazo_derecho_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q15" type="hinge">
+            <Body>r14</Body>
+            <Body>r15</Body>
+            <offsetfrom>r15</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-90 90</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+	  </KinBody>
+
+
+  <Manipulator name="m2">
+    <effector>r15</effector>   <!-- last link where end effector is attached-->
+    <base>r31</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 -0.2</Translation>-->
+  </Manipulator>
+
+
+	</Robot>
+
+
+

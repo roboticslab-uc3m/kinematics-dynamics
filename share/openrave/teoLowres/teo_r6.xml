@@ -1,0 +1,178 @@
+
+<!-- left leg robot -->
+
+        <Robot name="r6">
+
+          <KinBody name="left_leg" makejoinedlinksadjacent="1">
+
+            <Body name="r60" type="dynamic">
+            <offsetfrom>cintura</offsetfrom>
+            <Translation>0 0.146 0</Translation>
+            <RotationAxis>0 0 1 0</RotationAxis>
+            <Geom type="trimesh">
+            <Render>models/5.0^pierna_izq_links.wrl</Render>
+            <collision>models/5.0^pierna_izq_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+            <Joint circular="false" name="q60" type="hinge">
+            <Body>cintura</Body>
+            <Body>r60</Body>
+            <offsetfrom>r60</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-20 20</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>30</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r61" type="dynamic">
+            <offsetfrom>r60</offsetfrom>
+            <Translation>0 0 -0.092</Translation>
+            <Geom type="trimesh">
+            <Render>models/5.1^pierna_izq_links.wrl</Render>
+            <collision>models/5.1^pierna_izq_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+            <Joint circular="false" name="q61" type="hinge">
+            <Body>r60</Body>
+            <Body>r61</Body>
+            <offsetfrom>r61</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-30 30</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>30</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+            <Body name="r62" type="dynamic">
+            <Translation>0 0 0</Translation>
+            <offsetfrom>r61</offsetfrom>
+            <Geom type="trimesh">
+            <Render>models/5.2^pierna_izq_links.wrl</Render>
+            <collision>models/5.2^pierna_izq_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+            <Joint circular="false" name="q62" type="hinge">
+            <Body>r61</Body>
+            <Body>r62</Body>
+            <offsetfrom>r62</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-45 30</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>30</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+            <Body name="r63" type="dynamic">
+            <offsetfrom>r62</offsetfrom>
+            <Translation>0 0 -0.33</Translation>
+            <Geom type="trimesh">
+            <Render>models/5.3^pierna_izq_links.wrl</Render>
+            <collision>models/5.3^pierna_izq_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+
+            <Joint circular="false" name="q63" type="hinge">
+            <Body>r62</Body>
+            <Body>r63</Body>
+            <offsetfrom>r63</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-5 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>30</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+        <Body name="r6dummy" type="dynamic">
+        <offsetfrom>r63</offsetfrom>
+        <Translation>0 -0.0175 -0.3</Translation>
+        </Body>
+
+        <Joint name="q6dummy" type="hinge" enable="False">
+        <Body>r63</Body>
+        <Body>r6dummy</Body>
+        <limitsdeg>0 0</limitsdeg>
+        </Joint>
+
+           <Body name="r64" type="dynamic">
+           <offsetfrom>r6dummy</offsetfrom>
+           <Translation>0 0 0</Translation>
+           <Geom type="trimesh">
+           <Render>models/5.4^pierna_izq_links.wrl</Render>
+           <collision>models/5.4^pierna_izq_links.wrl</collision>
+           </Geom>
+           <Mass type="custom">
+             <density>1</density>
+           </Mass>
+           </Body>
+
+            <Joint circular="false" name="q64" type="hinge">
+            <Body>r6dummy</Body>
+            <Body>r64</Body>
+            <offsetfrom>r64</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-40 20</limitsdeg>
+             <axis>0 1 0</axis>
+            <maxvel>30</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+            <Body name="r65" type="dynamic">
+            <offsetfrom>r64</offsetfrom>
+            <Geom type="trimesh">
+            <Render>models/5.5^pierna_izq_links.wrl</Render>
+            <collision>models/5.5^pierna_izq_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+            <Joint circular="false" name="q65" type="hinge">
+            <Body>r64</Body>
+            <Body>r65</Body>
+            <offsetfrom>r65</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-30 30</limitsdeg>
+            <axis>1 0 0</axis>
+            <maxvel>30</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+	  </KinBody>
+
+
+
+  <Manipulator name="m6">
+    <effector>r65</effector>   <!-- last link where end effector is attached-->
+    <base>cintura</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <iksolver>ik/ikfast0x10000048.Transform6D.x86_64.22_23_24_25_26_27.so</iksolver>
+
+    <Translation>0 0 -0.125</Translation>
+  </Manipulator>
+
+
+          </Robot>
