@@ -1,0 +1,70 @@
+
+<!-- head robot -->
+
+        <Robot name="r0">
+        <KinBody name="head" makejoinedlinksadjacent="1">
+
+
+	    <Body name="r00" type="dynamic">
+            <offsetfrom>r31</offsetfrom>
+            <Translation>0 0 0.435</Translation>
+            <Geom type="trimesh">
+            <Render>models/0.0^cabeza_links.wrl</Render>
+            <collision>models/0.0^cabeza_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q00" type="hinge">
+            <Body>r31</Body>
+            <Body>r00</Body>
+            <offsetfrom>r00</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 0 1</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+
+
+	    <Body name="r01" type="dynamic">
+            <offsetfrom>r00</offsetfrom>
+            <Translation>0 0 0.0325</Translation>
+            <Geom type="trimesh">
+            <Render>models/0.1^cabeza_links.wrl</Render>
+            <collision>models/0.1^cabeza_links.wrl</collision>
+            </Geom>
+            <Mass type="custom">
+              <density>1</density>
+            </Mass>
+            </Body>
+
+	    <Joint circular="true" name="q01" type="hinge">
+            <Body>r00</Body>
+            <Body>r01</Body>
+            <offsetfrom>r01</offsetfrom>
+            <weight>1.0</weight>
+            <limitsdeg>-80 80</limitsdeg>
+            <axis>0 1 0</axis>
+            <maxvel>3</maxvel>
+            <resolution>1</resolution>
+            </Joint>
+            <!---->
+            </KinBody>
+
+
+  <Manipulator name="m1">
+    <effector>r01</effector>   <!-- last link where end effector is attached-->
+    <base>r00</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
+
+    <Translation>0 0 0</Translation>-->
+  </Manipulator>
+
+	</Robot>
+

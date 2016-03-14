@@ -1,0 +1,175 @@
+
+<!-- right leg robot -->
+<Robot name="r5">
+<KinBody name="right_leg" makejoinedlinksadjacent="1">
+
+        <Body name="r50" type="dynamic">
+        <offsetfrom>cintura</offsetfrom>
+        <Translation>0 -0.146 0</Translation>
+        <RotationAxis>0 0 1 0</RotationAxis>
+        <Geom type="trimesh">
+        <Render>models/4.0^pierna_der_links.wrl</Render>
+        <collision>models/4.0^pierna_der_links.wrl</collision>
+        </Geom>
+        <Mass type="custom">
+          <density>1</density>
+        </Mass>
+        </Body>
+
+        <Joint circular="false" name="q50" type="hinge">
+        <Body>cintura</Body>
+        <Body>r50</Body>
+        <offsetfrom>r50</offsetfrom>
+        <weight>1.0</weight>
+        <limitsdeg>-20 20</limitsdeg>
+        <axis>0 0 1</axis>
+        <maxvel>30</maxvel>
+        <resolution>1</resolution>
+        </Joint>
+
+        <Body name="r51" type="dynamic">
+        <offsetfrom>r50</offsetfrom>
+        <Translation>0 0 -0.092</Translation>
+        <RotationAxis>0 0 1 0</RotationAxis>
+        <Geom type="trimesh">
+        <Render>models/4.1^pierna_der_links.wrl</Render>
+        <collision>models/4.1^pierna_der_links.wrl</collision>
+        </Geom>
+        <Mass type="custom">
+          <density>1</density>
+        </Mass>
+        </Body>
+
+        <Joint circular="false" name="q51" type="hinge">
+        <Body>r50</Body>
+        <Body>r51</Body>
+        <offsetfrom>r51</offsetfrom>
+        <weight>1.0</weight>
+        <limitsdeg>-30 30</limitsdeg>
+        <axis>1 0 0</axis>
+        <maxvel>30</maxvel>
+        <resolution>1</resolution>
+        </Joint>
+
+
+        <Body name="r52" type="dynamic">
+        <Translation>0 0 0</Translation>
+        <RotationAxis>0 0 1 0</RotationAxis>
+        <offsetfrom>r51</offsetfrom>
+        <Geom type="trimesh">
+        <Render>models/4.2^pierna_der_links.wrl</Render>
+        <collision>models/4.2^pierna_der_links.wrl</collision>
+        </Geom>
+        <Mass type="custom">
+          <density>1</density>
+        </Mass>
+        </Body>
+
+        <Joint circular="false" name="q52" type="hinge">
+        <Body>r51</Body>
+        <Body>r52</Body>
+        <offsetfrom>r52</offsetfrom>
+        <weight>1.0</weight>
+        <limitsdeg>-45 30</limitsdeg>
+        <axis>0 1 0</axis>
+        <maxvel>30</maxvel>
+        <resolution>1</resolution>
+        </Joint>
+
+        <Body name="r53" type="dynamic">
+        <offsetfrom>r52</offsetfrom>
+        <Translation>0 0 -0.33</Translation>
+        <Geom type="trimesh">
+        <Render>models/4.3^pierna_der_links.wrl</Render>
+        <collision>models/4.3^pierna_der_links.wrl</collision>
+        </Geom>
+        <Mass type="custom">
+          <density>1</density>
+        </Mass>
+        </Body>
+
+
+        <Joint circular="false" name="q53" type="hinge">
+        <Body>r52</Body>
+        <Body>r53</Body>
+        <offsetfrom>r53</offsetfrom>
+        <weight>1.0</weight>
+        <limitsdeg>-5 80</limitsdeg>
+        <axis>0 1 0</axis>
+        <maxvel>30</maxvel>
+        <resolution>1</resolution>
+        </Joint>
+
+        <Body name="r5dummy" type="dynamic">
+        <offsetfrom>r53</offsetfrom>
+        <Translation>0 0.0175 -0.3</Translation>
+        </Body>
+
+        <Joint name="q5dummy" type="hinge" enable="False">
+        <Body>r53</Body>
+        <Body>r5dummy</Body>
+        <limitsdeg>0 0</limitsdeg>
+        </Joint>
+
+        <Body name="r54" type="dynamic">
+        <offsetfrom>r5dummy</offsetfrom>
+        <Translation>0 0 0</Translation>
+        <Geom type="trimesh">
+        <Render>models/4.4^pierna_der_links.wrl</Render>
+        <collision>models/4.4^pierna_der_links.wrl</collision>
+        </Geom>
+        <Mass type="custom">
+          <density>1</density>
+        </Mass>
+        </Body>
+
+        <Joint circular="false" name="q54" type="hinge">
+        <Body>r5dummy</Body>
+        <Body>r54</Body>
+        <offsetfrom>r54</offsetfrom>
+        <weight>1.0</weight>
+        <limitsdeg>-40 20</limitsdeg>
+        <axis>0 1 0</axis>
+        <maxvel>30</maxvel>
+        <resolution>1</resolution>
+        </Joint>
+
+        <Body name="r55" type="dynamic">
+        <offsetfrom>r54</offsetfrom>
+        <Geom type="trimesh">
+        <Render>models/4.5^pierna_der_links.wrl</Render>
+        <collision>models/4.5^pierna_der_links.wrl</collision>
+        </Geom>
+        <Mass type="custom">
+          <density>10</density>
+        </Mass>
+        </Body>
+
+       <Joint circular="false" name="q55" type="hinge">
+        <Body>r54</Body>
+        <Body>r55</Body>
+        <offsetfrom>r55</offsetfrom>
+        <weight>1.0</weight>
+        <limitsdeg>-30 30</limitsdeg>
+        <axis>1 0 0</axis>
+        <maxvel>30</maxvel>
+        <resolution>1</resolution>
+        </Joint>
+
+
+</KinBody>
+
+
+    <!--TODO: correct feet effector translation (-0.175)-->
+    <Manipulator name="m5">
+    <effector>r55</effector>   <!-- last link where end effector is attached-->
+    <base>cintura</base>           <!-- base link-->
+    <!-- the id of the inverse kinematics solver, it is not necessary to-->
+    <!-- specify an ik solver for every robot. But if there is one,-->
+    <!-- use iksolver field to identity it.-->
+     <iksolver>ik/ikfast0x10000048.Transform6D.x86_64.16_17_18_19_20_21.so</iksolver>
+
+    <Translation>0 0 -0.125</Translation>
+    </Manipulator>
+
+          </Robot>
