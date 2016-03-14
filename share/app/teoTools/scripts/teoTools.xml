@@ -32,5 +32,10 @@
         <node>localhost</node>
     </module>
 
+    <module>
+        <name>yarpmotorgui</name>
+        <parameters>--from config/yarpmotorgui.ini</parameters>
+    </module>
+
 </application>
 
