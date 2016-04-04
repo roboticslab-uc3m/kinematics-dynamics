@@ -9,11 +9,17 @@
         <node>/manipulation</node>
     </module>
 
+    <module>
+        <name>jr3pci2channelYarp</name>
+        <parameters></parameters>
+        <node>/manipulation</node>
+    </module>
+
 <!-- locomotion -->
 
     <module>
         <name>launchLocomotion</name>
-        <parameters></parameters>
+        <parameters>--from /home/teo/repos/teo-body/share/launchLocomotion/conf/launchLocomotion_without_113_114.ini</parameters>
         <node>/locomotion</node>
     </module>
 
