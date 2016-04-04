@@ -28,7 +28,7 @@
 
     <module>
         <name>gnome-terminal</name>
-        <parameters>-e "yarp read ... /speechRecognition1:o"</parameters>
+        <parameters>-e "yarp read ... /speechRecognition:o"</parameters>
         <node>localhost</node>
     </module>
 
