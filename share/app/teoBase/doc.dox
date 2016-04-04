@@ -4,7 +4,7 @@
 
 @brief An application that launches teoBase programs.
 
-An application that launches teoBase programs: launchManipulation, launchLocomotion, yarpdev --subdevice xsensmtx --device inertial, yarpdev --device OpenNI2DeviceServer, speechRecognition1, iSpeak.
+An application that launches teoBase programs: launchManipulation, launchLocomotion, yarpdev --subdevice xsensmtx --device inertial, yarpdev --device OpenNI2DeviceServer, speechRecognition, iSpeak.
 
 
 \section Legal
