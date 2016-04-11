@@ -5,7 +5,7 @@
 
     <module>
         <name>launchManipulation</name>
-        <parameters></parameters>
+        <parameters>--from /home/teo/repos/teo-body/build/share/teo-body/contexts/launchManipulation/launchManipulation_wo119.ini</parameters>
         <node>/manipulation</node>
     </module>
 
