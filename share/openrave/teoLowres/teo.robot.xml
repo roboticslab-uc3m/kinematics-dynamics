@@ -44,7 +44,7 @@
     <Translation>0 0 0</Translation>
   </Manipulator>
 
-  <Manipulator name="m1">
+  <Manipulator name="head">
     <effector>r01</effector>   <!-- last link where end effector is attached-->
     <base>r00</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
