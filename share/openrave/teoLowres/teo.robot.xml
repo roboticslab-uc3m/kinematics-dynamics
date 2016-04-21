@@ -33,7 +33,7 @@
     <KinBody name="r6" file="teo_r6.xml" />
 
     <!-- Manipulators -->
-  <Manipulator name="m4">
+  <Manipulator name="trunk">
     <effector>r31</effector>   <!-- last link where end effector is attached-->
     <base>r30</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
@@ -55,7 +55,7 @@
     <Translation>0 0 0</Translation>-->
   </Manipulator>
 
-  <Manipulator name="m2">
+  <Manipulator name="rightArm">
     <effector>r15</effector>   <!-- last link where end effector is attached-->
     <base>r31</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
@@ -66,7 +66,7 @@
     <Translation>0 0 -0.2</Translation>-->
   </Manipulator>
 
-  <Manipulator name="m3">
+  <Manipulator name="leftArm">
     <effector>r25</effector>   <!-- last link where end effector is attached-->
     <base>r31</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
@@ -78,7 +78,7 @@
   </Manipulator>
 
    <!--TODO: correct feet effector translation (-0.175)-->
-    <Manipulator name="m5">
+    <Manipulator name="rightLeg">
     <effector>r55</effector>   <!-- last link where end effector is attached-->
     <base>cintura</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
@@ -90,7 +90,7 @@
     </Manipulator>
 
 
-  <Manipulator name="m6">
+  <Manipulator name="leftLeg">
     <effector>r65</effector>   <!-- last link where end effector is attached-->
     <base>cintura</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
