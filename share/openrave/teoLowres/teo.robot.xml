@@ -46,7 +46,7 @@
 
   <Manipulator name="head">
     <effector>r01</effector>   <!-- last link where end effector is attached-->
-    <base>r00</base>           <!-- base link-->
+    <base>r31</base>           <!-- base link-->
     <!-- the id of the inverse kinematics solver, it is not necessary to-->
     <!-- specify an ik solver for every robot. But if there is one,-->
     <!-- use iksolver field to identity it.-->
