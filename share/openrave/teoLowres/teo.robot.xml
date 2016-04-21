@@ -14,23 +14,23 @@
         </Body>
     </KinBody>
 
-    <!-- torso robot-->
-    <KinBody name="r4" file="teo_r4.xml" />
+    <!-- trunk -->
+    <KinBody name="trunk" file="teo_trunk.kinbody.xml" />
 
-    <!-- head robot-->
-    <KinBody name="r1" file="teo_r1.xml" />
+    <!-- head -->
+    <KinBody name="head" file="teo_head.kinbody.xml" />
 
-    <!-- right arm robot-->
-    <KinBody name="r2" file="teo_r2.xml" />
+    <!-- rightArm -->
+    <KinBody name="rightArm" file="teo_rightArm.kinbody.xml" />
 
-    <!-- left arm robot-->
-    <KinBody name="r3" file="teo_r3.xml" />
+    <!-- leftArm -->
+    <KinBody name="leftArm" file="teo_leftArm.kinbody.xml" />
 
-    <!-- right leg robot-->
-    <KinBody name="r5" file="teo_r5.xml" />
+    <!-- rightLeg -->
+    <KinBody name="rightLeg" file="teo_rightLeg.kinbody.xml" />
 
-    <!-- left leg robot-->
-    <KinBody name="r6" file="teo_r6.xml" />
+    <!-- leftLeg -->
+    <KinBody name="leftLeg" file="teo_leftLeg.kinbody.xml" />
 
     <!-- Manipulators -->
   <Manipulator name="trunk">
