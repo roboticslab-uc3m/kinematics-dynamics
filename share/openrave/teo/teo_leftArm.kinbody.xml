@@ -1,9 +1,8 @@
 
-<!-- left arm robot -->
+<!-- left arm -->
 
-        <Robot name="r2">
 
-        <KinBody name="left_arm" makejoinedlinksadjacent="1">
+        <KinBody name="leftArm" makejoinedlinksadjacent="1">
 
             <Body name="r20" type="dynamic">
             <offsetfrom>r31</offsetfrom>
@@ -23,7 +22,7 @@
             <Body>r20</Body>
             <offsetfrom>r20</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-180 180</limitsdeg>
+            <limitsdeg>-75 45</limitsdeg>
             <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -47,7 +46,7 @@
             <Body>r21</Body>
             <offsetfrom>r21</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-10 100</limitsdeg>
+            <limitsdeg>-15 70</limitsdeg>
             <axis>1 0 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -71,8 +70,8 @@
             <Body>r22</Body>
             <offsetfrom>r22</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-30 30</limitsdeg>
-            <axis>0 0 1</axis>
+            <limitsdeg>-10 75</limitsdeg>
+            <axis>0 0 -1</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -95,7 +94,7 @@
             <Body>r23</Body>
             <offsetfrom>r23</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>0 135</limitsdeg>
+            <limitsdeg>-100 10</limitsdeg>
             <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -120,7 +119,7 @@
             <offsetfrom>r24</offsetfrom>
             <weight>1.0</weight>
             <limitsdeg>-90 90</limitsdeg>
-            <axis>0 0 1</axis>
+            <axis>0 0 -1</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -143,7 +142,7 @@
             <Body>r25</Body>
             <offsetfrom>r25</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-90 90</limitsdeg>
+            <limitsdeg>-100 10</limitsdeg>
             <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -152,16 +151,5 @@
           </KinBody>
 
 
-  <Manipulator name="m3">
-    <effector>r25</effector>   <!-- last link where end effector is attached-->
-    <base>r31</base>           <!-- base link-->
-    <!-- the id of the inverse kinematics solver, it is not necessary to-->
-    <!-- specify an ik solver for every robot. But if there is one,-->
-    <!-- use iksolver field to identity it.-->
-    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
 
-    <Translation>0 0 -0.2</Translation>
-  </Manipulator>
-
-        </Robot>
 
