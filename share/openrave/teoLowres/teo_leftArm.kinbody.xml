@@ -23,7 +23,7 @@
             <offsetfrom>r20</offsetfrom>
             <weight>1.0</weight>
             <limitsdeg>-180 180</limitsdeg>
-            <axis>0 -1 0</axis>
+            <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -95,7 +95,7 @@
             <offsetfrom>r23</offsetfrom>
             <weight>1.0</weight>
             <limitsdeg>0 135</limitsdeg>
-            <axis>0 -1 0</axis>
+            <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -143,7 +143,7 @@
             <offsetfrom>r25</offsetfrom>
             <weight>1.0</weight>
             <limitsdeg>-90 90</limitsdeg>
-            <axis>0 -1 0</axis>
+            <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
             </Joint>
