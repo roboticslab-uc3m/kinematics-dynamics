@@ -1,6 +1,5 @@
-<!-- torso robot -->
+<!-- torso -->
 
-	<Robot name="r3">
         <KinBody name="torso" makejoinedlinksadjacent="1">
 
 
@@ -22,7 +21,7 @@
             <Body>r30</Body>
             <offsetfrom>r30</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-20 20</limitsdeg>
+            <limitsdeg>-45 45</limitsdeg>
             <axis>0 0 1</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -45,7 +44,7 @@
             <Body>r31</Body>
             <offsetfrom>r30</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-80 80</limitsdeg>
+            <limitsdeg>-10 10</limitsdeg>
             <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -54,17 +53,6 @@
 	  </KinBody>
 
 
-  <Manipulator name="m4">
-    <effector>r31</effector>   <!-- last link where end effector is attached-->
-    <base>r30</base>           <!-- base link-->
-    <!-- the id of the inverse kinematics solver, it is not necessary to-->
-    <!-- specify an ik solver for every robot. But if there is one,-->
-    <!-- use iksolver field to identity it.-->
-    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
 
-    <Translation>0 0 0</Translation>
-  </Manipulator>
-
-          </Robot>
 
 

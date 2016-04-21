@@ -1,0 +1,74 @@
+<!-- teo.kinbody.xml  -->
+
+<Robot name="teoSim">
+
+    <KinBody file="trunk/trunk.kinbody.xml">
+
+        <KinBody file="head/head.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk2</body>
+            <body>head0</body>
+            <limits>0 0</limits>
+        </Joint>
+
+        <KinBody file="leftArm/leftArm.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk2</body>
+            <body>leftArm0</body>
+            <limits>0 0</limits>
+        </Joint>
+
+        <KinBody file="rightArm/rightArm.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk2</body>
+            <body>rightArm0</body>
+            <limits>0 0</limits>
+        </Joint>
+
+        <KinBody file="leftLeg/leftLeg.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk0</body>
+            <body>leftLeg0</body>
+            <limits>0 0</limits>
+        </Joint>
+
+        <KinBody file="rightLeg/rightLeg.kinbody.xml" />
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>trunk0</body>
+            <body>rightLeg0</body>
+            <limits>0 0</limits>
+        </Joint>
+
+    </KinBody>
+
+    <Manipulator name="trunk">
+        <base>trunk0</base>
+        <effector>trunk2</effector>
+    </Manipulator>
+
+    <Manipulator name="head">
+        <base>head0</base>
+        <effector>head2</effector>
+    </Manipulator>
+
+    <Manipulator name="leftArm">
+        <base>leftArm0</base>
+        <effector>leftArm6</effector>
+    </Manipulator>
+
+    <Manipulator name="rightArm">
+        <base>rightArm0</base>
+        <effector>rightArm6</effector>
+    </Manipulator>
+
+    <Manipulator name="leftLeg">
+        <base>leftLeg0</base>
+        <effector>leftLeg6</effector>
+    </Manipulator>
+
+    <Manipulator name="rightLeg">
+        <base>rightLeg0</base>
+        <effector>rightLeg6</effector>
+    </Manipulator>
+
+</Robot>

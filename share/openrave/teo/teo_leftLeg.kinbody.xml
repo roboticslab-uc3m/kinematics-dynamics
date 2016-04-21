@@ -1,9 +1,8 @@
 
-<!-- left leg robot -->
+<!-- left leg  -->
 
-        <Robot name="r6">
 
-          <KinBody name="left_leg" makejoinedlinksadjacent="1">
+          <KinBody name="leftLeg" makejoinedlinksadjacent="1">
 
             <Body name="r60" type="dynamic">
             <offsetfrom>cintura</offsetfrom>
@@ -23,7 +22,7 @@
             <Body>r60</Body>
             <offsetfrom>r60</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-20 20</limitsdeg>
+            <limitsdeg>-90 90</limitsdeg>
             <axis>0 0 1</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
@@ -46,8 +45,8 @@
             <Body>r61</Body>
             <offsetfrom>r61</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-30 30</limitsdeg>
-            <axis>1 0 0</axis>
+            <limitsdeg>-20 20</limitsdeg>
+            <axis>-1 0 0</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -70,7 +69,7 @@
             <Body>r62</Body>
             <offsetfrom>r62</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-45 30</limitsdeg>
+            <limitsdeg>-30 45</limitsdeg>
             <axis>0 1 0</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
@@ -130,7 +129,7 @@
             <Body>r64</Body>
             <offsetfrom>r64</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-40 20</limitsdeg>
+            <limitsdeg>-18 20</limitsdeg>
              <axis>0 1 0</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
@@ -152,8 +151,8 @@
             <Body>r65</Body>
             <offsetfrom>r65</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-30 30</limitsdeg>
-            <axis>1 0 0</axis>
+            <limitsdeg>-25 25</limitsdeg>
+            <axis>-1 0 0</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -163,16 +162,3 @@
 
 
 
-  <Manipulator name="m6">
-    <effector>r65</effector>   <!-- last link where end effector is attached-->
-    <base>cintura</base>           <!-- base link-->
-    <!-- the id of the inverse kinematics solver, it is not necessary to-->
-    <!-- specify an ik solver for every robot. But if there is one,-->
-    <!-- use iksolver field to identity it.-->
-    <iksolver>ik/ikfast0x10000048.Transform6D.x86_64.22_23_24_25_26_27.so</iksolver>
-
-    <Translation>0 0 -0.125</Translation>
-  </Manipulator>
-
-
-          </Robot>
