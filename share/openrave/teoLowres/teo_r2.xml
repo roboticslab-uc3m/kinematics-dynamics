@@ -1,7 +1,6 @@
 
-<!-- right arm robot -->
+<!-- right arm -->
 
-	<Robot name="r1">
 
         <KinBody name="right_arm" makejoinedlinksadjacent="1">
 
@@ -152,19 +151,8 @@
 	  </KinBody>
 
 
-  <Manipulator name="m2">
-    <effector>r15</effector>   <!-- last link where end effector is attached-->
-    <base>r31</base>           <!-- base link-->
-    <!-- the id of the inverse kinematics solver, it is not necessary to-->
-    <!-- specify an ik solver for every robot. But if there is one,-->
-    <!-- use iksolver field to identity it.-->
-    <!-- <iksolver>MyTriDOFSolver</iksolver> -->
-
-    <Translation>0 0 -0.2</Translation>-->
-  </Manipulator>
 
 
-	</Robot>
 
 
 

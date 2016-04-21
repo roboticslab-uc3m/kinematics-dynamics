@@ -1,7 +1,6 @@
 
-<!-- left leg robot -->
+<!-- left leg  -->
 
-        <Robot name="r6">
 
           <KinBody name="left_leg" makejoinedlinksadjacent="1">
 
@@ -163,16 +162,3 @@
 
 
 
-  <Manipulator name="m6">
-    <effector>r65</effector>   <!-- last link where end effector is attached-->
-    <base>cintura</base>           <!-- base link-->
-    <!-- the id of the inverse kinematics solver, it is not necessary to-->
-    <!-- specify an ik solver for every robot. But if there is one,-->
-    <!-- use iksolver field to identity it.-->
-    <iksolver>ik/ikfast0x10000048.Transform6D.x86_64.22_23_24_25_26_27.so</iksolver>
-
-    <Translation>0 0 -0.125</Translation>
-  </Manipulator>
-
-
-          </Robot>
