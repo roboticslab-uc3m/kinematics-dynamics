@@ -21,7 +21,7 @@
             <Body>r00</Body>
             <offsetfrom>r00</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-80 80</limitsdeg>
+            <limitsdeg>-70 70</limitsdeg>
             <axis>0 0 1</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
@@ -45,7 +45,7 @@
             <Body>r01</Body>
             <offsetfrom>r01</offsetfrom>
             <weight>1.0</weight>
-            <limitsdeg>-80 80</limitsdeg>
+            <limitsdeg>-29 8.4</limitsdeg>
             <axis>0 1 0</axis>
             <maxvel>3</maxvel>
             <resolution>1</resolution>
