@@ -2,7 +2,7 @@
 <!-- left leg  -->
 
 
-          <KinBody name="left_leg" makejoinedlinksadjacent="1">
+          <KinBody name="leftLeg" makejoinedlinksadjacent="1">
 
             <Body name="r60" type="dynamic">
             <offsetfrom>cintura</offsetfrom>
@@ -46,7 +46,7 @@
             <offsetfrom>r61</offsetfrom>
             <weight>1.0</weight>
             <limitsdeg>-30 30</limitsdeg>
-            <axis>1 0 0</axis>
+            <axis>-1 0 0</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
             </Joint>
@@ -152,7 +152,7 @@
             <offsetfrom>r65</offsetfrom>
             <weight>1.0</weight>
             <limitsdeg>-30 30</limitsdeg>
-            <axis>1 0 0</axis>
+            <axis>-1 0 0</axis>
             <maxvel>30</maxvel>
             <resolution>1</resolution>
             </Joint>
