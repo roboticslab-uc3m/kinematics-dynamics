@@ -45,7 +45,7 @@
 
     <module>
         <name>/sbin/runuser</name>
-        <parameters>-l teo -c iSpeak</parameters>
+        <parameters>-l teo -c "yarpdev --device speech --lingware-context speech --default-language en-GB --pitch 70 --speed 100"</parameters>
         <node>/head</node>
     </module>
 

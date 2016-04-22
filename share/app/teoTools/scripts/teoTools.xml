@@ -22,7 +22,7 @@
 
     <module>
         <name>gnome-terminal</name>
-        <parameters>-e "yarp write ... /iSpeak"</parameters>
+        <parameters>-e "yarp rpc /icub/speech:rpc"</parameters>
         <node>localhost</node>
     </module>
 
