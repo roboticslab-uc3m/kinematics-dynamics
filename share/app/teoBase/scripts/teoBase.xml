@@ -33,7 +33,7 @@
 
     <module>
         <name>yarpdev</name>
-        <parameters>--device OpenNI2DeviceServer --depthVideoMode 4 --colorVideoMode 9</parameters>
+        <parameters>--device OpenNI2DeviceServer --depthVideoMode 4 --colorVideoMode 9 --noRGBMirror --noDepthMirror</parameters>
         <node>/head</node>
     </module>
 
