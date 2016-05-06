@@ -4,6 +4,10 @@ Main TEO humanoid robot source code intended for use on any PC.
 
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-teo-main
 
+## Installation
+
+Installation instructions for installing from source can be found [on the wiki](http://robots.uc3m.es/dox-teo-main/teo_install_on_ubuntu_14_10.html).
+
 ## Contributing
 
 #### Posting Issues
