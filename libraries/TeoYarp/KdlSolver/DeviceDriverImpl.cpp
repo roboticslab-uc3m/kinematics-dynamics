@@ -140,7 +140,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
     qMax.resize(numLinks);
     qMin.resize(numLinks);
-    //-- Limits default to [ -1 , 1] and [ -pi , pi ].
+    //-- Limits [ -pi , pi ].
     for (int motor=0; motor<numLinks; motor++)
     {
         qMax(motor) = M_PI;
