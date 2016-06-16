@@ -61,18 +61,35 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     KDL::Frame frameXd;
     vectorToFrame(xd,frameXd);
 
+    int ret = 0;
+    KDL::JntArray qGuessInRad = KDL::JntArray(numLinks);
+    for (int motor=0; motor<numLinks; motor++)
+        qGuessInRad(motor)=toRad(qGuess[motor]);
+    KDL::JntArray kdlq = KDL::JntArray(numLinks);
+
+#ifdef _USE_LMA_
+
     Eigen::Matrix<double,6,1> L;
     L(0)=1;L(1)=1;L(2)=1;
     L(3)=0;L(4)=0;L(5)=0;
 
-    KDL::JntArray qGuessInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
-        qGuessInRad(motor)=toRad(qGuess[motor]);
 
     //-- Main invKin (pos) solver lines
     KDL::ChainIkSolverPos_LMA iksolver_pos(chain,L);
-    KDL::JntArray kdlq = KDL::JntArray(numLinks);
-    int ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
+    ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
+
+#else //_USE_LMA_
+
+    //Forward solvers, needed by the geometric solver
+    KDL::ChainFkSolverPos_recursive fksolver(chain);
+    KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
+
+    //Geometric solver definition (with joint limits)
+    KDL::ChainIkSolverPos_NR_JL inv_pos_solver(chain,qMin,qMax,fksolver,iksolver,100000,1E-15);
+
+    ret = inv_pos_solver.CartToJnt(qGuessInRad,frameXd,kdlq);
+
+#endif //_USE_LMA_
 
     q.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)

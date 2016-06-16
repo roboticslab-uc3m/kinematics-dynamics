@@ -148,6 +148,10 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         yarp::sig::Vector targetO;
 
         std::string angleRepr;
+
+        KDL::JntArray qMin;
+        KDL::JntArray qMax;
+
 };
 
 }  // namespace teo

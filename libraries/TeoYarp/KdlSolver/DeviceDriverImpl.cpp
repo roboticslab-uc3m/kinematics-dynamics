@@ -150,6 +150,22 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     _eqradius = 1; //0.000001;
     _aggregate = false;
 
+    qMax = KDL::JntArray(numLinks);
+    qMin = KDL::JntArray(numLinks);
+    //-- Limits default to [ -1 , 1] and [ -pi , pi ].
+    for (int motor=0; motor<numLinks; motor++)
+    {
+        if(isPrismatic[motor]) {
+            qMax(motor) = M_PI;
+            qMin(motor) = -M_PI;
+        }
+        else
+        {
+            qMax(motor) = 1;
+            qMin(motor) = -1;
+        }
+    }
+
     return true;
 }
 
