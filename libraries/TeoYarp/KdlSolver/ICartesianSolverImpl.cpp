@@ -61,7 +61,6 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     KDL::Frame frameXd;
     vectorToFrame(xd,frameXd);
 
-    int ret = 0;
     KDL::JntArray qGuessInRad = KDL::JntArray(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qGuessInRad(motor)=toRad(qGuess[motor]);
@@ -76,7 +75,6 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
     //-- Main invKin (pos) solver lines
     KDL::ChainIkSolverPos_LMA iksolver_pos(chain,L);
-    ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
 
 #else //_USE_LMA_
 
@@ -87,9 +85,9 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     //Geometric solver definition (with joint limits)
     KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,100000,1E-15);
 
-    ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
-
 #endif //_USE_LMA_
+
+    int ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
 
     if(ret < 0)
     {
