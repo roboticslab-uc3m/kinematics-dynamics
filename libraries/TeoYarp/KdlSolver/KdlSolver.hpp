@@ -26,7 +26,6 @@
 #include <kdl/trajectory_segment.hpp>
 
 #include <iostream> // only windows
-#include <stdlib.h> // for exit()
 
 #include "ColorDebug.hpp"
 #include "ICartesianSolver.h"
