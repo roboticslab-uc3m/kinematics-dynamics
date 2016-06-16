@@ -85,31 +85,26 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
 
     //Geometric solver definition (with joint limits)
-    KDL::ChainIkSolverPos_NR_JL inv_pos_solver(chain,qMin,qMax,fksolver,iksolver,100000,1E-15);
+    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,100000,1E-15);
 
-    ret = inv_pos_solver.CartToJnt(qGuessInRad,frameXd,kdlq);
+    ret = iksolver_pos.CartToJnt(qGuessInRad,frameXd,kdlq);
 
 #endif //_USE_LMA_
+
+    if(ret < 0)
+    {
+        CD_ERROR("%d: %s\n",ret,iksolver_pos.strError(ret));
+        return false;
+    }
+
+    if(ret > 0)
+        CD_WARNING("%d: %s\n",ret, iksolver_pos.strError(ret));
 
     q.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         q[motor]=toDeg(kdlq(motor));
 
-    if (ret == 0) return true;
-
-    if (ret == -1)
-    {
-        CD_WARNING("The gradient of E towards the joints is to small.\n");
-    }
-    else if (ret == -2)
-    {
-        CD_WARNING("The joint position increments are to small.\n");
-    }
-    else if (ret == -3)
-    {
-        CD_WARNING("The number of iterations is exceeded.\n");
-    }
-    return false;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
