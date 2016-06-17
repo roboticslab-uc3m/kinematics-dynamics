@@ -19,13 +19,13 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     }
 
     if(angleRepr == "axisAngle"){
-        targetO.resize(4);
+        //-- Do nothing.
     } else if(angleRepr == "eulerYZ") {  //-- For asibot.
-        targetO.resize(2);
+        //-- Do nothing.
     } else if(angleRepr == "eulerZYZ") {
-        targetO.resize(3);
+        //-- Do nothing.
     } else if(angleRepr == "RPY") {
-        targetO.resize(3);
+        //-- Do nothing.
     } else {
         CD_WARNING("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
     }
