@@ -22,7 +22,7 @@ class KdlSolverTest : public testing::Test
         virtual void SetUp() {
             YARP_REGISTER_PLUGINS(TeoYarp);
 
-            yarp::os::Property p("(device KdlSolver) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+            yarp::os::Property p("(device KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
             dd.open(p);
             if( ! dd.isValid() ) {
@@ -67,10 +67,14 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin2)
 
 TEST_F( KdlSolverTest, KdlSolverInvKin1)
 {
-    std::vector<double> xd(3),qGuess(1),q;
-    xd[0] = 1;
-    xd[1] = 0;
-    xd[2] = 0;
+    std::vector<double> xd(7),qGuess(1),q;
+    xd[0] = 1;  // x
+    xd[1] = 0;  // y
+    xd[2] = 0;  // z
+    xd[3] = 0;  // o(x)
+    xd[4] = 0;  // o(y)
+    xd[5] = 1;  // o(z)
+    xd[6] = 0;  // o(angle)
     qGuess[0] = 0;
     iCartesianSolver->invKin(xd,qGuess,q);
     ASSERT_EQ(q.size(), 1 );
@@ -79,11 +83,15 @@ TEST_F( KdlSolverTest, KdlSolverInvKin1)
 
 TEST_F( KdlSolverTest, KdlSolverInvKin2)
 {
-    std::vector<double> xd(3),qGuess(1),q;
-    xd[0] = 0;
-    xd[1] = 1;
-    xd[2] = 0;
-    qGuess[0] = 0;
+    std::vector<double> xd(7),qGuess(1),q;
+    xd[0] = 0;  // x
+    xd[1] = 1;  // y
+    xd[2] = 0;  // z
+    xd[3] = 0;  // o(x)
+    xd[4] = 0;  // o(y)
+    xd[5] = 1;  // o(z)
+    xd[6] = 90;  // o(angle)
+    qGuess[0] = 90;
     iCartesianSolver->invKin(xd,qGuess,q);
     ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 90, 1e-3);
