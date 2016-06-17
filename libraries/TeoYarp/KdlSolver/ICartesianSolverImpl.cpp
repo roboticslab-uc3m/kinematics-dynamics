@@ -224,7 +224,7 @@ bool teo::KdlSolver::vectorToFrame(const std::vector<double> &x, KDL::Frame& f) 
     f.p.data[2]=x[2];
 
     if (angleRepr == "axisAngle") {
-        f.M = KDL::Rotation::Rot(KDL::Vector(x[3],x[4],x[5]),x[6]);
+        f.M = KDL::Rotation::Rot(KDL::Vector(x[3],x[4],x[5]),toRad(x[6]));
     }
     else if (angleRepr == "eulerYZ")  //-- like ASIBOT
     {
