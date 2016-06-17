@@ -144,8 +144,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         double _eqradius;
         bool _aggregate;
 
-        yarp::sig::Vector targetO;
-
         std::string angleRepr;
 
         KDL::JntArray qMin;
