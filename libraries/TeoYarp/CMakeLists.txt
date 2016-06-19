@@ -16,6 +16,7 @@ IF (ENABLE_TeoYarp)
   yarp_begin_plugin_library(TeoYarp)
     add_subdirectory(FakeControlboard)
     add_subdirectory(KdlSolver)
+    add_subdirectory(BasicCartesianControl)
   yarp_end_plugin_library(TeoYarp)
 
   install(TARGETS TeoYarp DESTINATION lib)
