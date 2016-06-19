@@ -22,6 +22,7 @@ option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCom
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 
 ### options: force default
+option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
 option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
 option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 
