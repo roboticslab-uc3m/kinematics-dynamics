@@ -56,5 +56,35 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
     ASSERT_NEAR(x[2], 0, 1e-9);
 }
 
+TEST_F( BasicCartesianControlTest, BasicCartesianControlInv1)
+{
+    std::vector<double> xd(7),q;
+    xd[0] = 1;  // x
+    xd[1] = 0;  // y
+    xd[2] = 0;  // z
+    xd[3] = 0;  // o(x)
+    xd[4] = 0;  // o(y)
+    xd[5] = 1;  // o(z)
+    xd[6] = 0;  // o(angle)
+    iCartesianControl->inv(xd,q);
+    ASSERT_EQ(q.size(), 1 );
+    ASSERT_NEAR(q[0], 0, 1e-3);
+}
+
+TEST_F( BasicCartesianControlTest, BasicCartesianControlInv2)
+{
+    std::vector<double> xd(7),q;
+    xd[0] = 0;  // x
+    xd[1] = 1;  // y
+    xd[2] = 0;  // z
+    xd[3] = 0;  // o(x)
+    xd[4] = 0;  // o(y)
+    xd[5] = 1;  // o(z)
+    xd[6] = 90;  // o(angle)
+    iCartesianControl->inv(xd,q);
+    ASSERT_EQ(q.size(), 1 );
+    ASSERT_NEAR(q[0], 90, 1e-3);
+}
+
 }  // namespace teo
 
