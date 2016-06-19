@@ -6,11 +6,15 @@
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/sig/all.h>
+#include <yarp/dev/ControlBoardInterfaces.h>
 
 #include <iostream> // only windows
 
+#include "ICartesianSolver.h"
+
 #include "ColorDebug.hpp"
+
+#define DEFAULT_SOLVER "KdlSolver"
 
 namespace teo
 {
@@ -34,8 +38,11 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver {
         BasicCartesianControl() {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-        /** Get number of links for which the solver has been configured. */
-        virtual bool getNumLinks(int* numLinks) {}
+        /** . */
+        virtual bool stat(std::vector<double> &x)
+        {
+            return true;
+        }
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
@@ -62,6 +69,13 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver {
 
     protected:
 
+        yarp::dev::PolyDriver solverDevice;
+        teo::ICartesianSolver *iCartesianSolver;
+
+        yarp::dev::PolyDriver robotDevice;
+        yarp::dev::IEncoders *iEncoders;
+        yarp::dev::IVelocityControl *iVelocityControl;
+        yarp::dev::IPositionControl *iPositionControl;
 };
 
 }  // namespace teo
