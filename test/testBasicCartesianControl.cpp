@@ -30,7 +30,7 @@ class BasicCartesianControlTest : public testing::Test
                 CD_ERROR("BasicCartesianControl device not valid.\n");
                 return;
             }
-            if( ! dd.view(basicCartesianControl) ) {
+            if( ! dd.view(cartesianControl) ) {
                 CD_ERROR("Could not view BasicCartesianControl.\n");
                 return;
             }
@@ -44,7 +44,7 @@ class BasicCartesianControlTest : public testing::Test
 
     protected:
         yarp::dev::PolyDriver dd;
-        teo::BasicCartesianControl *basicCartesianControl;
+        teo::BasicCartesianControl *cartesianControl;
 };
 
 TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
