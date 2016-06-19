@@ -75,6 +75,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IPositionControl *iPositionControl;
+
+        int numRobotJoints;
 };
 
 }  // namespace teo
