@@ -11,6 +11,7 @@
 #include <iostream> // only windows
 
 #include "ICartesianSolver.h"
+#include "ICartesianControl.h"
 
 #include "ColorDebug.hpp"
 
@@ -32,7 +33,7 @@ namespace teo
  * @brief The BasicCartesianControl class implements ICartesianSolver.
  */
 
-class BasicCartesianControl : public yarp::dev::DeviceDriver {
+class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl {
 
     public:
 
@@ -40,10 +41,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver {
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
         /** . */
-        virtual bool stat(std::vector<double> &x)
-        {
-            return true;
-        }
+        virtual bool stat(std::vector<double> &x);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
