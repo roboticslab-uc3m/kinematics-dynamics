@@ -24,6 +24,8 @@ class ICartesianControl
         /** Get robot position and perform forward kinematics. */
         virtual bool stat(std::vector<double> &x) = 0;
 
+        /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
+        virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;
 };
 
 }  // namespace teo

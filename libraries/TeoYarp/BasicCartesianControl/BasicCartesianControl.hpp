@@ -40,8 +40,11 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         BasicCartesianControl() {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-        /** . */
+        /** Get robot position and perform forward kinematics. */
         virtual bool stat(std::vector<double> &x);
+
+        /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
+        virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
