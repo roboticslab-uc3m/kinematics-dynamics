@@ -4,7 +4,7 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include "BasicCartesianControl.hpp"
+#include "ICartesianControl.h"
 
 #include "ColorDebug.hpp"
 
@@ -30,8 +30,8 @@ class BasicCartesianControlTest : public testing::Test
                 CD_ERROR("BasicCartesianControl device not valid.\n");
                 return;
             }
-            if( ! dd.view(cartesianControl) ) {
-                CD_ERROR("Could not view BasicCartesianControl.\n");
+            if( ! dd.view(iCartesianControl) ) {
+                CD_ERROR("Could not view ICartesianControl.\n");
                 return;
             }
             yarp::os::Time::delay(1);
@@ -44,13 +44,13 @@ class BasicCartesianControlTest : public testing::Test
 
     protected:
         yarp::dev::PolyDriver dd;
-        teo::BasicCartesianControl *cartesianControl;
+        teo::ICartesianControl *iCartesianControl;
 };
 
 TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
-    cartesianControl->stat(x);
+    iCartesianControl->stat(x);
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
     ASSERT_NEAR(x[2], 0, 1e-9);
