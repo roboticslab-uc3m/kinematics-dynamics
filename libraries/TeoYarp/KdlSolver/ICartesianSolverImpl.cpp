@@ -300,3 +300,15 @@ bool teo::KdlSolver::frameToVector(const KDL::Frame& f, std::vector<double> &x) 
 }
 
 // -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax)
+{
+    for (int motor=0; motor<numLinks; motor++)
+    {
+        this->qMax(motor) = toRad(qMax[motor]);
+        this->qMin(motor) = toRad(qMin[motor]);
+    }
+    return true;
+}
+
+// -----------------------------------------------------------------------------
