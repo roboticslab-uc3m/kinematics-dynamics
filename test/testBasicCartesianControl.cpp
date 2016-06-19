@@ -44,7 +44,7 @@ class BasicCartesianControlTest : public testing::Test
         //teo::ICartesianSolver *iCartesianSolver;
 };
 
-TEST_F( BasicCartesianControlTest, BasicCartesianControlFwdKin1)
+TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
 {
 /*    std::vector<double> q(1),x;
     q[0]=0.0;
