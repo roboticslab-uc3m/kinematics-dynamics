@@ -37,6 +37,7 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
         CD_ERROR("Could not view iEncoders in: %s.\n",robotStr.c_str());
         return false;
     }
+    iEncoders->getAxes(&numRobotJoints);
 
     return true;
 }
