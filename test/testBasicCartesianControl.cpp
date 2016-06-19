@@ -51,12 +51,9 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
     cartesianControl->stat(x);
-/*    std::vector<double> q(1),x;
-    q[0]=0.0;
-    iCartesianSolver->fwdKin(q,x);
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
-    ASSERT_NEAR(x[2], 0, 1e-9);*/
+    ASSERT_NEAR(x[2], 0, 1e-9);
 }
 
 }  // namespace teo
