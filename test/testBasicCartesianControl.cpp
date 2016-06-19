@@ -4,6 +4,8 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include "BasicCartesianControl.hpp"
+
 #include "ColorDebug.hpp"
 
 YARP_DECLARE_PLUGINS(TeoYarp)
@@ -28,10 +30,11 @@ class BasicCartesianControlTest : public testing::Test
                 CD_ERROR("BasicCartesianControl device not valid.\n");
                 return;
             }
-            /*if( ! dd.view(iCartesianSolver) ) {
-                CD_ERROR("Could not view ICartesianSolver.\n");
+            if( ! dd.view(basicCartesianControl) ) {
+                CD_ERROR("Could not view BasicCartesianControl.\n");
                 return;
-            }*/
+            }
+            yarp::os::Time::delay(1);
         }
 
         virtual void TearDown()
@@ -41,7 +44,7 @@ class BasicCartesianControlTest : public testing::Test
 
     protected:
         yarp::dev::PolyDriver dd;
-        //teo::ICartesianSolver *iCartesianSolver;
+        teo::BasicCartesianControl *basicCartesianControl;
 };
 
 TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
