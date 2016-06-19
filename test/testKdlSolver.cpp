@@ -22,26 +22,26 @@ class KdlSolverTest : public testing::Test
         virtual void SetUp() {
             YARP_REGISTER_PLUGINS(TeoYarp);
 
-            yarp::os::Property p("(device KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+            yarp::os::Property solverOptions("(device KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
-            dd.open(p);
-            if( ! dd.isValid() ) {
-                CD_ERROR("Device not valid.\n");
+            solverDevice.open(solverOptions);
+            if( ! solverDevice.isValid() ) {
+                CD_ERROR("solverDevice not valid: %s.\n",solverOptions.find("device").asString().c_str());
                 return;
             }
-            if( ! dd.view(iCartesianSolver) ) {
-                CD_ERROR("Could not view ICartesianSolver.\n");
+            if( ! solverDevice.view(iCartesianSolver) ) {
+                CD_ERROR("Could not view ICartesianSolver in %s.\n",solverOptions.find("device").asString().c_str());
                 return;
             }
         }
 
         virtual void TearDown()
         {
-            dd.close();
+            solverDevice.close();
         }
 
     protected:
-        yarp::dev::PolyDriver dd;
+        yarp::dev::PolyDriver solverDevice;
         teo::ICartesianSolver *iCartesianSolver;
 };
 
