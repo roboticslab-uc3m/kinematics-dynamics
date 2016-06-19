@@ -144,6 +144,10 @@ TEST_F( KdlSolverTest, KdlSolverSetLimits)
     iCartesianSolver->invKin(xd,qGuess,q);
     ASSERT_EQ(q.size(), 1 );
     ASSERT_NEAR(q[0], 360, 1e-3);
+    //--Restore default limits
+    qMin[0] = -180.0;
+    qMax[0] = 180.0;
+    iCartesianSolver->setLimits(qMin,qMax);
 }
 
 }  // namespace teo
