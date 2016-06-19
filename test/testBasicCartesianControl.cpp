@@ -49,6 +49,8 @@ class BasicCartesianControlTest : public testing::Test
 
 TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
 {
+    std::vector<double> x;
+    cartesianControl->stat(x);
 /*    std::vector<double> q(1),x;
     q[0]=0.0;
     iCartesianSolver->fwdKin(q,x);
