@@ -4,7 +4,7 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_DEVICE(BasicCartesianControl TYPE teo::BasicCartesianControl INCLUDE BasicCartesianControl.hpp)
+YARP_PREPARE_DEVICE(BasicCartesianControl TYPE teo::BasicCartesianControl INCLUDE BasicCartesianControl.hpp WRAPPER CartesianControlServer)
 
 IF (NOT SKIP_BasicCartesianControl)
 
