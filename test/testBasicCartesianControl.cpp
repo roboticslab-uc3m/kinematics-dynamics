@@ -23,15 +23,15 @@ class BasicCartesianControlTest : public testing::Test
         virtual void SetUp() {
             YARP_REGISTER_PLUGINS(TeoYarp);
 
-            yarp::os::Property p("(device BasicCartesianControl) (robot FakeControlboard) (axes 1) (solver KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+            yarp::os::Property cartesianControlOptions("(device BasicCartesianControl) (robot FakeControlboard) (axes 1) (solver KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
-            dd.open(p);
-            if( ! dd.isValid() ) {
-                CD_ERROR("BasicCartesianControl device not valid.\n");
+            cartesianControlDevice.open(cartesianControlOptions);
+            if( ! cartesianControlDevice.isValid() ) {
+                CD_ERROR("CartesianControl device not valid: %s.\n",cartesianControlOptions.find("device").asString().c_str());
                 return;
             }
-            if( ! dd.view(iCartesianControl) ) {
-                CD_ERROR("Could not view ICartesianControl.\n");
+            if( ! cartesianControlDevice.view(iCartesianControl) ) {
+                CD_ERROR("Could not view iCartesianControl in: %s.\n",cartesianControlOptions.find("device").asString().c_str());
                 return;
             }
             yarp::os::Time::delay(1);
@@ -39,11 +39,11 @@ class BasicCartesianControlTest : public testing::Test
 
         virtual void TearDown()
         {
-            dd.close();
+            cartesianControlDevice.close();
         }
 
     protected:
-        yarp::dev::PolyDriver dd;
+        yarp::dev::PolyDriver cartesianControlDevice;
         teo::ICartesianControl *iCartesianControl;
 };
 
