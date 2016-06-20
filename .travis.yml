@@ -55,6 +55,7 @@ script:
   - sudo make install
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
+  - bin/testBasicCartesianControl
 
 after_success:
   #  - cd ${TRAVIS_BUILD_DIR}
