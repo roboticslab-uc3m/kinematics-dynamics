@@ -6,38 +6,47 @@
 
 bool teo::CartesianControlServer::open(yarp::os::Searchable& config) {
 
-    /*CD_DEBUG("CartesianControlServer config: %s.\n", config.toString().c_str());
+    rpcServer.setReader(*this);
 
-    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
-    std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
-
-    yarp::os::Property solverOptions;
-    solverOptions.fromString( config.toString() );
-    solverOptions.put("device",solverStr);
-
-    solverDevice.open(solverOptions);
-    if( ! solverDevice.isValid() ) {
-        CD_ERROR("solverDevice not valid: %s.\n",solverStr.c_str());
+    yarp::os::Value *name;
+    if (config.check("subdevice",name))
+    {
+        CD_INFO("Subdevice %s\n", name->toString().c_str());
+        if (name->isString())
+        {
+            // maybe user isn't doing nested configuration
+            yarp::os::Property p;
+            p.fromString(config.toString());
+            p.put("device",name->toString());
+            cartesianControlDevice.open(p);
+        }
+        else
+            cartesianControlDevice.open(*name);
+        if (!cartesianControlDevice.isValid())
+            CD_ERROR("cannot make <%s>\n", name->toString().c_str());
+    }
+    else
+    {
+        CD_ERROR("\"--subdevice <name>\" not set in CartesianControlServer\n");
         return false;
     }
-    if( ! solverDevice.view(iCartesianSolver) ) {
-        CD_ERROR("Could not view ICartesianSolver in: %s.\n",solverStr.c_str());
+    if( ! cartesianControlDevice.isValid() )
+    {
+        CD_ERROR("cartesianControlDevice not valid\n");
+        return false;
+    }
+    if( ! cartesianControlDevice.view( iCartesianControl ) )
+    {
+        CD_ERROR("iCartesianControl view failed\n");
         return false;
     }
 
-    yarp::os::Property robotOptions;
-    robotOptions.fromString( config.toString() );
-    robotOptions.put("device",robotStr);
-    robotDevice.open(robotOptions);
-    if( ! robotDevice.isValid() ) {
-        CD_ERROR("robotDevice not valid: %s.\n",robotStr.c_str());
-        return false;
-    }
-    if( ! robotDevice.view(iEncoders) ) {
-        CD_ERROR("Could not view iEncoders in: %s.\n",robotStr.c_str());
-        return false;
-    }
-    iEncoders->getAxes(&numRobotJoints);*/
+    //Look for the portname to register (--name option)
+    if (config.check("name",name))
+        rpcServer.open(name->asString()+"/rpc:s");
+    else
+        rpcServer.open("/CartesianControlServer/rpc:s");
+
 
     return true;
 }
