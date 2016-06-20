@@ -26,8 +26,8 @@ class ICartesianControl
          */
         virtual ~ICartesianControl() {}
 
-        /** Get robot position and perform forward kinematics. */
-        virtual bool stat(int &status, std::vector<double> &x) = 0;
+        /** Inform on control state, and get robot position and perform forward kinematics. */
+        virtual bool stat(int &state, std::vector<double> &x) = 0;
 
         /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;

@@ -50,9 +50,9 @@ class BasicCartesianControlTest : public testing::Test
 TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
-    int status;
-    iCartesianControl->stat(status,x);
-    ASSERT_EQ(status,VOCAB_CCS_STOP);
+    int state;
+    iCartesianControl->stat(state,x);
+    ASSERT_EQ(state,VOCAB_CCS_STOP);
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
     ASSERT_NEAR(x[2], 0, 1e-9);
