@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#define VOCAB_STAT VOCAB4('s','t','a','t')
+
 namespace teo
 {
 
