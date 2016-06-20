@@ -53,8 +53,10 @@ bool teo::CartesianControlServer::open(yarp::os::Searchable& config) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlServer::close() {
-
+bool teo::CartesianControlServer::close()
+{
+    rpcServer.close();
+    cartesianControlDevice.close();
     return true;
 }
 
