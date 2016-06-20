@@ -4,7 +4,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool teo::BasicCartesianControl::stat(std::vector<double> &x)
+bool teo::BasicCartesianControl::stat(int &status, std::vector<double> &x)
 {
     std::vector<double> qCurrent(numRobotJoints);
     if ( ! iEncoders->getEncoders( qCurrent.data() ) )
@@ -17,6 +17,7 @@ bool teo::BasicCartesianControl::stat(std::vector<double> &x)
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
+    status = currentStatus;
     return true;
 }
 
