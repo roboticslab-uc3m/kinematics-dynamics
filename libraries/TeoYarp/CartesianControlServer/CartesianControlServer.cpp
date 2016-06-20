@@ -21,7 +21,9 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
     else if( in.get(0).asVocab() == VOCAB_STAT)
     {
         std::vector<double> x;
-        iCartesianControl->stat( x );
+        int status;
+        iCartesianControl->stat( status, x );
+        out.addVocab(status);
         for(size_t i=0; i<x.size(); i++)
             out.addDouble(x[i]);
     }

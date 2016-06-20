@@ -17,6 +17,7 @@
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
+#define DEFAULT_STATUS VOCAB_CCS_STOP
 
 namespace teo
 {
@@ -37,11 +38,11 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     public:
 
-        BasicCartesianControl() {}
+        BasicCartesianControl() : currentStatus(DEFAULT_STATUS){}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
         /** Get robot position and perform forward kinematics. */
-        virtual bool stat(std::vector<double> &x);
+        virtual bool stat(int &status, std::vector<double> &x);
 
         /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
@@ -80,6 +81,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::IPositionControl *iPositionControl;
 
         int numRobotJoints;
+
+        int currentStatus;
 };
 
 }  // namespace teo
