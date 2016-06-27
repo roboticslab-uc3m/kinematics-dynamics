@@ -54,6 +54,9 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** movl */
         virtual bool movl(std::vector<double> &xd);
 
+        /** stop */
+        virtual bool stop();
+
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
         /** Loop function. This is the thread itself. */
