@@ -50,6 +50,7 @@ bool teo::BasicCartesianControl::movj(std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movl(std::vector<double> &xd)
 {
+    currentState = VOCAB_CC_MOVEL_CONTROLLING;
     return true;
 }
 
