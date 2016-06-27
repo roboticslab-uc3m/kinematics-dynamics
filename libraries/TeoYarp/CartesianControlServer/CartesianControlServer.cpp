@@ -15,10 +15,10 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
 
     if( in.get(0).asString() == "help")
     {
-        out.addVocab(VOCAB_STAT);
-        out.addVocab(VOCAB_INV);
+        out.addVocab(VOCAB_CC_STAT);
+        out.addVocab(VOCAB_CC_INV);
     }
-    else if( in.get(0).asVocab() == VOCAB_STAT)
+    else if( in.get(0).asVocab() == VOCAB_CC_STAT)
     {
         std::vector<double> x;
         int state;
@@ -27,7 +27,7 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
         for(size_t i=0; i<x.size(); i++)
             out.addDouble(x[i]);
     }
-    else if( in.get(0).asVocab() == VOCAB_INV)
+    else if( in.get(0).asVocab() == VOCAB_CC_INV)
     {
         if(in.size()>1)
         {

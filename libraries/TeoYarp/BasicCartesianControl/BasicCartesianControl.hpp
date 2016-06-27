@@ -17,7 +17,7 @@
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
-#define DEFAULT_INIT_STATE VOCAB_CCS_STOP
+#define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 
 namespace teo
 {
