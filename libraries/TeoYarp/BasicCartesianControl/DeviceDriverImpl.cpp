@@ -39,7 +39,7 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
     }
     iEncoders->getAxes(&numRobotJoints);
 
-    return true;
+    return this->start();
 }
 
 // -----------------------------------------------------------------------------
