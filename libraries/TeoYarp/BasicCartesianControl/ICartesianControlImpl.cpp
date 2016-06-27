@@ -40,3 +40,17 @@ bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<
 }
 
 // -----------------------------------------------------------------------------
+
+bool teo::BasicCartesianControl::movj(std::vector<double> &xd)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::BasicCartesianControl::movl(std::vector<double> &xd)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
