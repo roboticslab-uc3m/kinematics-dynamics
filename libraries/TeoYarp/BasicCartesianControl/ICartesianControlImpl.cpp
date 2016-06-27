@@ -43,6 +43,22 @@ bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<
 
 bool teo::BasicCartesianControl::movj(std::vector<double> &xd)
 {
+    std::vector<double> qCurrent(numRobotJoints), q;
+    if ( ! iEncoders->getEncoders( qCurrent.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+    if ( ! iCartesianSolver->invKin(xd,qCurrent,q) )
+    {
+        CD_ERROR("invKin failed.\n");
+        return false;
+    }
+    if ( ! iPositionControl->positionMove( q.data() ) )
+    {
+        CD_ERROR("positionMove failed.\n");
+        return false;
+    }
     return true;
 }
 
