@@ -41,7 +41,7 @@ bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::movj(std::vector<double> &xd)
+bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
     std::vector<double> qCurrent(numRobotJoints), q;
     if ( ! iEncoders->getEncoders( qCurrent.data() ) )
@@ -64,7 +64,7 @@ bool teo::BasicCartesianControl::movj(std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::movl(std::vector<double> &xd)
+bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     currentState = VOCAB_CC_MOVEL_CONTROLLING;
     return true;

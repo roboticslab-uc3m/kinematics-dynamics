@@ -37,10 +37,10 @@ class ICartesianControl
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;
 
         /** movj */
-        virtual bool movj(std::vector<double> &xd) = 0;
+        virtual bool movj(const std::vector<double> &xd) = 0;
 
         /** movl */
-        virtual bool movl(std::vector<double> &xd) = 0;
+        virtual bool movl(const std::vector<double> &xd) = 0;
 
         /** stop */
         virtual bool stop() = 0;

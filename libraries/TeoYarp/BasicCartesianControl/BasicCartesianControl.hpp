@@ -49,10 +49,10 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
         /** movj */
-        virtual bool movj(std::vector<double> &xd);
+        virtual bool movj(const std::vector<double> &xd);
 
         /** movl */
-        virtual bool movl(std::vector<double> &xd);
+        virtual bool movl(const std::vector<double> &xd);
 
         /** stop */
         virtual bool stop();
