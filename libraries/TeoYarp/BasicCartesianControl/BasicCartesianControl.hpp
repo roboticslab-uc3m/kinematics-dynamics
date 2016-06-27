@@ -18,6 +18,7 @@
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
+#define DEFAULT_MS 50
 
 namespace teo
 {
@@ -34,11 +35,11 @@ namespace teo
  * @brief The BasicCartesianControl class implements ICartesianSolver.
  */
 
-class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl {
+class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread {
 
     public:
 
-        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE){}
+        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_MS) {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
         /** Inform on control state, and get robot position and perform forward kinematics. */
@@ -46,6 +47,11 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
+
+        // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
+
+        /** Loop function. This is the thread itself. */
+        virtual void run();
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
