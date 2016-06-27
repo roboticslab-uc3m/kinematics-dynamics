@@ -32,6 +32,13 @@ class ICartesianControl
 
         /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;
+
+        /** movj */
+        virtual bool movj(std::vector<double> &xd) = 0;
+
+        /** movl */
+        virtual bool movl(std::vector<double> &xd) = 0;
+
 };
 
 }  // namespace teo

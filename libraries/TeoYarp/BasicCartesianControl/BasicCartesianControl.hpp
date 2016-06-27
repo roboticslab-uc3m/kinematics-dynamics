@@ -48,6 +48,12 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
+        /** movj */
+        virtual bool movj(std::vector<double> &xd);
+
+        /** movl */
+        virtual bool movl(std::vector<double> &xd);
+
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
         /** Loop function. This is the thread itself. */
