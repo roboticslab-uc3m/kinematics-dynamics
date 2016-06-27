@@ -7,6 +7,8 @@
 
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t')
 #define VOCAB_CC_INV VOCAB3('i','n','v')
+#define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
+#define VOCAB_CC_MOVL VOCAB4('m','o','v','l')
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
 #define VOCAB_CC_MOVEL_CONTROLLING VOCAB4('c','c','l','c')
