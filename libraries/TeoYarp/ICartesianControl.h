@@ -9,6 +9,7 @@
 #define VOCAB_CC_INV VOCAB3('i','n','v')
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
 #define VOCAB_CC_MOVL VOCAB4('m','o','v','l')
+#define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
 #define VOCAB_CC_MOVEL_CONTROLLING VOCAB4('c','c','l','c')
@@ -40,6 +41,9 @@ class ICartesianControl
 
         /** movl */
         virtual bool movl(std::vector<double> &xd) = 0;
+
+        /** stop */
+        virtual bool stop() = 0;
 
 };
 
