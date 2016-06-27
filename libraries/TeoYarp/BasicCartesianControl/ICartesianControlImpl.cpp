@@ -58,6 +58,7 @@ bool teo::BasicCartesianControl::movl(std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::stop()
 {
+    currentState = VOCAB_CC_NOT_CONTROLLING;
     return true;
 }
 
