@@ -17,11 +17,11 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
     solverDevice.open(solverOptions);
     if( ! solverDevice.isValid() ) {
-        CD_ERROR("solverDevice not valid: %s.\n",solverStr.c_str());
+        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
         return false;
     }
     if( ! solverDevice.view(iCartesianSolver) ) {
-        CD_ERROR("Could not view ICartesianSolver in: %s.\n",solverStr.c_str());
+        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;
     }
 
@@ -30,7 +30,7 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
     robotOptions.put("device",robotStr);
     robotDevice.open(robotOptions);
     if( ! robotDevice.isValid() ) {
-        CD_ERROR("robotDevice not valid: %s.\n",robotStr.c_str());
+        CD_ERROR("robot device not valid: %s.\n",robotStr.c_str());
         return false;
     }
     if( ! robotDevice.view(iEncoders) ) {
