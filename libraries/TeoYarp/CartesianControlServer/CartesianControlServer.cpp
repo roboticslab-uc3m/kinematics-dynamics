@@ -17,6 +17,9 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
     {
         out.addVocab(VOCAB_CC_STAT);
         out.addVocab(VOCAB_CC_INV);
+        out.addVocab(VOCAB_CC_MOVJ);
+        out.addVocab(VOCAB_CC_MOVL);
+        out.addVocab(VOCAB_CC_STOP);
     }
     else if( in.get(0).asVocab() == VOCAB_CC_STAT)
     {
