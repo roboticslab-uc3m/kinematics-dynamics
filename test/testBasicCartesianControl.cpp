@@ -52,7 +52,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
     std::vector<double> x;
     int state;
     iCartesianControl->stat(state,x);
-    ASSERT_EQ(state,VOCAB_CCS_STOP);
+    ASSERT_EQ(state,VOCAB_CC_NOT_CONTROLLING);
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
     ASSERT_NEAR(x[2], 0, 1e-9);
