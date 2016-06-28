@@ -38,6 +38,15 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
         return false;
     }
     iEncoders->getAxes(&numRobotJoints);
+    CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
+
+    iCartesianSolver->getNumLinks( &numSolverLinks );
+    CD_INFO("numSolverLinks: %d.\n",numSolverLinks);
+
+    if( numRobotJoints != numSolverLinks )
+    {
+        CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJoints,numSolverLinks);
+    }
 
     return this->start();
 }
