@@ -12,6 +12,7 @@
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
+#define VOCAB_CC_MOVEJ_CONTROLLING VOCAB4('c','c','j','c')
 #define VOCAB_CC_MOVEL_CONTROLLING VOCAB4('c','c','l','c')
 
 namespace teo
