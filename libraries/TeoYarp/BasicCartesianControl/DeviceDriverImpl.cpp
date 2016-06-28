@@ -37,6 +37,14 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
         CD_ERROR("Could not view iEncoders in: %s.\n",robotStr.c_str());
         return false;
     }
+    if( ! robotDevice.view(iPositionControl) ) {
+        CD_ERROR("Could not view iPositionControl in: %s.\n",robotStr.c_str());
+        return false;
+    }
+    if( ! robotDevice.view(iVelocityControl) ) {
+        CD_ERROR("Could not view iVelocityControl in: %s.\n",robotStr.c_str());
+        return false;
+    }
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
