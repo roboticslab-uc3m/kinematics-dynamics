@@ -82,11 +82,6 @@ protected:
 
     yarp::os::RpcClient rpcClient;
 
-private:
-
-    bool send1vocab1int(int vocab, int integer);
-    bool send1vocab(int vocab);
-
 };
 
 }  // namespace teo
