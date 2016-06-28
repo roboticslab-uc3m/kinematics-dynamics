@@ -82,6 +82,20 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
         CD_ERROR("positionMove failed.\n");
         return false;
     }
+
+    currentState = VOCAB_CC_MOVEJ_CONTROLLING;
+
+    CD_SUCCESS("Waiting\n");
+    bool done = false;
+    while(!done) {
+        iPositionControl->checkMotionDone(&done);
+        printf(".");
+        fflush(stdout);
+        yarp::os::Time::delay(0.5);
+    }
+
+    currentState = VOCAB_CC_NOT_CONTROLLING;
+
     return true;
 }
 
