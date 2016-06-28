@@ -22,6 +22,11 @@ sudo make install  # Install :-)
 cp ../scripts/gnome/teo-main.desktop $HOME/Desktop
 \endverbatim
 
+For CMake find_package(TEO REQUIRED), you may also be interested in adding the following to your bashrc or profile:
+\verbatim
+export TEO_DIR=/home/teo/repos/teo-main/build
+\endverbatim
+
 For additional TEO options use ccmake instead of cmake.
 
 @section install_on_ubuntu_14_10_even_more Even more!
