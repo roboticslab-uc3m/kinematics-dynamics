@@ -6,8 +6,8 @@
 
 bool teo::CartesianControlClient::open(yarp::os::Searchable& config) {
 
-    std::string local = config.check("local",yarp::os::Value(DEFAULT_LOCAL),"local").asString();
-    std::string remote = config.check("remote",yarp::os::Value(DEFAULT_REMOTE),"remote").asString();
+    std::string local = config.check("cartesianLocal",yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),"cartesianLocal").asString();
+    std::string remote = config.check("cartesianRemote",yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),"cartesianRemote").asString();
 
     local += "/rpc:c";
     rpcClient.open(local);
