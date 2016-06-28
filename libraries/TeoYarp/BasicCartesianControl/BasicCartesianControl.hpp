@@ -97,6 +97,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IPositionControl *iPositionControl;
         yarp::dev::IVelocityControl *iVelocityControl;
+        yarp::dev::IControlLimits *iControlLimits;
 
         int numRobotJoints, numSolverLinks;
 
