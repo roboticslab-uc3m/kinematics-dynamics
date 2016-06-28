@@ -54,6 +54,29 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
         CD_ERROR("invKin failed.\n");
         return false;
     }
+
+    // Find out the maximum time to move
+    double max_time = 0;
+    for(unsigned int motor=0;motor<numRobotJoints;motor++) {
+        CD_INFO("dist[%d]: %f\n",motor,fabs(q[motor]-qCurrent[motor]));
+        if (fabs((q[motor]-qCurrent[motor]) / MAX_ANG_VEL) > max_time)
+        {
+            max_time = fabs( (q[motor]-qCurrent[motor]) / MAX_ANG_VEL);
+            CD_INFO(" -->candidate: %f\n",max_time);
+        }
+    }
+    CD_INFO("max_time[final]: %f\n",max_time);
+
+    std::vector<double> vmo;
+    for(unsigned int motor=0;motor<numRobotJoints;motor++) {
+        vmo.push_back( fabs(q[motor] - qCurrent[motor])/max_time );
+        CD_INFO("vmo[%d]: %f\n",motor,vmo[motor]);
+    }
+    if ( ! iPositionControl->setRefSpeeds( vmo.data() ) )
+    {
+         CD_ERROR("setRefSpeeds failed.\n");
+         return false;
+    }
     if ( ! iPositionControl->positionMove( q.data() ) )
     {
         CD_ERROR("positionMove failed.\n");

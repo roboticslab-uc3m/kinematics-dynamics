@@ -10,6 +10,8 @@
 
 #include <iostream> // only windows
 
+#include <math.h>  //-- fabs
+
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
@@ -19,6 +21,7 @@
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_MS 50
+#define MAX_ANG_VEL 7.5
 
 namespace teo
 {
