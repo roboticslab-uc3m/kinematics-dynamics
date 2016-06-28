@@ -45,6 +45,11 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
         CD_ERROR("Could not view iVelocityControl in: %s.\n",robotStr.c_str());
         return false;
     }
+    if( ! robotDevice.view(iControlLimits) ) {
+        CD_ERROR("Could not view iControlLimits in: %s.\n",robotStr.c_str());
+        return false;
+    }
+
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
@@ -54,6 +59,24 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
     if( numRobotJoints != numSolverLinks )
     {
         CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJoints,numSolverLinks);
+    }
+
+    std::vector<double> qMin, qMax;
+    for(unsigned int motor=0;motor<numRobotJoints;motor++)
+    {
+        double min, max;
+        iControlLimits->getLimits(motor,&min,&max);
+        qMin.push_back(min);
+        qMax.push_back(max);
+        CD_INFO("Joint %d limits: [%f,%f]\n",motor,min,max);
+    }
+    if( qMin[0] == qMax[0] )
+    {
+        CD_WARNING("Not setting joint limits on solver, because qMin[0] == qMax[0].\n");
+    }
+    else
+    {
+        iCartesianSolver->setLimits(qMin,qMax);
     }
 
     return this->start();
