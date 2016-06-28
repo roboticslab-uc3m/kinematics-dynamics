@@ -83,7 +83,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    currentState = VOCAB_CC_MOVEJ_CONTROLLING;
+    currentState = VOCAB_CC_MOVJ_CONTROLLING;
 
     CD_SUCCESS("Waiting\n");
     bool done = false;
@@ -103,7 +103,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
-    currentState = VOCAB_CC_MOVEL_CONTROLLING;
+    currentState = VOCAB_CC_MOVL_CONTROLLING;
     return true;
 }
 

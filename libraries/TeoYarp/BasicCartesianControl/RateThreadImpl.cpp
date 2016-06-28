@@ -6,7 +6,7 @@
 
 void teo::BasicCartesianControl::run() {
 
-    if (currentState == VOCAB_CC_MOVEL_CONTROLLING)
+    if (currentState == VOCAB_CC_MOVL_CONTROLLING)
     {
         CD_DEBUG("MOVEL_CONTROLLING\n");
     }
