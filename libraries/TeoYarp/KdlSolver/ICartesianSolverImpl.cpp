@@ -256,7 +256,7 @@ bool teo::KdlSolver::frameToVector(const KDL::Frame& f, std::vector<double> &x) 
     {
         KDL::Vector rotVector = f.M.GetRot();
         x.resize(7);
-        x[6] = f.M.GetRotAngle(rotVector);  // Normalizes as colateral effect
+        x[6] = toDeg(f.M.GetRotAngle(rotVector));  // Normalizes as colateral effect
         x[3] = rotVector[0];
         x[4] = rotVector[1];
         x[5] = rotVector[2];
