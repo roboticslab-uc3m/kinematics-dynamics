@@ -111,6 +111,7 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::stop()
 {
+    iPositionControl->stop();
     currentState = VOCAB_CC_NOT_CONTROLLING;
     return true;
 }
