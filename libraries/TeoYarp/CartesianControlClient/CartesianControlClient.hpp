@@ -13,6 +13,8 @@
 
 #include "ColorDebug.hpp"
 
+#define VOCAB_FAILED VOCAB4('f','a','i','l')  //-- from yarp::dev
+
 #define DEFAULT_LOCAL "/CartesianControlClient/CartesianControlServer"
 #define DEFAULT_REMOTE "/CartesianControlServer"
 
