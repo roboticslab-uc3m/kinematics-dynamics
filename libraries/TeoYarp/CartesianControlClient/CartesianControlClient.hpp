@@ -31,11 +31,27 @@ namespace teo
  * @brief The CartesianControlClient class implements.
  */
 
-class CartesianControlClient : public yarp::dev::DeviceDriver {
+class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesianControl {
 
     public:
 
         CartesianControlClient() {}
+
+        // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
+        /** Inform on control state, and get robot position and perform forward kinematics. */
+        virtual bool stat(int &state, std::vector<double> &x);
+
+        /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
+        virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
+
+        /** movj */
+        virtual bool movj(const std::vector<double> &xd);
+
+        /** movl */
+        virtual bool movl(const std::vector<double> &xd);
+
+        /** stop */
+        virtual bool stop();
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
