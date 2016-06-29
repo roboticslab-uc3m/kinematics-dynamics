@@ -27,7 +27,7 @@ void teo::BasicCartesianControl::run() {
         //KDL::Frame desiredF = movementTrajectory->Pos(movementTime);
         //KDL::Twist desiredT = movementTrajectory->Vel(movementTime);
 
-        //KDL::Twist commandXdot = diff(currentX, targetF);
+        //KDL::Twist commandXdot = diff(currentX, desiredF);
         //for(unsigned int i=0; i<6; i++)
         //{
         //    commandXdot(i) *= GAIN;
