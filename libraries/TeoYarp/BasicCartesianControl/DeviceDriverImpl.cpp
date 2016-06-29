@@ -62,13 +62,13 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
     }
 
     std::vector<double> qMin, qMax;
-    for(unsigned int motor=0;motor<numRobotJoints;motor++)
+    for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
         double min, max;
-        iControlLimits->getLimits(motor,&min,&max);
+        iControlLimits->getLimits(joint,&min,&max);
         qMin.push_back(min);
         qMax.push_back(max);
-        CD_INFO("Joint %d limits: [%f,%f]\n",motor,min,max);
+        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
     }
     if( qMin[0] == qMax[0] )
     {
