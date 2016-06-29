@@ -26,8 +26,8 @@ void teo::BasicCartesianControl::run() {
 
         //-- Obtain desired Cartesian position and velocity.
         std::vector<double> desiredX, desiredXdot;
-        //KDL::Frame desiredX = movementTrajectory->Pos(movementTime);
-        //KDL::Twist desiredXdot = movementTrajectory->Vel(movementTime);
+        trajectory.getX(movementTime, desiredX);
+        trajectory.getXdot(movementTime, desiredXdot);
 
         //-- Apply control law to compute robot joint velocity commands.
         std::vector<double> commandXdot, commandQdot;
