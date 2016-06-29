@@ -139,7 +139,9 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
+    movementStartTime = yarp::os::Time::now();
     currentState = VOCAB_CC_MOVL_CONTROLLING;
+
     return true;
 }
 

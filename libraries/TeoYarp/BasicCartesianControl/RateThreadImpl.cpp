@@ -8,7 +8,8 @@ void teo::BasicCartesianControl::run() {
 
     if (currentState == VOCAB_CC_MOVL_CONTROLLING)
     {
-        CD_DEBUG("MOVEL_CONTROLLING\n");
+        double movementTime = yarp::os::Time::now() - movementStartTime;
+        CD_DEBUG("MOVEL_CONTROLLING: %f\n",movementTime);
     }
     return;
 }
