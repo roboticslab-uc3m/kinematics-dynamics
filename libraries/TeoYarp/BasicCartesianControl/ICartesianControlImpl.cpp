@@ -127,6 +127,18 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
+    std::vector<double> qCurrent(numRobotJoints), q;
+    if ( ! iEncoders->getEncoders( qCurrent.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+    if ( ! iCartesianSolver->invKin(xd,qCurrent,q) )
+    {
+        CD_ERROR("invKin failed.\n");
+        return false;
+    }
+
     currentState = VOCAB_CC_MOVL_CONTROLLING;
     return true;
 }
