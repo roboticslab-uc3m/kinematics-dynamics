@@ -24,14 +24,14 @@ void teo::BasicCartesianControl::run() {
             return;
         }
 
-        //KDL::Frame desiredF = movementTrajectory->Pos(movementTime);
-        //KDL::Twist desiredT = movementTrajectory->Vel(movementTime);
+        //KDL::Frame desiredX = movementTrajectory->Pos(movementTime);
+        //KDL::Twist desiredXdot = movementTrajectory->Vel(movementTime);
 
-        //KDL::Twist commandXdot = diff(currentX, desiredF);
+        //KDL::Twist commandXdot = diff(currentX, desiredX);
         //for(unsigned int i=0; i<6; i++)
         //{
         //    commandXdot(i) *= GAIN;
-        //    commandXdot(i) += desiredT(i);
+        //    commandXdot(i) += desiredXdot(i);
         //}
 
         if (! iCartesianSolver->diffInvKin(currentQ,commandXdot,commandQdot) )
