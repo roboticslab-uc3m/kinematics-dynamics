@@ -55,9 +55,10 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    // Find out the maximum time to move
+    //-- Find out the maximum time to move
     double max_time = 0;
-    for(unsigned int motor=0;motor<numRobotJoints;motor++) {
+    for(unsigned int motor=0;motor<numRobotJoints;motor++)
+    {
         CD_INFO("dist[%d]: %f\n",motor,fabs(q[motor]-qCurrent[motor]));
         if (fabs((q[motor]-qCurrent[motor]) / MAX_ANG_VEL) > max_time)
         {
@@ -67,15 +68,29 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
     CD_INFO("max_time[final]: %f\n",max_time);
 
-    std::vector<double> vmo;
-    for(unsigned int motor=0;motor<numRobotJoints;motor++) {
+    //-- Compute, store old and set joint velocities given this time
+    std::vector<double> vmo, vmoStored;
+    for(unsigned int motor=0;motor<numRobotJoints;motor++)
+    {
         vmo.push_back( fabs(q[motor] - qCurrent[motor])/max_time );
         CD_INFO("vmo[%d]: %f\n",motor,vmo[motor]);
+    }
+    if ( ! iPositionControl->getRefSpeeds( vmoStored.data() ) )
+    {
+         CD_ERROR("getRefSpeeds (for storing) failed.\n");
+         return false;
     }
     if ( ! iPositionControl->setRefSpeeds( vmo.data() ) )
     {
          CD_ERROR("setRefSpeeds failed.\n");
          return false;
+    }
+
+    //-- Enter position mode and perform movement
+    if ( ! iPositionControl->setPositionMode() )
+    {
+        CD_ERROR("setPositionMode failed.\n");
+        return false;
     }
     if ( ! iPositionControl->positionMove( q.data() ) )
     {
@@ -83,18 +98,27 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
+    //-- Set state, perform and wait for movement to be done
     currentState = VOCAB_CC_MOVJ_CONTROLLING;
 
     CD_SUCCESS("Waiting\n");
     bool done = false;
-    while(!done) {
+    while(!done)
+    {
         iPositionControl->checkMotionDone(&done);
         printf(".");
         fflush(stdout);
         yarp::os::Time::delay(0.5);
     }
 
+    //-- Reestablish state and velocities
     currentState = VOCAB_CC_NOT_CONTROLLING;
+
+    if ( ! iPositionControl->setRefSpeeds( vmoStored.data() ) )
+    {
+         CD_ERROR("setRefSpeeds (to restore) failed.\n");
+         return false;
+    }
 
     return true;
 }
