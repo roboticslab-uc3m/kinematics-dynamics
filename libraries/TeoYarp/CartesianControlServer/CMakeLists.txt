@@ -10,12 +10,11 @@ IF (NOT SKIP_CartesianControlServer)
 
 SET(CMAKE_MODULE_PATH ${TEO_MODULE_PATH} ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(YARP REQUIRED)
-FIND_PACKAGE(orocos_kdl REQUIRED)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS})
 
 YARP_ADD_PLUGIN(CartesianControlServer CartesianControlServer.hpp CartesianControlServer.cpp DeviceDriverImpl.cpp)
-TARGET_LINK_LIBRARIES(CartesianControlServer ${YARP_LIBRARIES} ${orocos_kdl_LIBRARIES})
+TARGET_LINK_LIBRARIES(CartesianControlServer ${YARP_LIBRARIES})
 install(TARGETS CartesianControlServer DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
