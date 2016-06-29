@@ -127,15 +127,15 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
-    std::vector<double> qCurrent(numRobotJoints), q;
+    std::vector<double> qCurrent(numRobotJoints), x;
     if ( ! iEncoders->getEncoders( qCurrent.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,qCurrent,q) )
+    if ( ! iCartesianSolver->fwdKin(qCurrent,x) )
     {
-        CD_ERROR("invKin failed.\n");
+        CD_ERROR("fwdKin failed.\n");
         return false;
     }
 
