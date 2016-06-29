@@ -6,13 +6,13 @@
 
 bool teo::BasicCartesianControl::stat(int &state, std::vector<double> &x)
 {
-    std::vector<double> qCurrent(numRobotJoints);
-    if ( ! iEncoders->getEncoders( qCurrent.data() ) )
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->fwdKin(qCurrent,x) )
+    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
@@ -25,13 +25,13 @@ bool teo::BasicCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    std::vector<double> qCurrent(numRobotJoints);
-    if ( ! iEncoders->getEncoders( qCurrent.data() ) )
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,qCurrent,q) )
+    if ( ! iCartesianSolver->invKin(xd,currentQ,q) )
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -43,13 +43,13 @@ bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<
 
 bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
-    std::vector<double> qCurrent(numRobotJoints), q;
-    if ( ! iEncoders->getEncoders( qCurrent.data() ) )
+    std::vector<double> currentQ(numRobotJoints), qd;
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,qCurrent,q) )
+    if ( ! iCartesianSolver->invKin(xd,currentQ,qd) )
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -59,10 +59,10 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     double max_time = 0;
     for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
-        CD_INFO("dist[%d]: %f\n",joint,fabs(q[joint]-qCurrent[joint]));
-        if (fabs((q[joint]-qCurrent[joint]) / MAX_ANG_VEL) > max_time)
+        CD_INFO("dist[%d]: %f\n",joint,fabs(qd[joint]-currentQ[joint]));
+        if (fabs((qd[joint]-currentQ[joint]) / MAX_ANG_VEL) > max_time)
         {
-            max_time = fabs( (q[joint]-qCurrent[joint]) / MAX_ANG_VEL);
+            max_time = fabs( (qd[joint]-currentQ[joint]) / MAX_ANG_VEL);
             CD_INFO(" -->candidate: %f\n",max_time);
         }
     }
@@ -72,7 +72,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     std::vector<double> vmo, vmoStored;
     for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
-        vmo.push_back( fabs(q[joint] - qCurrent[joint])/max_time );
+        vmo.push_back( fabs(qd[joint] - currentQ[joint])/max_time );
         CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
     }
     if ( ! iPositionControl->getRefSpeeds( vmoStored.data() ) )
@@ -92,7 +92,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
         CD_ERROR("setPositionMode failed.\n");
         return false;
     }
-    if ( ! iPositionControl->positionMove( q.data() ) )
+    if ( ! iPositionControl->positionMove( qd.data() ) )
     {
         CD_ERROR("positionMove failed.\n");
         return false;
@@ -127,13 +127,13 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
-    std::vector<double> qCurrent(numRobotJoints), x;
-    if ( ! iEncoders->getEncoders( qCurrent.data() ) )
+    std::vector<double> currentQ(numRobotJoints), x;
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->fwdKin(qCurrent,x) )
+    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
