@@ -102,6 +102,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         int numRobotJoints, numSolverLinks;
 
         int currentState;
+
+        double movementStartTime;
 };
 
 }  // namespace teo
