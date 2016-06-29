@@ -11,8 +11,8 @@ void teo::BasicCartesianControl::run() {
         double movementTime = yarp::os::Time::now() - movementStartTime;
         CD_DEBUG("MOVEL_CONTROLLING: %f\n",movementTime);
 
-        std::vector<double> currentQ(numRobotJoints), currentX, commandXdot, commandQdot;
-
+        //-- Obtain current joint position, use to compute current Cartesian position.
+        std::vector<double> currentQ(numRobotJoints), currentX;
         if ( ! iEncoders->getEncoders( currentQ.data() ) )
         {
             CD_WARNING("getEncoders failed, not updating control this iteration.\n");
@@ -24,20 +24,25 @@ void teo::BasicCartesianControl::run() {
             return;
         }
 
+        //-- Obtain desired Cartesian position and velocity.
+        std::vector<double> desiredX, desiredXdot;
         //KDL::Frame desiredX = movementTrajectory->Pos(movementTime);
         //KDL::Twist desiredXdot = movementTrajectory->Vel(movementTime);
 
+        //-- Apply control law to compute robot joint velocity commands.
+        std::vector<double> commandXdot, commandQdot;
         //KDL::Twist commandXdot = diff(currentX, desiredX);
         //for(unsigned int i=0; i<6; i++)
         //{
         //    commandXdot(i) *= GAIN;
         //    commandXdot(i) += desiredXdot(i);
         //}
-
         if (! iCartesianSolver->diffInvKin(currentQ,commandXdot,commandQdot) )
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         }
+
+        //-- Send robot in joint velocity commands.
         if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
         {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
