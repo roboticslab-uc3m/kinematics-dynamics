@@ -125,6 +125,15 @@ bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<
     KDL::ChainIkSolverVel_pinv iksolverv(chain);
     int ret = iksolverv.CartToJnt(qInRad,kdlxdot,qDotOutRadS);
 
+    if(ret < 0)
+    {
+        CD_ERROR("%d: %s\n",ret,iksolverv.strError(ret));
+        return false;
+    }
+
+    if(ret > 0)
+        CD_WARNING("%d: %s\n",ret, iksolverv.strError(ret));
+
     qdot.resize(numLinks);
     for (int motor=0; motor<numLinks; motor++)
         qdot[motor]=toDeg(qDotOutRadS(motor));
