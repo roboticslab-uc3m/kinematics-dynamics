@@ -92,7 +92,7 @@ bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::stop()
+bool teo::CartesianControlClient::stopControl()
 {
     yarp::os::Bottle cmd, response;
 

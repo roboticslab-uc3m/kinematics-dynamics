@@ -9,6 +9,13 @@ void teo::BasicCartesianControl::run() {
     if (currentState == VOCAB_CC_MOVL_CONTROLLING)
     {
         double movementTime = yarp::os::Time::now() - movementStartTime;
+
+        if( movementTime > DEFAULT_DURATION )
+        {
+            this->stopControl();
+            return;
+        }
+
         CD_DEBUG("MOVEL_CONTROLLING: %f\n",movementTime);
 
         //-- Obtain current joint position

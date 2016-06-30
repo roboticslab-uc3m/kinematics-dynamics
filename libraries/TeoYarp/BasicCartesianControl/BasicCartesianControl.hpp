@@ -61,7 +61,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         virtual bool movl(const std::vector<double> &xd);
 
         /** stop */
-        virtual bool stop();
+        virtual bool stopControl();
 
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 

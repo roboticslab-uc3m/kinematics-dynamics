@@ -109,7 +109,7 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
     }
     else if( in.get(0).asVocab() == VOCAB_CC_STOP)
     {
-        bool ok = iCartesianControl->stop();
+        bool ok = iCartesianControl->stopControl();
         if(ok)
         {
             out.addVocab(VOCAB_OK);
