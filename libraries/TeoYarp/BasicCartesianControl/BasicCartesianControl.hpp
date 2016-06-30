@@ -112,5 +112,4 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
 }  // namespace teo
 
-#endif  // __KDL_SOLVER_HPP__
-
+#endif  // __BASIC_CARTESIAN_CONTROL_HPP__
