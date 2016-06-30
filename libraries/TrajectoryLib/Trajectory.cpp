@@ -13,15 +13,16 @@ teo::Trajectory::Trajectory()
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::getX(const double movementTime, std::vector<double>& desiredX)
+bool teo::Trajectory::getX(const double movementTime, std::vector<double>& x)
 {
-    //KDL::Frame desiredX = trajectory->Pos(movementTime);
+    KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
+    frameToVector(xFrame,x);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& desiredXdot)
+bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& xdot)
 {
     //KDL::Twist desiredXdot = trajectory->Vel(movementTime);
     return true;

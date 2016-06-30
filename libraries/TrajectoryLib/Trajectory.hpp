@@ -28,9 +28,9 @@ public:
 
     Trajectory();
 
-    bool getX(const double movementTime, std::vector<double>& desiredX);
+    bool getX(const double movementTime, std::vector<double>& x);
 
-    bool getXdot(const double movementTime, std::vector<double>& desiredXdot);
+    bool getXdot(const double movementTime, std::vector<double>& xdot);
 
     bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
     bool deleteLine();
