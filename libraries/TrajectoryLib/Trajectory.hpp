@@ -5,6 +5,14 @@
 
 #include <vector>
 
+#include <kdl/frames_io.hpp>
+#include <kdl/frames.hpp>
+#include <kdl/path_line.hpp>
+#include <kdl/rotational_interpolation_sa.hpp>
+#include <kdl/velocityprofile_rect.hpp>
+#include <kdl/velocityprofile_trap.hpp>
+#include <kdl/trajectory_segment.hpp>
+
 namespace teo
 {
 

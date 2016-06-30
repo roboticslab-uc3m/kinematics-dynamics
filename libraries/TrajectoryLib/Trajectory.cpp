@@ -6,8 +6,8 @@
 
 bool teo::Trajectory::getX(const double movementTime, std::vector<double>& desiredX)
 {
-        //KDL::Frame desiredX = trajectory->Pos(movementTime);
-        return true;
+    //KDL::Frame desiredX = trajectory->Pos(movementTime);
+    return true;
 }
 
 // -----------------------------------------------------------------------------
