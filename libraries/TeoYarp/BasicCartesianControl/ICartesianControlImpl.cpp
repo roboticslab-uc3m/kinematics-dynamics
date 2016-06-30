@@ -57,7 +57,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
     //-- Find out the maximum time to move
     double max_time = 0;
-    for(unsigned int joint=0;joint<numRobotJoints;joint++)
+    for(unsigned int joint=0;joint<numSolverLinks;joint++)
     {
         CD_INFO("dist[%d]: %f\n",joint,fabs(qd[joint]-currentQ[joint]));
         if (fabs((qd[joint]-currentQ[joint]) / MAX_ANG_VEL) > max_time)
@@ -69,11 +69,19 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     CD_INFO("max_time[final]: %f\n",max_time);
 
     //-- Compute, store old and set joint velocities given this time
-    std::vector<double> vmo, vmoStored;
+    std::vector<double> vmo, vmoStored(numRobotJoints);
     for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
-        vmo.push_back( fabs(qd[joint] - currentQ[joint])/max_time );
-        CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
+        if( joint >= numSolverLinks )
+        {
+            vmo.push_back( 0.0 );
+            CD_INFO("vmo[%d]: 0.0 (forced)\n",joint);
+        }
+        else
+        {
+            vmo.push_back( fabs(qd[joint] - currentQ[joint])/max_time );
+            CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
+        }
     }
     if ( ! iPositionControl->getRefSpeeds( vmoStored.data() ) )
     {
