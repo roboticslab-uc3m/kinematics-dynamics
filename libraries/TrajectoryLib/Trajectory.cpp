@@ -24,7 +24,8 @@ bool teo::Trajectory::getX(const double movementTime, std::vector<double>& x)
 
 bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& xdot)
 {
-    //KDL::Twist desiredXdot = trajectory->Vel(movementTime);
+    KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
+    twistToVector(xdotFrame,xdot);
     return true;
 }
 
@@ -140,6 +141,18 @@ bool teo::Trajectory::frameToVector(const KDL::Frame& f, std::vector<double> &x)
     x[0] = f.p.data[0];
     x[1] = f.p.data[1];
     x[2] = f.p.data[2];
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::Trajectory::twistToVector(const KDL::Twist& t, std::vector<double> &xdot)
+{
+    xdot.resize(6);
+
+    for(unsigned int i=0; i<6; i++)
+        xdot[i] = t[i];
 
     return true;
 }
