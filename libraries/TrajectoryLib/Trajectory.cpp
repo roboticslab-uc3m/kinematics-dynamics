@@ -27,15 +27,32 @@ bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& de
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::generateLine(const std::vector<double> &src, const std::vector<double> &dest)
+bool teo::Trajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
 {
-
+    KDL::Frame srcFrame, destFrame;
+    vectorToFrame(src,srcFrame);
+    vectorToFrame(dest,destFrame);
     _orient = new KDL::RotationalInterpolation_SingleAxis();
     double _eqradius = 1; //0.000001;
     bool _aggregate = true;
-    //KDL::Path_Line testPathLine(initF, targetF, _orient, _eqradius, _aggregate);
-    //KDL::VelocityProfile_Trap testVelocityProfile(maxVel, maxAcc);
-    //currentTrajectory = new Trajectory_Segment(testPathLine.Clone(), testVelocityProfile.Clone(), duration, _aggregate);
+    double duration = DEFAULT_DURATION;
+
+    KDL::Path_Line testPathLine(srcFrame, destFrame, _orient, _eqradius, _aggregate);
+    KDL::VelocityProfile_Trap testVelocityProfile(DEFAULT_MAXVEL, DEFAULT_MAXACC);
+//    KDL::Trajectory_Segment testTrajectory(testPathLine.Clone(), testVelocityProfile.Clone(), duration, _aggregate);
+    currentTrajectory = new KDL::Trajectory_Segment(testPathLine.Clone(), testVelocityProfile.Clone(), duration, _aggregate);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::Trajectory::deleteLine()
+{
+    delete _orient;
+    _orient = 0;
+    delete currentTrajectory;
+    currentTrajectory = 0;
 
     return true;
 }
