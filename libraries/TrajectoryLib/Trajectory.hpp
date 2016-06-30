@@ -26,6 +26,11 @@ public:
 
     bool generateLine(const std::vector<double> &src, const std::vector<double> &dest);
 
+private:
+
+    KDL::Trajectory_Segment* currentTrajectory;
+    KDL::RotationalInterpolation_SingleAxis* _orient;
+
 };
 
 }  // namespace teo
