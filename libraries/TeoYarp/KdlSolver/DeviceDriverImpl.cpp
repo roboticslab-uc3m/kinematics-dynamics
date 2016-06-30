@@ -149,7 +149,6 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 // -----------------------------------------------------------------------------
 
 bool teo::KdlSolver::close() {
-    CD_SUCCESS("Cleaned heap.\n");
     return true;
 }
 
