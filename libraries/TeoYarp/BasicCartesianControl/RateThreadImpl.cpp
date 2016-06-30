@@ -30,7 +30,7 @@ void teo::BasicCartesianControl::run() {
         trajectory.getXdot(movementTime, desiredXdot);
 
         //-- Apply control law to compute robot Cartesian velocity commands.
-        std::vector<double> commandXdot, commandQdot;
+        std::vector<double> commandXdot;
         //KDL::Twist commandXdot = diff(currentX, desiredX);
         //for(unsigned int i=0; i<6; i++)
         //{
@@ -39,6 +39,7 @@ void teo::BasicCartesianControl::run() {
         //}
 
         //-- Compute joint velocity commands and send to robot.
+        std::vector<double> commandQdot;
         if (! iCartesianSolver->diffInvKin(currentQ,commandXdot,commandQdot) )
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
