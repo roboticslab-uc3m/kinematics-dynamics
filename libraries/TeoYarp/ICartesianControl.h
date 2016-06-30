@@ -44,7 +44,7 @@ class ICartesianControl
         virtual bool movl(const std::vector<double> &xd) = 0;
 
         /** stop */
-        virtual bool stop() = 0;
+        virtual bool stopControl() = 0;
 
 };
 

@@ -53,7 +53,7 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         virtual bool movl(const std::vector<double> &xd);
 
         /** stop */
-        virtual bool stop();
+        virtual bool stopControl();
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
