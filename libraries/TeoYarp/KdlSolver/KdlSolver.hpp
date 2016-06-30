@@ -143,10 +143,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
-        KDL::RotationalInterpolation_SingleAxis* _orient;
-        double _eqradius;
-        bool _aggregate;
-
         std::string angleRepr;
 
         KDL::JntArray qMin;
