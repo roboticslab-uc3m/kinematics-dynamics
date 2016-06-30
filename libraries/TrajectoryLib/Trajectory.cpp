@@ -11,3 +11,11 @@ bool teo::Trajectory::getX(const double movementTime, std::vector<double>& desir
 }
 
 // -----------------------------------------------------------------------------
+
+bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& desiredXdot)
+{
+    //KDL::Twist desiredXdot = trajectory->Vel(movementTime);
+    return true;
+}
+
+// -----------------------------------------------------------------------------

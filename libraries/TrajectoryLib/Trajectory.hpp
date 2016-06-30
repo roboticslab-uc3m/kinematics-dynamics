@@ -12,17 +12,9 @@ class Trajectory
 {
 public:
 
-    bool getX(const double movementTime, std::vector<double>& desiredX)
-    {
-        //KDL::Frame desiredX = trajectory->Pos(movementTime);
-        return true;
-    }
+    bool getX(const double movementTime, std::vector<double>& desiredX);
 
-    bool getXdot(const double movementTime, std::vector<double>& desiredXdot)
-    {
-        //KDL::Twist desiredXdot = trajectory->Vel(movementTime);
-        return true;
-    }
+    bool getXdot(const double movementTime, std::vector<double>& desiredXdot);
 
     //bool generateLine(std::vector<double>& src, std::vector<double>& dest)
     //{
