@@ -42,6 +42,7 @@ private:
 
     bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
     bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
+    bool twistToVector(const KDL::Twist& t, std::vector<double> &xdot);
 
     std::string angleRepr;
 
