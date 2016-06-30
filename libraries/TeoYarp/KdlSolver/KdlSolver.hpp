@@ -19,11 +19,6 @@
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
 #include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
-#include <kdl/path_line.hpp>
-#include <kdl/rotational_interpolation_sa.hpp>
-#include <kdl/velocityprofile_rect.hpp>
-#include <kdl/velocityprofile_trap.hpp>
-#include <kdl/trajectory_segment.hpp>
 
 #include <iostream> // only windows
 
