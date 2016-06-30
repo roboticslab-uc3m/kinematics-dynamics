@@ -36,7 +36,7 @@ void teo::BasicCartesianControl::run() {
         iCartesianSolver->fwdKinError(desiredX,currentQ, commandXdot);
         for(unsigned int i=0; i<6; i++)
         {
-            commandXdot[i] *= DEFAULT_GAIN;
+            commandXdot[i] *= -DEFAULT_GAIN;
             commandXdot[i] += desiredXdot[i];
         }
 
