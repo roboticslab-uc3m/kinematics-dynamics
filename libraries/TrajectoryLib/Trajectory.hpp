@@ -15,6 +15,10 @@
 
 #include "ColorDebug.hpp"
 
+#define DEFAULT_MAXVEL 7.5      // unit/s
+#define DEFAULT_MAXACC 0.2      // unit/s^2
+#define DEFAULT_DURATION 5
+
 namespace teo
 {
 
@@ -28,7 +32,8 @@ public:
 
     bool getXdot(const double movementTime, std::vector<double>& desiredXdot);
 
-    bool generateLine(const std::vector<double> &src, const std::vector<double> &dest);
+    bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
+    bool deleteLine();
 
 private:
 
