@@ -134,10 +134,6 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
     CD_INFO("Chain number of segments including none-joint (H0 and HN): %d\n",chain.getNrOfSegments());
 
-    _orient = new KDL::RotationalInterpolation_SingleAxis();
-    _eqradius = 1; //0.000001;
-    _aggregate = false;
-
     qMax.resize(numLinks);
     qMin.resize(numLinks);
     //-- Limits [ -pi , pi ].
@@ -153,7 +149,6 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 // -----------------------------------------------------------------------------
 
 bool teo::KdlSolver::close() {
-    delete _orient;
     CD_SUCCESS("Cleaned heap.\n");
     return true;
 }
