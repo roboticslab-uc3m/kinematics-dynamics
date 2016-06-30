@@ -7,6 +7,8 @@
 teo::Trajectory::Trajectory()
 {
     angleRepr = "axisAngle";
+    _orient = 0;
+    currentTrajectory = 0;
 }
 
 // -----------------------------------------------------------------------------
