@@ -32,11 +32,11 @@ void teo::BasicCartesianControl::run() {
         //-- Apply control law to compute robot Cartesian velocity commands.
         std::vector<double> commandXdot;
         //KDL::Twist commandXdot = diff(currentX, desiredX);
-        //for(unsigned int i=0; i<6; i++)
-        //{
+        for(unsigned int i=0; i<6; i++)
+        {
         //    commandXdot(i) *= GAIN;
-        //    commandXdot(i) += desiredXdot(i);
-        //}
+            commandXdot[i] += desiredXdot[i];
+        }
 
         //-- Compute joint velocity commands and send to robot.
         std::vector<double> commandQdot;
