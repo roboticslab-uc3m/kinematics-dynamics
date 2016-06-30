@@ -16,10 +16,8 @@ public:
 
     bool getXdot(const double movementTime, std::vector<double>& desiredXdot);
 
-    //bool generateLine(std::vector<double>& src, std::vector<double>& dest)
-    //{
-    //    return true;
-    //}
+    bool generateLine(const std::vector<double> &src, const std::vector<double> &dest);
+
 };
 
 }  // namespace teo

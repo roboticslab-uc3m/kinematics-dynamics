@@ -19,3 +19,10 @@ bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& de
 }
 
 // -----------------------------------------------------------------------------
+
+bool teo::Trajectory::generateLine(const std::vector<double> &src, const std::vector<double> &dest)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
