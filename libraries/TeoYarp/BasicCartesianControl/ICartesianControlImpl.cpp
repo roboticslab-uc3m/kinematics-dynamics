@@ -138,7 +138,7 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
-    //trajectory.generateLine(x,xd);
+    trajectory.generateLine(x,xd);
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     iVelocityControl->setVelocityMode();
