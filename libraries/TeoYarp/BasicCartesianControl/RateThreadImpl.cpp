@@ -52,6 +52,11 @@ void teo::BasicCartesianControl::run() {
         }
 
     }
+    else if (currentState == VOCAB_CC_GCMP_CONTROLLING)
+    {
+
+    }
+
     return;
 }
 

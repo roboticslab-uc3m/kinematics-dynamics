@@ -168,6 +168,15 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
+bool teo::BasicCartesianControl::gcmp()
+{
+    iPositionControl->stop();
+    currentState = VOCAB_CC_GCMP_CONTROLLING;
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::BasicCartesianControl::stopControl()
 {
     iPositionControl->stop();
