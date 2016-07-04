@@ -170,7 +170,8 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::gcmp()
 {
-    iPositionControl->stop();
+    //-- Set torque mode and set state which makes rate thread implement control.
+    iTorqueControl->setTorqueMode();
     currentState = VOCAB_CC_GCMP_CONTROLLING;
     return true;
 }

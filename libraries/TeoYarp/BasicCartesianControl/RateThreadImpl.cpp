@@ -54,7 +54,18 @@ void teo::BasicCartesianControl::run() {
     }
     else if (currentState == VOCAB_CC_GCMP_CONTROLLING)
     {
+        //-- Obtain current joint position
+        std::vector<double> currentQ(numRobotJoints);
+        if ( ! iEncoders->getEncoders( currentQ.data() ) )
+        {
+            CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+            return;
+        }
 
+        std::vector< double > t(numRobotJoints);
+        iCartesianSolver->invDyn(currentQ,t);
+
+        iTorqueControl->setRefTorques( t.data() );
     }
 
     return;
