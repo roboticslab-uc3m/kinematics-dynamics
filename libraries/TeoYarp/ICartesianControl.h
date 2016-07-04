@@ -9,11 +9,13 @@
 #define VOCAB_CC_INV VOCAB3('i','n','v')
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
 #define VOCAB_CC_MOVL VOCAB4('m','o','v','l')
+#define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
 #define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c')
 #define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c')
+#define VOCAB_CC_GCMP_CONTROLLING VOCAB4('c','c','g','c')
 
 namespace teo
 {
