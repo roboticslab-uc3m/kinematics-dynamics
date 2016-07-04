@@ -153,6 +153,16 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
     movementStartTime = yarp::os::Time::now();
     currentState = VOCAB_CC_MOVL_CONTROLLING;
 
+    //-- Wait for movement to be done, then delete
+    CD_SUCCESS("Waiting\n");
+    while( currentState == VOCAB_CC_MOVL_CONTROLLING )
+    {
+        printf(".");
+        fflush(stdout);
+        yarp::os::Time::delay(0.5);
+    }
+    trajectory.deleteLine();
+
     return true;
 }
 
