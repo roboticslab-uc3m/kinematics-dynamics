@@ -161,7 +161,7 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
         fflush(stdout);
         yarp::os::Time::delay(0.5);
     }
-    trajectory.deleteLine();
+    //trajectory.deleteLine();  //-- Causes segFaults for now
 
     return true;
 }
