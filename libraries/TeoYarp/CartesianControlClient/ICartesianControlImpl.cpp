@@ -92,6 +92,24 @@ bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
+bool teo::CartesianControlClient::gcmp()
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_GCMP);
+
+    rpcClient.write(cmd,response);
+
+    if( response.get(0).asVocab() == VOCAB_FAILED )
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::CartesianControlClient::stopControl()
 {
     yarp::os::Bottle cmd, response;
@@ -99,6 +117,11 @@ bool teo::CartesianControlClient::stopControl()
     cmd.addVocab(VOCAB_CC_STOP);
 
     rpcClient.write(cmd,response);
+
+    if( response.get(0).asVocab() == VOCAB_FAILED )
+    {
+        return false;
+    }
 
     return true;
 }

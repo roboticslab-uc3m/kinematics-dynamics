@@ -19,6 +19,7 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
         out.addVocab(VOCAB_CC_INV);
         out.addVocab(VOCAB_CC_MOVJ);
         out.addVocab(VOCAB_CC_MOVL);
+        out.addVocab(VOCAB_CC_GCMP);
         out.addVocab(VOCAB_CC_STOP);
     }
     else if( in.get(0).asVocab() == VOCAB_CC_STAT)
@@ -104,6 +105,18 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
         else
         {
             CD_ERROR("size error\n");
+            out.addVocab(VOCAB_FAILED);
+        }
+    }
+    else if( in.get(0).asVocab() == VOCAB_CC_GCMP)
+    {
+        bool ok = iCartesianControl->gcmp();
+        if(ok)
+        {
+            out.addVocab(VOCAB_OK);
+        }
+        else
+        {
             out.addVocab(VOCAB_FAILED);
         }
     }

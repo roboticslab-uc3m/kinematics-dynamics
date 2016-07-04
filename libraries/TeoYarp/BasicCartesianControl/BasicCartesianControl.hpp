@@ -60,6 +60,9 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** movl */
         virtual bool movl(const std::vector<double> &xd);
 
+        /** gcmp */
+        virtual bool gcmp();
+
         /** stop */
         virtual bool stopControl();
 
