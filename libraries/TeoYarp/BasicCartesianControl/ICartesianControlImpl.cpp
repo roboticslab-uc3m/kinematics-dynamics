@@ -181,6 +181,7 @@ bool teo::BasicCartesianControl::gcmp()
 bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
 {
     //-- Set torque mode and set state which makes rate thread implement control.
+    this->td = td;
     iTorqueControl->setTorqueMode();
     currentState = VOCAB_CC_FORC_CONTROLLING;
     return true;
