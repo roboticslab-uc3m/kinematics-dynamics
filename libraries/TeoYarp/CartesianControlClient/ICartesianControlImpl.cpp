@@ -110,6 +110,13 @@ bool teo::CartesianControlClient::gcmp()
 
 // -----------------------------------------------------------------------------
 
+bool teo::CartesianControlClient::forc(const std::vector<double> &td)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::CartesianControlClient::stopControl()
 {
     yarp::os::Bottle cmd, response;

@@ -178,6 +178,13 @@ bool teo::BasicCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
+bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::BasicCartesianControl::stopControl()
 {
     iPositionControl->stop();
