@@ -77,10 +77,19 @@ void teo::BasicCartesianControl::run() {
             return;
         }
 
-        /*std::vector< double > t(numRobotJoints);
-        iCartesianSolver->invDyn(currentQ,t);
+        std::vector<double> qdot(numRobotJoints,0), qdotdot(numRobotJoints,0);
+        std::vector< std::vector<double> > fexts;
+        for (int i=0; i<numRobotJoints-1; i++)  //-- "numRobotJoints-1" is important
+        {
+            std::vector<double> fext(6,0);
+            fexts.push_back(fext);
+        }
+        fexts.push_back(td);
 
-        iTorqueControl->setRefTorques( t.data() );*/
+        std::vector< double > t(numRobotJoints);
+        iCartesianSolver->invDyn(currentQ,qdot,qdotdot,fexts,t);
+
+        iTorqueControl->setRefTorques( t.data() );
     }
 
     return;

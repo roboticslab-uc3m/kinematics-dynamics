@@ -116,6 +116,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double movementStartTime;
 
         Trajectory trajectory;
+
+        std::vector<double> td;
 };
 
 }  // namespace teo
