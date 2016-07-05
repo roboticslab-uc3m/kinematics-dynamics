@@ -48,6 +48,9 @@ class ICartesianControl
         /** gcmp */
         virtual bool gcmp() = 0;
 
+        /** forc */
+        virtual bool forc(const std::vector<double> &td) = 0;
+
         /** stop */
         virtual bool stopControl() = 0;
 
