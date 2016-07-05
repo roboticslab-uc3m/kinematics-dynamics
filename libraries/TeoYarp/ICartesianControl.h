@@ -10,6 +10,7 @@
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
 #define VOCAB_CC_MOVL VOCAB4('m','o','v','l')
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
+#define VOCAB_CC_FORC VOCAB4('f','o','r','c')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
