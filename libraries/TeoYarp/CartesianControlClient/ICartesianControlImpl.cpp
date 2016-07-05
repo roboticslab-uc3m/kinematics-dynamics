@@ -112,6 +112,22 @@ bool teo::CartesianControlClient::gcmp()
 
 bool teo::CartesianControlClient::forc(const std::vector<double> &td)
 {
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_FORC);
+    for(size_t i=0; i<td.size(); i++)
+        cmd.addDouble(td[i]);
+
+    rpcClient.write(cmd,response);
+
+    if( response.get(0).isVocab() )
+    {
+        if( response.get(0).asVocab() == VOCAB_FAILED )
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 
