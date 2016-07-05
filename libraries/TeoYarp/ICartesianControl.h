@@ -16,6 +16,7 @@
 #define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c')
 #define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c')
 #define VOCAB_CC_GCMP_CONTROLLING VOCAB4('c','c','g','c')
+#define VOCAB_CC_FORC_CONTROLLING VOCAB4('c','c','f','c')
 
 namespace teo
 {
