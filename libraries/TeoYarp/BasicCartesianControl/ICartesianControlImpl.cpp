@@ -135,6 +135,8 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
+    CD_WARNING("MOVL mode still experimental.\n");
+
     std::vector<double> currentQ(numRobotJoints), x;
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
@@ -180,6 +182,8 @@ bool teo::BasicCartesianControl::gcmp()
 
 bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
 {
+    CD_WARNING("FORC mode still experimental.\n");
+
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
     iTorqueControl->setTorqueMode();
