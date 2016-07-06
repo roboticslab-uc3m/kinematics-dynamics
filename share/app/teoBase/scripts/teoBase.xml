@@ -10,7 +10,7 @@
     </module>
 
     <module>
-        <name>jr3pci2channelYarp</name>
+        <name>jr3pci4channelYarp</name>
         <parameters></parameters>
         <node>/manipulation</node>
     </module>
