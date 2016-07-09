@@ -172,6 +172,12 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
+    CD_WARNING("MOVV mode still experimental.\n");
+
+    //-- Set torque mode and set state which makes rate thread implement control.
+    this->xdotd = xdotd;
+    iVelocityControl->setVelocityMode();
+    currentState = VOCAB_CC_MOVV_CONTROLLING;
     return true;
 }
 

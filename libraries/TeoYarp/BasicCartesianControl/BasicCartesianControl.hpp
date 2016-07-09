@@ -120,6 +120,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         Trajectory trajectory;
 
+        std::vector<double> xdotd;
+
         std::vector<double> td;
 };
 
