@@ -94,6 +94,22 @@ bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
 
 bool teo::CartesianControlClient::movv(const std::vector<double> &xdotd)
 {
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_MOVV);
+    for(size_t i=0; i<xdotd.size(); i++)
+        cmd.addDouble(xdotd[i]);
+
+    rpcClient.write(cmd,response);
+
+    if( response.get(0).isVocab() )
+    {
+        if( response.get(0).asVocab() == VOCAB_FAILED )
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 
