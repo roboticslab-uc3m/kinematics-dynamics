@@ -16,8 +16,6 @@ void teo::BasicCartesianControl::run() {
             return;
         }
 
-        CD_DEBUG("MOVEL_CONTROLLING: %f\n",movementTime);
-
         //-- Obtain current joint position
         std::vector<double> currentQ(numRobotJoints);
         if ( ! iEncoders->getEncoders( currentQ.data() ) )
@@ -46,6 +44,15 @@ void teo::BasicCartesianControl::run() {
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         }
+
+        CD_DEBUG_NO_HEADER("[MOVL] [%f] ",movementTime);
+        for(int i=0;i<6;i++)
+            CD_DEBUG_NO_HEADER("%f ",commandXdot[i]);
+        CD_DEBUG_NO_HEADER("-> ");
+        for(int i=0;i<numRobotJoints;i++)
+            CD_DEBUG_NO_HEADER("%f ",commandQdot[i]);
+        CD_DEBUG_NO_HEADER("[deg/s]\n");
+
         if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
         {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
@@ -72,7 +79,7 @@ void teo::BasicCartesianControl::run() {
         CD_DEBUG_NO_HEADER("[MOVV] ");
         for(int i=0;i<6;i++)
             CD_DEBUG_NO_HEADER("%f ",xdotd[i]);
-        CD_DEBUG_NO_HEADER("-> \n");
+        CD_DEBUG_NO_HEADER("-> ");
         for(int i=0;i<numRobotJoints;i++)
             CD_DEBUG_NO_HEADER("%f ",commandQdot[i]);
         CD_DEBUG_NO_HEADER("[deg/s]\n");
