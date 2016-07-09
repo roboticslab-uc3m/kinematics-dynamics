@@ -22,14 +22,28 @@
 namespace teo
 {
 
+/**
+ * @ingroup teo_libraries
+ * \defgroup TrajectoryLib
+ *
+ * @brief Contains classes related to trajectories.
+ */
+
+/**
+ * @ingroup TrajectoryLib
+ * @brief Implements a basic trajectory.
+ */
+
 class Trajectory
 {
 public:
 
     Trajectory();
 
+    /** Cartesian position of the trajectory at movementTime */
     bool getX(const double movementTime, std::vector<double>& x);
 
+    /** Cartesian velocity of the trajectory at movementTime */
     bool getXdot(const double movementTime, std::vector<double>& xdot);
 
     bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
