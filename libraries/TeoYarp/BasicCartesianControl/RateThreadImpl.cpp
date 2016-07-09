@@ -52,6 +52,27 @@ void teo::BasicCartesianControl::run() {
         }
 
     }
+    else if (currentState == VOCAB_CC_MOVV_CONTROLLING)
+    {
+        //-- Obtain current joint position
+        std::vector<double> currentQ(numRobotJoints);
+        if ( ! iEncoders->getEncoders( currentQ.data() ) )
+        {
+            CD_WARNING("getEncoders failed, not updating control this iteration.\n");
+            return;
+        }
+
+        //-- Compute joint velocity commands and send to robot.
+        std::vector<double> commandQdot;
+        if (! iCartesianSolver->diffInvKin(currentQ,xdotd,commandQdot) )
+        {
+            CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
+        }
+        if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
+        {
+            CD_WARNING("velocityMove failed, not updating control this iteration.\n");
+        }
+    }
     else if (currentState == VOCAB_CC_GCMP_CONTROLLING)
     {
         //-- Obtain current joint position
