@@ -181,6 +181,8 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 }
                 tmpPort->open(tmpName);
                 vectorOfIntPortPtr.push_back(tmpPort);
+            } else if (psensorbase->Supports(OpenRAVE::SensorBase::ST_Force6D)) {
+                printf("Sensor %d supports ST_Force6D.\n", sensorIter);
             } else printf("Sensor %d not supported.\n", robotIter);
         }
     }
