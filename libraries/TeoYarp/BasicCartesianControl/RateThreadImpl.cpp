@@ -68,6 +68,15 @@ void teo::BasicCartesianControl::run() {
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         }
+
+        CD_DEBUG_NO_HEADER("[MOVV] ");
+        for(int i=0;i<6;i++)
+            CD_DEBUG_NO_HEADER("%f ",xdotd[i]);
+        CD_DEBUG_NO_HEADER("-> \n");
+        for(int i=0;i<numRobotJoints;i++)
+            CD_DEBUG_NO_HEADER("%f ",commandQdot[i]);
+        CD_DEBUG_NO_HEADER("[deg/s]\n");
+
         if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
         {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
