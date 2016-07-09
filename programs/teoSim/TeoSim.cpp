@@ -185,6 +185,9 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 printf("Sensor %d supports ST_Force6D.\n", sensorIter);
                 // Activate the sensor
                 psensorbase->Configure(OpenRAVE::SensorBase::CC_PowerOn);
+                // Get a pointer to access the force6D data stream
+                vectorOfForce6DSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::Force6DSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Force6D)));
+                vectorOfSensorPtrForForce6Ds.push_back(psensorbase);  // "save"
             } else printf("Sensor %d not supported.\n", robotIter);
         }
     }
