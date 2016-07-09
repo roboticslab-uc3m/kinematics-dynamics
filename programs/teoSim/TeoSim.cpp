@@ -188,6 +188,11 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 // Get a pointer to access the force6D data stream
                 vectorOfForce6DSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::Force6DSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Force6D)));
                 vectorOfSensorPtrForForce6Ds.push_back(psensorbase);  // "save"
+                yarp::os::Port * tmpPort = new yarp::os::Port;
+                std::string tmpName("/");
+                tmpName += psensorbase->GetName();
+                tmpPort->open(tmpName);
+                vectorOfForce6DPortPtr.push_back(tmpPort);
             } else printf("Sensor %d not supported.\n", robotIter);
         }
     }
@@ -202,12 +207,14 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     teoSimRateThread.setPtrVectorOfCameraSensorDataPtr(&vectorOfCameraSensorDataPtr);
     teoSimRateThread.setPtrVectorOfRgbPortPtr(&vectorOfRgbPortPtr);
     teoSimRateThread.setPtrVectorOfIntPortPtr(&vectorOfIntPortPtr);
+    teoSimRateThread.setPtrVectorOfForce6DPortPtr(&vectorOfForce6DPortPtr);
     teoSimRateThread.setPtrVectorOfCameraWidth(&vectorOfCameraWidth);
     teoSimRateThread.setPtrVectorOfCameraHeight(&vectorOfCameraHeight);
     teoSimRateThread.setPtrVectorOfSensorPtrForLasers(&vectorOfSensorPtrForLasers);
     teoSimRateThread.setPtrVectorOfLaserSensorDataPtr(&vectorOfLaserSensorDataPtr);
     teoSimRateThread.setPtrVectorOfSensorPtrForForce6Ds(&vectorOfSensorPtrForForce6Ds);
     teoSimRateThread.setPtrVectorOfForce6DSensorDataPtr(&vectorOfForce6DSensorDataPtr);
+
 
     teoSimRateThread.start();
     
