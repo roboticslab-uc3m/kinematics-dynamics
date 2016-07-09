@@ -6,5 +6,11 @@
         <node>localhost</node>
     </module>
 
+    <module>
+        <name>launchTeoYarp</name>
+        <parameters>--from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --device BasicCartesianControl --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm</parameters>
+        <node>localhost</node>
+    </module>
+
 </application>
 
