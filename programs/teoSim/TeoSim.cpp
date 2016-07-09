@@ -206,6 +206,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     teoSimRateThread.setPtrVectorOfCameraHeight(&vectorOfCameraHeight);
     teoSimRateThread.setPtrVectorOfSensorPtrForLasers(&vectorOfSensorPtrForLasers);
     teoSimRateThread.setPtrVectorOfLaserSensorDataPtr(&vectorOfLaserSensorDataPtr);
+    teoSimRateThread.setPtrVectorOfSensorPtrForForce6Ds(&vectorOfSensorPtrForForce6Ds);
 
     teoSimRateThread.start();
     
