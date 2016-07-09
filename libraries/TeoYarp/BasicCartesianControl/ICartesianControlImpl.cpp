@@ -170,6 +170,13 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
+bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.

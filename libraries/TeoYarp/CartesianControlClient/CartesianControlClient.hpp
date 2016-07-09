@@ -52,6 +52,9 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         /** movl */
         virtual bool movl(const std::vector<double> &xd);
 
+        /** movv */
+        virtual bool movv(const std::vector<double> &xdotd);
+
         /** gcmp */
         virtual bool gcmp();
 
