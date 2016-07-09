@@ -207,6 +207,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     teoSimRateThread.setPtrVectorOfSensorPtrForLasers(&vectorOfSensorPtrForLasers);
     teoSimRateThread.setPtrVectorOfLaserSensorDataPtr(&vectorOfLaserSensorDataPtr);
     teoSimRateThread.setPtrVectorOfSensorPtrForForce6Ds(&vectorOfSensorPtrForForce6Ds);
+    teoSimRateThread.setPtrVectorOfForce6DSensorDataPtr(&vectorOfForce6DSensorDataPtr);
 
     teoSimRateThread.start();
     

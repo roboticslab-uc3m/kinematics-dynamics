@@ -69,6 +69,10 @@ class TeoSimRateThread : public yarp::os::RateThread {
             this->ptrVectorOfLaserSensorDataPtr = setPtrVectorOfLaserSensorDataPtr;
         }
 
+        void setPtrVectorOfForce6DSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::Force6DSensorData> > * setPtrVectorOfForce6DSensorDataPtr) {
+            this->ptrVectorOfForce6DSensorDataPtr = setPtrVectorOfForce6DSensorDataPtr;
+        }
+
         void setPtrVectorOfCameraWidth(std::vector<int> * ptrVectorOfCameraWidth) {
             this->ptrVectorOfCameraWidth = ptrVectorOfCameraWidth;
         }
@@ -120,6 +124,7 @@ class TeoSimRateThread : public yarp::os::RateThread {
         std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForForce6Ds;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> > * ptrVectorOfLaserSensorDataPtr;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::Force6DSensorData> > * ptrVectorOfForce6DSensorDataPtr;
         std::vector<int> * ptrVectorOfCameraWidth;
         std::vector<int> * ptrVectorOfCameraHeight;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr;
