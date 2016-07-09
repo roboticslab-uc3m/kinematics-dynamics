@@ -47,6 +47,9 @@ class ICartesianControl
         /** movl */
         virtual bool movl(const std::vector<double> &xd) = 0;
 
+        /** movv */
+        virtual bool movv(const std::vector<double> &xdotd) = 0;
+
         /** gcmp */
         virtual bool gcmp() = 0;
 

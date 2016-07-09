@@ -92,6 +92,13 @@ bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
+bool teo::CartesianControlClient::movv(const std::vector<double> &xdotd)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::CartesianControlClient::gcmp()
 {
     yarp::os::Bottle cmd, response;
