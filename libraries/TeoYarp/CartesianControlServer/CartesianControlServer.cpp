@@ -117,7 +117,7 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
             std::vector<double> xdotd;
             for(size_t i=1; i<in.size();i++)
                 xdotd.push_back(in.get(i).asDouble());
-            bool ok = iCartesianControl->movl(xdotd);
+            bool ok = iCartesianControl->movv(xdotd);
             if(ok)
             {
                 out.addVocab(VOCAB_OK);
