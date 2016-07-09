@@ -57,6 +57,10 @@ class TeoSimRateThread : public yarp::os::RateThread {
             this->ptrVectorOfSensorPtrForLasers = ptrVectorOfSensorPtrForLasers;
         }
 
+        void setPtrVectorOfSensorPtrForForce6Ds(std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForForce6Ds) {
+            this->ptrVectorOfSensorPtrForForce6Ds = ptrVectorOfSensorPtrForForce6Ds;
+        }
+
         void setPtrVectorOfCameraSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr) {
             this->ptrVectorOfCameraSensorDataPtr = ptrVectorOfCameraSensorDataPtr;
         }
@@ -113,6 +117,7 @@ class TeoSimRateThread : public yarp::os::RateThread {
         //
         std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForCameras;
         std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForLasers;
+        std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForForce6Ds;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> > * ptrVectorOfLaserSensorDataPtr;
         std::vector<int> * ptrVectorOfCameraWidth;

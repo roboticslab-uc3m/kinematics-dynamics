@@ -132,6 +132,9 @@ void teo::TeoSimRateThread::run() {
         ptrVectorOfIntPortPtr->at(laserIter)->write();
     }
 
+    for(unsigned int force6DIter = 0; force6DIter<ptrVectorOfSensorPtrForForce6Ds->size(); force6DIter++ ) {
+    }
+
 }
 
 // -----------------------------------------------------------------------------
