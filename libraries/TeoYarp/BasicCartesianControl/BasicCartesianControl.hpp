@@ -114,14 +114,19 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         int numRobotJoints, numSolverLinks;
 
+        /** State encoded as a VOCAB which can be stored as an int */
         int currentState;
 
+        /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;
 
+        /** MOVL store Cartesian trajectory */
         Trajectory trajectory;
 
+        /** MOVV desired Cartesian velocity */
         std::vector<double> xdotd;
 
+        /** FORC desired Cartesian force */
         std::vector<double> td;
 };
 
