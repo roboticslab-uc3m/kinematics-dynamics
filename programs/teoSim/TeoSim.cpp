@@ -189,9 +189,11 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 vectorOfForce6DSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::Force6DSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Force6D)));
                 vectorOfSensorPtrForForce6Ds.push_back(psensorbase);  // "save"
                 yarp::os::Port * tmpPort = new yarp::os::Port;
-                std::string tmpName("/");
-                tmpName += psensorbase->GetName();
-                tmpPort->open(tmpName);
+                std::string sensorName = psensorbase->GetName();
+                size_t pos = sensorName.find(":");
+                std::string portName("/");
+                portName += sensorName.substr (pos+1,sensorName.size());
+                tmpPort->open(portName);
                 vectorOfForce6DPortPtr.push_back(tmpPort);
             } else printf("Sensor %d not supported.\n", robotIter);
         }
