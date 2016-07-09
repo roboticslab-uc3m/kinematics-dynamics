@@ -141,6 +141,7 @@ void teo::TeoSimRateThread::run() {
         b.addDouble( ptrVectorOfForce6DSensorDataPtr->at(force6DIter)->torque[0] );
         b.addDouble( ptrVectorOfForce6DSensorDataPtr->at(force6DIter)->torque[1] );
         b.addDouble( ptrVectorOfForce6DSensorDataPtr->at(force6DIter)->torque[2] );
+        ptrVectorOfForce6DPortPtr->at(force6DIter)->write(b);
     }
 
 }
