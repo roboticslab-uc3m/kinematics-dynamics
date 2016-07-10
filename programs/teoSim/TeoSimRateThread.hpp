@@ -57,12 +57,20 @@ class TeoSimRateThread : public yarp::os::RateThread {
             this->ptrVectorOfSensorPtrForLasers = ptrVectorOfSensorPtrForLasers;
         }
 
+        void setPtrVectorOfSensorPtrForForce6Ds(std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForForce6Ds) {
+            this->ptrVectorOfSensorPtrForForce6Ds = ptrVectorOfSensorPtrForForce6Ds;
+        }
+
         void setPtrVectorOfCameraSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr) {
             this->ptrVectorOfCameraSensorDataPtr = ptrVectorOfCameraSensorDataPtr;
         }
 
         void setPtrVectorOfLaserSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> > * setPtrVectorOfLaserSensorDataPtr) {
             this->ptrVectorOfLaserSensorDataPtr = setPtrVectorOfLaserSensorDataPtr;
+        }
+
+        void setPtrVectorOfForce6DSensorDataPtr(std::vector< boost::shared_ptr<OpenRAVE::SensorBase::Force6DSensorData> > * setPtrVectorOfForce6DSensorDataPtr) {
+            this->ptrVectorOfForce6DSensorDataPtr = setPtrVectorOfForce6DSensorDataPtr;
         }
 
         void setPtrVectorOfCameraWidth(std::vector<int> * ptrVectorOfCameraWidth) {
@@ -80,6 +88,11 @@ class TeoSimRateThread : public yarp::os::RateThread {
         void setPtrVectorOfIntPortPtr(std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr) {
             this->ptrVectorOfIntPortPtr = ptrVectorOfIntPortPtr;
         }
+
+        void setPtrVectorOfForce6DPortPtr(std::vector< yarp::os::BufferedPort<yarp::os::Bottle >* > * ptrVectorOfForce6DPortPtr) {
+            this->ptrVectorOfForce6DPortPtr = ptrVectorOfForce6DPortPtr;
+        }
+
 
     // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
@@ -113,12 +126,15 @@ class TeoSimRateThread : public yarp::os::RateThread {
         //
         std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForCameras;
         std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForLasers;
+        std::vector< OpenRAVE::SensorBasePtr > * ptrVectorOfSensorPtrForForce6Ds;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > * ptrVectorOfCameraSensorDataPtr;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> > * ptrVectorOfLaserSensorDataPtr;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::Force6DSensorData> > * ptrVectorOfForce6DSensorDataPtr;
         std::vector<int> * ptrVectorOfCameraWidth;
         std::vector<int> * ptrVectorOfCameraHeight;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::os::Bottle >* > * ptrVectorOfForce6DPortPtr;
         //
         /** Vector to store pointers to ManipulatorWrapper objects */
         std::vector < ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr;

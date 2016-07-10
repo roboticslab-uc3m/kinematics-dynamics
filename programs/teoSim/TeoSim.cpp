@@ -181,6 +181,20 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 }
                 tmpPort->open(tmpName);
                 vectorOfIntPortPtr.push_back(tmpPort);
+            } else if (psensorbase->Supports(OpenRAVE::SensorBase::ST_Force6D)) {
+                printf("Sensor %d supports ST_Force6D.\n", sensorIter);
+                // Activate the sensor
+                psensorbase->Configure(OpenRAVE::SensorBase::CC_PowerOn);
+                // Get a pointer to access the force6D data stream
+                vectorOfForce6DSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::Force6DSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Force6D)));
+                vectorOfSensorPtrForForce6Ds.push_back(psensorbase);  // "save"
+                yarp::os::BufferedPort<yarp::os::Bottle > * tmpPort = new yarp::os::BufferedPort<yarp::os::Bottle >;
+                std::string sensorName = psensorbase->GetName();
+                size_t pos = sensorName.find(":");
+                std::string portName("/");
+                portName += sensorName.substr (pos+1,sensorName.size());
+                tmpPort->open(portName);
+                vectorOfForce6DPortPtr.push_back(tmpPort);
             } else printf("Sensor %d not supported.\n", robotIter);
         }
     }
@@ -195,10 +209,14 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     teoSimRateThread.setPtrVectorOfCameraSensorDataPtr(&vectorOfCameraSensorDataPtr);
     teoSimRateThread.setPtrVectorOfRgbPortPtr(&vectorOfRgbPortPtr);
     teoSimRateThread.setPtrVectorOfIntPortPtr(&vectorOfIntPortPtr);
+    teoSimRateThread.setPtrVectorOfForce6DPortPtr(&vectorOfForce6DPortPtr);
     teoSimRateThread.setPtrVectorOfCameraWidth(&vectorOfCameraWidth);
     teoSimRateThread.setPtrVectorOfCameraHeight(&vectorOfCameraHeight);
     teoSimRateThread.setPtrVectorOfSensorPtrForLasers(&vectorOfSensorPtrForLasers);
     teoSimRateThread.setPtrVectorOfLaserSensorDataPtr(&vectorOfLaserSensorDataPtr);
+    teoSimRateThread.setPtrVectorOfSensorPtrForForce6Ds(&vectorOfSensorPtrForForce6Ds);
+    teoSimRateThread.setPtrVectorOfForce6DSensorDataPtr(&vectorOfForce6DSensorDataPtr);
+
 
     teoSimRateThread.start();
     

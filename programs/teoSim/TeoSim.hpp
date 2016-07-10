@@ -94,12 +94,15 @@ class TeoSim : public yarp::os::RFModule {
         //
         std::vector< OpenRAVE::SensorBasePtr > vectorOfSensorPtrForCameras;
         std::vector< OpenRAVE::SensorBasePtr > vectorOfSensorPtrForLasers;
+        std::vector< OpenRAVE::SensorBasePtr > vectorOfSensorPtrForForce6Ds;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::CameraSensorData> > vectorOfCameraSensorDataPtr;
         std::vector< boost::shared_ptr<OpenRAVE::SensorBase::LaserSensorData> >  vectorOfLaserSensorDataPtr;
+        std::vector< boost::shared_ptr<OpenRAVE::SensorBase::Force6DSensorData> >  vectorOfForce6DSensorDataPtr;
         std::vector<int> vectorOfCameraWidth;
         std::vector<int> vectorOfCameraHeight;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > vectorOfRgbPortPtr;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > vectorOfIntPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::os::Bottle >* > vectorOfForce6DPortPtr;
         //
         TeoSimRateThread teoSimRateThread;
 
