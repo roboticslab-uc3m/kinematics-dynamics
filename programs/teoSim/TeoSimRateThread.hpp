@@ -89,7 +89,7 @@ class TeoSimRateThread : public yarp::os::RateThread {
             this->ptrVectorOfIntPortPtr = ptrVectorOfIntPortPtr;
         }
 
-        void setPtrVectorOfForce6DPortPtr(std::vector< yarp::os::Port* > * ptrVectorOfForce6DPortPtr) {
+        void setPtrVectorOfForce6DPortPtr(std::vector< yarp::os::BufferedPort<yarp::os::Bottle >* > * ptrVectorOfForce6DPortPtr) {
             this->ptrVectorOfForce6DPortPtr = ptrVectorOfForce6DPortPtr;
         }
 
@@ -134,7 +134,7 @@ class TeoSimRateThread : public yarp::os::RateThread {
         std::vector<int> * ptrVectorOfCameraHeight;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > * ptrVectorOfRgbPortPtr;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > * ptrVectorOfIntPortPtr;
-        std::vector< yarp::os::Port* > * ptrVectorOfForce6DPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::os::Bottle >* > * ptrVectorOfForce6DPortPtr;
         //
         /** Vector to store pointers to ManipulatorWrapper objects */
         std::vector < ControlboardContainer* > * ptrVectorOfManipulatorWrapperPtr;
