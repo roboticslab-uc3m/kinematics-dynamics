@@ -102,7 +102,7 @@ class TeoSim : public yarp::os::RFModule {
         std::vector<int> vectorOfCameraHeight;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >* > vectorOfRgbPortPtr;
         std::vector< yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelInt> >* > vectorOfIntPortPtr;
-        std::vector< yarp::os::Port* > vectorOfForce6DPortPtr;
+        std::vector< yarp::os::BufferedPort<yarp::os::Bottle >* > vectorOfForce6DPortPtr;
         //
         TeoSimRateThread teoSimRateThread;
 

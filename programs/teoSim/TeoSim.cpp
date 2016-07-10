@@ -188,7 +188,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 // Get a pointer to access the force6D data stream
                 vectorOfForce6DSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::Force6DSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Force6D)));
                 vectorOfSensorPtrForForce6Ds.push_back(psensorbase);  // "save"
-                yarp::os::Port * tmpPort = new yarp::os::Port;
+                yarp::os::BufferedPort<yarp::os::Bottle > * tmpPort = new yarp::os::BufferedPort<yarp::os::Bottle >;
                 std::string sensorName = psensorbase->GetName();
                 size_t pos = sensorName.find(":");
                 std::string portName("/");
