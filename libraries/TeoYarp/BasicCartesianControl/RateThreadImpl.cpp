@@ -6,7 +6,8 @@
 
 void teo::BasicCartesianControl::run() {
 
-    if (getCurrentState() == VOCAB_CC_MOVL_CONTROLLING)
+    int catchCurrentState = getCurrentState();
+    if (catchCurrentState == VOCAB_CC_MOVL_CONTROLLING)
     {
         double movementTime = yarp::os::Time::now() - movementStartTime;
 
@@ -59,7 +60,7 @@ void teo::BasicCartesianControl::run() {
         }
 
     }
-    else if (getCurrentState() == VOCAB_CC_MOVV_CONTROLLING)
+    else if (catchCurrentState == VOCAB_CC_MOVV_CONTROLLING)
     {
         //-- Obtain current joint position
         std::vector<double> currentQ(numRobotJoints);
@@ -89,7 +90,7 @@ void teo::BasicCartesianControl::run() {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
         }
     }
-    else if (getCurrentState() == VOCAB_CC_GCMP_CONTROLLING)
+    else if (catchCurrentState == VOCAB_CC_GCMP_CONTROLLING)
     {
         //-- Obtain current joint position
         std::vector<double> currentQ(numRobotJoints);
@@ -104,7 +105,7 @@ void teo::BasicCartesianControl::run() {
 
         iTorqueControl->setRefTorques( t.data() );
     }
-    else if (getCurrentState() == VOCAB_CC_FORC_CONTROLLING)
+    else if (catchCurrentState == VOCAB_CC_FORC_CONTROLLING)
     {
         //-- Obtain current joint position
         std::vector<double> currentQ(numRobotJoints);
