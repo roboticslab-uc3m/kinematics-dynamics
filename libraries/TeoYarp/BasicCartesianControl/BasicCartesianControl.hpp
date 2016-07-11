@@ -100,7 +100,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         */
         virtual bool close();
 
-    protected:
+protected:
 
         yarp::dev::PolyDriver solverDevice;
         teo::ICartesianSolver *iCartesianSolver;
@@ -116,6 +116,10 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;
+
+        int getCurrentState();
+        void setCurrentState(int value);
+        yarp::os::Semaphore currentStateReady;
 
         /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;
