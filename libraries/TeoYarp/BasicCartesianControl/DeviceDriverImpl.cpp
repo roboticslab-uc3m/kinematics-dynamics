@@ -94,3 +94,24 @@ bool teo::BasicCartesianControl::close() {
 }
 
 // -----------------------------------------------------------------------------
+
+int teo::BasicCartesianControl::getCurrentState()
+{
+    int tmp;
+    currentStateReady.wait();
+    tmp = currentState;
+    currentStateReady.post();
+
+    return tmp;
+}
+
+// -----------------------------------------------------------------------------
+
+void teo::BasicCartesianControl::setCurrentState(int value)
+{
+    currentStateReady.wait();
+    currentState = value;
+    currentStateReady.post();
+}
+
+// -----------------------------------------------------------------------------

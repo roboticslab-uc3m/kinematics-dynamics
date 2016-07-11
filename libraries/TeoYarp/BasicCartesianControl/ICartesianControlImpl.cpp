@@ -17,7 +17,7 @@ bool teo::BasicCartesianControl::stat(int &state, std::vector<double> &x)
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
-    state = currentState;
+    state = getCurrentState();
     return true;
 }
 
@@ -107,7 +107,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
 
     //-- Set state, perform and wait for movement to be done
-    currentState = VOCAB_CC_MOVJ_CONTROLLING;
+    setCurrentState( VOCAB_CC_MOVJ_CONTROLLING );
 
     CD_SUCCESS("Waiting\n");
     bool done = false;
@@ -120,7 +120,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
 
     //-- Reestablish state and velocities
-    currentState = VOCAB_CC_NOT_CONTROLLING;
+    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
 
     if ( ! iPositionControl->setRefSpeeds( vmoStored.data() ) )
     {
@@ -153,11 +153,11 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
     //-- Set velocity mode and set state which makes rate thread implement control.
     iVelocityControl->setVelocityMode();
     movementStartTime = yarp::os::Time::now();
-    currentState = VOCAB_CC_MOVL_CONTROLLING;
+    setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
 
     //-- Wait for movement to be done, then delete
     CD_SUCCESS("Waiting\n");
-    while( currentState == VOCAB_CC_MOVL_CONTROLLING )
+    while( getCurrentState() == VOCAB_CC_MOVL_CONTROLLING )
     {
         printf(".");
         fflush(stdout);
@@ -177,7 +177,7 @@ bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
     //-- Set torque mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
     iVelocityControl->setVelocityMode();
-    currentState = VOCAB_CC_MOVV_CONTROLLING;
+    setCurrentState( VOCAB_CC_MOVV_CONTROLLING );
     return true;
 }
 
@@ -187,7 +187,7 @@ bool teo::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.
     iTorqueControl->setTorqueMode();
-    currentState = VOCAB_CC_GCMP_CONTROLLING;
+    setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
     return true;
 }
 
@@ -200,7 +200,7 @@ bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
     iTorqueControl->setTorqueMode();
-    currentState = VOCAB_CC_FORC_CONTROLLING;
+    setCurrentState( VOCAB_CC_FORC_CONTROLLING );
     return true;
 }
 
@@ -210,7 +210,7 @@ bool teo::BasicCartesianControl::stopControl()
 {
     iPositionControl->setPositionMode();
     iPositionControl->stop();
-    currentState = VOCAB_CC_NOT_CONTROLLING;
+    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
     return true;
 }
 
