@@ -114,10 +114,13 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         /** Define used gravity for the chain, important to think of DH. **/
         KDL::Vector gravity;
 
-        bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
-
+        /** Minimum joint limits. **/
         KDL::JntArray qMin;
+
+        /** Maximum joint limits. **/
         KDL::JntArray qMax;
+
+        bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
 };
 
