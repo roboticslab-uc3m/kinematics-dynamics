@@ -33,11 +33,17 @@ public:
 
 protected:
 
-    bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
-    bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
-    bool twistToVector(const KDL::Twist& t, std::vector<double> &xdot);
-
+    /** Angle representation used to interpret the std::vector orientation components for all conversions */
     std::string angleRepr;
+
+    /** Convert from std::vector<double> to KDL::Frame */
+    bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
+
+    /** Convert from KDL::Frame to std::vector<double> */
+    bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
+
+    /** Convert from KDL::Twist to std::vector<double> */
+    bool twistToVector(const KDL::Twist& t, std::vector<double> &xdot);
 
     /**
     * Simple function to pass from radians to degrees.
