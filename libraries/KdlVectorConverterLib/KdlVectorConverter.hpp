@@ -31,7 +31,7 @@ public:
 
     KdlVectorConverter(std::string angleRepr);
 
-private:
+protected:
 
     bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
     bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
