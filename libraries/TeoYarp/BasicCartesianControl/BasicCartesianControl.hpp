@@ -125,7 +125,7 @@ protected:
         double movementStartTime;
 
         /** MOVL store Cartesian trajectory */
-        Trajectory trajectory;
+        LineTrajectory trajectory;
 
         /** MOVV desired Cartesian velocity */
         std::vector<double> xdotd;
