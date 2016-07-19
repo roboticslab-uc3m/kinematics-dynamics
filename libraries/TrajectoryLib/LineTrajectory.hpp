@@ -1,9 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __TRAJECTORY_HPP__
-#define __TRAJECTORY_HPP__
-
-#include <vector>
+#ifndef __LINE_TRAJECTORY_HPP__
+#define __LINE_TRAJECTORY_HPP__
 
 #include <kdl/path_line.hpp>
 #include <kdl/rotational_interpolation_sa.hpp>
@@ -12,6 +10,8 @@
 #include <kdl/trajectory_segment.hpp>
 
 #include "ColorDebug.hpp"
+
+#include "Trajectory.hpp"
 #include "KdlVectorConverter.hpp"
 
 #define DEFAULT_MAXVEL 7.5      // unit/s
@@ -30,20 +30,20 @@ namespace teo
 
 /**
  * @ingroup TrajectoryLib
- * @brief Implements a basic trajectory.
+ * @brief Implements a basic line trajectory.
  */
 
-class LineTrajectory : public KdlVectorConverter
+class LineTrajectory : public Trajectory, public KdlVectorConverter
 {
 public:
 
     LineTrajectory();
 
     /** Cartesian position of the trajectory at movementTime */
-    bool getX(const double movementTime, std::vector<double>& x);
+    virtual bool getX(const double movementTime, std::vector<double>& x);
 
     /** Cartesian velocity of the trajectory at movementTime */
-    bool getXdot(const double movementTime, std::vector<double>& xdot);
+    virtual bool getXdot(const double movementTime, std::vector<double>& xdot);
 
     bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
     bool deleteLine();
@@ -57,4 +57,4 @@ private:
 
 }  // namespace teo
 
-#endif  // __TRAJECTORY_HPP__
+#endif  // __LINE_TRAJECTORY_HPP__

@@ -15,7 +15,7 @@
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
-#include "Trajectory.hpp"
+#include "LineTrajectory.hpp"
 
 #include "ColorDebug.hpp"
 
