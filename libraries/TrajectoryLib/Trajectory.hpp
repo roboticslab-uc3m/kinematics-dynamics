@@ -33,11 +33,11 @@ namespace teo
  * @brief Implements a basic trajectory.
  */
 
-class Trajectory : public KdlVectorConverter
+class LineTrajectory : public KdlVectorConverter
 {
 public:
 
-    Trajectory();
+    LineTrajectory();
 
     /** Cartesian position of the trajectory at movementTime */
     bool getX(const double movementTime, std::vector<double>& x);

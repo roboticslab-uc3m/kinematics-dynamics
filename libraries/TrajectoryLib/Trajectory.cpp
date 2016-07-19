@@ -4,7 +4,7 @@
 
 // -----------------------------------------------------------------------------
 
-teo::Trajectory::Trajectory() : KdlVectorConverter("axisAngle")
+teo::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")
 {
     _orient = 0;
     currentTrajectory = 0;
@@ -12,7 +12,7 @@ teo::Trajectory::Trajectory() : KdlVectorConverter("axisAngle")
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::getX(const double movementTime, std::vector<double>& x)
+bool teo::LineTrajectory::getX(const double movementTime, std::vector<double>& x)
 {
     KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
     frameToVector(xFrame,x);
@@ -21,7 +21,7 @@ bool teo::Trajectory::getX(const double movementTime, std::vector<double>& x)
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& xdot)
+bool teo::LineTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
 {
     KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
     twistToVector(xdotFrame,xdot);
@@ -30,7 +30,7 @@ bool teo::Trajectory::getXdot(const double movementTime, std::vector<double>& xd
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
+bool teo::LineTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
 {
     KDL::Frame srcFrame, destFrame;
     vectorToFrame(src,srcFrame);
@@ -50,7 +50,7 @@ bool teo::Trajectory::newLine(const std::vector<double> &src, const std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool teo::Trajectory::deleteLine()
+bool teo::LineTrajectory::deleteLine()
 {
     delete _orient;
     _orient = 0;
