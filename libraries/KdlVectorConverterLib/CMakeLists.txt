@@ -16,7 +16,7 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${TEO_INCLUDE_DIRS})
 
 # Set up our library.
 if (folder_source)
