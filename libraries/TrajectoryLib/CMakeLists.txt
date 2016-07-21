@@ -8,7 +8,7 @@ FIND_PACKAGE(orocos_kdl REQUIRED)
 #Change directory here if Gait instalation is not found
 set(GAIT_LOCATION /usr/local)
 message(STATUS "Looking for local Gait in: [${GAIT_LOCATION}].")
-# TODO:force to refresh find_library every run
+#TODO:force to refresh find_library every run
 find_library(gait_LIBRARY NAMES gait libgait PATHS "${GAIT_LOCATION}/lib/gait/")
 if(${gait_LIBRARY} STREQUAL "gait_LIBRARY-NOTFOUND")
     #Try to use the source code if not installed
