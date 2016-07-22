@@ -32,5 +32,5 @@ For additional TEO options use ccmake instead of cmake.
 Done! You are now probably interested in one of the following links:
 - teo_post_install
 - For the KDL controller, you should look at the \ref KdlBot library.
-- \ref teo_environment_variables
+- teo_environment_variables
 
