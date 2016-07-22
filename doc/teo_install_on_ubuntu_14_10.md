@@ -1,7 +1,7 @@
 ## Simulation and Basic Control: Installation from Source Code (Ubuntu 14.10)
 
 First install the dependencies:
-- [teo_install_cmake_on_ubuntu_14_10](teo_install_cmake_on_ubuntu_14_10.md) 
+- [teo_install_cmake_on_ubuntu_14_10](Install CMake (Ubuntu 14.10)) 
 - [teo_install_yarp_on_ubuntu_14_10](teo_install_yarp_on_ubuntu_14_10.md)
 - [teo_install_openrave_on_ubuntu_14_10](teo_install_openrave_on_ubuntu_14_10.md)
 - [teo_install_kdl_on_ubuntu_14_10](teo_install_kdl_on_ubuntu_14_10.md)
