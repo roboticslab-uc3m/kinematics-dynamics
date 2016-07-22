@@ -45,7 +45,13 @@
 
     <module>
         <name>/sbin/runuser</name>
-        <parameters>-l teo -c "yarpdev --device speech --lingware-context speech --default-language en-GB --pitch 70 --speed 100"</parameters>
+        <parameters>-l teo -c "yarp read /tts-en:i |  espeak -s 160 -v mb-en1"</parameters>
+        <node>/head</node>
+    </module>
+
+    <module>
+        <name>/sbin/runuser</name>
+        <parameters>-l teo -c "yarp read /tts-es:i |  espeak -s 160 -v mb-es1"</parameters>
         <node>/head</node>
     </module>
 
