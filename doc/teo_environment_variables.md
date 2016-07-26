@@ -1,11 +1,10 @@
-/**
- * \page teo_environment_variables Advanced: TEO Environment Variables (Ubuntu 14.10)
+## Advanced: TEO Environment Variables (Ubuntu 14.10)
 
 For the general installation and use case, TEO Environment Variables are not required.
 
 There are two cases where you will want to:
 
-@section teo_externally Using TEO Libraries externally
+### Using TEO Libraries externally
 
 You will need TEO_DIR for CMake to find the TEO configuration file.
 
@@ -17,12 +16,12 @@ There are two ways of doing this. Please __select only one of these two options_
 
 __Add the following line__ at the end of __the selected file, substituting '/your/full/path/to/teo-main/' for your full path__:
 
-\verbatim
+```bash
 export TEO_DIR=/your/full/path/to/teo-main/build
-\endverbatim
+```
 
 
-@section teo_without_installing Using TEO without installing
+### Using TEO without installing
 
 You will need YARP_DATA_DIRS for finding the share folder. You also probably want build/bin in your PATH.
 
@@ -34,15 +33,7 @@ There are two ways of doing this. Please __select only one of these two options_
  
 __Add the following lines__ at the end of __the selected file, substituting '/your/full/path/to/teo-main/' for your full path__:
 
-\verbatim
+```bash
 export YARP_DATA_DIRS=/your/full/path/to/teo-main/build/share/teo:$YARP_DATA_DIRS:/usr/local/share/yarp
 export PATH=$PATH:/your/full/path/to/teo-main/build/bin
-\endverbatim
-
-<hr>
-
-This page can be edited at teo-main/doc/teo_environment_variables.dox.
-
-*
-*/
-
+```
