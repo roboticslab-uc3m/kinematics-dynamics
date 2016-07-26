@@ -4,7 +4,7 @@ Now that you have installed the basic TEO repository, you're probably wondering 
 
 ###  Initializing the communication server
 
-Our current implementation uses <a class="el" href="http://eris.liralab.it/yarpdoc/what_is_yarp.html">YARP</a> for communication. Basic use of YARP requires the use of a centralized server. This server associates the low-level implementation of the communication ports with the names we give them. Before executing any TEO program or application, please launch a yarp server:
+Our current implementation uses [YARP](http://eris.liralab.it/yarpdoc/what_is_yarp.html) for communication. Basic use of YARP requires the use of a centralized server. This server associates the low-level implementation of the communication ports with the names we give them. Before executing any TEO program or application, please launch a yarp server:
 
 ```bash
 [terminal 1] yarp server
