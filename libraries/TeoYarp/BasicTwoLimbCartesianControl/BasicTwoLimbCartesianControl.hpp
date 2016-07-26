@@ -106,17 +106,15 @@ protected:
         void setCurrentState(int value);
         yarp::os::Semaphore currentStateReady;
 
-        /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
+        /** STEP keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;
 
-        /** MOVL store Cartesian trajectory */
+        /** STEP store Cartesian trajectory */
         LineTrajectory trajectory;
 
-        /** MOVV desired Cartesian velocity */
+        /** STEP desired Cartesian velocity */
         std::vector<double> xdotd;
 
-        /** FORC desired Cartesian force */
-        std::vector<double> td;
 };
 
 }  // namespace teo
