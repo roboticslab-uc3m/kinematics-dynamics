@@ -6,13 +6,13 @@
 
 bool teo::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
 {
-    std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    std::vector<double> currentQ(numRobotJointsA);
+    if ( ! iEncodersA->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
+    if ( ! iCartesianSolverA->fwdKin(currentQ,x) )
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
@@ -27,13 +27,13 @@ bool teo::BasicTwoLimbCartesianControl::step(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
-    std::vector<double> currentQ(numRobotJoints), x;
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    std::vector<double> currentQ(numRobotJointsA), x;
+    if ( ! iEncodersA->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
+    if ( ! iCartesianSolverA->fwdKin(currentQ,x) )
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
@@ -41,7 +41,7 @@ bool teo::BasicTwoLimbCartesianControl::step(const std::vector<double> &xd)
     trajectory.newLine(x,xd);
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    iVelocityControl->setVelocityMode();
+    iVelocityControlA->setVelocityMode();
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVS_CONTROLLING );
 
@@ -62,8 +62,8 @@ bool teo::BasicTwoLimbCartesianControl::step(const std::vector<double> &xd)
 
 bool teo::BasicTwoLimbCartesianControl::stopControl()
 {
-    iPositionControl->setPositionMode();
-    iPositionControl->stop();
+    iPositionControlA->setPositionMode();
+    iPositionControlA->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
     return true;
 }
