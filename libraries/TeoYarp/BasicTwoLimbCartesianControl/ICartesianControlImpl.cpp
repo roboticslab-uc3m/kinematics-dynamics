@@ -31,6 +31,7 @@ bool teo::BasicTwoLimbCartesianControl::step()
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     iVelocityControlA->setVelocityMode();
+    iVelocityControlB->setVelocityMode();
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVS_CONTROLLING );
 
