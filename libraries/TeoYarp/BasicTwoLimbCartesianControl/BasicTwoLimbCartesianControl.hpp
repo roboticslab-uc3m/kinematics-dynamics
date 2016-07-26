@@ -95,7 +95,6 @@ protected:
         yarp::dev::IPositionControl *iPositionControl;
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IControlLimits *iControlLimits;
-        yarp::dev::ITorqueControl *iTorqueControl;
 
         int numRobotJoints, numSolverLinks;
 
