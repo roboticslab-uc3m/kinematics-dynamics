@@ -1,7 +1,7 @@
 ## Simulation and Basic Control: Installation from Source Code (Ubuntu 14.10)
 
 First install the dependencies:
-- [Install CMake (Ubuntu 14.10)](teo_install_cmake_on_ubuntu_14_10)
+- [Install CMake (Ubuntu 14.10)](teo_install_cmake_on_ubuntu_14_10.md)
 - [Install Yarp (Ubuntu 14.10)](teo_install_yarp_on_ubuntu_14_10.md)
 - [Install Openrave (Ubuntu 14.10)](teo_install_openrave_on_ubuntu_14_10.md)
 - [Install Kdl (Ubuntu 14.10)](teo_install_kdl_on_ubuntu_14_10.md)
@@ -30,7 +30,7 @@ For additional TEO options use ccmake instead of cmake.
 ### Even more!
 
 Done! You are now probably interested in one of the following links:
-- [Simulation and Basic Control: Now what can I do?]( teo-main/doc/teo_post_install.md )
+- [Simulation and Basic Control: Now what can I do?]( teo_post_install.md )
 - For the KDL controller, you should look at the \ref KdlBot library.
-- [Advanced: TEO Environment Variables (Ubuntu 14.10)]( teo-main/doc/teo_environment_variables.md )
+- [Advanced: TEO Environment Variables (Ubuntu 14.10)]( teo_environment_variables.md )
 
