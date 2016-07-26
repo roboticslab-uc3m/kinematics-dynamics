@@ -15,7 +15,7 @@
 #include "ICartesianSolver.h"
 #include "ITwoLimbCartesianControl.h"
 
-#include "LineTrajectory.hpp"
+#include "GaitTrajectory.hpp"
 
 #include "ColorDebug.hpp"
 
@@ -121,7 +121,7 @@ protected:
         double movementStartTime;
 
         /** STEP store Cartesian trajectory */
-        LineTrajectory trajectory;
+        GaitTrajectory trajectory;
 
         /** STEP desired Cartesian velocity */
         std::vector<double> xdotd;
