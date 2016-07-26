@@ -13,8 +13,9 @@ bool teo::CartesianControlClient::stat(int &state, std::vector<double> &x)
     rpcClient.write(cmd,response);
 
     state = response.get(0).asVocab();
-    for(size_t i=1; i<response.size(); i++)
-        x.push_back(response.get(i).asDouble());
+    x.resize(response.size()-1);
+    for(size_t i=0; i<response.size()-1; i++)
+        x[i] = response.get(i+1).asDouble();
     return true;
 }
 
