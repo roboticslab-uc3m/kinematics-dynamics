@@ -34,7 +34,7 @@ class ITwoLimbCartesianControl
         virtual bool stat(int &state, std::vector<double> &x) = 0;
 
         /** Step. */
-        virtual bool step(const std::vector<double> &xd) = 0;
+        virtual bool step() = 0;
 
         /** stop */
         virtual bool stopControl() = 0;
