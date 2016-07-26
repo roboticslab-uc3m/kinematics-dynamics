@@ -2,9 +2,9 @@
 
 First install the dependencies:
 - [Install CMake (Ubuntu 14.10)](teo_install_cmake_on_ubuntu_14_10)
-- [teo_install_yarp_on_ubuntu_14_10](teo_install_yarp_on_ubuntu_14_10.md)
-- [teo_install_openrave_on_ubuntu_14_10](teo_install_openrave_on_ubuntu_14_10.md)
-- [teo_install_kdl_on_ubuntu_14_10](teo_install_kdl_on_ubuntu_14_10.md)
+- [Install Yarp (Ubuntu 14.10)](teo_install_yarp_on_ubuntu_14_10.md)
+- [Install Openrave (Ubuntu 14.10)](teo_install_openrave_on_ubuntu_14_10.md)
+- [Install Kdl (Ubuntu 14.10)](teo_install_kdl_on_ubuntu_14_10.md)
 
 ### Install the Simulation and Basic Control Software
 
