@@ -20,7 +20,8 @@
 #include "ColorDebug.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
-#define DEFAULT_ROBOT "remote_controlboard"
+#define DEFAULT_LIMB_A "/teo/rightLeg"
+#define DEFAULT_LIMB_B "/teo/leftLeg"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_MS 50
 #define MAX_ANG_VEL 7.5
@@ -87,16 +88,27 @@ class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwo
 
 protected:
 
-        yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        yarp::dev::PolyDriver solverDeviceA;
+        teo::ICartesianSolver *iCartesianSolverA;
 
-        yarp::dev::PolyDriver robotDevice;
-        yarp::dev::IEncoders *iEncoders;
-        yarp::dev::IPositionControl *iPositionControl;
-        yarp::dev::IVelocityControl *iVelocityControl;
-        yarp::dev::IControlLimits *iControlLimits;
+        yarp::dev::PolyDriver robotDeviceA;
+        yarp::dev::IEncoders *iEncodersA;
+        yarp::dev::IPositionControl *iPositionControlA;
+        yarp::dev::IVelocityControl *iVelocityControlA;
+        yarp::dev::IControlLimits *iControlLimitsA;
 
-        int numRobotJoints, numSolverLinks;
+        int numRobotJointsA, numSolverLinksA;
+
+        yarp::dev::PolyDriver solverDeviceB;
+        teo::ICartesianSolver *iCartesianSolverB;
+
+        yarp::dev::PolyDriver robotDeviceB;
+        yarp::dev::IEncoders *iEncodersB;
+        yarp::dev::IPositionControl *iPositionControlB;
+        yarp::dev::IVelocityControl *iVelocityControlB;
+        yarp::dev::IControlLimits *iControlLimitsB;
+
+        int numRobotJointsB, numSolverLinksB;
 
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;

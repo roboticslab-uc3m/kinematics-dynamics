@@ -18,8 +18,8 @@ void teo::BasicTwoLimbCartesianControl::run() {
         }
 
         //-- Obtain current joint position
-        std::vector<double> currentQ(numRobotJoints);
-        if ( ! iEncoders->getEncoders( currentQ.data() ) )
+        std::vector<double> currentQ(numRobotJointsA);
+        if ( ! iEncodersA->getEncoders( currentQ.data() ) )
         {
             CD_WARNING("getEncoders failed, not updating control this iteration.\n");
             return;
@@ -32,7 +32,7 @@ void teo::BasicTwoLimbCartesianControl::run() {
 
         //-- Apply control law to compute robot Cartesian velocity commands.
         std::vector<double> commandXdot;
-        iCartesianSolver->fwdKinError(desiredX,currentQ, commandXdot);
+        iCartesianSolverA->fwdKinError(desiredX,currentQ, commandXdot);
         for(unsigned int i=0; i<6; i++)
         {
             commandXdot[i] *= -DEFAULT_GAIN;
@@ -41,7 +41,7 @@ void teo::BasicTwoLimbCartesianControl::run() {
 
         //-- Compute joint velocity commands and send to robot.
         std::vector<double> commandQdot;
-        if (! iCartesianSolver->diffInvKin(currentQ,commandXdot,commandQdot) )
+        if (! iCartesianSolverA->diffInvKin(currentQ,commandXdot,commandQdot) )
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         }
@@ -50,11 +50,11 @@ void teo::BasicTwoLimbCartesianControl::run() {
         for(int i=0;i<6;i++)
             CD_DEBUG_NO_HEADER("%f ",commandXdot[i]);
         CD_DEBUG_NO_HEADER("-> ");
-        for(int i=0;i<numRobotJoints;i++)
+        for(int i=0;i<numRobotJointsA;i++)
             CD_DEBUG_NO_HEADER("%f ",commandQdot[i]);
         CD_DEBUG_NO_HEADER("[deg/s]\n");
 
-        if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
+        if( ! iVelocityControlA->velocityMove( commandQdot.data() ) )
         {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
         }
