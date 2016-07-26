@@ -27,7 +27,7 @@ bool teo::BasicTwoLimbCartesianControl::step(const std::vector<double> &xd)
 {
     CD_WARNING("STEP mode still experimental.\n");
 
-    //trajectory
+    // trajectory already initialized in constructor.
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     iVelocityControlA->setVelocityMode();
