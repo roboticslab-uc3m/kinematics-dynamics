@@ -19,6 +19,8 @@ IF (ENABLE_TeoYarp)
     add_subdirectory(BasicCartesianControl)
     add_subdirectory(CartesianControlServer)
     add_subdirectory(CartesianControlClient)
+    add_subdirectory(BasicTwoLimbCartesianControl)
+    add_subdirectory(TwoLimbCartesianControlServer)
   yarp_end_plugin_library(TeoYarp)
 
   install(TARGETS TeoYarp DESTINATION lib)
