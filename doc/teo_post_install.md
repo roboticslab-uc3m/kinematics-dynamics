@@ -65,10 +65,9 @@ env teo_kitchen_cameras.env.xml           /// env [xml] environment name in abs 
 ### Interfacing
 
 We can interact with this program through port commands as described in
-<a class="el" href="group__testRaveBot.html#testRaveBot_interfacing">testRaveBot</a>
-and <a class="el" href="group__teoSim.html#teoSim_interfacing">teoSim</a>,
-or through the different language APIs as can be seen in the different
-<a class="el" href="group__teo__examples.html">TEO examples</a>.
+[testRaveBot](group__testRaveBot.html#testRaveBot_interfacing)
+and [teoSim](http://robots.uc3m.es/dox-teo-main/group__teoSim.html#teoSim_interfacing),
+or through the different language APIs as can be seen in the different [TEO examples](http://robots.uc3m.es/dox-teo-main/group__teo__examples.html)
 
 ### Even more!
 
