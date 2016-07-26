@@ -16,6 +16,7 @@ bool teo::TwoLimbCartesianControlServer::read(yarp::os::ConnectionReader& connec
     if( in.get(0).asString() == "help")
     {
         out.addVocab(VOCAB_CC_STAT);
+        out.addVocab(VOCAB_CC_STEP);
         out.addVocab(VOCAB_CC_STOP);
     }
     else if( in.get(0).asVocab() == VOCAB_CC_STAT)
