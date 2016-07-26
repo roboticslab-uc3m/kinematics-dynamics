@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __BASIC_CARTESIAN_CONTROL_HPP__
-#define __BASIC_CARTESIAN_CONTROL_HPP__
+#ifndef __BASIC_TWO_LIMB_CARTESIAN_CONTROL_HPP__
+#define __BASIC_TWO_LIMB_CARTESIAN_CONTROL_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
@@ -13,7 +13,7 @@
 #include <math.h>  //-- fabs
 
 #include "ICartesianSolver.h"
-#include "ICartesianControl.h"
+#include "ITwoLimbCartesianControl.h"
 
 #include "LineTrajectory.hpp"
 
@@ -41,7 +41,7 @@ namespace teo
  * @brief The BasicTwoLimbCartesianControl class implements ICartesianSolver.
  */
 
-class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread {
+class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwoLimbCartesianControl, public yarp::os::RateThread {
 
     public:
 
@@ -51,23 +51,8 @@ class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ICar
         /** Inform on control state, and get robot position and perform forward kinematics. */
         virtual bool stat(int &state, std::vector<double> &x);
 
-        /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
-        virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
-
-        /** movj */
-        virtual bool movj(const std::vector<double> &xd);
-
-        /** movl */
-        virtual bool movl(const std::vector<double> &xd);
-
-        /** movv */
-        virtual bool movv(const std::vector<double> &xdotd);
-
-        /** gcmp */
-        virtual bool gcmp();
-
-        /** forc */
-        virtual bool forc(const std::vector<double> &td);
+        /** step */
+        virtual bool step(const std::vector<double> &xd);
 
         /** stop */
         virtual bool stopControl();
@@ -136,4 +121,4 @@ protected:
 
 }  // namespace teo
 
-#endif  // __BASIC_CARTESIAN_CONTROL_HPP__
+#endif  // __BASIC_TWO_LIMB_CARTESIAN_CONTROL_HPP__
