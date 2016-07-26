@@ -23,7 +23,7 @@ bool teo::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::step(const std::vector<double> &xd)
+bool teo::BasicTwoLimbCartesianControl::step()
 {
     CD_WARNING("STEP mode still experimental.\n");
 

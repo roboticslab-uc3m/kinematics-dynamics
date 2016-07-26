@@ -53,7 +53,7 @@ class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwo
         virtual bool stat(int &state, std::vector<double> &x);
 
         /** step */
-        virtual bool step(const std::vector<double> &xd);
+        virtual bool step();
 
         /** stop */
         virtual bool stopControl();

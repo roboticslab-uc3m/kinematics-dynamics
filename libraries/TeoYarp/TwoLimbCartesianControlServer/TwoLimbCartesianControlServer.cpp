@@ -37,24 +37,13 @@ bool teo::TwoLimbCartesianControlServer::read(yarp::os::ConnectionReader& connec
     }
     else if( in.get(0).asVocab() == VOCAB_CC_STEP)
     {
-        if(in.size()>1)
+        bool ok = iTwoLimbCartesianControl->step();
+        if(ok)
         {
-            std::vector<double> xd;
-            for(size_t i=1; i<in.size();i++)
-                xd.push_back(in.get(i).asDouble());
-            bool ok = iTwoLimbCartesianControl->step(xd);
-            if(ok)
-            {
-                out.addVocab(VOCAB_OK);
-            }
-            else
-            {
-                out.addVocab(VOCAB_FAILED);
-            }
+            out.addVocab(VOCAB_OK);
         }
         else
         {
-            CD_ERROR("size error\n");
             out.addVocab(VOCAB_FAILED);
         }
     }
