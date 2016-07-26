@@ -25,20 +25,9 @@ bool teo::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool teo::BasicTwoLimbCartesianControl::step(const std::vector<double> &xd)
 {
-    CD_WARNING("MOVL mode still experimental.\n");
+    CD_WARNING("STEP mode still experimental.\n");
 
-    std::vector<double> currentQ(numRobotJointsA), x;
-    if ( ! iEncodersA->getEncoders( currentQ.data() ) )
-    {
-        CD_ERROR("getEncoders failed.\n");
-        return false;
-    }
-    if ( ! iCartesianSolverA->fwdKin(currentQ,x) )
-    {
-        CD_ERROR("fwdKin failed.\n");
-        return false;
-    }
-    trajectory.newLine(x,xd);
+    //trajectory
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     iVelocityControlA->setVelocityMode();

@@ -11,10 +11,10 @@ IF (NOT SKIP_BasicTwoLimbCartesianControl)
 SET(CMAKE_MODULE_PATH ${TEO_MODULE_PATH} ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(YARP REQUIRED)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS} ${GAIT_INCLUDE_DIR})
 
 YARP_ADD_PLUGIN(BasicTwoLimbCartesianControl BasicTwoLimbCartesianControl.hpp DeviceDriverImpl.cpp ICartesianControlImpl.cpp RateThreadImpl.cpp)
-TARGET_LINK_LIBRARIES(BasicTwoLimbCartesianControl ${YARP_LIBRARIES} ${TEO_LIBRARIES})
+TARGET_LINK_LIBRARIES(BasicTwoLimbCartesianControl ${YARP_LIBRARIES} ${TEO_LIBRARIES} ${gait_LIBRARY})
 install(TARGETS BasicTwoLimbCartesianControl DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
