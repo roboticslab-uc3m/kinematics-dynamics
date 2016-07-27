@@ -25,6 +25,7 @@
 #define DEFAULT_MS 50
 #define MAX_ANG_VEL 7.5
 #define DEFAULT_GAIN 1.0
+#define DEFAULT_QDOT_LIMIT 10
 
 namespace teo
 {
