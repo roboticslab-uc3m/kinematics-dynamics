@@ -44,6 +44,7 @@ void teo::BasicCartesianControl::run() {
         if (! iCartesianSolver->diffInvKin(currentQ,commandXdot,commandQdot) )
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
+            return;
         }
 
         CD_DEBUG_NO_HEADER("[MOVL] [%f] ",movementTime);
