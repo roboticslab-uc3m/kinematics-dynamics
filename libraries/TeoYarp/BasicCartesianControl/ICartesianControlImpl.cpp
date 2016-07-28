@@ -133,6 +133,28 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
+bool teo::BasicCartesianControl::relj(const std::vector<double> &xd)
+{
+    std::vector<double> x;
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+    for(int i=0;i<xd.size();i++)
+        x[i] += xd[i];
+
+    return movj(x);
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");

@@ -8,6 +8,7 @@
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t')
 #define VOCAB_CC_INV VOCAB3('i','n','v')
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
+#define VOCAB_CC_RELJ VOCAB4('r','e','l','j')
 #define VOCAB_CC_MOVL VOCAB4('m','o','v','l')
 #define VOCAB_CC_MOVV VOCAB4('m','o','v','v')
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
@@ -45,6 +46,9 @@ class ICartesianControl
 
         /** movj */
         virtual bool movj(const std::vector<double> &xd) = 0;
+
+        /** relj */
+        virtual bool relj(const std::vector<double> &xd) = 0;
 
         /** movl */
         virtual bool movl(const std::vector<double> &xd) = 0;
