@@ -70,6 +70,29 @@ bool teo::CartesianControlClient::movj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
+bool teo::CartesianControlClient::relj(const std::vector<double> &xd)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_RELJ);
+    for(size_t i=0; i<xd.size(); i++)
+        cmd.addDouble(xd[i]);
+
+    rpcClient.write(cmd,response);
+
+    if( response.get(0).isVocab() )
+    {
+        if( response.get(0).asVocab() == VOCAB_FAILED )
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
 {
     yarp::os::Bottle cmd, response;

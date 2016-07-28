@@ -18,6 +18,7 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
         out.addVocab(VOCAB_CC_STAT);
         out.addVocab(VOCAB_CC_INV);
         out.addVocab(VOCAB_CC_MOVJ);
+        out.addVocab(VOCAB_CC_RELJ);
         out.addVocab(VOCAB_CC_MOVL);
         out.addVocab(VOCAB_CC_MOVV);
         out.addVocab(VOCAB_CC_GCMP);
@@ -72,6 +73,29 @@ bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
             for(size_t i=1; i<in.size();i++)
                 xd.push_back(in.get(i).asDouble());
             bool ok = iCartesianControl->movj(xd);
+            if(ok)
+            {
+                out.addVocab(VOCAB_OK);
+            }
+            else
+            {
+                out.addVocab(VOCAB_FAILED);
+            }
+        }
+        else
+        {
+            CD_ERROR("size error\n");
+            out.addVocab(VOCAB_FAILED);
+        }
+    }
+    else if( in.get(0).asVocab() == VOCAB_CC_RELJ)
+    {
+        if(in.size()>1)
+        {
+            std::vector<double> xd;
+            for(size_t i=1; i<in.size();i++)
+                xd.push_back(in.get(i).asDouble());
+            bool ok = iCartesianControl->relj(xd);
             if(ok)
             {
                 out.addVocab(VOCAB_OK);

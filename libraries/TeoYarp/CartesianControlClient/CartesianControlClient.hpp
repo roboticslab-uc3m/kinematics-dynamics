@@ -49,6 +49,9 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         /** movj */
         virtual bool movj(const std::vector<double> &xd);
 
+        /** relj */
+        virtual bool relj(const std::vector<double> &xd);
+
         /** movl */
         virtual bool movl(const std::vector<double> &xd);
 
