@@ -15,6 +15,7 @@ project(TEO)
 
 ### options: cpp libraries
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
+option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 
 ### options: cpp programs
 option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
