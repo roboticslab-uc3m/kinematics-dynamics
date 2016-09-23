@@ -14,6 +14,7 @@ bool TeoSimExample::run(){
     }
 
     //Configure Drivers
+    yarp::os::Property options; //create an instance of Property, a nice YARP class for storing name-value (key-value) pairs
     options.put("device","remote_controlboard"); //we add a name-value pair that indicates the YARP device
     options.put("remote","/teoSim/rightArm"); //we add info on to whom we will connect
     options.put("local","/local"); //we add info on how we will call ourselves on the YARP network
