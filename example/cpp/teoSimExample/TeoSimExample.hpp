@@ -16,7 +16,6 @@ public:
 
 private:
     yarp::os::Network yarp; // connect to YARP network
-    yarp::os::Property options; //create an instance of Property, a nice YARP class for storing name-value (key-value) pairs
     yarp::dev::PolyDriver dd; //create a YARP multi-use driver
     yarp::dev::IPositionControl *pos; //make a position controller object we call 'pos'
     yarp::dev::IEncoders *enc; //make an encoder controller object we call 'enc'
