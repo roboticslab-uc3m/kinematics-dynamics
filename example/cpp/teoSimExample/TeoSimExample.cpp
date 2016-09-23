@@ -7,7 +7,7 @@ namespace teo
 
 bool TeoSimExample::run(){
 
-    printf("WARNING: requires a running instance of teoSim\n");
+    printf("Note: requires a running instance of teoSim\n");
     if (!yarp::os::Network::checkNetwork()) {
         printf("Please start a yarp name server first\n");
         return(-1);
