@@ -51,6 +51,8 @@ bool TeoSimExample::run(){
     printf("Delaying 5 seconds...\n");
     yarp::os::Time::delay(5);
 
+    dd.close();
+
     return 0;
 }
 
