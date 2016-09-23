@@ -5,10 +5,11 @@
 namespace teo
 {
 
-bool TeoSimExample::run(){
-
+bool TeoSimExample::run()
+{
     printf("Note: requires a running instance of teoSim\n");
-    if (!yarp::os::Network::checkNetwork()) {
+    if (!yarp::os::Network::checkNetwork())
+    {
         printf("Please start a yarp name server first\n");
         return(-1);
     }
@@ -20,18 +21,22 @@ bool TeoSimExample::run(){
     options.put("local","/local"); //we add info on how we will call ourselves on the YARP network
     dd.open(options); //Configure the YARP multi-use driver with the given options
 
-    if(!dd.isValid()) {
+    if(!dd.isValid())
+    {
       printf("/teoSim/rightArm device not available.\n");
 	  dd.close();
       yarp::os::Network::fini(); //disconnect from the YARP network
       return 1;
     }
 
-    bool ok = dd.view(pos);
-    if (!ok) {
+    bool ok = dd.view(pos); // connect 'pos' interface to 'dd' device
+    if (!ok)
+    {
         printf("[warning] Problems acquiring robot interface\n");
         return false;
-    } else printf("[success] testAsibot acquired robot interface\n");
+    }
+    else
+        printf("[success] testAsibot acquired robot interface\n");
 
     pos->setPositionMode(); //use the object to set the device to position mode (as opposed to velocity mode)
 
@@ -41,9 +46,12 @@ bool TeoSimExample::run(){
     printf("Delaying 5 seconds...\n");
     yarp::os::Time::delay(5);
 
-    ok = dd.view(enc);
+    ok = dd.view(enc); // connect 'enc' interface to 'dd' device
+    double d;
+    enc->getEncoder(0,&d);
+    printf("test getEncoder(0) -> is at: %f\n", d);
 
-    ok = dd.view(vel);
+    ok = dd.view(vel); // connect 'vel' interface to 'dd' device
     vel->setVelocityMode(); //use the object to set the device to velocity mode (as opposed to position mode)
     printf("test velocityMove(0,10)\n");
     vel->velocityMove(0,10);
