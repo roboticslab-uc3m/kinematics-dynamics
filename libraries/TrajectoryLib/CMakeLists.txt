@@ -5,27 +5,7 @@ IF (ENABLE_TrajectoryLib)
 set(KEYWORD "TrajectoryLib")
 
 FIND_PACKAGE(orocos_kdl REQUIRED)
-
-#gait
-#Change directory here if Gait instalation is not found
-set(GAIT_LOCATION /usr/local)
-message(STATUS "Looking for local Gait in: [${GAIT_LOCATION}].")
-#TODO:force to refresh find_library every run
-find_library(gait_LIBRARY NAMES gait libgait PATHS "${GAIT_LOCATION}/lib/gait/")
-if(${gait_LIBRARY} STREQUAL "gait_LIBRARY-NOTFOUND")
-    #Try to use the source code if not installed
-    message(STATUS "Gait not installed. Trying to compile gait from sources")
-    add_subdirectory(${PROJECT_SOURCE_DIR}/lib/gait)
-    set(GAIT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/lib/gait/src ${GAIT_INCLUDE_DIR})
-    set(gait_LIBRARY "gait")
-else()
-    #Try to use the local lib if installed
-    message(STATUS "Gait library found. Using local files")
-    FIND_PATH(GAIT_INCLUDE_DIR Gait.h /usr/local/include/gait/)
-    message(STATUS "Local Gait files detected: [${gait_LIBRARY}].")
-    message(STATUS "Local include directories: [${GAIT_INCLUDE_DIR}].")
-endif()
-INCLUDE_DIRECTORIES(${GAIT_INCLUDE_DIR})
+FIND_PACKAGE(GAIT REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
@@ -39,12 +19,12 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${TEO_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${GAIT_INCLUDE_DIR} ${TEO_INCLUDE_DIRS})
 
 # Set up our library.
 if (folder_source)
   add_library(${KEYWORD} ${folder_source} ${folder_header})
-  target_link_libraries(${KEYWORD} ${orocos_kdl_LIBRARIES})
+  target_link_libraries(${KEYWORD} ${orocos_kdl_LIBRARIES} ${GAIT_LIBRARIES})
   install(TARGETS ${KEYWORD} DESTINATION lib)
 else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
