@@ -25,6 +25,8 @@ IF (ENABLE_TeoYarp)
 
   IF (ENABLE_launchTeoYarp)
 
+    link_directories(${TEO_LINK_DIRS})
+
     yarp_add_plugin_library_executable(launchTeoYarp TeoYarp)
     install(TARGETS launchTeoYarp DESTINATION bin)
 
