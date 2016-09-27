@@ -19,7 +19,7 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${GAIT_INCLUDE_DIR} ${TEO_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${GAIT_INCLUDE_DIRS} ${TEO_INCLUDE_DIRS})
 
 # Set up our library.
 if (folder_source)
@@ -32,6 +32,7 @@ endif (folder_source)
 
 # Exporting dependencies for ASIBOTConfig.cmake quite manually for now... 
 set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
+set(TEO_LINK_DIRS ${TEO_LINK_DIRS} ${GAIT_LINK_DIRS} CACHE INTERNAL "appended libraries")
 set(TEO_LIBRARIES ${TEO_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
 
 ENDIF (ENABLE_TrajectoryLib)
