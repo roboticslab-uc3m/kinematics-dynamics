@@ -130,3 +130,13 @@ bool teo::FakeControlboardOR::close() {
 
 // -----------------------------------------------------------------------------
 
+void teo::FakeControlboardOR::setPenv(const OpenRAVE::EnvironmentBasePtr &value) {
+    penv = value;
+}
+
+// -----------------------------------------------------------------------------
+
+void teo::FakeControlboardOR::setProbot(const OpenRAVE::RobotBasePtr &value) {
+    probot = value;
+}
+// -----------------------------------------------------------------------------
