@@ -35,6 +35,12 @@ bool teo::FakeControlboardOR::positionMove(int j, double ref) {  // encExposed =
         fprintf(stderr,"[FakeControlboardOR] warning: will not positionMove as not in positionMode\n");
         return false;
     }
+
+    if( penv->CheckSelfCollision() ) {  // Check if we collide.
+        fprintf(stderr,"[FakeControlboardOR] warning: collide\n");
+        return false;
+    }
+
     printf("[FakeControlboardOR] positionMove(%d,%f) f[begin]\n",j,ref);
     // Set all the private parameters of the Rave class that correspond to this kind of movement!
     targetExposed[j] = ref;

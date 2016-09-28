@@ -18,13 +18,13 @@ const int teo::ControlboardContainer::getFatherRobotIdx() {
 
   std::vector<double>& teo::ControlboardContainer::getVectorOfJointTrRef() {
      return vectorOfJointTr;
- }
+  }
 
-// -----------------------------------------------------------------------------
-
-std::vector<double>& teo::ControlboardContainer::getVectorOfJointPosRef() {
-    if(encs) {
-        double vals[vectorOfJointIdx.size()];
+  // -----------------------------------------------------------------------------
+  
+  std::vector<double>& teo::ControlboardContainer::getVectorOfJointPosRef() {
+      if(encs) {
+          double vals[vectorOfJointIdx.size()];
         encs->getEncoders(vals);
         for(size_t i=0; i < this->vectorOfJointIdx.size(); i++)
             vectorOfJointPos[i] = vals[i];
@@ -43,6 +43,18 @@ void teo::ControlboardContainer::setFatherRobotIdx(int value) {
 
 void teo::ControlboardContainer::setManipulatorWrapperName(const std::string &value) {
     manipulatorWrapperName = value;
+}
+
+// -----------------------------------------------------------------------------
+
+void teo::ControlboardContainer::setPenv(const OpenRAVE::EnvironmentBasePtr &value) {
+    penv = value;
+}
+
+// -----------------------------------------------------------------------------
+
+void teo::ControlboardContainer::setProbot(const OpenRAVE::RobotBasePtr &value) {
+    probot = value;
 }
 
 // -----------------------------------------------------------------------------
@@ -73,6 +85,11 @@ bool teo::ControlboardContainer::start() {
         return false;
     }
     dd.view(encs);
+
+    FakeControlboardOR *pFakeControlboardOR;
+    dd.view(pFakeControlboardOR);
+    pFakeControlboardOR->setPenv(penv);
+    pFakeControlboardOR->setProbot(probot);
 
     return true;
 }

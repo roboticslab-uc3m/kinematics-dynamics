@@ -10,6 +10,8 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
 
+#include <openrave-core.h>
+
 #include <iostream>
 #include <stdio.h>
 #include <sstream>
@@ -779,6 +781,11 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
         double getEncRaw(const int Index);
         double getEncExposed(const int Index);
 
+        // ----- OpenRAVE Funcion declarations. Implementation in DeviceDriverImpl.cpp -----
+
+        void setPenv(const OpenRAVE::EnvironmentBasePtr &value);
+        void setProbot(const OpenRAVE::RobotBasePtr &value);
+
     // ------------------------------- Private -------------------------------------
 
     private:
@@ -802,6 +809,11 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
         std::vector<double> velRawExposed;  // For conversion.
         std::vector<double> velRaw;
         double jmcMs, jmcMsAcc;
+
+        //OpenRAVE//
+        OpenRAVE::EnvironmentBasePtr penv;
+        OpenRAVE::RobotBasePtr probot;
+
 };
 
 }  // namespace teo
