@@ -13,7 +13,7 @@ Our software integrates the previous dependencies. Note that you will be prompte
 ```bash
 cd  # go home
 mkdir -p repos; cd repos  # make $HOME/repos if it doesn't exist; then, enter it
-git clone https://github.com/roboticslab-uc3m/teo-main.git  # Download teo-main software from the repository
+git clone --recursive https://github.com/roboticslab-uc3m/teo-main.git  # Download teo-main software from the repository; Use --recursive to get embedded repositories (technically, git submodules)
 cd teo-main; mkdir build; cd build; cmake ..  # Configure the teo-main software
 make  # Compile
 sudo make install  # Install :-)
