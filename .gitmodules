@@ -1,0 +1,3 @@
+[submodule "libraries/gait"]
+	path = libraries/gait
+	url = https://github.com/roboticslab-uc3m/gait.git
