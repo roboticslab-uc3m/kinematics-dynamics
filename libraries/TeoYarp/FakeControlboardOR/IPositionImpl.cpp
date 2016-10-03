@@ -36,11 +36,9 @@ bool teo::FakeControlboardOR::positionMove(int j, double ref) {  // encExposed =
         return false;
     }
 
-    std::vector<OpenRAVE::RobotBasePtr> vectorOfRobotPtr;
-    penv->GetRobots(vectorOfRobotPtr);
     {
         OpenRAVE::EnvironmentMutex::scoped_lock lock(penv->GetMutex()); // lock environment
-        if(penv->CheckSelfCollision(vectorOfRobotPtr[0])) {  // Check if we collide.
+        if(penv->CheckSelfCollision(probot)) {  // Check if we collide.
             CD_WARNING("Collision!!!\n");
             //return false;  // Bad strategy: we get trapped when we are already in collision!!
         }
