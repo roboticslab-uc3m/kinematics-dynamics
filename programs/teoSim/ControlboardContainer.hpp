@@ -39,7 +39,6 @@ class ControlboardContainer {
         void setFatherRobotIdx(int value);
         void setManipulatorWrapperName(const std::string &value);
         void setPenv(OpenRAVE::EnvironmentBasePtr value);
-        void setProbot(OpenRAVE::RobotBasePtr value);
         void push_back(int robotJointIdx);
         void push_back_tr(double robotJointTr);
 
@@ -61,7 +60,6 @@ protected:
         std::string manipulatorWrapperName;
 
         OpenRAVE::EnvironmentBasePtr penv;
-        OpenRAVE::RobotBasePtr probot;
 };
 
 }  // namsepace teo
