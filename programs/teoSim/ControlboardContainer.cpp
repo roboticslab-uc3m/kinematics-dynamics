@@ -47,13 +47,13 @@ void teo::ControlboardContainer::setManipulatorWrapperName(const std::string &va
 
 // -----------------------------------------------------------------------------
 
-void teo::ControlboardContainer::setPenv(const OpenRAVE::EnvironmentBasePtr &value) {
+void teo::ControlboardContainer::setPenv(const OpenRAVE::EnvironmentBasePtr value) {
     penv = value;
 }
 
 // -----------------------------------------------------------------------------
 
-void teo::ControlboardContainer::setProbot(const OpenRAVE::RobotBasePtr &value) {
+void teo::ControlboardContainer::setProbot(const OpenRAVE::RobotBasePtr value) {
     probot = value;
 }
 
@@ -75,7 +75,7 @@ bool teo::ControlboardContainer::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
     yarp::os::Property options;
     options.put("device","controlboardwrapper2");  //
-    options.put("subdevice","FakeControlboard");  // FakeControlboard provides more interfaces than test_motor
+    options.put("subdevice","FakeControlboardOR");  // FakeControlboard provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
     dd.open(options);
@@ -86,10 +86,13 @@ bool teo::ControlboardContainer::start() {
     }
     dd.view(encs);
 
-    FakeControlboardOR *pFakeControlboardOR;
-    dd.view(pFakeControlboardOR);
+    printf("--------here1\n");
+    FakeControlboardOR *pFakeControlboardOR = reinterpret_cast<FakeControlboardOR *>(&dd);
+    printf("--------here2\n");
     pFakeControlboardOR->setPenv(penv);
+    printf("--------here3\n");
     pFakeControlboardOR->setProbot(probot);
+    printf("--------here4\n");
 
     return true;
 }

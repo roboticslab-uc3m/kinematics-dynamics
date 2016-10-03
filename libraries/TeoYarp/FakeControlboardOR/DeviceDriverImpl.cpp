@@ -130,13 +130,18 @@ bool teo::FakeControlboardOR::close() {
 
 // -----------------------------------------------------------------------------
 
-void teo::FakeControlboardOR::setPenv(const OpenRAVE::EnvironmentBasePtr &value) {
-    penv = value;
+void teo::FakeControlboardOR::setPenv(OpenRAVE::EnvironmentBasePtr value) {
+    printf("value: %p\n",value.get());
+    //printf("penv : %p\n",penv2.get());
+    OpenRAVE::EnvironmentBasePtr penv2 = boost::make_shared<OpenRAVE::EnvironmentBase>();
+    //penv2.= value;
+    printf("value: %p\n",value.get());
+    printf("penv : %p\n",penv2.get());
 }
 
 // -----------------------------------------------------------------------------
 
-void teo::FakeControlboardOR::setProbot(const OpenRAVE::RobotBasePtr &value) {
+void teo::FakeControlboardOR::setProbot(OpenRAVE::RobotBasePtr value) {
     probot = value;
 }
 // -----------------------------------------------------------------------------
