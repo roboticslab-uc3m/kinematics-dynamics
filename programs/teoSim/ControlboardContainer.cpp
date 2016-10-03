@@ -78,6 +78,24 @@ bool teo::ControlboardContainer::start() {
     options.put("subdevice","FakeControlboardOR");  // FakeControlboard provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
+
+    /* [Thank you: https://github.com/robotology/yarp/blob/master/tests/libYARP_OS/ValueTest.cpp]
+    int i = 10;
+    yarp::os::Value v(&i, sizeof(int));
+    if(v.isBlob())
+        CD_DEBUG("(blob) type ok\n");
+    CD_DEBUG("(blob) %d\n",*(reinterpret_cast<const int*>(v.asBlob()))); */
+
+    CD_DEBUG("penv: %p\n",penv.get());
+    OpenRAVE::EnvironmentBase* p_env = penv.get();
+    yarp::os::Value v(&p_env, sizeof(OpenRAVE::EnvironmentBase*));
+    options.put("penv",v);
+
+    CD_DEBUG("probot: %p\n",probot.get());
+    OpenRAVE::RobotBase* p_robot = probot.get();
+    yarp::os::Value v2(&p_robot, sizeof(OpenRAVE::RobotBase*));
+    options.put("probot",v2);
+
     dd.open(options);
     if(!dd.isValid()) {
         CD_ERROR("ManipulatorWrapper device \"%s\" not available.\n", options.find("subdevice").asString().c_str());
@@ -85,14 +103,6 @@ bool teo::ControlboardContainer::start() {
         return false;
     }
     dd.view(encs);
-
-    printf("--------here1\n");
-    FakeControlboardOR *pFakeControlboardOR = reinterpret_cast<FakeControlboardOR *>(&dd);
-    printf("--------here2\n");
-    pFakeControlboardOR->setPenv(penv);
-    printf("--------here3\n");
-    pFakeControlboardOR->setProbot(probot);
-    printf("--------here4\n");
 
     return true;
 }

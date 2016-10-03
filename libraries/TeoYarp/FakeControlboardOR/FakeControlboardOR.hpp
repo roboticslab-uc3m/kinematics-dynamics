@@ -783,11 +783,6 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
         double getEncRaw(const int Index);
         double getEncExposed(const int Index);
 
-        // ----- OpenRAVE Funcion declarations. Implementation in DeviceDriverImpl.cpp -----
-
-        void setPenv(OpenRAVE::EnvironmentBasePtr value);
-        void setProbot(OpenRAVE::RobotBasePtr value);
-
     // ------------------------------- Private -------------------------------------
 
     private:
@@ -813,8 +808,8 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
         double jmcMs, jmcMsAcc;
 
         //OpenRAVE//
-        OpenRAVE::EnvironmentBasePtr penv;
-        OpenRAVE::RobotBasePtr probot;
+        OpenRAVE::EnvironmentBase* penv;
+        OpenRAVE::RobotBase* probot;
 
 };
 

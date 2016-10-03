@@ -36,7 +36,8 @@ bool teo::FakeControlboardOR::positionMove(int j, double ref) {  // encExposed =
         return false;
     }
 
-    if(penv->CheckSelfCollision(probot)) {  // Check if we collide.
+    boost::shared_ptr<OpenRAVE::RobotBase> p(probot);
+    if(penv->CheckSelfCollision(p)) {  // Check if we collide.
         fprintf(stderr,"[FakeControlboardOR] warning: collide\n");
         return false;
     }

@@ -80,6 +80,14 @@ bool teo::FakeControlboardOR::open(yarp::os::Searchable& config) {
         printf("FakeControlboardOR not using individual velRawExposeds, defaulting to genVelRawExposed.\n");
     }
 
+    CD_DEBUG("penv: %p\n",*((const OpenRAVE::EnvironmentBase**)(config.find("penv").asBlob())));
+    //OpenRAVE::EnvironmentBase* a = *((OpenRAVE::EnvironmentBase**)(config.find("penv").asBlob()));
+    //CD_DEBUG("(blob) %p\n",a);
+    penv = *((OpenRAVE::EnvironmentBase**)(config.find("penv").asBlob()));
+
+    CD_DEBUG("probot: %p\n",*((const OpenRAVE::RobotBase**)(config.find("probot").asBlob())));
+    probot = *((OpenRAVE::RobotBase**)(config.find("probot").asBlob()));
+
     encRawExposed.resize(axes);
     jointStatus.resize(axes);
     initPos.resize(axes);
@@ -128,20 +136,4 @@ bool teo::FakeControlboardOR::close() {
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
-void teo::FakeControlboardOR::setPenv(OpenRAVE::EnvironmentBasePtr value) {
-    printf("value: %p\n",value.get());
-    //printf("penv : %p\n",penv2.get());
-    OpenRAVE::EnvironmentBasePtr penv2 = boost::make_shared<OpenRAVE::EnvironmentBase>();
-    //penv2.= value;
-    printf("value: %p\n",value.get());
-    printf("penv : %p\n",penv2.get());
-}
-
-// -----------------------------------------------------------------------------
-
-void teo::FakeControlboardOR::setProbot(OpenRAVE::RobotBasePtr value) {
-    probot = value;
-}
 // -----------------------------------------------------------------------------
