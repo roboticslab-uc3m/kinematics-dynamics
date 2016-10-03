@@ -88,6 +88,12 @@ bool teo::FakeControlboardOR::open(yarp::os::Searchable& config) {
     CD_DEBUG("probot: %p\n",*((const OpenRAVE::RobotBase**)(config.find("probot").asBlob())));
     probot = *((OpenRAVE::RobotBase**)(config.find("probot").asBlob()));
 
+    /*CD_DEBUG("here4\n");
+    CD_DEBUG("penvreal: %p\n",(*(reinterpret_cast<const OpenRAVE::EnvironmentBasePtr*>(config.find("penvreal").asBlob()))).get());
+    penvreal = *((const OpenRAVE::EnvironmentBasePtr*)(config.find("penvreal").asBlob()));
+    CD_DEBUG("here5\n");
+    CD_DEBUG("penvreal: %p\n",penvreal.get());*/
+
     encRawExposed.resize(axes);
     jointStatus.resize(axes);
     initPos.resize(axes);

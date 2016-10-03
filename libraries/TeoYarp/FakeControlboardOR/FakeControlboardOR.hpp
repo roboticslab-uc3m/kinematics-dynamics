@@ -810,6 +810,7 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
         //OpenRAVE//
         OpenRAVE::EnvironmentBase* penv;
         OpenRAVE::RobotBase* probot;
+        //OpenRAVE::EnvironmentBasePtr penvreal;
 
 };
 

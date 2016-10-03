@@ -87,14 +87,20 @@ bool teo::ControlboardContainer::start() {
     CD_DEBUG("(blob) %d\n",*(reinterpret_cast<const int*>(v.asBlob()))); */
 
     CD_DEBUG("penv: %p\n",penv.get());
-    OpenRAVE::EnvironmentBase* p_env = penv.get();
-    yarp::os::Value v(&p_env, sizeof(OpenRAVE::EnvironmentBase*));
+    OpenRAVE::EnvironmentBase* penv_raw = penv.get();
+    yarp::os::Value v(&penv_raw, sizeof(OpenRAVE::EnvironmentBase*));
     options.put("penv",v);
 
     CD_DEBUG("probot: %p\n",probot.get());
-    OpenRAVE::RobotBase* p_robot = probot.get();
-    yarp::os::Value v2(&p_robot, sizeof(OpenRAVE::RobotBase*));
+    OpenRAVE::RobotBase* probot_raw = probot.get();
+    yarp::os::Value v2(&probot_raw, sizeof(OpenRAVE::RobotBase*));
     options.put("probot",v2);
+
+    /*CD_DEBUG("here1\n");
+    yarp::os::Value v3(&penv, sizeof(OpenRAVE::EnvironmentBasePtr));
+    CD_DEBUG("here2\n");
+    options.put("realpenv",v3);
+    CD_DEBUG("here3\n");*/
 
     dd.open(options);
     if(!dd.isValid()) {
