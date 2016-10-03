@@ -50,6 +50,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
     CD_SUCCESS("Loaded environment: %s\n",envFull.c_str());
+    CD_DEBUG("penv %p\n",environmentPtr.get());
 
     // Attach a physics engine
     if(physics=="ode"){
