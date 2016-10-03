@@ -81,18 +81,11 @@ bool teo::FakeControlboardOR::open(yarp::os::Searchable& config) {
     }
 
     CD_DEBUG("penv: %p\n",*((const OpenRAVE::EnvironmentBase**)(config.find("penv").asBlob())));
-    //OpenRAVE::EnvironmentBase* a = *((OpenRAVE::EnvironmentBase**)(config.find("penv").asBlob()));
-    //CD_DEBUG("(blob) %p\n",a);
     penv = *((OpenRAVE::EnvironmentBase**)(config.find("penv").asBlob()));
 
-    CD_DEBUG("probot: %p\n",*((const OpenRAVE::RobotBase**)(config.find("probot").asBlob())));
-    probot = *((OpenRAVE::RobotBase**)(config.find("probot").asBlob()));
-
-    /*CD_DEBUG("here4\n");
-    CD_DEBUG("penvreal: %p\n",(*(reinterpret_cast<const OpenRAVE::EnvironmentBasePtr*>(config.find("penvreal").asBlob()))).get());
-    penvreal = *((const OpenRAVE::EnvironmentBasePtr*)(config.find("penvreal").asBlob()));
-    CD_DEBUG("here5\n");
-    CD_DEBUG("penvreal: %p\n",penvreal.get());*/
+    std::vector<OpenRAVE::RobotBasePtr> vectorOfRobotPtr;
+    penv->GetRobots(vectorOfRobotPtr);
+    probot = vectorOfRobotPtr[0];
 
     encRawExposed.resize(axes);
     jointStatus.resize(axes);
