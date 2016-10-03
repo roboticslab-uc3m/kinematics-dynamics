@@ -12,6 +12,8 @@
 
 #include <openrave-core.h>
 
+#include <boost/make_shared.hpp>
+
 #include <iostream>
 #include <stdio.h>
 #include <sstream>
@@ -783,8 +785,8 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
 
         // ----- OpenRAVE Funcion declarations. Implementation in DeviceDriverImpl.cpp -----
 
-        void setPenv(const OpenRAVE::EnvironmentBasePtr &value);
-        void setProbot(const OpenRAVE::RobotBasePtr &value);
+        void setPenv(OpenRAVE::EnvironmentBasePtr value);
+        void setProbot(OpenRAVE::RobotBasePtr value);
 
     // ------------------------------- Private -------------------------------------
 
