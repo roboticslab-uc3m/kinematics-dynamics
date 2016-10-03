@@ -36,20 +36,15 @@ bool teo::FakeControlboardOR::positionMove(int j, double ref) {  // encExposed =
         return false;
     }
 
-    /*CD_DEBUG("penv %p\n",penv);
-    CD_DEBUG("probot %p\n",probot);
-    boost::shared_ptr<OpenRAVE::EnvironmentBase> bpenv(penv);
-    boost::shared_ptr<OpenRAVE::RobotBase> bprobot(probot);
-    CD_DEBUG("penv %p\n",bpenv.get());
-    CD_DEBUG("probot %p\n",bprobot.get());
-    if(bpenv->CheckSelfCollision(bprobot)) {  // Check if we collide.
-        fprintf(stderr,"[FakeControlboardOR] warning: collide\n");
-        return false;
-    }*/
-
-    OpenRAVE::EnvironmentBasePtr bpenv(penv);
-
-
+    std::vector<OpenRAVE::RobotBasePtr> vectorOfRobotPtr;
+    penv->GetRobots(vectorOfRobotPtr);
+    {
+        OpenRAVE::EnvironmentMutex::scoped_lock lock(penv->GetMutex()); // lock environment
+        if(penv->CheckSelfCollision(vectorOfRobotPtr[0])) {  // Check if we collide.
+            CD_WARNING("Collision!!!\n");
+            //return false;  // Bad strategy: we get trapped when we are already in collision!!
+        }
+    }
 
     printf("[FakeControlboardOR] positionMove(%d,%f) f[begin]\n",j,ref);
     // Set all the private parameters of the Rave class that correspond to this kind of movement!
