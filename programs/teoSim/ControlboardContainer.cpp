@@ -53,12 +53,6 @@ void teo::ControlboardContainer::setPenv(const OpenRAVE::EnvironmentBasePtr valu
 
 // -----------------------------------------------------------------------------
 
-void teo::ControlboardContainer::setProbot(const OpenRAVE::RobotBasePtr value) {
-    probot = value;
-}
-
-// -----------------------------------------------------------------------------
-
 void teo::ControlboardContainer::push_back(int robotJointIdx) {
     vectorOfJointIdx.push_back( robotJointIdx );
 }
@@ -91,16 +85,10 @@ bool teo::ControlboardContainer::start() {
     yarp::os::Value v(&penv_raw, sizeof(OpenRAVE::EnvironmentBase*));
     options.put("penv",v);
 
-    CD_DEBUG("probot: %p\n",probot.get());
-    OpenRAVE::RobotBase* probot_raw = probot.get();
-    yarp::os::Value v2(&probot_raw, sizeof(OpenRAVE::RobotBase*));
-    options.put("probot",v2);
+    // CD_DEBUG("probot: %p\n",probot.get());  // cannot do same for robot, raises generic robot error upon usage.
 
-    /*CD_DEBUG("here1\n");
-    yarp::os::Value v3(&penv, sizeof(OpenRAVE::EnvironmentBasePtr));
-    CD_DEBUG("here2\n");
-    options.put("realpenv",v3);
-    CD_DEBUG("here3\n");*/
+    //-- So instead, we pass the robot index for it to be extracted from the environment.
+    options.put("robotIndex",fatherRobotIdx);
 
     dd.open(options);
     if(!dd.isValid()) {

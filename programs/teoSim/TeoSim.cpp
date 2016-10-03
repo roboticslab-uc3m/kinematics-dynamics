@@ -50,7 +50,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
     CD_SUCCESS("Loaded environment: %s\n",envFull.c_str());
-    CD_DEBUG("penv %p\n",environmentPtr.get());
+    //CD_DEBUG("penv %p\n",environmentPtr.get());
 
     // Attach a physics engine
     if(physics=="ode"){
@@ -83,8 +83,6 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             vectorOfControlboardContainerPtr[index]->setFatherRobotIdx(robotPtrIdx);
             //-- give it a pointer to the environment
             vectorOfControlboardContainerPtr[index]->setPenv(environmentPtr);
-            //-- give it a pointer to the corresponding robot
-            vectorOfControlboardContainerPtr[index]->setProbot(vectorOfRobotPtr[robotPtrIdx]);
             //-- Check if there are overrides
             if(rf.check(manipulatorPortName)) {
                 yarp::os::Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();
