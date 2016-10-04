@@ -39,7 +39,7 @@ namespace teo
 
 /**
  * @ingroup BasicCartesianControl
- * @brief The BasicCartesianControl class implements ICartesianSolver.
+ * @brief The BasicCartesianControl class implements ICartesianControl.
  */
 
 class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread {
