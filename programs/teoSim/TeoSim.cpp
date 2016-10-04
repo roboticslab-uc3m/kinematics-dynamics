@@ -10,7 +10,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
 
     const double defautTr = M_PI/180.0;
     std::string env = DEFAULT_ENV;
-    double jmcMs = DEFAULT_JMC_MS;
+    double jmcMs = DEFAULT_TEO_SIM_MS;
     std::string physics = DEFAULT_PHYSICS;
     int viewer = DEFAULT_VIEWER;
 
@@ -50,6 +50,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
     CD_SUCCESS("Loaded environment: %s\n",envFull.c_str());
+    //CD_DEBUG("penv %p\n",environmentPtr.get());
 
     // Attach a physics engine
     if(physics=="ode"){
@@ -80,6 +81,8 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             vectorOfControlboardContainerPtr[index]->setManipulatorWrapperName(manipulatorPortName);
             //-- Give it its father's index
             vectorOfControlboardContainerPtr[index]->setFatherRobotIdx(robotPtrIdx);
+            //-- give it a pointer to the environment
+            vectorOfControlboardContainerPtr[index]->setPenv(environmentPtr);
             //-- Check if there are overrides
             if(rf.check(manipulatorPortName)) {
                 yarp::os::Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();

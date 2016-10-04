@@ -11,13 +11,15 @@
 #include <yarp/dev/Wrapper.h>
 #include <yarp/sig/all.h>
 
-#include <openrave-core.h>
-
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
 
+#include <openrave-core.h>  // OR
+
 #include "ColorDebug.hpp"
+
+#include "FakeControlboardOR.hpp"  // OR
 
 
 namespace teo
@@ -36,6 +38,7 @@ class ControlboardContainer {
         bool stop();
         void setFatherRobotIdx(int value);
         void setManipulatorWrapperName(const std::string &value);
+        void setPenv(OpenRAVE::EnvironmentBasePtr value);
         void push_back(int robotJointIdx);
         void push_back_tr(double robotJointTr);
 
@@ -43,6 +46,8 @@ class ControlboardContainer {
         std::vector<int>& getVectorOfJointIdxRef();
         std::vector<double>& getVectorOfJointPosRef();
         std::vector<double>& getVectorOfJointTrRef();
+
+
 
 protected:
 
@@ -53,6 +58,8 @@ protected:
         yarp::dev::PolyDriver dd;
         yarp::dev::IEncoders *encs;
         std::string manipulatorWrapperName;
+
+        OpenRAVE::EnvironmentBasePtr penv;
 };
 
 }  // namsepace teo
