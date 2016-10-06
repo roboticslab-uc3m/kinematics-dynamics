@@ -4,3 +4,4 @@
 add_subdirectory(teoCartesianServer)
 add_subdirectory(teoGravityCompensator)
 add_subdirectory(teoSim)
+add_subdirectory(teoCollisionAvoidance)
