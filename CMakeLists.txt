@@ -21,6 +21,7 @@ option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
 option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCompensator" TRUE)
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
+option(ENABLE_teoCollisionAvoidance "Choose if you want to compile teoCollisionAvoidance" TRUE)
 
 ### options: force default
 option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
