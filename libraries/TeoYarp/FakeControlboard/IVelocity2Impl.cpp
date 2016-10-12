@@ -7,7 +7,8 @@
 bool teo::FakeControlboard::velocityMove(const int n_joint, const int *joints, const double *spds)
 {
     CD_DEBUG("\n");
-    return true;
+    // must implement mask!
+    return velocityMove(spds);
 }
 
 // -----------------------------------------------------------------------------

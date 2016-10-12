@@ -15,15 +15,19 @@ project(TEO)
 
 ### options: cpp libraries
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
+option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 
 ### options: cpp programs
-option(ENABLE_teoCartesianServer "Choose if you want to compile teoCartesianServer" TRUE)
-option(ENABLE_teoGravityCompensator "Choose if you want to compile teoGravityCompensator" TRUE)
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
+option(ENABLE_teoCollisionAvoidance "Choose if you want to compile teoCollisionAvoidance" TRUE)
 
 ### options: force default
+option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
+option(ENABLE_TeoYarp_CartesianControlServer "Enable/disable compilation of TeoYarp_CartesianControlServer" TRUE)
+option(ENABLE_TeoYarp_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
 option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
 option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
+option(ENABLE_TeoYarp_FakeControlboardOR "Enable/disable compilation of TeoYarp_FakeControlboardOR" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
@@ -128,6 +132,6 @@ configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/TEOConfigUninstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake" IMMEDIATE @ONLY)
 
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake)
+#add_custom_target(uninstall
+ #   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake)
 

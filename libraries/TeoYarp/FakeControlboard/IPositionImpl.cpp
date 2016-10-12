@@ -77,7 +77,7 @@ bool teo::FakeControlboard::positionMove(const double *refs) {  // encExposed = 
     for(unsigned int motor=0;motor<axes;motor++) {
         targetExposed[motor]=refs[motor];
         velRaw[motor] = ((refs[motor]-getEncExposed(motor))/max_time)*velRawExposed[motor];
-        //if(velRaw[motor] != velRaw[motor]) velRaw[motor] = 0;  // protect against NaN
+        if(velRaw[motor] != velRaw[motor]) velRaw[motor] = 0;  // protect against NaN
         printf("[FakeControlboard] velRaw[%d]: %f\n",motor,velRaw[motor]);
         jointStatus[motor]=1;
         if (fabs(targetExposed[motor]-getEncExposed(motor))<jointTol[motor]) {

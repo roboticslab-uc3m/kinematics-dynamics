@@ -18,15 +18,15 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         gravity = KDL::Vector(0.0,0.0,-9.81);
     }
 
-    if(angleRepr == "axisAngle"){
-        targetO.resize(4);
-    } else if(angleRepr == "eulerYZ") {  //-- For asibot.
-        targetO.resize(2);
-    } else if(angleRepr == "eulerZYZ") {
-        targetO.resize(3);
-    } else if(angleRepr == "RPY") {
-        targetO.resize(3);
-    } else {
+    if( (angleRepr == "axisAngle")
+        || (angleRepr == "eulerYZ")
+        || (angleRepr == "eulerZYZ")
+        || (angleRepr == "RPY") )
+    {
+        CD_INFO("Using angleRepr: %s.\n",angleRepr.c_str());
+    }
+    else
+    {
         CD_WARNING("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
     }
 
@@ -92,40 +92,28 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         std::string linkType = bXyzLink.check("Type",yarp::os::Value("NULL")).asString();
         if(linkType == "RotX") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(0);
         } else if(linkType == "RotY") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotY),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(0);
         } else if(linkType == "RotZ") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(0);
         } else if(linkType == "InvRotX") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(0);
         } else if(linkType == "InvRotY") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotY,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(0);
         } else if(linkType == "InvRotZ") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(0);
         } else if(linkType == "TransX") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransX),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(1);
         } else if(linkType == "TransY") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransY),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(1);
         } else if(linkType == "TransZ") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(1);
         } else if(linkType == "InvTransX") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransX,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(1);
         } else if(linkType == "InvTransY") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransY,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(1);
         } else if(linkType == "InvTransZ") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-            isPrismatic.push_back(1);
         } else {
             CD_WARNING("Link joint type \"%s\" unrecognized!\n",linkType.c_str());
         }
@@ -146,9 +134,14 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
     CD_INFO("Chain number of segments including none-joint (H0 and HN): %d\n",chain.getNrOfSegments());
 
-    _orient = new KDL::RotationalInterpolation_SingleAxis();
-    _eqradius = 1; //0.000001;
-    _aggregate = false;
+    qMax.resize(numLinks);
+    qMin.resize(numLinks);
+    //-- Limits [ -pi , pi ].
+    for (int motor=0; motor<numLinks; motor++)
+    {
+        qMax(motor) = M_PI;
+        qMin(motor) = -M_PI;
+    }
 
     return true;
 }
@@ -156,8 +149,6 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 // -----------------------------------------------------------------------------
 
 bool teo::KdlSolver::close() {
-    delete _orient;
-    CD_SUCCESS("Cleaned heap.\n");
     return true;
 }
 
