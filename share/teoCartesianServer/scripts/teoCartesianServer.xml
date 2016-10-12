@@ -1,5 +1,5 @@
 <application>
-    <name>teoCartesianServer App</name>
+    <name>teoCartesianServer App [DEPRECIATED]</name>
 
     <module>
         <name>teoCartesianServer</name>
