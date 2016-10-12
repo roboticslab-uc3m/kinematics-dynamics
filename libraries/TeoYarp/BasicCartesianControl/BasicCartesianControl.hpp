@@ -91,6 +91,10 @@ What moslty changes is the library command line invocation. We also change the s
 [on terminal 2] launchTeoYarp --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer  --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teo/rightArm
 [on terminal 3] yarp rpc /teo/rightArm/CartesianControlServer/rpc:s
 \endverbatim
+On the real robot, you can even activate Gravity Compensation (warning: dangerous if kinematic/dynamic model has not been reviewed!).
+\verbatim
+[>>] gcmp
+\endverbatim
 
 @section BasicCartesianControl_Running4 Very Important
 
