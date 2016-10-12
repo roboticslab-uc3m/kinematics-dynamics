@@ -13,7 +13,7 @@ If nothing happens (e.g. Ubuntu 14.10 as of Dic/2014), a precompiled version of 
 ```bash
 sudo apt-get install git-core
 sudo apt-get install libboost-all-dev
-sudo apt-get install libqt4-dev qt4-dev-tools libxml2-dev libode-dev
+sudo apt-get install libqt4-dev qt4-dev-tools libxml2-dev libode-dev libfcl-dev
 sudo apt-get install libsoqt4-dev libcoin80-dev
 cd  # go home
 mkdir -p repos; cd repos  # make $HOME/repos if it doesn't exist; then, enter it
