@@ -16,29 +16,23 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_lma.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
-#include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
-#include <kdl/frames_io.hpp>
-#include <kdl/frames.hpp>
-#include <kdl/path_line.hpp>
-#include <kdl/rotational_interpolation_sa.hpp>
-#include <kdl/velocityprofile_rect.hpp>
-#include <kdl/velocityprofile_trap.hpp>
-#include <kdl/trajectory_segment.hpp>
 
 #include <iostream> // only windows
-#include <stdlib.h> // for exit()
 
 #include "ColorDebug.hpp"
 #include "ICartesianSolver.h"
+#include "KdlVectorConverter.hpp"
 
-#define DEFAULT_ANGLE_REPR "RPY"  // string
+#define DEFAULT_ANGLE_REPR "axisAngle"  // string
 #define DEFAULT_NUM_LINKS 1  // int
 
 #define DEFAULT_EPSILON 0.005     // Precision tolerance
 #define DEFAULT_DURATION 20     // For Trajectory
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
+
+//#define _USE_LMA_
 
 namespace teo
 {
@@ -55,11 +49,11 @@ namespace teo
  * @brief The KdlSolver class implements ICartesianSolver.
  */
 
-class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
+class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, public KdlVectorConverter {
 
     public:
 
-        KdlSolver() {}
+        KdlSolver() : KdlVectorConverter(DEFAULT_ANGLE_REPR) {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
         /** Get number of links for which the solver has been configured. */
@@ -82,6 +76,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
 
         /** Perform inverse dynamics. */
         virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
+
+        /** Set joint limits. */
+        virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
@@ -117,37 +114,14 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver {
         /** Define used gravity for the chain, important to think of DH. **/
         KDL::Vector gravity;
 
-        /**
-        * Simple function to pass from radians to degrees.
-        * @param inRad angle value in radians.
-        * @return angle value in degrees.
-        */
-        double toDeg(const double inRad) {
-            return (inRad * 180.0 / M_PI);  // return (inRad * 180.0 / 3.14159265);
-        }
+        /** Minimum joint limits. **/
+        KDL::JntArray qMin;
 
-        /**
-        * Simple function to pass from degrees to radians.
-        * @param inDeg angle value in degrees.
-        * @return angle value in radians.
-        */
-        double toRad(const double inDeg) {
-            return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
-        }
-
-        bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
-        bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
+        /** Maximum joint limits. **/
+        KDL::JntArray qMax;
 
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
-        KDL::RotationalInterpolation_SingleAxis* _orient;
-        double _eqradius;
-        bool _aggregate;
-
-        yarp::sig::Vector isPrismatic;
-        yarp::sig::Vector targetO;
-
-        std::string angleRepr;
 };
 
 }  // namespace teo

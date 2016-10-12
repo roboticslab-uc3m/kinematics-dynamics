@@ -42,6 +42,9 @@ class ICartesianSolver
         /** Perform inverse dynamics. */
         virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) = 0;
 
+        /** Set joint limits. */
+        virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax) = 0;
+
 };
 
 }  // namespace teo

@@ -15,14 +15,20 @@ IF (ENABLE_TeoYarp)
 
   yarp_begin_plugin_library(TeoYarp)
     add_subdirectory(FakeControlboard)
+    add_subdirectory(FakeControlboardOR)
     add_subdirectory(KdlSolver)
+    add_subdirectory(BasicCartesianControl)
+    add_subdirectory(CartesianControlServer)
+    add_subdirectory(CartesianControlClient)
   yarp_end_plugin_library(TeoYarp)
 
   install(TARGETS TeoYarp DESTINATION lib)
 
   IF (ENABLE_launchTeoYarp)
 
-    yarp_add_plugin_library_executable(launchTeoYarp TeoYarp)
+    link_directories(${TEO_LINK_DIRS})
+
+    yarp_add_plugin_yarpdev_executable(launchTeoYarp TeoYarp)
     install(TARGETS launchTeoYarp DESTINATION bin)
 
   ENDIF (ENABLE_launchTeoYarp)

@@ -10,7 +10,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
 
     const double defautTr = M_PI/180.0;
     std::string env = DEFAULT_ENV;
-    double jmcMs = DEFAULT_JMC_MS;
+    double jmcMs = DEFAULT_TEO_SIM_MS;
     std::string physics = DEFAULT_PHYSICS;
     int viewer = DEFAULT_VIEWER;
 
@@ -50,6 +50,7 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
     CD_SUCCESS("Loaded environment: %s\n",envFull.c_str());
+    //CD_DEBUG("penv %p\n",environmentPtr.get());
 
     // Attach a physics engine
     if(physics=="ode"){
@@ -80,6 +81,8 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             vectorOfControlboardContainerPtr[index]->setManipulatorWrapperName(manipulatorPortName);
             //-- Give it its father's index
             vectorOfControlboardContainerPtr[index]->setFatherRobotIdx(robotPtrIdx);
+            //-- give it a pointer to the environment
+            vectorOfControlboardContainerPtr[index]->setPenv(environmentPtr);
             //-- Check if there are overrides
             if(rf.check(manipulatorPortName)) {
                 yarp::os::Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();
@@ -181,6 +184,20 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
                 }
                 tmpPort->open(tmpName);
                 vectorOfIntPortPtr.push_back(tmpPort);
+            } else if (psensorbase->Supports(OpenRAVE::SensorBase::ST_Force6D)) {
+                printf("Sensor %d supports ST_Force6D.\n", sensorIter);
+                // Activate the sensor
+                psensorbase->Configure(OpenRAVE::SensorBase::CC_PowerOn);
+                // Get a pointer to access the force6D data stream
+                vectorOfForce6DSensorDataPtr.push_back(boost::dynamic_pointer_cast<OpenRAVE::SensorBase::Force6DSensorData>(psensorbase->CreateSensorData(OpenRAVE::SensorBase::ST_Force6D)));
+                vectorOfSensorPtrForForce6Ds.push_back(psensorbase);  // "save"
+                yarp::os::BufferedPort<yarp::os::Bottle > * tmpPort = new yarp::os::BufferedPort<yarp::os::Bottle >;
+                std::string sensorName = psensorbase->GetName();
+                size_t pos = sensorName.find(":");
+                std::string portName("/");
+                portName += sensorName.substr (pos+1,sensorName.size());
+                tmpPort->open(portName);
+                vectorOfForce6DPortPtr.push_back(tmpPort);
             } else printf("Sensor %d not supported.\n", robotIter);
         }
     }
@@ -195,10 +212,14 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
     teoSimRateThread.setPtrVectorOfCameraSensorDataPtr(&vectorOfCameraSensorDataPtr);
     teoSimRateThread.setPtrVectorOfRgbPortPtr(&vectorOfRgbPortPtr);
     teoSimRateThread.setPtrVectorOfIntPortPtr(&vectorOfIntPortPtr);
+    teoSimRateThread.setPtrVectorOfForce6DPortPtr(&vectorOfForce6DPortPtr);
     teoSimRateThread.setPtrVectorOfCameraWidth(&vectorOfCameraWidth);
     teoSimRateThread.setPtrVectorOfCameraHeight(&vectorOfCameraHeight);
     teoSimRateThread.setPtrVectorOfSensorPtrForLasers(&vectorOfSensorPtrForLasers);
     teoSimRateThread.setPtrVectorOfLaserSensorDataPtr(&vectorOfLaserSensorDataPtr);
+    teoSimRateThread.setPtrVectorOfSensorPtrForForce6Ds(&vectorOfSensorPtrForForce6Ds);
+    teoSimRateThread.setPtrVectorOfForce6DSensorDataPtr(&vectorOfForce6DSensorDataPtr);
+
 
     teoSimRateThread.start();
     

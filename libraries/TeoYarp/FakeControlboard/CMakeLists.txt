@@ -1,7 +1,7 @@
 # Copyright: (C) 2013 Universidad Carlos III de Madrid
 # Author: Juan G. Victores
 
-YARP_PREPARE_DEVICE(FakeControlboard TYPE teo::FakeControlboard INCLUDE FakeControlboard.hpp WRAPPER controlboard)
+YARP_PREPARE_DEVICE(FakeControlboard TYPE teo::FakeControlboard INCLUDE FakeControlboard.hpp WRAPPER controlboardwrapper2)
 
 IF (NOT SKIP_FakeControlboard)
 

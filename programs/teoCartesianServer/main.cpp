@@ -3,9 +3,9 @@
 /**
  * @ingroup teo_programs
  *
- * \defgroup teoCartesianServer teoCartesianServer
+ * \defgroup teoCartesianServer teoCartesianServer [DEPRECIATED]
  *
- * @brief Creates an instance of teo::TeoCartesianServer.
+ * @brief [DEPRECIATED] Use \ref BasicCartesianControl instead. Creates an instance of teo::TeoCartesianServer.
  *
  * @section teoCartesianServer_legal Legal
  *
