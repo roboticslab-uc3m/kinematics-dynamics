@@ -77,17 +77,19 @@ Response: [ok]
 
 @section BasicCartesianControl_Running2 Example with teoSim
 
-What moslty changes is the library command line invocation. The following is an example for the simulated robot's right arm.
+What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
-[on terminal 2] launchTeoYarp --device BasicCartesianControl --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 2] launchTeoYarp --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 3] yarp rpc /teoSim/rightArm/CartesianControlServer/rpc:s
 \endverbatim
 
 
 @section BasicCartesianControl_Running3 Example with real TEO
 
-What moslty changes is the library command line invocation. The following is an example for the robot's right arm.
+What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the robot's right arm.
 \verbatim
-[on terminal 2] launchTeoYarp --device BasicCartesianControl --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teo/rightArm
+[on terminal 2] launchTeoYarp --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer  --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teo/rightArm
+[on terminal 3] yarp rpc /teo/rightArm/CartesianControlServer/rpc:s
 \endverbatim
 
 @section BasicCartesianControl_Running4 Very Important
