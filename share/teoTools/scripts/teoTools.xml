@@ -22,7 +22,7 @@
 
     <module>
         <name>gnome-terminal</name>
-        <parameters>-e "yarp write ... /tts-en:i"</parameters>
+        <parameters>-e "yarp rpc /espeak/rpc:s"</parameters>
         <node>localhost</node>
     </module>
 
