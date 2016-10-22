@@ -51,13 +51,13 @@
 
     <module>
         <name>launchTeoYarp</name>
-        <parameters>--device BasicCartesianControl --name /teo/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/rightArm --remote /teo/rightArm</parameters>
+        <parameters>--device BasicCartesianControl --name /teo/rightArm/CartesianControl --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/rightArm --remote /teo/rightArm</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>launchTeoYarp</name>
-        <parameters>--device BasicCartesianControl --name /teo/leftArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/leftArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/leftArm --remote /teo/leftArm</parameters>
+        <parameters>--device BasicCartesianControl --name /teo/leftArm/CartesianControl --from /usr/local/share/teo/contexts/kinematics/leftArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/leftArm --remote /teo/leftArm</parameters>
         <node>localhost</node>
     </module>
 
@@ -65,13 +65,13 @@
 
     <module>
         <name>launchTeoYarp</name>
-        <parameters>--device BasicCartesianControl --name /teo/rightLeg/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightLegKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/rightLeg --remote /teo/rightLeg</parameters>
+        <parameters>--device BasicCartesianControl --name /teo/rightLeg/CartesianControl --from /usr/local/share/teo/contexts/kinematics/rightLegKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/rightLeg --remote /teo/rightLeg</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>launchTeoYarp</name>
-        <parameters>--device BasicCartesianControl --name /teo/leftLeg/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/leftLegKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/leftLeg --remote /teo/leftLeg</parameters>
+        <parameters>--device BasicCartesianControl --name /teo/leftLeg/CartesianControl --from /usr/local/share/teo/contexts/kinematics/leftLegKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/leftLeg --remote /teo/leftLeg</parameters>
         <node>localhost</node>
     </module>
 
