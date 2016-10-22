@@ -15,8 +15,8 @@
 
 #define VOCAB_FAILED VOCAB4('f','a','i','l')  //-- from yarp::dev
 
-#define DEFAULT_CARTESIAN_LOCAL "/CartesianControlClient/CartesianControlServer"
-#define DEFAULT_CARTESIAN_REMOTE "/CartesianControlServer"
+#define DEFAULT_CARTESIAN_LOCAL "/CartesianControl"
+#define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
 namespace teo
 {
