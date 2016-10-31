@@ -3,9 +3,9 @@
 /**
  * @ingroup teo_programs
  *
- * \defgroup teoGravityCompensator teoGravityCompensator
+ * \defgroup teoGravityCompensator teoGravityCompensator [DEPRECIATED]
  *
- * @brief Creates an instance of teo::TeoGravityCompensator.
+ * @brief [DEPRECIATED] Use \ref BasicCartesianControl instead. Creates an instance of teo::TeoGravityCompensator.
  *
  * <b> Legal </b>
  *

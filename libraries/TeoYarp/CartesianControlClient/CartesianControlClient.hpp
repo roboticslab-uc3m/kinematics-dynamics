@@ -15,8 +15,8 @@
 
 #define VOCAB_FAILED VOCAB4('f','a','i','l')  //-- from yarp::dev
 
-#define DEFAULT_CARTESIAN_LOCAL "/CartesianControlClient/CartesianControlServer"
-#define DEFAULT_CARTESIAN_REMOTE "/CartesianControlServer"
+#define DEFAULT_CARTESIAN_LOCAL "/CartesianControl"
+#define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
 namespace teo
 {
@@ -48,6 +48,9 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
 
         /** movj */
         virtual bool movj(const std::vector<double> &xd);
+
+        /** relj */
+        virtual bool relj(const std::vector<double> &xd);
 
         /** movl */
         virtual bool movl(const std::vector<double> &xd);

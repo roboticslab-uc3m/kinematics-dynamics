@@ -48,8 +48,8 @@ bool teo::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vecto
     x[1] = d.vel.y();
     x[2] = d.vel.z();
     x[3] = d.rot.x();
-    x[4] = d.vel.y();
-    x[5] = d.vel.z();
+    x[4] = d.rot.y();
+    x[5] = d.rot.z();
 
     return true;
 }

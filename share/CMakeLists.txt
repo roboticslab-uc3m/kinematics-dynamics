@@ -16,7 +16,7 @@ yarp_install(FILES ymanager.ini DESTINATION ${TEO_DATA_INSTALL_DIR})  # Cleaner 
 add_subdirectory(openrave)
 add_subdirectory(kinematics)
 
-add_subdirectory(teoCartesianServer)
-add_subdirectory(teoGravityCompensator)
 add_subdirectory(teoSim)
+add_subdirectory(teoCollisionAvoidance)
+
 
