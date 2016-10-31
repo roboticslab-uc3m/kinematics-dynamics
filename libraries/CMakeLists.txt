@@ -20,6 +20,9 @@ ENDFOREACH()
 set(COLOR_DEBUG_PART_OF_PROJECT TRUE)
 add_subdirectory(ColorDebug)
 
+set(GAIT_PART_OF_PROJECT TRUE)
+add_subdirectory(gait)
+
 add_subdirectory(KdlVectorConverterLib)
 add_subdirectory(TrajectoryLib)
 

@@ -44,6 +44,18 @@ void teo::BasicCartesianControl::run() {
         if (! iCartesianSolver->diffInvKin(currentQ,commandXdot,commandQdot) )
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
+            return;
+        }
+
+        for(int i=0;i<commandQdot.size();i++)
+        {
+            if( fabs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+            {
+                CD_ERROR("diffInvKin too dangerous, STOP!!!.\n");
+                for(int i=0;i<commandQdot.size();i++)
+                    commandQdot[i] = 0;
+                setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+            }
         }
 
         CD_DEBUG_NO_HEADER("[MOVL] [%f] ",movementTime);
@@ -75,6 +87,18 @@ void teo::BasicCartesianControl::run() {
         if (! iCartesianSolver->diffInvKin(currentQ,xdotd,commandQdot) )
         {
             CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
+            return;
+        }
+
+        for(int i=0;i<commandQdot.size();i++)
+        {
+            if( fabs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+            {
+                CD_ERROR("diffInvKin too dangerous, STOP!!!.\n");
+                for(int i=0;i<commandQdot.size();i++)
+                    commandQdot[i] = 0;
+                setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+            }
         }
 
         CD_DEBUG_NO_HEADER("[MOVV] ");
