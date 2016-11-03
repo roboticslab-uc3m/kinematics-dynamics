@@ -12,14 +12,22 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
     CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANGLE_REPR);
 
-    if( config.check("gravity") ) {
-        yarp::os::Bottle gravityBottle = config.findGroup("gravity").tail();
-        gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
-        CD_INFO("Found gravity parameter, using: %f %f %f.\n", gravity[0], gravity[1], gravity[2]);
-    } else {
-        CD_INFO("No gravity parameter, defaulting to -9.81 on Z axis.\n");
-        gravity = KDL::Vector(0.0,0.0,-9.81);
+    yarp::os::Bottle defaultGravityBottle;
+    defaultGravityBottle.addDouble(0);
+    defaultGravityBottle.addDouble(0);
+    defaultGravityBottle.addDouble(-9.81);
+
+    yarp::os::Bottle gravityBottle;
+    if( config.check("gravity") )
+    {
+        gravityBottle = config.findGroup("gravity").tail();
     }
+    else
+    {
+        gravityBottle = defaultGravityBottle;
+    }
+    gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
+    CD_INFO("gravity: %s [%s]\n",gravityBottle.toString().c_str(),defaultGravityBottle.toString().c_str());
 
     if( ! ( (angleRepr == "axisAngle")
             || (angleRepr == "eulerYZ")
