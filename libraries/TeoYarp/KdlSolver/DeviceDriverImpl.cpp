@@ -18,16 +18,13 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         gravity = KDL::Vector(0.0,0.0,-9.81);
     }
 
-    if( (angleRepr == "axisAngle")
-        || (angleRepr == "eulerYZ")
-        || (angleRepr == "eulerZYZ")
-        || (angleRepr == "RPY") )
+    if( ! ( (angleRepr == "axisAngle")
+            || (angleRepr == "eulerYZ")
+            || (angleRepr == "eulerZYZ")
+            || (angleRepr == "RPY") ) )
     {
-        CD_INFO("Using angleRepr: %s.\n",angleRepr.c_str());
-    }
-    else
-    {
-        CD_WARNING("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
+        CD_ERROR("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
+        return false;
     }
 
     yarp::sig::Matrix ymH0(4,4);
