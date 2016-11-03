@@ -25,18 +25,20 @@ bool teo::BasicTwoLimbCartesianControl::open(yarp::os::Searchable& config)
 bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
 {
     std::string solver = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
-    std::string remote = config.check("remote",yarp::os::Value(DEFAULT_REMOTE_A),"remote robot").asString();
     //std::string angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
+    std::string remote = config.check("remote",yarp::os::Value(DEFAULT_REMOTE_A),"remote robot").asString();
     //std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS_A),"limb kinematic description").asString();
 
-    printf("\t--limbA solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
-    printf("\t--limbA remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE_A);
-    //printf("\t--limbA kinematics (limb kinematic description, default: \"%s\")\n",DEFAULT_KINEMATICS_A);
+    CD_INFO("solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
+    //...
+    CD_INFO("remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE_A);
+    //printf("\t--limbA kinematics %s [%s]\n",DEFAULT_KINEMATICS_A);
 
     //-- Solver --
     yarp::os::Property solverOptions;
     solverOptions.fromString( config.toString() );
     solverOptions.put("device",solver);
+    //solverOptions.put("kinamatics",kinematics);
 
     solverDeviceA.open(solverOptions);
     if( ! solverDeviceA.isValid() )
