@@ -6,12 +6,24 @@
 
 bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
+    //-- numlinks
     numLinks = config.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
-    angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
-
     CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
+
+    //-- angleRepr
+    angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
     CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANGLE_REPR);
 
+    if( ! ( (angleRepr == "axisAngle")
+            || (angleRepr == "eulerYZ")
+            || (angleRepr == "eulerZYZ")
+            || (angleRepr == "RPY") ) )
+    {
+        CD_ERROR("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
+        return false;
+    }
+
+    //-- gravity
     yarp::os::Bottle defaultGravityBottle;
     defaultGravityBottle.addDouble(0);
     defaultGravityBottle.addDouble(0);
@@ -29,15 +41,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
     CD_INFO("gravity: %s [%s]\n",gravityBottle.toString().c_str(),defaultGravityBottle.toString().c_str());
 
-    if( ! ( (angleRepr == "axisAngle")
-            || (angleRepr == "eulerYZ")
-            || (angleRepr == "eulerZYZ")
-            || (angleRepr == "RPY") ) )
-    {
-        CD_ERROR("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
-        return false;
-    }
-
+    //-- H0
     yarp::sig::Matrix defaultYmH0(4,4);
     defaultYmH0.eye();
 
@@ -47,14 +51,15 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     {
         ymH0 = defaultYmH0;
     }
-    CD_INFO("H0:\n%s\n[%s]\n",ymH0.toString().c_str(),defaultYmH0.toString().c_str());
 
     KDL::Vector kdlVec0(ymH0(0,3),ymH0(1,3),ymH0(2,3));
     KDL::Rotation kdlRot0( ymH0(0,0),ymH0(0,1),ymH0(0,2),ymH0(1,0),ymH0(1,1),ymH0(1,2),ymH0(2,0),ymH0(2,1),ymH0(2,2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0,kdlVec0)));  //-- H0 = Frame(kdlRot0,kdlVec0);
+    CD_INFO("H0:\n%s\n[%s]\n",ymH0.toString().c_str(),defaultYmH0.toString().c_str());
 
-    for(int linkIndex=0;linkIndex<numLinks;linkIndex++) {
-
+    //-- links
+    for(int linkIndex=0;linkIndex<numLinks;linkIndex++)
+    {
         std::string link("link_");
         std::ostringstream s;
         s << linkIndex;
@@ -74,7 +79,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
                 chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset)),
                                               KDL::RigidBodyInertia(linkMass,KDL::Vector(linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble()),
                                                                     KDL::RotationalInertia(linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble(),0,0,0))));
-                CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
+                CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
                            link.c_str(), linkOffset,linkD,linkA,linkAlpha,linkMass,
                            linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble(),
                            linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble());
@@ -82,7 +87,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
             else //-- No mass -> skip dynamics
             {
                 chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
-                CD_SUCCESS("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
+                CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
             }
             continue;
         }
@@ -133,17 +138,23 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         CD_SUCCESS("Added: %s (Type %s) (x %f) (y %f) (z %f)\n",xyzLink.c_str(),linkType.c_str(),linkX,linkY,linkZ);
     }
 
+    //-- HN
+    yarp::sig::Matrix defaultYmHN(4,4);
+    defaultYmHN.eye();
+
     yarp::sig::Matrix ymHN(4,4);
-    std::string ycsHN("HN");
-    if(!getMatrixFromProperties(config,ycsHN,ymHN)){
-        ymHN.eye();
-        CD_SUCCESS("Using default HN: HN = I\n");
+    std::string ymHN_str("HN");
+    if( ! getMatrixFromProperties(config, ymHN_str, ymHN))
+    {
+        ymHN = defaultYmHN;
     }
-    else CD_SUCCESS("Using custom HN:\n%s\n",ymHN.toString().c_str());
+
     KDL::Vector kdlVecN(ymHN(0,3),ymHN(1,3),ymHN(2,3));
     KDL::Rotation kdlRotN( ymHN(0,0),ymHN(0,1),ymHN(0,2),ymHN(1,0),ymHN(1,1),ymHN(1,2),ymHN(2,0),ymHN(2,1),ymHN(2,2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN,kdlVecN)));
+    CD_INFO("HN:\n%s\n[%s]\n",ymHN.toString().c_str(),defaultYmHN.toString().c_str());
 
+    //--
     CD_INFO("Chain number of segments including none-joint (H0 and HN): %d\n",chain.getNrOfSegments());
 
     qMax.resize(numLinks);
