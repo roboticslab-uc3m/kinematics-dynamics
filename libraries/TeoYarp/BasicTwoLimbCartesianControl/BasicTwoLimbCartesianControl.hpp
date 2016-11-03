@@ -20,8 +20,11 @@
 #include "ColorDebug.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
-#define DEFAULT_LIMB_A "/teo/rightLeg"
-#define DEFAULT_LIMB_B "/teo/leftLeg"
+#define DEFAULT_ANG_REPR "axisAngle"
+#define DEFAULT_REMOTE_A "/teo/rightLeg"
+#define DEFAULT_REMOTE_B "/teo/leftLeg"
+#define DEFAULT_KINEMATICS_A "rightLegKinematics.ini"
+#define DEFAULT_KINEMATICS_B "leftLegKinematics.ini"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_MS 50
 #define MAX_ANG_VEL 7.5
@@ -86,7 +89,7 @@ class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwo
         */
         virtual bool close();
 
-protected:
+private:
 
         yarp::dev::PolyDriver solverDeviceA;
         teo::ICartesianSolver *iCartesianSolverA;
@@ -126,6 +129,9 @@ protected:
         /** STEP desired Cartesian velocity */
         std::vector<double> xdotd;
 
+        /** Private member functions */
+        bool configureLimbA(yarp::os::Bottle& config);
+        bool configureLimbB(yarp::os::Bottle& config);
 };
 
 }  // namespace teo
