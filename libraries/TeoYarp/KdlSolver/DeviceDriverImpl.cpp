@@ -38,13 +38,17 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         return false;
     }
 
+    yarp::sig::Matrix defaultYmH0(4,4);
+    defaultYmH0.eye();
+
     yarp::sig::Matrix ymH0(4,4);
-    std::string ycsH0("H0");
-    if( ! getMatrixFromProperties(config, ycsH0, ymH0)){
-        ymH0.eye();
-        CD_SUCCESS("Using default H0: H0 = I\n");
+    std::string ymH0_str("H0");
+    if( ! getMatrixFromProperties(config, ymH0_str, ymH0))
+    {
+        ymH0 = defaultYmH0;
     }
-    else CD_SUCCESS("Using custom H0:\n%s\n",ymH0.toString().c_str());
+    CD_INFO("H0:\n%s\n[%s]\n",ymH0.toString().c_str(),defaultYmH0.toString().c_str());
+
     KDL::Vector kdlVec0(ymH0(0,3),ymH0(1,3),ymH0(2,3));
     KDL::Rotation kdlRot0( ymH0(0,0),ymH0(0,1),ymH0(0,2),ymH0(1,0),ymH0(1,1),ymH0(1,2),ymH0(2,0),ymH0(2,1),ymH0(2,2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0,kdlVec0)));  //-- H0 = Frame(kdlRot0,kdlVec0);
