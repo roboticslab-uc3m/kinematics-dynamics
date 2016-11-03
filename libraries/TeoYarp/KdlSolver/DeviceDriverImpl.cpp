@@ -9,6 +9,9 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     numLinks = config.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
     angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
 
+    CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
+    CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANGLE_REPR);
+
     if( config.check("gravity") ) {
         yarp::os::Bottle gravityBottle = config.findGroup("gravity").tail();
         gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
