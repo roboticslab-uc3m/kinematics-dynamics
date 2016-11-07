@@ -6,18 +6,34 @@
 
 bool teo::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
 {
-    std::vector<double> currentQ(numRobotJointsA);
-    if ( ! iEncodersA->getEncoders( currentQ.data() ) )
+    std::vector<double> qA(numRobotJointsA), qB(numRobotJointsB);
+    if ( ! iEncodersA->getEncoders( qA.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolverA->fwdKin(currentQ,x) )
+    if ( ! iEncodersB->getEncoders( qB.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    if ( ! iCartesianSolverA->fwdKin(qA,x) )
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
+    std::vector<double> xB;
+    if ( ! iCartesianSolverB->fwdKin(qB,xB) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+    for(int i=0; i<xB.size(); i++)
+        x.push_back( xB[i] );
+
     state = getCurrentState();
+
     return true;
 }
 
