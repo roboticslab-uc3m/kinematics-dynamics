@@ -223,7 +223,13 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::close() {
+bool teo::BasicTwoLimbCartesianControl::close()
+{
+    robotDeviceA.close();
+    robotDeviceB.close();
+
+    solverDeviceA.close();
+    solverDeviceB.close();
 
     return true;
 }
