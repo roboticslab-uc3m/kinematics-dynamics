@@ -37,7 +37,7 @@
 
     <module>
         <name>/sbin/runuser</name>
-        <parameters>-l teo -c speechRecognition.py</parameters>
+        <parameters>-l teo -c "GST_PLUGIN_PATH=/usr/local/lib/gstreamer-1.0 speechRecognition.py"</parameters>
         <node>/head</node>
     </module>
 
