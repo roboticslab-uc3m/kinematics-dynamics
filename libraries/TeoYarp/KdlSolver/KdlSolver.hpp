@@ -24,6 +24,7 @@
 #include "ICartesianSolver.h"
 #include "KdlVectorConverter.hpp"
 
+#define DEFAULT_KINEMATICS "none.ini"  // string
 #define DEFAULT_ANGLE_REPR "axisAngle"  // string
 #define DEFAULT_NUM_LINKS 1  // int
 
