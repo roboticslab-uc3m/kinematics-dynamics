@@ -26,7 +26,7 @@ public:
 private:
 
     //every gait operation start with instantiation and initialization of a Gait child class
-    Gait * steps;
+    GaitSupportPoligon * steps;
 
     tra::SpaceTrajectory trf,tlf;
 
