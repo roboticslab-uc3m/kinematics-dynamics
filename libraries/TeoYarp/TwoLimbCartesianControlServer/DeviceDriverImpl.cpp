@@ -45,7 +45,7 @@ bool teo::TwoLimbCartesianControlServer::open(yarp::os::Searchable& config) {
     if (config.check("name",name))
         rpcServer.open(name->asString()+"/rpc:s");
     else
-        rpcServer.open("/TwoLimbCartesianControlServer/rpc:s");
+        rpcServer.open("/TwoLimbCartesianControl/rpc:s");
 
 
     return true;
