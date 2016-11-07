@@ -6,16 +6,15 @@
 
 bool teo::BasicTwoLimbCartesianControl::open(yarp::os::Searchable& config)
 {
-
-    CD_DEBUG("BasicTwoLimbCartesianControl config: %s.\n", config.toString().c_str());
+    CD_DEBUG("Config: %s.\n", config.toString().c_str());
 
     yarp::os::Bottle limbA = config.findGroup("limbA");
     if( ! configureLimbA(limbA) )
         return false;
 
-    /*yarp::os::Bottle limbB = config.findGroup("limbB");
+    yarp::os::Bottle limbB = config.findGroup("limbB");
     if( ! configureLimbB(limbB) )
-        return false;*/
+        return false;
 
     return this->start();
 }
@@ -24,21 +23,24 @@ bool teo::BasicTwoLimbCartesianControl::open(yarp::os::Searchable& config)
 
 bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
 {
-    std::string solver = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
-    //std::string angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
-    std::string remote = config.check("remote",yarp::os::Value(DEFAULT_REMOTE_A),"remote robot").asString();
-    //std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS_A),"limb kinematic description").asString();
-
-    CD_INFO("solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
-    //...
-    CD_INFO("remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE_A);
-    //printf("\t--limbA kinematics %s [%s]\n",DEFAULT_KINEMATICS_A);
-
     //-- Solver --
+
+    //-- solver
+    std::string solver = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
+    CD_INFO("solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
+
+    //-- angleRepr
+    std::string angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
+    CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANG_REPR);
+
+    //-- kinematics
+    std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS_A),"limb kinematic description").asString();
+    CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS_A);
+
     yarp::os::Property solverOptions;
-    solverOptions.fromString( config.toString() );
     solverOptions.put("device",solver);
-    //solverOptions.put("kinamatics",kinematics);
+    solverOptions.put("angleRepr",angleRepr);
+    solverOptions.put("kinematics",kinematics);
 
     solverDeviceA.open(solverOptions);
     if( ! solverDeviceA.isValid() )
@@ -53,6 +55,11 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
     }
 
     //-- Robot --
+
+    //-- remote
+    std::string remote = config.check("remote",yarp::os::Value(DEFAULT_REMOTE_A),"remote robot").asString();
+    CD_INFO("remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE_A);
+
     yarp::os::Property robotOptions;
     robotOptions.fromString( config.toString() );
     robotOptions.put("device","remote_controlboard");
@@ -92,22 +99,123 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
         CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJointsA,numSolverLinksA);
     }
 
-    std::vector<double> qMinA, qMaxA;
+    std::vector<double> qMin, qMax;
     for(unsigned int joint=0;joint<numRobotJointsA;joint++)
     {
         double min, max;
         iControlLimitsA->getLimits(joint,&min,&max);
-        qMinA.push_back(min);
-        qMaxA.push_back(max);
+        qMin.push_back(min);
+        qMax.push_back(max);
         CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
     }
-    if( qMinA[0] == qMaxA[0] )
+    if( qMin[0] == qMax[0] )
     {
         CD_WARNING("Not setting joint limits on solver, because qMin[0] == qMax[0].\n");
     }
     else
     {
-        iCartesianSolverA->setLimits(qMinA,qMaxA);
+        iCartesianSolverA->setLimits(qMin,qMax);
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
+{
+    //-- Solver --
+
+    //-- solver
+    std::string solver = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
+    CD_INFO("solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
+
+    //-- angleRepr
+    std::string angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
+    CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANG_REPR);
+
+    //-- kinematics
+    std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS_B),"limb kinematic description").asString();
+    CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS_B);
+
+    yarp::os::Property solverOptions;
+    solverOptions.put("device",solver);
+    solverOptions.put("angleRepr",angleRepr);
+    solverOptions.put("kinematics",kinematics);
+
+    solverDeviceB.open(solverOptions);
+    if( ! solverDeviceB.isValid() )
+    {
+        CD_ERROR("solver device not valid: %s.\n",solver.c_str());
+        return false;
+    }
+    if( ! solverDeviceB.view(iCartesianSolverB) )
+    {
+        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solver.c_str());
+        return false;
+    }
+
+    //-- Robot --
+
+    //-- remote
+    std::string remote = config.check("remote",yarp::os::Value(DEFAULT_REMOTE_B),"remote robot").asString();
+    CD_INFO("remote: %s [%s]\n",remote.c_str(),DEFAULT_REMOTE_B);
+
+    yarp::os::Property robotOptions;
+    robotOptions.fromString( config.toString() );
+    robotOptions.put("device","remote_controlboard");
+    std::string BasicTwoLimbCartesianControlStr("/BasicTwoLimbCartesianControl");
+    robotOptions.put("local",BasicTwoLimbCartesianControlStr+remote);
+    robotOptions.put("remote",remote);
+    robotDeviceB.open(robotOptions);
+    if( ! robotDeviceB.isValid() ) {
+        CD_ERROR("robot remote not valid: %s.\n",remote.c_str());
+        return false;
+    }
+    if( ! robotDeviceB.view(iEncodersB) ) {
+        CD_ERROR("Could not view iEncoders in: %s.\n",remote.c_str());
+        return false;
+    }
+    if( ! robotDeviceB.view(iPositionControlB) ) {
+        CD_ERROR("Could not view iPositionControl in: %s.\n",remote.c_str());
+        return false;
+    }
+    if( ! robotDeviceB.view(iVelocityControlB) ) {
+        CD_ERROR("Could not view iVelocityControl in: %s.\n",remote.c_str());
+        return false;
+    }
+    if( ! robotDeviceB.view(iControlLimitsB) ) {
+        CD_ERROR("Could not view iControlLimits in: %s.\n",remote.c_str());
+        return false;
+    }
+
+    iEncodersB->getAxes(&numRobotJointsB);
+    CD_INFO("numRobotJoints: %d.\n",numRobotJointsB);
+
+    iCartesianSolverB->getNumLinks( &numSolverLinksB );
+    CD_INFO("numSolverLinks: %d.\n",numSolverLinksB);
+
+    if( numRobotJointsB != numSolverLinksB )
+    {
+        CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJointsB,numSolverLinksB);
+    }
+
+    std::vector<double> qMin, qMax;
+    for(unsigned int joint=0;joint<numRobotJointsB;joint++)
+    {
+        double min, max;
+        iControlLimitsA->getLimits(joint,&min,&max);
+        qMin.push_back(min);
+        qMax.push_back(max);
+        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
+    }
+    if( qMin[0] == qMax[0] )
+    {
+        CD_WARNING("Not setting joint limits on solver, because qMin[0] == qMax[0].\n");
+    }
+    else
+    {
+        iCartesianSolverB->setLimits(qMin,qMax);
     }
 
     return true;
