@@ -4,14 +4,31 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::KdlSolver::open(yarp::os::Searchable& config) {
+bool teo::KdlSolver::open(yarp::os::Searchable& config)
+{
+
+    CD_DEBUG("config: %s.\n", config.toString().c_str());
+
+    //-- kinematics
+    std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
+    CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS);
+    yarp::os::ResourceFinder rf;
+    rf.setVerbose(false);
+    rf.setDefaultContext("kinematics");
+    std::string kinematicsFullPath = rf.findFileByName(kinematics);
+
+    yarp::os::Property fullConfig;
+    fullConfig.fromConfigFile(kinematicsFullPath.c_str());
+    fullConfig.fromString(config.toString(),false);  //-- Can override kinematics file contents.
+
+    CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
 
     //-- numlinks
-    numLinks = config.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
+    numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
     CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
 
     //-- angleRepr
-    angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
+    angleRepr = fullConfig.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
     CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANGLE_REPR);
 
     if( ! ( (angleRepr == "axisAngle")
@@ -30,9 +47,9 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
     defaultGravityBottle.addDouble(-9.81);
 
     yarp::os::Bottle gravityBottle;
-    if( config.check("gravity") )
+    if( fullConfig.check("gravity") )
     {
-        gravityBottle = config.findGroup("gravity").tail();
+        gravityBottle = fullConfig.findGroup("gravity").tail();
     }
     else
     {
@@ -47,7 +64,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
     yarp::sig::Matrix ymH0(4,4);
     std::string ymH0_str("H0");
-    if( ! getMatrixFromProperties(config, ymH0_str, ymH0))
+    if( ! getMatrixFromProperties(fullConfig, ymH0_str, ymH0))
     {
         ymH0 = defaultYmH0;
     }
@@ -64,7 +81,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         std::ostringstream s;
         s << linkIndex;
         link += s.str();
-        yarp::os::Bottle &bLink = config.findGroup(link);
+        yarp::os::Bottle &bLink = fullConfig.findGroup(link);
         if( ! bLink.isNull() ) {
             //-- Kinematic
             double linkOffset = bLink.check("offset",yarp::os::Value(0.0)).asDouble();
@@ -97,7 +114,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
         xyzS << linkIndex;
         xyzLink += xyzS.str();
         CD_WARNING("Not found: \"%s\", looking for \"%s\" instead.\n", link.c_str(), xyzLink.c_str());
-        yarp::os::Bottle &bXyzLink = config.findGroup(xyzLink);
+        yarp::os::Bottle &bXyzLink = fullConfig.findGroup(xyzLink);
         if( bXyzLink.isNull() ) {
             CD_ERROR("Not found: \"%s\" either.\n", xyzLink.c_str());
             return false;
@@ -144,7 +161,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config) {
 
     yarp::sig::Matrix ymHN(4,4);
     std::string ymHN_str("HN");
-    if( ! getMatrixFromProperties(config, ymHN_str, ymHN))
+    if( ! getMatrixFromProperties(fullConfig, ymHN_str, ymHN))
     {
         ymHN = defaultYmHN;
     }
