@@ -32,8 +32,8 @@ void teo::BasicTwoLimbCartesianControl::run() {
 
         //-- Obtain desired Cartesian position and velocity.
         std::vector<double> desiredX, desiredXdot;
-        trajectory.getX(movementTime, desiredX);
-        trajectory.getXdot(movementTime, desiredXdot);
+        trajectory->getX(movementTime, desiredX);
+        trajectory->getXdot(movementTime, desiredXdot);
 
         //-- Apply control law to compute robot Cartesian velocity commands.
         std::vector<double> commandXdotA, commandXdotB;
