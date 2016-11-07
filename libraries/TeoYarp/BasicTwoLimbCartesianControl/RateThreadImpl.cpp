@@ -35,6 +35,14 @@ void teo::BasicTwoLimbCartesianControl::run() {
         trajectory->getX(movementTime, desiredX);
         trajectory->getXdot(movementTime, desiredXdot);
 
+        CD_DEBUG_NO_HEADER("[STEP] [%f] x ",movementTime);
+        for(int i=0;i<desiredX.size();i++)
+            CD_DEBUG_NO_HEADER("%f ",desiredX[i]);
+        CD_DEBUG_NO_HEADER("xdot ");
+        for(int i=0;i<desiredXdot.size();i++)
+            CD_DEBUG_NO_HEADER("%f ",desiredXdot[i]);
+        CD_DEBUG_NO_HEADER("\n");
+
         //-- Apply control law to compute robot Cartesian velocity commands.
         std::vector<double> commandXdotA, commandXdotB;
         iCartesianSolverA->fwdKinError(desiredX,currentQA, commandXdotA);
