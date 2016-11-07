@@ -33,6 +33,12 @@
     </module>
 
     <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /speechRecognition/rpc:s"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
         <name>yarpmotorgui</name>
         <parameters>--from config/yarpmotorgui.ini</parameters>
     </module>
