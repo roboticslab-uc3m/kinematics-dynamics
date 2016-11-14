@@ -6,6 +6,7 @@
 #include <yarp/os/all.h>
 #include <yarp/os/Semaphore.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/IControlLimits2.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
@@ -62,7 +63,7 @@ namespace teo
 // Note: IPositionControl2 inherits from IPositionControl
 // Note: IVelocityControl2 inherits from IVelocityControl
 class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPositionControl2, public yarp::dev::IVelocityControl2, public yarp::dev::IEncodersTimed,
-                 public yarp::dev::IControlLimits, public yarp::dev::IControlMode, public yarp::dev::ITorqueControl, public yarp::os::RateThread {
+                 public yarp::dev::IControlLimits2, public yarp::dev::IControlMode, public yarp::dev::ITorqueControl, public yarp::os::RateThread {
     public:
 
         // Set the Thread Rate in the class constructor
@@ -486,6 +487,27 @@ class FakeControlboardOR : public yarp::dev::DeviceDriver, public yarp::dev::IPo
          * @return true if everything goes fine, false otherwise.
          */
         virtual bool getLimits(int axis, double *min, double *max);
+
+    //  --------- IControlLimits2 Declarations. Implementation in IControlLimits2Impl.cpp ---------
+
+        /**
+         * Set the software speed limits for a particular axis, the behavior of the
+         * control card when these limits are exceeded, depends on the implementation.
+         * @param axis joint number
+         * @param min the value of the lower limit
+         * @param max the value of the upper limit
+         * @return true or false on success or failure
+         */
+        virtual bool setVelLimits(int axis, double min, double max);
+
+        /**
+         * Get the software speed limits for a particular axis.
+         * @param axis joint number
+         * @param min pointer to store the value of the lower limit
+         * @param max pointer to store the value of the upper limit
+         * @return true if everything goes fine, false otherwise.
+         */
+        virtual bool getVelLimits(int axis, double *min, double *max);
 
     //  --------- IControlMode Declarations. Implementation in IControlModeImpl.cpp ---------
 
