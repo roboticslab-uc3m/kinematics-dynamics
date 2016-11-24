@@ -5,6 +5,7 @@
 
     <module>
         <name>launchManipulation</name>
+        <parameters>--externalEncoderWait 1</parameters>
         <node>/manipulation</node>
     </module>
 
