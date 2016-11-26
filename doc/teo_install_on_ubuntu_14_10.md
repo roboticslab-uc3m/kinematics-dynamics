@@ -1,7 +1,7 @@
 ## Simulation and Basic Control: Installation from Source Code (Ubuntu 14.10)
 
 First install the dependencies:
-- [Install CMake (Ubuntu 14.10)](teo_install_cmake_on_ubuntu_14_10.md)
+- [Install CMake (Ubuntu 14.10)](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_cmake.md)
 - [Install Yarp (Ubuntu 14.10)](teo_install_yarp_on_ubuntu_14_10.md)
 - [Install Openrave (Ubuntu 14.10)](teo_install_openrave_on_ubuntu_14_10.md)
 - [Install Kdl (Ubuntu 14.10)](teo_install_kdl_on_ubuntu_14_10.md)
