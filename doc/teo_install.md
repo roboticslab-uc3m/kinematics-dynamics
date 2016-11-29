@@ -1,4 +1,4 @@
-## Simulation and Basic Control: Installation from Source Code (Ubuntu 14.10)
+## Simulation and Basic Control: Installation from Source Code
 
 First install the dependencies:
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_cmake.md)
@@ -6,13 +6,13 @@ First install the dependencies:
 - [Install OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_openrave.md)
 - [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_kdl.md)
 
-### Install the Simulation and Basic Control Software
+### Install the Simulation and Basic Control Software on Ubuntu (working on all tested versions)
 
 Our software integrates the previous dependencies. Note that you will be prompted for your password upon using '''sudo''' a couple of times:
 
 ```bash
 cd  # go home
-mkdir -p repos; cd repos  # make $HOME/repos if it doesn't exist; then, enter it
+mkdir -p repos; cd repos  # make $HOME/repos if it does not exist; then, enter it
 git clone --recursive https://github.com/roboticslab-uc3m/teo-main.git  # Download teo-main software from the repository; Use --recursive to get embedded repositories (technically, git submodules)
 cd teo-main; mkdir build; cd build; cmake ..  # Configure the teo-main software
 make  # Compile
