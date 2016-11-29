@@ -2,9 +2,9 @@
 
 First install the dependencies:
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_cmake.md)
-- [Install Yarp (Ubuntu 14.10)](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_yarp.md)
-- [Install Openrave (Ubuntu 14.10)](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_openrave.md)
-- [Install Kdl (Ubuntu 14.10)](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_kdl.md)
+- [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_yarp.md)
+- [Install OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_openrave.md)
+- [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install_kdl.md)
 
 ### Install the Simulation and Basic Control Software
 
