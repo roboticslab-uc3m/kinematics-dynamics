@@ -6,7 +6,7 @@ Link to Doxygen generated documentation: http://robots.uc3m.es/dox-teo-main
 
 ## Installation
 
-Installation instructions for installing from source can be found [here](doc/teo_install_on_ubuntu_14_10.md).
+Installation instructions for installing from source can be found [here](doc/teo_install.md).
 
 ## Contributing
 
