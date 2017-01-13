@@ -4,7 +4,7 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_DEVICE(CartesianControlServer TYPE teo::CartesianControlServer INCLUDE CartesianControlServer.hpp WRAPPER CartesianControlServer)
+YARP_PREPARE_PLUGIN(CartesianControlServer CATEGORY device TYPE teo::CartesianControlServer INCLUDE CartesianControlServer.hpp WRAPPER CartesianControlServer)
 
 IF (NOT SKIP_CartesianControlServer)
 
