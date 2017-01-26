@@ -4,10 +4,18 @@
 teo::GaitTrajectory::GaitTrajectory()
 {
 
-    //revisar esos valores-->
-    steps = new GaitSupportPoligon(kin::Pose(0,-0.3,-1),kin::Pose(0,+0.3,-1));//<--revisar estos valores
+    //revisados estos valores-->
+
+    kin::Pose rf(0,-0.1285,-0.845);
+    rf.ChangeRotation(0,1,0,M_PI/2);
+    rf.ChangeRotation(0,0,1,M_PI);
+
+    kin::Pose lf(0,+0.1285,-0.845);
+    lf.ChangeRotation(0,1,0,M_PI/2);
+
+    steps = new GaitSupportPoligon(rf,lf);
     steps->SetSwingParameters(0.05,0.05); //(swing distance, swing height). revisar valores
-    steps->SetSupportParameters(0.25); //(hip sideshift). revisar estos valores
+    steps->SetHipParameters(0.25,0.1); //(hip sideshift, hip squat). revisar estos valores
     steps->AddStepForward(1);
     steps->GetTrajectories(trf,tlf);
 
