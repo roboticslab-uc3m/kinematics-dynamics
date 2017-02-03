@@ -7,19 +7,25 @@ teo::GaitTrajectory::GaitTrajectory()
     //revisados estos valores-->
 
     kin::Pose rf(0,-0.1285,-0.845);
-    rf.ChangeRotation(0,1,0,-M_PI/2);
-    rf.ChangeRotation(0,0,1,M_PI);
+    rf.ChangeRotation(0,1,0,M_PI/2);
+    //rf.ChangeRotation(1,0,0,M_PI);
+
+    std::cout << "right foot : " << rf.GetX() << "," << rf.GetY() << "," << rf.GetZ() << "," ;
+    std::cout << std::endl;
 
     kin::Pose lf(0,+0.1285,-0.845);
     lf.ChangeRotation(0,1,0,-M_PI/2);
+
+    std::cout << "left foot : " << rf.GetX() << "," << rf.GetY() << "," << rf.GetZ() << "," ;
+    std::cout << std::endl;
 
     //revisados estos valores<--
 
     steps = new GaitSupportPoligon(rf,lf);
     steps->SetSwingParameters(0.05,0.05); //(swing distance, swing height). revisar valores
-    steps->SetHipParameters(0.25,0.1); //(hip sideshift, hip squat). revisar estos valores
+    steps->SetHipParameters(0.25,0.05); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
-    steps->AddStepForward(1);
+    //steps->AddStepForward(1);
     steps->GetTrajectories(trf,tlf);
 
 }
@@ -37,7 +43,12 @@ bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x
 
     kin::Pose sample;
 
-    trf.GetSample(movementTime,sample);
+    if (trf.GetSample(movementTime,sample)==false)
+    {
+        //no data for that time, no moving.
+        x=lastGoodX;
+        return true;
+    }
     sample.GetPosition(px,py,pz);
     sample.GetRotation(rx,ry,rz,ang);
 
@@ -52,7 +63,16 @@ bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x
     x.push_back(rz);
     x.push_back(ang*180/M_PI);
 
-    tlf.GetSample(movementTime,sample);
+    std::cout << "> rfX: " << px << ","<< py << ","<< pz << ",";
+    std::cout << "> rot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";
+    std::cout << std::endl;
+
+    if (!tlf.GetSample(movementTime,sample))
+    {
+        //no data for that time, no moving.
+        x=lastGoodX;
+        return true;
+    }
     sample.GetPosition(px,py,pz);
     sample.GetRotation(rx,ry,rz,ang);
 
@@ -65,6 +85,11 @@ bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x
     x.push_back(rz);
     x.push_back(ang*180/M_PI);
 
+    std::cout << "> lfX: " << px << ","<< py << ","<< pz << ",";
+    std::cout << "> rot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";
+    std::cout << std::endl;
+
+    lastGoodX = x;
 
     return true;
 }
@@ -79,7 +104,12 @@ bool teo::GaitTrajectory::getXdot(const double movementTime, std::vector<double>
 
     kin::Pose sampleVelocity;
 
-    trf.GetSampleVelocity(movementTime,sampleVelocity);
+    if(!trf.GetSampleVelocity(movementTime,sampleVelocity))
+    {
+        //no velocities for that time.
+        xdot=std::vector <double> (14,0);
+        return true;
+    }
     sampleVelocity.GetPosition(px,py,pz);
     sampleVelocity.GetRotation(rx,ry,rz,ang);
 
@@ -94,7 +124,17 @@ bool teo::GaitTrajectory::getXdot(const double movementTime, std::vector<double>
     xdot.push_back(rz);
     xdot.push_back(ang*180/M_PI);
 
-    tlf.GetSampleVelocity(movementTime,sampleVelocity);
+    std::cout << "> rfXdot: " << px << ","<< py << ","<< pz << ",";
+    std::cout << "> rotdot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";
+    std::cout << std::endl;
+
+
+    if (!tlf.GetSampleVelocity(movementTime,sampleVelocity))
+    {
+        //no velocities for that time.
+        xdot=std::vector <double> (14,0);
+        return true;
+    }
     sampleVelocity.GetPosition(px,py,pz);
     sampleVelocity.GetRotation(rx,ry,rz,ang);
 
@@ -106,5 +146,11 @@ bool teo::GaitTrajectory::getXdot(const double movementTime, std::vector<double>
     xdot.push_back(ry);
     xdot.push_back(rz);
     xdot.push_back(ang*180/M_PI);
+
+    std::cout << "> lfXdot: " << px << ","<< py << ","<< pz << ",";
+    std::cout << "> rotdot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";
+    std::cout << std::endl;
+
+
     return true;
 }

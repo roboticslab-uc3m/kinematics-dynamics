@@ -117,6 +117,9 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
         iCartesianSolverA->setLimits(qMin,qMax);
     }
 
+    double nonSingular[6]={0,2,0,4,2,0};
+    iPositionControlA->positionMove(&nonSingular[0]);
+
     return true;
 }
 
@@ -217,6 +220,9 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
     {
         iCartesianSolverB->setLimits(qMin,qMax);
     }
+
+    double nonSingular[6]={0,2,0,4,2,0};
+    iPositionControlB->positionMove(&nonSingular[0]);
 
     return true;
 }
