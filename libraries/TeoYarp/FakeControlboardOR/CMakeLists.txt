@@ -30,7 +30,7 @@ install(TARGETS FakeControlboardOR DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp FakeControlboardOR CACHE INTERNAL "appended libraries") 
+set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp FakeControlboardOR ${OpenRAVE_LIBRARIES} ${OpenRAVE_CORE_LIBRARIES} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} CACHE INTERNAL "appended libraries") 
 
 ENDIF (NOT SKIP_FakeControlboardOR)
 
