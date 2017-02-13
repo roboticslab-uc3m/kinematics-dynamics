@@ -13,8 +13,9 @@ endif(COMMAND cmake_policy)
 
 project(TEO)
 
+set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
+
 ### options: cpp libraries
-option(BUILD_SHARED_LIBS "All shared libs" TRUE)
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 
