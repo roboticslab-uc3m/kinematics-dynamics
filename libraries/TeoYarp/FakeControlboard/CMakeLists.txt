@@ -1,5 +1,5 @@
-# Copyright: (C) 2013 Universidad Carlos III de Madrid
-# Author: Juan G. Victores
+# Copyright: (C) 2017 Universidad Carlos III de Madrid
+# Author: Juan G. Victores & Raul de Santos Rico
 
 YARP_PREPARE_PLUGIN(FakeControlboard CATEGORY device TYPE teo::FakeControlboard INCLUDE FakeControlboard.hpp WRAPPER controlboardwrapper2)
 
@@ -19,7 +19,18 @@ install(TARGETS FakeControlboard DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp FakeControlboard CACHE INTERNAL "appended libraries") 
+# set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp FakeControlboard CACHE INTERNAL "appended libraries") 
+
+  #install(TARGETS FakeControlboard DESTINATION lib)
+  yarp_install(TARGETS FakeControlboard
+             EXPORT YARP
+             COMPONENT runtime
+             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
+             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+
+  yarp_install(FILES FakeControlboard.ini
+              COMPONENT runtime
+DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 ENDIF (NOT SKIP_FakeControlboard)
 
