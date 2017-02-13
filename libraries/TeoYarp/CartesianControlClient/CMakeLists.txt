@@ -19,7 +19,18 @@ install(TARGETS CartesianControlClient DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp CartesianControlClient CACHE INTERNAL "appended libraries")
+# set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp CartesianControlClient CACHE INTERNAL "appended libraries")
+
+#install(TARGETS CartesianControlClient DESTINATION lib)
+  yarp_install(TARGETS CartesianControlClient
+             EXPORT YARP
+             COMPONENT runtime
+             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
+             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+
+  yarp_install(FILES CartesianControlClient.ini
+              COMPONENT runtime
+DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 ENDIF (NOT SKIP_CartesianControlClient)
 
