@@ -20,7 +20,7 @@ sudo make install  # Install :-)
 cp ../scripts/gnome/teo-main.desktop $HOME/Desktop
 ```
 
-For CMake find_package(TEO REQUIRED), you may also be interested in adding the following to your bashrc or profile:
+For CMake find_package(TEO REQUIRED), you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
 ```bash
 export TEO_DIR=/home/teo/repos/teo-main/build
 ```
