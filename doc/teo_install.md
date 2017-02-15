@@ -22,7 +22,7 @@ cp ../scripts/gnome/teo-main.desktop $HOME/Desktop
 
 For CMake `find_package(TEO REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
 ```bash
-export TEO_DIR=/home/teo/repos/teo-main/build
+export TEO_DIR=$HOME/repos/teo-main/build
 ```
 
 For additional TEO options use ccmake instead of cmake.
