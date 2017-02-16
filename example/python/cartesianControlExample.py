@@ -6,7 +6,7 @@ import teo
 yarp.Network.init()
 
 if yarp.Network.checkNetwork() != True:
-    print "[error] Please try running yarp server"
+    print '[error] Please try running yarp server'
     quit()
 
 options = yarp.Property()
@@ -17,14 +17,28 @@ dd = yarp.PolyDriver(options)  # calls open -> connects
 
 cartesianControl = teo.viewICartesianControl(dd)  # view the actual interface
 
-print "stat"
-#a = (int)
-#b = yarp.DVector()
-#cartesianControl.stat(a,b)
+print '> stat'
+x = yarp.DVector()
+stat = cartesianControl.stat(x)
+print '<',stat,'[%s]' % ', '.join(map(str, x))
 
-print "delay(5)"
-yarp.Time.delay(5)
+xd = [0,-0.346927436108, -0.221801094416,0,1,0,90]
 
-#print ""
-#cartesianControl.
+print '> inv [%s]' % ', '.join(map(str, xd))
+xd_vector = yarp.DVector(xd)
+qd_vector = yarp.DVector()
+cartesianControl.inv(xd_vector,qd_vector)
+print '< [%s]' % ', '.join(map(str, qd_vector))
+
+print '> movj [%s]' % ', '.join(map(str, xd))
+xd_vector = yarp.DVector(xd)
+if cartesianControl.movj(xd_vector):
+    print '< [ok]'
+else:
+    print '< [fail]'
+
+print 'delay(1)'
+yarp.Time.delay(1)
+
+print 'bye!'
 
