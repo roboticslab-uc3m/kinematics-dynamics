@@ -14,6 +14,8 @@
 
 %module teo
 
+%include "std_vector.i"  /* Do not doubt about the importance of this line */
+
 //%import "yarp.i"
 
 %{
@@ -23,6 +25,17 @@
 
 /* Parse the header file to generate wrappers */
 %include "ICartesianControl.h"
+
+%extend teo::ICartesianControl
+{
+    int stat(std::vector<double> &x)
+    {
+        int buffer;
+        bool ok = self->stat(buffer, x);
+        if (!ok) return 0;
+        return buffer;
+    }
+}
 
 %{
 #include <yarp/dev/all.h>
@@ -34,4 +47,5 @@ teo::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d)
 }
 %}
 extern teo::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d);
+
 
