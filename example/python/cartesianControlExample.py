@@ -20,7 +20,7 @@ cartesianControl = teo.viewICartesianControl(dd)  # view the actual interface
 print '> stat'
 x = yarp.DVector()
 stat = cartesianControl.stat(x)
-print '<',stat,'[%s]' % ', '.join(map(str, x))
+print '<',yarp.Vocab.decode(stat),'[%s]' % ', '.join(map(str, x))
 
 xd = [0,-0.346927436108, -0.221801094416,0,1,0,90]
 
