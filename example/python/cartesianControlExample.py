@@ -27,8 +27,10 @@ xd = [0,-0.346927436108, -0.221801094416,0,1,0,90]
 print '> inv [%s]' % ', '.join(map(str, xd))
 xd_vector = yarp.DVector(xd)
 qd_vector = yarp.DVector()
-cartesianControl.inv(xd_vector,qd_vector)
-print '< [%s]' % ', '.join(map(str, qd_vector))
+if cartesianControl.inv(xd_vector,qd_vector):
+    print '< [%s]' % ', '.join(map(str, qd_vector))
+else:
+    print '< [fail]'
 
 print '> movj [%s]' % ', '.join(map(str, xd))
 xd_vector = yarp.DVector(xd)
