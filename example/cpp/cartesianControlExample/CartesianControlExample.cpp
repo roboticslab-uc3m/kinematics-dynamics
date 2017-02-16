@@ -10,7 +10,7 @@
  *
  * Copyright: (C) 2017 Universidad Carlos III de Madrid;
  *
- * Authors: rsantos88, jgvictores
+ * Authors: Raul de Santos Rico
  *
  * CopyPolicy: Released under the terms of the LGPLv2.1 or later, see license/LGPL.TXT
  *
@@ -20,13 +20,22 @@ cd $TEO_MAIN_ROOT/example/cpp/cartesianControlExample/
 mkdir build; cd build; cmake ..
 make -j3
 \endverbatim
- *
- * <b>Running</b>
+ * <b>Running example with teoSim</b>
+ * First we must run a YARP name server if it is not running in our current namespace:
 \verbatim
-./cartesianControlExample
+[on terminal 1] yarp server
+\endverbatim
+ * What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
+\verbatim
+[on terminal 2] launchTeoYarp --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 3] ./cartesianControlExample
 \endverbatim
  *
+ *
+ *
+ *
  */
+
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
 #include "ICartesianControl.h" // incluimos este interfaz, puesto que vamos a usar las funciones de la librería compartida (device CartesianControlClient)
@@ -41,8 +50,8 @@ int main(int argc, char *argv[])
         return(1);
     }
     yarp::os::Property options;
-    options.put("device","CartesianControlClient");
-    options.put("cartesianRemote","/teoSim/rightArm/CartesianControlServer"); // puerto al que nos vamos a conectar
+    options.put("device","CartesianControlClient"); // Aquí es donde le indicamos el device (shared library)
+    options.put("cartesianRemote","/teoSim/rightArm/CartesianControlServer"); // puerto al que nos vamos a conectar con el servidor
     options.put("cartesianLocal","/CartesianControlExample");
 
     yarp::dev::PolyDriver dd(options);
