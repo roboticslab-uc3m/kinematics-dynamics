@@ -24,7 +24,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${GAI
 # Set up our library.
 if (folder_source)
   add_library(${KEYWORD} ${folder_source} ${folder_header})
-  target_link_libraries(${KEYWORD} ${orocos_kdl_LIBRARIES} ${GAIT_LIBRARIES})
+  target_link_libraries(${KEYWORD} ${orocos_kdl_LIBRARIES} ${GAIT_LIBRARIES} ${TEO_LIBRARIES})
   install(TARGETS ${KEYWORD} DESTINATION lib)
 else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
