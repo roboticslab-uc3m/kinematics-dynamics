@@ -2,4 +2,4 @@
 
 ## DH Coordinate Systems and Parameter Table
 
-![DH](fig/DH.png)
+![DH](fig/src/DH.svg)
