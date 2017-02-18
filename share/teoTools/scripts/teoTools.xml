@@ -40,7 +40,29 @@
 
     <module>
         <name>yarpscope</name>
-        <parameters>--remote /jr3ch0:o --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -1000 --max 1000</parameters>
+        <parameters>--remote /jr3/ch0:o --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -1000 --max 1000</parameters>
+        <prefix>/jr3/ch0:o</prefix>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpscope</name>
+        <parameters>--remote /jr3/ch1:o --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -1000 --max 1000</parameters>
+        <prefix>/jr3/ch1:o</prefix>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpscope</name>
+        <parameters>--remote /jr3/ch2:o --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -1000 --max 1000</parameters>
+        <prefix>/jr3/ch2:o</prefix>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpscope</name>
+        <parameters>--remote /jr3/ch3:o --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -1000 --max 1000</parameters>
+        <prefix>/jr3/ch3:o</prefix>
         <node>localhost</node>
     </module>
 
