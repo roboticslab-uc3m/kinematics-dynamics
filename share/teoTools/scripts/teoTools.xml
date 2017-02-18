@@ -39,6 +39,12 @@
     </module>
 
     <module>
+        <name>yarpscope</name>
+        <parameters>--remote /jr3ch0:o --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -1000 --max 1000</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
         <name>yarpmotorgui</name>
         <parameters>--from config/yarpmotorgui.ini</parameters>
     </module>
