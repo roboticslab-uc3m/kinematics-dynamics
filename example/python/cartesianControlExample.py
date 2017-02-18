@@ -15,6 +15,10 @@ options.put('cartesianRemote','/teoSim/rightArm/CartesianControlServer')
 options.put('cartesianLocal','/cartesianControlExample')
 dd = yarp.PolyDriver(options)  # calls open -> connects
 
+if not dd.isValid():
+    print 'Cannot open the device!'
+    sys.exit()
+
 cartesianControl = teo.viewICartesianControl(dd)  # view the actual interface
 
 print '> stat'
