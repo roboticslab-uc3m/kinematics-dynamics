@@ -81,6 +81,48 @@ int main(int argc, char *argv[])
         printf("%f ", vector[i]);
     printf("\n");
 
+    // -- Primero, mover el brazo en posición articular:
+    // -- set poss (0 0 0 90 0 0 0)
+
+    // -- Position 1
+    std::vector<double> position;
+    position.push_back(0.390926); // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
+    position.push_back(-0.346663);
+    position.push_back(0.166873);
+    position.push_back(-0.004334);
+    position.push_back(0.70944);
+    position.push_back(0.704752);
+    position.push_back(0.353119);
+
+    // movj -> mueve en posición
+    // movl -> mueve en velocidad
+    printf("Position 1: poss (0 0 0 90 0 0 0)\n");
+    iCartesianControl->movj(position);
+
+    // -- Position 2: mueve en eje X hacia al frente
+    printf("Position 2: mueve en eje X hacia el frente\n");
+    position [0] = 0.5;
+    iCartesianControl->movj(position);
+
+    // -- Position 3: mueve en eje Y hacia su derecha
+    printf("Position 3: mueve en eje Y hacia su derecha\n");
+    position [1] = -0.5;
+    iCartesianControl->movj(position);
+
+    // -- Position 4: rota en eje Y 10 grados
+    printf("Position 4: rota en eje Y 10 grados\n");
+    position [3] = 0.0;
+    position [4] = 1.0;
+    position [5] = 0.0;
+    position [6] = 10.0;
+    iCartesianControl->movj(position);
+
+    // -- Position 5: rota en eje Y 30 grados
+    printf("Position 5: rota en eje Y 30 grados\n");
+    position [6] = 30.0;
+    iCartesianControl->movj(position);
+
+
     dd.close();
 
     return 0;
