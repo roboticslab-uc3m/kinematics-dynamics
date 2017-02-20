@@ -8,4 +8,3 @@ CMakeLists.txt.user
 /build*/
 /.cproject
 /.project
-/example/cpp/cartesianControlExample/build*/
