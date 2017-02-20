@@ -47,7 +47,7 @@ First we must run a YARP name server if it is not running in our current namespa
 And then launch the actual library:
 
 \verbatim
-[on terminal 2] launchTeoYarp --device BasicCartesianControl --robot FakeControlboard --angleRepr axisAngle --link_0 "(A 1)"
+[on terminal 2] yarpdev --device BasicCartesianControl --robot FakeControlboard --angleRepr axisAngle --link_0 "(A 1)"
 \endverbatim
 
 Along the output, observe a line like the following.
