@@ -85,6 +85,12 @@
 
     <module>
         <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teo/head/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+    
+    <module>
+        <name>gnome-terminal</name>
         <parameters>-e "yarp rpc /teo/rightLeg/rpc:i"</parameters>
         <node>localhost</node>
     </module>
@@ -95,6 +101,12 @@
         <node>localhost</node>
     </module>
 
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teo/trunk/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+    
     <!-- CARTESIAN -->
     <module>
         <name>gnome-terminal</name>
