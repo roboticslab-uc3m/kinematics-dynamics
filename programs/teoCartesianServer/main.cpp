@@ -98,11 +98,11 @@ Response: (0.0 0.0 1.4 0.0 0.0) [ok]
 #include "TeoCartesianServer.hpp"
 
 
-YARP_DECLARE_PLUGINS(TeoYarp)
+//YARP_DECLARE_PLUGINS(TeoYarp)
 
 int main(int argc, char *argv[]) {
 
-    YARP_REGISTER_PLUGINS(TeoYarp);
+    //YARP_REGISTER_PLUGINS(TeoYarp);
 
     yarp::os::ResourceFinder rf;
     rf.setVerbose(true);
