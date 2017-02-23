@@ -43,11 +43,11 @@
 
 
 
-YARP_DECLARE_PLUGINS(TeoYarp)  //-- Provides "KdlSolver".
+//YARP_DECLARE_PLUGINS(TeoYarp)  //-- Provides "KdlSolver".
 
 int main(int argc, char *argv[]) {
 
-    YARP_REGISTER_PLUGINS(TeoYarp);  //-- Provides "KdlSolver".
+    //YARP_REGISTER_PLUGINS(TeoYarp);  //-- Provides "KdlSolver".
 
     yarp::os::ResourceFinder rf;
     rf.setVerbose(true);

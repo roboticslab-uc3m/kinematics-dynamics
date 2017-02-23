@@ -8,11 +8,11 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${TEO_INCLUD
 link_directories(${TEO_LINK_DIRS})
 
 add_executable(testKdlSolver testKdlSolver.cpp)
-target_link_libraries(testKdlSolver ${TEO_LIBRARIES} gtest gtest_main)
+target_link_libraries(testKdlSolver ${YARP_LIBRARIES} gtest gtest_main)
 
 add_executable(testKdlSolverFromFile testKdlSolverFromFile.cpp)
-target_link_libraries(testKdlSolverFromFile ${TEO_LIBRARIES} gtest gtest_main)
+target_link_libraries(testKdlSolverFromFile ${YARP_LIBRARIES} gtest gtest_main)
 
 add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
-target_link_libraries(testBasicCartesianControl ${TEO_LIBRARIES} gtest gtest_main)
+target_link_libraries(testBasicCartesianControl ${YARP_LIBRARIES} gtest gtest_main)
 

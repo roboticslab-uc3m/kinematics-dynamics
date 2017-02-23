@@ -6,7 +6,7 @@ Link to Doxygen generated documentation: http://robots.uc3m.es/dox-teo-main
 
 ## Installation
 
-Installation instructions for installing from source can be found [here](doc/teo_install_on_ubuntu_14_10.md).
+Installation instructions for installing from source can be found [here](doc/teo_install.md).
 
 ## Contributing
 
@@ -30,3 +30,8 @@ Installation instructions for installing from source can be found [here](doc/teo
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/teo-main/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/teo-main)
 
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/teo-main.svg?label=Issues)](https://github.com/roboticslab-uc3m/teo-main/issues)
+
+## Links of interest:
+
+* [teo-body](https://github.com/roboticslab-uc3m/teo-body)
+* [teo-head](https://github.com/roboticslab-uc3m/teo-head)

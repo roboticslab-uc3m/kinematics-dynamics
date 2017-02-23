@@ -7,7 +7,7 @@
 #include "ICartesianSolver.h"
 #include "ColorDebug.hpp"
 
-YARP_DECLARE_PLUGINS(TeoYarp)
+//YARP_DECLARE_PLUGINS(TeoYarp)
 
 namespace teo
 {
@@ -20,7 +20,7 @@ class KdlSolverTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            YARP_REGISTER_PLUGINS(TeoYarp);
+            //YARP_REGISTER_PLUGINS(TeoYarp);
 
             yarp::os::Property solverOptions("(device KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 

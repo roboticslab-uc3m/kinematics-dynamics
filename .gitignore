@@ -6,3 +6,5 @@
 tags
 CMakeLists.txt.user
 /build*/
+/.cproject
+/.project

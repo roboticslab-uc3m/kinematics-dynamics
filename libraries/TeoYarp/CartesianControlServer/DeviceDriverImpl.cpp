@@ -45,7 +45,7 @@ bool teo::CartesianControlServer::open(yarp::os::Searchable& config) {
     if (config.check("name",name))
         rpcServer.open(name->asString()+"/rpc:s");
     else
-        rpcServer.open("/CartesianControlServer/rpc:s");
+        rpcServer.open("/CartesianControl/rpc:s");
 
 
     return true;

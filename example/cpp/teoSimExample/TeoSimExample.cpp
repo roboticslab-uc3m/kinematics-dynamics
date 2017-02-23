@@ -11,7 +11,7 @@ bool TeoSimExample::run()
     if (!yarp::os::Network::checkNetwork())
     {
         printf("Please start a yarp name server first\n");
-        return(-1);
+        return(1);
     }
 
     //Configure Drivers

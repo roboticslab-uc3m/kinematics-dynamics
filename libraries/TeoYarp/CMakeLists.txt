@@ -11,27 +11,27 @@ IF (ENABLE_TeoYarp)
   include(YarpPlugin)
 
   # Exporting dependencies for TEOConfig.cmake quite manually for now... 
-  set(TEO_BODY_LIBRARIES ${TEO_LIBRARIES} TeoYarp CACHE INTERNAL "appended libraries") 
+  # set(TEO_BODY_LIBRARIES ${TEO_LIBRARIES} TeoYarp CACHE INTERNAL "appended libraries") 
 
-  yarp_begin_plugin_library(TeoYarp)
+  # yarp_begin_plugin_library(TeoYarp)
     add_subdirectory(FakeControlboard)
     add_subdirectory(FakeControlboardOR)
     add_subdirectory(KdlSolver)
     add_subdirectory(BasicCartesianControl)
     add_subdirectory(CartesianControlServer)
     add_subdirectory(CartesianControlClient)
-  yarp_end_plugin_library(TeoYarp)
+  # yarp_end_plugin_library(TeoYarp)
 
-  install(TARGETS TeoYarp DESTINATION lib)
+  # install(TARGETS TeoYarp DESTINATION lib)
 
-  IF (ENABLE_launchTeoYarp)
+  # IF (ENABLE_launchTeoYarp)
 
-    link_directories(${TEO_LINK_DIRS})
+    # link_directories(${TEO_LINK_DIRS})
 
-    yarp_add_plugin_yarpdev_executable(launchTeoYarp TeoYarp)
-    install(TARGETS launchTeoYarp DESTINATION bin)
+    # yarp_add_plugin_yarpdev_executable(launchTeoYarp TeoYarp)
+    # install(TARGETS launchTeoYarp DESTINATION bin)
 
-  ENDIF (ENABLE_launchTeoYarp)
+  # ENDIF (ENABLE_launchTeoYarp)
 
 ENDIF (ENABLE_TeoYarp)
 
