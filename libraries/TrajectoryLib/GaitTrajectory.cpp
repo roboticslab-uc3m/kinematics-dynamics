@@ -7,8 +7,11 @@ teo::GaitTrajectory::GaitTrajectory()
     //revisados estos valores-->
 
     kin::Pose rf(0,-0.1285,-0.845);
-    rf.ChangeRotation(0,1,0,M_PI/2);
-    //rf.ChangeRotation(1,0,0,M_PI);
+    //rf.ChangeRotation(-0.7071,0.0,0.7071,M_PI);
+    rf.ChangeRotation(0,1,0,0.99999*M_PI/2);
+    rf.ChangeRotation(1,0,0,0.99999*-M_PI);
+   /* rf.ChangeRotation(0.,1.,0.,M_PI/2);
+    rf.ChangeRotation(1.,0.,0.,M_PI);*/
 
     std::cout << "right foot : " << rf.GetX() << "," << rf.GetY() << "," << rf.GetZ() << "," ;
     std::cout << std::endl;
