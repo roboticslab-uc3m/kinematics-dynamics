@@ -17,8 +17,7 @@ FOREACH(subdir ${SUBDIRS})
     set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/${subdir} CACHE INTERNAL "appended header dirs")
 ENDFOREACH()
 
-set(COLOR_DEBUG_PART_OF_PROJECT TRUE)
-add_subdirectory(ColorDebug)
+include_directories("${CMAKE_BINARY_DIR}/install/include")
 
 set(GAIT_PART_OF_PROJECT TRUE)
 add_subdirectory(gait)
