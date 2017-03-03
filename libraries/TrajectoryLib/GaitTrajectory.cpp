@@ -26,7 +26,7 @@ teo::GaitTrajectory::GaitTrajectory()
 
     steps = new GaitSupportPoligon(rf,lf);
     steps->SetSwingParameters(0.05,0.05); //(swing distance, swing height). revisar valores
-    steps->SetHipParameters(0.1,0.07); //(hip sideshift, hip squat). revisar estos valores
+    steps->SetHipParameters(0.12,0.08); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
     steps->GetTrajectories(trf,tlf);

@@ -12,7 +12,7 @@
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
 #define VOCAB_CC_MOVS_CONTROLLING VOCAB4('c','c','s','c')
 
-#define DEFAULT_DURATION 10
+#define DEFAULT_DURATION 15
 
 namespace teo
 {

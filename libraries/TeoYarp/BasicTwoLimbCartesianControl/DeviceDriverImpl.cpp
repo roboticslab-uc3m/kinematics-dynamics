@@ -117,7 +117,7 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
         iCartesianSolverA->setLimits(qMin,qMax);
     }
 
-    double nonSingular[6]={0,2,0,4,2,0};
+    double nonSingular[6]={0,0,-2,4,-2,0};
     iPositionControlA->positionMove(&nonSingular[0]);
 
     return true;
@@ -207,7 +207,7 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
     for(unsigned int joint=0;joint<numRobotJointsB;joint++)
     {
         double min, max;
-        iControlLimitsA->getLimits(joint,&min,&max);
+        iControlLimitsB->getLimits(joint,&min,&max);
         qMin.push_back(min);
         qMax.push_back(max);
         CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
@@ -221,7 +221,7 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
         iCartesianSolverB->setLimits(qMin,qMax);
     }
 
-    double nonSingular[6]={0,2,0,4,2,0};
+    double nonSingular[6]={0,0,-2,4,-2,0};
     iPositionControlB->positionMove(&nonSingular[0]);
 
     return true;
