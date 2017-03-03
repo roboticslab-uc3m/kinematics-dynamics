@@ -43,13 +43,26 @@ void teo::BasicTwoLimbCartesianControl::run() {
             CD_DEBUG_NO_HEADER("%f ",desiredXdot[i]);
         CD_DEBUG_NO_HEADER("\n");
 
+
+        //jmy
+        std::vector<double> desiredXA(desiredX.begin(),desiredX.begin()+7);
+        std::vector<double> desiredXB(desiredX.begin()+7,desiredX.end());
+        std::vector<double> desiredXdotA(desiredXdot.begin(),desiredXdot.begin()+7);
+        std::vector<double> desiredXdotB(desiredXdot.begin()+7,desiredXdot.end());
+        //jmyend
+
         //-- Apply control law to compute robot Cartesian velocity commands.
         std::vector<double> commandXdotA, commandXdotB;
-        iCartesianSolverA->fwdKinError(desiredX,currentQA, commandXdotA);
+        iCartesianSolverA->fwdKinError(desiredXA,currentQA, commandXdotA);
+        //jmy
+        iCartesianSolverB->fwdKinError(desiredXB,currentQB, commandXdotB);
+        //jmyend
         for(unsigned int i=0; i<6; i++)
         {
             commandXdotA[i] *= -DEFAULT_GAIN;
-            commandXdotA[i] += desiredXdot[i];
+            commandXdotA[i] += desiredXdotA[i];
+            commandXdotB[i] *= -DEFAULT_GAIN;
+            commandXdotB[i] += desiredXdotB[i];
         }
 
         //-- Compute joint velocity commands and send to robot.
@@ -71,6 +84,32 @@ void teo::BasicTwoLimbCartesianControl::run() {
         {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
         }
+
+        //jmy
+        std::vector<double> encodersA(numRobotJointsA);
+        iEncodersA->getEncoders(encodersA.data());
+        std::cout << "rightLeg encoders: " << encodersA << std::endl;
+        if (! iCartesianSolverB->diffInvKin(currentQB,commandXdotB,commandQdotB) )
+        {
+            CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
+        }
+
+        CD_DEBUG_NO_HEADER("[STEP] [%f] ",movementTime);
+        for(int i=0;i<6;i++)
+            CD_DEBUG_NO_HEADER("%f ",commandXdotB[i]);
+        CD_DEBUG_NO_HEADER("-> ");
+        for(int i=0;i<numRobotJointsB;i++)
+            CD_DEBUG_NO_HEADER("%f ",commandQdotB[i]);
+        CD_DEBUG_NO_HEADER("[deg/s]\n");
+
+        if( ! iVelocityControlB->velocityMove( commandQdotB.data() ) )
+        {
+            CD_WARNING("velocityMove failed, not updating control this iteration.\n");
+        }
+        std::vector<double> encodersB(numRobotJointsB);
+        iEncodersB->getEncoders(encodersB.data());
+        std::cout << "leftLeg encoders: " << encodersB << std::endl;
+        //jmyend
 
     }
 

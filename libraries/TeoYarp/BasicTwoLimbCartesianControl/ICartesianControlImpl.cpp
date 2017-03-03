@@ -71,6 +71,8 @@ bool teo::BasicTwoLimbCartesianControl::stopControl()
 {
     iPositionControlA->setPositionMode();
     iPositionControlA->stop();
+    iPositionControlB->setPositionMode();
+    iPositionControlB->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
     return true;
 }
