@@ -8,8 +8,8 @@ teo::GaitTrajectory::GaitTrajectory()
 
     kin::Pose rf(0,-0.1285,-0.845);
     //rf.ChangeRotation(-0.7071,0.0,0.7071,M_PI);
-    rf.ChangeRotation(0,1,0,0.99999*-M_PI/2);
-    rf.ChangeRotation(0,0,1,0.99999*M_PI);
+    rf.ChangeRotation(0,1,0,-M_PI/2);
+    rf.ChangeRotation(0,0,1,M_PI);
     //rf.ChangeRotation(0.,1.,0.,M_PI/2);
     //rf.ChangeRotation(1.,0.,0.,-M_PI);
 
@@ -19,14 +19,14 @@ teo::GaitTrajectory::GaitTrajectory()
     kin::Pose lf(0,+0.1285,-0.845);
     lf.ChangeRotation(0,1,0,-M_PI/2);
 
-    std::cout << "left foot : " << rf.GetX() << "," << rf.GetY() << "," << rf.GetZ() << "," ;
+    std::cout << "left foot : " << lf.GetX() << "," << lf.GetY() << "," << lf.GetZ() << "," ;
     std::cout << std::endl;
 
     //revisados estos valores<--
 
     steps = new GaitSupportPoligon(rf,lf);
     steps->SetSwingParameters(0.05,0.05); //(swing distance, swing height). revisar valores
-    steps->SetHipParameters(0.20,0.07); //(hip sideshift, hip squat). revisar estos valores
+    steps->SetHipParameters(0.1,0.07); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
     steps->GetTrajectories(trf,tlf);
