@@ -2,5 +2,5 @@ include(YCMEPHelper)
 
 ycm_ep_helper(ColorDebug TYPE GIT
               STYLE GITHUB
-              REPOSITORY jgvictores/ColorDebug.git
+              REPOSITORY roboticslab-uc3m/color-debug.git
               TAG master)
