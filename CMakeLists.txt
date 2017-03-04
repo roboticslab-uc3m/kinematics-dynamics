@@ -1,5 +1,5 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2013;
-# Authors: Juan G. Victores
+# Copyright: Universidad Carlos III de Madrid (C) 2017;
+# Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 # Exploit new cmake 2.6 features (export). 
@@ -13,6 +13,8 @@ endif(COMMAND cmake_policy)
 
 project(TEO)
 
+set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
+
 ### options: cpp libraries
 option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)
 option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
@@ -22,14 +24,14 @@ option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 option(ENABLE_teoCollisionAvoidance "Choose if you want to compile teoCollisionAvoidance" TRUE)
 
 ### options: force default
-option(ENABLE_TeoYarp_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
-option(ENABLE_TeoYarp_CartesianControlServer "Enable/disable compilation of TeoYarp_CartesianControlServer" TRUE)
-option(ENABLE_TeoYarp_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
-option(ENABLE_TeoYarp_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
-option(ENABLE_TeoYarp_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
-option(ENABLE_TeoYarp_BasicTwoLimbCartesianControl "Enable/disable compilation of TeoYarp_BasicTwoLimbCartesianControl" TRUE)
-option(ENABLE_TeoYarp_TwoLimbCartesianControlServer "Enable/disable compilation of TeoYarp_TwoLimbCartesianControlServer" TRUE)
-option(ENABLE_TeoYarp_FakeControlboardOR "Enable/disable compilation of TeoYarp_FakeControlboardOR" TRUE)
+option(ENABLE_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
+option(ENABLE_CartesianControlServer "Enable/disable compilation of TeoYarp_CartesianControlServer" TRUE)
+option(ENABLE_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
+option(ENABLE_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
+option(ENABLE_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
+option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of TeoYarp_BasicTwoLimbCartesianControl" TRUE)
+option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TeoYarp_TwoLimbCartesianControlServer" TRUE)
+option(ENABLE_FakeControlboardOR "Enable/disable compilation of TeoYarp_FakeControlboardOR" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
@@ -134,6 +136,6 @@ configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/TEOConfigUninstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake" IMMEDIATE @ONLY)
 
-#add_custom_target(uninstall
- #   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake)
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake)
 

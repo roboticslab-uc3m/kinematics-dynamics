@@ -7,7 +7,7 @@
 #include "ICartesianSolver.h"
 #include "ColorDebug.hpp"
 
-YARP_DECLARE_PLUGINS(TeoYarp)
+//YARP_DECLARE_PLUGINS(TeoYarp)
 
 namespace teo
 {
@@ -20,7 +20,7 @@ class KdlSolverTestFromFile : public testing::Test
 
     public:
         virtual void SetUp() {
-            YARP_REGISTER_PLUGINS(TeoYarp);
+            //YARP_REGISTER_PLUGINS(TeoYarp);
 
             yarp::os::ResourceFinder rf;
             rf.setVerbose(false);

@@ -4,7 +4,7 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_DEVICE(TwoLimbCartesianControlServer TYPE teo::TwoLimbCartesianControlServer INCLUDE TwoLimbCartesianControlServer.hpp WRAPPER TwoLimbCartesianControlServer)
+YARP_PREPARE_PLUGIN(TwoLimbCartesianControlServer CATEGORY device TYPE teo::TwoLimbCartesianControlServer INCLUDE TwoLimbCartesianControlServer.hpp WRAPPER TwoLimbCartesianControlServer)
 
 IF (NOT SKIP_TwoLimbCartesianControlServer)
 
@@ -19,7 +19,17 @@ install(TARGETS TwoLimbCartesianControlServer DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp TwoLimbCartesianControlServer CACHE INTERNAL "appended libraries")
+#set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp TwoLimbCartesianControlServer CACHE INTERNAL "appended libraries")
+
+yarp_install(TARGETS TwoLimbCartesianControlServer
+             EXPORT YARP
+             COMPONENT runtime
+             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
+             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+
+yarp_install(FILES TwoLimbCartesianControlServer.ini
+             COMPONENT runtime
+             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 ENDIF (NOT SKIP_TwoLimbCartesianControlServer)
 
