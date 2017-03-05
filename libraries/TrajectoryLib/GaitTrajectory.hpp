@@ -26,9 +26,10 @@ public:
 private:
 
     //every gait operation start with instantiation and initialization of a Gait child class
-    Gait * steps;
+    GaitSupportPoligon * steps;
 
     tra::SpaceTrajectory trf,tlf;
+    std::vector<double> lastGoodX;
 
     //GaitSupportPoligon steps(kin::Pose(0,-0.3,-1),kin::Pose(0,+0.3,-1));
 
