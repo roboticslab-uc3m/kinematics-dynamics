@@ -19,6 +19,7 @@
 
     <module>
         <name>launchLocomotion</name>
+        <parameters>--externalEncoderWait 1</parameters>
         <node>/locomotion</node>
     </module>
 

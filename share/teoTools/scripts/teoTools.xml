@@ -70,7 +70,21 @@
         <node>localhost</node>
     </module>
 
+    <!-- INERTIAL -->
+        <module>
+        <name>yarpscope</name>
+        <parameters>--remote /inertial --index "(0 1 2 3 4 5)" --color "(Red Green Blue LightRed LightGreen LightBlue)" --min -100 --max 100 --x 0 --y 0 --dx 640 --dy 512</parameters>
+        <prefix>/jr3/ch2:o</prefix>
+        <node>localhost</node>
+    </module>
+
     <!-- JOINT -->
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teo/head/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+
     <module>
         <name>gnome-terminal</name>
         <parameters>-e "yarp rpc /teo/rightArm/rpc:i"</parameters>
@@ -85,10 +99,10 @@
 
     <module>
         <name>gnome-terminal</name>
-        <parameters>-e "yarp rpc /teo/head/rpc:i"</parameters>
+        <parameters>-e "yarp rpc /teo/trunk/rpc:i"</parameters>
         <node>localhost</node>
     </module>
-    
+
     <module>
         <name>gnome-terminal</name>
         <parameters>-e "yarp rpc /teo/rightLeg/rpc:i"</parameters>
@@ -101,12 +115,6 @@
         <node>localhost</node>
     </module>
 
-    <module>
-        <name>gnome-terminal</name>
-        <parameters>-e "yarp rpc /teo/trunk/rpc:i"</parameters>
-        <node>localhost</node>
-    </module>
-    
     <!-- CARTESIAN -->
     <module>
         <name>gnome-terminal</name>

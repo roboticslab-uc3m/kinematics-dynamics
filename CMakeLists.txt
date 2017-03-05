@@ -29,6 +29,8 @@ option(ENABLE_CartesianControlServer "Enable/disable compilation of TeoYarp_Cart
 option(ENABLE_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
 option(ENABLE_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
 option(ENABLE_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
+option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of TeoYarp_BasicTwoLimbCartesianControl" TRUE)
+option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TeoYarp_TwoLimbCartesianControlServer" TRUE)
 option(ENABLE_FakeControlboardOR "Enable/disable compilation of TeoYarp_FakeControlboardOR" TRUE)
 
 ##### test and coverage options

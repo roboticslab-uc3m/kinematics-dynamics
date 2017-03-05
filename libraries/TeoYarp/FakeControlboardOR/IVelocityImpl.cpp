@@ -29,8 +29,14 @@ bool teo::FakeControlboardOR::velocityMove(int j, double sp) {  // velExposed = 
 
 bool teo::FakeControlboardOR::velocityMove(const double *sp) {
     printf("[FakeControlboardOR] Vel:");
-    for (unsigned int i=0; i<axes; i++) printf(" %+.6f",velRaw[i]);
+    //double velCheck=0;
+    for (unsigned int i=0; i<axes; i++)
+    {
+        printf(" %+.6f",velRaw[i]);
+        //velCheck += velRaw[i];
+    }
     printf("\n");
+    //if (velCheck==0) {printf("NOT SENT TO OPENRAVE  \n"); return false;};
     bool ok = true;
     for(unsigned int i=0;i<axes;i++)
         ok &= velocityMove(i,sp[i]);

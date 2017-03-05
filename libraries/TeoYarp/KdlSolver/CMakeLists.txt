@@ -15,7 +15,7 @@ FIND_PACKAGE(orocos_kdl REQUIRED)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${TEO_INCLUDE_DIRS} ${orocos_kdl_INCLUDE_DIRS})
 
 YARP_ADD_PLUGIN(KdlSolver KdlSolver.hpp DeviceDriverImpl.cpp ICartesianSolverImpl.cpp)
-TARGET_LINK_LIBRARIES(KdlSolver ${YARP_LIBRARIES} ${orocos_kdl_LIBRARIES})
+TARGET_LINK_LIBRARIES(KdlSolver ${TEO_LIBRARIES} ${YARP_LIBRARIES} ${orocos_kdl_LIBRARIES})
 install(TARGETS KdlSolver DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
