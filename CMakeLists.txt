@@ -21,7 +21,6 @@ option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 
 ### options: cpp programs
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
-option(ENABLE_teoCollisionAvoidance "Choose if you want to compile teoCollisionAvoidance" TRUE)
 
 ### options: force default
 option(ENABLE_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
