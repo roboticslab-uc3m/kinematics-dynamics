@@ -10,9 +10,6 @@ IF (ENABLE_TeoYarp)
   list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
   include(YarpPlugin)
 
-  # Exporting dependencies for TEOConfig.cmake quite manually for now... 
-  # set(TEO_BODY_LIBRARIES ${TEO_LIBRARIES} TeoYarp CACHE INTERNAL "appended libraries") 
-
   # yarp_begin_plugin_library(TeoYarp)
     add_subdirectory(FakeControlboard)
     add_subdirectory(FakeControlboardOR)

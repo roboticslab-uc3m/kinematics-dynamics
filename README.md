@@ -33,5 +33,5 @@ Installation instructions for installing from source can be found [here](doc/teo
 
 ## Links of interest:
 
-* [teo-body](https://github.com/roboticslab-uc3m/teo-body)
-* [teo-head](https://github.com/roboticslab-uc3m/teo-head)
+* [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices)
+* [vision](https://github.com/roboticslab-uc3m/vision)
