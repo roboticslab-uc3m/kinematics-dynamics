@@ -83,7 +83,7 @@ endif(MSVC)
 
 ######################
 
-### this makes everything go in $TEO_DIR/lib and $TEO_DIR/bin
+### this makes everything go in $KINEMATICS_DYNAMICS_DIR/lib and $KINEMATICS_DYNAMICS_DIR/bin
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Libraries go to ${LIBRARY_OUTPUT_PATH}")
