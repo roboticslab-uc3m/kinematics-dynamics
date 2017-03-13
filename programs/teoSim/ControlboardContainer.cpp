@@ -47,12 +47,6 @@ void teo::ControlboardContainer::setManipulatorWrapperName(const std::string &va
 
 // -----------------------------------------------------------------------------
 
-void teo::ControlboardContainer::setPenv(const OpenRAVE::EnvironmentBasePtr value) {
-    penv = value;
-}
-
-// -----------------------------------------------------------------------------
-
 void teo::ControlboardContainer::push_back(int robotJointIdx) {
     vectorOfJointIdx.push_back( robotJointIdx );
 }
@@ -72,18 +66,6 @@ bool teo::ControlboardContainer::start() {
     options.put("subdevice","FakeControlboard");  // FakeControlboard provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
-
-    /* [Thank you: https://github.com/robotology/yarp/blob/master/tests/libYARP_OS/ValueTest.cpp]
-    int i = 10;
-    yarp::os::Value v(&i, sizeof(int));
-    if(v.isBlob())
-        CD_DEBUG("(blob) type ok\n");
-    CD_DEBUG("(blob) %d\n",*(reinterpret_cast<const int*>(v.asBlob()))); */
-
-    CD_DEBUG("penv: %p\n",penv.get());
-    OpenRAVE::EnvironmentBase* penv_raw = penv.get();
-    yarp::os::Value v(&penv_raw, sizeof(OpenRAVE::EnvironmentBase*));
-    options.put("penv",v);
 
     // CD_DEBUG("probot: %p\n",probot.get());  // cannot do same for robot, raises generic robot error upon usage.
 

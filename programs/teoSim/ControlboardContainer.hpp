@@ -15,8 +15,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <openrave-core.h>  // OR
-
 #include "ColorDebug.hpp"
 
 #include "FakeControlboard.hpp"
@@ -38,7 +36,6 @@ class ControlboardContainer {
         bool stop();
         void setFatherRobotIdx(int value);
         void setManipulatorWrapperName(const std::string &value);
-        void setPenv(OpenRAVE::EnvironmentBasePtr value);
         void push_back(int robotJointIdx);
         void push_back_tr(double robotJointTr);
 
@@ -59,7 +56,6 @@ protected:
         yarp::dev::IEncoders *encs;
         std::string manipulatorWrapperName;
 
-        OpenRAVE::EnvironmentBasePtr penv;
 };
 
 }  // namsepace teo

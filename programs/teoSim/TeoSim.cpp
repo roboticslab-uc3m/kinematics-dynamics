@@ -81,8 +81,6 @@ bool teo::TeoSim::configure(yarp::os::ResourceFinder &rf) {
             vectorOfControlboardContainerPtr[index]->setManipulatorWrapperName(manipulatorPortName);
             //-- Give it its father's index
             vectorOfControlboardContainerPtr[index]->setFatherRobotIdx(robotPtrIdx);
-            //-- give it a pointer to the environment
-            vectorOfControlboardContainerPtr[index]->setPenv(environmentPtr);
             //-- Check if there are overrides
             if(rf.check(manipulatorPortName)) {
                 yarp::os::Bottle manipulatorDescription = rf.findGroup(manipulatorPortName).tail();
