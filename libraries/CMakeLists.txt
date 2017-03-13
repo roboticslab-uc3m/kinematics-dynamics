@@ -20,8 +20,10 @@ ENDFOREACH()
 set(COLOR_DEBUG_PART_OF_PROJECT TRUE)
 add_subdirectory(ColorDebug)
 
-set(GAIT_PART_OF_PROJECT TRUE)
-add_subdirectory(gait)
+IF (ENABLE_BasicTwoLimbCartesianControl)
+    set(GAIT_PART_OF_PROJECT TRUE)
+    add_subdirectory(gait)
+ENDIF (ENABLE_BasicTwoLimbCartesianControl)
 
 add_subdirectory(KdlVectorConverterLib)
 add_subdirectory(TrajectoryLib)
