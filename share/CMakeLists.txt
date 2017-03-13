@@ -11,9 +11,6 @@ yarp_configure_external_installation(teo)
 yarp_install(FILES ymanager.ini DESTINATION ${TEO_DATA_INSTALL_DIR})  # Cleaner than ${TEO_ROBOTS_INSTALL_DIR}/../ or similar.
 
 ### Go through single applications
-#add_subdirectory(teo)
-
-add_subdirectory(kinematics)
 
 add_subdirectory(teoSim)
 

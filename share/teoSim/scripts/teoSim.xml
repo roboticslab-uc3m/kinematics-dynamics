@@ -1,0 +1,54 @@
+<application>
+    <name>teoSim App</name>
+
+    <module>
+        <name>teoSim</name>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>launchTeoYarp</name>
+        <parameters>--device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>launchTeoYarp</name>
+        <parameters>--device BasicCartesianControl --name /teoSim/leftArm/CartesianControl --from /usr/local/share/teo/contexts/kinematics/leftArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/leftArm --remote /teoSim/leftArm</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>launchTeoYarp</name>
+        <parameters>--device BasicCartesianControl --name /teoSim/rightLeg/CartesianControl --from /usr/local/share/teo/contexts/kinematics/rightLegKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightLeg --remote /teoSim/rightLeg</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>launchTeoYarp</name>
+        <parameters>--device BasicCartesianControl --name /teoSim/leftLeg/CartesianControl --from /usr/local/share/teo/contexts/kinematics/leftLegKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/leftLeg --remote /teoSim/leftLeg</parameters>
+        <node>localhost</node>
+    </module>
+
+    <!-- TOOLS -->
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teoSim/rightArm/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teoSim/trunk/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teoSim/head/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+
+</application>
+
