@@ -2,5 +2,4 @@
 # Authors: Juan G. Victores
 
 add_subdirectory(teoSim)
-add_subdirectory(teoCollisionAvoidance)
 
