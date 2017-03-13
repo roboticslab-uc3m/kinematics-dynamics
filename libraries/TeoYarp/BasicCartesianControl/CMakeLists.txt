@@ -14,12 +14,12 @@ FIND_PACKAGE(YARP REQUIRED)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
 YARP_ADD_PLUGIN(BasicCartesianControl BasicCartesianControl.hpp DeviceDriverImpl.cpp ICartesianControlImpl.cpp RateThreadImpl.cpp)
-TARGET_LINK_LIBRARIES(BasicCartesianControl ${YARP_LIBRARIES} ${TEO_LIBRARIES})
+TARGET_LINK_LIBRARIES(BasicCartesianControl ${YARP_LIBRARIES} ${KINEMATICS_DYNAMICS_LIBRARIES})
 install(TARGETS BasicCartesianControl DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(KINEMATICS_DYNAMICS_INCLUDE_DIRS ${KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-# set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp BasicCartesianControl CACHE INTERNAL "appended libraries")
+# set(KINEMATICS_DYNAMICS_LIBRARIES ${KINEMATICS_DYNAMICS_LIBRARIES} TeoYarp BasicCartesianControl CACHE INTERNAL "appended libraries")
 
   #install(TARGETS BasicCartesianControl DESTINATION lib)
   yarp_install(TARGETS BasicCartesianControl

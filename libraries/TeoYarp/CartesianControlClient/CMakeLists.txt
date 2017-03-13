@@ -19,7 +19,7 @@ install(TARGETS CartesianControlClient DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(KINEMATICS_DYNAMICS_INCLUDE_DIRS ${KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-# set(TEO_LIBRARIES ${TEO_LIBRARIES} TeoYarp CartesianControlClient CACHE INTERNAL "appended libraries")
+# set(KINEMATICS_DYNAMICS_LIBRARIES ${KINEMATICS_DYNAMICS_LIBRARIES} TeoYarp CartesianControlClient CACHE INTERNAL "appended libraries")
 
 #install(TARGETS CartesianControlClient DESTINATION lib)
   yarp_install(TARGETS CartesianControlClient

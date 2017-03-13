@@ -24,7 +24,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${GAI
 # Set up our library.
 if (folder_source)
   add_library(${KEYWORD} ${folder_source} ${folder_header})
-  target_link_libraries(${KEYWORD} ${orocos_kdl_LIBRARIES} ${GAIT_LIBRARIES} ${TEO_LIBRARIES})
+  target_link_libraries(${KEYWORD} ${orocos_kdl_LIBRARIES} ${GAIT_LIBRARIES} ${KINEMATICS_DYNAMICS_LIBRARIES})
   install(TARGETS ${KEYWORD} DESTINATION lib)
 else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")
@@ -33,7 +33,7 @@ endif (folder_source)
 # Exporting dependencies for ASIBOTConfig.cmake quite manually for now... 
 set(KINEMATICS_DYNAMICS_INCLUDE_DIRS ${KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
 set(KINEMATICS_DYNAMICS_LINK_DIRS ${KINEMATICS_DYNAMICS_LINK_DIRS} ${GAIT_LINK_DIRS} CACHE INTERNAL "appended libraries")
-set(TEO_LIBRARIES ${TEO_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
+set(KINEMATICS_DYNAMICS_LIBRARIES ${KINEMATICS_DYNAMICS_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
 
 ENDIF (ENABLE_TrajectoryLib)
 

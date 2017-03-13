@@ -13,7 +13,7 @@ link_libraries(${YARP_LIBRARIES})
 find_package(TEO REQUIRED)
 include_directories(${KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 link_directories(${KINEMATICS_DYNAMICS_LINK_DIRS})
-link_libraries(${TEO_LIBRARIES})
+link_libraries(${KINEMATICS_DYNAMICS_LIBRARIES})
 
 # Work-around for missing paths to OpenCV libraries
 find_package(OpenCV)
