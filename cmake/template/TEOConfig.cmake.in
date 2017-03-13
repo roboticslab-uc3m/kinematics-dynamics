@@ -4,7 +4,7 @@
 
 # Once you find_package(TEO), it defines:
 #
-# TEO_MODULE_PATH   # as in: list(APPEND CMAKE_MODULE_PATH ${TEO_MODULE_PATH}) <- not that we use them too much, but you never know...
+# KINEMATICS_DYNAMICS_MODULE_PATH   # as in: list(APPEND CMAKE_MODULE_PATH ${KINEMATICS_DYNAMICS_MODULE_PATH}) <- not that we use them too much, but you never know...
 # KINEMATICS_DYNAMICS_DEFINES       # as in: add_definitions(${KINEMATICS_DYNAMICS_DEFINES}) <- not that we use them too much, but you never know...
 # KINEMATICS_DYNAMICS_INCLUDE_DIRS  # as in: include_directories(${KINEMATICS_DYNAMICS_INCLUDE_DIRS})  <- IMPORTANT to find headers!
 # KINEMATICS_DYNAMICS_LINK_DIRS     # as in: link_directories(${KINEMATICS_DYNAMICS_LINK_DIRS}) <- not required so much any more, but may be useful.
@@ -14,7 +14,7 @@
 
 IF (NOT TEO_FOUND)
 
-  SET(TEO_MODULE_PATH "@TEO_MODULE_PATH@")
+  SET(KINEMATICS_DYNAMICS_MODULE_PATH "@KINEMATICS_DYNAMICS_MODULE_PATH@")
   SET(KINEMATICS_DYNAMICS_DEFINES "@KINEMATICS_DYNAMICS_DEFINES@")
   SET(KINEMATICS_DYNAMICS_INCLUDE_DIRS "@KINEMATICS_DYNAMICS_INCLUDE_DIRS@")
   SET(KINEMATICS_DYNAMICS_LINK_DIRS "@KINEMATICS_DYNAMICS_LINK_DIRS@")

@@ -99,9 +99,9 @@ mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
 ##########################################
 
 # Pick up our cmake modules - they are all in the cmake subdirectory
-set(TEO_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(KINEMATICS_DYNAMICS_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
-list(APPEND CMAKE_MODULE_PATH ${TEO_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${KINEMATICS_DYNAMICS_MODULE_PATH})
 
 #set_property(GLOBAL PROPERTY KINEMATICS_DYNAMICS_INCLUDE_DIRS)
 #set_property(GLOBAL PROPERTY KINEMATICS_DYNAMICS_LINK_DIRS)
