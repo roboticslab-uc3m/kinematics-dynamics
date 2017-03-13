@@ -23,6 +23,7 @@ option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 
 ### options: force default
+option(ENABLE_KdlVectorConverterLib "Enable/disable compilation of KdlVectorConverterLib" TRUE)
 option(ENABLE_BasicCartesianControl "Enable/disable compilation of TeoYarp_BasicCartesianControl" TRUE)
 option(ENABLE_CartesianControlServer "Enable/disable compilation of TeoYarp_CartesianControlServer" TRUE)
 option(ENABLE_CartesianControlClient "Enable/disable compilation of TeoYarp_CartesianControlClient" TRUE)
