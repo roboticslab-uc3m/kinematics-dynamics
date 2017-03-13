@@ -28,7 +28,6 @@ option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
 option(ENABLE_FakeControlboard "Enable/disable compilation of FakeControlboard" TRUE)
 option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
-option(ENABLE_FakeControlboard "Enable/disable compilation of FakeControlboard" TRUE)
 
 ### options: cpp programs
 option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
