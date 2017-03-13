@@ -67,11 +67,6 @@ bool teo::ControlboardContainer::start() {
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
 
-    // CD_DEBUG("probot: %p\n",probot.get());  // cannot do same for robot, raises generic robot error upon usage.
-
-    //-- So instead, we pass the robot index for it to be extracted from the environment.
-    options.put("robotIndex",fatherRobotIdx);
-
     dd.open(options);
     if(!dd.isValid()) {
         CD_ERROR("ManipulatorWrapper device \"%s\" not available.\n", options.find("subdevice").asString().c_str());
