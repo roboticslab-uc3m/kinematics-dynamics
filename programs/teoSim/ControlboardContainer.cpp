@@ -69,7 +69,7 @@ bool teo::ControlboardContainer::start() {
     vectorOfJointPos.resize( this->vectorOfJointIdx.size() );
     yarp::os::Property options;
     options.put("device","controlboardwrapper2");  //
-    options.put("subdevice","FakeControlboardOR");  // FakeControlboard provides more interfaces than test_motor
+    options.put("subdevice","FakeControlboard");  // FakeControlboard provides more interfaces than test_motor
     options.put("axes", (int)this->vectorOfJointIdx.size() );
     options.put("name", this->manipulatorWrapperName );
 
