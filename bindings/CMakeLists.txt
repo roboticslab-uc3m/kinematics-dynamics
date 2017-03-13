@@ -11,7 +11,7 @@ link_directories(${YARP_LIBRARY_DIRS})
 link_libraries(${YARP_LIBRARIES})
 
 find_package(TEO REQUIRED)
-include_directories(${TEO_INCLUDE_DIRS})
+include_directories(${KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 link_directories(${TEO_LINK_DIRS})
 link_libraries(${TEO_LIBRARIES})
 

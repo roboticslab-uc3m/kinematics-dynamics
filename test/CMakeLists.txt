@@ -4,7 +4,7 @@ enable_testing()
 
 find_package(YARP REQUIRED)
 
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${TEO_INCLUDE_DIRS})
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 link_directories(${TEO_LINK_DIRS})
 
 add_executable(testKdlSolver testKdlSolver.cpp)

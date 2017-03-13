@@ -23,7 +23,7 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-include_directories(${YARP_INCLUDE_DIRS} ${TEO_INCLUDE_DIRS}) # rutas de cabeceras de librerias
+include_directories(${YARP_INCLUDE_DIRS} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS}) # rutas de cabeceras de librerias
 
 # Set up our main executable.
 if (folder_source)
