@@ -30,7 +30,7 @@ option(ENABLE_KdlSolver "Enable/disable compilation of TeoYarp_KdlSolver" TRUE)
 option(ENABLE_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of TeoYarp_BasicTwoLimbCartesianControl" TRUE)
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TeoYarp_TwoLimbCartesianControlServer" TRUE)
-option(ENABLE_FakeControlboardOR "Enable/disable compilation of TeoYarp_FakeControlboardOR" TRUE)
+option(ENABLE_FakeControlboard "Enable/disable compilation of TeoYarp_FakeControlboard" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
