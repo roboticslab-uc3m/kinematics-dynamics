@@ -11,7 +11,7 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-project(TEO)
+project(KINEMATICS_DYNAMICS)
 
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
@@ -83,7 +83,7 @@ endif(MSVC)
 
 ######################
 
-### this makes everything go in $TEO_DIR/lib and $TEO_DIR/bin
+### this makes everything go in $KINEMATICS_DYNAMICS_DIR/lib and $KINEMATICS_DYNAMICS_DIR/bin
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Libraries go to ${LIBRARY_OUTPUT_PATH}")
@@ -99,17 +99,17 @@ mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
 ##########################################
 
 # Pick up our cmake modules - they are all in the cmake subdirectory
-set(TEO_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(KINEMATICS_DYNAMICS_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
-list(APPEND CMAKE_MODULE_PATH ${TEO_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${KINEMATICS_DYNAMICS_MODULE_PATH})
 
-#set_property(GLOBAL PROPERTY TEO_INCLUDE_DIRS)
-#set_property(GLOBAL PROPERTY TEO_LINK_DIRS)
-#set_property(GLOBAL PROPERTY TEO_LIBRARIES)
-#set_property(GLOBAL PROPERTY TEO_TARGETS)
-set(TEO_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
-set(TEO_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
-set(TEO_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+#set_property(GLOBAL PROPERTY KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+#set_property(GLOBAL PROPERTY KINEMATICS_DYNAMICS_LINK_DIRS)
+#set_property(GLOBAL PROPERTY KINEMATICS_DYNAMICS_LIBRARIES)
+#set_property(GLOBAL PROPERTY KINEMATICS_DYNAMICS_TARGETS)
+set(KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
+set(KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
+set(KINEMATICS_DYNAMICS_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
 
 if(ENABLE_coverage)
   if(CMAKE_COMPILER_IS_GNUCXX)
@@ -126,7 +126,7 @@ if (ENABLE_tests)
 endif (ENABLE_tests)
 
 # export our variables to a TEOConfig.cmake creation
-set(TEO_LINK_DIRS ${TEO_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
+set(KINEMATICS_DYNAMICS_LINK_DIRS ${KINEMATICS_DYNAMICS_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
 configure_file(${CMAKE_SOURCE_DIR}/cmake/template/TEOConfig.cmake.in
                ${CMAKE_BINARY_DIR}/TEOConfig.cmake @ONLY)
 

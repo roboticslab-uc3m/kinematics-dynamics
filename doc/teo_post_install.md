@@ -50,7 +50,7 @@ We can actually see the default parameters, and the final selected ones, with th
 [terminal 2] teoSim --env teo_kitchen_cameras.env.xml --help
 ```
 
-If we want to affect this parameter at a more persistent level, we can change the configuration file. For this specific case, the [teoSim](http://robots.uc3m.es/dox-teo-main/group__teoSim.html) configuration file is located at <i>$TEO_ROOT/app/teoSim/conf/teoSim.ini</i>. In this file, we can see that most parameters are commented out (the <b>//</b> characters). This is a common convention to indicate these are the default parameters set in the headers (the first parsed, as explained previously). Here, we would search to subsitute the line:
+If we want to affect this parameter at a more persistent level, we can change the configuration file. For this specific case, the [teoSim](http://robots.uc3m.es/dox-teo-main/group__teoSim.html) configuration file is located at <i>$KINEMATICS_DYNAMICS_ROOT/app/teoSim/conf/teoSim.ini</i>. In this file, we can see that most parameters are commented out (the <b>//</b> characters). This is a common convention to indicate these are the default parameters set in the headers (the first parsed, as explained previously). Here, we would search to subsitute the line:
 
 ```bash
 // env teo_kitchen.env.xml           /// env [xml] environment name in abs or rel

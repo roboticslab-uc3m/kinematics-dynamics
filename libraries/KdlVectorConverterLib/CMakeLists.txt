@@ -18,7 +18,7 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${TEO_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${orocos_kdl_INCLUDE_DIRS} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
 # Set up our library.
 if (folder_source)
@@ -30,8 +30,8 @@ else (folder_source)
 endif (folder_source)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
-set(TEO_INCLUDE_DIRS ${TEO_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
-set(TEO_LIBRARIES ${TEO_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
+set(KINEMATICS_DYNAMICS_INCLUDE_DIRS ${KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
+set(KINEMATICS_DYNAMICS_LIBRARIES ${KINEMATICS_DYNAMICS_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
 
 ENDIF (ENABLE_KdlVectorConverterLib)
 
