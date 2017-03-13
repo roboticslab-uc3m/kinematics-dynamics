@@ -5,22 +5,22 @@
 namespace teo {}
 
 /**
- * \defgroup teo_applications teo-main Applications (Collections of Programs)
+ * \defgroup teo_applications kinematics-dynamics Applications (Collections of Programs)
  *
- * @brief teo-main applications (collections of programs).
+ * @brief kinematics-dynamics applications (collections of programs).
  */
 
 /**
- * \defgroup teo_libraries teo-main Libraries
+ * \defgroup teo_libraries kinematics-dynamics Libraries
  *
- * @brief teo-main libraries.
+ * @brief kinematics-dynamics libraries.
  */
 
 /**
  * @ingroup teo_libraries
  * \defgroup TeoYarp
  *
- * @brief Contains teo-main libraries that implement YARP device interfaces
+ * @brief Contains kinematics-dynamics libraries that implement YARP device interfaces
  * and therefore can be invoked as YARP plugins.
  *
  * @section BodyYarp_install Installation
@@ -30,12 +30,12 @@ namespace teo {}
 
 /**
  * 
- * \defgroup teo_programs teo-main Programs
- * @brief teo-main programs.
+ * \defgroup teo_programs kinematics-dynamics Programs
+ * @brief kinematics-dynamics programs.
  */
 
 /**
- * \defgroup teo_examples teo-main Examples
- * @brief teo-main examples.
+ * \defgroup teo_examples kinematics-dynamics Examples
+ * @brief kinematics-dynamics examples.
  */
 

@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=teo-main yarpmanager
+Name=kinematics-dynamics yarpmanager
 Type=Application
 MimeType=application/vnd.ms-htmlhelp;
 Exec=yarpmanager
 NoDisplay=true
 StartupNotify=true
-Icon=/home/teo/teo-main/doc/fig/teo-icon-64x64.png
-Path=/home/teo/teo-main/share
+Icon=/home/teo/kinematics-dynamics/doc/fig/teo-icon-64x64.png
+Path=/home/teo/kinematics-dynamics/share

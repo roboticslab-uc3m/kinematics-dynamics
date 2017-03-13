@@ -5,10 +5,10 @@
 # crontab -e
 # 30 2 * * * /your/command
 
-echo "Update teo-main..."
-cd $HOME/teo-main
+echo "Update kinematics-dynamics..."
+cd $HOME/kinematics-dynamics
 git pull
-echo "Doxy teo-main..."
+echo "Doxy kinematics-dynamics..."
 cd doc
 rm -r html
 /usr/bin/doxygen

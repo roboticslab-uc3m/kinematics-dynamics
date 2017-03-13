@@ -13,16 +13,16 @@ Our software integrates the previous dependencies. Note that you will be prompte
 ```bash
 cd  # go home
 mkdir -p repos; cd repos  # make $HOME/repos if it does not exist; then, enter it
-git clone --recursive https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download teo-main software from the repository; Use --recursive to get embedded repositories (technically, git submodules)
-cd teo-main; mkdir build; cd build; cmake ..  # Configure the teo-main software
+git clone --recursive https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download kinematics-dynamics software from the repository; Use --recursive to get embedded repositories (technically, git submodules)
+cd kinematics-dynamics; mkdir build; cd build; cmake ..  # Configure the kinematics-dynamics software
 make  # Compile
 sudo make install  # Install :-)
-cp ../scripts/gnome/teo-main.desktop $HOME/Desktop
+cp ../scripts/gnome/kinematics-dynamics.desktop $HOME/Desktop
 ```
 
 For CMake `find_package(TEO REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
 ```bash
-export KINEMATICS_DYNAMICS_DIR=$HOME/repos/teo-main/build  # Points to where TEOConfig.cmake is generated upon running CMake
+export KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
 ```
 
 For additional TEO options use ccmake instead of cmake.

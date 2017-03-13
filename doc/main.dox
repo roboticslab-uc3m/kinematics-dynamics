@@ -1,9 +1,9 @@
 /**
-  * \mainpage teo-main Repository documentation
+  * \mainpage kinematics-dynamics Repository documentation
 
-Welcome to the TEO Software Repository documentation for the main PC. <a class=el href="http://robots.uc3m.es">Click here to return to Wiki.</a> <a class=el href="https://github.com/roboticslab-uc3m/teo-main">Click here to see teo-main on repo.</a>
+Welcome to the TEO Software Repository documentation for the main PC. <a class=el href="http://robots.uc3m.es">Click here to return to Wiki.</a> <a class=el href="https://github.com/roboticslab-uc3m/kinematics-dynamics">Click here to see kinematics-dynamics on repo.</a>
 
- \li <a class=el href="https://github.com/roboticslab-uc3m/teo-main/blob/develop/doc/teo_install.md">Teo install</a>
+ \li <a class=el href="https://github.com/roboticslab-uc3m/kinematics-dynamics/blob/develop/doc/teo_install.md">Teo install</a>
 
 Other internal links of interest:
  \li \ref teo_programs
@@ -22,6 +22,6 @@ External links of interest:
 
 <hr>
 
-This page can be edited at teo-main/doc/main.dox.
+This page can be edited at kinematics-dynamics/doc/main.dox.
 
 */
