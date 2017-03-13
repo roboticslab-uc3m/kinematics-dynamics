@@ -36,7 +36,7 @@ if( Boost_INCLUDE_DIRS )
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-link_directories(${TEO_LINK_DIRS})
+link_directories(${KINEMATICS_DYNAMICS_LINK_DIRS})
 
 # Set up our main executable.
 if (folder_source)

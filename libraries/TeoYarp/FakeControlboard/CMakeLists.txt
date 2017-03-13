@@ -10,7 +10,7 @@ FIND_PACKAGE(YARP REQUIRED)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS})  # kdl name depends on version
 
-LINK_DIRECTORIES(${TEO_LINK_DIRS})
+LINK_DIRECTORIES(${KINEMATICS_DYNAMICS_LINK_DIRS})
 
 YARP_ADD_PLUGIN(FakeControlboard FakeControlboard.hpp DeviceDriverImpl.cpp IControlLimitsImpl.cpp IControlModeImpl.cpp IEncodersImpl.cpp IEncodersTimedImpl.cpp IPositionImpl.cpp IPosition2Impl.cpp IVelocityImpl.cpp IVelocity2Impl.cpp ITorqueImpl.cpp SharedArea.cpp RateThreadImpl.cpp)
 TARGET_LINK_LIBRARIES(FakeControlboard ${YARP_LIBRARIES})

@@ -32,7 +32,7 @@ endif (folder_source)
 
 # Exporting dependencies for ASIBOTConfig.cmake quite manually for now... 
 set(KINEMATICS_DYNAMICS_INCLUDE_DIRS ${KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
-set(TEO_LINK_DIRS ${TEO_LINK_DIRS} ${GAIT_LINK_DIRS} CACHE INTERNAL "appended libraries")
+set(KINEMATICS_DYNAMICS_LINK_DIRS ${KINEMATICS_DYNAMICS_LINK_DIRS} ${GAIT_LINK_DIRS} CACHE INTERNAL "appended libraries")
 set(TEO_LIBRARIES ${TEO_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
 
 ENDIF (ENABLE_TrajectoryLib)
