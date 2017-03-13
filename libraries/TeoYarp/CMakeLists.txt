@@ -1,9 +1,9 @@
 # Copyright: (C) 2013 Universidad Carlos III de Madrid
 # Authors: Juan G. Victores
 
-IF (ENABLE_TeoYarp)
+#IF (ENABLE_TeoYarp)
 
-  option(ENABLE_launchTeoYarp "Choose if you want to compile launchTeoYarp" TRUE)
+#  option(ENABLE_launchTeoYarp "Choose if you want to compile launchTeoYarp" TRUE)
 
   find_package(YARP REQUIRED)
   include_directories(${YARP_INCLUDE_DIRS})
@@ -31,6 +31,6 @@ IF (ENABLE_TeoYarp)
 
   # ENDIF (ENABLE_launchTeoYarp)
 
-ENDIF (ENABLE_TeoYarp)
+#ENDIF (ENABLE_TeoYarp)
 
 
