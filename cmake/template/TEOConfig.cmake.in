@@ -2,7 +2,7 @@
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 # Evident yet unstandarized names
 
-# Once you find_package(TEO), it defines:
+# Once you find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS), it defines:
 #
 # KINEMATICS_DYNAMICS_MODULE_PATH   # as in: list(APPEND CMAKE_MODULE_PATH ${KINEMATICS_DYNAMICS_MODULE_PATH}) <- not that we use them too much, but you never know...
 # KINEMATICS_DYNAMICS_DEFINES       # as in: add_definitions(${KINEMATICS_DYNAMICS_DEFINES}) <- not that we use them too much, but you never know...
