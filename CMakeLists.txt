@@ -2,10 +2,7 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-# Exploit new cmake 2.6 features (export). 
-
-# reduce warning level with cmake 2.6
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.9)
 #cmake policies
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
@@ -37,35 +34,35 @@ option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
 
 # ColorDebug options
-option(ColorDebug_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
-if(ColorDebug_FULL_FILE)
+option(COLOR_DEBUG_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
+if(COLOR_DEBUG_FULL_FILE)
     add_definitions(-DCD_FULL_FILE)
-endif(ColorDebug_FULL_FILE)
+endif()
 
-option(ColorDebug_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
-if(ColorDebug_HIDE_ERROR)
+option(COLOR_DEBUG_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
+if(COLOR_DEBUG_HIDE_ERROR)
     add_definitions(-DCD_HIDE_ERROR)
-endif(ColorDebug_HIDE_ERROR)
+endif()
 
-option(ColorDebug_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
-if(ColorDebug_HIDE_WARNING)
+option(COLOR_DEBUG_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
+if(COLOR_DEBUG_HIDE_WARNING)
     add_definitions(-DCD_HIDE_WARNING)
-endif(ColorDebug_HIDE_WARNING)
+endif()
 
-option(ColorDebug_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
-if(ColorDebug_HIDE_SUCCESS)
+option(COLOR_DEBUG_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
+if(COLOR_DEBUG_HIDE_SUCCESS)
     add_definitions(-DCD_HIDE_SUCCESS)
-endif(ColorDebug_HIDE_SUCCESS)
+endif()
 
-option(ColorDebug_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
-if(ColorDebug_HIDE_INFO)
+option(COLOR_DEBUG_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
+if(COLOR_DEBUG_HIDE_INFO)
     add_definitions(-DCD_HIDE_INFO)
-endif(ColorDebug_HIDE_INFO)
+endif()
 
-option(ColorDebug_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
-if(ColorDebug_HIDE_DEBUG)
+option(COLOR_DEBUG_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
+if(COLOR_DEBUG_HIDE_DEBUG)
     add_definitions(-DCD_HIDE_DEBUG)
-endif(ColorDebug_HIDE_DEBUG)
+endif()
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    
@@ -116,6 +113,13 @@ if(ENABLE_coverage)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
   endif(CMAKE_COMPILER_IS_GNUCXX)
 endif(ENABLE_coverage)
+
+# Bootstrap YCM
+include(YCMBootstrap)
+
+# Superbuild phase - include color-debug
+include(FindOrBuildPackage)
+find_or_build_package(COLOR_DEBUG)
 
 # add main contents
 add_subdirectory(share)
