@@ -17,9 +17,6 @@ FOREACH(subdir ${SUBDIRS})
     set(KINEMATICS_DYNAMICS_INCLUDE_DIRS ${KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/${subdir} CACHE INTERNAL "appended header dirs")
 ENDFOREACH()
 
-set(COLOR_DEBUG_PART_OF_PROJECT TRUE)
-add_subdirectory(ColorDebug)
-
 IF (ENABLE_BasicTwoLimbCartesianControl)
     set(GAIT_PART_OF_PROJECT TRUE)
     add_subdirectory(gait)
