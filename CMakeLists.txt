@@ -131,14 +131,14 @@ endif (ENABLE_tests)
 
 # export our variables to a TEOConfig.cmake creation
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
-configure_file(${CMAKE_SOURCE_DIR}/cmake/template/TEOConfig.cmake.in
+configure_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
                ${CMAKE_BINARY_DIR}/TEOConfig.cmake @ONLY)
 
 # uninstall target
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/TEOConfigUninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake" IMMEDIATE @ONLY)
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake" IMMEDIATE @ONLY)
 
 add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake)
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake)
 
