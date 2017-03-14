@@ -23,12 +23,12 @@ foreach(header_file ${folder_header})
   include_directories(${p})
 endforeach(header_file ${folder_header})
 
-include_directories(${YARP_INCLUDE_DIRS} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS}) # rutas de cabeceras de librerias
+include_directories(${YARP_INCLUDE_DIRS} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS}) # rutas de cabeceras de librerias
 
 # Set up our main executable.
 if (folder_source)
   add_executable(${KEYWORD} ${folder_source} ${folder_header})
-  target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} ${KINEMATICS_DYNAMICS_LIBRARIES}) # Se especifican las rutas de libreria.
+  target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES}) # Se especifican las rutas de libreria.
   install(TARGETS ${KEYWORD} DESTINATION bin )
 else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")

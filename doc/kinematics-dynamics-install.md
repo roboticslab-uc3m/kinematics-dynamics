@@ -22,7 +22,7 @@ cp ../scripts/gnome/kinematics-dynamics.desktop $HOME/Desktop
 
 For CMake `find_package(TEO REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
 ```bash
-export KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
+export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
 ```
 
 For additional TEO options use ccmake instead of cmake.

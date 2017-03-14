@@ -24,7 +24,7 @@
 
   # IF (ENABLE_launchTeoYarp)
 
-    # link_directories(${KINEMATICS_DYNAMICS_LINK_DIRS})
+    # link_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS})
 
     # yarp_add_plugin_yarpdev_executable(launchTeoYarp TeoYarp)
     # install(TARGETS launchTeoYarp DESTINATION bin)
