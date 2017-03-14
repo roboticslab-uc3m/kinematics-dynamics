@@ -4,8 +4,8 @@ enable_testing()
 
 find_package(YARP REQUIRED)
 
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${KINEMATICS_DYNAMICS_INCLUDE_DIRS})
-link_directories(${KINEMATICS_DYNAMICS_LINK_DIRS})
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+link_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS})
 
 add_executable(testKdlSolver testKdlSolver.cpp)
 target_link_libraries(testKdlSolver ${YARP_LIBRARIES} gtest gtest_main)
