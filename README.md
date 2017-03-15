@@ -1,6 +1,6 @@
 [![Teo-main Homepage](https://img.shields.io/badge/kinematics-dynamics-orange.svg)](http://robots.uc3m.es/dox-kinematics-dynamics) [![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/kinematics-dynamics.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/kinematics-dynamics/tags)
 
-Main TEO humanoid robot source code intended for use on any PC.
+Kinematics and dynamics solvers and controllers.
 
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-kinematics-dynamics
 
