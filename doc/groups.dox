@@ -11,7 +11,7 @@ namespace teo {}
  */
 
 /**
- * \defgroup teo_libraries kinematics-dynamics Libraries
+ * \defgroup kinematics-dynamics-libraries kinematics-dynamics Libraries
  *
  * @brief kinematics-dynamics libraries.
  */
