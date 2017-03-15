@@ -20,7 +20,7 @@ sudo make install  # Install :-)
 cp ../scripts/gnome/kinematics-dynamics.desktop $HOME/Desktop
 ```
 
-For CMake `find_package(TEO REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
+For CMake `find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
 ```bash
 export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
 ```
