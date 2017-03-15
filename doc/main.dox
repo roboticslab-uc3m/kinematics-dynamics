@@ -6,10 +6,10 @@ Welcome to the TEO Software Repository documentation for the main PC. <a class=e
  \li <a class=el href="https://github.com/roboticslab-uc3m/kinematics-dynamics/blob/develop/doc/teo_install.md">Teo install</a>
 
 Other internal links of interest:
- \li \ref teo_programs
- \li \ref teo_libraries
- \li \ref teo_applications
- \li \ref teo_examples
+ \li \ref kinematics-dynamics-programs
+ \li \ref kinematics-dynamics-libraries
+ \li \ref kinematics-dynamics-applications
+ \li \ref kinematics-dynamics-examples
 
 Even more internal links of interest:
  \li <a class=el href="http://robots.uc3m.es/dox-yarp-devices/index.html">yarp-devices</a>

@@ -5,7 +5,7 @@
 namespace teo {}
 
 /**
- * \defgroup teo_applications kinematics-dynamics Applications (Collections of Programs)
+ * \defgroup kinematics-dynamics-applications kinematics-dynamics Applications (Collections of Programs)
  *
  * @brief kinematics-dynamics applications (collections of programs).
  */
@@ -17,7 +17,7 @@ namespace teo {}
  */
 
 /**
- * @ingroup teo_libraries
+ * @ingroup kinematics-dynamics-libraries
  * \defgroup TeoYarp
  *
  * @brief Contains kinematics-dynamics libraries that implement YARP device interfaces
@@ -30,12 +30,12 @@ namespace teo {}
 
 /**
  * 
- * \defgroup teo_programs kinematics-dynamics Programs
+ * \defgroup kinematics-dynamics-programs kinematics-dynamics Programs
  * @brief kinematics-dynamics programs.
  */
 
 /**
- * \defgroup teo_examples kinematics-dynamics Examples
+ * \defgroup kinematics-dynamics-examples kinematics-dynamics Examples
  * @brief kinematics-dynamics examples.
  */
 

@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 /**
- * @ingroup teo_programs
+ * @ingroup kinematics-dynamics-programs
  *
  * \defgroup teoSim teoSim
  *
