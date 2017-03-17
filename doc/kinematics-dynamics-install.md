@@ -31,5 +31,3 @@ For additional TEO options use ccmake instead of cmake.
 
 Done! You are now probably interested in one of the following links:
 - [Simulation and Basic Control: Now what can I do?]( teo-post-install.md )
-- For the KDL controller, you should look at the \ref KdlBot library.
-
