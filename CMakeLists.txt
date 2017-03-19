@@ -2,16 +2,13 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-# Exploit new cmake 2.6 features (export). 
-
-# reduce warning level with cmake 2.6
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.9)
 #cmake policies
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-project(TEO)
+project(KINEMATICS_DYNAMICS)
 
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
@@ -25,47 +22,45 @@ option(ENABLE_BasicCartesianControl "Enable/disable compilation of BasicCartesia
 option(ENABLE_CartesianControlServer "Enable/disable compilation of CartesianControlServer" TRUE)
 option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianControlClient" TRUE)
 option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
-option(ENABLE_FakeControlboard "Enable/disable compilation of FakeControlboard" TRUE)
 option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
 
 ### options: cpp programs
-option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
 
 # ColorDebug options
-option(ColorDebug_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
-if(ColorDebug_FULL_FILE)
+option(COLOR_DEBUG_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
+if(COLOR_DEBUG_FULL_FILE)
     add_definitions(-DCD_FULL_FILE)
-endif(ColorDebug_FULL_FILE)
+endif()
 
-option(ColorDebug_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
-if(ColorDebug_HIDE_ERROR)
+option(COLOR_DEBUG_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
+if(COLOR_DEBUG_HIDE_ERROR)
     add_definitions(-DCD_HIDE_ERROR)
-endif(ColorDebug_HIDE_ERROR)
+endif()
 
-option(ColorDebug_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
-if(ColorDebug_HIDE_WARNING)
+option(COLOR_DEBUG_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
+if(COLOR_DEBUG_HIDE_WARNING)
     add_definitions(-DCD_HIDE_WARNING)
-endif(ColorDebug_HIDE_WARNING)
+endif()
 
-option(ColorDebug_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
-if(ColorDebug_HIDE_SUCCESS)
+option(COLOR_DEBUG_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
+if(COLOR_DEBUG_HIDE_SUCCESS)
     add_definitions(-DCD_HIDE_SUCCESS)
-endif(ColorDebug_HIDE_SUCCESS)
+endif()
 
-option(ColorDebug_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
-if(ColorDebug_HIDE_INFO)
+option(COLOR_DEBUG_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
+if(COLOR_DEBUG_HIDE_INFO)
     add_definitions(-DCD_HIDE_INFO)
-endif(ColorDebug_HIDE_INFO)
+endif()
 
-option(ColorDebug_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
-if(ColorDebug_HIDE_DEBUG)
+option(COLOR_DEBUG_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
+if(COLOR_DEBUG_HIDE_DEBUG)
     add_definitions(-DCD_HIDE_DEBUG)
-endif(ColorDebug_HIDE_DEBUG)
+endif()
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    
@@ -83,7 +78,7 @@ endif(MSVC)
 
 ######################
 
-### this makes everything go in $TEO_DIR/lib and $TEO_DIR/bin
+### this makes everything go in $ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR/lib and $ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR/bin
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Libraries go to ${LIBRARY_OUTPUT_PATH}")
@@ -99,17 +94,17 @@ mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
 ##########################################
 
 # Pick up our cmake modules - they are all in the cmake subdirectory
-set(TEO_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
-list(APPEND CMAKE_MODULE_PATH ${TEO_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH})
 
-#set_property(GLOBAL PROPERTY TEO_INCLUDE_DIRS)
-#set_property(GLOBAL PROPERTY TEO_LINK_DIRS)
-#set_property(GLOBAL PROPERTY TEO_LIBRARIES)
-#set_property(GLOBAL PROPERTY TEO_TARGETS)
-set(TEO_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
-set(TEO_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
-set(TEO_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS)
+#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES)
+#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
 
 if(ENABLE_coverage)
   if(CMAKE_COMPILER_IS_GNUCXX)
@@ -117,24 +112,31 @@ if(ENABLE_coverage)
   endif(CMAKE_COMPILER_IS_GNUCXX)
 endif(ENABLE_coverage)
 
+# Bootstrap YCM
+include(YCMBootstrap)
+
+# Superbuild phase - include color-debug
+include(FindOrBuildPackage)
+find_or_build_package(COLOR_DEBUG)
+
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
-add_subdirectory(programs)
+#add_subdirectory(programs)
 if (ENABLE_tests)
     add_subdirectory(test)
 endif (ENABLE_tests)
 
 # export our variables to a TEOConfig.cmake creation
-set(TEO_LINK_DIRS ${TEO_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
-configure_file(${CMAKE_SOURCE_DIR}/cmake/template/TEOConfig.cmake.in
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
+configure_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
                ${CMAKE_BINARY_DIR}/TEOConfig.cmake @ONLY)
 
 # uninstall target
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/TEOConfigUninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake" IMMEDIATE @ONLY)
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake" IMMEDIATE @ONLY)
 
 add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/TEOConfigUninstall.cmake)
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake)
 

@@ -11,7 +11,6 @@
   include(YarpPlugin)
 
   # yarp_begin_plugin_library(TeoYarp)
-    add_subdirectory(FakeControlboard)
     add_subdirectory(KdlSolver)
     add_subdirectory(BasicCartesianControl)
     add_subdirectory(CartesianControlServer)
@@ -24,7 +23,7 @@
 
   # IF (ENABLE_launchTeoYarp)
 
-    # link_directories(${TEO_LINK_DIRS})
+    # link_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS})
 
     # yarp_add_plugin_yarpdev_executable(launchTeoYarp TeoYarp)
     # install(TARGETS launchTeoYarp DESTINATION bin)

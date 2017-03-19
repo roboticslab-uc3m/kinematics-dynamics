@@ -9,7 +9,7 @@ namespace teo
 {
 
 /**
- * @ingroup teo_libraries
+ * @ingroup kinematics-dynamics-libraries
  * \defgroup TrajectoryLib
  *
  * @brief Contains classes related to trajectories.

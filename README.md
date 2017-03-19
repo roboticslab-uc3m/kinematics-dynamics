@@ -1,23 +1,23 @@
-[![Teo-main Homepage](https://img.shields.io/badge/teo-main-orange.svg)](http://robots.uc3m.es/dox-teo-main) [![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/teo-main.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/teo-main/tags)
+[![Teo-main Homepage](https://img.shields.io/badge/kinematics-dynamics-orange.svg)](http://robots.uc3m.es/dox-kinematics-dynamics) [![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/kinematics-dynamics.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/kinematics-dynamics/tags)
 
-Main TEO humanoid robot source code intended for use on any PC.
+Kinematics and dynamics solvers and controllers.
 
-Link to Doxygen generated documentation: http://robots.uc3m.es/dox-teo-main
+Link to Doxygen generated documentation: http://robots.uc3m.es/dox-kinematics-dynamics
 
 ## Installation
 
-Installation instructions for installing from source can be found [here](doc/teo_install.md).
+Installation instructions for installing from source can be found [here](doc/kinematics-dynamics-install.md).
 
 ## Contributing
 
 #### Posting Issues
 
-1. Read [CONTRIBUTING.md](https://github.com/roboticslab-uc3m/teo-main/blob/master/CONTRIBUTING.md)
-2. [Post an issue / Feature request / Specific documentation request](https://github.com/roboticslab-uc3m/teo-main/issues)
+1. Read [CONTRIBUTING.md](https://github.com/roboticslab-uc3m/kinematics-dynamics/blob/master/CONTRIBUTING.md)
+2. [Post an issue / Feature request / Specific documentation request](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 
 #### Fork & Pull Request
 
-1. [Fork the repository](https://github.com/roboticslab-uc3m/teo-main/fork)
+1. [Fork the repository](https://github.com/roboticslab-uc3m/kinematics-dynamics/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`) off the `develop` branch, following the [GitFlow git workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
 3. Commit your changes
 4. Push to the branch (`git push origin my-new-feature`)
@@ -25,11 +25,11 @@ Installation instructions for installing from source can be found [here](doc/teo
 
 ## Status
 
-[![Build Status (Linux/OSX)](https://img.shields.io/travis/roboticslab-uc3m/teo-main/master.svg?label=Build Status (Linux/OSX))](https://travis-ci.org/roboticslab-uc3m/teo-main)
+[![Build Status (Linux/OSX)](https://img.shields.io/travis/roboticslab-uc3m/kinematics-dynamics/master.svg?label=Build Status (Linux/OSX))](https://travis-ci.org/roboticslab-uc3m/kinematics-dynamics)
 
-[![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/teo-main/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/teo-main)
+[![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/kinematics-dynamics/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/kinematics-dynamics)
 
-[![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/teo-main.svg?label=Issues)](https://github.com/roboticslab-uc3m/teo-main/issues)
+[![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/kinematics-dynamics.svg?label=Issues)](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 
 ## Links of interest:
 

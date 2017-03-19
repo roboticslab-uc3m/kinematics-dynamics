@@ -14,7 +14,7 @@ namespace teo
 {
 
 /**
- * @ingroup teo_libraries
+ * @ingroup kinematics-dynamics-libraries
  * \defgroup KdlVectorConverterLib
  *
  * @brief Contains classes related to kdl and std::vector classes.
