@@ -22,12 +22,10 @@ option(ENABLE_BasicCartesianControl "Enable/disable compilation of BasicCartesia
 option(ENABLE_CartesianControlServer "Enable/disable compilation of CartesianControlServer" TRUE)
 option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianControlClient" TRUE)
 option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
-option(ENABLE_FakeControlboard "Enable/disable compilation of FakeControlboard" TRUE)
 option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
 
 ### options: cpp programs
-option(ENABLE_teoSim "Choose if you want to compile teoSim" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
@@ -124,7 +122,7 @@ find_or_build_package(COLOR_DEBUG)
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
-add_subdirectory(programs)
+#add_subdirectory(programs)
 if (ENABLE_tests)
     add_subdirectory(test)
 endif (ENABLE_tests)

@@ -11,7 +11,6 @@
   include(YarpPlugin)
 
   # yarp_begin_plugin_library(TeoYarp)
-    add_subdirectory(FakeControlboard)
     add_subdirectory(KdlSolver)
     add_subdirectory(BasicCartesianControl)
     add_subdirectory(CartesianControlServer)
