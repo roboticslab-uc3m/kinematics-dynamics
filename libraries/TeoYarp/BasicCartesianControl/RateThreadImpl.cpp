@@ -70,7 +70,6 @@ void teo::BasicCartesianControl::run() {
         {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
         }
-
     }
     else if (catchCurrentState == VOCAB_CC_MOVV_CONTROLLING)
     {
