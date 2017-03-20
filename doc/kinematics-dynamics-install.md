@@ -1,12 +1,11 @@
-## Simulation and Basic Control: Installation from Source Code
+## kinematics-dynamics: Installation from Source Code
 
 First install the dependencies:
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-cmake.md)
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-yarp.md)
-- [Install OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-openrave.md)
 - [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-kdl.md)
 
-### Install the Simulation and Basic Control Software on Ubuntu (working on all tested versions)
+### Install kinematics-dynamics on Ubuntu (working on all tested versions)
 
 Our software integrates the previous dependencies. Note that you will be prompted for your password upon using '''sudo''' a couple of times:
 
@@ -25,7 +24,7 @@ For CMake `find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)`, you may also
 export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
 ```
 
-For additional TEO options use ccmake instead of cmake.
+For additional options use ccmake instead of cmake.
 
 ### Even more!
 

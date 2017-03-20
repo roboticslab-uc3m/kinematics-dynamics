@@ -12,6 +12,5 @@ yarp_install(FILES ymanager.ini DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DA
 
 ### Go through single applications
 
-add_subdirectory(teoSim)
-
+#add_subdirectory(program)
 
