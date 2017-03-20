@@ -1,8 +1,10 @@
-[![Teo-main Homepage](https://img.shields.io/badge/kinematics-dynamics-orange.svg)](http://robots.uc3m.es/dox-kinematics-dynamics) [![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/kinematics-dynamics.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/kinematics-dynamics/tags)
+[![Teo-main Homepage](https://img.shields.io/badge/kinematics-dynamics-orange.svg)](http://robots.uc3m.es/dox-kinematics-dynamics)
 
 Kinematics and dynamics solvers and controllers.
 
+<p align="center">
 ![kinematics-dynamics.jpg](doc/fig/kinematics-dynamics.png)
+</p>
 
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-kinematics-dynamics
 
