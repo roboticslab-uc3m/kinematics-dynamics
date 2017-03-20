@@ -7,6 +7,7 @@
 void teo::BasicCartesianControl::run() {
 
     int catchCurrentState = getCurrentState();
+
     if (catchCurrentState == VOCAB_CC_MOVL_CONTROLLING)
     {
         double movementTime = yarp::os::Time::now() - movementStartTime;
