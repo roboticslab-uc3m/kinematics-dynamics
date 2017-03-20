@@ -2,6 +2,8 @@
 
 Kinematics and dynamics solvers and controllers.
 
+![kinematics-dynamics.jpg](doc/fig/kinematics-dynamics.jpg)
+
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-kinematics-dynamics
 
 ## Installation
