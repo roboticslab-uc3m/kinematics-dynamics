@@ -27,9 +27,10 @@ teo::GaitTrajectory::GaitTrajectory()
 //    steps = new GaitSupportPoligon(rf,lf);
     steps = new GaitLipm(rf,lf,80.0);
     steps->SetKickParameters(0.05,0.05); //(kick distance, kick height). revisar valores
-    steps->SetHipParameters(0.11,0.04); //(hip sideshift, hip squat). revisar estos valores
+    steps->SetHipParameters(0.10,0.02); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
+    steps->AfterStep();
     steps->GetTrajectories(trf,tlf);
 
 }
