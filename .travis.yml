@@ -11,6 +11,8 @@ compiler:
 before_install:
   - sudo add-apt-repository --yes ppa:kalakris/cmake
   - sudo apt-get update -qq  # -qq No output except for errors
+  - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
+  - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
 
 install:
   #-- Install cmake
@@ -30,16 +32,6 @@ install:
   - make
   - sudo make install
   - cd ../../..
-  #-- Install OpenRAVE
-  - sudo apt-get install libboost-dev libboost-date-time-dev libboost-thread-dev
-  - sudo apt-get install libqt4-dev qt4-dev-tools libxml2-dev libode-dev # libfcl-dev not on travis as of Oct 2016
-  - sudo apt-get install libsoqt4-dev libcoin60-dev  # libcoin80-dev is not supported by current default travis
-  - git clone --branch latest_stable https://github.com/rdiankov/openrave.git
-  - cd openrave && mkdir build && cd build
-  - cmake .. -DOPENRAVE_PLUGIN_FCLRAVE=OFF
-  - make
-  - sudo make install
-  - cd ../..
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
   - if [ "$CXX" = "g++" ]; then wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz; fi
   - if [ "$CXX" = "g++" ]; then tar xf lcov_1.11.orig.tar.gz; fi
