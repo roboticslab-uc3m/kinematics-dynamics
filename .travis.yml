@@ -45,6 +45,7 @@ script:
   - cmake .. -DENABLE_coverage=ON
   - make
   - sudo make install
+  - sudo ldconfig
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
   - bin/testBasicCartesianControl
