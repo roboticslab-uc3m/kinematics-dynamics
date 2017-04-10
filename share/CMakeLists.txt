@@ -12,5 +12,5 @@ yarp_install(FILES ymanager.ini DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DA
 
 ### Go through single applications
 
-#add_subdirectory(program)
+add_subdirectory(testKdlSolverFromFile)
 
