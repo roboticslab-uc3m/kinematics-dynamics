@@ -24,10 +24,9 @@ class KdlSolverTestFromFile : public testing::Test
 
             yarp::os::ResourceFinder rf;
             rf.setVerbose(false);
-            //-- Next two lines could use an .ini from any valid program (teoSim, teoGravityCompensator...)
-            rf.setDefaultContext("teoSim");
-            rf.setDefaultConfigFile("teoSim.ini");
-            std::string kinematicsFileFullPath = rf.findFileByName( "../kinematics/leftArmKinematics.ini" );
+            rf.setDefaultContext("testKdlSolverFromFile");
+            rf.setDefaultConfigFile("testKdlSolverFromFile.ini");
+            std::string kinematicsFileFullPath = rf.findFileByName( "testKdlSolverFromFile.ini" );
 
             yarp::os::Property solverOptions;
             if (! solverOptions.fromConfigFile(kinematicsFileFullPath) ) {  //-- Put first because defaults to wiping out.
