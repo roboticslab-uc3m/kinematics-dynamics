@@ -24,6 +24,7 @@ option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianCon
 option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
 option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
+option(ENABLE_AmorCartesianControl "Enable/disable compilation of AmorCartesianControl" TRUE)
 
 ### options: cpp programs
 option(ENABLE_transCoordsUsingJoints "Enable/disable compilation of transCoordsUsingJoints" TRUE)

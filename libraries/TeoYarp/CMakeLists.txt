@@ -17,6 +17,7 @@
     add_subdirectory(CartesianControlClient)
     add_subdirectory(BasicTwoLimbCartesianControl)
     add_subdirectory(TwoLimbCartesianControlServer)
+    add_subdirectory(AmorCartesianControl)
   # yarp_end_plugin_library(TeoYarp)
 
   # install(TARGETS TeoYarp DESTINATION lib)
