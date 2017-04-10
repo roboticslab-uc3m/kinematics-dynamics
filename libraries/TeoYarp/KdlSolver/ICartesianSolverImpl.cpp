@@ -195,11 +195,11 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qdotdotInRad(motor)=toRad(qdotdot[motor]);
 
-    KDL::Wrenches wrenches;
-    for (int i=0; i<chain.getNrOfSegments(); i++)
+    KDL::Wrenches wrenches = KDL::Wrenches(chain.getNrOfSegments(),KDL::Wrench::Zero());
+    for (int i=0; i<fexts.size(); i++)
     {
         KDL::Wrench wrench( KDL::Vector(fexts[i][0],fexts[i][1],fexts[i][2]), KDL::Vector(fexts[i][3],fexts[i][4],fexts[i][5]) );
-        wrenches.push_back(wrench);
+        wrenches[i] = wrench;
     }
 
     KDL::JntArray kdlt = KDL::JntArray(chain.getNrOfJoints());
