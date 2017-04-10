@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------------
 
 bool teo::KdlSolver::getNumLinks(int* numLinks) {
-    *numLinks = this->numLinks;
+    *numLinks = this->chain.getNrOfSegments();
     return true;
 }
 
@@ -13,8 +13,8 @@ bool teo::KdlSolver::getNumLinks(int* numLinks) {
 
 bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x) {
 
-    KDL::JntArray qInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qInRad(motor)=toRad(q[motor]);
 
     //-- Main fwdKin (pos) solver lines
@@ -33,8 +33,8 @@ bool teo::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vecto
     KDL::Frame frameXd;
     vectorToFrame(xd,frameXd);
 
-    KDL::JntArray qInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qInRad(motor)=toRad(q[motor]);
 
     //-- Main fwdKin (pos) solver lines
@@ -61,10 +61,10 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     KDL::Frame frameXd;
     vectorToFrame(xd,frameXd);
 
-    KDL::JntArray qGuessInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qGuessInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qGuessInRad(motor)=toRad(qGuess[motor]);
-    KDL::JntArray kdlq = KDL::JntArray(numLinks);
+    KDL::JntArray kdlq = KDL::JntArray(chain.getNrOfJoints());
 
 #ifdef _USE_LMA_
 
@@ -98,8 +98,8 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
     if(ret > 0)
         CD_WARNING("%d: %s\n",ret, iksolver_pos.strError(ret));
 
-    q.resize(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    q.resize(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         q[motor]=toDeg(kdlq(motor));
 
     return true;
@@ -109,8 +109,8 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
 bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) {
 
-    KDL::JntArray qInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qInRad(motor)=toRad(q[motor]);
 
     KDL::Twist kdlxdot;
@@ -121,7 +121,7 @@ bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<
     kdlxdot.rot.y(xdot[4]);
     kdlxdot.rot.z(xdot[5]);
 
-    KDL::JntArray qDotOutRadS = KDL::JntArray(numLinks);
+    KDL::JntArray qDotOutRadS = KDL::JntArray(chain.getNrOfJoints());
     KDL::ChainIkSolverVel_pinv iksolverv(chain);
     int ret = iksolverv.CartToJnt(qInRad,kdlxdot,qDotOutRadS);
 
@@ -134,8 +134,8 @@ bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<
     if(ret > 0)
         CD_WARNING("%d: %s\n",ret, iksolverv.strError(ret));
 
-    qdot.resize(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    qdot.resize(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qdot[motor]=toDeg(qDotOutRadS(motor));
 
     return true;
@@ -145,19 +145,19 @@ bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<
 
 bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
 
-    KDL::JntArray qInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qInRad(motor)=toRad(q[motor]);
 
-    KDL::JntArray qdotInRad = KDL::JntArray(numLinks);
+    KDL::JntArray qdotInRad = KDL::JntArray(chain.getNrOfJoints());
     qdotInRad.data.setZero();
 
-    KDL::JntArray qdotdotInRad = KDL::JntArray(numLinks);
+    KDL::JntArray qdotdotInRad = KDL::JntArray(chain.getNrOfJoints());
     qdotdotInRad.data.setZero();
 
-    KDL::Wrenches wrenches(numLinks,KDL::Wrench::Zero());
+    KDL::Wrenches wrenches(chain.getNrOfSegments(),KDL::Wrench::Zero());
 
-    KDL::JntArray kdlt = KDL::JntArray(numLinks);
+    KDL::JntArray kdlt = KDL::JntArray(chain.getNrOfJoints());
 
     //-- Main invDyn solver lines
     KDL::ChainIdSolver_RNE idsolver(chain,gravity);
@@ -172,8 +172,8 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
     if(ret > 0)
         CD_WARNING("%d: %s\n",ret, idsolver.strError(ret));
 
-    t.resize(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    t.resize(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         t[motor]=kdlt(motor);
 
     return true;
@@ -183,26 +183,26 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
 bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) {
 
-    KDL::JntArray qInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qInRad(motor)=toRad(q[motor]);
 
-    KDL::JntArray qdotInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qdotInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qdotInRad(motor)=toRad(qdot[motor]);
 
-    KDL::JntArray qdotdotInRad = KDL::JntArray(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    KDL::JntArray qdotdotInRad = KDL::JntArray(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qdotdotInRad(motor)=toRad(qdotdot[motor]);
 
-    KDL::Wrenches wrenches;
-    for (int i=0; i<numLinks; i++)
+    KDL::Wrenches wrenches = KDL::Wrenches(chain.getNrOfSegments(),KDL::Wrench::Zero());
+    for (int i=0; i<fexts.size(); i++)
     {
         KDL::Wrench wrench( KDL::Vector(fexts[i][0],fexts[i][1],fexts[i][2]), KDL::Vector(fexts[i][3],fexts[i][4],fexts[i][5]) );
-        wrenches.push_back(wrench);
+        wrenches[i] = wrench;
     }
 
-    KDL::JntArray kdlt = KDL::JntArray(numLinks);
+    KDL::JntArray kdlt = KDL::JntArray(chain.getNrOfJoints());
 
     //-- Main invDyn solver lines
     KDL::ChainIdSolver_RNE idsolver(chain,gravity);
@@ -217,8 +217,8 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
     if(ret > 0)
         CD_WARNING("%d: %s\n",ret,idsolver.strError(ret));
 
-    t.resize(numLinks);
-    for (int motor=0; motor<numLinks; motor++)
+    t.resize(chain.getNrOfJoints());
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         t[motor]=kdlt(motor);
 
     return true;
@@ -228,7 +228,7 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
 
 bool teo::KdlSolver::setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax)
 {
-    for (int motor=0; motor<numLinks; motor++)
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
     {
         this->qMax(motor) = toRad(qMax[motor]);
         this->qMin(motor) = toRad(qMin[motor]);

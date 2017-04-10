@@ -24,7 +24,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config)
     CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
 
     //-- numlinks
-    numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
+    int numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
     CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
 
     //-- angleRepr
@@ -172,12 +172,13 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config)
     CD_INFO("HN:\n%s\n[%s]\n",ymHN.toString().c_str(),defaultYmHN.toString().c_str());
 
     //--
-    CD_INFO("Chain number of segments including none-joint (H0 and HN): %d\n",chain.getNrOfSegments());
+    CD_INFO("Chain number of segments (post- H0 and HN): %d\n",chain.getNrOfSegments());
+    CD_INFO("Chain number of joints (post- H0 and HN): %d\n",chain.getNrOfJoints());
 
-    qMax.resize(numLinks);
-    qMin.resize(numLinks);
+    qMax.resize(chain.getNrOfJoints());
+    qMin.resize(chain.getNrOfJoints());
     //-- Limits [ -pi , pi ].
-    for (int motor=0; motor<numLinks; motor++)
+    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
     {
         qMax(motor) = M_PI;
         qMin(motor) = -M_PI;
