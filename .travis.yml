@@ -26,7 +26,7 @@ install:
   - cd ../..
   #-- Install kdl
   - sudo apt-get install libeigen3-dev
-  - git clone -b issue78 https://github.com/roboticslab-uc3m/orocos_kinematics_dynamics
+  - git clone https://github.com/orocos/orocos_kinematics_dynamics
   - cd orocos_kinematics_dynamics/orocos_kdl && mkdir build && cd build
   - cmake ..
   - make
