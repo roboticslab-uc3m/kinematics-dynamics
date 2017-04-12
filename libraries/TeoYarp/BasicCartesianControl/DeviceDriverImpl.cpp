@@ -90,8 +90,9 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
 bool teo::BasicCartesianControl::close()
 {
-	solverDevice.close();
+    this->stop();
 	robotDevice.close();
+    solverDevice.close();
     return true;
 }
 
