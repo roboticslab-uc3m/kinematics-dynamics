@@ -1,16 +1,15 @@
+language: cpp
+dist: trusty
+sudo: required
+
 os:
   - linux
-
-language:
-  - cpp
 
 compiler:
   - gcc
   - clang
 
 before_install:
-  - sudo add-apt-repository --yes ppa:kalakris/cmake
-  - sudo apt-get update -qq  # -qq No output except for errors
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
 
