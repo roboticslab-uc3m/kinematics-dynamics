@@ -4,7 +4,7 @@ First install the dependencies:
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-cmake.md)
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-yarp.md)
 - [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-kdl.md)
-- Only for testBasicCartesianControl, we use `FakeControlboard`:
+- Only for `testBasicCartesianControl`, we use `FakeControlboard` from [openrave-yarp-plugins](https://github.com/roboticslab-uc3m/openrave-yarp-plugins):
 ```bash
 mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
 git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
