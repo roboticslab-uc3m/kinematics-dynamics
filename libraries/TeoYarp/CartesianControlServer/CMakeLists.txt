@@ -15,7 +15,6 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMIC
 
 YARP_ADD_PLUGIN(CartesianControlServer CartesianControlServer.hpp CartesianControlServer.cpp DeviceDriverImpl.cpp)
 TARGET_LINK_LIBRARIES(CartesianControlServer ${YARP_LIBRARIES})
-install(TARGETS CartesianControlServer DESTINATION lib)
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
