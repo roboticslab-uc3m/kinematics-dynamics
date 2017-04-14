@@ -109,9 +109,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         /** The chain. **/
         KDL::Chain chain;
 
-        /** Number of links of the chain. **/
-        int numLinks;
-
         /** Define used gravity for the chain, important to think of DH. **/
         KDL::Vector gravity;
 

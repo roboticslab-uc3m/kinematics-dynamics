@@ -7,6 +7,8 @@ set(KEYWORD "TrajectoryLib")
 FIND_PACKAGE(orocos_kdl REQUIRED)
 FIND_PACKAGE(GAIT REQUIRED)
 
+add_definitions(${GAIT_DEFINES})
+
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
 file(GLOB folder_header *.h)

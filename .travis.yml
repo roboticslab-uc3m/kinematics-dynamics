@@ -1,16 +1,17 @@
+language: cpp
+dist: trusty
+sudo: required
+
 os:
   - linux
-
-language:
-  - cpp
 
 compiler:
   - gcc
   - clang
 
 before_install:
-  - sudo add-apt-repository --yes ppa:kalakris/cmake
-  - sudo apt-get update -qq  # -qq No output except for errors
+  - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
+  - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
 
 install:
   #-- Install cmake
@@ -24,19 +25,18 @@ install:
   - cd ../..
   #-- Install kdl
   - sudo apt-get install libeigen3-dev
-  - git clone -b issue78 https://github.com/jgvictores/orocos_kinematics_dynamics
+  - git clone https://github.com/orocos/orocos_kinematics_dynamics
   - cd orocos_kinematics_dynamics/orocos_kdl && mkdir build && cd build
   - cmake ..
   - make
   - sudo make install
   - cd ../../..
-  #-- Install OpenRAVE
-  - sudo apt-get install libboost-dev libboost-date-time-dev libboost-thread-dev
-  - sudo apt-get install libqt4-dev qt4-dev-tools libxml2-dev libode-dev # libfcl-dev not on travis as of Oct 2016
-  - sudo apt-get install libsoqt4-dev libcoin60-dev  # libcoin80-dev is not supported by current default travis
-  - git clone --branch latest_stable https://github.com/rdiankov/openrave.git
-  - cd openrave && mkdir build && cd build
-  - cmake .. -DOPENRAVE_PLUGIN_FCLRAVE=OFF
+  #-- (For testBasicCartesianControl) Install FakeControlboard currently at https://github.com/roboticslab-uc3m/openrave-yarp-plugins
+  - git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
+  - cd openrave-yarp-plugins
+  - git checkout d58cfecf097ded53f014ac982e949b233b4e3c40
+  - mkdir build && cd build
+  - cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_teoSim=OFF
   - make
   - sudo make install
   - cd ../..
@@ -53,6 +53,7 @@ script:
   - cmake .. -DENABLE_coverage=ON
   - make
   - sudo make install
+  - sudo ldconfig
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
   - bin/testBasicCartesianControl

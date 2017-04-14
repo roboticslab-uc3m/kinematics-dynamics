@@ -5,6 +5,8 @@
 
 //adds libgait support poligon dependency
 #include "GaitSupportPoligon.h"
+#include "GaitLipm.h"
+
 
 namespace teo
 {
@@ -26,7 +28,8 @@ public:
 private:
 
     //every gait operation start with instantiation and initialization of a Gait child class
-    GaitSupportPoligon * steps;
+    //GaitSupportPoligon * steps;
+    GaitLipm * steps;
 
     tra::SpaceTrajectory trf,tlf;
     std::vector<double> lastGoodX;

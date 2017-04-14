@@ -1,8 +1,12 @@
-[![Teo-main Homepage](https://img.shields.io/badge/kinematics-dynamics-orange.svg)](http://robots.uc3m.es/dox-kinematics-dynamics) [![Latest Release](https://img.shields.io/github/tag/roboticslab-uc3m/kinematics-dynamics.svg?label=Latest Release)](https://github.com/roboticslab-uc3m/kinematics-dynamics/tags)
+[![Teo-main Homepage](https://img.shields.io/badge/kinematics-dynamics-orange.svg)](http://robots.uc3m.es/dox-kinematics-dynamics)
 
 Kinematics and dynamics solvers and controllers.
 
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-kinematics-dynamics
+
+<p align="center">
+    <img src="doc/fig/kinematics-dynamics.png" alt="kinematics-dynamics image"/>
+</p>
 
 ## Installation
 
@@ -25,7 +29,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ## Status
 
-[![Build Status (Linux/OSX)](https://img.shields.io/travis/roboticslab-uc3m/kinematics-dynamics/master.svg?label=Build Status (Linux/OSX))](https://travis-ci.org/roboticslab-uc3m/kinematics-dynamics)
+[![Build Status (Linux/OSX)](https://travis-ci.org/roboticslab-uc3m/kinematics-dynamics.svg?branch=master)](https://travis-ci.org/roboticslab-uc3m/kinematics-dynamics)
 
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/kinematics-dynamics/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/kinematics-dynamics)
 

@@ -4,17 +4,30 @@ First install the dependencies:
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-cmake.md)
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-yarp.md)
 - [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-kdl.md)
+- Only for `testBasicCartesianControl`, we use `FakeControlboard` from [openrave-yarp-plugins](https://github.com/roboticslab-uc3m/openrave-yarp-plugins):
+```bash
+cd  # go home
+mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
+git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
+cd openrave-yarp-plugins
+git checkout d58cfecf097ded53f014ac982e949b233b4e3c40
+mkdir build && cd build
+cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_teoSim=OFF
+make -j$(nproc)  # compile
+sudo make install
+cd ../..
+```
 
 ### Install kinematics-dynamics on Ubuntu (working on all tested versions)
 
-Our software integrates the previous dependencies. Note that you will be prompted for your password upon using '''sudo''' a couple of times:
+Our software integrates the previous dependencies. Note that you will be prompted for your password upon using `sudo` a couple of times:
 
 ```bash
 cd  # go home
-mkdir -p repos; cd repos  # make $HOME/repos if it does not exist; then, enter it
+mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
 git clone --recursive https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download kinematics-dynamics software from the repository; Use --recursive to get embedded repositories (technically, git submodules)
 cd kinematics-dynamics; mkdir build; cd build; cmake ..  # Configure the kinematics-dynamics software
-make  # Compile
+make -j$(nproc) # Compile
 sudo make install  # Install :-)
 cp ../scripts/gnome/kinematics-dynamics.desktop $HOME/Desktop
 ```

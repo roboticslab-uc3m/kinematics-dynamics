@@ -4,14 +4,10 @@
 teo::GaitTrajectory::GaitTrajectory()
 {
 
-    //revisados estos valores-->
-
     kin::Pose rf(0,-0.1285,-0.845);
     //rf.ChangeRotation(-0.7071,0.0,0.7071,M_PI);
     rf.ChangeRotation(0,1,0,-M_PI/2);
     rf.ChangeRotation(0,0,1,M_PI);
-    //rf.ChangeRotation(0.,1.,0.,M_PI/2);
-    //rf.ChangeRotation(1.,0.,0.,-M_PI);
 
     std::cout << "right foot : " << rf.GetX() << "," << rf.GetY() << "," << rf.GetZ() << "," ;
     std::cout << std::endl;
@@ -22,13 +18,15 @@ teo::GaitTrajectory::GaitTrajectory()
     std::cout << "left foot : " << lf.GetX() << "," << lf.GetY() << "," << lf.GetZ() << "," ;
     std::cout << std::endl;
 
-    //revisados estos valores<--
 
-    steps = new GaitSupportPoligon(rf,lf);
-    steps->SetSwingParameters(0.1,0.05); //(swing distance, swing height). revisar valores
-    steps->SetHipParameters(0.12,0.04); //(hip sideshift, hip squat). revisar estos valores
+//    steps = new GaitSupportPoligon(rf,lf);
+    //now using zmp lip model.
+    steps = new GaitLipm(rf,lf,80.0);
+    steps->SetKickParameters(0.05,0.05); //(kick distance, kick height). revisar valores
+    steps->SetHipParameters(0.10,0.02); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
+    steps->AfterStep();
     steps->GetTrajectories(trf,tlf);
 
 }
