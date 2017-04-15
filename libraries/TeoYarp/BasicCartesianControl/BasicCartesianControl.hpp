@@ -58,7 +58,7 @@ This would mean we are using an axis/angle notation (par de rotación). Note tha
 
 We connect, can ask for help, etc. Here's an example interaction:
 \verbatim
-[on terminal 3] yarp rpc /BasicCartesianControl/rpc:s
+[on terminal 3] yarp rpc /CartesianControl/rpc:s
 [>>] help
 Response: [stat] [inv] [movj] [movl] [movv] [gcmp] [forc] [stop]
 [>>] stat
