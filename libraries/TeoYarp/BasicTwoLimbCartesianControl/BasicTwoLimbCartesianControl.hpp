@@ -42,7 +42,7 @@ namespace teo
 
 /**
  * @ingroup BasicTwoLimbCartesianControl
- * @brief The BasicTwoLimbCartesianControl class implements ICartesianSolver.
+ * @brief The BasicTwoLimbCartesianControl class implements ITwoLimbCartesianControl.
  */
 
 class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwoLimbCartesianControl, public yarp::os::RateThread {
