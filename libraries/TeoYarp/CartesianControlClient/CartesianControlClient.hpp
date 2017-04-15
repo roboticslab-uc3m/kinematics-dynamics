@@ -30,7 +30,7 @@ namespace teo
 
 /**
  * @ingroup CartesianControlClient
- * @brief The CartesianControlClient class implements.
+ * @brief The CartesianControlClient class implements ICartesianControl client side.
  */
 
 class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesianControl {

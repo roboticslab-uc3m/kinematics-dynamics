@@ -26,7 +26,7 @@ namespace teo
 
 /**
  * @ingroup TwoLimbCartesianControlServer
- * @brief The TwoLimbCartesianControlServer class implements ICartesianSolver.
+ * @brief The TwoLimbCartesianControlServer class implements ITwoLimbCartesianControl server side.
  */
 
 class TwoLimbCartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::PortReader {
