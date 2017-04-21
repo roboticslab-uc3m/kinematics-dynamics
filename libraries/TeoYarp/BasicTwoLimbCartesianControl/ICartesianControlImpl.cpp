@@ -47,8 +47,14 @@ bool teo::BasicTwoLimbCartesianControl::step()
     trajectory = new GaitTrajectory();
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    iVelocityControlA->setVelocityMode();
-    iVelocityControlB->setVelocityMode();
+    for (unsigned int joint = 0; joint < numRobotJointsA; joint++)
+    {
+        iControlModeA->setVelocityMode(joint);
+    }
+    for (unsigned int joint = 0; joint < numRobotJointsB; joint++)
+    {
+        iControlModeB->setVelocityMode(joint);
+    }
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVS_CONTROLLING );
 
@@ -69,9 +75,15 @@ bool teo::BasicTwoLimbCartesianControl::step()
 
 bool teo::BasicTwoLimbCartesianControl::stopControl()
 {
-    iPositionControlA->setPositionMode();
+    for (unsigned int joint = 0; joint < numRobotJointsA; joint++)
+    {
+        iControlModeA->setPositionMode(joint);
+    }
     iPositionControlA->stop();
-    iPositionControlB->setPositionMode();
+    for (unsigned int joint = 0; joint < numRobotJointsB; joint++)
+    {
+        iControlModeB->setPositionMode(joint);
+    }
     iPositionControlB->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
     return true;
