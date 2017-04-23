@@ -49,12 +49,12 @@ install:
 
 before_script:
   - mkdir -p build && cd build
-
-script:
   - cmake .. -DENABLE_coverage=ON
   - make
   - sudo make install
   - sudo ldconfig
+
+script:
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
   - bin/testBasicCartesianControl
