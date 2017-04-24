@@ -21,8 +21,8 @@
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ANG_REPR "axisAngle"
-#define DEFAULT_REMOTE_A "/teoSim/rightLeg"
-#define DEFAULT_REMOTE_B "/teoSim/leftLeg"
+#define DEFAULT_REMOTE_A "/teo/rightLeg"
+#define DEFAULT_REMOTE_B "/teo/leftLeg"
 #define DEFAULT_KINEMATICS_A "rightLegKinematics.ini"
 #define DEFAULT_KINEMATICS_B "leftLegKinematics.ini"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
