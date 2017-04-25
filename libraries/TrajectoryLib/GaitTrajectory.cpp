@@ -19,12 +19,15 @@ teo::GaitTrajectory::GaitTrajectory()
     std::cout << "left foot : " << lf.GetX() << "," << lf.GetY() << "," << lf.GetZ() << "," ;
     std::cout << std::endl;
 
+    trf.setDefaultSpeeds(0.1, 0.05);
+    tlf.setDefaultSpeeds(0.1, 0.05);
+
 
 //    steps = new GaitSupportPoligon(rf,lf);
     //now using zmp lip model.
     steps = new GaitLipm(rf,lf,80.0);
     steps->SetKickParameters(0.02,0.02); //(kick distance, kick height). revisar valores
-    steps->SetHipParameters(0.10,0.02); //(hip sideshift, hip squat). revisar estos valores
+    steps->SetHipParameters(0.1,0.03); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
     steps->AfterStep();
