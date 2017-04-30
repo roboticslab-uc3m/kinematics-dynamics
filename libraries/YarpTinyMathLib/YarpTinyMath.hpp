@@ -4,9 +4,7 @@
 #define __YARP_TINY_MATH_HPP__
 
 #define _USE_MATH_DEFINES // see <math.h> on Windows
-#include <math.h>  // provides: M_PI
-
-#include <stdio.h>  // provides: fprintf, stderr
+#include <cmath>  // provides: M_PI
 
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
@@ -15,8 +13,6 @@
 
 namespace teo
 {
-
-using namespace yarp::math;  // else matrix operators wreak havoc
 
 /**
  * @ingroup kinematics-dynamics-libraries
