@@ -23,6 +23,7 @@ IF (ENABLE_BasicTwoLimbCartesianControl)
 ENDIF (ENABLE_BasicTwoLimbCartesianControl)
 
 add_subdirectory(KdlVectorConverterLib)
+add_subdirectory(YarpTinyMathLib)
 add_subdirectory(TrajectoryLib)
 
 add_subdirectory(TeoYarp)

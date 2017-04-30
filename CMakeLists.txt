@@ -15,6 +15,7 @@ set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 ### options: cpp libraries
 option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 option(ENABLE_KdlVectorConverterLib "Enable/disable compilation of KdlVectorConverterLib" TRUE)
+option(ENABLE_YarpTinyMathLib "Enable/disable compilation of YarpTinyMathLib" TRUE)
 
 ### options: cpp libraries (yarp plugins inside TeoYarp)
 #option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)  # dropped with shared libs
