@@ -183,6 +183,7 @@ protected:
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IControlLimits *iControlLimits;
         yarp::dev::ITorqueControl *iTorqueControl;
+        yarp::dev::IControlMode *iControlMode;
 
         int numRobotJoints, numSolverLinks;
 

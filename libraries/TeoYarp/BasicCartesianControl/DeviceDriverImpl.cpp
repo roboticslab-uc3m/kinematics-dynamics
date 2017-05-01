@@ -53,6 +53,10 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
         CD_ERROR("Could not view iTorqueControl in: %s.\n",robotStr.c_str());
         return false;
     }
+    if( ! robotDevice.view(iControlMode) ) {
+        CD_ERROR("Could not view iControlMode in: %s.\n",robotStr.c_str());
+        return false;
+    }
 
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);

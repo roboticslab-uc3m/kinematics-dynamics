@@ -87,6 +87,10 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
         CD_ERROR("Could not view iControlLimits in: %s.\n",remote.c_str());
         return false;
     }
+    if( ! robotDeviceA.view(iControlModeA) ) {
+        CD_ERROR("Could not view iControlMode in: %s.\n",remote.c_str());
+        return false;
+    }
 
     iEncodersA->getAxes(&numRobotJointsA);
     CD_INFO("numRobotJoints: %d.\n",numRobotJointsA);
@@ -189,6 +193,10 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
     }
     if( ! robotDeviceB.view(iControlLimitsB) ) {
         CD_ERROR("Could not view iControlLimits in: %s.\n",remote.c_str());
+        return false;
+    }
+    if( ! robotDeviceB.view(iControlModeB) ) {
+        CD_ERROR("Could not view iControlMode in: %s.\n",remote.c_str());
         return false;
     }
 
