@@ -23,6 +23,7 @@ option(ENABLE_BasicCartesianControl "Enable/disable compilation of BasicCartesia
 option(ENABLE_CartesianControlServer "Enable/disable compilation of CartesianControlServer" TRUE)
 option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianControlClient" TRUE)
 option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
+option(ENABLE_AsibotSolver "Enable/disable compilation of AsibotSolver" TRUE)
 option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
 

@@ -12,6 +12,7 @@
 
   # yarp_begin_plugin_library(TeoYarp)
     add_subdirectory(KdlSolver)
+    add_subdirectory(AsibotSolver)
     add_subdirectory(BasicCartesianControl)
     add_subdirectory(CartesianControlServer)
     add_subdirectory(CartesianControlClient)
