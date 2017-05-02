@@ -1,28 +1,28 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "CartesianBot.h"
+#include <AsibotSolver.hpp>
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setTrackingMode(const bool f) {
+bool roboticslab::AsibotSolver::setTrackingMode(const bool f) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getTrackingMode(bool *f) {
+bool roboticslab::AsibotSolver::getTrackingMode(bool *f) {
     return false;
 }
 
 // ----------------------------------------------------------------------------- 
 
-bool CartesianBot::getPose(const int axis, yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
+bool roboticslab::AsibotSolver::getPose(const int axis, yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
     return false;
 }
 
 // ----------------------------------------------------------------------------- 
 
-bool CartesianBot::getPose(yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
+bool roboticslab::AsibotSolver::getPose(yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
     double realDeg[NUM_MOTORS];
     if(!enc->getEncoders(realDeg)) {
         fprintf(stderr,"[CartesianBot] warning: getPose() failed to getEncoders()\n");
@@ -33,7 +33,7 @@ bool CartesianBot::getPose(yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os:
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::goToPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od, const double t) {
+bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od, const double t) {
     yarp::sig::Vector x,o;  // empty vectors
     getPose(x,o);  // where we put the result of performing fwd kinematics of current position
     if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
@@ -101,13 +101,13 @@ bool CartesianBot::goToPose(const yarp::sig::Vector &xd, const yarp::sig::Vector
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::goToPosition(const yarp::sig::Vector &xd, const double t) {
+bool roboticslab::AsibotSolver::goToPosition(const yarp::sig::Vector &xd, const double t) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
+bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                               const double t) {
     yarp::sig::Vector x,o;  // empty vectors
     getPose(x,o);  // where we put the result of performing fwd kinematics of current position
@@ -179,20 +179,20 @@ bool CartesianBot::goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Ve
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::goToPositionSync(const yarp::sig::Vector &xd, const double t) {
+bool roboticslab::AsibotSolver::goToPositionSync(const yarp::sig::Vector &xd, const double t) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getDesired(yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
+bool roboticslab::AsibotSolver::getDesired(yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
                             yarp::sig::Vector &qdhat) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
+bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                             yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
                             yarp::sig::Vector &qdhat) {
     printf("Problem statement:\n");
@@ -232,7 +232,7 @@ bool CartesianBot::askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vect
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::askForPose(const yarp::sig::Vector &q0,
+bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &q0,
                             const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                             yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
                             yarp::sig::Vector &qdhat) {
@@ -241,7 +241,7 @@ bool CartesianBot::askForPose(const yarp::sig::Vector &q0,
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::askForPosition(const yarp::sig::Vector &xd,
+bool roboticslab::AsibotSolver::askForPosition(const yarp::sig::Vector &xd,
                                 yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
                                 yarp::sig::Vector &qdhat) {
     return false;
@@ -249,7 +249,7 @@ bool CartesianBot::askForPosition(const yarp::sig::Vector &xd,
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::askForPosition(const yarp::sig::Vector &q0,
+bool roboticslab::AsibotSolver::askForPosition(const yarp::sig::Vector &q0,
                                 const yarp::sig::Vector &xd,
                                 yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
                                 yarp::sig::Vector &qdhat) {
@@ -258,93 +258,93 @@ bool CartesianBot::askForPosition(const yarp::sig::Vector &q0,
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getDOF(yarp::sig::Vector &curDof) {
+bool roboticslab::AsibotSolver::getDOF(yarp::sig::Vector &curDof) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setDOF(const yarp::sig::Vector &newDof, yarp::sig::Vector &curDof) {
+bool roboticslab::AsibotSolver::setDOF(const yarp::sig::Vector &newDof, yarp::sig::Vector &curDof) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getRestPos(yarp::sig::Vector &curRestPos) {
+bool roboticslab::AsibotSolver::getRestPos(yarp::sig::Vector &curRestPos) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setRestPos(const yarp::sig::Vector &newRestPos, yarp::sig::Vector &curRestPos) {
+bool roboticslab::AsibotSolver::setRestPos(const yarp::sig::Vector &newRestPos, yarp::sig::Vector &curRestPos) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getRestWeights(yarp::sig::Vector &curRestWeights) {
+bool roboticslab::AsibotSolver::getRestWeights(yarp::sig::Vector &curRestWeights) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setRestWeights(const yarp::sig::Vector &newRestWeights, yarp::sig::Vector &curRestWeights) {
+bool roboticslab::AsibotSolver::setRestWeights(const yarp::sig::Vector &newRestWeights, yarp::sig::Vector &curRestWeights) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getLimits(const int axis, double *min, double *max) {
+bool roboticslab::AsibotSolver::getLimits(const int axis, double *min, double *max) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setLimits(const int axis, const double min, const double max) {
+bool roboticslab::AsibotSolver::setLimits(const int axis, const double min, const double max) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getTrajTime(double *t) {
+bool roboticslab::AsibotSolver::getTrajTime(double *t) {
     *t = duration;
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setTrajTime(const double t) {
+bool roboticslab::AsibotSolver::setTrajTime(const double t) {
     duration = t;
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getInTargetTol(double *tol) {
+bool roboticslab::AsibotSolver::getInTargetTol(double *tol) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setInTargetTol(const double tol) {
+bool roboticslab::AsibotSolver::setInTargetTol(const double tol) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getJointsVelocities(yarp::sig::Vector &qdot) {
+bool roboticslab::AsibotSolver::getJointsVelocities(yarp::sig::Vector &qdot) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getTaskVelocities(yarp::sig::Vector &xdot, yarp::sig::Vector &odot) {
+bool roboticslab::AsibotSolver::getTaskVelocities(yarp::sig::Vector &xdot, yarp::sig::Vector &odot) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot) {
+bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot) {
     double realDeg[NUM_MOTORS];  // Fixed because CartesianBot is very ASIBOT-specific
     if(!enc->getEncoders(realDeg)) {
         fprintf(stderr,"[CartesianBot] warning: setTaskVelocities() failed to getEncoders()\n");
@@ -424,25 +424,25 @@ bool CartesianBot::setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::attachTipFrame(const yarp::sig::Vector &x, const yarp::sig::Vector &o) {
+bool roboticslab::AsibotSolver::attachTipFrame(const yarp::sig::Vector &x, const yarp::sig::Vector &o) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getTipFrame(yarp::sig::Vector &x, yarp::sig::Vector &o) {
+bool roboticslab::AsibotSolver::getTipFrame(yarp::sig::Vector &x, yarp::sig::Vector &o) {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::removeTipFrame() {
+bool roboticslab::AsibotSolver::removeTipFrame() {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::checkMotionDone(bool *f) {
+bool roboticslab::AsibotSolver::checkMotionDone(bool *f) {
     bool tmpf = false;
     if(cmc_status<=0) tmpf = true;
     *f = tmpf;
@@ -451,13 +451,13 @@ bool CartesianBot::checkMotionDone(bool *f) {
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::waitMotionDone(const double period, const double timeout) {
+bool roboticslab::AsibotSolver::waitMotionDone(const double period, const double timeout) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::stopControl() {
+bool roboticslab::AsibotSolver::stopControl() {
     cmc_status=-1;
     printf("[CartesianBot] stopControl() End\n");
     return true;
@@ -465,49 +465,49 @@ bool CartesianBot::stopControl() {
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::storeContext(int *id) {
+bool roboticslab::AsibotSolver::storeContext(int *id) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::restoreContext(const int id) {
+bool roboticslab::AsibotSolver::restoreContext(const int id) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getInfo(yarp::os::Bottle &info) {
+bool roboticslab::AsibotSolver::getInfo(yarp::os::Bottle &info) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::registerEvent(yarp::dev::CartesianEvent &event) {
+bool roboticslab::AsibotSolver::registerEvent(yarp::dev::CartesianEvent &event) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::unregisterEvent(yarp::dev::CartesianEvent &event) {
+bool roboticslab::AsibotSolver::unregisterEvent(yarp::dev::CartesianEvent &event) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::setReferenceMode(const bool f) {
+bool roboticslab::AsibotSolver::setReferenceMode(const bool f) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::getReferenceMode(bool *f) {
+bool roboticslab::AsibotSolver::getReferenceMode(bool *f) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::tweakSet(const yarp::os::Bottle &options) {
+bool roboticslab::AsibotSolver::tweakSet(const yarp::os::Bottle &options) {
     Bottle &opt=const_cast<Bottle&>(options);  // Ugo knows why... :-)
     if (!isQuiet) printf("[CartesianBot] tweakSet: %s\n", opt.toString().c_str());
     if (opt.check("tool")) tool = opt.find("tool").asInt();
@@ -516,13 +516,13 @@ bool CartesianBot::tweakSet(const yarp::os::Bottle &options) {
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::tweakGet(yarp::os::Bottle &options) {
+bool roboticslab::AsibotSolver::tweakGet(yarp::os::Bottle &options) {
     return false;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::deleteContext(const int id) {
+bool roboticslab::AsibotSolver::deleteContext(const int id) {
     return false;
 }
 

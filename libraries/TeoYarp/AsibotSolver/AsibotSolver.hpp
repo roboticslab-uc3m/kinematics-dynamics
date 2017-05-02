@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __CARTESIANBOT_H__
-#define __CARTESIANBOT_H__
+#ifndef __ASIBOT_SOLVER_HPP__
+#define __ASIBOT_SOLVER_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
@@ -12,6 +12,7 @@
 #include <yarp/math/Math.h>
 #include <yarp/math/SVD.h>
 
+#include "ICartesianSolver.h"
 #include "TrajGen.hpp"
 #include "YarpTinyMath.hpp"
 
@@ -39,39 +40,56 @@
 #define DEFAULT_ROBOT_REMOTE "N/A"
 #define DEFAULT_TOOL 0
 
+namespace roboticslab
+{
+
 using namespace teo;
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::math;
 
 /**
- * @ingroup RlPlugins
- * \defgroup CartesianBot
+ * @ingroup TeoYarp
+ * @defgroup AsibotSolver
  *
- * @brief The \ref CartesianBot library is composed by a single class, CartesianBot.
- *
- * @section cartesianbot_install Installation
- *
- * The plugin is compiled when ENABLE_RlPlugins_cartesianbot is activated (not default). For further
- * installation steps refer to <a class="el" href="pages.html">your own system installation guidelines</a>.
- *
+ * @brief Contains roboticslab::AsibotSolver.
  */
 
 /**
- * @ingroup CartesianBot
- * @brief Implements the Cartesian space solver based on the geometrical solution of for the ASIBOT robot.
- *
- * The CartesianBot class connects to a robot (the IPositionControl, IVelocityControl and
- * IEncoders interfaces) and exposes a YARP_dev cartesian interface (implements
- * <a href="http://eris.liralab.it/yarpdoc/classyarp_1_1dev_1_1ICartesianControl.html">ICartesianControl</a>).
- * It is used by the \ref cartesianServer module.
+ * @ingroup AsibotSolver
+ * @brief The AsibotSolver implements ICartesianSolver.
  */
 
-class CartesianBot : public DeviceDriver, public RateThread, public ICartesianControl {
-  public:
+class AsibotSolver : public DeviceDriver, public teo::ICartesianSolver
+{
+public:
 
-    // Set the Thread Rate in the class constructor
-    CartesianBot() : RateThread(DEFAULT_CMC_MS) {}  // In ms
+    AsibotSolver() {}  // In ms
+
+    // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
+    /** Get number of links for which the solver has been configured. */
+    virtual bool getNumLinks(int* numLinks);
+
+    /** Perform forward kinematics. */
+    virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
+
+    /** Obtain error with respect to forward kinematics. */
+    virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
+
+    /** Perform inverse kinematics. */
+    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q);
+
+    /** Perform differential inverse kinematics. */
+    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
+
+    /** Perform inverse dynamics. */
+    virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
+
+    /** Perform inverse dynamics. */
+    virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
+
+    /** Set joint limits. */
+    virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
 
 // -- Helper Funcion declarations. Implementation in HelperFuncs.cpp--
 
@@ -696,7 +714,7 @@ class CartesianBot : public DeviceDriver, public RateThread, public ICartesianCo
    */
   void run();
 
- private:
+private:
     Property options;
     PolyDriver robotDevice;
     IEncoders *enc;
@@ -719,5 +737,6 @@ class CartesianBot : public DeviceDriver, public RateThread, public ICartesianCo
     bool isQuiet;
 };
 
-#endif  // __CARTESIANBOT_H__
+}  // namespace roboticslab
 
+#endif  // __ASIBOT_SOLVER_HPP__

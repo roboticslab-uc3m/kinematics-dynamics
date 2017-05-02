@@ -1,7 +1,7 @@
 yarp_prepare_plugin(AsibotSolver
                     CATEGORY device
-                    TYPE CartesianBot
-                    INCLUDE CartesianBot.h)
+                    TYPE roboticslab::AsibotSolver
+                    INCLUDE AsibotSolver.hpp)
 
 if(NOT SKIP_AsibotSolver)
 
@@ -9,7 +9,13 @@ find_package(YARP REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${YARP_INCLUDE_DIRS})
 
-yarp_add_plugin(AsibotSolver CartesianBot.h IDeviceImpl.cpp ICartesianImpl.cpp RateThreadImpl.cpp HelperFuncs.cpp)
+yarp_add_plugin(AsibotSolver AsibotSolver.hpp
+                             DeviceDriverImpl.cpp
+                             ICartesianSolverImpl.cpp
+                             ICartesianImpl.cpp
+                             RateThreadImpl.cpp
+                             HelperFuncs.cpp)
+
 target_link_libraries(AsibotSolver ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} ${YARP_LIBRARIES})
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 

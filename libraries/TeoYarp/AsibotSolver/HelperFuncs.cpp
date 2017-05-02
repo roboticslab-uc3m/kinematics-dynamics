@@ -1,10 +1,10 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "CartesianBot.h"
+#include <AsibotSolver.hpp>
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::fwdKin(const double inDeg[NUM_MOTORS], yarp::sig::Vector &x, yarp::sig::Vector &o) {
+bool roboticslab::AsibotSolver::fwdKin(const double inDeg[NUM_MOTORS], yarp::sig::Vector &x, yarp::sig::Vector &o) {
     for (int i=0; i<NUM_MOTORS; i++)
         realRad[i]=toRad(inDeg[i]);
     double prP = A1*sin(realRad[1])+A2*sin(realRad[1]+realRad[2])+A3*sin(realRad[1]+realRad[2]+realRad[3]); // P = prime

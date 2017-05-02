@@ -1,17 +1,17 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "CartesianBot.h"
+#include <AsibotSolver.hpp>
 
 // ------------------- RateThread Related ------------------------------------
 
-bool CartesianBot::threadInit() {
-    printf("[CartesianBot] success: threadInit() started %f ms ratethread\n",getRate());
+bool roboticslab::AsibotSolver::threadInit() {
+    //printf("[CartesianBot] success: threadInit() started %f ms ratethread\n",getRate());
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianBot::run() {
+void roboticslab::AsibotSolver::run() {
     if (cmc_status>0) {  // If it is movement
         double realDeg[NUM_MOTORS];
         if(!enc->getEncoders(realDeg)) {

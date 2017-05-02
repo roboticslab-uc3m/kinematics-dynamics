@@ -1,10 +1,10 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "CartesianBot.h"
+#include <AsibotSolver.hpp>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool CartesianBot::open(Searchable& config) {
+bool roboticslab::AsibotSolver::open(Searchable& config) {
 
     isQuiet = false;
 
@@ -100,14 +100,14 @@ bool CartesianBot::open(Searchable& config) {
     } else printf("[CartesianBot] success: Acquired robot interfaces.\n");
 
     // Start the RateThread
-    this->setRate(cmcMs);
-    this->start();
+    //this->setRate(cmcMs);
+    //this->start();
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianBot::close() {
+bool roboticslab::AsibotSolver::close() {
     // printf("Cleaned heap.\n");
     return true;
 }
