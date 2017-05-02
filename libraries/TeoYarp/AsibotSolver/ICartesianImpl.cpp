@@ -2,24 +2,6 @@
 
 #include <AsibotSolver.hpp>
 
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setTrackingMode(const bool f) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getTrackingMode(bool *f) {
-    return false;
-}
-
-// ----------------------------------------------------------------------------- 
-
-bool roboticslab::AsibotSolver::getPose(const int axis, yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
-    return false;
-}
-
 // ----------------------------------------------------------------------------- 
 
 bool roboticslab::AsibotSolver::getPose(yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
@@ -102,12 +84,6 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::goToPosition(const yarp::sig::Vector &xd, const double t) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                               const double t) {
     yarp::sig::Vector x,o;  // empty vectors
@@ -180,19 +156,6 @@ bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const 
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::goToPositionSync(const yarp::sig::Vector &xd, const double t) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getDesired(yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                             yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
                             yarp::sig::Vector &qdhat) {
@@ -233,80 +196,6 @@ bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const ya
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &q0,
-                            const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
-                            yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::askForPosition(const yarp::sig::Vector &xd,
-                                yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                                yarp::sig::Vector &qdhat) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::askForPosition(const yarp::sig::Vector &q0,
-                                const yarp::sig::Vector &xd,
-                                yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                                yarp::sig::Vector &qdhat) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getDOF(yarp::sig::Vector &curDof) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setDOF(const yarp::sig::Vector &newDof, yarp::sig::Vector &curDof) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getRestPos(yarp::sig::Vector &curRestPos) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setRestPos(const yarp::sig::Vector &newRestPos, yarp::sig::Vector &curRestPos) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getRestWeights(yarp::sig::Vector &curRestWeights) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setRestWeights(const yarp::sig::Vector &newRestWeights, yarp::sig::Vector &curRestWeights) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getLimits(const int axis, double *min, double *max) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setLimits(const int axis, const double min, const double max) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AsibotSolver::getTrajTime(double *t) {
     *t = duration;
     return true;
@@ -317,30 +206,6 @@ bool roboticslab::AsibotSolver::getTrajTime(double *t) {
 bool roboticslab::AsibotSolver::setTrajTime(const double t) {
     duration = t;
     return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getInTargetTol(double *tol) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setInTargetTol(const double tol) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getJointsVelocities(yarp::sig::Vector &qdot) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getTaskVelocities(yarp::sig::Vector &xdot, yarp::sig::Vector &odot) {
-    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -425,35 +290,11 @@ bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::attachTipFrame(const yarp::sig::Vector &x, const yarp::sig::Vector &o) {
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getTipFrame(yarp::sig::Vector &x, yarp::sig::Vector &o) {
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::removeTipFrame() {
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AsibotSolver::checkMotionDone(bool *f) {
     bool tmpf = false;
     if(cmc_status<=0) tmpf = true;
     *f = tmpf;
     return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::waitMotionDone(const double period, const double timeout) {
-    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -466,48 +307,6 @@ bool roboticslab::AsibotSolver::stopControl() {
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::storeContext(int *id) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::restoreContext(const int id) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getInfo(yarp::os::Bottle &info) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::registerEvent(yarp::dev::CartesianEvent &event) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::unregisterEvent(yarp::dev::CartesianEvent &event) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setReferenceMode(const bool f) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::getReferenceMode(bool *f) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AsibotSolver::tweakSet(const yarp::os::Bottle &options) {
     Bottle &opt=const_cast<Bottle&>(options);  // Ugo knows why... :-)
     if (!isQuiet) printf("[CartesianBot] tweakSet: %s\n", opt.toString().c_str());
@@ -516,16 +315,3 @@ bool roboticslab::AsibotSolver::tweakSet(const yarp::os::Bottle &options) {
 }
 
 // -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::tweakGet(yarp::os::Bottle &options) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::deleteContext(const int id) {
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
