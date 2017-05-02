@@ -19,7 +19,7 @@ void roboticslab::AsibotSolver::run() {
             return;  // bad practice??
         }
         yarp::sig::Vector x,o;
-        fwdKin(realDeg,x,o);
+        //fwdKin(realDeg,x,o);
         bool done = true;
         if(fabs(x[0]-targetX[0])>CARTPOS_PRECISION) done = false;
         if(fabs(x[1]-targetX[1])>CARTPOS_PRECISION) done = false;

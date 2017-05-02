@@ -28,7 +28,8 @@ bool roboticslab::AsibotSolver::getPose(yarp::sig::Vector &x, yarp::sig::Vector 
         fprintf(stderr,"[CartesianBot] warning: getPose() failed to getEncoders()\n");
         return false;
     }
-    return fwdKin(realDeg,x,o);  // Modifies x and o, returning success/fail value.
+    //return fwdKin(realDeg,x,o);  // Modifies x and o, returning success/fail value.
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -389,7 +390,7 @@ bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot,
         xdotd.push_back(toRad(odot[1]));
     } else if (tool == 1) {
         yarp::sig::Vector x,o;  // empty vectors
-        fwdKin(realDeg,x,o);  // Modifies x and o, returning success/fail value.
+        //fwdKin(realDeg,x,o);  // Modifies x and o, returning success/fail value.
         yarp::sig::Matrix H_0_N = eulerYZtoH(x,o);
         H_0_N(0,3) = 0;
         H_0_N(1,3) = 0;

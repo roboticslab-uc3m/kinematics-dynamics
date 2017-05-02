@@ -18,6 +18,8 @@
 
 #include <iostream> // only windows
 #include <stdlib.h> // for exit()
+#include <cmath>
+#include <vector>
 
 
 #define NUM_MOTORS 5
@@ -90,13 +92,6 @@ public:
 
     /** Set joint limits. */
     virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
-
-// -- Helper Funcion declarations. Implementation in HelperFuncs.cpp--
-
-    /**
-    * Perform forward kinematics.
-    */
-    bool fwdKin(const double inDeg[NUM_MOTORS], yarp::sig::Vector &x, yarp::sig::Vector &o);
 
 // ------- ICartesianControl declarations. Implementation in ICartesianImpl.cpp -------
 

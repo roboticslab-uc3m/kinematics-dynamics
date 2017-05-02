@@ -13,8 +13,7 @@ yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                              DeviceDriverImpl.cpp
                              ICartesianSolverImpl.cpp
                              ICartesianImpl.cpp
-                             RateThreadImpl.cpp
-                             HelperFuncs.cpp)
+                             RateThreadImpl.cpp)
 
 target_link_libraries(AsibotSolver ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} ${YARP_LIBRARIES})
 
