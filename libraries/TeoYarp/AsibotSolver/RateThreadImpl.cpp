@@ -4,13 +4,6 @@
 
 // ------------------- RateThread Related ------------------------------------
 
-bool roboticslab::AsibotSolver::threadInit() {
-    //printf("[CartesianBot] success: threadInit() started %f ms ratethread\n",getRate());
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
 void roboticslab::AsibotSolver::run() {
     if (cmc_status>0) {  // If it is movement
         double realDeg[NUM_MOTORS];

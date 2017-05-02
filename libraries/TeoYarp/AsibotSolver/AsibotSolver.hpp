@@ -66,7 +66,7 @@ class AsibotSolver : public DeviceDriver, public teo::ICartesianSolver
 {
 public:
 
-    AsibotSolver() {}  // In ms
+    AsibotSolver() {}
 
     // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
     /** Get number of links for which the solver has been configured. */
@@ -94,21 +94,6 @@ public:
     virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
 
 // ------- ICartesianControl declarations. Implementation in ICartesianImpl.cpp -------
-
-    /**
-    * Get the current pose of the end-effector. [do not wait for 
-    * reply] 
-    * @param x a 3-d vector which is filled with the actual 
-    *         position x,y,z (meters).
-    * @param od a 2-d vector which is filled with the actual 
-    * orientation using euler representation xa, ya, za, theta 
-    * (meters and radians). 
-    * @param stamp the stamp of the encoders employed to compute the
-    *              pose.
-    * @return true/false on success/failure.
-    */
-    virtual bool getPose(yarp::sig::Vector &x, yarp::sig::Vector &o,
-                         yarp::os::Stamp *stamp=NULL);
 
     /**
     * Move the end-effector to a specified pose (position
@@ -164,21 +149,6 @@ public:
                             yarp::sig::Vector &qdhat);
 
     /**
-    * Get the current trajectory duration. [wait for reply]
-    * @param t the memory location where the time is returned
-    *         (seconds).
-    * @return true/false on success/failure.
-    */
-    virtual bool getTrajTime(double *t);
-
-    /**
-    * Set the duration of the trajectory. [wait for reply]
-    * @param t time (seconds).
-    * @return true/false on success/failure.
-    */
-    virtual bool setTrajTime(const double t);
-
-    /**
     * Set the reference velocities of the end-effector in the task 
     * space.
     * @param xdot the 3-d vector containing the x,y,z reference 
@@ -188,32 +158,6 @@ public:
     * @return true/false on success/failure.
     */
     virtual bool setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot);
-
-    /** Check once if the current trajectory is terminated. [wait for
-    *   reply]
-    * @param f where the result is returned.
-    * @return true/false on success/failure.
-    */
-    virtual bool checkMotionDone(bool *f);
-
-    /** Ask for an immediate stop motion. [wait for reply]
-    * @return true/false on success/failure.
-    *
-    * @note The control is completely released, i.e. a direct switch
-    *       to non-tracking mode is executed.
-    */
-    virtual bool stopControl();
-
-    /**
-    * Tweak low-level controller's parameters. [wait for reply]
-    * @param options is a property-like bottle containing new values
-    *                for the low-level controller's configuration.
-    * @return true/false on success/failure.
-    *
-    * @note This method is intended for accessing low-level
-    *       controller's configuration.
-    */
-    virtual bool tweakSet(const yarp::os::Bottle &options);
 
 // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

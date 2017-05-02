@@ -2,23 +2,11 @@
 
 #include <AsibotSolver.hpp>
 
-// ----------------------------------------------------------------------------- 
-
-bool roboticslab::AsibotSolver::getPose(yarp::sig::Vector &x, yarp::sig::Vector &o, yarp::os::Stamp *stamp) {
-    double realDeg[NUM_MOTORS];
-    if(!enc->getEncoders(realDeg)) {
-        fprintf(stderr,"[CartesianBot] warning: getPose() failed to getEncoders()\n");
-        return false;
-    }
-    //return fwdKin(realDeg,x,o);  // Modifies x and o, returning success/fail value.
-    return true;
-}
-
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od, const double t) {
     yarp::sig::Vector x,o;  // empty vectors
-    getPose(x,o);  // where we put the result of performing fwd kinematics of current position
+    //getPose(x,o);  // where we put the result of performing fwd kinematics of current position
     if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
     if (tool == 0) {
         if (!isQuiet) printf("[CartesianBot] Using base coordinates.\n");
@@ -87,7 +75,7 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
 bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                               const double t) {
     yarp::sig::Vector x,o;  // empty vectors
-    getPose(x,o);  // where we put the result of performing fwd kinematics of current position
+    //getPose(x,o);  // where we put the result of performing fwd kinematics of current position
     if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
     if (tool == 0) {
         if (!isQuiet) printf("[CartesianBot] Using base coordinates.\n");
@@ -196,20 +184,6 @@ bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const ya
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::getTrajTime(double *t) {
-    *t = duration;
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::setTrajTime(const double t) {
-    duration = t;
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot) {
     double realDeg[NUM_MOTORS];  // Fixed because CartesianBot is very ASIBOT-specific
     if(!enc->getEncoders(realDeg)) {
@@ -285,32 +259,6 @@ bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot,
         mode->setVelocityMode(i);
     if(!vel->velocityMove(qdot))
         fprintf(stderr,"[CartesianBot] warning: COULD NOT SEND VELOCITY MOVE!!!\n");
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::checkMotionDone(bool *f) {
-    bool tmpf = false;
-    if(cmc_status<=0) tmpf = true;
-    *f = tmpf;
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::stopControl() {
-    cmc_status=-1;
-    printf("[CartesianBot] stopControl() End\n");
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::tweakSet(const yarp::os::Bottle &options) {
-    Bottle &opt=const_cast<Bottle&>(options);  // Ugo knows why... :-)
-    if (!isQuiet) printf("[CartesianBot] tweakSet: %s\n", opt.toString().c_str());
-    if (opt.check("tool")) tool = opt.find("tool").asInt();
     return true;
 }
 
