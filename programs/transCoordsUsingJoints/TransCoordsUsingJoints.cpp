@@ -56,10 +56,10 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    outPort.open("/out");
+    outPort.open("/coords:o");
     premultPorts.setOutPort(&outPort);
     premultPorts.setIEncoders(iEncoders);
-    premultPorts.open("/in");
+    premultPorts.open("/coords:i");
     premultPorts.useCallback();
 
     return true;
