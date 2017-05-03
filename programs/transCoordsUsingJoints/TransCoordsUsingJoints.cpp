@@ -20,16 +20,31 @@ double TransCoordsUsingJoints::getPeriod()
 
 bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("config: %s.\n", rf.toString().c_str());
+    CD_DEBUG("TransCoordsUsingJoints config: %s.\n", rf.toString().c_str());
+
+    std::string solverStr = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
+    std::string robotStr = rf.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
 
     if(rf.check("help"))
     {
-        printf("OneCanBusOneWrapper options:\n");
+        printf("TransCoordsUsingJoints options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         return false;
     }
 
+    yarp::os::Property solverOptions;
+    solverOptions.fromString( rf.toString() );
+    solverOptions.put("device",solverStr);
+
+    solverDevice.open(solverOptions);
+    if( ! solverDevice.isValid() ) {
+        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
+        return false;
+    }
+
     yarp::os::Property robotOptions;
+    robotOptions.fromString( rf.toString() );
+    robotOptions.put("device",robotStr);
     robotDevice.open(robotOptions);
     if( ! robotDevice.isValid() ) {
         CD_ERROR("robot device not valid.\n");

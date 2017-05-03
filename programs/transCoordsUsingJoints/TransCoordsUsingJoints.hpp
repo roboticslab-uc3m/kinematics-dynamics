@@ -13,6 +13,9 @@
 
 #include "ColorDebug.hpp"
 
+#define DEFAULT_SOLVER "KdlSolver"
+#define DEFAULT_ROBOT "remote_controlboard"
+
 namespace teo
 {
 
@@ -36,6 +39,8 @@ private:
     PremultPorts premultPorts;
 
     yarp::dev::PolyDriver robotDevice;
+
+    yarp::dev::PolyDriver solverDevice;
 
 };
 
