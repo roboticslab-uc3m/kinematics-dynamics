@@ -1,4 +1,3 @@
-
 #include "PremultPorts.hpp"
 
 namespace teo

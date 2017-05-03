@@ -1,7 +1,5 @@
-// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
-
-#ifndef __CV1_TO_ROOT_HPP__
-#define __CV1_TO_ROOT_HPP__
+#ifndef __TRANS_COORDS_USING_JOINTS_HPP__
+#define __TRANS_COORDS_USING_JOINTS_HPP__
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/Module.h>
@@ -40,5 +38,5 @@ class TransCoordsUsingJoints : public yarp::os::RFModule {
 
 }  // namespace teo
 
-#endif  // __PREMULT_H_HPP__
+#endif  // __TRANS_COORDS_USING_JOINTS_HPP__
 

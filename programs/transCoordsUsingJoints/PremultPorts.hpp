@@ -1,5 +1,3 @@
-// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
-
 #ifndef __PREMULT_PORTS__
 #define __PREMULT_PORTS__
 
