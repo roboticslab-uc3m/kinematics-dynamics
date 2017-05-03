@@ -13,9 +13,6 @@
 
 #include "ColorDebug.hpp"
 
-#define DEFAULT_WATCHDOG    5       // [s]
-
-
 namespace teo
 {
 
