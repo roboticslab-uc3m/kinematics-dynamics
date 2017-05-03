@@ -28,7 +28,8 @@ int main(int argc, char *argv[]) {
     printf("premultH checking for yarp network... ");
     fflush(stdout);
     yarp::os::Network yarp;
-    if (!yarp.checkNetwork()) {
+    if ( ! yarp.checkNetwork() )
+    {
         fprintf(stderr, "[fail]\ntransCoordsUsingJoints found no yarp network (try running \"yarpserver &\"), bye!\n");
         return 1;
     } else printf("[ok]\n");
