@@ -20,11 +20,11 @@ namespace teo
 {
 
 /**
- * @ingroup cv1ToRoot
+ * @ingroup transCoordsUsingJoints
  *
  * @brief Transform Computer Vision values to root frame.
  */
-class Cv1ToRoot : public yarp::os::RFModule {
+class TransCoordsUsingJoints : public yarp::os::RFModule {
     protected:
         bool updateModule();
         bool interruptModule();

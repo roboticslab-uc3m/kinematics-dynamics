@@ -4,32 +4,32 @@
  *
  * @ingroup vision_programs
  *
- * \defgroup cv1ToRoot cv1ToRoot
+ * \defgroup transCoordsUsingJoints transCoordsUsingJoints
  *
- * @brief Creates an instance of teo::Cv1ToRoot.
+ * @brief Creates an instance of teo::TransCoordsUsingJoints.
  */
 
-#include "Cv1ToRoot.hpp"
+#include "TransCoordsUsingJoints.hpp"
 
 int main(int argc, char *argv[]) {
 
     yarp::os::ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultContext("cv1ToRoot");
-    rf.setDefaultConfigFile("cv1ToRoot.ini");
+    rf.setDefaultContext("transCoordsUsingJoints");
+    rf.setDefaultConfigFile("transCoordsUsingJoints.ini");
     rf.configure(argc, argv);
 
-    teo::Cv1ToRoot mod;
+    teo::TransCoordsUsingJoints mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
 
-    printf("Run \"cv1ToRoot --help\" for options.\n");
+    printf("Run \"transCoordsUsingJoints --help\" for options.\n");
     printf("premultH checking for yarp network... ");
     fflush(stdout);
     yarp::os::Network yarp;
     if (!yarp.checkNetwork()) {
-        fprintf(stderr, "[fail]\ncv1ToRoot found no yarp network (try running \"yarpserver &\"), bye!\n");
+        fprintf(stderr, "[fail]\ntransCoordsUsingJoints found no yarp network (try running \"yarpserver &\"), bye!\n");
         return -1;
     } else printf("[ok]\n");
 

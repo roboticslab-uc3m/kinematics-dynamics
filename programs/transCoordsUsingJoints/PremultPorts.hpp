@@ -17,7 +17,7 @@ namespace teo
 {
 
 /**
- * @ingroup cv1ToRoot
+ * @ingroup transCoordsUsingJoints
  *
  * @brief Implements a port with x callbacks.
  */
