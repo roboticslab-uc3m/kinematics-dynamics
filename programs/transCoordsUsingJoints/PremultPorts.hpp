@@ -12,6 +12,10 @@
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 
+#include "ICartesianSolver.h"
+
+#include "KdlVectorConverter.hpp"
+
 #include "ColorDebug.hpp"
 
 namespace teo
@@ -22,13 +26,16 @@ namespace teo
  *
  * @brief Implements a port with x callbacks.
  */
-class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>
+class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>, KdlVectorConverter
 {
 
 public:
 
+    PremultPorts();
+
     void setOutPort(yarp::os::Port* outPort);
     void setIEncoders(yarp::dev::IEncoders* iEncoders);
+    void setICartesianSolver(teo::ICartesianSolver* iCartesianSolver);
 
 private:
 
@@ -38,8 +45,9 @@ private:
     yarp::os::Port* outPort;
 
     yarp::dev::IEncoders* iEncoders;
+    int numRobotJoints;
 
-    KDL::Chain oneChain;
+    teo::ICartesianSolver* iCartesianSolver;
 
 };
 

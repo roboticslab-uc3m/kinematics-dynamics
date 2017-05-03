@@ -5,6 +5,13 @@ namespace teo
 
 /************************************************************************/
 
+PremultPorts::PremultPorts() : KdlVectorConverter("axisAngle")
+{
+    return;
+}
+
+/************************************************************************/
+
 void PremultPorts::setOutPort(yarp::os::Port* outPort)
 {
     this->outPort = outPort;
@@ -15,6 +22,19 @@ void PremultPorts::setOutPort(yarp::os::Port* outPort)
 void PremultPorts::setIEncoders(yarp::dev::IEncoders* iEncoders)
 {
     this->iEncoders = iEncoders;
+    if( ! iEncoders->getAxes(&numRobotJoints) )
+    {
+        CD_ERROR("Could not get axes.\n");
+        exit(1);
+    }
+    CD_SUCCESS("numRobotJoints: %d.\n",numRobotJoints);
+}
+
+/************************************************************************/
+
+void PremultPorts::setICartesianSolver(teo::ICartesianSolver* iCartesianSolver)
+{
+    this->iCartesianSolver = iCartesianSolver;
 }
 
 /************************************************************************/
@@ -28,15 +48,18 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
         exit(1);  // case: other --> still not implemented
     }
 
-    KDL::ChainFkSolverPos_recursive oneChainFKsolver = KDL::ChainFkSolverPos_recursive(oneChain);
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        exit(1);
+    }
 
-    //-- Should get these from encoders
-    KDL::JntArray oneChainJoints = KDL::JntArray(2);
-    oneChainJoints(0) = 0.0;
-    oneChainJoints(1) = 0.0;
+    std::vector<double> currentX;
+    iCartesianSolver->fwdKin(currentQ,currentX);
 
     KDL::Frame H_root_camera;
-    oneChainFKsolver.JntToCart(oneChainJoints,H_root_camera);
+    vectorToFrame(currentX,H_root_camera);
 
     KDL::Frame H_camera;
     H_camera.p.data[0] = b.get(0).asDouble();

@@ -23,12 +23,12 @@ foreach(header_file ${folder_header})
 endforeach(header_file ${folder_header})
 
 # Inclue any directories needed for YARP
-include_directories(${YARP_INCLUDE_DIRS} ${orocos_kdl_INCLUDE_DIRS})
+include_directories(${YARP_INCLUDE_DIRS} ${orocos_kdl_INCLUDE_DIRS} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
 # Set up our main executable.
 if (folder_source)
   add_executable(${KEYWORD} ${folder_source} ${folder_header})
-  target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} ${orocos_kdl_LIBRARIES})
+  target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} ${orocos_kdl_LIBRARIES} KdlVectorConverterLib)
   install(TARGETS ${KEYWORD} DESTINATION bin)
 else (folder_source)
   message(FATAL_ERROR "No source code files found. Please add something")

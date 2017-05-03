@@ -11,6 +11,8 @@
 
 #include "PremultPorts.hpp"
 
+#include "ICartesianSolver.h"
+
 #include "ColorDebug.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"

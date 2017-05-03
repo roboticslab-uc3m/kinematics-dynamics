@@ -41,6 +41,11 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
         CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
         return false;
     }
+    teo::ICartesianSolver* iCartesianSolver;
+    if( ! solverDevice.view(iCartesianSolver) ) {
+        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
+        return false;
+    }
 
     yarp::os::Property robotOptions;
     robotOptions.fromString( rf.toString() );
@@ -59,6 +64,7 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
     outPort.open("/coords:o");
     premultPorts.setOutPort(&outPort);
     premultPorts.setIEncoders(iEncoders);
+    premultPorts.setICartesianSolver(iCartesianSolver);
     premultPorts.open("/coords:i");
     premultPorts.useCallback();
 
