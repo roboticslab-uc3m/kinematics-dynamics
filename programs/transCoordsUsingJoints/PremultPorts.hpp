@@ -35,6 +35,8 @@ private:
 
     yarp::os::Port* outPort;
 
+    yarp::dev::IEncoders* iEncoders;
+
     KDL::Chain oneChain;
 
 };
