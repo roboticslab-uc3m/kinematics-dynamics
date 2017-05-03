@@ -19,7 +19,12 @@ namespace teo
  *
  * @brief Implements a port with x callbacks.
  */
-class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle> {
+class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>
+{
+
+public:
+
+    void setOutPort(yarp::os::Port* _outPort);
 
 private:
 
@@ -29,11 +34,6 @@ private:
     void onRead(yarp::os::Bottle& b);
 
     yarp::os::Port* outPort;
-
-public:
-
-    PremultPorts() {}
-    void setOutPort(yarp::os::Port* _outPort);
 };
 
 }  // namespace teo
