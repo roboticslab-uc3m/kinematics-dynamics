@@ -7,8 +7,6 @@
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
 
-#include <yarp/sig/Matrix.h>
-
 #include "PremultPorts.hpp"
 
 #define DEFAULT_WATCHDOG    5       // [s]
