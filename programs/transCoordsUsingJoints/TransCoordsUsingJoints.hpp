@@ -34,7 +34,6 @@ private:
     bool updateModule();
     bool interruptModule();
     double getPeriod();
-    double watchdog; // [s]
 
     yarp::os::Port outPort;
     PremultPorts premultPorts;

@@ -13,28 +13,20 @@ bool TransCoordsUsingJoints::updateModule()
 /************************************************************************/
 double TransCoordsUsingJoints::getPeriod()
 {
-    return watchdog;  // [s]
+    return 2.0;  // [s]
 }
 
 /************************************************************************/
 
 bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
 {
-    watchdog = DEFAULT_WATCHDOG;  // double
+    CD_DEBUG("config: %s.\n", rf.toString().c_str());
 
-    fprintf(stdout,"--------------------------------------------------------------\n");
-    if( rf.check("help") )
-    {
-       printf("TransCoordsUsingJoints Options:\n");
-       printf("\t--watchdog ([s] default: \"%f\")\n",watchdog);
-    }
-    if(rf.check("watchdog")) watchdog = rf.find("watchdog").asDouble();
-    fprintf(stdout,"TransCoordsUsingJoints using watchdog [s]: %f.\n",watchdog);
-
-    fprintf(stdout,"--------------------------------------------------------------\n");
     if(rf.check("help"))
     {
-       return false;
+        printf("OneCanBusOneWrapper options:\n");
+        printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
+        return false;
     }
 
     yarp::os::Property robotOptions;
