@@ -24,7 +24,7 @@ class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>
 
 public:
 
-    void setOutPort(yarp::os::Port* _outPort);
+    void setOutPort(yarp::os::Port* outPort);
 
 private:
 

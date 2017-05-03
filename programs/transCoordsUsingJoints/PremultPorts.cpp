@@ -5,8 +5,8 @@ namespace teo
 
 /************************************************************************/
 
-void PremultPorts::setOutPort(yarp::os::Port* _outPort) {
-    outPort = _outPort;
+void PremultPorts::setOutPort(yarp::os::Port* outPort) {
+    this->outPort = outPort;
 }
 
 /************************************************************************/
