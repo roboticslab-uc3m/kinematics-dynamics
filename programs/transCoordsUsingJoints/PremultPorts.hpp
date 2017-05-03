@@ -22,11 +22,14 @@ namespace teo
  * @brief Implements a port with x callbacks.
  */
 class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle> {
-protected:
-    /**
-    * Implement the actual callback.
-    */
+
+private:
+
+    KDL::Chain oneChain;
+
+    /** Implement the actual callback. */
     void onRead(yarp::os::Bottle& b);
+
     yarp::os::Port* outPort;
 
 public:
