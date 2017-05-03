@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     yarp::os::Network yarp;
     if (!yarp.checkNetwork()) {
         fprintf(stderr, "[fail]\ntransCoordsUsingJoints found no yarp network (try running \"yarpserver &\"), bye!\n");
-        return -1;
+        return 1;
     } else printf("[ok]\n");
 
     return mod.runModule(rf);
