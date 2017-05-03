@@ -11,6 +11,8 @@
 
 #include "PremultPorts.hpp"
 
+#include "ColorDebug.hpp"
+
 #define DEFAULT_WATCHDOG    5       // [s]
 
 
@@ -36,6 +38,8 @@ private:
 
     yarp::os::Port outPort;
     PremultPorts premultPorts;
+
+    yarp::dev::PolyDriver robotDevice;
 
 };
 

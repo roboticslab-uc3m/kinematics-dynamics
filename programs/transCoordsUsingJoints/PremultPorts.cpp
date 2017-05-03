@@ -12,12 +12,19 @@ void PremultPorts::setOutPort(yarp::os::Port* outPort)
 
 /************************************************************************/
 
+void PremultPorts::setIEncoders(yarp::dev::IEncoders* iEncoders)
+{
+    this->iEncoders = iEncoders;
+}
+
+/************************************************************************/
+
 void PremultPorts::onRead(yarp::os::Bottle& b)
 {
     //printf("[PremultPorts] Got %s\n", b.toString().c_str());
     if(b.size() != 3)
     {
-        fprintf(stderr,"[error] for now only parsing 3-double lists\n");
+        CD_ERROR("For now only parsing 3-double lists\n");
         exit(1);  // case: other --> still not implemented
     }
 

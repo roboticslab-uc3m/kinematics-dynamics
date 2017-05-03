@@ -12,6 +12,7 @@
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 
+#include "ColorDebug.hpp"
 
 namespace teo
 {
@@ -27,6 +28,7 @@ class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>
 public:
 
     void setOutPort(yarp::os::Port* outPort);
+    void setIEncoders(yarp::dev::IEncoders* iEncoders);
 
 private:
 

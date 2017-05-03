@@ -37,8 +37,21 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
        return false;
     }
 
+    yarp::os::Property robotOptions;
+    robotDevice.open(robotOptions);
+    if( ! robotDevice.isValid() ) {
+        CD_ERROR("robot device not valid.\n");
+        return false;
+    }
+    yarp::dev::IEncoders* iEncoders;
+    if( ! robotDevice.view(iEncoders) ) {
+        CD_ERROR("Could not view iEncoders.\n");
+        return false;
+    }
+
     outPort.open("/out");
     premultPorts.setOutPort(&outPort);
+    premultPorts.setIEncoders(iEncoders);
     premultPorts.open("/in");
     premultPorts.useCallback();
 
@@ -52,6 +65,7 @@ bool TransCoordsUsingJoints::interruptModule()
     premultPorts.disableCallback();
     premultPorts.close();
     outPort.close();
+    robotDevice.close();
     return true;
 }
 
