@@ -6,6 +6,8 @@
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
 
+#include <yarp/dev/IEncoders.h>
+
 #include <kdl/frames.hpp>
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -28,12 +30,13 @@ public:
 
 private:
 
-    KDL::Chain oneChain;
-
     /** Implement the actual callback. */
     void onRead(yarp::os::Bottle& b);
 
     yarp::os::Port* outPort;
+
+    KDL::Chain oneChain;
+
 };
 
 }  // namespace teo
