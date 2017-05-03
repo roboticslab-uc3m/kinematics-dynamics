@@ -5,15 +5,18 @@ namespace teo
 
 /************************************************************************/
 
-void PremultPorts::setOutPort(yarp::os::Port* outPort) {
+void PremultPorts::setOutPort(yarp::os::Port* outPort)
+{
     this->outPort = outPort;
 }
 
 /************************************************************************/
 
-void PremultPorts::onRead(yarp::os::Bottle& b) {
+void PremultPorts::onRead(yarp::os::Bottle& b)
+{
     //printf("[PremultPorts] Got %s\n", b.toString().c_str());
-    if(b.size() != 3) {
+    if(b.size() != 3)
+    {
         fprintf(stderr,"[error] for now only parsing 3-double lists\n");
         exit(1);  // case: other --> still not implemented
     }
