@@ -22,18 +22,21 @@ namespace teo
  *
  * @brief Transform Computer Vision values to root frame.
  */
-class TransCoordsUsingJoints : public yarp::os::RFModule {
-    protected:
-        bool updateModule();
-        bool interruptModule();
-        double getPeriod();
-        double watchdog; // [s]
+class TransCoordsUsingJoints : public yarp::os::RFModule
+{
 
-        yarp::os::Port outPort;
-        PremultPorts premultPorts;
+public:
+    bool configure(yarp::os::ResourceFinder &rf);
 
-    public:
-        bool configure(yarp::os::ResourceFinder &rf);
+private:
+    bool updateModule();
+    bool interruptModule();
+    double getPeriod();
+    double watchdog; // [s]
+
+    yarp::os::Port outPort;
+    PremultPorts premultPorts;
+
 };
 
 }  // namespace teo
