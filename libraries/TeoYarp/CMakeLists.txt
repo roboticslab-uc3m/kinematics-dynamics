@@ -31,6 +31,11 @@
 
   # ENDIF (ENABLE_launchTeoYarp)
 
+  install(FILES ICartesianControl.h
+                ITwoLimbCartesianControl.h
+                ICartesianSolver.h
+          DESTINATION include)
+
 #ENDIF (ENABLE_TeoYarp)
 
 

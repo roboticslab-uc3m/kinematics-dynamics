@@ -9,7 +9,7 @@ project(${KEYWORD})
 
 #set(CMAKE_BUILD_TYPE Debug)#RelWithDebInfo)
 FIND_PACKAGE(YARP REQUIRED)
-FIND_PACKAGE(TEO REQUIRED)
+FIND_PACKAGE(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)

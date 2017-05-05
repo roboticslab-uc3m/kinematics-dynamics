@@ -99,6 +99,7 @@ private:
         yarp::dev::IPositionControl *iPositionControlA;
         yarp::dev::IVelocityControl *iVelocityControlA;
         yarp::dev::IControlLimits *iControlLimitsA;
+        yarp::dev::IControlMode *iControlModeA;
 
         int numRobotJointsA, numSolverLinksA;
 
@@ -110,6 +111,7 @@ private:
         yarp::dev::IPositionControl *iPositionControlB;
         yarp::dev::IVelocityControl *iVelocityControlB;
         yarp::dev::IControlLimits *iControlLimitsB;
+        yarp::dev::IControlMode *iControlModeB;
 
         int numRobotJointsB, numSolverLinksB;
 

@@ -95,10 +95,13 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
 
     //-- Enter position mode and perform movement
-    if ( ! iPositionControl->setPositionMode() )
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {
-        CD_ERROR("setPositionMode failed.\n");
-        return false;
+        if ( ! iControlMode->setPositionMode(joint) )
+        {
+            CD_ERROR("setPositionMode failed at joint %d.\n", joint);
+            return false;
+        }
     }
     if ( ! iPositionControl->positionMove( qd.data() ) )
     {
@@ -173,7 +176,10 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
     trajectory.newLine(x,xd);
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    iVelocityControl->setVelocityMode();
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setVelocityMode(joint);
+    }
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
 
@@ -198,7 +204,10 @@ bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     //-- Set torque mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
-    iVelocityControl->setVelocityMode();
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setVelocityMode(joint);
+    }
     setCurrentState( VOCAB_CC_MOVV_CONTROLLING );
     return true;
 }
@@ -208,7 +217,10 @@ bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 bool teo::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.
-    iTorqueControl->setTorqueMode();
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setTorqueMode(joint);
+    }
     setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
     return true;
 }
@@ -221,7 +233,10 @@ bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
 
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
-    iTorqueControl->setTorqueMode();
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setTorqueMode(joint);
+    }
     setCurrentState( VOCAB_CC_FORC_CONTROLLING );
     return true;
 }
@@ -230,7 +245,10 @@ bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool teo::BasicCartesianControl::stopControl()
 {
-    iPositionControl->setPositionMode();
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setPositionMode(joint);
+    }
     iPositionControl->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
     return true;
