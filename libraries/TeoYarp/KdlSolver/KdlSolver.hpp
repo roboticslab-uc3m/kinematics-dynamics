@@ -63,6 +63,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         /** Append an additional link. */
         virtual bool appendLink(const std::vector<double>& x);
 
+        /** Restore original kinematic chain. */
+        virtual bool restoreOriginalChain();
+
         /** Perform forward kinematics. */
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
@@ -111,6 +114,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
         /** The chain. **/
         KDL::Chain chain;
+
+        /** To store a copy of the original chain. **/
+        KDL::Chain originalChain;
 
         /** Define used gravity for the chain, important to think of DH. **/
         KDL::Vector gravity;

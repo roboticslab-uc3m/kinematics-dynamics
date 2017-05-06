@@ -27,6 +27,9 @@ class ICartesianSolver
         /** Append an additional link. */
         virtual bool appendLink(const std::vector<double>& x) = 0;
 
+        /** Restore original kinematic chain. */
+        virtual bool restoreOriginalChain() = 0;
+
         /** Perform forward kinematics. */
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
 

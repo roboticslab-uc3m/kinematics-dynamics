@@ -20,6 +20,13 @@ bool teo::KdlSolver::appendLink(const std::vector<double>& x) {
 
 // -----------------------------------------------------------------------------
 
+bool teo::KdlSolver::restoreOriginalChain() {
+    chain = originalChain;  // We have: Chain& operator = (const Chain& arg);
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());

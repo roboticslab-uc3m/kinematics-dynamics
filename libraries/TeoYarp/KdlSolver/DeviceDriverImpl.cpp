@@ -184,6 +184,8 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config)
         qMin(motor) = -M_PI;
     }
 
+    originalChain = chain;  // We have: Chain& operator = (const Chain& arg);
+
     return true;
 }
 
