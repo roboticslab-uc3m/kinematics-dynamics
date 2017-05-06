@@ -24,6 +24,9 @@ class ICartesianSolver
         /** Get number of links for which the solver has been configured. */
         virtual bool getNumLinks(int* numLinks) = 0;
 
+        /** Append an additional link. */
+        virtual bool appendLink(const std::vector<double>& x) = 0;
+
         /** Perform forward kinematics. */
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
 

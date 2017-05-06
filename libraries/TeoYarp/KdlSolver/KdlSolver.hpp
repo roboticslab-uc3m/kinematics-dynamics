@@ -60,6 +60,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         /** Get number of links for which the solver has been configured. */
         virtual bool getNumLinks(int* numLinks);
 
+        /** Append an additional link. */
+        virtual bool appendLink(const std::vector<double>& x);
+
         /** Perform forward kinematics. */
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
