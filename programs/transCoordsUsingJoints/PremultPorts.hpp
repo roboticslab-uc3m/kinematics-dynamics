@@ -6,6 +6,7 @@
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
 
+#include <yarp/dev/api.h>
 #include <yarp/dev/IEncoders.h>
 
 #include <kdl/frames.hpp>
