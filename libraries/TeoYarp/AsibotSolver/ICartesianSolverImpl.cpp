@@ -11,6 +11,20 @@ bool roboticslab::AsibotSolver::getNumLinks(int* numLinks)
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::AsibotSolver::appendLink(const std::vector<double> &x)
+{
+    return true;
+}
+
+// --------------------------------------------------------------------------
+
+bool roboticslab::AsibotSolver::restoreOriginalChain()
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 {
     std::vector<double> qInRad(q);
