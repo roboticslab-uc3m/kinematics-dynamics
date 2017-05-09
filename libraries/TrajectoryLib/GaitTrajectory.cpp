@@ -26,7 +26,7 @@ teo::GaitTrajectory::GaitTrajectory()
 //    steps = new GaitSupportPoligon(rf,lf);
     //now using zmp lip model.
     steps = new GaitLipm(rf,lf,80.0);
-    steps->SetKickParameters(0.0,0.004); //(kick distance, kick height). revisar valores
+    steps->SetKickParameters(0.0,0.02); //(kick distance, kick height). revisar valores
     steps->SetHipParameters(0.04,0.02, 0.16); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
