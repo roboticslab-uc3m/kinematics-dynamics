@@ -6,8 +6,6 @@
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
 
-#include <yarp/dev/api.h>
-
 // Temporary fix to avoid https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/97
 // Affects YARP 2.3.68 and 2.3.69-2.3.69.6
 #include <yarp/conf/version.h>
@@ -18,9 +16,11 @@
 #define __YARP_VERSION_N (__YARP_VERSION_N + YARP_VERSION_TWEAK)
 #endif
 #if __YARP_VERSION_N == 230680 || (__YARP_VERSION_N >= 230690 && __YARP_VERSION_N <= 230696)
-#include <yarp/dev/IEncoders.h>
+#include <yarp/dev/api.h>
 #endif
 #undef __YARP_VERSION_N
+
+#include <yarp/dev/IEncoders.h>
 
 #include <kdl/frames.hpp>
 #include <kdl/chain.hpp>
