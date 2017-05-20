@@ -12,12 +12,13 @@ compiler:
 before_install:
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
+  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
 install:
   #-- Install cmake
   - sudo apt-get install cmake
   #-- Install yarp
-  - git clone https://github.com/robotology/yarp
+  - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
   - cmake .. -DSKIP_ACE=ON
   - make
@@ -34,7 +35,7 @@ install:
   #-- (For testBasicCartesianControl) Install FakeControlboard currently at https://github.com/roboticslab-uc3m/openrave-yarp-plugins
   - git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
   - cd openrave-yarp-plugins
-  - git checkout d58cfecf097ded53f014ac982e949b233b4e3c40
+  - git checkout 479b52dcebf10eab1b75f9f2afe05d544f81d095
   - mkdir build && cd build
   - cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_teoSim=OFF
   - make
@@ -48,12 +49,12 @@ install:
 
 before_script:
   - mkdir -p build && cd build
-
-script:
   - cmake .. -DENABLE_coverage=ON
   - make
   - sudo make install
   - sudo ldconfig
+
+script:
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
   - bin/testBasicCartesianControl

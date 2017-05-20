@@ -11,6 +11,22 @@ bool teo::KdlSolver::getNumLinks(int* numLinks) {
 
 // -----------------------------------------------------------------------------
 
+bool teo::KdlSolver::appendLink(const std::vector<double>& x) {
+    KDL::Frame frameX;
+    vectorToFrame(x,frameX);
+    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), frameX));
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool teo::KdlSolver::restoreOriginalChain() {
+    chain = originalChain;  // We have: Chain& operator = (const Chain& arg);
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());

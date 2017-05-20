@@ -138,21 +138,17 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool teo::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
+    int state;
     std::vector<double> x;
-    std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    if ( ! stat(state, x) )
     {
-        CD_ERROR("getEncoders failed.\n");
+        CD_ERROR("stat failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
+    for (unsigned int i = 0; i < xd.size(); i++)
     {
-        CD_ERROR("fwdKin failed.\n");
-        return false;
-    }
-    for(int i=0;i<xd.size();i++)
         x[i] += xd[i];
-
+    }
     return movj(x);
 }
 
@@ -162,15 +158,11 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
-    std::vector<double> currentQ(numRobotJoints), x;
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    int state;
+    std::vector<double> x;
+    if ( ! stat(state, x) )
     {
-        CD_ERROR("getEncoders failed.\n");
-        return false;
-    }
-    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
-    {
-        CD_ERROR("fwdKin failed.\n");
+        CD_ERROR("stat failed.\n");
         return false;
     }
     trajectory.newLine(x,xd);
@@ -202,7 +194,7 @@ bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     CD_WARNING("MOVV mode still experimental.\n");
 
-    //-- Set torque mode and set state which makes rate thread implement control.
+    //-- Set velocity mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {

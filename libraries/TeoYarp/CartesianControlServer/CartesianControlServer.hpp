@@ -26,7 +26,7 @@ namespace teo
 
 /**
  * @ingroup CartesianControlServer
- * @brief The CartesianControlServer class implements ICartesianSolver.
+ * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 
 class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::PortReader {

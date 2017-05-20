@@ -58,7 +58,7 @@ This would mean we are using an axis/angle notation (par de rotación). Note tha
 
 We connect, can ask for help, etc. Here's an example interaction:
 \verbatim
-[on terminal 3] yarp rpc /CartesianControlServer/rpc:s
+[on terminal 3] yarp rpc /CartesianControl/rpc:s
 [>>] help
 Response: [stat] [inv] [movj] [movl] [movv] [gcmp] [forc] [stop]
 [>>] stat
@@ -79,8 +79,8 @@ Response: [ok]
 
 What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
-[on terminal 2] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
-[on terminal 3] yarp rpc /teoSim/rightArm/CartesianControlServer/rpc:s
+[on terminal 2] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 3] yarp rpc /teoSim/rightArm/CartesianControl/rpc:s
 \endverbatim
 
 
@@ -88,8 +88,8 @@ What moslty changes is the library command line invocation. We also change the s
 
 What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the robot's right arm.
 \verbatim
-[on terminal 2] yarpdev --device BasicCartesianControl --name /teo/rightArm/CartesianControlServer  --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/rightArm --remote /teo/rightArm
-[on terminal 3] yarp rpc /teo/rightArm/CartesianControlServer/rpc:s
+[on terminal 2] yarpdev --device BasicCartesianControl --name /teo/rightArm/CartesianControl  --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teo/rightArm --remote /teo/rightArm
+[on terminal 3] yarp rpc /teo/rightArm/CartesianControl/rpc:s
 \endverbatim
 On the real robot, you can even activate Gravity Compensation (warning: dangerous if kinematic/dynamic model has not been reviewed!).
 \verbatim

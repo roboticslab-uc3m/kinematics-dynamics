@@ -14,16 +14,20 @@ teo::GaitTrajectory::GaitTrajectory()
 
     kin::Pose lf(0,+0.1285,-0.845);
     lf.ChangeRotation(0,1,0,-M_PI/2);
+    lf.ChangeRotation(1,0,0,M_PI);
 
     std::cout << "left foot : " << lf.GetX() << "," << lf.GetY() << "," << lf.GetZ() << "," ;
     std::cout << std::endl;
+
+    trf.setDefaultSpeeds(0.15, 0.04);
+    tlf.setDefaultSpeeds(0.15, 0.04);
 
 
 //    steps = new GaitSupportPoligon(rf,lf);
     //now using zmp lip model.
     steps = new GaitLipm(rf,lf,80.0);
-    steps->SetKickParameters(0.05,0.05); //(kick distance, kick height). revisar valores
-    steps->SetHipParameters(0.10,0.02); //(hip sideshift, hip squat). revisar estos valores
+    steps->SetKickParameters(0.0,0.02); //(kick distance, kick height). revisar valores
+    steps->SetHipParameters(0.04,0.02, 0.16); //(hip sideshift, hip squat). revisar estos valores
     steps->BeforeStep();
     steps->AddStepForward(1);
     steps->AfterStep();
@@ -44,7 +48,7 @@ bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x
 
     kin::Pose sample;
 
-    if (trf.GetSample(movementTime,sample)==false)
+    if (trf.GetSample(movementTime,sample)!=0)
     {
         //no data for that time, no moving.
         x=lastGoodX;
@@ -68,7 +72,7 @@ bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x
     std::cout << "> rot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";
     std::cout << std::endl;
 
-    if (!tlf.GetSample(movementTime,sample))
+    if (tlf.GetSample(movementTime,sample)!=0)
     {
         //no data for that time, no moving.
         x=lastGoodX;
@@ -105,7 +109,7 @@ bool teo::GaitTrajectory::getXdot(const double movementTime, std::vector<double>
 
     kin::Pose sampleVelocity;
 
-    if(!trf.GetSampleVelocity(movementTime,sampleVelocity))
+    if(trf.GetSampleVelocity(movementTime,sampleVelocity)!=0)
     {
         //no velocities for that time.
         xdot=std::vector <double> (14,0);
@@ -130,7 +134,7 @@ bool teo::GaitTrajectory::getXdot(const double movementTime, std::vector<double>
     std::cout << std::endl;
 
 
-    if (!tlf.GetSampleVelocity(movementTime,sampleVelocity))
+    if (tlf.GetSampleVelocity(movementTime,sampleVelocity)!=0)
     {
         //no velocities for that time.
         xdot=std::vector <double> (14,0);

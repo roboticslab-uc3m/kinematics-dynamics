@@ -26,6 +26,7 @@ option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicT
 option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
 
 ### options: cpp programs
+option(ENABLE_transCoordsUsingJoints "Enable/disable compilation of transCoordsUsingJoints" TRUE)
 
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
@@ -129,7 +130,7 @@ endif()
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
-#add_subdirectory(programs)
+add_subdirectory(programs)
 if (ENABLE_tests)
     add_subdirectory(test)
 endif (ENABLE_tests)
