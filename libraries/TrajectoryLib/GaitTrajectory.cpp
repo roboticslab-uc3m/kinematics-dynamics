@@ -19,8 +19,8 @@ teo::GaitTrajectory::GaitTrajectory()
     std::cout << "left foot : " << lf.GetX() << "," << lf.GetY() << "," << lf.GetZ() << "," ;
     std::cout << std::endl;
 
-    trf.setDefaultSpeeds(0.15, 0.04);
-    tlf.setDefaultSpeeds(0.15, 0.04);
+    trf.SetDefaultSpeeds(0.15, 0.04);
+    tlf.SetDefaultSpeeds(0.15, 0.04);
 
 
 //    steps = new GaitSupportPoligon(rf,lf);
