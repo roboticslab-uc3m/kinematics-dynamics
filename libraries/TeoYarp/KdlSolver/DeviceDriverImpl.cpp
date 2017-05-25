@@ -93,7 +93,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config)
                 double linkMass = bLink.check("mass",yarp::os::Value(0.0)).asDouble();
                 yarp::os::Bottle linkCog = bLink.findGroup("cog").tail();
                 yarp::os::Bottle linkInertia = bLink.findGroup("inertia").tail();
-                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset)),
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame::DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset)),
                                               KDL::RigidBodyInertia(linkMass,KDL::Vector(linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble()),
                                                                     KDL::RotationalInertia(linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble(),0,0,0))));
                 CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
@@ -103,7 +103,7 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config)
             }
             else //-- No mass -> skip dynamics
             {
-                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame().DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
                 CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
             }
             continue;
