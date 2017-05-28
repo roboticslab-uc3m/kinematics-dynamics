@@ -16,6 +16,9 @@
 #include "ICartesianControl.h"
 #include "ColorDebug.hpp"
 
+#define DEFAULT_CAN_LIBRARY "libeddriver.so"
+#define DEFAULT_CAN_PORT 0
+
 namespace roboticslab
 {
 
@@ -112,6 +115,7 @@ protected:
 private:
 
     AMOR_HANDLE handle;
+    bool ownsHandle;
 };
 
 }  // namespace roboticslab
