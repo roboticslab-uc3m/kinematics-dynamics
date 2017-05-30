@@ -5,7 +5,7 @@
 
 #include <vector>
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -32,6 +32,6 @@ public:
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __TRAJECTORY_HPP__

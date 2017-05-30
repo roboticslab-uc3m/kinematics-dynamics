@@ -8,9 +8,9 @@
 
 #include "ColorDebug.hpp"
 
-//YARP_DECLARE_PLUGINS(TeoYarp)
+//YARP_DECLARE_PLUGINS(roboticslabYarp)
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -21,7 +21,7 @@ class BasicCartesianControlTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            //YARP_REGISTER_PLUGINS(TeoYarp);
+            //YARP_REGISTER_PLUGINS(roboticslabYarp);
 
             yarp::os::Property cartesianControlOptions("(device BasicCartesianControl) (robot FakeControlboard) (axes 1) (solver KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
@@ -44,7 +44,7 @@ class BasicCartesianControlTest : public testing::Test
 
     protected:
         yarp::dev::PolyDriver cartesianControlDevice;
-        teo::ICartesianControl *iCartesianControl;
+        roboticslab::ICartesianControl *iCartesianControl;
 };
 
 TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
@@ -88,5 +88,5 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlInv2)
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
 
-}  // namespace teo
+}  // namespace roboticslab
 

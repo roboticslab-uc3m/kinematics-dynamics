@@ -4,7 +4,7 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(KdlSolver CATEGORY device TYPE teo::KdlSolver INCLUDE KdlSolver.hpp)
+YARP_PREPARE_PLUGIN(KdlSolver CATEGORY device TYPE roboticslab::KdlSolver INCLUDE KdlSolver.hpp)
 
 IF (NOT SKIP_KdlSolver)
 

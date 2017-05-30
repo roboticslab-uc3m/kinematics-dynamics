@@ -10,7 +10,7 @@
 
 #include "ColorDebug.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -65,6 +65,6 @@ static double toRad(const double inDeg) {
     return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
 }
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __KDL_VECTOR_CONVERTER_HPP__

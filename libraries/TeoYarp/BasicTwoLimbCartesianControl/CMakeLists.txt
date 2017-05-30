@@ -4,7 +4,7 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(BasicTwoLimbCartesianControl CATEGORY device TYPE teo::BasicTwoLimbCartesianControl INCLUDE BasicTwoLimbCartesianControl.hpp WRAPPER TwoLimbCartesianControlServer)
+YARP_PREPARE_PLUGIN(BasicTwoLimbCartesianControl CATEGORY device TYPE roboticslab::BasicTwoLimbCartesianControl INCLUDE BasicTwoLimbCartesianControl.hpp WRAPPER TwoLimbCartesianControlServer)
 
 IF (NOT SKIP_BasicTwoLimbCartesianControl)
 

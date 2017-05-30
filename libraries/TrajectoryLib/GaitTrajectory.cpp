@@ -1,7 +1,7 @@
 
 #include "GaitTrajectory.hpp"
 
-teo::GaitTrajectory::GaitTrajectory()
+roboticslab::GaitTrajectory::GaitTrajectory()
 {
 
     kin::Pose rf(0,-0.1285,-0.845);
@@ -19,8 +19,8 @@ teo::GaitTrajectory::GaitTrajectory()
     std::cout << "left foot : " << lf.GetX() << "," << lf.GetY() << "," << lf.GetZ() << "," ;
     std::cout << std::endl;
 
-    trf.SetDefaultSpeeds(0.15, 0.04);
-    tlf.SetDefaultSpeeds(0.15, 0.04);
+    trf.setDefaultSpeeds(0.15, 0.04);
+    tlf.setDefaultSpeeds(0.15, 0.04);
 
 
 //    steps = new GaitSupportPoligon(rf,lf);
@@ -35,12 +35,12 @@ teo::GaitTrajectory::GaitTrajectory()
 
 }
 
-teo::GaitTrajectory::~GaitTrajectory()
+roboticslab::GaitTrajectory::~GaitTrajectory()
 {
     delete steps;
 }
 
-bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x)
+bool roboticslab::GaitTrajectory::getX(const double movementTime, std::vector<double>& x)
 {
 
     double px,py,pz;
@@ -101,7 +101,7 @@ bool teo::GaitTrajectory::getX(const double movementTime, std::vector<double>& x
 
 // -----------------------------------------------------------------------------
 
-bool teo::GaitTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
+bool roboticslab::GaitTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
 {
 
     double px,py,pz;

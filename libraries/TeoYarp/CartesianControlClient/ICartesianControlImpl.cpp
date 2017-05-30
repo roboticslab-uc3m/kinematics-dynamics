@@ -4,7 +4,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool teo::CartesianControlClient::stat(int &state, std::vector<double> &x)
+bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
 {
     yarp::os::Bottle cmd, response;
 
@@ -21,7 +21,7 @@ bool teo::CartesianControlClient::stat(int &state, std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
+bool roboticslab::CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     yarp::os::Bottle cmd, response;
 
@@ -47,7 +47,7 @@ bool teo::CartesianControlClient::inv(const std::vector<double> &xd, std::vector
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::movj(const std::vector<double> &xd)
+bool roboticslab::CartesianControlClient::movj(const std::vector<double> &xd)
 {
     yarp::os::Bottle cmd, response;
 
@@ -70,7 +70,7 @@ bool teo::CartesianControlClient::movj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::relj(const std::vector<double> &xd)
+bool roboticslab::CartesianControlClient::relj(const std::vector<double> &xd)
 {
     yarp::os::Bottle cmd, response;
 
@@ -93,7 +93,7 @@ bool teo::CartesianControlClient::relj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
+bool roboticslab::CartesianControlClient::movl(const std::vector<double> &xd)
 {
     yarp::os::Bottle cmd, response;
 
@@ -116,7 +116,7 @@ bool teo::CartesianControlClient::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::movv(const std::vector<double> &xdotd)
+bool roboticslab::CartesianControlClient::movv(const std::vector<double> &xdotd)
 {
     yarp::os::Bottle cmd, response;
 
@@ -139,7 +139,7 @@ bool teo::CartesianControlClient::movv(const std::vector<double> &xdotd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::gcmp()
+bool roboticslab::CartesianControlClient::gcmp()
 {
     yarp::os::Bottle cmd, response;
 
@@ -157,7 +157,7 @@ bool teo::CartesianControlClient::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::forc(const std::vector<double> &td)
+bool roboticslab::CartesianControlClient::forc(const std::vector<double> &td)
 {
     yarp::os::Bottle cmd, response;
 
@@ -180,7 +180,7 @@ bool teo::CartesianControlClient::forc(const std::vector<double> &td)
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::stopControl()
+bool roboticslab::CartesianControlClient::stopControl()
 {
     yarp::os::Bottle cmd, response;
 

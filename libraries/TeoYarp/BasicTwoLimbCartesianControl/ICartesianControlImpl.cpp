@@ -4,7 +4,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
+bool roboticslab::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
 {
     std::vector<double> currentQA(numRobotJointsA), currentQB(numRobotJointsB);
     if ( ! iEncodersA->getEncoders( currentQA.data() ) )
@@ -39,7 +39,7 @@ bool teo::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::step()
+bool roboticslab::BasicTwoLimbCartesianControl::step()
 {
     CD_WARNING("STEP mode still experimental.\n");
 
@@ -73,7 +73,7 @@ bool teo::BasicTwoLimbCartesianControl::step()
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::stopControl()
+bool roboticslab::BasicTwoLimbCartesianControl::stopControl()
 {
     for (unsigned int joint = 0; joint < numRobotJointsA; joint++)
     {

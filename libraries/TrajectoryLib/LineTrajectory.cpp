@@ -4,7 +4,7 @@
 
 // -----------------------------------------------------------------------------
 
-teo::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")
+roboticslab::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")
 {
     _orient = 0;
     currentTrajectory = 0;
@@ -12,7 +12,7 @@ teo::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")
 
 // -----------------------------------------------------------------------------
 
-bool teo::LineTrajectory::getX(const double movementTime, std::vector<double>& x)
+bool roboticslab::LineTrajectory::getX(const double movementTime, std::vector<double>& x)
 {
     KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
     frameToVector(xFrame,x);
@@ -21,7 +21,7 @@ bool teo::LineTrajectory::getX(const double movementTime, std::vector<double>& x
 
 // -----------------------------------------------------------------------------
 
-bool teo::LineTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
+bool roboticslab::LineTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
 {
     KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
     twistToVector(xdotFrame,xdot);
@@ -30,7 +30,7 @@ bool teo::LineTrajectory::getXdot(const double movementTime, std::vector<double>
 
 // -----------------------------------------------------------------------------
 
-bool teo::LineTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
+bool roboticslab::LineTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
 {
     KDL::Frame srcFrame, destFrame;
     vectorToFrame(src,srcFrame);
@@ -50,7 +50,7 @@ bool teo::LineTrajectory::newLine(const std::vector<double> &src, const std::vec
 
 // -----------------------------------------------------------------------------
 
-bool teo::LineTrajectory::deleteLine()
+bool roboticslab::LineTrajectory::deleteLine()
 {
     delete _orient;
     _orient = 0;

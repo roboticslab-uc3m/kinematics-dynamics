@@ -32,7 +32,7 @@
 
 #include "ColorDebug.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -49,7 +49,7 @@ public:
 
     void setOutPort(yarp::os::Port* outPort);
     void setIEncoders(yarp::dev::IEncoders* iEncoders);
-    void setICartesianSolver(teo::ICartesianSolver* iCartesianSolver);
+    void setICartesianSolver(roboticslab::ICartesianSolver* iCartesianSolver);
 
 private:
 
@@ -61,11 +61,11 @@ private:
     yarp::dev::IEncoders* iEncoders;
     int numRobotJoints;
 
-    teo::ICartesianSolver* iCartesianSolver;
+    roboticslab::ICartesianSolver* iCartesianSolver;
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif
 

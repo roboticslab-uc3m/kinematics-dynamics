@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::CartesianControlClient::open(yarp::os::Searchable& config) {
+bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config) {
 
     std::string local = config.check("cartesianLocal",yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),"cartesianLocal").asString();
     std::string remote = config.check("cartesianRemote",yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),"cartesianRemote").asString();
@@ -36,7 +36,7 @@ bool teo::CartesianControlClient::open(yarp::os::Searchable& config) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlClient::close()
+bool roboticslab::CartesianControlClient::close()
 {
     rpcClient.close();
     return true;
