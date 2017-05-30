@@ -31,50 +31,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
     CD_SUCCESS("Acquired AMOR handle!\n");
 
-    yarp::os::Property robotOptions;
-    yarp::os::Value vHandle(handle, sizeof handle);
-
-    robotOptions.put("device", "AmorControlboard");
-    //robotOptions.put("handle", vHandle); // FIXME
-
-    robotDevice.open(robotOptions);
-
-    if (!robotDevice.isValid())
-    {
-        CD_ERROR("Robot device not valid.\n");
-        return false;
-    }
-
-    if (!robotDevice.view(iEncoders))
-    {
-        CD_ERROR("Could not view iEncoders.\n");
-        return false;
-    }
-
-    if (!robotDevice.view(iPositionControl))
-    {
-        CD_ERROR("Could not view iPositionControl.\n");
-        return false;
-    }
-
-    if (!robotDevice.view(iVelocityControl))
-    {
-        CD_ERROR("Could not view iVelocityControl.\n");
-        return false;
-    }
-
-    if (!robotDevice.view(iControlLimits))
-    {
-        CD_ERROR("Could not view iControlLimits.\n");
-        return false;
-    }
-
-    if (!robotDevice.view(iTorqueControl))
-    {
-        CD_ERROR("Could not view iTorqueControl.\n");
-        return false;
-    }
-
     return true;
 }
 
@@ -82,7 +38,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
 bool roboticslab::AmorCartesianControl::close()
 {
-    CD_INFO("Closing...\n");
+    CD_INFO("Closing AmorCartesianControl...\n");
 
     if (handle != AMOR_INVALID_HANDLE)
     {
@@ -93,6 +49,8 @@ bool roboticslab::AmorCartesianControl::close()
     {
         amor_release(handle);
     }
+
+    handle = AMOR_INVALID_HANDLE;
 
     return true;
 }

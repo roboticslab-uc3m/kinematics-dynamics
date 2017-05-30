@@ -6,7 +6,6 @@
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -39,7 +38,9 @@ class AmorCartesianControl : public yarp::dev::DeviceDriver, public teo::ICartes
 {
 public:
 
-    AmorCartesianControl() : handle(NULL) {}
+    AmorCartesianControl() : handle(AMOR_INVALID_HANDLE),
+                             ownsHandle(false)
+    {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
@@ -104,13 +105,6 @@ protected:
     {
         return deg * M_PI / 180;
     }
-
-    yarp::dev::PolyDriver robotDevice;
-    yarp::dev::IEncoders *iEncoders;
-    yarp::dev::IPositionControl *iPositionControl;
-    yarp::dev::IVelocityControl *iVelocityControl;
-    yarp::dev::IControlLimits *iControlLimits;
-    yarp::dev::ITorqueControl *iTorqueControl;
 
 private:
 
