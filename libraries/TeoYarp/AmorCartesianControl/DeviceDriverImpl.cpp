@@ -20,7 +20,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     {
         CD_INFO("Using external AMOR handle.\n");
         ownsHandle = false;
-        handle = *reinterpret_cast<AMOR_HANDLE *>(vHandle.asBlob());
+        handle = *((AMOR_HANDLE *)vHandle.asBlob());
     }
 
     if (handle == AMOR_INVALID_HANDLE)
