@@ -22,7 +22,7 @@
 #define VOCAB_CC_GCMP_CONTROLLING VOCAB4('c','c','g','c')
 #define VOCAB_CC_FORC_CONTROLLING VOCAB4('c','c','f','c')
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -67,7 +67,7 @@ class ICartesianControl
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  //  __I_CARTESIAN_CONTROL__
 

@@ -4,7 +4,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool teo::BasicCartesianControl::stat(int &state, std::vector<double> &x)
+bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x)
 {
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
@@ -23,7 +23,7 @@ bool teo::BasicCartesianControl::stat(int &state, std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
+bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
@@ -41,7 +41,7 @@ bool teo::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
+bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numRobotJoints), qd;
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
@@ -136,7 +136,7 @@ bool teo::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::relj(const std::vector<double> &xd)
+bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
     int state;
     std::vector<double> x;
@@ -154,7 +154,7 @@ bool teo::BasicCartesianControl::relj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
+bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
@@ -190,7 +190,7 @@ bool teo::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
+bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     CD_WARNING("MOVV mode still experimental.\n");
 
@@ -206,7 +206,7 @@ bool teo::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::gcmp()
+bool roboticslab::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -219,7 +219,7 @@ bool teo::BasicCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
+bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 {
     CD_WARNING("FORC mode still experimental.\n");
 
@@ -235,7 +235,7 @@ bool teo::BasicCartesianControl::forc(const std::vector<double> &td)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::stopControl()
+bool roboticslab::BasicCartesianControl::stopControl()
 {
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {

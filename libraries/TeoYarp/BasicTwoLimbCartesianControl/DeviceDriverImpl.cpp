@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::open(yarp::os::Searchable& config)
+bool roboticslab::BasicTwoLimbCartesianControl::open(yarp::os::Searchable& config)
 {
     CD_DEBUG("Config: %s.\n", config.toString().c_str());
 
@@ -21,7 +21,7 @@ bool teo::BasicTwoLimbCartesianControl::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
+bool roboticslab::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
 {
     //-- Solver --
 
@@ -129,7 +129,7 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle& config)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
+bool roboticslab::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
 {
     //-- Solver --
 
@@ -237,7 +237,7 @@ bool teo::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle& config)
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicTwoLimbCartesianControl::close()
+bool roboticslab::BasicTwoLimbCartesianControl::close()
 {
     robotDeviceA.close();
     robotDeviceB.close();
@@ -250,7 +250,7 @@ bool teo::BasicTwoLimbCartesianControl::close()
 
 // -----------------------------------------------------------------------------
 
-int teo::BasicTwoLimbCartesianControl::getCurrentState()
+int roboticslab::BasicTwoLimbCartesianControl::getCurrentState()
 {
     int tmp;
     currentStateReady.wait();
@@ -262,7 +262,7 @@ int teo::BasicTwoLimbCartesianControl::getCurrentState()
 
 // -----------------------------------------------------------------------------
 
-void teo::BasicTwoLimbCartesianControl::setCurrentState(int value)
+void roboticslab::BasicTwoLimbCartesianControl::setCurrentState(int value)
 {
     currentStateReady.wait();
     currentState = value;

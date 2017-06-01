@@ -14,14 +14,14 @@
 
 #include "ColorDebug.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup CartesianControlServer
  *
- * @brief Contains teo::CartesianControlServer.
+ * @brief Contains roboticslab::CartesianControlServer.
  */
 
 /**
@@ -67,11 +67,11 @@ class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::
         yarp::os::RpcServer rpcServer;
 
         yarp::dev::PolyDriver cartesianControlDevice;
-        teo::ICartesianControl *iCartesianControl;
+        roboticslab::ICartesianControl *iCartesianControl;
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __KDL_SOLVER_HPP__
 

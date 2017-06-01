@@ -4,7 +4,7 @@
 
 // ------------------- CartesianControlServer Related ------------------------------------
 
-bool teo::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
+bool roboticslab::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
 {
     yarp::os::Bottle in, out;
     bool ok = in.read(connection);

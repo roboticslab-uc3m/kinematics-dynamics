@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::CartesianControlServer::open(yarp::os::Searchable& config) {
+bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
 
     rpcServer.setReader(*this);
 
@@ -53,7 +53,7 @@ bool teo::CartesianControlServer::open(yarp::os::Searchable& config) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::CartesianControlServer::close()
+bool roboticslab::CartesianControlServer::close()
 {
     rpcServer.close();
     cartesianControlDevice.close();
