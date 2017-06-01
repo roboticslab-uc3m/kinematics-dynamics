@@ -45,7 +45,6 @@
 namespace roboticslab
 {
 
-using namespace teo;
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::math;
@@ -62,7 +61,7 @@ using namespace yarp::math;
  * @brief The AsibotSolver implements ICartesianSolver.
  */
 
-class AsibotSolver : public DeviceDriver, public teo::ICartesianSolver
+class AsibotSolver : public DeviceDriver, public ICartesianSolver
 {
 public:
 

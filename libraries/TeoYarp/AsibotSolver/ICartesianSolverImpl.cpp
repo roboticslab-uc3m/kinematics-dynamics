@@ -31,7 +31,7 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); it++)
     {
-        *it = teo::toRad(*it);
+        *it = toRad(*it);
     }
 
     // P = prime
