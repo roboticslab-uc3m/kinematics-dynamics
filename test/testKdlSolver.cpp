@@ -7,9 +7,9 @@
 #include "ICartesianSolver.h"
 #include "ColorDebug.hpp"
 
-//YARP_DECLARE_PLUGINS(TeoYarp)
+//YARP_DECLARE_PLUGINS(roboticslabYarp)
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -20,7 +20,7 @@ class KdlSolverTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            //YARP_REGISTER_PLUGINS(TeoYarp);
+            //YARP_REGISTER_PLUGINS(roboticslabYarp);
 
             yarp::os::Property solverOptions("(device KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
@@ -42,7 +42,7 @@ class KdlSolverTest : public testing::Test
 
     protected:
         yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 };
 
 TEST_F( KdlSolverTest, KdlSolverFwdKin1)
@@ -150,5 +150,5 @@ TEST_F( KdlSolverTest, KdlSolverSetLimits)
     iCartesianSolver->setLimits(qMin,qMax);
 }
 
-}  // namespace teo
+}  // namespace roboticslab
 

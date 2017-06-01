@@ -4,14 +4,14 @@
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::getNumLinks(int* numLinks) {
+bool roboticslab::KdlSolver::getNumLinks(int* numLinks) {
     *numLinks = this->chain.getNrOfSegments();
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::appendLink(const std::vector<double>& x) {
+bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x) {
     KDL::Frame frameX;
     vectorToFrame(x,frameX);
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), frameX));
@@ -20,14 +20,14 @@ bool teo::KdlSolver::appendLink(const std::vector<double>& x) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::restoreOriginalChain() {
+bool roboticslab::KdlSolver::restoreOriginalChain() {
     chain = originalChain;  // We have: Chain& operator = (const Chain& arg);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x) {
+bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
@@ -44,7 +44,7 @@ bool teo::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) {
+bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) {
 
     KDL::Frame frameXd;
     vectorToFrame(xd,frameXd);
@@ -72,7 +72,7 @@ bool teo::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vecto
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q) {
+bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q) {
 
     KDL::Frame frameXd;
     vectorToFrame(xd,frameXd);
@@ -123,7 +123,7 @@ bool teo::KdlSolver::invKin(const std::vector<double> &xd, const std::vector<dou
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) {
+bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
@@ -159,7 +159,7 @@ bool teo::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
+bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
@@ -197,7 +197,7 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) {
+bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
@@ -242,7 +242,7 @@ bool teo::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<doubl
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax)
+bool roboticslab::KdlSolver::setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax)
 {
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
     {

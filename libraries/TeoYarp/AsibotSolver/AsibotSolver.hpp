@@ -45,11 +45,6 @@
 namespace roboticslab
 {
 
-using namespace teo;
-using namespace yarp::os;
-using namespace yarp::dev;
-using namespace yarp::math;
-
 /**
  * @ingroup TeoYarp
  * @defgroup AsibotSolver
@@ -62,7 +57,7 @@ using namespace yarp::math;
  * @brief The AsibotSolver implements ICartesianSolver.
  */
 
-class AsibotSolver : public DeviceDriver, public teo::ICartesianSolver
+class AsibotSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 {
 public:
 
@@ -180,7 +175,7 @@ public:
     * yarp developers to add documentation for your device).
     * @return true/false upon success/failure
     */
-    virtual bool open(Searchable& config);
+    virtual bool open(yarp::os::Searchable& config);
 
     /**
     * Close the DeviceDriver.
@@ -209,11 +204,11 @@ public:
   void run();
 
 private:
-    Property options;
-    PolyDriver robotDevice;
-    IEncoders *enc;
-    IVelocityControl *vel;
-    IControlMode *mode;
+    yarp::os::Property options;
+    yarp::dev::PolyDriver robotDevice;
+    yarp::dev::IEncoders *enc;
+    yarp::dev::IVelocityControl *vel;
+    yarp::dev::IControlMode *mode;
 
     int cmc_status;
     bool withOri;

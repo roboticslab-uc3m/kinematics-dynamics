@@ -18,7 +18,7 @@
 #define DEFAULT_MAXACC 0.2      // unit/s^2
 #define DEFAULT_DURATION 10
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -55,6 +55,6 @@ private:
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __LINE_TRAJECTORY_HPP__

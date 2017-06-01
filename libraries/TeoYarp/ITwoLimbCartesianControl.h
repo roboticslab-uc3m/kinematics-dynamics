@@ -14,7 +14,7 @@
 
 #define DEFAULT_DURATION 15
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -41,7 +41,7 @@ class ITwoLimbCartesianControl
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  //  __I_TWO_LIMB_CARTESIAN_CONTROL__
 

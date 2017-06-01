@@ -4,21 +4,21 @@
 
 // ----------------------------------------------------------------------------
 
-double teo::toDeg(const double inRad)
+double roboticslab::toDeg(const double inRad)
 {
     return (inRad * 180.0 / M_PI);  // return (inRad * 180.0 / 3.14159265);
 }
 
 // ----------------------------------------------------------------------------
 
-double teo::toRad(const double inDeg)
+double roboticslab::toRad(const double inDeg)
 {
     return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
 }
 
 // ----------------------------------------------------------------------------
 
-void teo::xUpdateH(const yarp::sig::Vector &x, yarp::sig::Matrix &H)
+void roboticslab::xUpdateH(const yarp::sig::Vector &x, yarp::sig::Matrix &H)
 {
     H(0, 3) = x(0);
     H(1, 3) = x(1);
@@ -27,7 +27,7 @@ void teo::xUpdateH(const yarp::sig::Vector &x, yarp::sig::Matrix &H)
 
 // ----------------------------------------------------------------------------
 
-yarp::sig::Matrix teo::rotX(const double &inDeg)
+yarp::sig::Matrix roboticslab::rotX(const double &inDeg)
 {
     yarp::sig::Matrix R = yarp::math::eye(3, 3);
     double c = std::cos(toRad(inDeg));
@@ -42,7 +42,7 @@ yarp::sig::Matrix teo::rotX(const double &inDeg)
 
 // ----------------------------------------------------------------------------
 
-yarp::sig::Matrix teo::rotY(const double &inDeg)
+yarp::sig::Matrix roboticslab::rotY(const double &inDeg)
 {
     yarp::sig::Matrix R = yarp::math::eye(3, 3);
     double c = std::cos(toRad(inDeg));
@@ -57,7 +57,7 @@ yarp::sig::Matrix teo::rotY(const double &inDeg)
 
 // ----------------------------------------------------------------------------
 
-yarp::sig::Matrix teo::rotZ(const double &inDeg)
+yarp::sig::Matrix roboticslab::rotZ(const double &inDeg)
 {
     yarp::sig::Matrix R = yarp::math::eye(3, 3);
     double c = std::cos(toRad(inDeg));
@@ -72,7 +72,7 @@ yarp::sig::Matrix teo::rotZ(const double &inDeg)
 
 // ----------------------------------------------------------------------------
 
-yarp::sig::Matrix teo::eulerZYZtoH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
+yarp::sig::Matrix roboticslab::eulerZYZtoH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
 {
     using namespace yarp::math;  // else matrix operators wreak havoc in the following line
     yarp::sig::Matrix result = rotZ(o[0]) * rotY(o[1]) * rotZ(o[2]);  // 3x3 
@@ -84,7 +84,7 @@ yarp::sig::Matrix teo::eulerZYZtoH(const yarp::sig::Vector &x, const yarp::sig::
 
 // ----------------------------------------------------------------------------
 
-yarp::sig::Matrix teo::eulerYZtoH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
+yarp::sig::Matrix roboticslab::eulerYZtoH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
 {
     yarp::sig::Vector oZYZ(3);
     oZYZ[0] = toDeg(std::atan2(x[1], x[0]));
@@ -95,7 +95,7 @@ yarp::sig::Matrix teo::eulerYZtoH(const yarp::sig::Vector &x, const yarp::sig::V
 
 // ----------------------------------------------------------------------------
 
-yarp::sig::Matrix teo::axisAngleToH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
+yarp::sig::Matrix roboticslab::axisAngleToH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
 {
     yarp::sig::Matrix H = yarp::math::eye(4, 4);
 

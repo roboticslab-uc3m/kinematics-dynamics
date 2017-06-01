@@ -5,6 +5,7 @@
 // ------------------- RateThread Related ------------------------------------
 
 void roboticslab::AsibotSolver::run() {
+    using namespace yarp::math;
     if (cmc_status>0) {  // If it is movement
         double realDeg[NUM_MOTORS];
         if(!enc->getEncoders(realDeg)) {
@@ -20,7 +21,7 @@ void roboticslab::AsibotSolver::run() {
         if((withOri)&&(fabs(o[0]-targetO[0])>CARTORI_PRECISION)) done = false;
         if((withOri)&&(fabs(o[1]-targetO[1])>CARTORI_PRECISION)) done = false;
         if (done) {
-            printf("[CartesianBot] success: Target reached in %f.\n",Time::now()-startTime);
+            printf("[CartesianBot] success: Target reached in %f.\n",yarp::os::Time::now()-startTime);
             delete trajPrP;
             trajPrP = 0;
             delete trajPhP;
@@ -44,7 +45,7 @@ void roboticslab::AsibotSolver::run() {
             xP.push_back(toRad(o[0]));  // oyP
             //printf("Problem statement:\n");
             //printf("oz: %f\nxP: %f\nzP: %f\n",toDeg(ozRad),xP[0],xP[1]);
-            double sTime = Time::now()-startTime;
+            double sTime = yarp::os::Time::now()-startTime;
             if(sTime>trajPrP->getT()){
                 printf ("[CartesianBot] warning: Out of time at %f.\n",sTime);
                 startTime = 0;
@@ -75,7 +76,7 @@ void roboticslab::AsibotSolver::run() {
             Ja(2,0) = 1;
             Ja(2,1) = 1;
             Ja(2,2) = 1;
-            yarp::sig::Matrix Ja_pinv(pinv(Ja,1.0e-2));
+            yarp::sig::Matrix Ja_pinv(yarp::math::pinv(Ja,1.0e-2));
 //            yarp::sig::Matrix Ja_pinv(pinv(Ja));
             yarp::sig::Vector t;
             t.resize(3);

@@ -18,7 +18,7 @@
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -46,7 +46,7 @@ private:
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __TRANS_COORDS_USING_JOINTS_HPP__
 

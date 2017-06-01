@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::AsibotSolver::open(Searchable& config) {
+bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config) {
 
     isQuiet = false;
 
@@ -22,11 +22,11 @@ bool roboticslab::AsibotSolver::open(Searchable& config) {
     duration = DEFAULT_DURATION;
     maxAcc = DEFAULT_MAXACC;
     maxVel = DEFAULT_MAXVEL;
-    ConstString strRobotDevice = DEFAULT_ROBOT_DEVICE;
-    ConstString strRobotSubDevice = DEFAULT_ROBOT_SUBDEVICE;
-    ConstString strRobotName = DEFAULT_ROBOT_NAME;
-    ConstString strRobotLocal = DEFAULT_ROBOT_LOCAL;
-    ConstString strRobotRemote = DEFAULT_ROBOT_REMOTE;
+    yarp::os::ConstString strRobotDevice = DEFAULT_ROBOT_DEVICE;
+    yarp::os::ConstString strRobotSubDevice = DEFAULT_ROBOT_SUBDEVICE;
+    yarp::os::ConstString strRobotName = DEFAULT_ROBOT_NAME;
+    yarp::os::ConstString strRobotLocal = DEFAULT_ROBOT_LOCAL;
+    yarp::os::ConstString strRobotRemote = DEFAULT_ROBOT_REMOTE;
     tool = DEFAULT_TOOL;
 
     printf("--------------------------------------------------------------\n");
@@ -74,7 +74,7 @@ bool roboticslab::AsibotSolver::open(Searchable& config) {
         ::exit(1);
     }
 
-    Property options;
+    yarp::os::Property options;
     options.fromString(config.toString());
     options.put("device",strRobotDevice);
     options.put("subdevice",strRobotSubDevice);

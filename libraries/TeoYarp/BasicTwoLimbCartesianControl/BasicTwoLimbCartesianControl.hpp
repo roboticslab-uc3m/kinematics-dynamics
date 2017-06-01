@@ -30,14 +30,14 @@
 #define MAX_ANG_VEL 7.5
 #define DEFAULT_GAIN 1.0
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup BasicTwoLimbCartesianControl
  *
- * @brief Contains teo::BasicTwoLimbCartesianControl.
+ * @brief Contains roboticslab::BasicTwoLimbCartesianControl.
  */
 
 /**
@@ -92,7 +92,7 @@ class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwo
 private:
 
         yarp::dev::PolyDriver solverDeviceA;
-        teo::ICartesianSolver *iCartesianSolverA;
+        roboticslab::ICartesianSolver *iCartesianSolverA;
 
         yarp::dev::PolyDriver robotDeviceA;
         yarp::dev::IEncoders *iEncodersA;
@@ -104,7 +104,7 @@ private:
         int numRobotJointsA, numSolverLinksA;
 
         yarp::dev::PolyDriver solverDeviceB;
-        teo::ICartesianSolver *iCartesianSolverB;
+        roboticslab::ICartesianSolver *iCartesianSolverB;
 
         yarp::dev::PolyDriver robotDeviceB;
         yarp::dev::IEncoders *iEncodersB;
@@ -136,6 +136,6 @@ private:
         bool configureLimbB(yarp::os::Bottle& config);
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __BASIC_TWO_LIMB_CARTESIAN_CONTROL_HPP__

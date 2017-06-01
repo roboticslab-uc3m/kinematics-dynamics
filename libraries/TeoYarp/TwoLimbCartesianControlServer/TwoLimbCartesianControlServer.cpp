@@ -4,7 +4,7 @@
 
 // ------------------- TwoLimbCartesianControlServer Related ------------------------------------
 
-bool teo::TwoLimbCartesianControlServer::read(yarp::os::ConnectionReader& connection)
+bool roboticslab::TwoLimbCartesianControlServer::read(yarp::os::ConnectionReader& connection)
 {
     yarp::os::Bottle in, out;
     bool ok = in.read(connection);

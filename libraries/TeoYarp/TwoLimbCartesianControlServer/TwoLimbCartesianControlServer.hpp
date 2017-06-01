@@ -14,14 +14,14 @@
 
 #include "ColorDebug.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup TwoLimbCartesianControlServer
  *
- * @brief Contains teo::TwoLimbCartesianControlServer.
+ * @brief Contains roboticslab::TwoLimbCartesianControlServer.
  */
 
 /**
@@ -67,11 +67,11 @@ class TwoLimbCartesianControlServer : public yarp::dev::DeviceDriver, public yar
         yarp::os::RpcServer rpcServer;
 
         yarp::dev::PolyDriver cartesianControlDevice;
-        teo::ITwoLimbCartesianControl *iTwoLimbCartesianControl;
+        roboticslab::ITwoLimbCartesianControl *iTwoLimbCartesianControl;
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __TWO_LIMB_CARTESIAN_CONTROL_HPP__
 

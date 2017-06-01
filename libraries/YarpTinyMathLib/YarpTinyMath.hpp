@@ -11,7 +11,7 @@
 
 #include <yarp/math/Math.h>  // provides: eye, operators
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -68,7 +68,7 @@ yarp::sig::Matrix eulerYZtoH(const yarp::sig::Vector &x, const yarp::sig::Vector
  */
 yarp::sig::Matrix axisAngleToH(const yarp::sig::Vector &x, const yarp::sig::Vector &o);
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __YARP_TINY_MATH_HPP__
 

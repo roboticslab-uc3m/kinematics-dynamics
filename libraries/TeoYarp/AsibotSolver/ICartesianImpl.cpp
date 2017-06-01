@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od, const double t) {
+    using namespace yarp::math;  // just for matrix operators
     yarp::sig::Vector x,o;  // empty vectors
     //getPose(x,o);  // where we put the result of performing fwd kinematics of current position
     if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
@@ -61,7 +62,7 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
     printf("[goToPose] begin: trajOzPP dump(100 samples).\n");
     trajOzPP->dump(100);
     printf("[goToPose] end: trajOzPP dump(100 samples).\n");*/
-    startTime = Time::now();
+    startTime = yarp::os::Time::now();
     withOri=true;
     for (int i=0; i<NUM_MOTORS; i++)
         mode->setVelocityMode(i);
@@ -74,6 +75,7 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
 
 bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
                               const double t) {
+    using namespace yarp::math;  // just for matrix operators
     yarp::sig::Vector x,o;  // empty vectors
     //getPose(x,o);  // where we put the result of performing fwd kinematics of current position
     if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
@@ -133,7 +135,7 @@ bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const 
     printf("[CartesianBot] goToPoseSync trajOzPP dump(100 samples) begin.\n");
     trajOzPP->dump(100);
     printf("[CartesianBot] goToPoseSync trajOzPP dump(100 samples) end.\n");*/
-    startTime = Time::now();
+    startTime = yarp::os::Time::now();
     withOri=true;
     for (int i=0; i<NUM_MOTORS; i++)
         mode->setVelocityMode(i);
@@ -185,6 +187,7 @@ bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const ya
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot) {
+    using namespace yarp::math;  // just for matrix operators
     double realDeg[NUM_MOTORS];  // Fixed because CartesianBot is very ASIBOT-specific
     if(!enc->getEncoders(realDeg)) {
         fprintf(stderr,"[CartesianBot] warning: setTaskVelocities() failed to getEncoders()\n");
@@ -218,7 +221,7 @@ bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot,
     Ja(4,2) = 0;
     Ja(4,3) = 0;
     Ja(4,4) = 1;
-    yarp::sig::Matrix Ja_pinv(pinv(Ja,1.0e-2));
+    yarp::sig::Matrix Ja_pinv(yarp::math::pinv(Ja,1.0e-2));
     //yarp::sig::Vector xdotd(xdot);
     yarp::sig::Vector xdotd;
     if (tool == 0) {
