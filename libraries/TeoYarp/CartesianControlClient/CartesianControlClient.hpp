@@ -18,14 +18,14 @@
 #define DEFAULT_CARTESIAN_LOCAL "/CartesianControl"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup CartesianControlClient
  *
- * @brief Contains teo::CartesianControlClient.
+ * @brief Contains roboticslab::CartesianControlClient.
  */
 
 /**
@@ -96,7 +96,7 @@ protected:
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __CARTESIAN_CONTROL_CLIENT_HPP__
 

@@ -5,7 +5,7 @@
 
 #include <vector>
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -53,6 +53,6 @@ class ICartesianSolver
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  //  __I_CARTESIAN_SOLVER__

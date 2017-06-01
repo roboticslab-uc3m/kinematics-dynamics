@@ -27,8 +27,9 @@ make -j3
 \endverbatim
  * What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
-[on terminal 2] launchTeoYarp --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
-[on terminal 3] ./cartesianControlExample
+[on terminal 2] teoSim
+[on terminal 3] launchTeoYarp --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 4] ./cartesianControlExample
 \endverbatim
  *
  *
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
     }
 
 
-    teo::ICartesianControl *iCartesianControl;       
+    roboticslab::ICartesianControl *iCartesianControl;
 
     if ( ! dd.view(iCartesianControl) )
     {

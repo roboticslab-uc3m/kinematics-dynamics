@@ -7,9 +7,9 @@
 #include "ICartesianSolver.h"
 #include "ColorDebug.hpp"
 
-//YARP_DECLARE_PLUGINS(TeoYarp)
+//YARP_DECLARE_PLUGINS(roboticslabYarp)
 
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -20,7 +20,7 @@ class KdlSolverTestFromFile : public testing::Test
 
     public:
         virtual void SetUp() {
-            //YARP_REGISTER_PLUGINS(TeoYarp);
+            //YARP_REGISTER_PLUGINS(roboticslabYarp);
 
             yarp::os::ResourceFinder rf;
             rf.setVerbose(false);
@@ -54,7 +54,7 @@ class KdlSolverTestFromFile : public testing::Test
 
     protected:
         yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 };
 
 TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin1)
@@ -91,5 +91,5 @@ TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin2)
     //-- Not checking orientation for now
 }
 
-}  // namespace teo
+}  // namespace roboticslab
 

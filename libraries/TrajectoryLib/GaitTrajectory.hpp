@@ -8,10 +8,10 @@
 #include "GaitLipm.h"
 
 
-namespace teo
+namespace roboticslab
 {
 
-class GaitTrajectory : public teo::Trajectory
+class GaitTrajectory : public roboticslab::Trajectory
 {
 public:
     GaitTrajectory();
@@ -39,6 +39,6 @@ private:
 
 };
 
-}//namespace teo end
+}//namespace roboticslab end
 
 #endif // GAITTRAJECTORY_H

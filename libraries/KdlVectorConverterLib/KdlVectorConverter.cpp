@@ -4,14 +4,14 @@
 
 // -----------------------------------------------------------------------------
 
-teo::KdlVectorConverter::KdlVectorConverter(std::string angleRepr)
+roboticslab::KdlVectorConverter::KdlVectorConverter(std::string angleRepr)
 {
     this->angleRepr = angleRepr;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlVectorConverter::vectorToFrame(const std::vector<double> &x, KDL::Frame& f) {
+bool roboticslab::KdlVectorConverter::vectorToFrame(const std::vector<double> &x, KDL::Frame& f) {
 
     f.p.data[0]=x[0];
     f.p.data[1]=x[1];
@@ -42,7 +42,7 @@ bool teo::KdlVectorConverter::vectorToFrame(const std::vector<double> &x, KDL::F
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlVectorConverter::frameToVector(const KDL::Frame& f, std::vector<double> &x) {
+bool roboticslab::KdlVectorConverter::frameToVector(const KDL::Frame& f, std::vector<double> &x) {
 
     //-- Fill angle first, then 0-2 for position.
 
@@ -95,7 +95,7 @@ bool teo::KdlVectorConverter::frameToVector(const KDL::Frame& f, std::vector<dou
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlVectorConverter::twistToVector(const KDL::Twist& t, std::vector<double> &xdot)
+bool roboticslab::KdlVectorConverter::twistToVector(const KDL::Twist& t, std::vector<double> &xdot)
 {
     xdot.resize(6);
 

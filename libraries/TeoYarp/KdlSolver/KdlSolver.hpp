@@ -35,14 +35,14 @@
 
 //#define _USE_LMA_
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup KdlSolver
  *
- * @brief Contains teo::KdlSolver.
+ * @brief Contains roboticslab::KdlSolver.
  */
 
 /**
@@ -131,7 +131,7 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __KDL_SOLVER_HPP__
 

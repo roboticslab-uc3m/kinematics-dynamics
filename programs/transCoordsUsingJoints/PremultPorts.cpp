@@ -1,6 +1,6 @@
 #include "PremultPorts.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /************************************************************************/
@@ -32,7 +32,7 @@ void PremultPorts::setIEncoders(yarp::dev::IEncoders* iEncoders)
 
 /************************************************************************/
 
-void PremultPorts::setICartesianSolver(teo::ICartesianSolver* iCartesianSolver)
+void PremultPorts::setICartesianSolver(roboticslab::ICartesianSolver* iCartesianSolver)
 {
     this->iCartesianSolver = iCartesianSolver;
 }
@@ -77,4 +77,4 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
 
 /************************************************************************/
 
-}  // namespace teo
+}  // namespace roboticslab

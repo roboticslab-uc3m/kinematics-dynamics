@@ -27,14 +27,14 @@
 #define DEFAULT_GAIN 1.0
 #define DEFAULT_QDOT_LIMIT 10
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup BasicCartesianControl
  *
- * @brief Contains teo::BasicCartesianControl.
+ * @brief Contains roboticslab::BasicCartesianControl.
 
 @section BasicCartesianControl_Running1 Example with a Fake robot
 
@@ -175,7 +175,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 protected:
 
         yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 
         yarp::dev::PolyDriver robotDevice;
         yarp::dev::IEncoders *iEncoders;
@@ -207,6 +207,6 @@ protected:
         std::vector<double> td;
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __BASIC_CARTESIAN_CONTROL_HPP__

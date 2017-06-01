@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::KdlSolver::open(yarp::os::Searchable& config)
+bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 {
 
     CD_DEBUG("config: %s.\n", config.toString().c_str());
@@ -191,13 +191,13 @@ bool teo::KdlSolver::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::close() {
+bool roboticslab::KdlSolver::close() {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool teo::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H) {
+bool roboticslab::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H) {
 
     yarp::os::Bottle *bH=options.find(tag).asList();
     if (!bH) return false;
