@@ -34,7 +34,7 @@ namespace roboticslab
  * Uses the roll-pitch-yaw (RPY) angle representation.
  */
 
-class AmorCartesianControl : public yarp::dev::DeviceDriver, public teo::ICartesianControl
+class AmorCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl
 {
 public:
 
