@@ -4,7 +4,7 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
+bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
@@ -92,7 +92,7 @@ bool teo::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
 // -----------------------------------------------------------------------------
 
-bool teo::BasicCartesianControl::close()
+bool roboticslab::BasicCartesianControl::close()
 {
     this->stop();
 	robotDevice.close();
@@ -102,7 +102,7 @@ bool teo::BasicCartesianControl::close()
 
 // -----------------------------------------------------------------------------
 
-int teo::BasicCartesianControl::getCurrentState()
+int roboticslab::BasicCartesianControl::getCurrentState()
 {
     int tmp;
     currentStateReady.wait();
@@ -114,7 +114,7 @@ int teo::BasicCartesianControl::getCurrentState()
 
 // -----------------------------------------------------------------------------
 
-void teo::BasicCartesianControl::setCurrentState(int value)
+void roboticslab::BasicCartesianControl::setCurrentState(int value)
 {
     currentStateReady.wait();
     currentState = value;

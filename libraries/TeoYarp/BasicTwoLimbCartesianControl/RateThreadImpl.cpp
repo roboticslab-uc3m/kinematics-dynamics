@@ -4,7 +4,7 @@
 
 // ------------------- RateThread Related ------------------------------------
 
-void teo::BasicTwoLimbCartesianControl::run() {
+void roboticslab::BasicTwoLimbCartesianControl::run() {
 
     int catchCurrentState = getCurrentState();
     if (catchCurrentState == VOCAB_CC_MOVS_CONTROLLING)

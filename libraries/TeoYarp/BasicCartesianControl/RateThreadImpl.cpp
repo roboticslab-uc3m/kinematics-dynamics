@@ -4,7 +4,7 @@
 
 // ------------------- RateThread Related ------------------------------------
 
-void teo::BasicCartesianControl::run() {
+void roboticslab::BasicCartesianControl::run() {
 
     int catchCurrentState = getCurrentState();
 

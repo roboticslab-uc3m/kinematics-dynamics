@@ -4,7 +4,7 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(TwoLimbCartesianControlServer CATEGORY device TYPE teo::TwoLimbCartesianControlServer INCLUDE TwoLimbCartesianControlServer.hpp WRAPPER TwoLimbCartesianControlServer)
+YARP_PREPARE_PLUGIN(TwoLimbCartesianControlServer CATEGORY device TYPE roboticslab::TwoLimbCartesianControlServer INCLUDE TwoLimbCartesianControlServer.hpp WRAPPER TwoLimbCartesianControlServer)
 
 IF (NOT SKIP_TwoLimbCartesianControlServer)
 

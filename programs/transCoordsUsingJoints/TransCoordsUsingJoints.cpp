@@ -1,6 +1,6 @@
 #include "TransCoordsUsingJoints.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 /************************************************************************/
@@ -41,7 +41,7 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
         CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
         return false;
     }
-    teo::ICartesianSolver* iCartesianSolver;
+    roboticslab::ICartesianSolver* iCartesianSolver;
     if( ! solverDevice.view(iCartesianSolver) ) {
         CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
         return false;
@@ -84,4 +84,4 @@ bool TransCoordsUsingJoints::interruptModule()
 
 /************************************************************************/
 
-}  // namespace teo
+}  // namespace roboticslab

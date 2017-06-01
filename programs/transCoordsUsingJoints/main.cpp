@@ -4,7 +4,7 @@
  *
  * \defgroup transCoordsUsingJoints transCoordsUsingJoints
  *
- * @brief Creates an instance of teo::TransCoordsUsingJoints.
+ * @brief Creates an instance of roboticslab::TransCoordsUsingJoints.
  */
 
 #include "TransCoordsUsingJoints.hpp"
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     rf.setDefaultConfigFile("transCoordsUsingJoints.ini");
     rf.configure(argc, argv);
 
-    teo::TransCoordsUsingJoints mod;
+    roboticslab::TransCoordsUsingJoints mod;
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
