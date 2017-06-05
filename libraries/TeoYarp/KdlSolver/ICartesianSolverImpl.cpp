@@ -4,8 +4,8 @@
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::getNumLinks(int* numLinks) {
-    *numLinks = this->chain.getNrOfSegments();
+bool roboticslab::KdlSolver::getNumJoints(int* numJoints) {
+    *numJoints = this->chain.getNrOfJoints();
     return true;
 }
 
