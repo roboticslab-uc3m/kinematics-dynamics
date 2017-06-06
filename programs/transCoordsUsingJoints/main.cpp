@@ -11,6 +11,8 @@
  * \defgroup transCoordsUsingJoints transCoordsUsingJoints
  *
  * @brief Creates an instance of roboticslab::TransCoordsUsingJoints.
+ *
+ * Use example: transCoordsUsingJoints --kinematics /usr/local/share/teo-configuration-files/contexts/kinematics/headKinematics.ini --local /transCoordsUsingJoints --remote /teo/head
  */
 
 int main(int argc, char *argv[]) {
@@ -23,6 +25,7 @@ int main(int argc, char *argv[]) {
 
     roboticslab::TransCoordsUsingJoints mod;
     if(rf.check("help")) {
+        CD_INFO("Use example: transCoordsUsingJoints --kinematics /usr/local/share/teo-configuration-files/contexts/kinematics/headKinematics.ini --local /transCoordsUsingJoints --remote /teo/head\n");
         return mod.runModule(rf);
     }
 

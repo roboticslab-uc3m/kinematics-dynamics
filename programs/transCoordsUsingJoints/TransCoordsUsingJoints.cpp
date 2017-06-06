@@ -29,7 +29,7 @@ double TransCoordsUsingJoints::getPeriod()
 
 bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("TransCoordsUsingJoints config: %s.\n", rf.toString().c_str());
+    CD_INFO("TransCoordsUsingJoints config: %s.\n", rf.toString().c_str());
 
     std::string solverStr = rf.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
     std::string robotStr = rf.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
