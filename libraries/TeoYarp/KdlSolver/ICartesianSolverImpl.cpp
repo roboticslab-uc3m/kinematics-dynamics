@@ -4,6 +4,13 @@
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::KdlSolver::getNumLinks(int* numLinks) {
+    CD_WARNING("getNumLinks deprecated: use getNumJoints instead.\n");
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlSolver::getNumJoints(int* numJoints) {
     *numJoints = this->chain.getNrOfJoints();
     return true;
