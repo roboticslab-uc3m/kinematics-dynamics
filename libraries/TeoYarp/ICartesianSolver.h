@@ -21,7 +21,10 @@ class ICartesianSolver
          */
         virtual ~ICartesianSolver() {}
 
-        /** Get number of joint for which the solver has been configured. */
+        /** Get number of links for which the solver has been configured. */
+        virtual bool getNumLinks(int* numLinks) = 0;
+
+        /** Get number of joints for which the solver has been configured. */
         virtual bool getNumJoints(int* numJoints) = 0;
 
         /** Append an additional link. */
