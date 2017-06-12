@@ -57,6 +57,10 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         KdlSolver() : KdlVectorConverter(DEFAULT_ANGLE_REPR) {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
+
+        /** Get number of links for which the solver has been configured. */
+        virtual bool getNumLinks(int* numLinks);
+
         /** Get number of links for which the solver has been configured. */
         virtual bool getNumJoints(int* numJoints);
 
