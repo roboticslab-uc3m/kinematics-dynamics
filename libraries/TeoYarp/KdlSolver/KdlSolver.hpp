@@ -61,7 +61,7 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         /** Get number of links for which the solver has been configured. */
         virtual bool getNumLinks(int* numLinks);
 
-        /** Get number of links for which the solver has been configured. */
+        /** Get number of joints for which the solver has been configured. */
         virtual bool getNumJoints(int* numJoints);
 
         /** Append an additional link. */
