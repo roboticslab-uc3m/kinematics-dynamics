@@ -185,7 +185,7 @@ protected:
         yarp::dev::ITorqueControl *iTorqueControl;
         yarp::dev::IControlMode *iControlMode;
 
-        int numRobotJoints, numSolverLinks;
+        int numRobotJoints, numSolverJoints;
 
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;

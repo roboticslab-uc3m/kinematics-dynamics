@@ -57,7 +57,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
     //-- Find out the maximum time to move
     double max_time = 0;
-    for(unsigned int joint=0;joint<numSolverLinks;joint++)
+    for(unsigned int joint=0;joint<numSolverJoints;joint++)
     {
         CD_INFO("dist[%d]: %f\n",joint,fabs(qd[joint]-currentQ[joint]));
         if (fabs((qd[joint]-currentQ[joint]) / MAX_ANG_VEL) > max_time)
@@ -72,7 +72,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     std::vector<double> vmo, vmoStored(numRobotJoints);
     for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
-        if( joint >= numSolverLinks )
+        if( joint >= numSolverJoints )
         {
             vmo.push_back( 0.0 );
             CD_INFO("vmo[%d]: 0.0 (forced)\n",joint);
