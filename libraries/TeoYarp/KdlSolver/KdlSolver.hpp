@@ -24,8 +24,6 @@
 #include "ICartesianSolver.h"
 #include "KdlVectorConverter.hpp"
 
-#include "roboticslab-kinematics-dynamics-export.h"
-
 #define DEFAULT_KINEMATICS "none.ini"  // string
 #define DEFAULT_ANGLE_REPR "axisAngle"  // string
 #define DEFAULT_NUM_LINKS 1  // int
@@ -61,7 +59,7 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
 
         /** Get number of links for which the solver has been configured. */
-        ROBOTICSLAB_KINEMATICS_DYNAMICS_DEPRECATED virtual bool getNumLinks(int* numLinks);
+        virtual bool getNumLinks(int* numLinks);
 
         /** Get number of joints for which the solver has been configured. */
         virtual bool getNumJoints(int* numJoints);
