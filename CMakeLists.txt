@@ -114,6 +114,8 @@ add_library( ROBOTICSLAB_KINEMATICS_DYNAMICS ${CMAKE_BINARY_DIR}/generated_src/e
 generate_export_header( ROBOTICSLAB_KINEMATICS_DYNAMICS
                         EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h )
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/generated_include CACHE INTERNAL "appended header dirs")
+install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h
+        DESTINATION include)
 
 if(ENABLE_coverage)
   if(CMAKE_COMPILER_IS_GNUCXX)
