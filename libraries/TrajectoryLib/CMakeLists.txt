@@ -11,7 +11,7 @@ add_definitions(${GAIT_DEFINES})
 
 # Search for source code.
 file(GLOB folder_source *.cpp *.cc *.c)
-file(GLOB folder_header *.h)
+file(GLOB folder_header *.hpp *.h)
 source_group("Source Files" FILES ${folder_source})
 source_group("Header Files" FILES ${folder_header})
 

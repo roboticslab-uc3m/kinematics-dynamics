@@ -101,7 +101,7 @@ private:
         yarp::dev::IControlLimits *iControlLimitsA;
         yarp::dev::IControlMode *iControlModeA;
 
-        int numRobotJointsA, numSolverLinksA;
+        int numRobotJointsA, numSolverJointsA;
 
         yarp::dev::PolyDriver solverDeviceB;
         roboticslab::ICartesianSolver *iCartesianSolverB;
@@ -113,7 +113,7 @@ private:
         yarp::dev::IControlLimits *iControlLimitsB;
         yarp::dev::IControlMode *iControlModeB;
 
-        int numRobotJointsB, numSolverLinksB;
+        int numRobotJointsB, numSolverJointsB;
 
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;
