@@ -1,9 +1,9 @@
 ## kinematics-dynamics: Installation from Source Code
 
 First install the dependencies:
-- [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-cmake.md)
-- [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-yarp.md)
-- [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-kdl.md)
+- [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
+- [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
+- [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)
 - Only for `testBasicCartesianControl`, we use `FakeControlboard` from [openrave-yarp-plugins](https://github.com/roboticslab-uc3m/openrave-yarp-plugins):
 ```bash
 cd  # go home

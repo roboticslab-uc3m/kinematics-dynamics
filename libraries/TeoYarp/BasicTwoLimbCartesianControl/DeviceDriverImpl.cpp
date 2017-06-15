@@ -95,12 +95,12 @@ bool roboticslab::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle&
     iEncodersA->getAxes(&numRobotJointsA);
     CD_INFO("numRobotJoints: %d.\n",numRobotJointsA);
 
-    iCartesianSolverA->getNumLinks( &numSolverLinksA );
-    CD_INFO("numSolverLinks: %d.\n",numSolverLinksA);
+    iCartesianSolverA->getNumJoints( &numSolverJointsA );
+    CD_INFO("numSolverJoints: %d.\n",numSolverJointsA);
 
-    if( numRobotJointsA != numSolverLinksA )
+    if( numRobotJointsA != numSolverJointsA )
     {
-        CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJointsA,numSolverLinksA);
+        CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJointsA,numSolverJointsA);
     }
 
     std::vector<double> qMin, qMax;
@@ -203,12 +203,12 @@ bool roboticslab::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle&
     iEncodersB->getAxes(&numRobotJointsB);
     CD_INFO("numRobotJoints: %d.\n",numRobotJointsB);
 
-    iCartesianSolverB->getNumLinks( &numSolverLinksB );
-    CD_INFO("numSolverLinks: %d.\n",numSolverLinksB);
+    iCartesianSolverB->getNumJoints( &numSolverJointsB );
+    CD_INFO("numSolverJoints: %d.\n",numSolverJointsB);
 
-    if( numRobotJointsB != numSolverLinksB )
+    if( numRobotJointsB != numSolverJointsB )
     {
-        CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJointsB,numSolverLinksB);
+        CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJointsB,numSolverJointsB);
     }
 
     std::vector<double> qMin, qMax;

@@ -61,12 +61,12 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
-    iCartesianSolver->getNumLinks( &numSolverLinks );
-    CD_INFO("numSolverLinks: %d.\n",numSolverLinks);
+    iCartesianSolver->getNumJoints( &numSolverJoints );
+    CD_INFO("numSolverJoints: %d.\n",numSolverJoints);
 
-    if( numRobotJoints != numSolverLinks )
+    if( numRobotJoints != numSolverJoints )
     {
-        CD_WARNING("numRobotJoints(%d) != numSolverLinks(%d) !!!\n",numRobotJoints,numSolverLinks);
+        CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJoints,numSolverJoints);
     }
 
     std::vector<double> qMin, qMax;

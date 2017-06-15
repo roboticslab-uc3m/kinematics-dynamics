@@ -4,8 +4,8 @@
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::getNumLinks(int* numLinks) {
-    *numLinks = this->chain.getNrOfSegments();
+bool roboticslab::KdlSolver::getNumJoints(int* numJoints) {
+    *numJoints = this->chain.getNrOfJoints();
     return true;
 }
 
@@ -99,7 +99,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
 
     //Geometric solver definition (with joint limits)
-    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,100000,1E-15);
+    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,1000,1E-9);
 
 #endif //_USE_LMA_
 
