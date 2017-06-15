@@ -58,9 +58,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
 
-        /** Get number of links for which the solver has been configured. */
-        virtual bool getNumLinks(int* numLinks);
-
         /** Get number of joints for which the solver has been configured. */
         virtual bool getNumJoints(int* numJoints);
 
