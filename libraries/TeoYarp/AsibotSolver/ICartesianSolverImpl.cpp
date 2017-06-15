@@ -4,7 +4,7 @@
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::getNumLinks(int* numLinks)
+bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 {
     return true;
 }
