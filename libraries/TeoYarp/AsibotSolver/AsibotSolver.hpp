@@ -127,29 +127,6 @@ public:
                               const double t=0.0);
 
     /**
-    * Ask for inverting a given pose without actually moving there.
-    * [wait for reply] 
-    * @param xd a 3-d vector which contains the desired 
-    *          position x,y,z (meters).
-    * @param od a 2-d vector which contains the desired 
-    *          orientation using axis-angle representation xa, ya,
-    *          za, theta (meters and radians).
-    * @param xdhat a 3-d vector which is filled with the final 
-    *          position x,y,z (meters); it may differ from the
-    *          commanded xd.
-    * @param odhat a 2-d vector which is filled with the final 
-    *          orientation using axis-angle representation xa, ya,
-    *          za, theta (meters and radians); it may differ from
-    *          the commanded od.
-    * @param qdhat the joints configuration through which the
-    *             couple (xdhat,odhat) is achieved (degrees).
-    * @return true/false on success/failure.
-    */
-    virtual bool askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
-                            yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat);
-
-    /**
     * Set the reference velocities of the end-effector in the task 
     * space.
     * @param xdot the 3-d vector containing the x,y,z reference 
@@ -204,26 +181,16 @@ public:
   void run();
 
 private:
-    yarp::os::Property options;
-    yarp::dev::PolyDriver robotDevice;
-    yarp::dev::IEncoders *enc;
-    yarp::dev::IVelocityControl *vel;
-    yarp::dev::IControlMode *mode;
 
-    int cmc_status;
     bool withOri;
     int tool;
 
     Traj *trajOz, *trajPrP, *trajPhP, *trajOyP, *trajOzPP;
-    yarp::sig::Vector targetX,targetO;
+    yarp::sig::Vector targetX, targetO;
     yarp::sig::Vector realRad;  // current radians
 
     double A0, A1, A2, A3;  // link lengths
     double startTime;
-    double duration, maxVel, maxAcc;
-    
-    double cmcMs;
-    bool isQuiet;
 };
 
 }  // namespace roboticslab

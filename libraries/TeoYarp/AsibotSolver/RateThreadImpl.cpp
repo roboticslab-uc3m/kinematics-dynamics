@@ -6,12 +6,12 @@
 
 void roboticslab::AsibotSolver::run() {
     using namespace yarp::math;
-    if (cmc_status>0) {  // If it is movement
+    //if (cmc_status>0) {  // If it is movement
         double realDeg[NUM_MOTORS];
-        if(!enc->getEncoders(realDeg)) {
+        /*if(!enc->getEncoders(realDeg)) {
             fprintf(stderr, "[CartesianBot] warning: getPose() failed to getEncoders()\n");
             return;  // bad practice??
-        }
+        }*/
         yarp::sig::Vector x,o;
         //fwdKin(realDeg,x,o);
         bool done = true;
@@ -33,9 +33,9 @@ void roboticslab::AsibotSolver::run() {
             delete trajOzPP;
             trajOzPP = 0;
             startTime = 0;
-            for (int i=0; i<NUM_MOTORS; i++)
+            /*for (int i=0; i<NUM_MOTORS; i++)
                 mode->setPositionMode(i);
-            cmc_status=0;
+            cmc_status=0;*/
         } else {
             //printf("Inside control loop moving.\n");
             yarp::sig::Vector xP,xPd,xPdotd,eP,lawxP;
@@ -49,9 +49,9 @@ void roboticslab::AsibotSolver::run() {
             if(sTime>trajPrP->getT()){
                 printf ("[CartesianBot] warning: Out of time at %f.\n",sTime);
                 startTime = 0;
-                for (int i=0; i<NUM_MOTORS; i++)
+                /*for (int i=0; i<NUM_MOTORS; i++)
                     mode->setPositionMode(i);
-                cmc_status=0;
+                cmc_status=0;*/
                 return;  // bad practice??
             }
             xPd.push_back(trajPrP->get(sTime));
@@ -63,7 +63,7 @@ void roboticslab::AsibotSolver::run() {
             xPdotd.push_back(trajPhP->getdot(sTime));
             xPdotd.push_back(toRad(trajOyP->getdot(sTime)));
             lawxP.resize(3);
-            lawxP = (eP * GAIN * (cmcMs/1000.0)) + xPdotd;  // GAIN=0 => lawxP = xPdotd;
+            //lawxP = (eP * GAIN * (cmcMs/1000.0)) + xPdotd;  // GAIN=0 => lawxP = xPdotd;
             yarp::sig::Matrix Ja(3,3);
             for (int i=0; i<NUM_MOTORS; i++)
                 realRad[i]=toRad(realDeg[i]);
@@ -83,16 +83,16 @@ void roboticslab::AsibotSolver::run() {
             t = Ja_pinv * lawxP;
             double qdot[NUM_MOTORS];
             double eoz = trajOz->get(sTime) - realDeg[0];
-            qdot[0] = trajOz->getdot(sTime) + GAIN*(cmcMs/1000.0)*eoz;  // lawoz
+            //qdot[0] = trajOz->getdot(sTime) + GAIN*(cmcMs/1000.0)*eoz;  // lawoz
             qdot[1] = toDeg(t[0]);
             qdot[2] = toDeg(t[1]);
             qdot[3] = toDeg(t[2]);
             double eOzPP = trajOzPP->get(sTime) - realDeg[4];
-            qdot[4] = trajOzPP->getdot(sTime) + GAIN*(cmcMs/1000.0)*eOzPP;  // lawOzP
-            if(!vel->velocityMove(qdot))
-                fprintf(stderr, "[CartesianBot] warning: FAILED ON VELOCITY MOVE!!!\n");
+            //qdot[4] = trajOzPP->getdot(sTime) + GAIN*(cmcMs/1000.0)*eOzPP;  // lawOzP
+            /*if(!vel->velocityMove(qdot))
+                fprintf(stderr, "[CartesianBot] warning: FAILED ON VELOCITY MOVE!!!\n");*/
         }
-    } /*else {  // If it is stopped or breaked, remain unchanged
+    /*}*/ /*else {  // If it is stopped or breaked, remain unchanged
         printf("Inside control loop stopped.\n");
     }*/
 }

@@ -8,16 +8,16 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
     using namespace yarp::math;  // just for matrix operators
     yarp::sig::Vector x,o;  // empty vectors
     //getPose(x,o);  // where we put the result of performing fwd kinematics of current position
-    if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
+    //if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
     if (tool == 0) {
-        if (!isQuiet) printf("[CartesianBot] Using base coordinates.\n");
+        //if (!isQuiet) printf("[CartesianBot] Using base coordinates.\n");
         targetX[0]=xd[0];
         targetX[1]=xd[1];
         targetX[2]=xd[2];
         targetO[0]=od[0];
         targetO[1]=od[1];
     } else if (tool == 1) {
-        if (!isQuiet) printf("[CartesianBot] Using robot tip coordinates.\n");
+        //if (!isQuiet) printf("[CartesianBot] Using robot tip coordinates.\n");
         yarp::sig::Matrix H_0_N = eulerYZtoH(x,o);
         yarp::sig::Matrix H_N_target = eulerYZtoH(xd,od);
         yarp::sig::Matrix H_0_target = H_0_N * H_N_target;
@@ -30,12 +30,12 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
         targetO[0]=o[0]+od[0];  // !!!! (but why not!?)
         targetO[1]=o[1]+od[1];  // !!!! (but why not!?)
     } else fprintf(stderr, "[CartesianBot] warning: Tool %d not implemented.\n",tool);
-    if (!isQuiet) printf("[CartesianBot] goToPose() Begin setting absolute base movement.\n");
-    if (!isQuiet) printf("[CartesianBot] goToPose() \\begin{Problem statement}\n");
-    if (!isQuiet) printf("[CartesianBot] x: %s \t o: %s\n",x.toString().c_str(),o.toString().c_str());
-    if (!isQuiet) printf("[CartesianBot] targetX: %s \t targetO: %s\n",targetX.toString().c_str(),targetO.toString().c_str());
-    if (!isQuiet)printf("[CartesianBot] goToPose() \\end{Problem statement}\n");
-    double trajT=duration;
+    //if (!isQuiet) printf("[CartesianBot] goToPose() Begin setting absolute base movement.\n");
+    //if (!isQuiet) printf("[CartesianBot] goToPose() \\begin{Problem statement}\n");
+    //if (!isQuiet) printf("[CartesianBot] x: %s \t o: %s\n",x.toString().c_str(),o.toString().c_str());
+    //if (!isQuiet) printf("[CartesianBot] targetX: %s \t targetO: %s\n",targetX.toString().c_str(),targetO.toString().c_str());
+    //if (!isQuiet)printf("[CartesianBot] goToPose() \\end{Problem statement}\n");
+    double trajT=0.0;//duration;
     if (t>0) trajT = t;
     trajPrP = new OrderOneTraj;
     trajPrP->configure(sqrt(x[0]*x[0]+x[1]*x[1]),sqrt(targetX[0]*targetX[0]+targetX[1]*targetX[1]),trajT);
@@ -64,10 +64,10 @@ bool roboticslab::AsibotSolver::goToPose(const yarp::sig::Vector &xd, const yarp
     printf("[goToPose] end: trajOzPP dump(100 samples).\n");*/
     startTime = yarp::os::Time::now();
     withOri=true;
-    for (int i=0; i<NUM_MOTORS; i++)
+    /*for (int i=0; i<NUM_MOTORS; i++)
         mode->setVelocityMode(i);
-    cmc_status=1;
-    if (!isQuiet) printf("[CartesianBot] goToPose() End setting absolute base movement.\n");
+    cmc_status=1;*/
+    //if (!isQuiet) printf("[CartesianBot] goToPose() End setting absolute base movement.\n");
     return true;
 }
 
@@ -78,22 +78,22 @@ bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const 
     using namespace yarp::math;  // just for matrix operators
     yarp::sig::Vector x,o;  // empty vectors
     //getPose(x,o);  // where we put the result of performing fwd kinematics of current position
-    if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
+    //if (!isQuiet) printf("[CartesianBot] Using tool: %d\n",tool);
     if (tool == 0) {
-        if (!isQuiet) printf("[CartesianBot] Using base coordinates.\n");
+        //if (!isQuiet) printf("[CartesianBot] Using base coordinates.\n");
         targetX[0]=xd[0];
         targetX[1]=xd[1];
         targetX[2]=xd[2];
         targetO[0]=od[0];
         targetO[1]=od[1];
     } else if (tool == 1) {
-        if (!isQuiet) printf("[CartesianBot] Using robot tip coordinates.\n");
+        //if (!isQuiet) printf("[CartesianBot] Using robot tip coordinates.\n");
         yarp::sig::Matrix H_0_N = eulerYZtoH(x,o);
-        if (!isQuiet) printf("H_0_N:\n%s\n\n",H_0_N.toString().c_str());
+        //if (!isQuiet) printf("H_0_N:\n%s\n\n",H_0_N.toString().c_str());
         yarp::sig::Matrix H_N_target = eulerYZtoH(xd,od);
-        if (!isQuiet) printf("H_N_target:\n%s\n\n",H_N_target.toString().c_str());
+        //if (!isQuiet) printf("H_N_target:\n%s\n\n",H_N_target.toString().c_str());
         yarp::sig::Matrix H_0_target = H_0_N * H_N_target;
-        if (!isQuiet) printf("H_0_target:\n%s\n\n",H_0_target.toString().c_str());
+        //if (!isQuiet) printf("H_0_target:\n%s\n\n",H_0_target.toString().c_str());
         targetX[0]=H_0_target(0,3);
         targetX[1]=H_0_target(1,3);
         targetX[2]=H_0_target(2,3);
@@ -103,12 +103,12 @@ bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const 
         targetO[0]=o[0]+od[0];  // !!!! (but why not!?)
         targetO[1]=o[1]+od[1];  // !!!! (but why not!?)
     } else fprintf(stderr, "[CartesianBot] warning: Tool %d not implemented.\n",tool);
-    if (!isQuiet) printf("[CartesianBot] goToPose() Begin setting absolute base movement.\n");
-    if (!isQuiet) printf("[CartesianBot] goToPose() \\begin{Problem statement}\n");
-    if (!isQuiet) printf("[CartesianBot] x: %s \t o: %s\n",x.toString().c_str(),o.toString().c_str());
-    if (!isQuiet) printf("[CartesianBot] targetX: %s \t targetO: %s\n",targetX.toString().c_str(),targetO.toString().c_str());
-    if (!isQuiet)printf("[CartesianBot] goToPose() \\end{Problem statement}\n");
-    double trajT=duration;
+    //if (!isQuiet) printf("[CartesianBot] goToPose() Begin setting absolute base movement.\n");
+    //if (!isQuiet) printf("[CartesianBot] goToPose() \\begin{Problem statement}\n");
+    //if (!isQuiet) printf("[CartesianBot] x: %s \t o: %s\n",x.toString().c_str(),o.toString().c_str());
+    //if (!isQuiet) printf("[CartesianBot] targetX: %s \t targetO: %s\n",targetX.toString().c_str(),targetO.toString().c_str());
+    //if (!isQuiet)printf("[CartesianBot] goToPose() \\end{Problem statement}\n");
+    double trajT=0.0;//duration;
     if (t>0) trajT = t;
     trajPrP = new OrderThreeTraj;
     trajPrP->configure(sqrt(x[0]*x[0]+x[1]*x[1]),sqrt(targetX[0]*targetX[0]+targetX[1]*targetX[1]),trajT);
@@ -137,50 +137,10 @@ bool roboticslab::AsibotSolver::goToPoseSync(const yarp::sig::Vector &xd, const 
     printf("[CartesianBot] goToPoseSync trajOzPP dump(100 samples) end.\n");*/
     startTime = yarp::os::Time::now();
     withOri=true;
-    for (int i=0; i<NUM_MOTORS; i++)
+    /*for (int i=0; i<NUM_MOTORS; i++)
         mode->setVelocityMode(i);
-    cmc_status=1;
+    cmc_status=1;*/
     printf("[CartesianBot] End setting absolute base movement.\n");
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const yarp::sig::Vector &od,
-                            yarp::sig::Vector &xdhat, yarp::sig::Vector &odhat,
-                            yarp::sig::Vector &qdhat) {
-    printf("Problem statement:\n");
-    printf("xd: %s\nod: %s\n",xd.toString().c_str(),od.toString().c_str());
-    double ozdRad = atan2(xd[1],xd[0]);
-    double prPd = sqrt(xd[0]*xd[0]+xd[1]*xd[1]);
-    double phPd = xd[2]-A0;
-    double oyPd = od[0];
-    printf("Problem statement:\n");
-    printf("ozd: %f\nprPd: %f\nphPd: %f\n",toDeg(ozdRad),prPd,phPd);
-    // t1=qdhat[1],t2=qdhat[2],t3=qdhat[3]
-    double prWd = prPd - A3*sin(toRad(oyPd));
-    double phWd = phPd - A3*cos(toRad(oyPd));
-    double ct2 = (prWd*prWd + phWd*phWd - A1*A1 - A2*A2)/(2*A1*A2);
-    double st2 = sqrt(1-ct2*ct2);  // forces elbow-up in ASIBOT
-    //double st2 = -sqrt(1-ct2*ct2);  // forces elbow-down in ASIBOT
-    printf("prWd: %f, phWd:%f\n",prWd,phWd);
-    double t2Rad = atan2(st2,ct2);
-    double st1 = ((A1+A2*ct2)*prWd - A2*st2*phWd)/(phWd*phWd+prWd*prWd);
-    double ct1 = ((A1+A2*ct2)*phWd + A2*st2*prWd)/(phWd*phWd+prWd*prWd);
-    // double ct1 = (phWd+A2*st1*st2)/(A1+A2*ct2);  // Alternative method for same result
-    double t1Rad = atan2(st1,ct1);
-    qdhat.resize(5);
-    qdhat[0] = toDeg(ozdRad);
-    qdhat[1] = toDeg(t1Rad);
-    qdhat[2] = toDeg(t2Rad);
-    qdhat[3] = oyPd - qdhat[1] - qdhat[2];
-    qdhat[4] = od[1];  // ozPP
-// Do the fwd kin for this and then:
-    //xdhat.resize(3);
-//    xdhat[0] = ;
-    //odhat.resize(2);
-//    odhat[0] = ;
-    //fwdKin(qdhat,xdhat,odhat);  // 
     return true;
 }
 
@@ -189,10 +149,10 @@ bool roboticslab::AsibotSolver::askForPose(const yarp::sig::Vector &xd, const ya
 bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot, const yarp::sig::Vector &odot) {
     using namespace yarp::math;  // just for matrix operators
     double realDeg[NUM_MOTORS];  // Fixed because CartesianBot is very ASIBOT-specific
-    if(!enc->getEncoders(realDeg)) {
+    /*if(!enc->getEncoders(realDeg)) {
         fprintf(stderr,"[CartesianBot] warning: setTaskVelocities() failed to getEncoders()\n");
         return false;  // bad practice??
-    }
+    }*/
     yarp::sig::Matrix Ja(5,5);
     for (int i=0; i<NUM_MOTORS; i++)
         realRad[i]=toRad(realDeg[i]);
@@ -237,11 +197,11 @@ bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot,
         H_0_N(0,3) = 0;
         H_0_N(1,3) = 0;
         H_0_N(2,3) = 0;
-        if (!isQuiet) printf("H_0_N (w/o pos):\n%s\n\n",H_0_N.toString().c_str());
+        //if (!isQuiet) printf("H_0_N (w/o pos):\n%s\n\n",H_0_N.toString().c_str());
         yarp::sig::Matrix H_N_target = eulerYZtoH(xdot,odot);
-        if (!isQuiet) printf("H_N_target:\n%s\n\n",H_N_target.toString().c_str());
+        //if (!isQuiet) printf("H_N_target:\n%s\n\n",H_N_target.toString().c_str());
         yarp::sig::Matrix H_0_target = H_0_N * H_N_target;
-        if (!isQuiet) printf("H_0_target:\n%s\n\n",H_0_target.toString().c_str());
+        //if (!isQuiet) printf("H_0_target:\n%s\n\n",H_0_target.toString().c_str());
         xdotd.push_back( H_0_target(0,3) );
         xdotd.push_back( H_0_target(1,3) );
         xdotd.push_back( H_0_target(2,3) );
@@ -258,10 +218,10 @@ bool roboticslab::AsibotSolver::setTaskVelocities(const yarp::sig::Vector &xdot,
     qdot[2] = toDeg(t[2]);
     qdot[3] = toDeg(t[3]);
     qdot[4] = toDeg(t[4]);
-    for (int i=0; i<NUM_MOTORS; i++)
+    /*for (int i=0; i<NUM_MOTORS; i++)
         mode->setVelocityMode(i);
     if(!vel->velocityMove(qdot))
-        fprintf(stderr,"[CartesianBot] warning: COULD NOT SEND VELOCITY MOVE!!!\n");
+        fprintf(stderr,"[CartesianBot] warning: COULD NOT SEND VELOCITY MOVE!!!\n");*/
     return true;
 }
 
