@@ -6,6 +6,7 @@
 
 bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 {
+    *numJoints = NUM_MOTORS;
     return true;
 }
 
@@ -29,7 +30,7 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 {
     std::vector<double> qInRad(q);
 
-    for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); it++)
+    for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
     {
         *it = toRad(*it);
     }
@@ -39,7 +40,8 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
     double phP = A1 * std::cos(qInRad[1]) + A2 * std::cos(qInRad[1] + qInRad[2]) + A3 * std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
     double oyP = q[1] + q[2] + q[3];  // [deg]
 
-    x.resize(NUM_MOTORS);
+    x.resize(5);
+
     x[0] = prP * std::cos(qInRad[0]);
     x[1] = prP * std::sin(qInRad[0]);
     x[2] = phP + A0;  // pz = pzP
