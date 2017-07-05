@@ -3,6 +3,8 @@
 #ifndef __LINE_TRAJECTORY_HPP__
 #define __LINE_TRAJECTORY_HPP__
 
+#include <string>
+
 #include <kdl/path_line.hpp>
 #include <kdl/rotational_interpolation_sa.hpp>
 #include <kdl/velocityprofile_rect.hpp>
@@ -37,7 +39,7 @@ class LineTrajectory : public Trajectory, public KdlVectorConverter
 {
 public:
 
-    LineTrajectory();
+    LineTrajectory(const std::string & angleRepr = "axisAngle");
 
     /** Cartesian position of the trajectory at movementTime */
     virtual bool getX(const double movementTime, std::vector<double>& x);
