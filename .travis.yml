@@ -35,7 +35,7 @@ install:
   #-- (For testBasicCartesianControl) Install FakeControlboard currently at https://github.com/roboticslab-uc3m/openrave-yarp-plugins
   - git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
   - cd openrave-yarp-plugins
-  - git checkout 479b52dcebf10eab1b75f9f2afe05d544f81d095
+  - git checkout 9f147182b4aaf984170f4ee9a42f8da2a1b44eb1
   - mkdir build && cd build
   - cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_teoSim=OFF
   - make
