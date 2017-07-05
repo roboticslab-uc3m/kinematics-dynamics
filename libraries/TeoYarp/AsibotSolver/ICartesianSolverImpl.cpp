@@ -55,6 +55,17 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
 bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x)
 {
+    std::vector<double> currentX;
+    fwdKin(q, currentX);
+
+    x.resize(5);
+
+    x[0] = xd[0] - currentX[0];
+    x[1] = xd[1] - currentX[1];
+    x[2] = xd[2] - currentX[2];
+    x[3] = xd[3] - currentX[3];
+    x[4] = xd[4] - currentX[4];
+
     return true;
 }
 
