@@ -124,6 +124,8 @@ if(ENABLE_coverage)
 endif(ENABLE_coverage)
 
 # Bootstrap YCM
+# https://github.com/robotology/ycm/issues/118
+set(YCM_TAG v0.2.2)
 include(YCMBootstrap)
 
 # Superbuild phase - include color-debug
