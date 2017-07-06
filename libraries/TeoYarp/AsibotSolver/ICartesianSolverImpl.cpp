@@ -155,9 +155,10 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
     double s1 = std::sin(qInRad[0]);
     double c1 = std::cos(qInRad[0]);
-
     double s2 = std::sin(qInRad[1]);
     double c2 = std::cos(qInRad[1]);
+    double s5 = std::sin(qInRad[4]);
+    double c5 = std::cos(qInRad[4]);
 
     double s23 = std::sin(qInRad[1] + qInRad[2]);
     double c23 = std::cos(qInRad[1] + qInRad[2]);
@@ -165,7 +166,10 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     double s234 = std::sin(qInRad[1] + qInRad[2] + qInRad[3]);
     double c234 = std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
 
-    yarp::sig::Matrix Ja(5, 5);
+    double den = 1 - s234 * s234 * c5 * c5;
+    double sqrtden = std::sqrt(den);
+
+    yarp::sig::Matrix Ja(6, 5);
 
     Ja(0, 0) = -s1 * (A3 * s234 + A2 * s23 + A1 * s2);
     Ja(0, 1) =  c1 * (A3 * c234 + A2 * c23 + A1 * c2);
@@ -186,39 +190,36 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     Ja(2, 4) = 0;
 
     Ja(3, 0) = 0;
-    Ja(3, 1) = 1;
-    Ja(3, 2) = 1;
-    Ja(3, 3) = 1;
-    Ja(3, 4) = 0;
+    Ja(3, 1) = s5 / den;
+    Ja(3, 2) = Ja(3, 1);
+    Ja(3, 3) = Ja(3, 1);
+    Ja(3, 4) = (s234 * c234 * c5) / den;
 
     Ja(4, 0) = 0;
-    Ja(4, 1) = 0;
-    Ja(4, 2) = 0;
-    Ja(4, 3) = 0;
-    Ja(4, 4) = 1;
+    Ja(4, 1) = (c234 * c5) / sqrtden;
+    Ja(4, 2) = Ja(4, 1);
+    Ja(4, 3) = Ja(4, 1);
+    Ja(4, 4) = -(s234 * s5) / sqrtden;
 
-    yarp::sig::Matrix Ja_inv = yarp::math::luinv(Ja);
-    yarp::sig::Vector xdotEuler(5, 0.0);
+    Ja(5, 0) = 1;
+    Ja(5, 1) = (s234 * s5 * c5) / den;
+    Ja(5, 2) = Ja(5, 1);
+    Ja(5, 3) = Ja(5, 1);
+    Ja(5, 4) = c234 / den;
 
-    for (int i = 0; i < 3; i++)
-    {
-        xdotEuler[i] = xdot[i];
-    }
+    yarp::sig::Matrix Ja_inv = yarp::math::pinv(Ja, 1.0e-2);
 
-    yarp::sig::Vector xdotRPY(3);
+    yarp::sig::Vector xdotv(6);
 
-    xdotRPY[0] = toRad(xdot[3]);
-    xdotRPY[1] = toRad(xdot[4]);
-    xdotRPY[2] = toRad(xdot[5]);
-
-    yarp::sig::Matrix Hcommand = yarp::math::rpy2dcm(xdotRPY);
-    yarp::sig::Vector xdotZYZ = yarp::math::dcm2euler(Hcommand);
-
-    xdotEuler[3] = xdotZYZ[1];
-    xdotEuler[4] = xdotZYZ[2];
+    xdotv[0] = xdot[0];
+    xdotv[1] = xdot[1];
+    xdotv[2] = xdot[2];
+    xdotv[3] = toRad(xdot[3]);
+    xdotv[4] = toRad(xdot[4]);
+    xdotv[5] = toRad(xdot[5]);
 
     using namespace yarp::math;
-    yarp::sig::Vector qdotv = Ja_inv * xdotEuler;
+    yarp::sig::Vector qdotv = Ja_inv * xdotv;
 
     qdot.resize(NUM_MOTORS);
 
