@@ -2,6 +2,8 @@
 
 #include "AsibotSolver.hpp"
 
+#include <yarp/math/FrameTransform.h>
+
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
@@ -69,13 +71,37 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
     std::vector<double> currentX;
     fwdKin(q, currentX);
 
-    x.resize(5);
+    x.resize(6);
 
     x[0] = xd[0] - currentX[0];
     x[1] = xd[1] - currentX[1];
     x[2] = xd[2] - currentX[2];
-    x[3] = xd[3] - currentX[3];
-    x[4] = xd[4] - currentX[4];
+
+    yarp::sig::Vector eulerDesired(3);
+    yarp::sig::Vector eulerCurrent(3);
+
+    eulerDesired[0] = std::atan2(xd[1], xd[0]);
+    eulerDesired[1] = toRad(xd[3]);
+    eulerDesired[2] = toRad(xd[4]);
+
+    eulerCurrent[0] = std::atan2(currentX[1], currentX[0]);
+    eulerCurrent[1] = toRad(currentX[3]);
+    eulerCurrent[2] = toRad(currentX[4]);
+
+    yarp::sig::Matrix Hdesired = yarp::math::euler2dcm(eulerDesired);
+    yarp::sig::Matrix Hcurrent = yarp::math::euler2dcm(eulerCurrent);
+
+    yarp::math::FrameTransform frameDesired, frameCurrent;
+
+    frameDesired.fromMatrix(Hdesired);
+    frameCurrent.fromMatrix(Hcurrent);
+
+    yarp::sig::Vector rpyDesired = frameDesired.getRPYRot();
+    yarp::sig::Vector rpyCurrent = frameCurrent.getRPYRot();
+
+    x[3] = toDeg(rpyDesired[0] - rpyCurrent[0]);
+    x[4] = toDeg(rpyDesired[1] - rpyCurrent[1]);
+    x[5] = toDeg(rpyDesired[2] - rpyCurrent[2]);
 
     return true;
 }
@@ -172,15 +198,27 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     Ja(4, 4) = 1;
 
     yarp::sig::Matrix Ja_inv = yarp::math::luinv(Ja);
-    yarp::sig::Vector xdotv(5, 0.0);
+    yarp::sig::Vector xdotEuler(5, 0.0);
 
-    for (int i = 0; i < xdot.size(); i++)
+    for (int i = 0; i < 3; i++)
     {
-        xdotv[i] = xdot[i];
+        xdotEuler[i] = xdot[i];
     }
 
+    yarp::sig::Vector xdotRPY(3);
+
+    xdotRPY[0] = toRad(xdot[3]);
+    xdotRPY[1] = toRad(xdot[4]);
+    xdotRPY[2] = toRad(xdot[5]);
+
+    yarp::sig::Matrix Hcommand = yarp::math::rpy2dcm(xdotRPY);
+    yarp::sig::Vector xdotZYZ = yarp::math::dcm2euler(Hcommand);
+
+    xdotEuler[3] = xdotZYZ[1];
+    xdotEuler[4] = xdotZYZ[2];
+
     using namespace yarp::math;
-    yarp::sig::Vector qdotv = Ja_inv * xdotv;
+    yarp::sig::Vector qdotv = Ja_inv * xdotEuler;
 
     qdot.resize(NUM_MOTORS);
 
