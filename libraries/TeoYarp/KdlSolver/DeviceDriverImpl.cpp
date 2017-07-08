@@ -184,6 +184,10 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         qMin(motor) = -M_PI;
     }
 
+    //-- Precision and max iterations for IK solver.
+    eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision").asDouble();
+    maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
+
     originalChain = chain;  // We have: Chain& operator = (const Chain& arg);
 
     return true;

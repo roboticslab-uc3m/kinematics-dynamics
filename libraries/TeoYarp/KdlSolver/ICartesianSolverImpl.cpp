@@ -99,7 +99,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
 
     //Geometric solver definition (with joint limits)
-    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,1000,1E-9);
+    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,maxIter,eps);
 
 #endif //_USE_LMA_
 
