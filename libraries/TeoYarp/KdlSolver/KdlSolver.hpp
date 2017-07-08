@@ -33,6 +33,9 @@
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
 
+#define DEFAULT_EPS 1e-9
+#define DEFAULT_MAXITER 1000
+
 //#define _USE_LMA_
 
 namespace roboticslab
@@ -54,7 +57,11 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
     public:
 
-        KdlSolver() : KdlVectorConverter(DEFAULT_ANGLE_REPR) {}
+        KdlSolver()
+            : KdlVectorConverter(DEFAULT_ANGLE_REPR),
+              eps(DEFAULT_EPS),
+              maxIter(DEFAULT_MAXITER)
+        {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
 
@@ -127,6 +134,12 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
         /** Maximum joint limits. **/
         KDL::JntArray qMax;
+
+        /** Precision value used by the IK solver. **/
+        double eps;
+
+        /** Maximum number of iterations to calculate inverse kinematics. **/
+        unsigned int maxIter;
 
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
