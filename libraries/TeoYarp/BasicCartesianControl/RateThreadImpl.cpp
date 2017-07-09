@@ -14,7 +14,8 @@ void roboticslab::BasicCartesianControl::run() {
 
         if( movementTime > DEFAULT_DURATION )
         {
-            this->stopControl();
+            CD_ERROR("Default duration (%d s) exceeded.\n", DEFAULT_DURATION);
+            stopControl();
             return;
         }
 
@@ -48,17 +49,6 @@ void roboticslab::BasicCartesianControl::run() {
             return;
         }
 
-        for(int i=0;i<commandQdot.size();i++)
-        {
-            if( fabs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
-            {
-                CD_ERROR("diffInvKin too dangerous, STOP!!!.\n");
-                for(int i=0;i<commandQdot.size();i++)
-                    commandQdot[i] = 0;
-                setCurrentState(VOCAB_CC_NOT_CONTROLLING);
-            }
-        }
-
         CD_DEBUG_NO_HEADER("[MOVL] [%f] ",movementTime);
         for(int i=0;i<6;i++)
             CD_DEBUG_NO_HEADER("%f ",commandXdot[i]);
@@ -66,6 +56,16 @@ void roboticslab::BasicCartesianControl::run() {
         for(int i=0;i<numRobotJoints;i++)
             CD_DEBUG_NO_HEADER("%f ",commandQdot[i]);
         CD_DEBUG_NO_HEADER("[deg/s]\n");
+
+        for(int i=0;i<commandQdot.size();i++)
+        {
+            if( fabs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+            {
+                CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+                stopControl();
+                return;
+            }
+        }
 
         if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
         {
@@ -90,17 +90,6 @@ void roboticslab::BasicCartesianControl::run() {
             return;
         }
 
-        for(int i=0;i<commandQdot.size();i++)
-        {
-            if( fabs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
-            {
-                CD_ERROR("diffInvKin too dangerous, STOP!!!.\n");
-                for(int i=0;i<commandQdot.size();i++)
-                    commandQdot[i] = 0;
-                setCurrentState(VOCAB_CC_NOT_CONTROLLING);
-            }
-        }
-
         CD_DEBUG_NO_HEADER("[MOVV] ");
         for(int i=0;i<6;i++)
             CD_DEBUG_NO_HEADER("%f ",xdotd[i]);
@@ -108,6 +97,16 @@ void roboticslab::BasicCartesianControl::run() {
         for(int i=0;i<numRobotJoints;i++)
             CD_DEBUG_NO_HEADER("%f ",commandQdot[i]);
         CD_DEBUG_NO_HEADER("[deg/s]\n");
+
+        for(int i=0;i<commandQdot.size();i++)
+        {
+            if( fabs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+            {
+                CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+                stopControl();
+                return;
+            }
+        }
 
         if( ! iVelocityControl->velocityMove( commandQdot.data() ) )
         {
