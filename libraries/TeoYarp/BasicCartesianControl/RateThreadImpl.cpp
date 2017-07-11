@@ -14,7 +14,6 @@ void roboticslab::BasicCartesianControl::run() {
 
         if( movementTime > DEFAULT_DURATION )
         {
-            CD_ERROR("Default duration (%d s) exceeded.\n", DEFAULT_DURATION);
             stopControl();
             return;
         }
