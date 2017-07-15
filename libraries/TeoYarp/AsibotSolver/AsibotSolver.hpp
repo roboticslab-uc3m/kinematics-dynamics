@@ -191,6 +191,8 @@ private:
 
     double A0, A1, A2, A3;  // link lengths
     double startTime;
+
+    std::vector<double> qMin, qMax;
 };
 
 }  // namespace roboticslab

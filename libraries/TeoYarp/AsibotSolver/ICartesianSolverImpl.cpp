@@ -145,7 +145,18 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     q[3] = oyPd - q[1] - q[2];
     q[4] = xd[4];  // ozPP
 
-    return true;
+    bool limitsOk = true;
+
+    for (int i = 0; i < NUM_MOTORS; i++)
+    {
+        if (q[i] < qMin[i] || q[i] > qMax[i])
+        {
+            CD_ERROR("Joint q%d out of limits: %f [deg] not in [%f, %f]\n", i + 1, q[i], qMin[i], qMax[i]);
+            limitsOk = false;
+        }
+    }
+
+    return limitsOk;
 }
 
 // -----------------------------------------------------------------------------
@@ -256,6 +267,22 @@ bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,const std::v
 
 bool roboticslab::AsibotSolver::setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax)
 {
+    for (int motor = 0; motor < NUM_MOTORS; motor++)
+    {
+        if (qMin[motor] > qMax[motor])
+        {
+            CD_ERROR("qMin > qMax at joint q%d (%f vs %f).\n", motor + 1, qMin[motor], qMax[motor]);
+            return false;
+        }
+        else if (qMin[motor] == qMax[motor])
+        {
+            CD_WARNING("qMin = qMax at joint q%d.\n", motor + 1);
+        }
+
+        this->qMax[motor] = qMax[motor];
+        this->qMin[motor] = qMin[motor];
+    }
+
     return true;
 }
 

@@ -35,6 +35,9 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     CD_DEBUG("CartesianBot using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
+    qMin.resize(NUM_MOTORS, -90);
+    qMax.resize(NUM_MOTORS, 90);
+
     return true;
 }
 
