@@ -116,6 +116,12 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double phPd = xd[2] - A0;
     double oyPd = xd[3];
 
+    if (std::sqrt(prPd * prPd + phPd * phPd) > A1 + A2 + A3)
+    {
+        CD_ERROR("Target out of reach.\n");
+        return false;
+    }
+
     double prWd = prPd - A3 * std::sin(toRad(oyPd));
     double phWd = phPd - A3 * std::cos(toRad(oyPd));
 
