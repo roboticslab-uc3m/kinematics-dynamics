@@ -125,31 +125,90 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double prWd = prPd - A3 * std::sin(toRad(oyPd));
     double phWd = phPd - A3 * std::cos(toRad(oyPd));
 
-    double ct2 = (prWd * prWd + phWd * phWd - A1 * A1 - A2 * A2) / (2 * A1 * A2);
+    double len_2 = phWd * phWd + prWd * prWd;
+
+    double ct2 = (len_2 - A1 * A1 - A2 * A2) / (2 * A1 * A2);
     double st2 = std::sqrt(1 - ct2 * ct2);  // forces elbow-up in ASIBOT
     //double st2 = -std::sqrt(1 - ct2 * ct2);  // forces elbow-down in ASIBOT
 
-    double t2Rad = std::atan2(st2, ct2);
+    // 'u': elbow-up; 'd': elbow-down
+    double t2u = toDeg(std::atan2(st2, ct2));
+    double t2d = toDeg(std::atan2(-st2, ct2));
 
-    double st1 = ((A1 + A2 * ct2) * prWd - A2 * st2 * phWd) / (phWd * phWd + prWd * prWd);
-    double ct1 = ((A1 + A2 * ct2) * phWd + A2 * st2 * prWd) / (phWd * phWd + prWd * prWd);
-    // double ct1 = (phWd + A2 * st1 * st2) / (A1 + A2 * ct2);  // alternative method for same result
+    double st1u = ((A1 + A2 * ct2) * prWd - A2 * st2 * phWd) / len_2;
+    double ct1u = ((A1 + A2 * ct2) * phWd + A2 * st2 * prWd) / len_2;
+    // double ct1u = (phWd + A2 * st1 * st2) / (A1 + A2 * ct2);  // alternative method for same result
 
-    double t1Rad = std::atan2(st1, ct1);
+    double st1d = ((A1 + A2 * ct2) * prWd + A2 * st2 * phWd) / len_2;
+    double ct1d = ((A1 + A2 * ct2) * phWd - A2 * st2 * prWd) / len_2;
+
+    double t1u = toDeg(std::atan2(st1u, ct1u));
+    double t1d = toDeg(std::atan2(st1d, ct1d));
+
+    double t1, t2, t3;
+
+    // absolute distance between current and desired positions for both configurations (elbow up/down)
+    double dt1u = std::abs(t1u - q[1]);
+    double dt1d = std::abs(t1d - q[1]);
+
+    double t3u = oyPd - t1u - t2u;
+    double t3d = oyPd - t1d - t2d;
+
+    bool elbowUpInLimits = checkJointInLimits(1, t1u) && checkJointInLimits(2, t2u) && checkJointInLimits(3, t3u);
+    bool elbowDownInLimits = checkJointInLimits(1, t1d) && checkJointInLimits(2, t2d) && checkJointInLimits(3, t3d);
+
+    // prefer shorter distances for joint q2 (compare dt1u vs dt1d and check reachability)
+    if (dt1u < dt1d && elbowUpInLimits)
+    {
+        t1 = t1u;
+        t2 = t2u;
+        t3 = t3u;
+    }
+    else if (dt1u > dt1d && elbowDownInLimits)
+    {
+        // shorter path but outside elbow-down limits? see last 'else' clause
+        t1 = t1d;
+        t2 = t2d;
+        t3 = t3d;
+    }
+    else if (dt1u == dt1d)
+    {
+        if (elbowUpInLimits)
+        {
+            // prefer elbow-up to elbow-down
+            t1 = t1u;
+            t2 = t2u;
+            t3 = t3u;
+        }
+        else
+        {
+            // a few lines further down, we'll check reachability once again
+            t1 = t1d;
+            t2 = t2d;
+            t3 = t3d;
+        }
+    }
+    else
+    {
+        // we are here because reachability failed or: dt1u > dt1d && !elbowDownInLimits
+        t1 = t1u;
+        t2 = t2u;
+        t3 = t3u;
+    }
 
     q.resize(NUM_MOTORS);
 
     q[0] = toDeg(ozdRad);
-    q[1] = toDeg(t1Rad);
-    q[2] = toDeg(t2Rad);
-    q[3] = oyPd - q[1] - q[2];
+    q[1] = t1;
+    q[2] = t2;
+    q[3] = t3;
     q[4] = xd[4];  // ozPP
 
     bool limitsOk = true;
 
     for (int i = 0; i < NUM_MOTORS; i++)
     {
-        if (q[i] < qMin[i] || q[i] > qMax[i])
+        if (!checkJointInLimits(i, q[i]))
         {
             CD_ERROR("Joint q%d out of limits: %f [deg] not in [%f, %f]\n", i + 1, q[i], qMin[i], qMax[i]);
             limitsOk = false;

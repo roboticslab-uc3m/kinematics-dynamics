@@ -180,6 +180,19 @@ public:
    */
   void run();
 
+protected:
+
+  /**
+   * Check reachability of specified joint.
+   * @param joint zero-based joint number
+   * @param qInDeg joint angle in [deg]
+   * @return true if joint within limits, false otherwise
+   */
+  bool checkJointInLimits(int joint, double qInDeg)
+  {
+      return qInDeg >= qMin[joint] && qInDeg <= qMax[joint];
+  }
+
 private:
 
     bool withOri;
