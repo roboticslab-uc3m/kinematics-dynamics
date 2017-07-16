@@ -8,21 +8,6 @@ project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
-### options: cpp libraries
-option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
-option(ENABLE_KdlVectorConverterLib "Enable/disable compilation of KdlVectorConverterLib" TRUE)
-
-### options: cpp libraries (yarp plugins inside TeoYarp)
-option(ENABLE_BasicCartesianControl "Enable/disable compilation of BasicCartesianControl" TRUE)
-option(ENABLE_CartesianControlServer "Enable/disable compilation of CartesianControlServer" TRUE)
-option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianControlClient" TRUE)
-option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
-option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
-option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
-
-### options: cpp programs
-option(ENABLE_transCoordsUsingJoints "Enable/disable compilation of transCoordsUsingJoints" TRUE)
-
 ##### test and coverage options
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)

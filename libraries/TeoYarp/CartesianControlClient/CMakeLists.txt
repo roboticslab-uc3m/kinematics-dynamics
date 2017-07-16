@@ -4,32 +4,36 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(CartesianControlClient CATEGORY device TYPE roboticslab::CartesianControlClient INCLUDE CartesianControlClient.hpp)
+yarp_prepare_plugin(CartesianControlClient
+                    CATEGORY device
+                    TYPE roboticslab::CartesianControlClient
+                    INCLUDE CartesianControlClient.hpp
+                    DEFAULT ON)
 
-IF (NOT SKIP_CartesianControlClient)
+if(NOT SKIP_CartesianControlClient)
 
-SET(CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH} ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(YARP REQUIRED)
+find_package(YARP REQUIRED)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
-YARP_ADD_PLUGIN(CartesianControlClient CartesianControlClient.hpp DeviceDriverImpl.cpp ICartesianControlImpl.cpp)
-TARGET_LINK_LIBRARIES(CartesianControlClient ${YARP_LIBRARIES})
+yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
+                                       DeviceDriverImpl.cpp
+                                       ICartesianControlImpl.cpp)
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now... 
+target_link_libraries(CartesianControlClient ${YARP_LIBRARIES})
+
+# Exporting dependencies for TEOConfig.cmake quite manually for now...
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-# set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} TeoYarp CartesianControlClient CACHE INTERNAL "appended libraries")
 
-#install(TARGETS CartesianControlClient DESTINATION lib)
-  yarp_install(TARGETS CartesianControlClient
+yarp_install(TARGETS CartesianControlClient
              EXPORT YARP
              COMPONENT runtime
              LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
              ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
 
-  yarp_install(FILES CartesianControlClient.ini
-              COMPONENT runtime
-DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+yarp_install(FILES CartesianControlClient.ini
+             COMPONENT runtime
+             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
-ENDIF (NOT SKIP_CartesianControlClient)
-
+endif()
