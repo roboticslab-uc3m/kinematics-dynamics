@@ -13,8 +13,6 @@ yarp_prepare_plugin(TwoLimbCartesianControlServer
 
 if(NOT SKIP_TwoLimbCartesianControlServer)
 
-find_package(YARP REQUIRED)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
@@ -24,11 +22,7 @@ yarp_add_plugin(TwoLimbCartesianControlServer TwoLimbCartesianControlServer.hpp
 
 target_link_libraries(TwoLimbCartesianControlServer ${YARP_LIBRARIES})
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now...
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-
 yarp_install(TARGETS TwoLimbCartesianControlServer
-             EXPORT YARP
              COMPONENT runtime
              LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
              ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})

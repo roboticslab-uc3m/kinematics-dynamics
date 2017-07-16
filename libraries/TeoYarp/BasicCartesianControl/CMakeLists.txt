@@ -13,8 +13,6 @@ yarp_prepare_plugin(BasicCartesianControl
 
 if(NOT SKIP_BasicCartesianControl)
 
-find_package(YARP REQUIRED)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
 
@@ -26,11 +24,7 @@ yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
 target_link_libraries(BasicCartesianControl ${YARP_LIBRARIES}
                                             ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES})
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now...
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-
 yarp_install(TARGETS BasicCartesianControl
-             EXPORT YARP
              COMPONENT runtime
              LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
              ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
