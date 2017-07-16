@@ -44,33 +44,34 @@ if(COLOR_DEBUG_HIDE_DEBUG)
 endif()
 
 if(MSVC)
-  message(STATUS "Running on windows")    
-  set(CMAKE_DEBUG_POSTFIX "d")
+    message(STATUS "Running on windows")    
+    set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
-      "Choose the type of build, recommended options are: Debug or Release")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
+        "Choose the type of build, recommended options are: Debug or Release")
 endif()
 # Hide variable to MSVC users, since it is not needed
 if(MSVC)
-   mark_as_advanced(CMAKE_BUILD_TYPE)
+    mark_as_advanced(CMAKE_BUILD_TYPE)
 endif()
 
 ######################
 
-### this makes everything go in $ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR/lib and $ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR/bin
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-message(STATUS "Libraries go to ${LIBRARY_OUTPUT_PATH}")
-message(STATUS "Executables go to ${EXECUTABLE_OUTPUT_PATH}")
-mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
-##########################################
+# Standard installation directories.
+include(GNUInstallDirs)
 
-# Pick up our cmake modules - they are all in the cmake subdirectory
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-# let cmake use them
-list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH})
+# Control where libraries and executables are placed during the build.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+
+# Pick up our cmake modules - they are all in the cmake subdirectory.
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_DIR ${CMAKE_SOURCE_DIR}/cmake)
+
+# Let cmake use them.
+list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_DIR})
 
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs")
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs")
@@ -87,9 +88,10 @@ install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynam
         DESTINATION include)
 
 if(ENABLE_coverage)
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
-  endif()
+    # List supported compilers.
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
+    endif()
 endif()
 
 # Bootstrap YCM
@@ -102,10 +104,10 @@ include(FindOrBuildPackage)
 find_or_build_package(COLOR_DEBUG)
 
 if(USE_SYSTEM_COLOR_DEBUG)
-  find_package(COLOR_DEBUG QUIET)
-  if(COLOR_DEBUG_FOUND)
-    include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
-  endif()
+    find_package(COLOR_DEBUG QUIET)
+    if(COLOR_DEBUG_FOUND)
+        include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
+    endif()
 endif()
 
 # add main contents
