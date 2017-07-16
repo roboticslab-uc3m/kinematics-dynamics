@@ -3,12 +3,8 @@
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 cmake_minimum_required(VERSION 2.8.9)
-#cmake policies
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
 
-project(KINEMATICS_DYNAMICS)
+project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
@@ -17,7 +13,6 @@ option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
 option(ENABLE_KdlVectorConverterLib "Enable/disable compilation of KdlVectorConverterLib" TRUE)
 
 ### options: cpp libraries (yarp plugins inside TeoYarp)
-#option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)  # dropped with shared libs
 option(ENABLE_BasicCartesianControl "Enable/disable compilation of BasicCartesianControl" TRUE)
 option(ENABLE_CartesianControlServer "Enable/disable compilation of CartesianControlServer" TRUE)
 option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianControlClient" TRUE)
@@ -64,18 +59,18 @@ if(COLOR_DEBUG_HIDE_DEBUG)
 endif()
 
 if(MSVC)
-  MESSAGE(STATUS "Running on windows")    
+  message(STATUS "Running on windows")    
   set(CMAKE_DEBUG_POSTFIX "d")
-endif(MSVC)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
-    "Choose the type of build, recommanded options are: Debug or Release")
-endif(NOT CMAKE_BUILD_TYPE)
+      "Choose the type of build, recommended options are: Debug or Release")
+endif()
 # Hide variable to MSVC users, since it is not needed
-if (MSVC)
+if(MSVC)
    mark_as_advanced(CMAKE_BUILD_TYPE)
-endif(MSVC)
+endif()
 
 ######################
 
@@ -84,14 +79,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Libraries go to ${LIBRARY_OUTPUT_PATH}")
 message(STATUS "Executables go to ${EXECUTABLE_OUTPUT_PATH}")
-# this doesn't happen automatically for makefiles
-make_directory(${LIBRARY_OUTPUT_PATH})
-make_directory(${EXECUTABLE_OUTPUT_PATH})
-# and let us clean their contents on a "make clean"
-##set_directory_properties(PROPERTIES LIBRARY_OUTPUT_PATH ADDITIONAL_MAKE_CLEAN_FILES)
-##set_directory_properties(PROPERTIES EXECUTABLE_OUTPUT_PATH ADDITIONAL_MAKE_CLEAN_FILES)
 mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
-mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
 ##########################################
 
 # Pick up our cmake modules - they are all in the cmake subdirectory
@@ -99,20 +87,16 @@ set(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
 list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH})
 
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS)
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES)
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs")
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs")
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES CACHE INTERNAL "appended libraries")
 
 # Generate roboticslab-kinematics-dynamics-export.h
 include(GenerateExportHeader)
-file( WRITE ${CMAKE_BINARY_DIR}/generated_src/empty.c "" )
-add_library( ROBOTICSLAB_KINEMATICS_DYNAMICS ${CMAKE_BINARY_DIR}/generated_src/empty.c )
-generate_export_header( ROBOTICSLAB_KINEMATICS_DYNAMICS
-                        EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h )
+file(WRITE ${CMAKE_BINARY_DIR}/generated_src/empty.c "")
+add_library(ROBOTICSLAB_KINEMATICS_DYNAMICS ${CMAKE_BINARY_DIR}/generated_src/empty.c)
+generate_export_header(ROBOTICSLAB_KINEMATICS_DYNAMICS
+                       EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h)
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/generated_include CACHE INTERNAL "appended header dirs")
 install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h
         DESTINATION include)
@@ -120,8 +104,8 @@ install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynam
 if(ENABLE_coverage)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
-  endif(CMAKE_COMPILER_IS_GNUCXX)
-endif(ENABLE_coverage)
+  endif()
+endif()
 
 # Bootstrap YCM
 # https://github.com/robotology/ycm/issues/118
@@ -143,9 +127,9 @@ endif()
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
-if (ENABLE_tests)
+if(ENABLE_tests)
     add_subdirectory(test)
-endif (ENABLE_tests)
+endif()
 
 # export our variables to a TEOConfig.cmake creation
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
@@ -159,4 +143,3 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake)
-
