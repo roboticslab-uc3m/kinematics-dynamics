@@ -4,18 +4,23 @@ if(ENABLE_KdlVectorConverterLib)
 
 find_package(orocos_kdl REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${orocos_kdl_INCLUDE_DIRS}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
-
 # Set up our library.
 add_library(KdlVectorConverterLib KdlVectorConverter.cpp
                                   KdlVectorConverter.hpp)
 
-target_link_libraries(KdlVectorConverterLib ${orocos_kdl_LIBRARIES})
+set_target_properties(KdlVectorConverterLib PROPERTIES PUBLIC_HEADER KdlVectorConverter.hpp)
+
+target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES})
+
+target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
+                                                        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                                        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 install(TARGETS KdlVectorConverterLib
-        DESTINATION lib)
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Exporting dependencies for TEOConfig.cmake quite manually for now... 
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
