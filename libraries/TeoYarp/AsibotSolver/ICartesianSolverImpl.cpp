@@ -148,8 +148,8 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double t1, t2, t3;
 
     // absolute distance between current and desired positions for both configurations (elbow up/down)
-    double dt1u = std::abs(t1u - q[1]);
-    double dt1d = std::abs(t1d - q[1]);
+    double dt1u = std::abs(t1u - qGuess[1]);
+    double dt1d = std::abs(t1d - qGuess[1]);
 
     double t3u = oyPd - t1u - t2u;
     double t3d = oyPd - t1d - t2d;
