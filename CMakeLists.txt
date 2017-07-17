@@ -6,6 +6,10 @@ cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
+# Safety check against missing dummy library for system-available COLOR_DEBUG.
+# Remove if cmake_minimum_required() above is set to 3.0 or later.
+cmake_policy(SET CMP0046 NEW)
+
 # Force building shared libraries and YARP DL modules.
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
@@ -83,8 +87,10 @@ find_or_build_package(COLOR_DEBUG)
 # find_package() command and proceed as usual.
 if(USE_SYSTEM_COLOR_DEBUG)
     find_package(COLOR_DEBUG QUIET)
+
     if(COLOR_DEBUG_FOUND)
         include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
+        add_library(COLOR_DEBUG UNKNOWN IMPORTED)
     endif()
 endif()
 

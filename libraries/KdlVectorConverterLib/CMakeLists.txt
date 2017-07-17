@@ -8,6 +8,8 @@ find_package(orocos_kdl REQUIRED)
 add_library(KdlVectorConverterLib KdlVectorConverter.cpp
                                   KdlVectorConverter.hpp)
 
+add_dependencies(KdlVectorConverterLib COLOR_DEBUG)
+
 set_target_properties(KdlVectorConverterLib PROPERTIES PUBLIC_HEADER KdlVectorConverter.hpp)
 
 target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES})

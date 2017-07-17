@@ -19,6 +19,8 @@ yarp_add_plugin(TwoLimbCartesianControlServer TwoLimbCartesianControlServer.hpp
                                               TwoLimbCartesianControlServer.cpp
                                               DeviceDriverImpl.cpp)
 
+add_dependencies(TwoLimbCartesianControlServer COLOR_DEBUG)
+
 target_link_libraries(TwoLimbCartesianControlServer YARP::YARP_OS
                                                     YARP::YARP_dev)
 

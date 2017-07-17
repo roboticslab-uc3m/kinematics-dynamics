@@ -21,6 +21,8 @@ yarp_add_plugin(BasicTwoLimbCartesianControl BasicTwoLimbCartesianControl.hpp
                                              ICartesianControlImpl.cpp
                                              RateThreadImpl.cpp)
 
+add_dependencies(BasicTwoLimbCartesianControl COLOR_DEBUG)
+
 target_link_libraries(BasicTwoLimbCartesianControl YARP::YARP_OS
                                                    YARP::YARP_dev
                                                    TrajectoryLib

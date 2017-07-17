@@ -17,6 +17,8 @@ endif()
 # Set up our library.
 add_library(TrajectoryLib ${_trayectory_lib_sources})
 
+add_dependencies(TrajectoryLib COLOR_DEBUG)
+
 set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER Trajectory.hpp
                                                          LineTrajectory.hpp)
 

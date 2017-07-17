@@ -18,6 +18,8 @@ yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
                                        DeviceDriverImpl.cpp
                                        ICartesianControlImpl.cpp)
 
+add_dependencies(CartesianControlClient COLOR_DEBUG)
+
 target_link_libraries(CartesianControlClient YARP::YARP_OS
                                              YARP::YARP_dev)
 
