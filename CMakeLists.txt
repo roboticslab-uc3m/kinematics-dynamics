@@ -113,6 +113,9 @@ endif()
 # Store common include directories in global scope.
 set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/generated_include)
 
+# Store list of exported targets in global scope.
+set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
+
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
@@ -121,15 +124,28 @@ if(ENABLE_tests)
     add_subdirectory(test)
 endif()
 
-# export our variables to a TEOConfig.cmake creation
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
-configure_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
-               ${CMAKE_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake @ONLY)
+# Store the package in the user registry.
+export(PACKAGE ${PROJECT_NAME})
 
-# uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake" IMMEDIATE @ONLY)
+# Create and install config and version files.
+include(InstallBasicPackageFiles)
 
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake)
+# Retrieve global properties.
+get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+
+# Set build/install pairs of paths for each exported property.
+# Must end in _DIR instead of _DIRS as the former is a default PATH_VARS suffix
+# recognized by install_basic_package_files(). Alternatively, use EXTRA_PATH_VARS_SUFFIX.
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_BUILD_INCLUDE_DIR ${_common_includes})
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+
+install_basic_package_files(${PROJECT_NAME}
+                            VERSION 0.1.0
+                            COMPATIBILITY AnyNewerVersion
+                            TARGETS_PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS
+                            NO_SET_AND_CHECK_MACRO
+                            NO_CHECK_REQUIRED_COMPONENTS_MACRO
+                            NAMESPACE ROBOTICSLAB::)
+
+# Configure and create uninstall target.
+include(AddUninstallTarget)

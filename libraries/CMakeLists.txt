@@ -21,6 +21,7 @@ cmake_dependent_option(ENABLE_Gait "Enable/disable Gait library" ON
 if(ENABLE_Gait AND NOT ROBOTICSLAB_GAIT_FOUND)
     message(STATUS "Using Gait library as part of current project")
     add_subdirectory(gait)
+    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS Gait)
 endif()
 
 add_subdirectory(KdlVectorConverterLib)
