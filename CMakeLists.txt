@@ -144,7 +144,6 @@ install_basic_package_files(${PROJECT_NAME}
                             VERSION 0.1.0
                             COMPATIBILITY AnyNewerVersion
                             TARGETS_PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS
-                            NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
                             NAMESPACE ROBOTICSLAB::)
 
