@@ -11,6 +11,13 @@
 #
 # * ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES; shorthand for linking against all targets at once,
 #   use target_link_libraries(${KEYWORD} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES})
+#
+# Notes:
+#
+# * All target names are prepended with the ROBOTICSLAB:: namespace
+#
+# * This package may require the presence of ROBOTICSLAB_GAIT on your system if the
+#   ROBOTICSLAB::Gait library is not distributed along with kinematics-dynamics' binaries 
 
 @PACKAGE_INIT@
 
@@ -28,3 +35,8 @@ set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES)
 foreach(_target @_exported_targets@)
     list(APPEND ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ROBOTICSLAB::${_target})
 endforeach()
+
+if(NOT TARGET ROBOTICSLAB::Gait AND @ENABLE_Gait@)
+    include(CMakeFindDependencyMacro)
+    find_dependency(ROBOTICSLAB_GAIT)
+endif()
