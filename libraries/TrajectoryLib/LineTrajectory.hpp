@@ -3,13 +3,10 @@
 #ifndef __LINE_TRAJECTORY_HPP__
 #define __LINE_TRAJECTORY_HPP__
 
-#include <kdl/path_line.hpp>
-#include <kdl/rotational_interpolation_sa.hpp>
-#include <kdl/velocityprofile_rect.hpp>
-#include <kdl/velocityprofile_trap.hpp>
-#include <kdl/trajectory_segment.hpp>
+#include <vector>
 
-#include "ColorDebug.hpp"
+#include <kdl/rotational_interpolation_sa.hpp>
+#include <kdl/trajectory_segment.hpp>
 
 #include "Trajectory.hpp"
 #include "KdlVectorConverter.hpp"

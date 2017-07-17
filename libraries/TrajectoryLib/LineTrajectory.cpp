@@ -2,6 +2,12 @@
 
 #include "LineTrajectory.hpp"
 
+#include <kdl/frames.hpp>
+#include <kdl/velocityprofile_trap.hpp>
+#include <kdl/path_line.hpp>
+
+#include <ColorDebug.hpp>
+
 // -----------------------------------------------------------------------------
 
 roboticslab::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")

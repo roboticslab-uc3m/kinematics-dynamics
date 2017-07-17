@@ -4,33 +4,39 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(KdlSolver CATEGORY device TYPE roboticslab::KdlSolver INCLUDE KdlSolver.hpp)
+yarp_prepare_plugin(KdlSolver
+                    CATEGORY device
+                    TYPE roboticslab::KdlSolver
+                    INCLUDE KdlSolver.hpp
+                    DEFAULT ON
+                    DEPENDS ENABLE_KdlVectorConverterLib)
 
-IF (NOT SKIP_KdlSolver)
+if(NOT SKIP_KdlSolver)
 
-SET(CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH} ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(YARP REQUIRED)
-FIND_PACKAGE(orocos_kdl REQUIRED)
+find_package(orocos_kdl REQUIRED)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${orocos_kdl_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
+                    ${orocos_kdl_INCLUDE_DIRS})
 
-YARP_ADD_PLUGIN(KdlSolver KdlSolver.hpp DeviceDriverImpl.cpp ICartesianSolverImpl.cpp)
-TARGET_LINK_LIBRARIES(KdlSolver ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} ${YARP_LIBRARIES} ${orocos_kdl_LIBRARIES})
+yarp_add_plugin(KdlSolver KdlSolver.hpp
+                          DeviceDriverImpl.cpp
+                          ICartesianSolverImpl.cpp)
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now... 
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${orocos_kdl_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-# set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} TeoYarp KdlSolver ${orocos_kdl_LIBRARIES} CACHE INTERNAL "appended libraries")
+add_dependencies(KdlSolver COLOR_DEBUG)
 
-#install(TARGETS KdlSolver DESTINATION lib)
-  yarp_install(TARGETS KdlSolver
-             EXPORT YARP
+target_link_libraries(KdlSolver YARP::YARP_OS
+                                YARP::YARP_dev
+                                YARP::YARP_sig
+                                ${orocos_kdl_LIBRARIES}
+                                KdlVectorConverterLib)
+
+yarp_install(TARGETS KdlSolver
              COMPONENT runtime
              LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
              ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
 
-  yarp_install(FILES KdlSolver.ini
-              COMPONENT runtime
-              DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR}) 
+yarp_install(FILES KdlSolver.ini
+             COMPONENT runtime
+             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
-ENDIF (NOT SKIP_KdlSolver)
-
+endif()

@@ -2,152 +2,135 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8.9)
-#cmake policies
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
-project(KINEMATICS_DYNAMICS)
+project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
+# Safety check against missing dummy library for system-available COLOR_DEBUG.
+# Remove if cmake_minimum_required() above is set to 3.0 or later.
+cmake_policy(SET CMP0046 NEW)
+
+# Force building shared libraries and YARP DL modules.
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
-### options: cpp libraries
-option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" TRUE)
-option(ENABLE_KdlVectorConverterLib "Enable/disable compilation of KdlVectorConverterLib" TRUE)
-
-### options: cpp libraries (yarp plugins inside TeoYarp)
-#option(ENABLE_TeoYarp "Choose if you want to compile TeoYarp" TRUE)  # dropped with shared libs
-option(ENABLE_BasicCartesianControl "Enable/disable compilation of BasicCartesianControl" TRUE)
-option(ENABLE_CartesianControlServer "Enable/disable compilation of CartesianControlServer" TRUE)
-option(ENABLE_CartesianControlClient "Enable/disable compilation of CartesianControlClient" TRUE)
-option(ENABLE_KdlSolver "Enable/disable compilation of KdlSolver" TRUE)
-option(ENABLE_BasicTwoLimbCartesianControl "Enable/disable compilation of BasicTwoLimbCartesianControl" TRUE)
-option(ENABLE_TwoLimbCartesianControlServer "Enable/disable compilation of TwoLimbCartesianControlServer" TRUE)
-option(ENABLE_AmorCartesianControl "Enable/disable compilation of AmorCartesianControl" TRUE)
-
-### options: cpp programs
-option(ENABLE_transCoordsUsingJoints "Enable/disable compilation of transCoordsUsingJoints" TRUE)
-
-##### test and coverage options
-option(ENABLE_tests "Choose if you want to compile tests" TRUE)
-option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
-
-# ColorDebug options
-option(COLOR_DEBUG_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
-if(COLOR_DEBUG_FULL_FILE)
-    add_definitions(-DCD_FULL_FILE)
-endif()
-
-option(COLOR_DEBUG_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
-if(COLOR_DEBUG_HIDE_ERROR)
-    add_definitions(-DCD_HIDE_ERROR)
-endif()
-
-option(COLOR_DEBUG_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
-if(COLOR_DEBUG_HIDE_WARNING)
-    add_definitions(-DCD_HIDE_WARNING)
-endif()
-
-option(COLOR_DEBUG_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
-if(COLOR_DEBUG_HIDE_SUCCESS)
-    add_definitions(-DCD_HIDE_SUCCESS)
-endif()
-
-option(COLOR_DEBUG_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
-if(COLOR_DEBUG_HIDE_INFO)
-    add_definitions(-DCD_HIDE_INFO)
-endif()
-
-option(COLOR_DEBUG_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
-if(COLOR_DEBUG_HIDE_DEBUG)
-    add_definitions(-DCD_HIDE_DEBUG)
-endif()
-
+# Add suffix for debug libraries.
 if(MSVC)
-  MESSAGE(STATUS "Running on windows")    
-  set(CMAKE_DEBUG_POSTFIX "d")
-endif(MSVC)
+    message(STATUS "Running on windows")    
+    set(CMAKE_DEBUG_POSTFIX "d")
+endif()
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
-    "Choose the type of build, recommanded options are: Debug or Release")
-endif(NOT CMAKE_BUILD_TYPE)
-# Hide variable to MSVC users, since it is not needed
-if (MSVC)
-   mark_as_advanced(CMAKE_BUILD_TYPE)
-endif(MSVC)
+# Let the user specify a configuration (only single-config generators).
+if(NOT CMAKE_CONFIGURATION_TYPES)
+    # Possible values.
+    set(_configurations Debug Release MinSizeRel RelWithDebInfo)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${_configurations})
 
-######################
+    foreach(_conf ${_configurations})
+        set(_conf_string "${_conf_string} ${_conf}")
+    endforeach()
 
-### this makes everything go in $ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR/lib and $ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR/bin
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-message(STATUS "Libraries go to ${LIBRARY_OUTPUT_PATH}")
-message(STATUS "Executables go to ${EXECUTABLE_OUTPUT_PATH}")
-# this doesn't happen automatically for makefiles
-make_directory(${LIBRARY_OUTPUT_PATH})
-make_directory(${EXECUTABLE_OUTPUT_PATH})
-# and let us clean their contents on a "make clean"
-##set_directory_properties(PROPERTIES LIBRARY_OUTPUT_PATH ADDITIONAL_MAKE_CLEAN_FILES)
-##set_directory_properties(PROPERTIES EXECUTABLE_OUTPUT_PATH ADDITIONAL_MAKE_CLEAN_FILES)
-mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
-mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
-##########################################
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING
+                 "Choose the type of build, options are:${_conf_string}")
 
-# Pick up our cmake modules - they are all in the cmake subdirectory
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-# let cmake use them
-list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH})
+    if(NOT CMAKE_BUILD_TYPE)
+        # Encourage the user to specify build type.
+        message(STATUS "Setting build type to 'Release' as none was specified.")
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE Release)
+    endif()
+endif()
 
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS)
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES)
-#set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+# Standard installation directories.
+include(GNUInstallDirs)
+
+# Control where libraries and executables are placed during the build.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+
+# Pick up our cmake modules.
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+# Generate export header.
+include(GenerateExportHeader)
+
+# Dummy source file and library target for generate_export_header().
+file(WRITE ${CMAKE_BINARY_DIR}/generated_src/empty.c "")
+add_library(ROBOTICSLAB_KINEMATICS_DYNAMICS ${CMAKE_BINARY_DIR}/generated_src/empty.c)
+
+generate_export_header(ROBOTICSLAB_KINEMATICS_DYNAMICS
+                       EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h)
+
+install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Enabling coverage.
+option(ENABLE_coverage "Choose if you want to enable coverage collection" OFF)
 
 if(ENABLE_coverage)
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
-  endif(CMAKE_COMPILER_IS_GNUCXX)
-endif(ENABLE_coverage)
+    # List supported compilers.
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+    endif()
+endif()
 
-# Bootstrap YCM
+# Bootstrap YCM.
 # https://github.com/robotology/ycm/issues/118
 set(YCM_TAG v0.2.2)
 include(YCMBootstrap)
 
-# Superbuild phase - include color-debug
+# Superbuild phase - include color-debug.
 include(FindOrBuildPackage)
 find_or_build_package(COLOR_DEBUG)
 
+# find_or_build_package() doesn't bring into scope COLOR_DEBUG_INCLUDE_DIRS
+# nor other config variables. If a system copy is found, we have to call the
+# find_package() command and proceed as usual.
 if(USE_SYSTEM_COLOR_DEBUG)
-  find_package(COLOR_DEBUG QUIET)
-  if(COLOR_DEBUG_FOUND)
-    include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
-  endif()
+    find_package(COLOR_DEBUG QUIET)
+
+    if(COLOR_DEBUG_FOUND)
+        include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
+        add_library(COLOR_DEBUG UNKNOWN IMPORTED)
+    endif()
 endif()
 
-# add main contents
+# Store common include directories in global scope.
+set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/generated_include)
+
+# Store list of exported targets in global scope.
+set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
+
+# Create targets if specific requirements are satisfied.
+include(CMakeDependentOption)
+
+# Add main contents.
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
-if (ENABLE_tests)
-    add_subdirectory(test)
-endif (ENABLE_tests)
+add_subdirectory(test)
 
-# export our variables to a TEOConfig.cmake creation
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
-configure_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
-               ${CMAKE_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake @ONLY)
+# Store the package in the user registry.
+export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
-# uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake" IMMEDIATE @ONLY)
+# Create and install config and version files.
+include(InstallBasicPackageFiles)
 
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfigUninstall.cmake)
+# Retrieve global properties.
+get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+get_property(_exported_targets GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 
+# Set build/install pairs of paths for each exported property.
+# Must end in _DIR instead of _DIRS as the former is a default PATH_VARS suffix
+# recognized by install_basic_package_files(). Alternatively, use EXTRA_PATH_VARS_SUFFIX.
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_BUILD_INCLUDE_DIR ${_common_includes})
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+
+install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
+                            VERSION 0.1.0
+                            COMPATIBILITY AnyNewerVersion
+                            TARGETS_PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS
+                            NO_CHECK_REQUIRED_COMPONENTS_MACRO
+                            NAMESPACE ROBOTICSLAB::)
+
+# Configure and create uninstall target.
+include(AddUninstallTarget)

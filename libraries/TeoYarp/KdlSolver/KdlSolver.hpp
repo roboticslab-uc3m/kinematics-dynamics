@@ -8,19 +8,12 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
 
-#include <kdl/segment.hpp>
+#include <kdl/frames.hpp>
 #include <kdl/chain.hpp>
-#include <kdl/chainfksolver.hpp>
-#include <kdl/chainiksolverpos_nr.hpp>
-#include <kdl/chainiksolverpos_nr_jl.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainiksolverpos_lma.hpp>
-#include <kdl/chainiksolvervel_pinv.hpp>
-#include <kdl/chainidsolver_recursive_newton_euler.hpp>
+#include <kdl/jntarray.hpp>
 
 #include <iostream> // only windows
 
-#include "ColorDebug.hpp"
 #include "ICartesianSolver.h"
 #include "KdlVectorConverter.hpp"
 
@@ -32,6 +25,9 @@
 #define DEFAULT_DURATION 20     // For Trajectory
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
+
+#define DEFAULT_EPS 1e-9
+#define DEFAULT_MAXITER 1000
 
 //#define _USE_LMA_
 
@@ -54,11 +50,16 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
     public:
 
-        KdlSolver() : KdlVectorConverter(DEFAULT_ANGLE_REPR) {}
+        KdlSolver()
+            : KdlVectorConverter(DEFAULT_ANGLE_REPR),
+              eps(DEFAULT_EPS),
+              maxIter(DEFAULT_MAXITER)
+        {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
-        /** Get number of links for which the solver has been configured. */
-        virtual bool getNumLinks(int* numLinks);
+
+        /** Get number of joints for which the solver has been configured. */
+        virtual bool getNumJoints(int* numJoints);
 
         /** Append an additional link. */
         virtual bool appendLink(const std::vector<double>& x);
@@ -126,6 +127,12 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, publi
 
         /** Maximum joint limits. **/
         KDL::JntArray qMax;
+
+        /** Precision value used by the IK solver. **/
+        double eps;
+
+        /** Maximum number of iterations to calculate inverse kinematics. **/
+        unsigned int maxIter;
 
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 

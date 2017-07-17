@@ -1,13 +1,17 @@
+#include <stdio.h>
+
+#include <yarp/os/ResourceFinder.h>
+#include <yarp/os/Network.h>
+
+#include "TransCoordsUsingJoints.hpp"
+
 /**
- *
  * @ingroup vision_programs
  *
  * \defgroup transCoordsUsingJoints transCoordsUsingJoints
  *
  * @brief Creates an instance of roboticslab::TransCoordsUsingJoints.
  */
-
-#include "TransCoordsUsingJoints.hpp"
 
 int main(int argc, char *argv[]) {
 

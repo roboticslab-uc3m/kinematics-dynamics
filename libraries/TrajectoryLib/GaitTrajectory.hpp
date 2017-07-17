@@ -1,12 +1,12 @@
 #ifndef GAITTRAJECTORY_H
 #define GAITTRAJECTORY_H
 
+#include <vector>
+
 #include "Trajectory.hpp"
 
-//adds libgait support poligon dependency
-#include "GaitSupportPoligon.h"
 #include "GaitLipm.h"
-
+#include "tools.h"
 
 namespace roboticslab
 {
