@@ -2,31 +2,38 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
+# Force building shared libraries and YARP DL modules.
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
-##### test and coverage options
-option(ENABLE_tests "Choose if you want to compile tests" TRUE)
-option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
-
+# Add suffix for debug libraries.
 if(MSVC)
     message(STATUS "Running on windows")    
     set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
-        "Choose the type of build, recommended options are: Debug or Release")
-endif()
-# Hide variable to MSVC users, since it is not needed
-if(MSVC)
-    mark_as_advanced(CMAKE_BUILD_TYPE)
-endif()
+# Let the user specify a configuration (only single-config generators).
+if(NOT CMAKE_CONFIGURATION_TYPES)
+    # Possible values.
+    set(_configurations Debug Release MinSizeRel RelWithDebInfo)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${_configurations})
 
-######################
+    foreach(_conf ${_configurations})
+        set(_conf_string "${_conf_string} ${_conf}")
+    endforeach()
+
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING
+                 "Choose the type of build, options are:${_conf_string}")
+
+    if(NOT CMAKE_BUILD_TYPE)
+        # Encourage the user to specify build type.
+        message(STATUS "Setting build type to 'Release' as none was specified.")
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE Release)
+    endif()
+endif()
 
 # Standard installation directories.
 include(GNUInstallDirs)
@@ -36,42 +43,44 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
-# Pick up our cmake modules - they are all in the cmake subdirectory.
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_DIR ${CMAKE_SOURCE_DIR}/cmake)
+# Pick up our cmake modules.
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-# Let cmake use them.
-list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_DIR})
-
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS CACHE INTERNAL "appended header dirs")
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS CACHE INTERNAL "appended link dirs")
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES CACHE INTERNAL "appended libraries")
-
-# Generate roboticslab-kinematics-dynamics-export.h
+# Generate export header.
 include(GenerateExportHeader)
+
+# Dummy source file and library target for generate_export_header().
 file(WRITE ${CMAKE_BINARY_DIR}/generated_src/empty.c "")
 add_library(ROBOTICSLAB_KINEMATICS_DYNAMICS ${CMAKE_BINARY_DIR}/generated_src/empty.c)
+
 generate_export_header(ROBOTICSLAB_KINEMATICS_DYNAMICS
                        EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h)
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/generated_include CACHE INTERNAL "appended header dirs")
+
 install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Enabling coverage.
+option(ENABLE_coverage "Choose if you want to enable coverage collection" OFF)
 
 if(ENABLE_coverage)
     # List supported compilers.
     if(CMAKE_COMPILER_IS_GNUCXX)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage") # enabling coverage
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     endif()
 endif()
 
-# Bootstrap YCM
+# Bootstrap YCM.
 # https://github.com/robotology/ycm/issues/118
 set(YCM_TAG v0.2.2)
 include(YCMBootstrap)
 
-# Superbuild phase - include color-debug
+# Superbuild phase - include color-debug.
 include(FindOrBuildPackage)
 find_or_build_package(COLOR_DEBUG)
 
+# find_or_build_package() doesn't bring into scope COLOR_DEBUG_INCLUDE_DIRS
+# nor other config variables. If a system copy is found, we have to call the
+# find_package() command and proceed as usual.
 if(USE_SYSTEM_COLOR_DEBUG)
     find_package(COLOR_DEBUG QUIET)
     if(COLOR_DEBUG_FOUND)
@@ -85,13 +94,11 @@ set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAK
 # Store list of exported targets in global scope.
 set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 
-# add main contents
+# Add main contents.
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
-if(ENABLE_tests)
-    add_subdirectory(test)
-endif()
+add_subdirectory(test)
 
 # Store the package in the user registry.
 export(PACKAGE ${PROJECT_NAME})

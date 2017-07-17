@@ -1,4 +1,7 @@
-# Testing things #########################################################################################
+option(ENABLE_tests "Choose if you want to compile tests" ON)
+
+if(ENABLE_tests)
+
 add_subdirectory(gtest-1.7.0)
 enable_testing()
 
@@ -19,3 +22,5 @@ target_link_libraries(testKdlSolverFromFile YARP::YARP_OS YARP::YARP_dev gtest_m
 
 add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 target_link_libraries(testBasicCartesianControl YARP::YARP_OS YARP::YARP_dev gtest_main)
+
+endif()
