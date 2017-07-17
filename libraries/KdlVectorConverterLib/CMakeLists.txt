@@ -17,7 +17,7 @@ target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIR
                                                         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 install(TARGETS KdlVectorConverterLib
-        EXPORT ${PROJECT_NAME}
+        EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

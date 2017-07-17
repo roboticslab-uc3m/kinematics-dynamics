@@ -1,8 +1,6 @@
 # Copyright: Universidad Carlos III de Madrid (C) 2013
 # Authors: Juan G. Victores
 
-include(CMakeDependentOption)
-
 # Try to find Gait library on system, don't fail otherwise.
 find_package(ROBOTICSLAB_GAIT QUIET)
 

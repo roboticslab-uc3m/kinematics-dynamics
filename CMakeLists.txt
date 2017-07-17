@@ -94,6 +94,9 @@ set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAK
 # Store list of exported targets in global scope.
 set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 
+# Create targets if specific requirements are satisfied.
+include(CMakeDependentOption)
+
 # Add main contents.
 add_subdirectory(share)
 add_subdirectory(libraries)
@@ -101,7 +104,7 @@ add_subdirectory(programs)
 add_subdirectory(test)
 
 # Store the package in the user registry.
-export(PACKAGE ${PROJECT_NAME})
+export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
 # Create and install config and version files.
 include(InstallBasicPackageFiles)
@@ -116,7 +119,7 @@ get_property(_exported_targets GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_T
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_BUILD_INCLUDE_DIR ${_common_includes})
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
 
-install_basic_package_files(${PROJECT_NAME}
+install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
                             VERSION 0.1.0
                             COMPATIBILITY AnyNewerVersion
                             TARGETS_PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS
