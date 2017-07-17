@@ -110,6 +110,9 @@ if(USE_SYSTEM_COLOR_DEBUG)
     endif()
 endif()
 
+# Define global properties to store relevant configuration.
+set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
