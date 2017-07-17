@@ -2,6 +2,9 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <math.h>  //-- fabs
+#include <ColorDebug.hpp>
+
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x)

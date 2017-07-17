@@ -1,29 +1,27 @@
 # Copyright: Universidad Carlos III de Madrid (C) 2013
 # Authors: Juan G. Victores
 
-MACRO(SUBDIRLIST result curdir)
-  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
-  SET(dirlist "")
-  FOREACH(child ${children})
-    IF(IS_DIRECTORY ${curdir}/${child})
-        SET(dirlist ${dirlist} ${child})
-    ENDIF()
-  ENDFOREACH()
-  SET(${result} ${dirlist})
-ENDMACRO()
+# Try to find Gait library on system, don't fail otherwise.
+find_package(ROBOTICSLAB_GAIT QUIET)
 
-SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
-FOREACH(subdir ${SUBDIRS})
-    set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/${subdir} CACHE INTERNAL "appended header dirs")
-ENDFOREACH()
+unset(HAVE_GAIT)
 
-IF (ENABLE_BasicTwoLimbCartesianControl)
-    set(GAIT_PART_OF_PROJECT TRUE)
+# Do we have Gait, either as separate installation or git submodule of current project?
+if(ROBOTICSLAB_GAIT_FOUND OR EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/gait/CMakeLists.txt)
+    set(HAVE_GAIT TRUE)
+endif()
+
+# Present GUI option to user if Gait was found.
+cmake_dependent_option(ENABLE_Gait "Enable/disable Gait library" ON
+                       HAVE_GAIT OFF)
+
+# Gait enabled and not found on system, but available as submodule.
+if(ENABLE_Gait AND NOT ROBOTICSLAB_GAIT_FOUND)
+    message(STATUS "Using Gait library as part of current project")
     add_subdirectory(gait)
-ENDIF (ENABLE_BasicTwoLimbCartesianControl)
+    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS Gait)
+endif()
 
 add_subdirectory(KdlVectorConverterLib)
 add_subdirectory(TrajectoryLib)
-
 add_subdirectory(TeoYarp)
-

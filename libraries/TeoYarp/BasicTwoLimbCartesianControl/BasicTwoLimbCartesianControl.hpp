@@ -8,16 +8,13 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
+#include <vector>
 #include <iostream> // only windows
-
-#include <math.h>  //-- fabs
 
 #include "ICartesianSolver.h"
 #include "ITwoLimbCartesianControl.h"
 
-#include "GaitTrajectory.hpp"
-
-#include "ColorDebug.hpp"
+#include "Trajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ANG_REPR "axisAngle"

@@ -12,8 +12,6 @@
 
 #include "ITwoLimbCartesianControl.h"
 
-#include "ColorDebug.hpp"
-
 namespace roboticslab
 {
 

@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <ColorDebug.hpp>
+
 // ------------------- CartesianControlServer Related ------------------------------------
 
 bool roboticslab::CartesianControlServer::read(yarp::os::ConnectionReader& connection)

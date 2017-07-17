@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <yarp/os/Vocab.h>
+
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t')
 #define VOCAB_CC_INV VOCAB3('i','n','v')
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')

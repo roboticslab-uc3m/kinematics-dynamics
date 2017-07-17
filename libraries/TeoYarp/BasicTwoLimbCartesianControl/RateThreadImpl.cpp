@@ -2,6 +2,8 @@
 
 #include "BasicTwoLimbCartesianControl.hpp"
 
+#include <ColorDebug.hpp>
+
 // ------------------- RateThread Related ------------------------------------
 
 void roboticslab::BasicTwoLimbCartesianControl::run() {

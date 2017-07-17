@@ -7,11 +7,10 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include <vector>
 #include <iostream> // only windows
 
 #include "ICartesianControl.h"
-
-#include "ColorDebug.hpp"
 
 #define VOCAB_FAILED VOCAB4('f','a','i','l')  //-- from yarp::dev
 

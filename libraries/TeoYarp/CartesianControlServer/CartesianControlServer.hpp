@@ -12,8 +12,6 @@
 
 #include "ICartesianControl.h"
 
-#include "ColorDebug.hpp"
-
 namespace roboticslab
 {
 

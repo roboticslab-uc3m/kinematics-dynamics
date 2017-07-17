@@ -2,6 +2,9 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <math.h>  //-- fabs
+#include <ColorDebug.hpp>
+
 // ------------------- RateThread Related ------------------------------------
 
 void roboticslab::BasicCartesianControl::run() {

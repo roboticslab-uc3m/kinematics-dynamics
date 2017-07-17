@@ -1,40 +1,36 @@
 # Copyright: (C) 2013 Universidad Carlos III de Madrid
 # Authors: Juan G. Victores
 
-#IF (ENABLE_TeoYarp)
+# Find YARP (common dependency for all devices).
+find_package(YARP REQUIRED)
 
-#  option(ENABLE_launchTeoYarp "Choose if you want to compile launchTeoYarp" TRUE)
+# Include YARP CMake modules (needless since YARP 2.3.70).
+list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 
-  find_package(YARP REQUIRED)
-  include_directories(${YARP_INCLUDE_DIRS})
-  list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
-  include(YarpPlugin)
+# Utilities for creating YARP devices.
+include(YarpPlugin)
 
-  # yarp_begin_plugin_library(TeoYarp)
-    add_subdirectory(KdlSolver)
-    add_subdirectory(BasicCartesianControl)
-    add_subdirectory(CartesianControlServer)
-    add_subdirectory(CartesianControlClient)
-    add_subdirectory(BasicTwoLimbCartesianControl)
-    add_subdirectory(TwoLimbCartesianControlServer)
-  # yarp_end_plugin_library(TeoYarp)
+# Common YARP includes for subdirectories (needless since YARP 2.3.70).
+include_directories(${YARP_INCLUDE_DIRS})
 
-  # install(TARGETS TeoYarp DESTINATION lib)
+# Include export headers (ATM only deprecation notices).
+include_directories(${CMAKE_BINARY_DIR}/generated_include)
 
-  # IF (ENABLE_launchTeoYarp)
+# Make interface headers discoverable by subdirectories.
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-    # link_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS})
+add_subdirectory(BasicCartesianControl)
+add_subdirectory(BasicTwoLimbCartesianControl)
+add_subdirectory(CartesianControlClient)
+add_subdirectory(CartesianControlServer)
+add_subdirectory(KdlSolver)
+add_subdirectory(TwoLimbCartesianControlServer)
 
-    # yarp_add_plugin_yarpdev_executable(launchTeoYarp TeoYarp)
-    # install(TARGETS launchTeoYarp DESTINATION bin)
+# Install interface headers.
+install(FILES ICartesianControl.h
+              ICartesianSolver.h
+              ITwoLimbCartesianControl.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-  # ENDIF (ENABLE_launchTeoYarp)
-
-  install(FILES ICartesianControl.h
-                ITwoLimbCartesianControl.h
-                ICartesianSolver.h
-          DESTINATION include)
-
-#ENDIF (ENABLE_TeoYarp)
-
-
+# Export variables to the global scope.
+set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})

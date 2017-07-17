@@ -5,10 +5,10 @@
 
 #include <vector>
 
+#include <math.h>  // M_PI
+
 #include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
-
-#include "ColorDebug.hpp"
 
 namespace roboticslab
 {

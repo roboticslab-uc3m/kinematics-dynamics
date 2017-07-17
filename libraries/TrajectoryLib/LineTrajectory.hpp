@@ -4,14 +4,10 @@
 #define __LINE_TRAJECTORY_HPP__
 
 #include <string>
+#include <vector>
 
-#include <kdl/path_line.hpp>
 #include <kdl/rotational_interpolation_sa.hpp>
-#include <kdl/velocityprofile_rect.hpp>
-#include <kdl/velocityprofile_trap.hpp>
 #include <kdl/trajectory_segment.hpp>
-
-#include "ColorDebug.hpp"
 
 #include "Trajectory.hpp"
 #include "KdlVectorConverter.hpp"
