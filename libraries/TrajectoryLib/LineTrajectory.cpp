@@ -4,11 +4,11 @@
 
 // -----------------------------------------------------------------------------
 
-roboticslab::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")
-{
-    _orient = 0;
-    currentTrajectory = 0;
-}
+roboticslab::LineTrajectory::LineTrajectory(const std::string & angleRepr)
+    : KdlVectorConverter(angleRepr),
+      currentTrajectory(0),
+      _orient(0)
+{}
 
 // -----------------------------------------------------------------------------
 
