@@ -2,6 +2,12 @@
 
 #include "KdlSolver.hpp"
 
+#include <kdl/segment.hpp>
+#include <kdl/rigidbodyinertia.hpp>
+#include <kdl/rotationalinertia.hpp>
+
+#include <ColorDebug.hpp>
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)

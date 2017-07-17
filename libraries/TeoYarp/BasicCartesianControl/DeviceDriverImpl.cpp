@@ -2,6 +2,8 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <ColorDebug.hpp>
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {

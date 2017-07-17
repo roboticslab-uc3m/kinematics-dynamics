@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import yarp
-import teo
+import kinematics_dynamics
 
 yarp.Network.init()
 
@@ -19,7 +19,7 @@ if not dd.isValid():
     print 'Cannot open the device!'
     sys.exit()
 
-cartesianControl = teo.viewICartesianControl(dd)  # view the actual interface
+cartesianControl = kinematics_dynamics.viewICartesianControl(dd)  # view the actual interface
 
 print '> stat'
 x = yarp.DVector()

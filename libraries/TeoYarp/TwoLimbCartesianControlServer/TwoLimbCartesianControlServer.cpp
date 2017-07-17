@@ -2,6 +2,8 @@
 
 #include "TwoLimbCartesianControlServer.hpp"
 
+#include <ColorDebug.hpp>
+
 // ------------------- TwoLimbCartesianControlServer Related ------------------------------------
 
 bool roboticslab::TwoLimbCartesianControlServer::read(yarp::os::ConnectionReader& connection)

@@ -1,5 +1,6 @@
-
 #include "GaitTrajectory.hpp"
+
+#include <iostream>
 
 roboticslab::GaitTrajectory::GaitTrajectory()
 {

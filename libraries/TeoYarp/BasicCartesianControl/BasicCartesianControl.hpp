@@ -9,15 +9,12 @@
 #include <yarp/dev/ControlBoardInterfaces.h>
 
 #include <iostream> // only windows
-
-#include <math.h>  //-- fabs
+#include <vector>
 
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
 #include "LineTrajectory.hpp"
-
-#include "ColorDebug.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
