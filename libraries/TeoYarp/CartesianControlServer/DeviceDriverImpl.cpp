@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <ColorDebug.hpp>
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {

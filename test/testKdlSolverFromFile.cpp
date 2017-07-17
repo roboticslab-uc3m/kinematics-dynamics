@@ -1,13 +1,15 @@
 #include "gtest/gtest.h"
 
+#include <string>
+#include <vector>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include "ICartesianSolver.h"
-#include "ColorDebug.hpp"
+#include <ColorDebug.hpp>
 
-//YARP_DECLARE_PLUGINS(roboticslabYarp)
+#include "ICartesianSolver.h"
 
 namespace roboticslab
 {
@@ -20,8 +22,6 @@ class KdlSolverTestFromFile : public testing::Test
 
     public:
         virtual void SetUp() {
-            //YARP_REGISTER_PLUGINS(roboticslabYarp);
-
             yarp::os::ResourceFinder rf;
             rf.setVerbose(false);
             rf.setDefaultContext("testKdlSolverFromFile");

@@ -1,17 +1,26 @@
-if(ENABLE_YarpTinyMathLib)
+option(ENABLE_YarpTinyMathLib "Enable/disable YarpTinyMathLib library" ON)
 
-set(KEYWORD "YarpTinyMathLib")
+if(ENABLE_YarpTinyMathLib)
 
 find_package(YARP REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${YARP_INCLUDE_DIRS})
+add_library(YarpTinyMathLib YarpTinyMath.hpp
+                            YarpTinyMath.cpp)
 
-add_library(${KEYWORD} YarpTinyMath.hpp YarpTinyMath.cpp)
-target_link_libraries(${KEYWORD} ${YARP_LIBRARIES})
-install(TARGETS ${KEYWORD} DESTINATION lib)
+target_link_libraries(YarpTinyMathLib YARP::YARP_sig
+                                      YARP::YARP_math)
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now... 
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} ${KEYWORD} CACHE INTERNAL "appended libraries")
+target_include_directories(YarpTinyMathLib PUBLIC ${YARP_INCLUDE_DIRS}
+                                                  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+install(TARGETS YarpTinyMathLib
+        EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS YarpTinyMathLib)
 
 endif()

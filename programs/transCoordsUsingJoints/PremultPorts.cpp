@@ -1,5 +1,11 @@
 #include "PremultPorts.hpp"
 
+#include <vector>
+
+#include <kdl/frames.hpp>
+
+#include <ColorDebug.hpp>
+
 namespace roboticslab
 {
 

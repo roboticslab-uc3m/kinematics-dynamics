@@ -4,24 +4,26 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(TwoLimbCartesianControlServer CATEGORY device TYPE roboticslab::TwoLimbCartesianControlServer INCLUDE TwoLimbCartesianControlServer.hpp WRAPPER TwoLimbCartesianControlServer)
+yarp_prepare_plugin(TwoLimbCartesianControlServer
+                    CATEGORY device
+                    TYPE roboticslab::TwoLimbCartesianControlServer
+                    INCLUDE TwoLimbCartesianControlServer.hpp
+                    DEFAULT ON)
 
-IF (NOT SKIP_TwoLimbCartesianControlServer)
+if(NOT SKIP_TwoLimbCartesianControlServer)
 
-SET(CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH} ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(YARP REQUIRED)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+yarp_add_plugin(TwoLimbCartesianControlServer TwoLimbCartesianControlServer.hpp
+                                              TwoLimbCartesianControlServer.cpp
+                                              DeviceDriverImpl.cpp)
 
-YARP_ADD_PLUGIN(TwoLimbCartesianControlServer TwoLimbCartesianControlServer.hpp TwoLimbCartesianControlServer.cpp DeviceDriverImpl.cpp)
-TARGET_LINK_LIBRARIES(TwoLimbCartesianControlServer ${YARP_LIBRARIES})
+add_dependencies(TwoLimbCartesianControlServer COLOR_DEBUG)
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now... 
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
-#set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} TeoYarp TwoLimbCartesianControlServer CACHE INTERNAL "appended libraries")
+target_link_libraries(TwoLimbCartesianControlServer YARP::YARP_OS
+                                                    YARP::YARP_dev)
 
 yarp_install(TARGETS TwoLimbCartesianControlServer
-             EXPORT YARP
              COMPONENT runtime
              LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
              ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
@@ -30,5 +32,4 @@ yarp_install(FILES TwoLimbCartesianControlServer.ini
              COMPONENT runtime
              DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
-ENDIF (NOT SKIP_TwoLimbCartesianControlServer)
-
+endif()

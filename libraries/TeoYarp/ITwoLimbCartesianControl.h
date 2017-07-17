@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <yarp/os/Vocab.h>
+
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 #define VOCAB_CC_STEP VOCAB4('s','t','e','p')

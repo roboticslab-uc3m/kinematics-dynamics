@@ -2,6 +2,9 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <math.h>  //-- fabs
+#include <ColorDebug.hpp>
+
 // ------------------- RateThread Related ------------------------------------
 
 void roboticslab::BasicCartesianControl::run() {
@@ -14,7 +17,6 @@ void roboticslab::BasicCartesianControl::run() {
 
         if( movementTime > DEFAULT_DURATION )
         {
-            CD_ERROR("Default duration (%d s) exceeded.\n", DEFAULT_DURATION);
             stopControl();
             return;
         }

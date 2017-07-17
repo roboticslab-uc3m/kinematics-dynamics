@@ -1,5 +1,14 @@
 #include "TransCoordsUsingJoints.hpp"
 
+#include <string>
+
+#include <yarp/os/Value.h>
+#include <yarp/os/Property.h>
+
+#include <yarp/dev/IEncoders.h>
+
+#include <ColorDebug.hpp>
+
 namespace roboticslab
 {
 

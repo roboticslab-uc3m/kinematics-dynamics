@@ -1,13 +1,13 @@
 yarp_prepare_plugin(AsibotSolver
                     CATEGORY device
                     TYPE roboticslab::AsibotSolver
-                    INCLUDE AsibotSolver.hpp)
+                    INCLUDE AsibotSolver.hpp
+                    DEFAULT ON
+                    DEPENDS ENABLE_YarpTinyMathLib)
 
 if(NOT SKIP_AsibotSolver)
 
-find_package(YARP REQUIRED)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${YARP_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                              DeviceDriverImpl.cpp
@@ -15,13 +15,13 @@ yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                              ICartesianImpl.cpp
                              RateThreadImpl.cpp)
 
-target_link_libraries(AsibotSolver ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES} ${YARP_LIBRARIES})
+add_dependencies(AsibotSolver COLOR_DEBUG)
 
-# Exporting dependencies for TEOConfig.cmake quite manually for now... 
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended libraries")
+target_link_libraries(AsibotSolver YARP::YARP_OS
+                                   YARP::YARP_dev
+                                   YarpTinyMathLib)
 
 yarp_install(TARGETS AsibotSolver
-             EXPORT YARP
              COMPONENT runtime
              LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
              ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
