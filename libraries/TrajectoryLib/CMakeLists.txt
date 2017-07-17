@@ -17,18 +17,18 @@ endif()
 # Set up our library.
 add_library(TrajectoryLib ${_trayectory_lib_sources})
 
-set_property(TARGET KdlVectorConverterLib PROPERTY PUBLIC_HEADER Trajectory.hpp
-                                                                 LineTrajectory.hpp)
+set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER Trajectory.hpp
+                                                         LineTrajectory.hpp)
 
 target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
                                            KdlVectorConverterLib)
 
-target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
-                                                        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                                        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_include_directories(TrajectoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
+                                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(HAVE_GAIT AND ENABLE_Gait)
-    set_property(TARGET KdlVectorConverterLib APPEND PROPERTY PUBLIC_HEADER GaitTrajectory.hpp)
+    set_property(TARGET TrajectoryLib APPEND PROPERTY PUBLIC_HEADER GaitTrajectory.hpp)
     target_link_libraries(TrajectoryLib PUBLIC ROBOTICSLAB::Gait)
 endif()
 
