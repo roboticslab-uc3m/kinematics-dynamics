@@ -8,7 +8,6 @@ yarp_prepare_plugin(CartesianControlServer
                     CATEGORY device
                     TYPE roboticslab::CartesianControlServer
                     INCLUDE CartesianControlServer.hpp
-                    WRAPPER CartesianControlServer
                     DEFAULT ON)
 
 if(NOT SKIP_CartesianControlServer)

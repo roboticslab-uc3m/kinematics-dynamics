@@ -8,7 +8,6 @@ yarp_prepare_plugin(BasicCartesianControl
                     CATEGORY device
                     TYPE roboticslab::BasicCartesianControl
                     INCLUDE BasicCartesianControl.hpp
-                    WRAPPER CartesianControlServer
                     DEFAULT ON
                     DEPENDS ENABLE_TrajectoryLib)
 
