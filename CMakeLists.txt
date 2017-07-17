@@ -85,7 +85,7 @@ generate_export_header(ROBOTICSLAB_KINEMATICS_DYNAMICS
                        EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h)
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/generated_include CACHE INTERNAL "appended header dirs")
 install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h
-        DESTINATION include)
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(ENABLE_coverage)
     # List supported compilers.
@@ -110,8 +110,8 @@ if(USE_SYSTEM_COLOR_DEBUG)
     endif()
 endif()
 
-# Define global properties to store relevant configuration.
-set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+# Store common include directories in global scope.
+set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/generated_include)
 
 # add main contents
 add_subdirectory(share)

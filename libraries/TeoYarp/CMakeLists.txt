@@ -13,6 +13,9 @@ include(YarpPlugin)
 # Common YARP includes for subdirectories (needless since YARP 2.3.70).
 include_directories(${YARP_INCLUDE_DIRS})
 
+# Include export headers (ATM only deprecation notices).
+include_directories(${CMAKE_BINARY_DIR}/generated_include)
+
 # Make interface headers discoverable by subdirectories.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
