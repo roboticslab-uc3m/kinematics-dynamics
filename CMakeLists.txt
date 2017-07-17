@@ -132,6 +132,7 @@ include(InstallBasicPackageFiles)
 
 # Retrieve global properties.
 get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
+get_property(_exported_targets GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 
 # Set build/install pairs of paths for each exported property.
 # Must end in _DIR instead of _DIRS as the former is a default PATH_VARS suffix
