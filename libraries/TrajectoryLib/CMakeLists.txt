@@ -1,30 +1,42 @@
-option(ENABLE_TrajectoryLib "Choose if you want to compile TrajectoryLib" ON)
+cmake_dependent_option(ENABLE_Gait "Enable/disable TrajectoryLib library" ON
+                       ENABLE_KdlVectorConverterLib OFF)
 
 if(ENABLE_TrajectoryLib)
 
 find_package(orocos_kdl REQUIRED)
-find_package(GAIT REQUIRED)
 
-add_definitions(${GAIT_DEFINES})
+set(_trayectory_lib_sources Trajectory.hpp
+                            LineTrajectory.cpp
+                            LineTrajectory.hpp)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${orocos_kdl_INCLUDE_DIRS}
-                    ${GAIT_INCLUDE_DIRS}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+if(HAVE_GAIT AND ENABLE_Gait)
+    list(APPEND _trayectory_lib_sources GaitTrajectory.cpp
+                                        GaitTrajectory.hpp)
+endif()
 
 # Set up our library.
-add_library(TrajectoryLib Trajectory.hpp
-                          LineTrajectory.cpp
-                          LineTrajectory.hpp
-                          GaitTrajectory.cpp
-                          GaitTrajectory.hpp)
+add_library(TrajectoryLib ${_trayectory_lib_sources})
 
-target_link_libraries(TrajectoryLib ${orocos_kdl_LIBRARIES}
-                                    ${GAIT_LIBRARIES}
-                                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES})
+set_property(TARGET KdlVectorConverterLib PROPERTY PUBLIC_HEADER Trajectory.hpp
+                                                                 LineTrajectory.hpp)
+
+target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
+                                           KdlVectorConverterLib)
+
+target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
+                                                        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                                        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+if(HAVE_GAIT AND ENABLE_Gait)
+    set_property(TARGET KdlVectorConverterLib APPEND PROPERTY PUBLIC_HEADER GaitTrajectory.hpp)
+    target_link_libraries(TrajectoryLib PUBLIC ROBOTICSLAB::Gait)
+endif()
 
 install(TARGETS TrajectoryLib
-        DESTINATION lib)
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Exporting dependencies for ASIBOTConfig.cmake quite manually for now...
 set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "appended header dirs")
