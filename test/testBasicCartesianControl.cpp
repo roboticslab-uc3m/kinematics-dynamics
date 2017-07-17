@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 
+#include <vector>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include <ColorDebug.hpp>
+
 #include "ICartesianControl.h"
-
-#include "ColorDebug.hpp"
-
-//YARP_DECLARE_PLUGINS(roboticslabYarp)
 
 namespace roboticslab
 {
@@ -21,8 +21,6 @@ class BasicCartesianControlTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            //YARP_REGISTER_PLUGINS(roboticslabYarp);
-
             yarp::os::Property cartesianControlOptions("(device BasicCartesianControl) (robot FakeControlboard) (axes 1) (solver KdlSolver) (angleRepr axisAngle) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
 
             cartesianControlDevice.open(cartesianControlOptions);
