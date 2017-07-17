@@ -2,6 +2,8 @@
 
 #include "KdlVectorConverter.hpp"
 
+#include <ColorDebug.hpp>
+
 // -----------------------------------------------------------------------------
 
 roboticslab::KdlVectorConverter::KdlVectorConverter(std::string angleRepr)

@@ -2,10 +2,19 @@
 
 #include "KdlSolver.hpp"
 
+#include <kdl/segment.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainidsolver.hpp>
+#include <kdl/chainidsolver_recursive_newton_euler.hpp>
+
+#include <ColorDebug.hpp>
+
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::getNumLinks(int* numLinks) {
-    *numLinks = this->chain.getNrOfSegments();
+bool roboticslab::KdlSolver::getNumJoints(int* numJoints) {
+    *numJoints = this->chain.getNrOfJoints();
     return true;
 }
 
@@ -99,7 +108,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
 
     //Geometric solver definition (with joint limits)
-    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,100000,1E-15);
+    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain,qMin,qMax,fksolver,iksolver,maxIter,eps);
 
 #endif //_USE_LMA_
 

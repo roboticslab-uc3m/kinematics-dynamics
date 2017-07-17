@@ -2,18 +2,12 @@
 #define __TRANS_COORDS_USING_JOINTS_HPP__
 
 #include <yarp/os/RFModule.h>
-#include <yarp/os/Module.h>
-#include <yarp/os/Network.h>
+#include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Port.h>
-#include <yarp/os/BufferedPort.h>
 
 #include <yarp/dev/PolyDriver.h>
 
 #include "PremultPorts.hpp"
-
-#include "ICartesianSolver.h"
-
-#include "ColorDebug.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"

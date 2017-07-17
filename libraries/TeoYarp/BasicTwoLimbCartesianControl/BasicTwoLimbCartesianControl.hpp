@@ -8,16 +8,13 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 
+#include <vector>
 #include <iostream> // only windows
-
-#include <math.h>  //-- fabs
 
 #include "ICartesianSolver.h"
 #include "ITwoLimbCartesianControl.h"
 
-#include "GaitTrajectory.hpp"
-
-#include "ColorDebug.hpp"
+#include "Trajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ANG_REPR "axisAngle"
@@ -101,7 +98,7 @@ private:
         yarp::dev::IControlLimits *iControlLimitsA;
         yarp::dev::IControlMode *iControlModeA;
 
-        int numRobotJointsA, numSolverLinksA;
+        int numRobotJointsA, numSolverJointsA;
 
         yarp::dev::PolyDriver solverDeviceB;
         roboticslab::ICartesianSolver *iCartesianSolverB;
@@ -113,7 +110,7 @@ private:
         yarp::dev::IControlLimits *iControlLimitsB;
         yarp::dev::IControlMode *iControlModeB;
 
-        int numRobotJointsB, numSolverLinksB;
+        int numRobotJointsB, numSolverJointsB;
 
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;

@@ -4,15 +4,15 @@
 
 //////////////////////////////////////////////////////////////////////////
 // 
-// This is a configuration file to explain TEO to SWIG
+// This is a configuration file to explain kinematics_dynamics to SWIG
 //
-// SWIG, for the most part, understands TEO auto-magically.
+// SWIG, for the most part, understands kinematics_dynamics auto-magically.
 // There are a few things that need to be explained:
 //  + use of multiple inheritance
 //  + use of names that clash with special names in Java/Python/Perl/...
 //  + use of templates
 
-%module teo
+%module "kinematics_dynamics"
 
 %include "std_vector.i"  /* Do not doubt about the importance of this line */
 
@@ -26,7 +26,7 @@
 /* Parse the header file to generate wrappers */
 %include "ICartesianControl.h"
 
-%extend teo::ICartesianControl
+%extend roboticslab::ICartesianControl
 {
     int stat(std::vector<double> &x)
     {
@@ -39,13 +39,12 @@
 
 %{
 #include <yarp/dev/all.h>
-teo::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d)
+roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d)
 {
-    teo::ICartesianControl *result;
+    roboticslab::ICartesianControl *result;
     d.view(result);
     return result;
 }
 %}
-extern teo::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d);
-
+extern roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d);
 
