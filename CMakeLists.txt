@@ -12,37 +12,6 @@ set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 option(ENABLE_tests "Choose if you want to compile tests" TRUE)
 option(ENABLE_coverage "Choose if you want to enable coverage collection" FALSE)
 
-# ColorDebug options
-option(COLOR_DEBUG_FULL_FILE "Choose if you want to compile with CD_FULL_FILE" FALSE)
-if(COLOR_DEBUG_FULL_FILE)
-    add_definitions(-DCD_FULL_FILE)
-endif()
-
-option(COLOR_DEBUG_HIDE_ERROR "Choose if you want to compile with CD_HIDE_ERROR" FALSE)
-if(COLOR_DEBUG_HIDE_ERROR)
-    add_definitions(-DCD_HIDE_ERROR)
-endif()
-
-option(COLOR_DEBUG_HIDE_WARNING "Choose if you want to compile with CD_HIDE_WARNING" FALSE)
-if(COLOR_DEBUG_HIDE_WARNING)
-    add_definitions(-DCD_HIDE_WARNING)
-endif()
-
-option(COLOR_DEBUG_HIDE_SUCCESS "Choose if you want to compile with CD_HIDE_SUCCESS" FALSE)
-if(COLOR_DEBUG_HIDE_SUCCESS)
-    add_definitions(-DCD_HIDE_SUCCESS)
-endif()
-
-option(COLOR_DEBUG_HIDE_INFO "Choose if you want to compile with CD_HIDE_INFO" FALSE)
-if(COLOR_DEBUG_HIDE_INFO)
-    add_definitions(-DCD_HIDE_INFO)
-endif()
-
-option(COLOR_DEBUG_HIDE_DEBUG "Choose if you want to compile with CD_HIDE_DEBUG" FALSE)
-if(COLOR_DEBUG_HIDE_DEBUG)
-    add_definitions(-DCD_HIDE_DEBUG)
-endif()
-
 if(MSVC)
     message(STATUS "Running on windows")    
     set(CMAKE_DEBUG_POSTFIX "d")
