@@ -1,4 +1,4 @@
-cmake_dependent_option(ENABLE_Gait "Enable/disable TrajectoryLib library" ON
+cmake_dependent_option(ENABLE_TrajectoryLib "Enable/disable TrajectoryLib library" ON
                        ENABLE_KdlVectorConverterLib OFF)
 
 if(ENABLE_TrajectoryLib)

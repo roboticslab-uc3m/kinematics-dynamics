@@ -2,6 +2,10 @@
 
 #include "BasicTwoLimbCartesianControl.hpp"
 
+#include <ColorDebug.hpp>
+
+#include <GaitTrajectory.hpp>
+
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool roboticslab::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)

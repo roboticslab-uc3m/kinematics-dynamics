@@ -8,19 +8,12 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
 
-#include <kdl/segment.hpp>
+#include <kdl/frames.hpp>
 #include <kdl/chain.hpp>
-#include <kdl/chainfksolver.hpp>
-#include <kdl/chainiksolverpos_nr.hpp>
-#include <kdl/chainiksolverpos_nr_jl.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainiksolverpos_lma.hpp>
-#include <kdl/chainiksolvervel_pinv.hpp>
-#include <kdl/chainidsolver_recursive_newton_euler.hpp>
+#include <kdl/jntarray.hpp>
 
 #include <iostream> // only windows
 
-#include "ColorDebug.hpp"
 #include "ICartesianSolver.h"
 #include "KdlVectorConverter.hpp"
 

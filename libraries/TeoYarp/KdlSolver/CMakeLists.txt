@@ -8,23 +8,25 @@ yarp_prepare_plugin(KdlSolver
                     CATEGORY device
                     TYPE roboticslab::KdlSolver
                     INCLUDE KdlSolver.hpp
-                    DEFAULT ON)
+                    DEFAULT ON
+                    DEPENDS ENABLE_KdlVectorConverterLib)
 
 if(NOT SKIP_KdlSolver)
 
 find_package(orocos_kdl REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS}
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
                     ${orocos_kdl_INCLUDE_DIRS})
 
 yarp_add_plugin(KdlSolver KdlSolver.hpp
                           DeviceDriverImpl.cpp
                           ICartesianSolverImpl.cpp)
 
-target_link_libraries(KdlSolver ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES}
-                                ${YARP_LIBRARIES}
-                                ${orocos_kdl_LIBRARIES})
+target_link_libraries(KdlSolver YARP::YARP_OS
+                                YARP::YARP_dev
+                                YARP::YARP_sig
+                                ${orocos_kdl_LIBRARIES}
+                                KdlVectorConverterLib)
 
 yarp_install(TARGETS KdlSolver
              COMPONENT runtime

@@ -9,22 +9,22 @@ yarp_prepare_plugin(BasicTwoLimbCartesianControl
                     TYPE roboticslab::BasicTwoLimbCartesianControl
                     INCLUDE BasicTwoLimbCartesianControl.hpp
                     WRAPPER TwoLimbCartesianControlServer
-                    DEFAULT ON)
+                    DEFAULT ON
+                    DEPENDS "ENABLE_TrajectoryLib;ENABLE_Gait")
 
 if(NOT SKIP_BasicTwoLimbCartesianControl)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS}
-                    ${GAIT_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(BasicTwoLimbCartesianControl BasicTwoLimbCartesianControl.hpp
                                              DeviceDriverImpl.cpp
                                              ICartesianControlImpl.cpp
                                              RateThreadImpl.cpp)
 
-target_link_libraries(BasicTwoLimbCartesianControl ${YARP_LIBRARIES}
-                                                   ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES}
-                                                   ${GAIT_LIBRARIES})
+target_link_libraries(BasicTwoLimbCartesianControl YARP::YARP_OS
+                                                   YARP::YARP_dev
+                                                   TrajectoryLib
+                                                   Gait)
 
 yarp_install(TARGETS BasicTwoLimbCartesianControl
              COMPONENT runtime

@@ -5,6 +5,7 @@
 
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
+#include <yarp/os/Bottle.h>
 
 // Temporary fix to avoid https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/97
 // Affects YARP 2.3.68 and 2.3.69-2.3.69.6
@@ -22,15 +23,8 @@
 
 #include <yarp/dev/IEncoders.h>
 
-#include <kdl/frames.hpp>
-#include <kdl/chain.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
-
 #include "ICartesianSolver.h"
-
 #include "KdlVectorConverter.hpp"
-
-#include "ColorDebug.hpp"
 
 namespace roboticslab
 {

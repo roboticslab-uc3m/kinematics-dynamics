@@ -12,14 +12,14 @@ yarp_prepare_plugin(CartesianControlClient
 
 if(NOT SKIP_CartesianControlClient)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
                                        DeviceDriverImpl.cpp
                                        ICartesianControlImpl.cpp)
 
-target_link_libraries(CartesianControlClient ${YARP_LIBRARIES})
+target_link_libraries(CartesianControlClient YARP::YARP_OS
+                                             YARP::YARP_dev)
 
 yarp_install(TARGETS CartesianControlClient
              COMPONENT runtime

@@ -2,6 +2,15 @@
 
 #include "KdlSolver.hpp"
 
+#include <kdl/segment.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainidsolver.hpp>
+#include <kdl/chainidsolver_recursive_newton_euler.hpp>
+
+#include <ColorDebug.hpp>
+
 // -----------------------------------------------------------------------------
 
 bool roboticslab::KdlSolver::getNumJoints(int* numJoints) {

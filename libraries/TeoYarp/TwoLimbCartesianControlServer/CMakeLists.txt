@@ -13,14 +13,14 @@ yarp_prepare_plugin(TwoLimbCartesianControlServer
 
 if(NOT SKIP_TwoLimbCartesianControlServer)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(TwoLimbCartesianControlServer TwoLimbCartesianControlServer.hpp
                                               TwoLimbCartesianControlServer.cpp
                                               DeviceDriverImpl.cpp)
 
-target_link_libraries(TwoLimbCartesianControlServer ${YARP_LIBRARIES})
+target_link_libraries(TwoLimbCartesianControlServer YARP::YARP_OS
+                                                    YARP::YARP_dev)
 
 yarp_install(TARGETS TwoLimbCartesianControlServer
              COMPONENT runtime

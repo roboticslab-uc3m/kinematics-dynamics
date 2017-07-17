@@ -7,7 +7,7 @@
 
 #include "roboticslab-kinematics-dynamics-export.h"
 
-#include "ColorDebug.hpp"
+#include <ColorDebug.hpp>
 
 namespace roboticslab
 {

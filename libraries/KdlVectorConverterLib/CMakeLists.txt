@@ -1,4 +1,4 @@
-option(ENABLE_KdlVectorConverterLib "Enable/disable compilation of KdlVectorConverterLib" ON)
+option(ENABLE_KdlVectorConverterLib "Enable/disable KdlVectorConverterLib library" ON)
 
 if(ENABLE_KdlVectorConverterLib)
 

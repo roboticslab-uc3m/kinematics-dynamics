@@ -9,20 +9,21 @@ yarp_prepare_plugin(BasicCartesianControl
                     TYPE roboticslab::BasicCartesianControl
                     INCLUDE BasicCartesianControl.hpp
                     WRAPPER CartesianControlServer
-                    DEFAULT ON)
+                    DEFAULT ON
+                    DEPENDS ENABLE_TrajectoryLib)
 
 if(NOT SKIP_BasicCartesianControl)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
                                       DeviceDriverImpl.cpp
                                       ICartesianControlImpl.cpp
                                       RateThreadImpl.cpp)
 
-target_link_libraries(BasicCartesianControl ${YARP_LIBRARIES}
-                                            ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES})
+target_link_libraries(BasicCartesianControl YARP::YARP_OS
+                                            YARP::YARP_dev
+                                            TrajectoryLib)
 
 yarp_install(TARGETS BasicCartesianControl
              COMPONENT runtime
