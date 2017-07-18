@@ -55,7 +55,7 @@ include(GenerateExportHeader)
 
 # Dummy source file and library target for generate_export_header().
 file(WRITE ${CMAKE_BINARY_DIR}/generated_src/empty.c "")
-add_library(ROBOTICSLAB_KINEMATICS_DYNAMICS ${CMAKE_BINARY_DIR}/generated_src/empty.c)
+add_library(ROBOTICSLAB_KINEMATICS_DYNAMICS EXCLUDE_FROM_ALL ${CMAKE_BINARY_DIR}/generated_src/empty.c)
 
 generate_export_header(ROBOTICSLAB_KINEMATICS_DYNAMICS
                        EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h)
