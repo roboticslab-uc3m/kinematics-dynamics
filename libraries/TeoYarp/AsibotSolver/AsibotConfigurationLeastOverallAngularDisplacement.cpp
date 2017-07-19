@@ -14,16 +14,18 @@ AsibotConfigurationLeastOverallAngularDisplacement::AsibotConfigurationLeastOver
       _q5(0), _q5f(0.0), _q5r(0.0)
 {}
 
-bool AsibotConfigurationLeastOverallAngularDisplacement::configure(double q1, double q2, double q3u, double q3d, double q4, double q5)
+bool AsibotConfigurationLeastOverallAngularDisplacement::configure(double q1, double q2u, double q2d, double q3, double q4, double q5)
 {
     _q1f = q1;
     _q1r = -q1;
 
-    _q2uf = _q2dr = q2;
-    _q2df = _q2ur = -q2;
+    _q2uf = q2u;
+    _q2ur = -q2u;
+    _q2df = q2d;
+    _q2dr = -q2d;
 
-    _q3uf = _q3dr = q3u;
-    _q3df = _q3ur = q3d;
+    _q3uf = _q3dr = q3;
+    _q3df = _q3ur = -q3;
 
     _q4f = q4;
     _q4r = -q4;

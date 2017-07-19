@@ -28,15 +28,15 @@ public:
      * Distinguishes between elbow up and down poses.
      *
      * @param q1 IK solution for joint 1 [deg]
-     * @param q2 IK solution for joint 2 [deg]
-     * @param q3u IK solution for joint 3 (elbow up) [deg]
-     * @param q3d IK solution for joint 3 (elbow down) [deg]
+     * @param q2u IK solution for joint 2 (elbow up) [deg]
+     * @param q2d IK solution for joint 2 (elbow down) [deg]
+     * @param q3 IK solution for joint 3 [deg]
      * @param q4 IK solution for joint 4 [deg]
      * @param q5 IK solution for joint 5 [deg]
      *
      * @return true/false on success/failure
      */
-    virtual bool configure(double q1, double q2, double q3u, double q3d, double q4, double q5) = 0;
+    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4, double q5) = 0;
 
     /**
      * @brief Analyzes available configurations and selects the optimal one.
@@ -73,7 +73,7 @@ public:
      */
     AsibotConfigurationLeastOverallAngularDisplacement(const std::vector<double> & qMin, const std::vector<double> & qMax);
 
-    virtual bool configure(double q1, double q2, double q3u, double q3d, double q4, double q5);
+    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4, double q5);
 
     virtual bool findOptimalConfiguration(const std::vector<double> & qGuess);
 
