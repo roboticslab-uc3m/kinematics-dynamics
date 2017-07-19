@@ -29,14 +29,14 @@ public:
      *
      * @param q1 IK solution for joint 1 [deg]
      * @param q2 IK solution for joint 2 [deg]
-     * @param q3A IK solution for joint 3 (elbow up) [deg]
-     * @param q3B IK solution for joint 3 (elbow down) [deg]
+     * @param q3u IK solution for joint 3 (elbow up) [deg]
+     * @param q3d IK solution for joint 3 (elbow down) [deg]
      * @param q4 IK solution for joint 4 [deg]
      * @param q5 IK solution for joint 5 [deg]
      *
      * @return true/false on success/failure
      */
-    virtual bool configure(double q1, double q2, double q3A, double q3B, double q4, double q5) = 0;
+    virtual bool configure(double q1, double q2, double q3u, double q3d, double q4, double q5) = 0;
 
     /**
      * @brief Analyzes available configurations and selects the optimal one.
