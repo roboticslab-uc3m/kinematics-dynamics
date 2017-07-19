@@ -145,7 +145,17 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double t1u = toDeg(std::atan2(st1u, ct1u));
     double t1d = toDeg(std::atan2(st1d, ct1d));
 
-    double t1, t2, t3;
+    // assume first joint is rotated 180º
+    bool invertedT0 = false;
+
+    if (invertedT0)
+    {
+        t1u = -t1u;
+        t1d = -t1d;
+        t2u = -t2u;
+        t2d = -t2d;
+        oyPd = -oyPd;
+    }
 
     // absolute distance between current and desired positions for both configurations (elbow up/down)
     double dt1u = std::abs(t1u - qGuess[1]);
@@ -156,6 +166,8 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
     bool elbowUpInLimits = checkJointInLimits(1, t1u) && checkJointInLimits(2, t2u) && checkJointInLimits(3, t3u);
     bool elbowDownInLimits = checkJointInLimits(1, t1d) && checkJointInLimits(2, t2d) && checkJointInLimits(3, t3d);
+
+    double t1, t2, t3;
 
     // prefer shorter distances for joint q2 (compare dt1u vs dt1d and check reachability)
     if (dt1u < dt1d && elbowUpInLimits)
