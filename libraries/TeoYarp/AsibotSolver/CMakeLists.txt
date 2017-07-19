@@ -13,7 +13,9 @@ yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                              DeviceDriverImpl.cpp
                              ICartesianSolverImpl.cpp
                              ICartesianImpl.cpp
-                             RateThreadImpl.cpp)
+                             RateThreadImpl.cpp
+                             AsibotConfiguration.hpp
+                             AsibotConfigurationLeastOverallAngularDisplacement.cpp)
 
 add_dependencies(AsibotSolver COLOR_DEBUG)
 
