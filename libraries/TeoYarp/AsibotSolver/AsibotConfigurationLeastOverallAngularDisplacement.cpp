@@ -34,7 +34,7 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::configure(double q1, do
     return true;
 }
 
-bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguration()
+bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguration(const std::vector<double> & qGuess)
 {
     return true;
 }

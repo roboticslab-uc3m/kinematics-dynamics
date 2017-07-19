@@ -40,9 +40,10 @@ public:
 
     /**
      * @brief Analyzes available configurations and selects the optimal one.
+     * @param qGuess vector of joint angles for current robot position [deg]
      * @return true/false on success/failure
      */
-    virtual bool findOptimalConfiguration() = 0;
+    virtual bool findOptimalConfiguration(const std::vector<double> & qGuess) = 0;
 
     /**
      * @brief Queries computed angles for the optimal configuration.
@@ -74,7 +75,7 @@ public:
 
     virtual bool configure(double q1, double q2, double q3u, double q3d, double q4, double q5);
 
-    virtual bool findOptimalConfiguration();
+    virtual bool findOptimalConfiguration(const std::vector<double> & qGuess);
 
     virtual void retrieveAngles(std::vector<double> & q);
 
