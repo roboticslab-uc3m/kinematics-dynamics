@@ -14,6 +14,22 @@ namespace
     {
         return q >= qMin && q <= qMax;
     }
+
+    double normalizeAngle(double q)
+    {
+        if (q > 180)
+        {
+            return q - 360;
+        }
+        else if (q <= -180)
+        {
+            return q + 360;
+        }
+        else
+        {
+            return q;
+        }
+    }
 }
 
 bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3, double q4, double q5)
@@ -36,7 +52,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", forwardElbowDown.toString().c_str());
 
-    reversedElbowUp.storeAngles(-q1, -q2u, -q3, -q4, -q5, Pose::REVERSED, Pose::UP);
+    reversedElbowUp.storeAngles(180 - q1, -q2u, -q3, -q4, 180 - q5, Pose::REVERSED, Pose::UP);
 
     if (!reversedElbowUp.checkJointsInLimits(_qMin, _qMax))
     {
@@ -45,7 +61,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", reversedElbowUp.toString().c_str());
 
-    reversedElbowDown.storeAngles(-q1, -q2d, q3, q4, -q5, Pose::REVERSED, Pose::DOWN);
+    reversedElbowDown.storeAngles(180 - q1, -q2d, q3, q4, 180 - q5, Pose::REVERSED, Pose::DOWN);
 
     if (!reversedElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
@@ -59,11 +75,11 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
 void AsibotConfiguration::Pose::storeAngles(double q1, double q2, double q3, double q4, double q5, orientation orient, elbow elb)
 {
-    _q1 = q1;
-    _q2 = q2;
-    _q3 = q3;
-    _q4 = q4;
-    _q5 = q5;
+    _q1 = normalizeAngle(q1);
+    _q2 = normalizeAngle(q2);
+    _q3 = normalizeAngle(q3);
+    _q4 = normalizeAngle(q4);
+    _q5 = normalizeAngle(q5);
 
     _orient = orient;
     _elb = elb;
