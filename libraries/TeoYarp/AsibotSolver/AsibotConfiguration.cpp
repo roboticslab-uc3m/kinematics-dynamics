@@ -2,6 +2,8 @@
 
 #include "AsibotConfiguration.hpp"
 
+#include <sstream>
+
 #include <ColorDebug.hpp>
 
 using namespace roboticslab;
@@ -23,12 +25,16 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         forwardElbowUp.valid = false;
     }
 
+    CD_INFO("%s\n", forwardElbowUp.toString().c_str());
+
     forwardElbowDown.storeAngles(q1, q2d, -q3, -q4, q5, Pose::FORWARD, Pose::DOWN);
 
     if (!forwardElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
         forwardElbowDown.valid = false;
     }
+
+    CD_INFO("%s\n", forwardElbowDown.toString().c_str());
 
     reversedElbowUp.storeAngles(-q1, -q2u, -q3, -q4, -q5, Pose::REVERSED, Pose::UP);
 
@@ -37,12 +43,16 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         reversedElbowUp.valid = false;
     }
 
+    CD_INFO("%s\n", reversedElbowUp.toString().c_str());
+
     reversedElbowDown.storeAngles(-q1, -q2d, q3, q4, -q5, Pose::REVERSED, Pose::DOWN);
 
     if (!reversedElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
         reversedElbowDown.valid = false;
     }
+
+    CD_INFO("%s\n", reversedElbowDown.toString().c_str());
 
     return forwardElbowUp.valid || forwardElbowDown.valid || reversedElbowUp.valid || reversedElbowDown.valid;
 }
@@ -87,4 +97,16 @@ void AsibotConfiguration::Pose::retrieveAngles(JointsOut q) const
     q[2] = _q3;
     q[3] = _q4;
     q[4] = _q5;
+}
+
+std::string AsibotConfiguration::Pose::toString()
+{
+    std::stringstream ss;
+
+    ss << (_orient == FORWARD ? "FORWARD" : "REVERSED");
+    ss << " ";
+    ss << (_elb == UP ? "UP" : "DOWN");
+    ss << ": " << _q1 << " " << _q2 << " " << _q3 << " " << _q4 << " " << _q5;
+
+    return ss.str();
 }

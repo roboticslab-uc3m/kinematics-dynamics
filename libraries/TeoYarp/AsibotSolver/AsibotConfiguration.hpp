@@ -4,6 +4,7 @@
 #define __ASIBOT_CONFIGURATION_HPP__
 
 #include <vector>
+#include <string>
 
 namespace roboticslab
 {
@@ -95,6 +96,9 @@ protected:
 
         //! @brief Returns stored angles.
         void retrieveAngles(JointsOut q) const;
+
+        //! @brief Serializes stored data.
+        std::string toString();
 
         double _q1, _q2, _q3, _q4, _q5;
         bool valid;

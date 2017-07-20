@@ -75,6 +75,8 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguratio
         }
     }
 
+    CD_SUCCESS("%s\n", optimalPose.toString().c_str());
+
     return true;
 }
 
