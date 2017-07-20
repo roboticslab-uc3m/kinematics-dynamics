@@ -56,7 +56,7 @@ void AsibotConfiguration::AsibotPose::storeAngles(double q1, double q2, double q
     _q5 = q5;
 }
 
-bool AsibotConfiguration::AsibotPose::checkJointsInLimits(JointsIn qMin, JointsIn qMax)
+bool AsibotConfiguration::AsibotPose::checkJointsInLimits(JointsIn qMin, JointsIn qMax) const
 {
     double joints[5] = {_q1, _q2, _q3, _q4, _q5};
     bool ok = true;
@@ -75,7 +75,7 @@ bool AsibotConfiguration::AsibotPose::checkJointsInLimits(JointsIn qMin, JointsI
     return ok;
 }
 
-void AsibotConfiguration::AsibotPose::retrieveAngles(JointsOut q)
+void AsibotConfiguration::AsibotPose::retrieveAngles(JointsOut q) const
 {
     q.resize(5);
 

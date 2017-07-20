@@ -10,7 +10,7 @@ namespace roboticslab
 
 /**
  * @ingroup AsibotSolver
- * @brief abstract base class for a robot configuration strategy selector.
+ * @brief Abstract base class for a robot configuration strategy selector.
  *
  * Designed with ASIBOT's specific case in mind, which entails up to
  * four different configurations depending on initial angles provided.
@@ -64,7 +64,7 @@ public:
      * @brief Queries computed angles for the optimal configuration.
      * @param q vector of joint angles [deg]
      */
-    virtual void retrieveAngles(JointsOut q)
+    virtual void retrieveAngles(JointsOut q) const
     {
         optimalPose.retrieveAngles(q);
     }
@@ -81,14 +81,14 @@ protected:
             : _q1(0.0), _q2(0.0), _q3(0.0), _q4(0.0), _q5(0.0), valid(true)
         {}
 
-        //! @brief Initialize angle values (in degrees).
+        //! @brief Initializes angle values (in degrees).
         void storeAngles(double q1, double q2, double q3, double q4, double q5);
 
         //! @brief Checks whether current configuration is reachable.
-        bool checkJointsInLimits(JointsIn qMin, JointsIn qMax);
+        bool checkJointsInLimits(JointsIn qMin, JointsIn qMax) const;
 
         //! @brief Returns stored angles.
-        void retrieveAngles(JointsOut q);
+        void retrieveAngles(JointsOut q) const;
 
         double _q1, _q2, _q3, _q4, _q5;
         bool valid;
