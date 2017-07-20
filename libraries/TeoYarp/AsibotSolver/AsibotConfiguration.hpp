@@ -74,15 +74,21 @@ protected:
     /**
      * @brief Helper class to store a specific robot configuration.
      */
-    struct AsibotPose
+    struct Pose
     {
+        //! @brief Orientation of axis 1 ('forward' or 180º offset).
+        enum orientation { FORWARD, REVERSED };
+
+        //! @brief Orientation of axes 2-3 (elbow up/down).
+        enum elbow { UP, DOWN };
+
         //! @brief Constructor
-        AsibotPose()
-            : _q1(0.0), _q2(0.0), _q3(0.0), _q4(0.0), _q5(0.0), valid(true)
+        Pose()
+            : _q1(0.0), _q2(0.0), _q3(0.0), _q4(0.0), _q5(0.0), valid(true), _orient(FORWARD), _elb(UP)
         {}
 
         //! @brief Initializes angle values (in degrees).
-        void storeAngles(double q1, double q2, double q3, double q4, double q5);
+        void storeAngles(double q1, double q2, double q3, double q4, double q5, orientation orient, elbow elb);
 
         //! @brief Checks whether current configuration is reachable.
         bool checkJointsInLimits(JointsIn qMin, JointsIn qMax) const;
@@ -92,16 +98,19 @@ protected:
 
         double _q1, _q2, _q3, _q4, _q5;
         bool valid;
+
+        orientation _orient;
+        elbow _elb;
     };
 
     JointsIn _qMin, _qMax;
 
-    AsibotPose optimalPose;
+    Pose optimalPose;
 
-    AsibotPose forwardElbowUp;
-    AsibotPose forwardElbowDown;
-    AsibotPose reversedElbowUp;
-    AsibotPose reversedElbowDown;
+    Pose forwardElbowUp;
+    Pose forwardElbowDown;
+    Pose reversedElbowUp;
+    Pose reversedElbowDown;
 };
 
 /**

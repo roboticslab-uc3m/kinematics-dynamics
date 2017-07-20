@@ -16,28 +16,28 @@ namespace
 
 bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3, double q4, double q5)
 {
-    forwardElbowUp.storeAngles(q1, q2u, q3, q4, q5);
+    forwardElbowUp.storeAngles(q1, q2u, q3, q4, q5, Pose::FORWARD, Pose::UP);
 
     if (!forwardElbowUp.checkJointsInLimits(_qMin, _qMax))
     {
         forwardElbowUp.valid = false;
     }
 
-    forwardElbowDown.storeAngles(q1, q2d, -q3, q4, q5);
+    forwardElbowDown.storeAngles(q1, q2d, -q3, q4, q5, Pose::FORWARD, Pose::DOWN);
 
     if (!forwardElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
         forwardElbowDown.valid = false;
     }
 
-    reversedElbowUp.storeAngles(-q1, -q2u, -q3, -q4, -q5);
+    reversedElbowUp.storeAngles(-q1, -q2u, -q3, -q4, -q5, Pose::REVERSED, Pose::UP);
 
     if (!reversedElbowUp.checkJointsInLimits(_qMin, _qMax))
     {
         reversedElbowUp.valid = false;
     }
 
-    reversedElbowDown.storeAngles(-q1, -q2d, q3, -q4, -q5);
+    reversedElbowDown.storeAngles(-q1, -q2d, q3, -q4, -q5, Pose::REVERSED, Pose::DOWN);
 
     if (!reversedElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
@@ -47,16 +47,19 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
     return forwardElbowUp.valid || forwardElbowDown.valid || reversedElbowUp.valid || reversedElbowDown.valid;
 }
 
-void AsibotConfiguration::AsibotPose::storeAngles(double q1, double q2, double q3, double q4, double q5)
+void AsibotConfiguration::Pose::storeAngles(double q1, double q2, double q3, double q4, double q5, orientation orient, elbow elb)
 {
     _q1 = q1;
     _q2 = q2;
     _q3 = q3;
     _q4 = q4;
     _q5 = q5;
+
+    _orient = orient;
+    _elb = elb;
 }
 
-bool AsibotConfiguration::AsibotPose::checkJointsInLimits(JointsIn qMin, JointsIn qMax) const
+bool AsibotConfiguration::Pose::checkJointsInLimits(JointsIn qMin, JointsIn qMax) const
 {
     double joints[5] = {_q1, _q2, _q3, _q4, _q5};
     bool ok = true;
@@ -75,7 +78,7 @@ bool AsibotConfiguration::AsibotPose::checkJointsInLimits(JointsIn qMin, JointsI
     return ok;
 }
 
-void AsibotConfiguration::AsibotPose::retrieveAngles(JointsOut q) const
+void AsibotConfiguration::Pose::retrieveAngles(JointsOut q) const
 {
     q.resize(5);
 
