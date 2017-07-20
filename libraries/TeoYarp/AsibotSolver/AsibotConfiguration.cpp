@@ -23,7 +23,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         forwardElbowUp.valid = false;
     }
 
-    forwardElbowDown.storeAngles(q1, q2d, -q3, q4, q5, Pose::FORWARD, Pose::DOWN);
+    forwardElbowDown.storeAngles(q1, q2d, -q3, -q4, q5, Pose::FORWARD, Pose::DOWN);
 
     if (!forwardElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
@@ -37,7 +37,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         reversedElbowUp.valid = false;
     }
 
-    reversedElbowDown.storeAngles(-q1, -q2d, q3, -q4, -q5, Pose::REVERSED, Pose::DOWN);
+    reversedElbowDown.storeAngles(-q1, -q2d, q3, q4, -q5, Pose::REVERSED, Pose::DOWN);
 
     if (!reversedElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
