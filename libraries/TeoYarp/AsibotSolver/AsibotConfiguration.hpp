@@ -137,6 +137,11 @@ public:
     {}
 
     virtual bool findOptimalConfiguration(JointsIn qGuess);
+
+private:
+
+    //! @brief Obtains vector of differences between current and desired joint angles [deg].
+    std::vector<double> getDiffs(JointsIn qGuess, const Pose & pose);
 };
 
 }  // namespace roboticslab
