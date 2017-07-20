@@ -10,7 +10,7 @@ namespace roboticslab
 
 /**
  * @ingroup AsibotSolver
- * @brief Interface for a robot configuration strategy selector.
+ * @brief abstract base class for a robot configuration strategy selector.
  *
  * Designed with ASIBOT's specific case in mind, which entails up to
  * four different configurations depending on initial angles provided.
@@ -18,6 +18,21 @@ namespace roboticslab
 class AsibotConfiguration
 {
 public:
+
+    //! @brief Const vector of joint angles (input parameter).
+    typedef const std::vector<double> & JointsIn;
+
+    //! @brief Vector of joint angles (output parameter).
+    typedef std::vector<double> & JointsOut;
+
+    /**
+     * @brief Constructor
+     * @param qMin vector of minimum joint limits [deg]
+     * @param qMax vector of maximum joint limits [deg]
+     */
+    AsibotConfiguration(JointsIn qMin, JointsIn qMax)
+        : _qMin(qMin), _qMax(qMax)
+    {}
 
     //! @brief Destructor
     virtual ~AsibotConfiguration() {}
@@ -36,20 +51,57 @@ public:
      *
      * @return true/false on success/failure
      */
-    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4, double q5) = 0;
+    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4, double q5);
 
     /**
      * @brief Analyzes available configurations and selects the optimal one.
      * @param qGuess vector of joint angles for current robot position [deg]
      * @return true/false on success/failure
      */
-    virtual bool findOptimalConfiguration(const std::vector<double> & qGuess) = 0;
+    virtual bool findOptimalConfiguration(JointsIn qGuess) = 0;
 
     /**
      * @brief Queries computed angles for the optimal configuration.
      * @param q vector of joint angles [deg]
      */
-    virtual void retrieveAngles(std::vector<double> & q) = 0;
+    virtual void retrieveAngles(JointsOut q)
+    {
+        optimalPose.retrieveAngles(q);
+    }
+
+protected:
+
+    /**
+     * @brief Helper class to store a specific robot configuration.
+     */
+    struct AsibotPose
+    {
+        //! @brief Constructor
+        AsibotPose()
+            : _q1(0.0), _q2(0.0), _q3(0.0), _q4(0.0), _q5(0.0), valid(true)
+        {}
+
+        //! @brief Initialize angle values (in degrees).
+        void storeAngles(double q1, double q2, double q3, double q4, double q5);
+
+        //! @brief Checks whether current configuration is reachable.
+        bool checkJointsInLimits(JointsIn qMin, JointsIn qMax);
+
+        //! @brief Returns stored angles.
+        void retrieveAngles(JointsOut q);
+
+        double _q1, _q2, _q3, _q4, _q5;
+        bool valid;
+    };
+
+    JointsIn _qMin, _qMax;
+
+    AsibotPose optimalPose;
+
+    AsibotPose forwardElbowUp;
+    AsibotPose forwardElbowDown;
+    AsibotPose reversedElbowUp;
+    AsibotPose reversedElbowDown;
 };
 
 /**
@@ -71,28 +123,11 @@ public:
      * @param qMin vector of minimum joint limits [deg]
      * @param qMax vector of maximum joint limits [deg]
      */
-    AsibotConfigurationLeastOverallAngularDisplacement(const std::vector<double> & qMin, const std::vector<double> & qMax);
+    AsibotConfigurationLeastOverallAngularDisplacement(JointsIn qMin, JointsIn qMax)
+        : AsibotConfiguration(qMin, qMax)
+    {}
 
-    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4, double q5);
-
-    virtual bool findOptimalConfiguration(const std::vector<double> & qGuess);
-
-    virtual void retrieveAngles(std::vector<double> & q);
-
-private:
-
-    const std::vector<double> & _qMax, & _qMin;
-
-    // 'u': elbow up
-    // 'd': elbow down
-    // 'f': forward (joint 1 not reversed)
-    // 'r': reversed (joint 1 = q1 + 180º)
-
-    double _q1, _q1f, _q1r;
-    double _q2, _q2uf, _q2df, _q2ur, _q2dr;
-    double _q3, _q3uf, _q3df, _q3ur, _q3dr;
-    double _q4, _q4f, _q4r;
-    double _q5, _q5f, _q5r;
+    virtual bool findOptimalConfiguration(JointsIn qGuess);
 };
 
 }  // namespace roboticslab
