@@ -98,7 +98,7 @@ protected:
         void retrieveAngles(JointsOut q) const;
 
         //! @brief Serializes stored data.
-        std::string toString();
+        std::string toString() const;
 
         double _q1, _q2, _q3, _q4, _q5;
         bool valid;

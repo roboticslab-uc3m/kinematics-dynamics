@@ -115,7 +115,7 @@ void AsibotConfiguration::Pose::retrieveAngles(JointsOut q) const
     q[4] = _q5;
 }
 
-std::string AsibotConfiguration::Pose::toString()
+std::string AsibotConfiguration::Pose::toString() const
 {
     std::stringstream ss;
 
