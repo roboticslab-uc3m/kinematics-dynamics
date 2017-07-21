@@ -52,7 +52,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", forwardElbowDown.toString().c_str());
 
-    reversedElbowUp.storeAngles(180 - q1, -q2u, -q3, -q4, 180 - q5, Pose::REVERSED, Pose::UP);
+    reversedElbowUp.storeAngles(q1 + 180, -q2u, -q3, -q4, q5 + 180, Pose::REVERSED, Pose::UP);
 
     if (!reversedElbowUp.checkJointsInLimits(_qMin, _qMax))
     {
@@ -61,7 +61,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", reversedElbowUp.toString().c_str());
 
-    reversedElbowDown.storeAngles(180 - q1, -q2d, q3, q4, 180 - q5, Pose::REVERSED, Pose::DOWN);
+    reversedElbowDown.storeAngles(q1 + 180, -q2d, q3, q4, q5 + 180, Pose::REVERSED, Pose::DOWN);
 
     if (!reversedElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
