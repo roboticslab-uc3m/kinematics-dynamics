@@ -48,11 +48,11 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     CD_DEBUG("CartesianBot using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
-    yarp::os::Value min = fullConfig.check("qMin", yarp::os::Value::getNullValue(), "minimum joint limits");
+    yarp::os::Value mins = fullConfig.check("mins", yarp::os::Value::getNullValue(), "minimum joint limits");
 
-    if (!min.isNull())
+    if (!mins.isNull())
     {
-        yarp::os::Bottle * b = min.asList();
+        yarp::os::Bottle * b = mins.asList();
 
         for (int i = 0; i < b->size(); i++)
         {
@@ -64,11 +64,11 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         qMin.resize(NUM_MOTORS, -90);
     }
 
-    yarp::os::Value max = fullConfig.check("qMax", yarp::os::Value::getNullValue(), "maximum joint limits");
+    yarp::os::Value maxs = fullConfig.check("maxs", yarp::os::Value::getNullValue(), "maximum joint limits");
 
-    if (!max.isNull())
+    if (!maxs.isNull())
     {
-        yarp::os::Bottle * b = max.asList();
+        yarp::os::Bottle * b = maxs.asList();
 
         for (int i = 0; i < b->size(); i++)
         {
