@@ -104,7 +104,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
 
     xd[0] = 0.494974746;  //-- x
     xd[1] = 0.0;  //-- y
-    xd[2] = 0.982842712;  //-- z
+    xd[2] = 1.194974747;  //-- z
     xd[3] = 45.0;  //-- oyP
     xd[4] = 0.0;  //-- ozPP
 
@@ -135,7 +135,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
 
     xd[0] = 0.494974746;  //-- x
     xd[1] = 0.0;  //-- y
-    xd[2] = 0.982842712;  //-- z
+    xd[2] = 1.194974747;  //-- z
     xd[3] = 45.0;  //-- oyP
     xd[4] = 0.0;  //-- ozPP
 
