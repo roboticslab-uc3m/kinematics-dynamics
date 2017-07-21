@@ -123,7 +123,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
 {
-    std::vector<double> qMin(5, -90.0), qMax(5, 90.0);
+    // enable joints q1, q3, q4, q5 on all configs
+    std::vector<double> qMin(5, -180.0), qMax(5, 180.0);
 
     // restrict movement on joint q2, force FORWARD DOWN
     qMin[1] = 45.0;
