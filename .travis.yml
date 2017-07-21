@@ -58,6 +58,7 @@ before_script:
 script:
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
+  - bin/testAsibotSolverFromFile
   - bin/testBasicCartesianControl
 
 after_success:
