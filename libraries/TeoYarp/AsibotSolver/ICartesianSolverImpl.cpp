@@ -145,10 +145,10 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double t1uRad = std::atan2(st1u, ct1u);
     double t1dRad = std::atan2(st1d, ct1d);
 
-    double t3Rad = toRad(oyPd) - t1uRad - t2Rad;
-    //double t3Rad = -toRad(oyPd) + t1dRad - t2Rad;  // alternatively
+    double t3uRad = toRad(oyPd) - t1uRad - t2Rad;
+    double t3dRad = toRad(oyPd) - t1dRad + t2Rad;
 
-    if (!conf->configure(toDeg(ozdRad), toDeg(t1uRad), toDeg(t1dRad), toDeg(t2Rad), toDeg(t3Rad), xd[4]))
+    if (!conf->configure(toDeg(ozdRad), toDeg(t1uRad), toDeg(t1dRad), toDeg(t2Rad), toDeg(t3uRad), toDeg(t3dRad), xd[4]))
     {
         CD_ERROR("Unable to find a valid configuration within joint limits.\n");
         return false;

@@ -41,18 +41,21 @@ public:
     /**
      * @brief Stores initial values for a specific pose.
      *
-     * Distinguishes between elbow up and down poses.
+     * Distinguishes between elbow up and down poses. Make sure that:
+     *
+     * @code oyP = q2u + q3 + q4u = q2d - q3 + q4d @endcode
      *
      * @param q1 IK solution for joint 1 [deg]
      * @param q2u IK solution for joint 2 (elbow up) [deg]
      * @param q2d IK solution for joint 2 (elbow down) [deg]
      * @param q3 IK solution for joint 3 [deg]
-     * @param q4 IK solution for joint 4 [deg]
+     * @param q4u IK solution for joint 4 (elbow up) [deg]
+     * @param q4d IK solution for joint 4 (elbow down) [deg]
      * @param q5 IK solution for joint 5 [deg]
      *
      * @return true/false on success/failure
      */
-    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4, double q5);
+    virtual bool configure(double q1, double q2u, double q2d, double q3, double q4u, double q4d, double q5);
 
     /**
      * @brief Analyzes available configurations and selects the optimal one.

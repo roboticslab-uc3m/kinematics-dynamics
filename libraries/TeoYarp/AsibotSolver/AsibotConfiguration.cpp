@@ -2,6 +2,7 @@
 
 #include "AsibotConfiguration.hpp"
 
+#include <cmath>
 #include <sstream>
 
 #include <ColorDebug.hpp>
@@ -10,9 +11,12 @@ using namespace roboticslab;
 
 namespace
 {
+    // epsilon for floating-point operations (represents degrees)
+    const double eps = 0.001;
+
     inline bool checkJointInLimits(double q, double qMin, double qMax)
     {
-        return q >= qMin && q <= qMax;
+        return q >= (qMin - eps) && q <= (qMax + eps);
     }
 
     double normalizeAngle(double q)
@@ -34,9 +38,16 @@ namespace
     }
 }
 
-bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3, double q4, double q5)
+bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3, double q4u, double q4d, double q5)
 {
-    forwardElbowUp.storeAngles(q1, q2u, q3, q4, q5, Pose::FORWARD, Pose::UP);
+    if (std::abs((q2u + q3 + q4u) - (q2d - q3 + q4d)) > eps)
+    {
+        CD_ERROR("Assertion failed: oyP = q2u + q3 + q4u = q2d - q3 + q4d\n");
+        CD_DEBUG("q1: %f, q2u: %f, q2d: %f, q3: %f, q4u: %f, q4d: %f, q5: %f\n", q1, q2u, q2d, q3, q4u, q4d, q5);
+        return false;
+    }
+
+    forwardElbowUp.storeAngles(q1, q2u, q3, q4u, q5, Pose::FORWARD, Pose::UP);
 
     if (!forwardElbowUp.checkJointsInLimits(_qMin, _qMax))
     {
@@ -45,7 +56,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", forwardElbowUp.toString().c_str());
 
-    forwardElbowDown.storeAngles(q1, q2d, -q3, -q4, q5, Pose::FORWARD, Pose::DOWN);
+    forwardElbowDown.storeAngles(q1, q2d, -q3, q4d, q5, Pose::FORWARD, Pose::DOWN);
 
     if (!forwardElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
@@ -54,7 +65,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", forwardElbowDown.toString().c_str());
 
-    reversedElbowUp.storeAngles(q1 + 180, -q2u, -q3, -q4, q5 + 180, Pose::REVERSED, Pose::UP);
+    reversedElbowUp.storeAngles(q1 + 180, -q2u, -q3, -q4u, q5 + 180, Pose::REVERSED, Pose::UP);
 
     if (!reversedElbowUp.checkJointsInLimits(_qMin, _qMax))
     {
@@ -63,7 +74,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 
     CD_INFO("%s\n", reversedElbowUp.toString().c_str());
 
-    reversedElbowDown.storeAngles(q1 + 180, -q2d, q3, q4, q5 + 180, Pose::REVERSED, Pose::DOWN);
+    reversedElbowDown.storeAngles(q1 + 180, -q2d, q3, -q4d, q5 + 180, Pose::REVERSED, Pose::DOWN);
 
     if (!reversedElbowDown.checkJointsInLimits(_qMin, _qMax))
     {
