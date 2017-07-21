@@ -38,12 +38,20 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
     qMin.resize(NUM_MOTORS, -90);
     qMax.resize(NUM_MOTORS, 90);
 
+    conf = new AsibotConfigurationLeastOverallAngularDisplacement(qMin, qMax);
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::close() {
+    if (conf != NULL)
+    {
+        delete conf;
+        conf = NULL;
+    }
+
     return true;
 }
 

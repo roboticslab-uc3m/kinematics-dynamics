@@ -3,6 +3,11 @@
 #ifndef __ASIBOT_SOLVER_HPP__
 #define __ASIBOT_SOLVER_HPP__
 
+#include <iostream> // only windows
+#include <stdlib.h> // for exit()
+#include <cmath>
+#include <vector>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/Drivers.h>
@@ -15,12 +20,7 @@
 #include "ICartesianSolver.h"
 #include "TrajGen.hpp"
 #include "YarpTinyMath.hpp"
-
-#include <iostream> // only windows
-#include <stdlib.h> // for exit()
-#include <cmath>
-#include <vector>
-
+#include "AsibotConfiguration.hpp"
 
 #define NUM_MOTORS 5
 #define CARTPOS_PRECISION 0.01  /// Meter 0.0005
@@ -206,6 +206,8 @@ private:
     double startTime;
 
     std::vector<double> qMin, qMax;
+
+    AsibotConfiguration * conf;
 };
 
 }  // namespace roboticslab

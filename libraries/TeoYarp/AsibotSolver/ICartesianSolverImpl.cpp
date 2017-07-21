@@ -131,10 +131,10 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double st2 = std::sqrt(1 - ct2 * ct2);  // forces elbow-up in ASIBOT
     //double st2 = -std::sqrt(1 - ct2 * ct2);  // forces elbow-down in ASIBOT
 
-    // 'u': elbow-up; 'd': elbow-down
-    double t2u = toDeg(std::atan2(st2, ct2));
-    double t2d = toDeg(std::atan2(-st2, ct2));
+    double t2Rad = std::atan2(st2, ct2);
+    //double t2Rad = std::atan2(-st2, ct2);  // or just '-std::atan(st2, ct2)' (elbow-down)
 
+    // 'u': elbow-up; 'd': elbow-down
     double st1u = ((A1 + A2 * ct2) * prWd - A2 * st2 * phWd) / len_2;
     double ct1u = ((A1 + A2 * ct2) * phWd + A2 * st2 * prWd) / len_2;
     // double ct1u = (phWd + A2 * st1 * st2) / (A1 + A2 * ct2);  // alternative method for same result
@@ -142,92 +142,27 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double st1d = ((A1 + A2 * ct2) * prWd + A2 * st2 * phWd) / len_2;
     double ct1d = ((A1 + A2 * ct2) * phWd - A2 * st2 * prWd) / len_2;
 
-    double t1u = toDeg(std::atan2(st1u, ct1u));
-    double t1d = toDeg(std::atan2(st1d, ct1d));
+    double t1uRad = std::atan2(st1u, ct1u);
+    double t1dRad = std::atan2(st1d, ct1d);
 
-    // assume first joint is rotated 180º
-    bool invertedT0 = false;
+    double t3Rad = toRad(oyPd) - t1uRad - t2Rad;
+    //double t3Rad = -toRad(oyPd) + t1dRad - t2Rad;  // alternatively
 
-    if (invertedT0)
+    if (!conf->configure(toDeg(ozdRad), toDeg(t1uRad), toDeg(t1dRad), toDeg(t2Rad), toDeg(t3Rad), xd[4]))
     {
-        t1u = -t1u;
-        t1d = -t1d;
-        t2u = -t2u;
-        t2d = -t2d;
-        oyPd = -oyPd;
+        CD_ERROR("Unable to find a valid configuration within joint limits.\n");
+        return false;
     }
 
-    // absolute distance between current and desired positions for both configurations (elbow up/down)
-    double dt1u = std::abs(t1u - qGuess[1]);
-    double dt1d = std::abs(t1d - qGuess[1]);
-
-    double t3u = oyPd - t1u - t2u;
-    double t3d = oyPd - t1d - t2d;
-
-    bool elbowUpInLimits = checkJointInLimits(1, t1u) && checkJointInLimits(2, t2u) && checkJointInLimits(3, t3u);
-    bool elbowDownInLimits = checkJointInLimits(1, t1d) && checkJointInLimits(2, t2d) && checkJointInLimits(3, t3d);
-
-    double t1, t2, t3;
-
-    // prefer shorter distances for joint q2 (compare dt1u vs dt1d and check reachability)
-    if (dt1u < dt1d && elbowUpInLimits)
+    if (!conf->findOptimalConfiguration(qGuess))
     {
-        t1 = t1u;
-        t2 = t2u;
-        t3 = t3u;
-    }
-    else if (dt1u > dt1d && elbowDownInLimits)
-    {
-        // shorter path but outside elbow-down limits? see last 'else' clause
-        t1 = t1d;
-        t2 = t2d;
-        t3 = t3d;
-    }
-    else if (dt1u == dt1d)
-    {
-        if (elbowUpInLimits)
-        {
-            // prefer elbow-up to elbow-down
-            t1 = t1u;
-            t2 = t2u;
-            t3 = t3u;
-        }
-        else
-        {
-            // a few lines further down, we'll check reachability once again
-            t1 = t1d;
-            t2 = t2d;
-            t3 = t3d;
-        }
-    }
-    else
-    {
-        // we are here because reachability failed or: dt1u > dt1d && !elbowDownInLimits
-        t1 = t1u;
-        t2 = t2u;
-        t3 = t3u;
+        CD_ERROR("findOptimalConfiguration() failed.\n");
+        return false;
     }
 
-    q.resize(NUM_MOTORS);
+    conf->retrieveAngles(q);
 
-    q[0] = toDeg(ozdRad);
-    q[1] = t1;
-    q[2] = t2;
-    q[3] = t3;
-    q[4] = xd[4];  // ozPP
-
-    bool limitsOk = true;
-
-    for (int i = 0; i < NUM_MOTORS; i++)
-    {
-        if (!checkJointInLimits(i, q[i]))
-        {
-            CD_ERROR("Joint q%d out of limits: %f [deg] not in [%f, %f]\n", i + 1, q[i], qMin[i], qMax[i]);
-            limitsOk = false;
-        }
-    }
-
-    return limitsOk;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
