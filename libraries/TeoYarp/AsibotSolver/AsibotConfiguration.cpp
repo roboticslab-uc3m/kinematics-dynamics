@@ -10,7 +10,7 @@ using namespace roboticslab;
 
 namespace
 {
-    inline bool checkJointInLimit(double q, double qMin, double qMax)
+    inline bool checkJointInLimits(double q, double qMin, double qMax)
     {
         return q >= qMin && q <= qMax;
     }
@@ -94,7 +94,7 @@ bool AsibotConfiguration::Pose::checkJointsInLimits(JointsIn qMin, JointsIn qMax
     {
         double joint = joints[i];
 
-        if (!checkJointInLimit(joint, qMin[i], qMax[i]))
+        if (!checkJointInLimits(joint, qMin[i], qMax[i]))
         {
             CD_WARNING("Joint %d out of limits: %f not in [%f, %f].\n", i + 1, joint, qMin[i], qMax[i]);
             ok = false;
