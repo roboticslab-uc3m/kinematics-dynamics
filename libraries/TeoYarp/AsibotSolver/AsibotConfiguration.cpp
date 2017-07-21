@@ -10,9 +10,12 @@ using namespace roboticslab;
 
 namespace
 {
+    // epsilon for floating-point operations (represents degrees)
+    const double eps = 0.001;
+
     inline bool checkJointInLimits(double q, double qMin, double qMax)
     {
-        return q >= qMin && q <= qMax;
+        return q >= (qMin - eps) && q <= (qMax + eps);
     }
 
     double normalizeAngle(double q)
