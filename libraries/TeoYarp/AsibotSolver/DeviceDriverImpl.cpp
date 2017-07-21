@@ -6,16 +6,27 @@
 
 bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 {
+    CD_DEBUG("config: %s.\n", config.toString().c_str());
+
+    std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS), "limb kinematic description").asString();
+    CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(), DEFAULT_KINEMATICS);
+
+    yarp::os::ResourceFinder rf;
+    rf.setVerbose(false);
+    rf.setDefaultContext("kinematics");
+
+    std::string kinematicsFullPath = rf.findFileByName(kinematics);
+
+    yarp::os::Property fullConfig;
+    fullConfig.fromConfigFile(kinematicsFullPath.c_str());
+    fullConfig.fromString(config.toString(), false);
+
+    CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
+
     startTime = 0;
     realRad.resize(5);
     targetX.resize(3);
     targetO.resize(2);
-
-    A0 = DEFAULT_A0;
-    A1 = DEFAULT_A1;
-    A2 = DEFAULT_A2;
-    A3 = DEFAULT_A3;
-    tool = DEFAULT_TOOL;
 
     printf("--------------------------------------------------------------\n");
     if(config.check("help")) {
@@ -28,17 +39,58 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         // Do not exit: let last layer exit so we get help from the complete chain.
     }
 
-    if (config.check("A0")) A0 = config.find("A0").asDouble();
-    if (config.check("A1")) A1 = config.find("A1").asDouble();
-    if (config.check("A2")) A2 = config.find("A2").asDouble();
-    if (config.check("A3")) A3 = config.find("A3").asDouble();
+    A0 = fullConfig.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1").asDouble();
+    A1 = fullConfig.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2").asDouble();
+    A2 = fullConfig.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3").asDouble();
+    A3 = fullConfig.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4").asDouble();
+
+    tool = DEFAULT_TOOL;
 
     CD_DEBUG("CartesianBot using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
-    qMin.resize(NUM_MOTORS, -90);
-    qMax.resize(NUM_MOTORS, 90);
+    yarp::os::Value min = fullConfig.check("qMin", yarp::os::Value::getNullValue(), "minimum joint limits");
 
-    conf = new AsibotConfigurationLeastOverallAngularDisplacement(qMin, qMax);
+    if (!min.isNull())
+    {
+        yarp::os::Bottle * b = min.asList();
+
+        for (int i = 0; i < b->size(); i++)
+        {
+            qMin.push_back(b->get(i).asDouble());
+        }
+    }
+    else
+    {
+        qMin.resize(NUM_MOTORS, -90);
+    }
+
+    yarp::os::Value max = fullConfig.check("qMax", yarp::os::Value::getNullValue(), "maximum joint limits");
+
+    if (!max.isNull())
+    {
+        yarp::os::Bottle * b = max.asList();
+
+        for (int i = 0; i < b->size(); i++)
+        {
+            qMax.push_back(b->get(i).asDouble());
+        }
+    }
+    else
+    {
+        qMax.resize(NUM_MOTORS, 90);
+    }
+
+    std::string strategy = fullConfig.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
+
+    if (strategy == DEFAULT_STRATEGY)
+    {
+        conf = new AsibotConfigurationLeastOverallAngularDisplacement(qMin, qMax);
+    }
+    else
+    {
+        CD_ERROR("Unsupported IK configuration strategy: %s.\n", strategy.c_str());
+        return false;
+    }
 
     return true;
 }

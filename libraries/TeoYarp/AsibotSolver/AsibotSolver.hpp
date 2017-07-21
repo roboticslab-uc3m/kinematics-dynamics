@@ -41,6 +41,8 @@
 #define DEFAULT_ROBOT_LOCAL "N/A"
 #define DEFAULT_ROBOT_REMOTE "N/A"
 #define DEFAULT_TOOL 0
+#define DEFAULT_KINEMATICS "none.ini"
+#define DEFAULT_STRATEGY "leastOverallAngularDisplacement"
 
 namespace roboticslab
 {
