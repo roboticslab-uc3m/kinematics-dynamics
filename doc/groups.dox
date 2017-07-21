@@ -1,8 +1,8 @@
 
 /**
-@brief The main, catch-all namespace for TEO.
+@brief The main, catch-all namespace for Robotics Lab UC3M.
  */
-namespace teo {}
+namespace roboticslab {}
 
 /**
  * \defgroup kinematics-dynamics-applications kinematics-dynamics Applications (Collections of Programs)
@@ -22,14 +22,9 @@ namespace teo {}
  *
  * @brief Contains kinematics-dynamics libraries that implement YARP device interfaces
  * and therefore can be invoked as YARP plugins.
- *
- * @section BodyYarp_install Installation
- *
- * Compiled when ENABLE_BodyYarp is activated.
  */
 
 /**
- * 
  * \defgroup kinematics-dynamics-programs kinematics-dynamics Programs
  * @brief kinematics-dynamics programs.
  */
@@ -38,4 +33,3 @@ namespace teo {}
  * \defgroup kinematics-dynamics-examples kinematics-dynamics Examples
  * @brief kinematics-dynamics examples.
  */
-
