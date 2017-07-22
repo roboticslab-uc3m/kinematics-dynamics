@@ -60,7 +60,13 @@ public:
 protected:
     yarp::dev::PolyDriver solverDevice;
     roboticslab::ICartesianSolver *iCartesianSolver;
+
+    static const double EPS_CART;
+    static const double EPS_JOINT;
 };
+
+const double AsibotSolverTestFromFile::EPS_CART = 1e-6;  //-- [m]
+const double AsibotSolverTestFromFile::EPS_JOINT = 1e-3;  //-- [deg]
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin1)
 {
@@ -70,11 +76,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin1)
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(x[0], 0.0, 1e-9);  //-- x
-    ASSERT_NEAR(x[1], 0.0, 1e-9);  //-- y
-    ASSERT_NEAR(x[2], 1.4, 1e-9);  //-- z
-    ASSERT_NEAR(x[3], 0.0, 1e-9);  //-- oyP
-    ASSERT_NEAR(x[4], 0.0, 1e-9);  //-- ozPP
+    ASSERT_NEAR(x[0], 0.0, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.0, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 1.4, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 0.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 0.0, EPS_CART);  //-- ozPP
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
@@ -91,11 +97,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(x[0], 0.0, 1e-9);  //-- x
-    ASSERT_NEAR(x[1], 0.865685425, 1e-9);  //-- y
-    ASSERT_NEAR(x[2], 0.3, 1e-9);  //-- z
-    ASSERT_NEAR(x[3], 90.0, 1e-9);  //-- oyP
-    ASSERT_NEAR(x[4], 90.0, 1e-9);  //-- ozPP
+    ASSERT_NEAR(x[0], 0.0, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.865685425, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.3, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 90.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
@@ -115,11 +121,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
 
     ASSERT_EQ(q.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(q[0], 0.0, 1e-3);
-    ASSERT_NEAR(q[1], 0.0, 1e-3);
-    ASSERT_NEAR(q[2], 45.0, 1e-3);
-    ASSERT_NEAR(q[3], 0.0, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
@@ -140,11 +146,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
     ASSERT_EQ(q.size(), 5);  //-- eulerYZ
 
     // increasing eps at q2-4
-    ASSERT_NEAR(q[0], 0.0, 1e-3);
-    ASSERT_NEAR(q[1], -45.0, 1e-2);
-    ASSERT_NEAR(q[2], 0.0, 1e-2);
-    ASSERT_NEAR(q[3], 0.0, 1e-2);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], -45.0, EPS_JOINT * 10);
+    ASSERT_NEAR(q[2], 0.0, EPS_JOINT * 10);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT * 10);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
@@ -164,22 +170,22 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 
     ASSERT_EQ(q.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(q[0], 130.0, 1e-3);
-    ASSERT_NEAR(q[1], 0.0, 1e-3);
-    ASSERT_NEAR(q[2], 45.0, 1e-3);
-    ASSERT_NEAR(q[3], 0.0, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 130.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 
     // force REVERSED
     xd[4] = 180.0;
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_NEAR(q[0], -50.0, 1e-3);
-    ASSERT_NEAR(q[1], 0.0, 1e-3);
-    ASSERT_NEAR(q[2], -45.0, 1e-3);
-    ASSERT_NEAR(q[3], 0.0, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], -50.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], -45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
@@ -199,22 +205,22 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 
     ASSERT_EQ(q.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(q[0], -40.0, 1e-3);
-    ASSERT_NEAR(q[1], 0.0, 1e-3);
-    ASSERT_NEAR(q[2], -45.0, 1e-3);
-    ASSERT_NEAR(q[3], 0.0, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], -40.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], -45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 
     // force FORWARD
     xd[4] = 0.0;
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_NEAR(q[0], 140.0, 1e-3);
-    ASSERT_NEAR(q[1], 0.0, 1e-3);
-    ASSERT_NEAR(q[2], 45.0, 1e-3);
-    ASSERT_NEAR(q[3], 0.0, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 140.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
@@ -235,11 +241,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
 
     ASSERT_EQ(q.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(q[0], 0.0, 1e-3);
-    ASSERT_NEAR(q[1], 15.44443859, 1e-3);
-    ASSERT_NEAR(q[2], -84.01897954, 1e-3);
-    ASSERT_NEAR(q[3], 42.00948977, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 15.44443859, EPS_JOINT);
+    ASSERT_NEAR(q[2], -84.01897954, EPS_JOINT);
+    ASSERT_NEAR(q[3], 42.00948977, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 
     // force REVERSED DOWN
     qGuess[1] = -30.0;
@@ -247,11 +253,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_NEAR(q[0], 0.0, 1e-3);
-    ASSERT_NEAR(q[1], -68.57454095, 1e-3);
-    ASSERT_NEAR(q[2], 84.01897954, 1e-3);
-    ASSERT_NEAR(q[3], -42.00948977, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], -68.57454095, EPS_JOINT);
+    ASSERT_NEAR(q[2], 84.01897954, EPS_JOINT);
+    ASSERT_NEAR(q[3], -42.00948977, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
@@ -279,11 +285,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
 
     ASSERT_EQ(q.size(), 5);  //-- eulerYZ
 
-    ASSERT_NEAR(q[0], 0.0, 1e-3);
-    ASSERT_NEAR(q[1], 45.0, 1e-3);
-    ASSERT_NEAR(q[2], -45.0, 1e-3);
-    ASSERT_NEAR(q[3], 45.0, 1e-3);
-    ASSERT_NEAR(q[4], 0.0, 1e-3);
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], -45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 }  // namespace roboticslab
