@@ -122,7 +122,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinError)
 
     ASSERT_TRUE(iCartesianSolver->fwdKinError(xd, q, x));
 
-    ASSERT_EQ(x.size(), 6);
+    ASSERT_EQ(x.size(), 6);  //-- twist
 
     ASSERT_NEAR(x[0], -0.582842712, EPS_CART);  //-- x
     ASSERT_NEAR(x[1], 0.865685425, EPS_CART);  //-- y
@@ -147,7 +147,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_EQ(q.size(), 5);  //-- eulerYZ
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
     ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
@@ -171,7 +171,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_EQ(q.size(), 5);  //-- eulerYZ
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
     // increasing eps at q2-4
     ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
@@ -196,7 +196,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_EQ(q.size(), 5);  //-- eulerYZ
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
     ASSERT_NEAR(q[0], 130.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
@@ -231,7 +231,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_EQ(q.size(), 5);  //-- eulerYZ
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
     ASSERT_NEAR(q[0], -40.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
@@ -267,7 +267,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_EQ(q.size(), 5);  //-- eulerYZ
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
     ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 15.44443859, EPS_JOINT);
@@ -286,6 +286,29 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     ASSERT_NEAR(q[2], 84.01897954, EPS_JOINT);
     ASSERT_NEAR(q[3], -42.00948977, EPS_JOINT);
     ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
+}
+
+TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKin)
+{
+    std::vector<double> q(5, 0.0), xdot(6, 0.0), qdot;
+
+    q[1] = -45.0;
+    q[2] = 90.0;
+    q[3] = 45.0;
+
+    xdot[2] = 0.01;  //- m/step
+    xdot[3] = 0.017453292;  //-- 1º/step
+
+    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot));
+
+    ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
+
+    // increasing eps at q2-4
+    ASSERT_NEAR(qdot[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(qdot[1], 1.02202511, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[2], -2.04405022, EPS_JOINT * 100);
+    ASSERT_NEAR(qdot[3], 1.02202511, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[4], 1.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
@@ -311,7 +334,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
-    ASSERT_EQ(q.size(), 5);  //-- eulerYZ
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
     ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 45.0, EPS_JOINT);
