@@ -104,6 +104,34 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
     ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
 }
 
+TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinError)
+{
+    std::vector<double> xd(5), q(5), x;
+
+    xd[0] = 0.0;
+    xd[1] = 0.865685425;
+    xd[2] = 0.865685425;
+    xd[3] = 90.0;
+    xd[4] = -90.0;
+
+    q[0] = 0.0;
+    q[1] = 0.0;
+    q[2] = 45.0;
+    q[3] = 45.0;
+    q[4] = 0.0;
+
+    ASSERT_TRUE(iCartesianSolver->fwdKinError(xd, q, x));
+
+    ASSERT_EQ(x.size(), 6);
+
+    ASSERT_NEAR(x[0], -0.582842712, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.865685425, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], -0.117157287, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], -69.2820323, EPS_CART);  //-- rot_x
+    ASSERT_NEAR(x[4], -69.2820323, EPS_CART);  //-- rot_y
+    ASSERT_NEAR(x[5], 69.2820323, EPS_CART);  //-- rot_z
+}
+
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
 {
     std::vector<double> xd(5), qGuess(5, 0.0), q;
