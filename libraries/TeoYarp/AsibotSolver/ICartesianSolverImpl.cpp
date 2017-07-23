@@ -95,9 +95,9 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
     yarp::sig::Vector axis = axisAngle.subVector(0, 2) * axisAngle[3];
     yarp::sig::Vector rotd = rotCurrent * axis;
 
-    x[3] = toDeg(rotd[0]);
-    x[4] = toDeg(rotd[1]);
-    x[5] = toDeg(rotd[2]);
+    x[3] = rotd[0];
+    x[4] = rotd[1];
+    x[5] = rotd[2];
 
     return true;
 }
@@ -233,9 +233,9 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     xdotv[0] = xdot[0];
     xdotv[1] = xdot[1];
     xdotv[2] = xdot[2];
-    xdotv[3] = toRad(xdot[3]);
-    xdotv[4] = toRad(xdot[4]);
-    xdotv[5] = toRad(xdot[5]);
+    xdotv[3] = xdot[3];
+    xdotv[4] = xdot[4];
+    xdotv[5] = xdot[5];
 
     using namespace yarp::math;
     yarp::sig::Vector qdotv = Ja_inv * xdotv;
