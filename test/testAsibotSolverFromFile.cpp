@@ -61,12 +61,12 @@ protected:
     yarp::dev::PolyDriver solverDevice;
     roboticslab::ICartesianSolver *iCartesianSolver;
 
-    static const double EPS_CART;
-    static const double EPS_JOINT;
+    static const double EPS_CART;  //-- cartesian space
+    static const double EPS_JOINT;  //-- joint space
 };
 
-const double AsibotSolverTestFromFile::EPS_CART = 1e-6;  //-- [m]
-const double AsibotSolverTestFromFile::EPS_JOINT = 1e-3;  //-- [deg]
+const double AsibotSolverTestFromFile::EPS_CART = 1e-6;
+const double AsibotSolverTestFromFile::EPS_JOINT = 1e-3;
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin1)
 {
