@@ -2,8 +2,6 @@
 
 #include "AsibotSolver.hpp"
 
-#include <yarp/math/FrameTransform.h>
-
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
@@ -88,20 +86,18 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
     eulerCurrent[1] = toRad(currentX[3]);
     eulerCurrent[2] = toRad(currentX[4]);
 
-    yarp::sig::Matrix Hdesired = yarp::math::euler2dcm(eulerDesired);
-    yarp::sig::Matrix Hcurrent = yarp::math::euler2dcm(eulerCurrent);
+    yarp::sig::Matrix rotDesired = yarp::math::euler2dcm(eulerDesired).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotCurrent = yarp::math::euler2dcm(eulerCurrent).submatrix(0, 2, 0, 2);
 
-    yarp::math::FrameTransform frameDesired, frameCurrent;
+    using namespace yarp::math;
+    yarp::sig::Matrix rotCurrentToDesired = rotCurrent.transposed() * rotDesired;
+    yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rotCurrentToDesired);
+    yarp::sig::Vector axis = axisAngle.subVector(0, 2) * axisAngle[3];
+    yarp::sig::Vector rotd = rotCurrent * axis;
 
-    frameDesired.fromMatrix(Hdesired);
-    frameCurrent.fromMatrix(Hcurrent);
-
-    yarp::sig::Vector rpyDesired = frameDesired.getRPYRot();
-    yarp::sig::Vector rpyCurrent = frameCurrent.getRPYRot();
-
-    x[3] = toDeg(rpyDesired[0] - rpyCurrent[0]);
-    x[4] = toDeg(rpyDesired[1] - rpyCurrent[1]);
-    x[5] = toDeg(rpyDesired[2] - rpyCurrent[2]);
+    x[3] = toDeg(rotd[0]);
+    x[4] = toDeg(rotd[1]);
+    x[5] = toDeg(rotd[2]);
 
     return true;
 }
