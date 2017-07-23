@@ -127,9 +127,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinError)
     ASSERT_NEAR(x[0], -0.582842712, EPS_CART);  //-- x
     ASSERT_NEAR(x[1], 0.865685425, EPS_CART);  //-- y
     ASSERT_NEAR(x[2], -0.117157287, EPS_CART);  //-- z
-    ASSERT_NEAR(x[3], -69.2820323, EPS_CART);  //-- rot_x
-    ASSERT_NEAR(x[4], -69.2820323, EPS_CART);  //-- rot_y
-    ASSERT_NEAR(x[5], 69.2820323, EPS_CART);  //-- rot_z
+    ASSERT_NEAR(x[3], -1.209199576, EPS_CART);  //-- rot_x
+    ASSERT_NEAR(x[4], -1.209199576, EPS_CART);  //-- rot_y
+    ASSERT_NEAR(x[5], 1.209199576, EPS_CART);  //-- rot_z
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
