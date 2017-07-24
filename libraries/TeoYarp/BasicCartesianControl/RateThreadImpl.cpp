@@ -39,7 +39,7 @@ void roboticslab::BasicCartesianControl::run() {
         iCartesianSolver->fwdKinError(desiredX,currentQ, commandXdot);
         for(unsigned int i=0; i<6; i++)
         {
-            commandXdot[i] *= -DEFAULT_GAIN;
+            commandXdot[i] *= DEFAULT_GAIN * (1000.0 / DEFAULT_MS);
             commandXdot[i] += desiredXdot[i];
         }
 
