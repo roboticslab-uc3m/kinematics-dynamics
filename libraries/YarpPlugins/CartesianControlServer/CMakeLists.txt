@@ -17,6 +17,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs thi
 
 yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
                                        DeviceDriverImpl.cpp
+                                       RateThreadImpl.cpp
                                        RpcResponder.cpp
                                        StreamResponder.cpp)
 

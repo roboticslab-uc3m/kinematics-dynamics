@@ -60,15 +60,19 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     {
         rpcServer.open(name->asString() + "/rpc:s");
         commandPort.open(name->asString() + "/command:i");
+        fkOutPort.open(name->asString() + "/state:o");
     }
     else
     {
         rpcServer.open("/CartesianControl/rpc:s");
         commandPort.open("/CartesianControl/command:i");
+        fkOutPort.open("/CartesianControl/state:o");
     }
 
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
+
+    yarp::os::RateThread::start();
 
     // check angle representation, leave this block last to allow inner return instruction
     if (config.check("angleRepr", angleRepr))
@@ -103,6 +107,11 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
 bool roboticslab::CartesianControlServer::close()
 {
+    yarp::os::RateThread::stop();
+
+    fkOutPort.interrupt();
+    fkOutPort.close();
+
     rpcServer.interrupt();
     rpcServer.close();
     delete rpcResponder;

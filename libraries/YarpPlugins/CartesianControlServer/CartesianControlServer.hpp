@@ -13,6 +13,8 @@
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
+#define DEFAULT_MS 20
+
 namespace roboticslab
 {
 
@@ -32,12 +34,13 @@ class StreamResponder;
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 
-class CartesianControlServer : public yarp::dev::DeviceDriver
+class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::RateThread
 {
 public:
 
     CartesianControlServer()
-        : iCartesianControl(NULL),
+        : yarp::os::RateThread(DEFAULT_MS),
+          iCartesianControl(NULL),
           rpcResponder(NULL), rpcTransformResponder(NULL),
           streamResponder(NULL)
     {}
@@ -65,9 +68,16 @@ public:
      */
     virtual bool close();
 
+    /**
+     * Loop function. This is the thread itself.
+     */
+    virtual void run();
+
 protected:
 
     yarp::os::RpcServer rpcServer, rpcTransformServer;
+
+    yarp::os::Port fkOutPort;
 
     yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
 
