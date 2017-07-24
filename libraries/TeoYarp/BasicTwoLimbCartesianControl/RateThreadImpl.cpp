@@ -61,9 +61,9 @@ void roboticslab::BasicTwoLimbCartesianControl::run() {
         //jmyend
         for(unsigned int i=0; i<6; i++)
         {
-            commandXdotA[i] *= -DEFAULT_GAIN;
+            commandXdotA[i] *= DEFAULT_GAIN * (1000.0 / DEFAULT_MS);
             commandXdotA[i] += desiredXdotA[i];
-            commandXdotB[i] *= -DEFAULT_GAIN;
+            commandXdotB[i] *= DEFAULT_GAIN * (1000.0 / DEFAULT_MS);
             commandXdotB[i] += desiredXdotB[i];
         }
 
