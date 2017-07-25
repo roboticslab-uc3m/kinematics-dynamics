@@ -12,8 +12,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs thi
 yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                              DeviceDriverImpl.cpp
                              ICartesianSolverImpl.cpp
-                             ICartesianImpl.cpp
-                             RateThreadImpl.cpp
                              AsibotConfiguration.hpp
                              AsibotConfiguration.cpp
                              AsibotConfigurationLeastOverallAngularDisplacement.cpp)

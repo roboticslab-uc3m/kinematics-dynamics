@@ -2,6 +2,14 @@
 
 #include "AsibotSolver.hpp"
 
+#include <cmath>
+
+#include <yarp/math/Math.h>
+#include <yarp/math/SVD.h>
+#include <yarp/sig/Matrix.h>
+
+#include "YarpTinyMath.hpp"
+
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
