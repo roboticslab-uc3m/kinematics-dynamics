@@ -96,6 +96,10 @@ protected:
 
     yarp::os::RpcClient rpcClient;
 
+    yarp::os::Port commandPort;
+
+    yarp::os::PortWriterBuffer<yarp::os::Bottle> commandBuffer;
+
 };
 
 }  // namespace roboticslab
