@@ -7,6 +7,7 @@
 
 #include <yarp/os/Vocab.h>
 
+// RPC commands
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t')
 #define VOCAB_CC_INV VOCAB3('i','n','v')
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
@@ -17,6 +18,10 @@
 #define VOCAB_CC_FORC VOCAB4('f','o','r','c')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 
+// Streaming commands
+#define VOCAB_CC_VMOS VOCAB4('v','m','o','s')
+
+// Control state
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
 #define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c')
 #define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c')
@@ -29,7 +34,7 @@ namespace roboticslab
 
 /**
  *
- * @brief Abstract base for a cartesian control.
+ * @brief Abstract base class for a cartesian controller.
  *
  */
 class ICartesianControl
@@ -39,6 +44,8 @@ class ICartesianControl
          * Destructor.
          */
         virtual ~ICartesianControl() {}
+
+        //--------------------- RPC commands ---------------------
 
         /** Inform on control state, and get robot position and perform forward kinematics. */
         virtual bool stat(int &state, std::vector<double> &x) = 0;
@@ -66,6 +73,10 @@ class ICartesianControl
 
         /** stop */
         virtual bool stopControl() = 0;
+
+        //--------------------- Streaming commands ---------------------
+        /** vmos */
+        virtual bool vmos(const std::vector<double> &xdot) = 0;
 
 };
 

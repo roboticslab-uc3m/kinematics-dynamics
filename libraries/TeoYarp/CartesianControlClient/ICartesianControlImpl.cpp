@@ -197,3 +197,10 @@ bool roboticslab::CartesianControlClient::stopControl()
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------

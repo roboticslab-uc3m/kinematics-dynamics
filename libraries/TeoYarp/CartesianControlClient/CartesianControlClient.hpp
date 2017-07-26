@@ -66,6 +66,9 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         /** stop */
         virtual bool stopControl();
 
+        /** vmos */
+        virtual bool vmos(const std::vector<double> &xdot);
+
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
         /**

@@ -250,3 +250,10 @@ bool roboticslab::BasicCartesianControl::stopControl()
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
