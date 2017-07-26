@@ -253,6 +253,30 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 {
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setVelocityMode(joint);
+    }
+
+    std::vector<double> currentQ(numRobotJoints), qdot;
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    if ( ! iCartesianSolver->diffInvKin( currentQ, xdot, qdot ) )
+    {
+        CD_ERROR("currentQ, xdot, qdot failed.\n");
+        return false;
+    }
+
+    if ( ! iVelocityControl->velocityMove( qdot.data() ) )
+    {
+        CD_ERROR("velocityMove failed.\n");
+        return false;
+    }
+
     return true;
 }
 
