@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __BASIC_CARTESIAN_CONTROL_HPP__
-#define __BASIC_CARTESIAN_CONTROL_HPP__
+#ifndef __CARTESIAN_CONTROL_SERVER_HPP__
+#define __CARTESIAN_CONTROL_SERVER_HPP__
 
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
@@ -22,54 +22,97 @@ namespace roboticslab
  * @brief Contains roboticslab::CartesianControlServer.
  */
 
+class RpcResponder;
+
 /**
  * @ingroup CartesianControlServer
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 
-class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::PortReader {
+class CartesianControlServer : public yarp::dev::DeviceDriver
+{
+public:
 
-    public:
+    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL) {}
 
-        CartesianControlServer() {}
+    // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
-        // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
+    /**
+     * Open the DeviceDriver.
+     * @param config is a list of parameters for the device.
+     * Which parameters are effective for your device can vary.
+     * See \ref dev_examples "device invocation examples".
+     * If there is no example for your device,
+     * you can run the "yarpdev" program with the verbose flag
+     * set to probe what parameters the device is checking.
+     * If that fails too,
+     * you'll need to read the source code (please nag one of the
+     * yarp developers to add documentation for your device).
+     * @return true/false upon success/failure
+     */
+    virtual bool open(yarp::os::Searchable& config);
 
-        /**
-        * Open the DeviceDriver.
-        * @param config is a list of parameters for the device.
-        * Which parameters are effective for your device can vary.
-        * See \ref dev_examples "device invocation examples".
-        * If there is no example for your device,
-        * you can run the "yarpdev" program with the verbose flag
-        * set to probe what parameters the device is checking.
-        * If that fails too,
-        * you'll need to read the source code (please nag one of the
-        * yarp developers to add documentation for your device).
-        * @return true/false upon success/failure
-        */
-        virtual bool open(yarp::os::Searchable& config);
+    /**
+     * Close the DeviceDriver.
+     * @return true/false on success/failure.
+     */
+    virtual bool close();
 
-        /**
-        * Close the DeviceDriver.
-        * @return true/false on success/failure.
-        */
-        virtual bool close();
+protected:
 
-        // -------- PortReader declarations. Implementation in CartesianControlServer.cpp --------
+    yarp::os::RpcServer rpcServer;
 
-        virtual bool read(yarp::os::ConnectionReader& connection);
+    yarp::dev::PolyDriver cartesianControlDevice;
 
-    protected:
+    roboticslab::ICartesianControl *iCartesianControl;
 
-        yarp::os::RpcServer rpcServer;
+    RpcResponder *rpcResponder;
+};
 
-        yarp::dev::PolyDriver cartesianControlDevice;
-        roboticslab::ICartesianControl *iCartesianControl;
+/**
+ * @ingroup CartesianControlServer
+ * @brief Responds to RPC command messages.
+ */
+class RpcResponder : public yarp::dev::DeviceResponder
+{
+public:
 
+    RpcResponder(roboticslab::ICartesianControl * iCartesianControl)
+    {
+        this->iCartesianControl = iCartesianControl;
+
+        // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
+        makeUsage();
+    }
+
+    /**
+     * Respond to a message.
+     * @param in the message
+     * @param out the response
+     * @return true if there was no critical failure
+     */
+    virtual bool respond(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
+    /**
+     * Generate command usage information.
+     */
+    void makeUsage();
+
+protected:
+
+    typedef bool (ICartesianControl::*RunnableFun)();
+    typedef bool (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
+    typedef bool (ICartesianControl::*FunctionFun)(const std::vector<double>&, std::vector<double>&);
+
+    bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
+    bool handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd);
+    bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
+    bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
+
+    roboticslab::ICartesianControl * iCartesianControl;
 };
 
 }  // namespace roboticslab
 
-#endif  // __KDL_SOLVER_HPP__
-
+#endif  // __CARTESIAN_CONTROL_SERVER_HPP__

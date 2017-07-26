@@ -15,8 +15,8 @@ if(NOT SKIP_CartesianControlServer)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
-                                       CartesianControlServer.cpp
-                                       DeviceDriverImpl.cpp)
+                                       DeviceDriverImpl.cpp
+                                       RpcResponder.cpp)
 
 add_dependencies(CartesianControlServer COLOR_DEBUG)
 
