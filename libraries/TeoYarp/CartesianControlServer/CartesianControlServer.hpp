@@ -98,6 +98,16 @@ public:
 
 protected:
 
+    bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleInvMsg (const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleMovjMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleReljMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleMovlMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleMovvMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleGcmpMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleForcMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleStopMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
     roboticslab::ICartesianControl * iCartesianControl;
 };
 
