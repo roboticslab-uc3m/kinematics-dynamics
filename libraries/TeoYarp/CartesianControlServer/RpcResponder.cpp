@@ -9,21 +9,9 @@
 bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     // process data "in", prepare "out"
-    CD_DEBUG("Got: %s\n",in.toString().c_str());
+    CD_DEBUG("Got: %s\n", in.toString().c_str());
 
-    if( in.get(0).asString() == "help")
-    {
-        out.addVocab(VOCAB_CC_STAT);
-        out.addVocab(VOCAB_CC_INV);
-        out.addVocab(VOCAB_CC_MOVJ);
-        out.addVocab(VOCAB_CC_RELJ);
-        out.addVocab(VOCAB_CC_MOVL);
-        out.addVocab(VOCAB_CC_MOVV);
-        out.addVocab(VOCAB_CC_GCMP);
-        out.addVocab(VOCAB_CC_FORC);
-        out.addVocab(VOCAB_CC_STOP);
-    }
-    else if( in.get(0).asVocab() == VOCAB_CC_STAT)
+    if( in.get(0).asVocab() == VOCAB_CC_STAT)
     {
         std::vector<double> x;
         int state;
@@ -204,10 +192,26 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
     }
     else
     {
-        out.addVocab(VOCAB_FAILED);
+        DeviceResponder::respond(in, out);
     }
 
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::RpcResponder::makeUsage()
+{
+    // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
+    addUsage("[stat]", "get current position in cartesian space");
+    addUsage("[inv] $fCoord1 $fCoord2 ...", "accept desired position in cartesian space, return result in joint space");
+    addUsage("[movj] $fCoord1 $fCoord2 ...", "joint move to desired position (absolute coordinates in cartesian space)");
+    addUsage("[relj] $fCoord1 $fCoord2 ...", "joint move to desired position (relative coordinates in cartesian space)");
+    addUsage("[movl] $fCoord1 $fCoord2 ...", "linear move to desired position (absolute coordinates in cartesian space)");
+    addUsage("[movv] $fCoord1 $fCoord2 ...", "velocity move using supplied vector (cartesian space)");
+    addUsage("[gcmp]", "enable gravity compensation");
+    addUsage("[forc] $fCoord1 $fCoord2 ...", "enable torque control, apply input forces (cartesian space)");
+    addUsage("[stop]", "stop control");
 }
 
 // -----------------------------------------------------------------------------

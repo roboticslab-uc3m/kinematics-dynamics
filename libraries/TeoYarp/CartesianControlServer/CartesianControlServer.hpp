@@ -80,6 +80,7 @@ public:
     RpcResponder(roboticslab::ICartesianControl * iCartesianControl)
     {
         this->iCartesianControl = iCartesianControl;
+        this->makeUsage();
     }
 
     /**
@@ -89,6 +90,11 @@ public:
      * @return true if there was no critical failure
      */
     virtual bool respond(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
+    /**
+     * Generate command usage information.
+     */
+    virtual void makeUsage();
 
 protected:
 
