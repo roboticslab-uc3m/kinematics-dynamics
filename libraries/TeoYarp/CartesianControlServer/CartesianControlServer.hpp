@@ -23,6 +23,7 @@ namespace roboticslab
  */
 
 class RpcResponder;
+class StreamResponder;
 
 /**
  * @ingroup CartesianControlServer
@@ -33,7 +34,8 @@ class CartesianControlServer : public yarp::dev::DeviceDriver
 {
 public:
 
-    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL) {}
+    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL), streamResponder(NULL)
+    {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
@@ -67,6 +69,8 @@ protected:
     roboticslab::ICartesianControl *iCartesianControl;
 
     RpcResponder *rpcResponder;
+
+    StreamResponder *streamResponder;
 };
 
 /**
@@ -77,7 +81,7 @@ class RpcResponder : public yarp::dev::DeviceResponder
 {
 public:
 
-    RpcResponder(roboticslab::ICartesianControl * iCartesianControl)
+    RpcResponder(roboticslab::ICartesianControl *iCartesianControl)
     {
         this->iCartesianControl = iCartesianControl;
         this->makeUsage();
@@ -108,7 +112,27 @@ protected:
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
     bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    roboticslab::ICartesianControl *iCartesianControl;
+};
+
+/**
+ * @ingroup CartesianControlServer
+ * @brief Responds to streaming command messages.
+ */
+class StreamResponder : public yarp::os::BufferedPort<yarp::os::Bottle>
+{
+public:
+
+    StreamResponder(roboticslab::ICartesianControl *iCartesianControl)
+    {
+        this->iCartesianControl = iCartesianControl;
+    }
+
+    void onRead(yarp::os::Bottle& b);
+
+protected:
+
+    roboticslab::ICartesianControl *iCartesianControl;
 };
 
 }  // namespace roboticslab

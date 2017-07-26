@@ -41,15 +41,23 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         return false;
     }
 
-    //Look for the portname to register (--name option)
-    if (config.check("name",name))
-        rpcServer.open(name->asString()+"/rpc:s");
-    else
-        rpcServer.open("/CartesianControl/rpc:s");
-
     rpcResponder = new RpcResponder(iCartesianControl);
+    streamResponder = new StreamResponder(iCartesianControl);
+
+    //Look for the portname to register (--name option)
+    if (config.check("name", name))
+    {
+        rpcServer.open(name->asString() + "/rpc:s");
+        streamResponder->open(name->asString() + "/command:s");
+    }
+    else
+    {
+        rpcServer.open("/CartesianControl/rpc:s");
+        streamResponder->open("/CartesianControl/command:s");
+    }
 
     rpcServer.setReader(*rpcResponder);
+    streamResponder->useCallback();
 
     return true;
 }
@@ -58,10 +66,18 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
 bool roboticslab::CartesianControlServer::close()
 {
+    rpcServer.interrupt();
     rpcServer.close();
     delete rpcResponder;
     rpcResponder = NULL;
+
+    streamResponder->disableCallback();
+    streamResponder->close();
+    delete streamResponder;
+    streamResponder = NULL;
+
     cartesianControlDevice.close();
+
     return true;
 }
 
