@@ -4,14 +4,10 @@
 
 #include <ColorDebug.hpp>
 
-// ------------------- CartesianControlServer Related ------------------------------------
+// ------------------- RpcResponder Related ------------------------------------
 
-bool roboticslab::CartesianControlServer::read(yarp::os::ConnectionReader& connection)
+bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
-    yarp::os::Bottle in, out;
-    bool ok = in.read(connection);
-    if (!ok) return false;
-
     // process data "in", prepare "out"
     CD_DEBUG("Got: %s\n",in.toString().c_str());
 
@@ -211,10 +207,6 @@ bool roboticslab::CartesianControlServer::read(yarp::os::ConnectionReader& conne
         out.addVocab(VOCAB_FAILED);
     }
 
-    yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
-    if (returnToSender!=NULL) {
-        out.write(*returnToSender);
-    }
     return true;
 }
 

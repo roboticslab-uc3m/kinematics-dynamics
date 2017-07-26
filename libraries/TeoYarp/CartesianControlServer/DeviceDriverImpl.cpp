@@ -6,10 +6,8 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
-
-    rpcServer.setReader(*this);
-
+bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
+{
     yarp::os::Value *name;
     if (config.check("subdevice",name))
     {
@@ -49,6 +47,9 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
     else
         rpcServer.open("/CartesianControl/rpc:s");
 
+    rpcResponder = new RpcResponder(iCartesianControl);
+
+    rpcServer.setReader(*rpcResponder);
 
     return true;
 }
@@ -58,6 +59,8 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
 bool roboticslab::CartesianControlServer::close()
 {
     rpcServer.close();
+    delete rpcResponder;
+    rpcResponder = NULL;
     cartesianControlDevice.close();
     return true;
 }
