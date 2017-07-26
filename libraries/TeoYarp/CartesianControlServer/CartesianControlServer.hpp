@@ -98,15 +98,15 @@ public:
 
 protected:
 
+    typedef bool (ICartesianControl::*RunnableFun)();
+    typedef bool (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
+    typedef bool (ICartesianControl::*FunctionFun)(const std::vector<double>&, std::vector<double>&);
+
     bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleInvMsg (const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleMovjMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleReljMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleMovlMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleMovvMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleGcmpMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleForcMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleStopMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
+    bool handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd);
+    bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
+    bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
 
     roboticslab::ICartesianControl * iCartesianControl;
 };

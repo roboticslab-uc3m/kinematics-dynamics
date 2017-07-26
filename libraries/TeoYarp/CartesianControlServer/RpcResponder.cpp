@@ -16,19 +16,19 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
     case VOCAB_CC_STAT:
         return handleStatMsg(in, out);
     case VOCAB_CC_INV:
-        return handleInvMsg(in, out);
+        return handleFunctionCmdMsg(in, out, &ICartesianControl::inv);
     case VOCAB_CC_MOVJ:
-        return handleMovjMsg(in, out);
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::movj);
     case VOCAB_CC_RELJ:
-        return handleReljMsg(in, out);
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::relj);
     case VOCAB_CC_MOVL:
-        return handleMovlMsg(in, out);
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::movl);
     case VOCAB_CC_GCMP:
-        return handleGcmpMsg(in, out);
+        return handleRunnableCmdMsg(in, out, &ICartesianControl::gcmp);
     case VOCAB_CC_FORC:
-        return handleForcMsg(in, out);
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::forc);
     case VOCAB_CC_STOP:
-        return handleStopMsg(in, out);
+        return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -77,22 +77,70 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleInvMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool roboticslab::RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd)
+{
+    if ((iCartesianControl->*cmd)())
+    {
+        out.addVocab(VOCAB_OK);
+        return true;
+    }
+    else
+    {
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd)
 {
     if (in.size() > 1)
     {
-        std::vector<double> xd, q;
+        std::vector<double> vin;
 
         for (size_t i = 1; i < in.size(); i++)
         {
-            xd.push_back(in.get(i).asDouble());
+            vin.push_back(in.get(i).asDouble());
         }
 
-        if (iCartesianControl->inv(xd,q))
+        if ((iCartesianControl->*cmd)(vin))
         {
-            for (size_t i = 0; i < q.size(); i++)
+            out.addVocab(VOCAB_OK);
+            return true;
+        }
+        else
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd)
+{
+    if (in.size() > 1)
+    {
+        std::vector<double> vin, vout;
+
+        for (size_t i = 1; i < in.size(); i++)
+        {
+            vin.push_back(in.get(i).asDouble());
+        }
+
+        if ((iCartesianControl->*cmd)(vin, vout))
+        {
+            for (size_t i = 0; i < vout.size(); i++)
             {
-                out.addDouble(q[i]);
+                out.addDouble(vout[i]);
             }
 
             return true;
@@ -106,198 +154,6 @@ bool roboticslab::RpcResponder::handleInvMsg(const yarp::os::Bottle& in, yarp::o
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleMovjMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 1)
-    {
-        std::vector<double> xd;
-
-        for (size_t i = 1; i < in.size(); i++)
-        {
-            xd.push_back(in.get(i).asDouble());
-        }
-
-        if (iCartesianControl->movj(xd))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleReljMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 1)
-    {
-        std::vector<double> xd;
-
-        for (size_t i = 1; i < in.size(); i++)
-        {
-            xd.push_back(in.get(i).asDouble());
-        }
-
-        if (iCartesianControl->relj(xd))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleMovlMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 1)
-    {
-        std::vector<double> xd;
-
-        for (size_t i = 1; i < in.size(); i++)
-        {
-            xd.push_back(in.get(i).asDouble());
-        }
-
-        if (iCartesianControl->movl(xd))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleMovvMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 1)
-    {
-        std::vector<double> xdotd;
-
-        for (size_t i = 1; i < in.size(); i++)
-        {
-            xdotd.push_back(in.get(i).asDouble());
-        }
-
-        if (iCartesianControl->movv(xdotd))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleGcmpMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (iCartesianControl->gcmp())
-    {
-        out.addVocab(VOCAB_OK);
-        return true;
-    }
-    else
-    {
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleForcMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 1)
-    {
-        std::vector<double> td;
-
-        for (size_t i = 1; i < in.size(); i++)
-        {
-            td.push_back(in.get(i).asDouble());
-        }
-
-        if (iCartesianControl->forc(td))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleStopMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (iCartesianControl->stopControl())
-    {
-        out.addVocab(VOCAB_OK);
-        return true;
-    }
-    else
-    {
         out.addVocab(VOCAB_FAILED);
         return false;
     }
