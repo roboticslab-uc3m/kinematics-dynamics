@@ -48,12 +48,12 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     if (config.check("name", name))
     {
         rpcServer.open(name->asString() + "/rpc:s");
-        streamResponder->open(name->asString() + "/command:s");
+        streamResponder->open(name->asString() + "/command:i");
     }
     else
     {
         rpcServer.open("/CartesianControl/rpc:s");
-        streamResponder->open("/CartesianControl/command:s");
+        streamResponder->open("/CartesianControl/command:i");
     }
 
     rpcServer.setReader(*rpcResponder);
