@@ -64,6 +64,8 @@ protected:
 
     yarp::os::RpcServer rpcServer;
 
+    yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
+
     yarp::dev::PolyDriver cartesianControlDevice;
 
     roboticslab::ICartesianControl *iCartesianControl;
@@ -119,7 +121,7 @@ protected:
  * @ingroup CartesianControlServer
  * @brief Responds to streaming command messages.
  */
-class StreamResponder : public yarp::os::BufferedPort<yarp::os::Bottle>
+class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
 

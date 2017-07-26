@@ -48,16 +48,16 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     if (config.check("name", name))
     {
         rpcServer.open(name->asString() + "/rpc:s");
-        streamResponder->open(name->asString() + "/command:i");
+        commandPort.open(name->asString() + "/command:i");
     }
     else
     {
         rpcServer.open("/CartesianControl/rpc:s");
-        streamResponder->open("/CartesianControl/command:i");
+        commandPort.open("/CartesianControl/command:i");
     }
 
     rpcServer.setReader(*rpcResponder);
-    streamResponder->useCallback();
+    commandPort.useCallback(*streamResponder);
 
     return true;
 }
@@ -71,8 +71,8 @@ bool roboticslab::CartesianControlServer::close()
     delete rpcResponder;
     rpcResponder = NULL;
 
-    streamResponder->disableCallback();
-    streamResponder->close();
+    commandPort.interrupt();
+    commandPort.close();
     delete streamResponder;
     streamResponder = NULL;
 
