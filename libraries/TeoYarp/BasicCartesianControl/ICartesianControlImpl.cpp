@@ -271,6 +271,15 @@ bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
         return false;
     }
 
+    for (unsigned int i = 0; i < qdot.size(); i++)
+    {
+        if ( fabs(qdot[i]) > MAX_ANG_VEL )
+        {
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            return false;
+        }
+    }
+
     if ( ! iVelocityControl->velocityMove( qdot.data() ) )
     {
         CD_ERROR("velocityMove failed.\n");
