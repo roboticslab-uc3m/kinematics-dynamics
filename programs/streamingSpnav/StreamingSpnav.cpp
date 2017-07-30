@@ -24,7 +24,50 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
 
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
 
-    if(rf.check("help"))
+    yarp::os::Value axesValue = rf.check("fixedAxes", yarp::os::Value(DEFAULT_FIXED_AXES), "axes with restricted movement");
+
+    fixedAxes.resize(6, false);
+
+    if (axesValue.isList())
+    {
+        yarp::os::Bottle * axesList = axesValue.asList();
+
+        for (int i = 0; i < axesList->size(); i++)
+        {
+            std::string str = axesList->get(i).asString();
+
+            if (str == "x")
+            {
+                fixedAxes[0] = true;
+            }
+            else if (str == "y")
+            {
+                fixedAxes[1] = true;
+            }
+            else if (str == "z")
+            {
+                fixedAxes[2] = true;
+            }
+            else if (str == "rotx")
+            {
+                fixedAxes[3] = true;
+            }
+            else if (str == "roty")
+            {
+                fixedAxes[4] = true;
+            }
+            else if (str == "rotz")
+            {
+                fixedAxes[5] = true;
+            }
+            else
+            {
+                CD_WARNING("Unrecognized fixed axis label: %s. Ignoring...\n", str.c_str());
+            }
+        }
+    }
+
+    if (rf.check("help"))
     {
         printf("StreamingSpnav options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
@@ -85,11 +128,14 @@ bool StreamingSpnav::updateModule()
         return false;
     }
 
-    std::vector<double> xdot(6);
+    std::vector<double> xdot(6, 0.0);
 
     for (int i = 0; i < data.size(); i++)
     {
-        xdot[i] = data[i] / scaling;
+        if (!fixedAxes[i])
+        {
+            xdot[i] = data[i] / scaling;
+        }
     }
 
     if (!iCartesianControl->vmos(xdot))

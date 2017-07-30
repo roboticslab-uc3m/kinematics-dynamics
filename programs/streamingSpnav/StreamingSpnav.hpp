@@ -1,6 +1,8 @@
 #ifndef __STREAMING_SPNAV_HPP__
 #define __STREAMING_SPNAV_HPP__
 
+#include <vector>
+
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
 
@@ -16,6 +18,8 @@
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 
 #define DEFAULT_SCALING 10.0
+
+#define DEFAULT_FIXED_AXES "none"
 
 namespace roboticslab
 {
@@ -43,6 +47,8 @@ private:
     roboticslab::ICartesianControl *iCartesianControl;
 
     double scaling;
+
+    std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled
 };
 
 }  // namespace roboticslab
