@@ -134,6 +134,10 @@ public:
 
 protected:
 
+    typedef bool (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
+
+    void handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd);
+
     roboticslab::ICartesianControl *iCartesianControl;
 };
 
