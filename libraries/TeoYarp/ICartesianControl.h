@@ -19,7 +19,11 @@
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
 
 // Streaming commands
+#define VOCAB_CC_FWD VOCAB3('f','w','d')
+#define VOCAB_CC_BKWD VOCAB4('b','k','w','d')
+#define VOCAB_CC_ROT VOCAB3('r','o','t')
 #define VOCAB_CC_VMOS VOCAB4('v','m','o','s')
+#define VOCAB_CC_POSE VOCAB4('p','o','s','e')
 
 // Control state
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
@@ -75,8 +79,20 @@ class ICartesianControl
         virtual bool stopControl() = 0;
 
         //--------------------- Streaming commands ---------------------
+        /** fwd */
+        virtual bool fwd(const std::vector<double> &rot) = 0;
+
+        /** bkwd */
+        virtual bool bkwd(const std::vector<double> &rot) =0;
+
+        /** rot */
+        virtual bool rot(const std::vector<double> &rot) = 0;
+
         /** vmos */
         virtual bool vmos(const std::vector<double> &xdot) = 0;
+
+        /** pose */
+        virtual bool pose(const std::vector<double> &x) = 0;
 
 };
 

@@ -251,6 +251,27 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::rot(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 {
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -286,6 +307,13 @@ bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
         return false;
     }
 
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::pose(const std::vector<double> &x)
+{
     return true;
 }
 

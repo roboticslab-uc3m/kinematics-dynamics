@@ -198,6 +198,27 @@ bool roboticslab::CartesianControlClient::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
@@ -209,6 +230,13 @@ bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 
     commandBuffer.write(true);
 
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x)
+{
     return true;
 }
 
