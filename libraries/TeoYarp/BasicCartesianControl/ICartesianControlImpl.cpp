@@ -186,7 +186,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         fflush(stdout);
         yarp::os::Time::delay(0.5);
     }
-    //trajectory.deleteLine();  //-- Causes segFaults for now
+    trajectory.deleteLine();
 
     return true;
 }
