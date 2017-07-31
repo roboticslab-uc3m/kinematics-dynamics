@@ -133,6 +133,7 @@ bool StreamingSpnav::updateModule()
     }
 
     std::vector<double> xdot(6, 0.0);
+    bool isZero = true;
 
     if (!fixedAxes[3] || !fixedAxes[4] || !fixedAxes[5])
     {
@@ -155,11 +156,17 @@ bool StreamingSpnav::updateModule()
 
     for (int i = 0; i < data.size(); i++)
     {
-        if (!fixedAxes[i])
+        if (!fixedAxes[i] && data[i] != 0.0)
         {
-
+            isZero = false;
             xdot[i] = data[i] / scaling;
         }
+    }
+
+    if (isZero)
+    {
+        iCartesianControl->stopControl();
+        return true;
     }
 
     if (!iCartesianControl->vmos(xdot))
