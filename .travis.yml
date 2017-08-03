@@ -15,12 +15,12 @@ before_install:
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
 install:
-  #-- Install cmake
-  - sudo apt-get install cmake
+  #-- Install cmake and eigen
+  - sudo apt-get install cmake libeigen3-dev
   #-- Install yarp
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
-  - cmake .. -DSKIP_ACE=ON
+  - cmake .. -DSKIP_ACE=ON -DCREATE_LIB_MATH=ON
   - make
   - sudo make install
   - cd ../..
