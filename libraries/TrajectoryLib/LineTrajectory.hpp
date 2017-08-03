@@ -3,6 +3,7 @@
 #ifndef __LINE_TRAJECTORY_HPP__
 #define __LINE_TRAJECTORY_HPP__
 
+#include <string>
 #include <vector>
 
 #include <kdl/rotational_interpolation_sa.hpp>
@@ -13,7 +14,7 @@
 
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
-#define DEFAULT_DURATION 10
+#define DEFAULT_DURATION 10.0
 
 namespace roboticslab
 {
@@ -34,7 +35,7 @@ class LineTrajectory : public Trajectory, public KdlVectorConverter
 {
 public:
 
-    LineTrajectory();
+    LineTrajectory(const std::string & angleRepr = "axisAngle");
 
     /** Cartesian position of the trajectory at movementTime */
     virtual bool getX(const double movementTime, std::vector<double>& x);

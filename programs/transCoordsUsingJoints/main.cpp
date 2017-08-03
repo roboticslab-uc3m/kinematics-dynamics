@@ -6,7 +6,7 @@
 #include "TransCoordsUsingJoints.hpp"
 
 /**
- * @ingroup vision_programs
+ * @ingroup kinematics-dynamics-programs
  *
  * \defgroup transCoordsUsingJoints transCoordsUsingJoints
  *

@@ -21,7 +21,7 @@
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_MS 50
 #define MAX_ANG_VEL 7.5
-#define DEFAULT_GAIN 1.0
+#define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10
 
 namespace roboticslab
@@ -140,6 +140,21 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         /** stop */
         virtual bool stopControl();
+
+        /** fwd */
+        virtual bool fwd(const std::vector<double> &rot);
+
+        /** bkwd*/
+        virtual bool bkwd(const std::vector<double> &rot);
+
+        /** rot */
+        virtual bool rot(const std::vector<double> &rot);
+
+        /** vmos */
+        virtual bool vmos(const std::vector<double> &xdot);
+
+        /** pose */
+        virtual bool pose(const std::vector<double> &x);
 
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 

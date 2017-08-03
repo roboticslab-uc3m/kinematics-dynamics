@@ -10,11 +10,11 @@
 
 // -----------------------------------------------------------------------------
 
-roboticslab::LineTrajectory::LineTrajectory() : KdlVectorConverter("axisAngle")
-{
-    _orient = 0;
-    currentTrajectory = 0;
-}
+roboticslab::LineTrajectory::LineTrajectory(const std::string & angleRepr)
+    : KdlVectorConverter(angleRepr),
+      currentTrajectory(0),
+      _orient(0)
+{}
 
 // -----------------------------------------------------------------------------
 
@@ -41,15 +41,15 @@ bool roboticslab::LineTrajectory::newLine(const std::vector<double> &src, const 
     KDL::Frame srcFrame, destFrame;
     vectorToFrame(src,srcFrame);
     vectorToFrame(dest,destFrame);
-    _orient = new KDL::RotationalInterpolation_SingleAxis();
-    double _eqradius = 1; //0.000001;
-    bool _aggregate = true;
-    double duration = DEFAULT_DURATION;
 
-    KDL::Path_Line testPathLine(srcFrame, destFrame, _orient, _eqradius, _aggregate);
-    KDL::VelocityProfile_Trap testVelocityProfile(DEFAULT_MAXVEL, DEFAULT_MAXACC);
-//    KDL::Trajectory_Segment testTrajectory(testPathLine.Clone(), testVelocityProfile.Clone(), duration, _aggregate);
-    currentTrajectory = new KDL::Trajectory_Segment(testPathLine.Clone(), testVelocityProfile.Clone(), duration, _aggregate);
+    _orient = new KDL::RotationalInterpolation_SingleAxis();
+
+    double _eqradius = 1.0; //0.000001;
+
+    KDL::Path * pathLine = new KDL::Path_Line(srcFrame, destFrame, _orient, _eqradius);
+    KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_MAXVEL, DEFAULT_MAXACC);
+
+    currentTrajectory = new KDL::Trajectory_Segment(pathLine, velocityProfile, DEFAULT_DURATION);
 
     return true;
 }
@@ -58,10 +58,9 @@ bool roboticslab::LineTrajectory::newLine(const std::vector<double> &src, const 
 
 bool roboticslab::LineTrajectory::deleteLine()
 {
-    delete _orient;
-    _orient = 0;
-    delete currentTrajectory;
+    delete currentTrajectory;  // deletes _orient, too
     currentTrajectory = 0;
+    _orient = 0;
 
     return true;
 }

@@ -109,3 +109,48 @@ bool roboticslab::AmorCartesianControl::stopControl()
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::rot(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
+{
+    AMOR_VECTOR7 velocities;
+
+    velocities[0] = xdot[0] * 1000;  // [mm/s]
+    velocities[1] = xdot[1] * 1000;
+    velocities[2] = xdot[2] * 1000;
+
+    velocities[3] = toRad(xdot[3]);  // [rad/s]
+    velocities[4] = toRad(xdot[4]);
+    velocities[5] = toRad(xdot[5]);
+
+    return amor_set_cartesian_velocities(handle, velocities) == AMOR_SUCCESS;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
