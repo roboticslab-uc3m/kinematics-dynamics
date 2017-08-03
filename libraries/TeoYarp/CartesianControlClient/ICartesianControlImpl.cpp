@@ -197,3 +197,83 @@ bool roboticslab::CartesianControlClient::stopControl()
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_FWD);
+    for(size_t i=0; i<rot.size(); i++)
+        cmd.addDouble(rot[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_BKWD);
+    for(size_t i=0; i<rot.size(); i++)
+        cmd.addDouble(rot[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_ROT);
+    for(size_t i=0; i<rot.size(); i++)
+        cmd.addDouble(rot[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_VMOS);
+    for(size_t i=0; i<xdot.size(); i++)
+        cmd.addDouble(xdot[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_POSE);
+    for(size_t i=0; i<x.size(); i++)
+        cmd.addDouble(x[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------

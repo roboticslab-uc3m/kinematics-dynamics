@@ -30,6 +30,8 @@ public:
     /** Cartesian velocity of the trajectory at movementTime */
     virtual bool getXdot(const double movementTime, std::vector<double>& xdot) = 0;
 
+    /** Destructor */
+    virtual ~Trajectory() {}
 };
 
 }  // namespace roboticslab

@@ -89,6 +89,19 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
         iCartesianSolver->setLimits(qMin,qMax);
     }
 
+    // Somewhat dirty hack; we cannot rely on polymorphism yet, thus 'trayectory'
+    // is a LineTrajectory object initialized here again in case the default angle
+    // representation differs from the one used by TEO.
+    yarp::os::Value angleReprValue = config.find("angleRepr");
+    if( !angleReprValue.isNull() )
+    {
+        std::string angleRepr = angleReprValue.asString();
+        if( angleRepr != "axisAngle" )
+        {
+            trajectory = LineTrajectory(angleRepr);
+        }
+    }
+
     return this->start();
 }
 

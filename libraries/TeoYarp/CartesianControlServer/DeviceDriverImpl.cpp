@@ -6,10 +6,8 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
-
-    rpcServer.setReader(*this);
-
+bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
+{
     yarp::os::Value *name;
     if (config.check("subdevice",name))
     {
@@ -43,12 +41,23 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
         return false;
     }
 
-    //Look for the portname to register (--name option)
-    if (config.check("name",name))
-        rpcServer.open(name->asString()+"/rpc:s");
-    else
-        rpcServer.open("/CartesianControl/rpc:s");
+    rpcResponder = new RpcResponder(iCartesianControl);
+    streamResponder = new StreamResponder(iCartesianControl);
 
+    //Look for the portname to register (--name option)
+    if (config.check("name", name))
+    {
+        rpcServer.open(name->asString() + "/rpc:s");
+        commandPort.open(name->asString() + "/command:i");
+    }
+    else
+    {
+        rpcServer.open("/CartesianControl/rpc:s");
+        commandPort.open("/CartesianControl/command:i");
+    }
+
+    rpcServer.setReader(*rpcResponder);
+    commandPort.useCallback(*streamResponder);
 
     return true;
 }
@@ -57,8 +66,18 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config) {
 
 bool roboticslab::CartesianControlServer::close()
 {
+    rpcServer.interrupt();
     rpcServer.close();
+    delete rpcResponder;
+    rpcResponder = NULL;
+
+    commandPort.interrupt();
+    commandPort.close();
+    delete streamResponder;
+    streamResponder = NULL;
+
     cartesianControlDevice.close();
+
     return true;
 }
 

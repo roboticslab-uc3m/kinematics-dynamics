@@ -9,3 +9,4 @@ CMakeLists.txt.user
 /.cproject
 /.project
 /external/
+/doc/html/*
