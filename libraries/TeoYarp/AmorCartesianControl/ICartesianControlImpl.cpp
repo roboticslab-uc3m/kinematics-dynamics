@@ -57,9 +57,9 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 {
     AMOR_VECTOR7 positions;
 
-    positions[0] = xd[0];  // [mm]
-    positions[1] = xd[1];
-    positions[2] = xd[2];
+    positions[0] = xd[0] * 1000;  // [mm]
+    positions[1] = xd[1] * 1000;
+    positions[2] = xd[2] * 1000;
 
     positions[3] = toRad(xd[3]);  // [rad]
     positions[4] = toRad(xd[4]);
