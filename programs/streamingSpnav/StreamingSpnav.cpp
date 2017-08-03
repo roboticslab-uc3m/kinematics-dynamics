@@ -1,11 +1,15 @@
 #include "StreamingSpnav.hpp"
 
 #include <string>
+#include <cmath>
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
 
 #include <yarp/sig/Vector.h>
+#include <yarp/sig/Matrix.h>
+
+#include <yarp/math/Math.h>
 
 #include <ColorDebug.hpp>
 
@@ -130,10 +134,30 @@ bool StreamingSpnav::updateModule()
 
     std::vector<double> xdot(6, 0.0);
 
+    if (!fixedAxes[3] || !fixedAxes[4] || !fixedAxes[5])
+    {
+        yarp::sig::Matrix rot = yarp::math::rpy2dcm(data.subVector(3, 5));
+        yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rot);
+        yarp::sig::Vector axis = axisAngle.subVector(0, 2);
+
+        if (std::abs(yarp::math::norm(axis)) > 1e-9)
+        {
+            data[3] /= axisAngle[3];
+            data[4] /= axisAngle[3];
+            data[5] /= axisAngle[3];
+        }
+        else
+        {
+            data[3] = 1.0;
+            data[4] = data[5] = 0.0;
+        }
+    }
+
     for (int i = 0; i < data.size(); i++)
     {
         if (!fixedAxes[i])
         {
+
             xdot[i] = data[i] / scaling;
         }
     }
