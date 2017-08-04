@@ -51,6 +51,9 @@ private:
     template <typename func>
     void incrementOrDecrementCartesianVelocity(cart coord, func op);
 
+    void printJointPositions();
+    void printCartesianPositions();
+
     void issueStop();
 
     int axes;
