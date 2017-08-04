@@ -10,6 +10,7 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IControlMode.h>
+#include <yarp/dev/IControlLimits2.h>
 #include <yarp/dev/IVelocityControl.h>
 
 #include "ICartesianControl.h"
@@ -59,10 +60,12 @@ private:
 
     yarp::dev::IEncoders * iEncoders;
     yarp::dev::IControlMode * iControlMode;
+    yarp::dev::IControlLimits2 * iControlLimits;
     yarp::dev::IVelocityControl * iVelocityControl;
 
     roboticslab::ICartesianControl * iCartesianControl;
 
+    std::vector<double> maxVelocityLimits;
     std::vector<double> currentJointVels;
     std::vector<double> currentCartVels;
 

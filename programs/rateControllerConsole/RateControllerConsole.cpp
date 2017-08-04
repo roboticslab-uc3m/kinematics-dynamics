@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <csignal>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -110,6 +111,12 @@ bool roboticslab::RateControllerConsole::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    if (!controlboardDevice.view(iControlLimits))
+    {
+        CD_ERROR("Could not view iControlLimits.\n");
+        return false;
+    }
+
     if (!controlboardDevice.view(iVelocityControl))
     {
         CD_ERROR("Could not view iVelocityControl.\n");
@@ -143,6 +150,15 @@ bool roboticslab::RateControllerConsole::configure(yarp::os::ResourceFinder &rf)
         cartesianControlDevice.close();
         controlboardDevice.close();
         return false;
+    }
+
+    maxVelocityLimits.resize(axes);
+
+    for (int i = 0; i < axes; i++)
+    {
+        double min, max;
+        iControlLimits->getVelLimits(i, &min, &max);
+        maxVelocityLimits[i] = max;
     }
 
     currentJointVels.resize(axes, 0.0);
@@ -325,6 +341,12 @@ void roboticslab::RateControllerConsole::incrementOrDecrementJointVelocity(joint
         }
 
         currentJointVels[q] = op(currentJointVels[q], JOINT_VELOCITY_STEP);
+
+        if (std::abs(currentJointVels[q]) > maxVelocityLimits[q])
+        {
+            CD_WARNING("Absolute joint velocity limit exceeded: maxVelocityLimits[%d] = %f\n", q, maxVelocityLimits[q]);
+            currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
+        }
 
         std::cout << "New joint velocity: " << currentJointVels << std::endl;
 
