@@ -23,6 +23,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleConsumerCmdMsg(in, out, &ICartesianControl::relj);
     case VOCAB_CC_MOVL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::movl);
+    case VOCAB_CC_MOVV:
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::movv);
     case VOCAB_CC_GCMP:
         return handleRunnableCmdMsg(in, out, &ICartesianControl::gcmp);
     case VOCAB_CC_FORC:
