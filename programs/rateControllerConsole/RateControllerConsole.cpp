@@ -46,7 +46,6 @@ namespace
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &ots);
         tcsetattr(STDOUT_FILENO, TCSANOW, &ots);
-        std::exit(signal);
     }
 
     // configure the TTY for reading keyboard input (UNIX)
@@ -314,9 +313,13 @@ bool roboticslab::RateControllerConsole::updateModule()
 bool roboticslab::RateControllerConsole::interruptModule()
 {
     bool ok = true;
+
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlDevice.close();
     ok &= controlboardDevice.close();
+
+    ttyreset(0);
+
     return ok;
 }
 
