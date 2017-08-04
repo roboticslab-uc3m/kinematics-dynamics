@@ -71,9 +71,9 @@ namespace
     }
 }
 
-const double roboticslab::RateControllerConsole::JOINT_VELOCITY_STEP = 1.0;  // [deg]
-const double roboticslab::RateControllerConsole::CARTESIAN_LINEAR_VELOCITY_STEP = 0.01;  // [m]
-const double roboticslab::RateControllerConsole::CARTESIAN_ANGULAR_VELOCITY_STEP = 1.0;  // [deg]
+const double roboticslab::RateControllerConsole::JOINT_VELOCITY_STEP = 0.5;  // [deg]
+const double roboticslab::RateControllerConsole::CARTESIAN_LINEAR_VELOCITY_STEP = 0.005;  // [m]
+const double roboticslab::RateControllerConsole::CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01;  // [deg]
 
 bool roboticslab::RateControllerConsole::configure(yarp::os::ResourceFinder &rf)
 {
