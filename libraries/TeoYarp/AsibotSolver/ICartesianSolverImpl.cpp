@@ -2,6 +2,14 @@
 
 #include "AsibotSolver.hpp"
 
+#include <cmath>
+
+#include <yarp/math/Math.h>
+#include <yarp/math/SVD.h>
+#include <yarp/sig/Matrix.h>
+
+#include "YarpTinyMath.hpp"
+
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
@@ -209,22 +217,22 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     Ja(2, 4) = 0;
 
     Ja(3, 0) = 0;
-    Ja(3, 1) = s5 / den;
-    Ja(3, 2) = Ja(3, 1);
-    Ja(3, 3) = Ja(3, 1);
-    Ja(3, 4) = (s234 * c234 * c5) / den;
+    Ja(3, 1) = -s1;
+    Ja(3, 2) = -s1;
+    Ja(3, 3) = -s1;
+    Ja(3, 4) = c1 * s234;
 
     Ja(4, 0) = 0;
-    Ja(4, 1) = (c234 * c5) / sqrtden;
-    Ja(4, 2) = Ja(4, 1);
-    Ja(4, 3) = Ja(4, 1);
-    Ja(4, 4) = -(s234 * s5) / sqrtden;
+    Ja(4, 1) = c1;
+    Ja(4, 2) = c1;
+    Ja(4, 3) = c1;
+    Ja(4, 4) = s1 * s234;
 
     Ja(5, 0) = 1;
-    Ja(5, 1) = (s234 * s5 * c5) / den;
-    Ja(5, 2) = Ja(5, 1);
-    Ja(5, 3) = Ja(5, 1);
-    Ja(5, 4) = c234 / den;
+    Ja(5, 1) = 0;
+    Ja(5, 2) = 0;
+    Ja(5, 3) = 0;
+    Ja(5, 4) = c234;
 
     yarp::sig::Matrix Ja_inv = yarp::math::pinv(Ja, 1.0e-2);
 

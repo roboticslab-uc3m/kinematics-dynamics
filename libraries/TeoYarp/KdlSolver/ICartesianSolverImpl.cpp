@@ -67,7 +67,7 @@ bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const st
     KDL::ChainFkSolverPos_recursive fksolver = KDL::ChainFkSolverPos_recursive(chain);
     fksolver.JntToCart(qInRad,f);
 
-    KDL::Twist d = KDL::diff(frameXd,f);
+    KDL::Twist d = KDL::diff(f,frameXd);
     x.resize(6);
     x[0] = d.vel.x();
     x[1] = d.vel.y();

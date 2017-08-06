@@ -23,11 +23,6 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
 
-    startTime = 0;
-    realRad.resize(5);
-    targetX.resize(3);
-    targetO.resize(2);
-
     printf("--------------------------------------------------------------\n");
     if(config.check("help")) {
         printf("CartesianBot options:\n");
@@ -43,8 +38,6 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
     A1 = fullConfig.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2").asDouble();
     A2 = fullConfig.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3").asDouble();
     A3 = fullConfig.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4").asDouble();
-
-    tool = DEFAULT_TOOL;
 
     CD_DEBUG("CartesianBot using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
