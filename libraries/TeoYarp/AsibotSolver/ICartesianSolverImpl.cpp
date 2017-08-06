@@ -22,14 +22,16 @@ bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 
 bool roboticslab::AsibotSolver::appendLink(const std::vector<double> &x)
 {
-    return true;
+    CD_WARNING("Not implemented.\n");
+    return false;
 }
 
 // --------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::restoreOriginalChain()
 {
-    return true;
+    CD_WARNING("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -193,9 +195,6 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     double s234 = std::sin(qInRad[1] + qInRad[2] + qInRad[3]);
     double c234 = std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
 
-    double den = 1 - s234 * s234 * c5 * c5;
-    double sqrtden = std::sqrt(den);
-
     yarp::sig::Matrix Ja(6, 5);
 
     Ja(0, 0) = -s1 * (A3 * s234 + A2 * s23 + A1 * s2);
@@ -263,14 +262,16 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
 bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 {
-    return true;
+    CD_WARNING("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
 {
-    return true;
+    CD_WARNING("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
