@@ -205,7 +205,7 @@ bool roboticslab::RateControllerConsole::updateModule()
         break;
     // print help
     case '?':
-        std::cout << "RTFM" << std::endl;
+        printHelp();
         break;
     // print current joint positions
     case 'j':
@@ -456,4 +456,45 @@ void roboticslab::RateControllerConsole::issueStop()
     }
 
     std::cout << "Stopped" << std::endl;
+}
+
+void roboticslab::RateControllerConsole::printHelp()
+{
+    char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
+
+    std::cout << std::string(60, '-') << std::endl;
+    std::cout << " [Esc] - close the application" << std::endl;
+    std::cout << " '?' - print this help guide" << std::endl;
+    std::cout << " 'j' - query current joint positions" << std::endl;
+    std::cout << " 'p' - query current cartesian positions" << std::endl;
+
+    std::cout << " '1'";
+
+    if (axes > 1)
+    {
+        std::cout << " to '" << jointPos[axes - 1] << "', ";
+    }
+    else
+    {
+        std::cout << "/";
+    }
+
+    std::cout << "'q'";
+
+    if (axes > 1)
+    {
+        std::cout << " to '" << jointNeg[axes - 1] << "'";
+    }
+
+    std::cout << " - issue joint movements (+/-)" << std::endl;
+
+    std::cout << " 'a'/'z' - move along x axis (+/-)" << std::endl;
+    std::cout << " 's'/'x' - move along y axis (+/-)" << std::endl;
+    std::cout << " 'd'/'c' - move along z axis (+/-)" << std::endl;
+    std::cout << " 'f'/'v' - rotate about x axis (+/-)" << std::endl;
+    std::cout << " 'g'/'b' - rotate about y axis (+/-)" << std::endl;
+    std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
+    std::cout << " [Enter] - issue stop" << std::endl;
+    std::cout << std::string(60, '-') << std::endl;
 }

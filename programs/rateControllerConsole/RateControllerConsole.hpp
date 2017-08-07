@@ -57,6 +57,8 @@ private:
 
     void issueStop();
 
+    void printHelp();
+
     int axes;
 
     yarp::dev::PolyDriver controlboardDevice;
