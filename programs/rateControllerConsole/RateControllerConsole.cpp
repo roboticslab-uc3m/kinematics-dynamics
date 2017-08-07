@@ -340,101 +340,96 @@ double roboticslab::RateControllerConsole::getPeriod()
 template <typename func>
 void roboticslab::RateControllerConsole::incrementOrDecrementJointVelocity(joint q, func op)
 {
-    if (controlboardDevice.isValid())
-    {
-        if (axes > q)
-        {
-            for (int i = 0; i < axes; i++)
-            {
-                if (!iControlMode->setVelocityMode(i))
-                {
-                    CD_ERROR("setVelocityMode failed\n");
-                    issueStop();
-                    return;
-                }
-            }
-
-            currentJointVels[q] = op(currentJointVels[q], JOINT_VELOCITY_STEP);
-
-            if (std::abs(currentJointVels[q]) > maxVelocityLimits[q])
-            {
-                CD_WARNING("Absolute joint velocity limit exceeded: maxVel[%d] = %f\n", q, maxVelocityLimits[q]);
-                currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
-            }
-
-            std::cout << "New joint velocity: " << currentJointVels << std::endl;
-
-            if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
-            {
-                CD_ERROR("velocityMove failed\n");
-            }
-        }
-        else
-        {
-            CD_WARNING("Unrecognized key, only %d joints available.\n", axes);
-            issueStop();
-        }
-    }
-    else
+    if (!controlboardDevice.isValid())
     {
         CD_WARNING("Unrecognized command (you chose not to launch remote control board client).\n");
         issueStop();
+        return;
+    }
+
+    if (axes <= q)
+    {
+        CD_WARNING("Unrecognized key, only %d joints available.\n", axes);
+        issueStop();
+        return;
+    }
+
+    for (int i = 0; i < axes; i++)
+    {
+        if (!iControlMode->setVelocityMode(i))
+        {
+            CD_ERROR("setVelocityMode failed\n");
+            issueStop();
+            return;
+        }
+    }
+
+    currentJointVels[q] = op(currentJointVels[q], JOINT_VELOCITY_STEP);
+
+    if (std::abs(currentJointVels[q]) > maxVelocityLimits[q])
+    {
+        CD_WARNING("Absolute joint velocity limit exceeded: maxVel[%d] = %f\n", q, maxVelocityLimits[q]);
+        currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
+    }
+
+    std::cout << "New joint velocity: " << currentJointVels << std::endl;
+
+    if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
+    {
+        CD_ERROR("velocityMove failed\n");
     }
 }
 
 template <typename func>
 void roboticslab::RateControllerConsole::incrementOrDecrementCartesianVelocity(cart coord, func op)
 {
-    if (cartesianControlDevice.isValid())
-    {
-        bool isLinear = coord == X || coord == Y || coord == Z;
-        double step = isLinear ? CARTESIAN_LINEAR_VELOCITY_STEP : CARTESIAN_ANGULAR_VELOCITY_STEP;
-
-        currentCartVels[coord] = op(currentCartVels[coord], step);
-
-        std::cout << "New cartesian velocity: " << currentCartVels << std::endl;
-
-        if (!iCartesianControl->movv(currentCartVels))
-        {
-            CD_ERROR("movv failed\n");
-        }
-    }
-    else
+    if (!cartesianControlDevice.isValid())
     {
         CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
         issueStop();
+        return;
+    }
+
+    bool isLinear = coord == X || coord == Y || coord == Z;
+    double step = isLinear ? CARTESIAN_LINEAR_VELOCITY_STEP : CARTESIAN_ANGULAR_VELOCITY_STEP;
+
+    currentCartVels[coord] = op(currentCartVels[coord], step);
+
+    std::cout << "New cartesian velocity: " << currentCartVels << std::endl;
+
+    if (!iCartesianControl->movv(currentCartVels))
+    {
+        CD_ERROR("movv failed\n");
     }
 }
 
 void roboticslab::RateControllerConsole::printJointPositions()
 {
-    if (controlboardDevice.isValid())
-    {
-        std::vector<double> encs(axes);
-        iEncoders->getEncoders(encs.data());
-        std::cout << "Current joint positions: " << encs << std::endl;
-    }
-    else
+    if (!controlboardDevice.isValid())
     {
         CD_WARNING("Unrecognized command (you chose not to launch remote control board client).\n");
         issueStop();
+        return;
     }
+
+    std::vector<double> encs(axes);
+    iEncoders->getEncoders(encs.data());
+    std::cout << "Current joint positions: " << encs << std::endl;
 }
 
 void roboticslab::RateControllerConsole::printCartesianPositions()
 {
-    if (cartesianControlDevice.isValid())
-    {
-        int state;
-        std::vector<double> x;
-        iCartesianControl->stat(state, x);
-        std::cout << "Current cartesian positions: " << x << std::endl;
-    }
-    else
+    if (!cartesianControlDevice.isValid())
     {
         CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
         issueStop();
+        return;
     }
+
+    int state;
+    std::vector<double> x;
+    iCartesianControl->stat(state, x);
+    std::cout << "Current cartesian positions: " << x << std::endl;
 }
 
 void roboticslab::RateControllerConsole::issueStop()
