@@ -206,6 +206,29 @@ bool roboticslab::CartesianControlServer::read(yarp::os::ConnectionReader& conne
             out.addVocab(VOCAB_FAILED);
         }
     }
+    else if( in.get(0).asVocab() == VOCAB_CC_TOOL)
+    {
+        if(in.size()>1)
+        {
+            std::vector<double> x;
+            for(size_t i=1; i<in.size();i++)
+                x.push_back(in.get(i).asDouble());
+            bool ok = iCartesianControl->tool(x);
+            if(ok)
+            {
+                out.addVocab(VOCAB_OK);
+            }
+            else
+            {
+                out.addVocab(VOCAB_FAILED);
+            }
+        }
+        else
+        {
+            CD_ERROR("size error\n");
+            out.addVocab(VOCAB_FAILED);
+        }
+    }
     else
     {
         out.addVocab(VOCAB_FAILED);
