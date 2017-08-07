@@ -28,13 +28,12 @@ namespace
     }
 
     // https://stackoverflow.com/a/23397700
-    template <typename T>
-    std::ostream& operator<<(std::ostream& out, const std::vector<T>& v)
+    std::ostream& operator<<(std::ostream& out, const std::vector<double>& v)
     {
         if (!v.empty())
         {
             out << '[';
-            std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+            std::copy(v.begin(), v.end(), std::ostream_iterator<double>(out, ", "));
             out << "\b\b]";
         }
 
