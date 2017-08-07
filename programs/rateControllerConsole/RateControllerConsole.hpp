@@ -36,6 +36,7 @@ public:
     virtual bool updateModule();
     virtual bool interruptModule();
     virtual double getPeriod();
+    virtual bool close();
 
 private:
     // used for array indexes and size checks
