@@ -296,7 +296,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKin)
     q[2] = 90.0;
     q[3] = 45.0;
 
-    xdot[2] = 0.01;  //- m/step
+    xdot[2] = 0.005;  //- m/step
     xdot[3] = 0.017453292;  //-- 1º/step
 
     ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot));
@@ -305,9 +305,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKin)
 
     // increasing eps at q2-4
     ASSERT_NEAR(qdot[0], 0.0, EPS_JOINT);
-    ASSERT_NEAR(qdot[1], 1.02202511, EPS_JOINT * 10);
-    ASSERT_NEAR(qdot[2], -2.04405022, EPS_JOINT * 100);
-    ASSERT_NEAR(qdot[3], 1.02202511, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[1], 0.50869278, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[2], -1.017385551, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT* 10);
     ASSERT_NEAR(qdot[4], 1.0, EPS_JOINT);
 }
 
