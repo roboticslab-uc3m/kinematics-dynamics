@@ -403,7 +403,7 @@ void roboticslab::RateControllerConsole::incrementOrDecrementCartesianVelocity(c
     else
     {
         CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
-                issueStop();
+        issueStop();
     }
 }
 
@@ -440,11 +440,11 @@ void roboticslab::RateControllerConsole::printCartesianPositions()
 
 void roboticslab::RateControllerConsole::issueStop()
 {
-    if (iCartesianControl)
+    if (cartesianControlDevice.isValid())
     {
         iCartesianControl->stopControl();
     }
-    else
+    else if (controlboardDevice.isValid())
     {
         iVelocityControl->stop();
     }
