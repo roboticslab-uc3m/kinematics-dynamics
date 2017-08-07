@@ -18,7 +18,6 @@
 #define DEFAULT_A2 0.4
 #define DEFAULT_A3 0.3
 
-#define DEFAULT_KINEMATICS "none.ini"
 #define DEFAULT_STRATEGY "leastOverallAngularDisplacement"
 
 namespace roboticslab

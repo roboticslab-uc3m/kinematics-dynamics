@@ -2,6 +2,8 @@
 
 #include "AsibotSolver.hpp"
 
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 
 #include <yarp/os/ResourceFinder.h>
@@ -17,40 +19,28 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 {
     CD_DEBUG("config: %s.\n", config.toString().c_str());
 
-    std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS), "limb kinematic description").asString();
-    CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(), DEFAULT_KINEMATICS);
+    std::printf("--------------------------------------------------------------\n");
 
-    yarp::os::ResourceFinder rf;
-    rf.setVerbose(false);
-    rf.setDefaultContext("kinematics");
-
-    std::string kinematicsFullPath = rf.findFileByName(kinematics);
-
-    yarp::os::Property fullConfig;
-    fullConfig.fromConfigFile(kinematicsFullPath.c_str());
-    fullConfig.fromString(config.toString(), false);
-
-    CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
-
-    printf("--------------------------------------------------------------\n");
-    if(config.check("help")) {
-        printf("CartesianBot options:\n");
-        printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        printf("\t--A0 [m] (dist from base to motor 2, default: \"%f\")\n",A0);
-        printf("\t--A1 [m] (dist from motor 2 to motor 3, default: \"%f\")\n",A1);
-        printf("\t--A2 [m] (dist from motor 3 to motor 4, default: \"%f\")\n",A2);
-        printf("\t--A3 [m] (dist from motor 4 to end-effector, default: \"%f\")\n",A3);
+    if (config.check("help"))
+    {
+        std::printf("AsibotSolver options:\n");
+        std::printf("\t--help (this help)\n");
+        std::printf("\t--A0 [m] (dist from base to motor 2, default: \"%f\")\n", DEFAULT_A0);
+        std::printf("\t--A1 [m] (dist from motor 2 to motor 3, default: \"%f\")\n", DEFAULT_A1);
+        std::printf("\t--A2 [m] (dist from motor 3 to motor 4, default: \"%f\")\n", DEFAULT_A2);
+        std::printf("\t--A3 [m] (dist from motor 4 to end-effector, default: \"%f\")\n", DEFAULT_A3);
+        std::printf("\t--invKinStrategy (IK configuration strategy, default: \"%s\")\n", DEFAULT_STRATEGY);
         // Do not exit: let last layer exit so we get help from the complete chain.
     }
 
-    A0 = fullConfig.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1").asDouble();
-    A1 = fullConfig.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2").asDouble();
-    A2 = fullConfig.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3").asDouble();
-    A3 = fullConfig.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4").asDouble();
+    A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1").asDouble();
+    A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2").asDouble();
+    A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3").asDouble();
+    A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4").asDouble();
 
-    CD_DEBUG("CartesianBot using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
+    CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
-    yarp::os::Value mins = fullConfig.check("mins", yarp::os::Value::getNullValue(), "minimum joint limits");
+    yarp::os::Value mins = config.check("mins", yarp::os::Value::getNullValue(), "minimum joint limits");
 
     if (!mins.isNull())
     {
@@ -66,7 +56,7 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         qMin.resize(NUM_MOTORS, -90);
     }
 
-    yarp::os::Value maxs = fullConfig.check("maxs", yarp::os::Value::getNullValue(), "maximum joint limits");
+    yarp::os::Value maxs = config.check("maxs", yarp::os::Value::getNullValue(), "maximum joint limits");
 
     if (!maxs.isNull())
     {
@@ -82,7 +72,7 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         qMax.resize(NUM_MOTORS, 90);
     }
 
-    std::string strategy = fullConfig.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
+    std::string strategy = config.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
 
     if (strategy == DEFAULT_STRATEGY)
     {
@@ -94,18 +84,19 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         return false;
     }
 
+    if (config.check("help"))
+    {
+        std::exit(0);
+    }
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::close() {
-    if (conf != NULL)
-    {
-        delete conf;
-        conf = NULL;
-    }
-
+    delete conf;
+    conf = NULL;
     return true;
 }
 
