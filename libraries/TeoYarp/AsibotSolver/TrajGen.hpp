@@ -3,7 +3,7 @@
 #ifndef __TRAJ_GEN_HPP__
 #define __TRAJ_GEN_HPP__
 
-#include "ColorDebug.hpp"
+#include <ColorDebug.hpp>
 
 /**
  * @ingroup kinematics-dynamics-libraries

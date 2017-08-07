@@ -3,18 +3,13 @@
 #ifndef __ASIBOT_SOLVER_HPP__
 #define __ASIBOT_SOLVER_HPP__
 
-#include <stdlib.h>
 #include <vector>
 
-#include <yarp/os/all.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
-#include <yarp/dev/Drivers.h>
-#include <yarp/dev/PolyDriver.h>
+#include <yarp/os/Searchable.h>
+#include <yarp/dev/DeviceDriver.h>
 
-#include "ICartesianSolver.h"
-//#include "TrajGen.hpp"
-//#include "YarpTinyMath.hpp"
 #include "AsibotConfiguration.hpp"
+#include "ICartesianSolver.h"
 
 #define NUM_MOTORS 5
 
