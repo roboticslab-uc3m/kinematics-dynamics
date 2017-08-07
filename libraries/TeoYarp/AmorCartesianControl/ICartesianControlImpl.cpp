@@ -10,7 +10,7 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
     if (amor_get_cartesian_position(handle, positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("Could not retrieve current cartesian position.\n");
+        CD_ERROR("%s\n", amor_error());
         return false;
     }
 
@@ -31,7 +31,7 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    CD_ERROR("Not available.\n");
+    CD_ERROR("Not implemented.\n");
     return false;
 }
 
@@ -65,7 +65,13 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
     positions[4] = toRad(xd[4]);
     positions[5] = toRad(xd[5]);
 
-    return amor_set_cartesian_positions(handle, positions) == AMOR_SUCCESS;
+    if (amor_set_cartesian_positions(handle, positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -82,7 +88,13 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
     velocities[4] = toRad(xdotd[4]);
     velocities[5] = toRad(xdotd[5]);
 
-    return amor_set_cartesian_velocities(handle, velocities) == AMOR_SUCCESS;
+    if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -105,7 +117,13 @@ bool roboticslab::AmorCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::AmorCartesianControl::stopControl()
 {
-    return amor_controlled_stop(handle) == AMOR_SUCCESS;
+    if (amor_controlled_stop(handle) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -143,7 +161,13 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
     velocities[4] = toRad(xdot[4]);
     velocities[5] = toRad(xdot[5]);
 
-    return amor_set_cartesian_velocities(handle, velocities) == AMOR_SUCCESS;
+    if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
