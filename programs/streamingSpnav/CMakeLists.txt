@@ -22,7 +22,8 @@ add_dependencies(streamingSpnav COLOR_DEBUG)
 target_link_libraries(streamingSpnav YARP::YARP_OS
                                      YARP::YARP_init
                                      YARP::YARP_dev
-                                     YARP::YARP_sig)
+                                     YARP::YARP_sig
+                                     YARP::YARP_math)
 
 install(TARGETS streamingSpnav
         DESTINATION ${CMAKE_INSTALL_BINDIR})
