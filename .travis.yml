@@ -15,7 +15,6 @@ before_install:
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
 install:
-<<<<<<< HEAD
   #-- Install cmake and eigen
   - sudo apt-get install cmake libeigen3-dev
   #-- Install yarp
