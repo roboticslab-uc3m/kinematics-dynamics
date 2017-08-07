@@ -197,3 +197,10 @@ bool roboticslab::CartesianControlClient::stopControl()
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
