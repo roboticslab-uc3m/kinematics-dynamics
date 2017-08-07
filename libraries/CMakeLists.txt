@@ -23,5 +23,6 @@ if(ENABLE_Gait AND NOT ROBOTICSLAB_GAIT_FOUND)
 endif()
 
 add_subdirectory(KdlVectorConverterLib)
+add_subdirectory(YarpTinyMathLib)
 add_subdirectory(TrajectoryLib)
 add_subdirectory(TeoYarp)
