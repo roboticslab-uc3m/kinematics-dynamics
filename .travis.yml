@@ -25,7 +25,6 @@ install:
   - sudo make install
   - cd ../..
   #-- Install kdl
-  - sudo apt-get install libeigen3-dev
   - git clone https://github.com/orocos/orocos_kinematics_dynamics
   - cd orocos_kinematics_dynamics/orocos_kdl && mkdir build && cd build
   - cmake ..
@@ -57,6 +56,7 @@ before_script:
 script:
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
+  - bin/testAsibotSolverFromFile
   - bin/testBasicCartesianControl
 
 after_success:
