@@ -2,13 +2,9 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1.3 FATAL_ERROR)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
-
-# Safety check against missing dummy library for system-available COLOR_DEBUG.
-# Remove if cmake_minimum_required() above is set to 3.0 or later.
-cmake_policy(SET CMP0046 NEW)
 
 # Force building shared libraries and YARP DL modules.
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
@@ -112,25 +108,60 @@ add_subdirectory(test)
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
-# Create and install config and version files.
-include(InstallBasicPackageFiles)
-
 # Retrieve global properties.
 get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
 get_property(_exported_targets GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 
-# Set build/install pairs of paths for each exported property.
-# Must end in _DIR instead of _DIRS as the former is a default PATH_VARS suffix
-# recognized by install_basic_package_files(). Alternatively, use EXTRA_PATH_VARS_SUFFIX.
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_BUILD_INCLUDE_DIR ${_common_includes})
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+# CMake installation path.
+if(WIN32)
+    set(_cmake_destination cmake)
+else()
+    set(_cmake_destination ${CMAKE_INSTALL_LIBDIR}/cmake/ROBOTICSLAB_KINEMATICS_DYNAMICS)
+endif()
 
-install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
-                            VERSION 0.1.0
-                            COMPATIBILITY AnyNewerVersion
-                            TARGETS_PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS
-                            NO_CHECK_REQUIRED_COMPONENTS_MACRO
-                            NAMESPACE ROBOTICSLAB::)
+# Create and install config files.
+include(CMakePackageConfigHelpers)
+
+# Set exported variables (build tree).
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR ${_common_includes})
+
+# <pkg>Config.cmake (build tree).
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
+                              ${CMAKE_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake
+                              INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
+                              INSTALL_PREFIX ${CMAKE_BINARY_DIR}
+                              PATH_VARS ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR
+                              NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+# Set exported variables (build tree).
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+
+# <pkg>Config.cmake (install tree).
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
+                              ${CMAKE_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.install
+                              INSTALL_DESTINATION ${_cmake_destination}
+                              PATH_VARS ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR
+                              NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+# Install <pkg>Config.cmake.
+install(FILES ${CMAKE_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.install
+        RENAME ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake
+        DESTINATION ${_cmake_destination})
+
+# Export library targets if enabled.
+# https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/104
+if(_exported_targets)
+    # <pkg>Targets.cmake (build tree).
+    export(EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
+           NAMESPACE ROBOTICSLAB::
+           FILE ROBOTICSLAB_KINEMATICS_DYNAMICSTargets.cmake)
+
+    # <pkg>Targets.cmake (install tree).
+    install(EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
+            DESTINATION ${_cmake_destination}
+            NAMESPACE ROBOTICSLAB::
+            FILE ROBOTICSLAB_KINEMATICS_DYNAMICSTargets.cmake)
+endif()
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)
