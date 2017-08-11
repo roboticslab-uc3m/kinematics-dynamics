@@ -22,7 +22,7 @@ add_executable(transCoordsUsingJoints main.cpp
                                       PremultPorts.cpp
                                       PremultPorts.hpp)
 
-add_dependencies(transCoordsUsingJoints ROBOTICSLAB::COLOR_DEBUG)
+add_dependencies(transCoordsUsingJoints COLOR_DEBUG)
 
 target_link_libraries(transCoordsUsingJoints YARP::YARP_OS
                                              YARP::YARP_init
