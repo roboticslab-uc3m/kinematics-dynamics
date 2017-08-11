@@ -16,7 +16,7 @@ yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                              AsibotConfiguration.cpp
                              AsibotConfigurationLeastOverallAngularDisplacement.cpp)
 
-add_dependencies(AsibotSolver COLOR_DEBUG)
+add_dependencies(AsibotSolver ROBOTICSLAB::COLOR_DEBUG)
 
 target_link_libraries(AsibotSolver YARP::YARP_OS
                                    YARP::YARP_dev

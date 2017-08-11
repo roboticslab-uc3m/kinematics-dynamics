@@ -22,7 +22,7 @@ yarp_add_plugin(KdlSolver KdlSolver.hpp
                           DeviceDriverImpl.cpp
                           ICartesianSolverImpl.cpp)
 
-add_dependencies(KdlSolver COLOR_DEBUG)
+add_dependencies(KdlSolver ROBOTICSLAB::COLOR_DEBUG)
 
 target_link_libraries(KdlSolver YARP::YARP_OS
                                 YARP::YARP_dev

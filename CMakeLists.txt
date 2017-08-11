@@ -82,12 +82,8 @@ find_or_build_package(COLOR_DEBUG)
 # nor other config variables. If a system copy is found, we have to call the
 # find_package() command and proceed as usual.
 if(USE_SYSTEM_COLOR_DEBUG)
-    find_package(COLOR_DEBUG QUIET)
-
-    if(COLOR_DEBUG_FOUND)
-        include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
-        add_library(COLOR_DEBUG UNKNOWN IMPORTED)
-    endif()
+    find_package(COLOR_DEBUG REQUIRED)
+    include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
 endif()
 
 # Store common include directories in global scope.

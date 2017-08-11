@@ -18,7 +18,7 @@ yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
                                        CartesianControlServer.cpp
                                        DeviceDriverImpl.cpp)
 
-add_dependencies(CartesianControlServer COLOR_DEBUG)
+add_dependencies(CartesianControlServer ROBOTICSLAB::COLOR_DEBUG)
 
 target_link_libraries(CartesianControlServer YARP::YARP_OS
                                              YARP::YARP_dev)
