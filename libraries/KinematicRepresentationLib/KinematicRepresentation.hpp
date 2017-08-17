@@ -14,6 +14,22 @@ namespace roboticslab
  * between different coordinate and orientation systems.
  */
 
+enum coordinate_system
+{
+    CARTESIAN,   ///< (x distance, y distance, z distance)
+    CYLINDRICAL, ///< (radial distance, azimuthal angle, height)
+    SPHERICAL    ///< (radial distance, polar angle, azimuthal angle)
+};
+
+enum orientation_system
+{
+    AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis as unit vector]
+    AXIS_ANGLE_SCALED, ///< (axis_x, axis_y, axis_z) [axis' norm is the rotation angle]
+    RPY,               ///< fixed axes, roll is axis_x
+    EULER_YZ,          ///< as ::EULER_ZYZ, preceded by rotation about the azimuthal angle got from x-y coordinates
+    EULER_ZYZ          ///< mobile axes
+};
+
 /**
  * @ingroup KinematicRepresentationLib
  * @brief Stores pose values.
