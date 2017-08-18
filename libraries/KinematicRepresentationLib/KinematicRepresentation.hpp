@@ -114,6 +114,15 @@ public:
 
 private:
     KinRepresentation() {}
+
+    /**
+     * @brief Checks if input vector has the expected size.
+     * @param v_in Input vector (translation + rotation).
+     * @param orient Orientation system for the rotational part.
+     * @param expectedSize Minimum expected size for the input vector in the chosen representation system.
+     * @return true if size is adequate, false otherwise.
+     */
+    static bool checkVectorSize(const std::vector<double> &v_in, orientation_system orient, int *expectedSize);
 };
 
 }  // namespace roboticslab

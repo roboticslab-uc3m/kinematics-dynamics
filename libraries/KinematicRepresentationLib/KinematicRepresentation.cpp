@@ -16,6 +16,14 @@ namespace roboticslab
 bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
         coordinate_system coord, orientation_system orient)
 {
+    int expectedSize;
+
+    if (!checkVectorSize(x_in, orient, &expectedSize))
+    {
+        CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, x_in.size());
+        return false;
+    }
+
     switch (orient)
     {
     case AXIS_ANGLE:
@@ -96,6 +104,14 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
 bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
         coordinate_system coord, orientation_system orient)
 {
+    int expectedSize;
+
+    if (!checkVectorSize(x_in, orient, &expectedSize))
+    {
+        CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, x_in.size());
+        return false;
+    }
+
     switch (orient)
     {
     case AXIS_ANGLE:
@@ -205,6 +221,35 @@ bool KinRepresentation::encodeAcceleration(const std::vector<double> &xdotdot_in
 bool KinRepresentation::decodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
         coordinate_system coord, orientation_system orient)
 {
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool KinRepresentation::checkVectorSize(const std::vector<double> &v_in, orientation_system orient, int *expectedSize)
+{
+    switch (orient)
+    {
+    case AXIS_ANGLE:
+        *expectedSize = 7;
+        return v_in.size() >= *expectedSize;
+    case AXIS_ANGLE_SCALED:
+        *expectedSize = 6;
+        return v_in.size() >= *expectedSize;
+    case RPY:
+        *expectedSize = 6;
+        return v_in.size() >= *expectedSize;
+    case EULER_YZ:
+        *expectedSize = 5;
+        return v_in.size() >= *expectedSize;
+    case EULER_ZYZ:
+        *expectedSize = 6;
+        return v_in.size() >= *expectedSize;
+    default:
+        *expectedSize = 0;
+        return false;
+    }
+
     return true;
 }
 
