@@ -86,7 +86,9 @@ public:
     RpcResponder(roboticslab::ICartesianControl *iCartesianControl)
     {
         this->iCartesianControl = iCartesianControl;
-        this->makeUsage();
+
+        // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
+        makeUsage();
     }
 
     /**
@@ -100,7 +102,7 @@ public:
     /**
      * Generate command usage information.
      */
-    virtual void makeUsage();
+    void makeUsage();
 
 protected:
 
