@@ -39,7 +39,7 @@ public:
      */
     enum orientation_system
     {
-        AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis as unit vector]
+        AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis need not to be normalized]
         AXIS_ANGLE_SCALED, ///< (axis_x, axis_y, axis_z) [axis' norm is the rotation angle]
         RPY,               ///< fixed axes, roll is axis_x
         EULER_YZ,          ///< as @ref EULER_ZYZ, preceded by rotation about the azimuthal angle got from x-y coordinates
