@@ -5,9 +5,7 @@ if(ENABLE_KinematicRepresentationLib)
 find_package(orocos_kdl REQUIRED)
 
 add_library(KinematicRepresentationLib KinematicRepresentation.hpp
-                                       KinPose.cpp
-                                       KinVelocity.cpp
-                                       KinAcceleration.cpp)
+                                       KinematicRepresentation.cpp)
 
 add_dependencies(KinematicRepresentationLib COLOR_DEBUG)
 

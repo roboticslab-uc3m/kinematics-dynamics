@@ -12,99 +12,108 @@ namespace roboticslab
  * @ingroup kinematics-dynamics-libraries
  * @defgroup KinematicRepresentationLib
  *
- * @brief Contains classes related to conversion mechanisms
+ * @brief Contains utilities related to conversion mechanisms
  * between different coordinate and orientation systems.
  */
 
-enum coordinate_system
-{
-    CARTESIAN,   ///< (x distance, y distance, z distance)
-    CYLINDRICAL, ///< (radial distance, azimuthal angle, height)
-    SPHERICAL    ///< (radial distance, polar angle, azimuthal angle)
-};
-
-enum orientation_system
-{
-    AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis as unit vector]
-    AXIS_ANGLE_SCALED, ///< (axis_x, axis_y, axis_z) [axis' norm is the rotation angle]
-    RPY,               ///< fixed axes, roll is axis_x
-    EULER_YZ,          ///< as ::EULER_ZYZ, preceded by rotation about the azimuthal angle got from x-y coordinates
-    EULER_ZYZ          ///< mobile axes
-};
-
 /**
  * @ingroup KinematicRepresentationLib
- * @brief Stores pose values.
+ * @brief Collection of static methods to perform geometric
+ * transformations.
  */
-class KinPose
+class KinRepresentation
 {
 public:
     /**
-     * @brief Stores the translation and rotation values of a specific pose.
-     * @param x Vector describing a three-dimensional pose (translation + rotation).
-     * @param coord Coordinate system for the translational part.
-     * @param orient Orientation system for the rotational part.
-     * @return true/false on success or failure.
+     * @brief Lists available translational representations.
      */
-    bool storePose(const std::vector<double> & x, coordinate_system coord, orientation_system orient);
+    enum coordinate_system
+    {
+        CARTESIAN,   ///< (x distance, y distance, z distance)
+        CYLINDRICAL, ///< (radial distance, azimuthal angle, height)
+        SPHERICAL    ///< (radial distance, polar angle, azimuthal angle)
+    };
 
     /**
-     * @brief Retrieves the translation and rotation values of a specific pose.
-     * @param coord Coordinate system for the translational part.
-     * @param orient Orientation system for the rotational part.
-     * @return Vector describing a three-dimensional pose (translation + rotation).
+     * @brief Lists available rotational representations.
      */
-    std::vector<double> retrievePose(coordinate_system coord, orientation_system orient) const;
-};
-
-/**
- * @ingroup KinematicRepresentationLib
- * @brief Stores velocity values.
- */
-class KinVelocity
-{
-public:
-    /**
-     * @brief Stores the translation and rotation values of a specific velocity.
-     * @param x Vector describing a three-dimensional velocity (translation + rotation).
-     * @param coord Coordinate system for the translational part.
-     * @param orient Orientation system for the rotational part.
-     * @return true/false on success or failure.
-     */
-    bool storeVelocity(const std::vector<double> & xdot, coordinate_system coord, orientation_system orient);
+    enum orientation_system
+    {
+        AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis as unit vector]
+        AXIS_ANGLE_SCALED, ///< (axis_x, axis_y, axis_z) [axis' norm is the rotation angle]
+        RPY,               ///< fixed axes, roll is axis_x
+        EULER_YZ,          ///< as @ref EULER_ZYZ, preceded by rotation about the azimuthal angle got from x-y coordinates
+        EULER_ZYZ          ///< mobile axes
+    };
 
     /**
-     * @brief Retrieves the translation and rotation values of a specific velocity.
+     * @brief Converts the translation and rotation values of a specific pose to @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_in Input vector describing a three-dimensional pose (translation + rotation).
+     * @param x_out Output vector describing the same pose in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED notation.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @return Vector describing a three-dimensional velocity (translation + rotation).
+     * @return true on success, false otherwise.
      */
-    std::vector<double> retrieveVelocity(coordinate_system coord, orientation_system orient) const;
-};
-
-/**
- * @ingroup KinematicRepresentationLib
- * @brief Stores acceleration values.
- */
-class KinAcceleration
-{
-public:
-    /**
-     * @brief Stores the translation and rotation values of a specific acceleration.
-     * @param x Vector describing a three-dimensional acceleration (translation + rotation).
-     * @param coord Coordinate system for the translational part.
-     * @param orient Orientation system for the rotational part.
-     * @return true/false on success or failure.
-     */
-    bool storeAcceleration(const std::vector<double> & xdotdot, coordinate_system coord, orientation_system orient);
+    static bool encodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
+            coordinate_system coord, orientation_system orient);
 
     /**
-     * @brief Retrieves the translation and rotation values of a specific acceleration.
+     * @brief Converts the translation and rotation values of a specific pose to the chosen representation systems.
+     * @param x_in Input vector describing a three-dimensional pose in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_out Output vector describing the same pose in the chosen representation system.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @return Vector describing a three-dimensional acceleration (translation + rotation).
+     * @return true on success, false otherwise.
      */
-    std::vector<double> retrieveAcceleration(coordinate_system coord, orientation_system orient) const;
+    static bool decodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
+            coordinate_system coord, orientation_system orient);
+
+    /**
+     * @brief Converts the translation and rotation values of a specific velocity to @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_in Input vector describing a three-dimensional velocity (translation + rotation).
+     * @param x_out Output vector describing the same velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param coord Coordinate system for the translational part.
+     * @param orient Orientation system for the rotational part.
+     * @return true on success, false otherwise.
+     */
+    static bool encodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
+            coordinate_system coord, orientation_system orient);
+
+    /**
+     * @brief Retrieves the translation and rotation values of a specific velocity to the chosen representation systems.
+     * @param x_in Input vector describing a three-dimensional velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_out Output vector describing the same velocity in the chosen representation system.
+     * @param coord Coordinate system for the translational part.
+     * @param orient Orientation system for the rotational part.
+     * @return true on success, false otherwise.
+     */
+    static bool decodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
+            coordinate_system coord, orientation_system orient);
+
+    /**
+     * @brief Converts the translation and rotation values of a specific acceleration to @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_in Input vector describing a three-dimensional acceleration (translation + rotation).
+     * @param x_out Output vector describing the same acceleration in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param coord Coordinate system for the translational part.
+     * @param orient Orientation system for the rotational part.
+     * @return true on success, false otherwise.
+     */
+    static bool encodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+            coordinate_system coord, orientation_system orient);
+
+    /**
+     * @brief Retrieves the translation and rotation values of a specific acceleration to the chosen representation systems.
+     * @param x_in Input vector describing a three-dimensional acceleration in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_out Output vector describing the same acceleration in the chosen representation system.
+     * @param coord Coordinate system for the translational part.
+     * @param orient Orientation system for the rotational part.
+     * @return true on success, false otherwise.
+     */
+    static bool decodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+            coordinate_system coord, orientation_system orient);
+
+private:
+    KinRepresentation() {}
 };
 
 }  // namespace roboticslab
