@@ -4,12 +4,17 @@
 
 #include <ColorDebug.hpp>
 
+#include "KinematicRepresentation.hpp"
+
 // ------------------- RpcResponder Related ------------------------------------
 
 bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     // process data "in", prepare "out"
     CD_DEBUG("Got: %s\n", in.toString().c_str());
+
+    // may be used by derived classes
+    transformIncomingData(in);
 
     switch (in.get(0).asVocab())
     {
@@ -158,6 +163,13 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
         out.addVocab(VOCAB_FAILED);
         return false;
     }
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::RpcTransformResponder::transformIncomingData(const yarp::os::Bottle& in)
+{
+
 }
 
 // -----------------------------------------------------------------------------

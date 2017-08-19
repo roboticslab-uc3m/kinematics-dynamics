@@ -23,6 +23,7 @@ namespace roboticslab
  */
 
 class RpcResponder;
+class RpcTransformResponder;
 
 /**
  * @ingroup CartesianControlServer
@@ -33,7 +34,7 @@ class CartesianControlServer : public yarp::dev::DeviceDriver
 {
 public:
 
-    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL) {}
+    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL), rpcTransformResponder(NULL) {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
@@ -60,13 +61,13 @@ public:
 
 protected:
 
-    yarp::os::RpcServer rpcServer;
+    yarp::os::RpcServer rpcServer, rpcTransformServer;
 
     yarp::dev::PolyDriver cartesianControlDevice;
 
     roboticslab::ICartesianControl *iCartesianControl;
 
-    RpcResponder *rpcResponder;
+    RpcResponder *rpcResponder, *rpcTransformResponder;
 };
 
 /**
@@ -110,7 +111,25 @@ protected:
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
     bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
 
+    virtual void transformIncomingData(const yarp::os::Bottle& in) {}
+
     roboticslab::ICartesianControl * iCartesianControl;
+};
+
+/**
+ * @ingroup CartesianControlServer
+ * @brief Responds to RPC command messages, transforms incoming data.
+ */
+class RpcTransformResponder : public RpcResponder
+{
+public:
+
+    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl) : RpcResponder(iCartesianControl)
+    {}
+
+protected:
+
+    virtual void transformIncomingData(const yarp::os::Bottle& in);
 };
 
 }  // namespace roboticslab
