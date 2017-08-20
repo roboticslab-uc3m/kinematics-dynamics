@@ -24,7 +24,6 @@
 #include <yarp/dev/IEncoders.h>
 
 #include "ICartesianSolver.h"
-#include "KdlVectorConverter.hpp"
 
 namespace roboticslab
 {
@@ -34,12 +33,12 @@ namespace roboticslab
  *
  * @brief Implements a port with x callbacks.
  */
-class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>, KdlVectorConverter
+class PremultPorts : public yarp::os::BufferedPort<yarp::os::Bottle>
 {
 
 public:
 
-    PremultPorts();
+    PremultPorts() {}
 
     void setOutPort(yarp::os::Port* outPort);
     void setIEncoders(yarp::dev::IEncoders* iEncoders);

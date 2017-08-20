@@ -9,7 +9,7 @@ yarp_prepare_plugin(KdlSolver
                     TYPE roboticslab::KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS ENABLE_KdlVectorConverterLib)
+                    DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib")
 
 if(NOT SKIP_KdlSolver)
 
@@ -28,7 +28,8 @@ target_link_libraries(KdlSolver YARP::YARP_OS
                                 YARP::YARP_dev
                                 YARP::YARP_sig
                                 ${orocos_kdl_LIBRARIES}
-                                KdlVectorConverterLib)
+                                KdlVectorConverterLib
+                                KinematicRepresentationLib)
 
 yarp_install(TARGETS KdlSolver
              COMPONENT runtime
