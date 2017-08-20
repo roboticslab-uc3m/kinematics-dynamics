@@ -12,7 +12,11 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
     CD_DEBUG("Got: %s\n", in.toString().c_str());
 
     // may be used by derived classes
-    transformIncomingData(in);
+    if (!transformIncomingData(const_cast<yarp::os::Bottle &>(in)))
+    {
+        CD_ERROR("transformIncomingData failed.\n");
+        return false;
+    }
 
     switch (in.get(0).asVocab())
     {
@@ -165,9 +169,36 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::RpcTransformResponder::transformIncomingData(const yarp::os::Bottle& in)
+bool roboticslab::RpcTransformResponder::transformIncomingData(yarp::os::Bottle& b)
 {
+    if (b.size() < 2)
+    {
+        return true;
+    }
 
+    std::vector<double> vin, vout;
+
+    for (size_t i = 1; i < b.size(); i++)
+    {
+        vin.push_back(b.get(i).asDouble());
+    }
+
+    if (!KinRepresentation::encodePose(vin, vout, KinRepresentation::CARTESIAN, orient))
+    {
+        return false;
+    }
+
+    yarp::os::Value *firstValue = b.get(0).clone();
+
+    b.clear();
+    b.add(firstValue);
+
+    for (size_t i = 0; i < vout.size(); i++)
+    {
+        b.addDouble(vout[i]);
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
