@@ -17,7 +17,6 @@
 #include "ICartesianSolver.h"
 
 #define DEFAULT_KINEMATICS "none.ini"  // string
-#define DEFAULT_ANGLE_REPR "axisAngle"  // string
 #define DEFAULT_NUM_LINKS 1  // int
 
 #define DEFAULT_EPSILON 0.005     // Precision tolerance
