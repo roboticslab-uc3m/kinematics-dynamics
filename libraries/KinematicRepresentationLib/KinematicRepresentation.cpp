@@ -24,11 +24,12 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
         return false;
     }
 
+    x_out.reserve(6);
+
     switch (orient)
     {
     case AXIS_ANGLE:
     {
-        x_out.resize(7);
         KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(x_in[3], x_in[4], x_in[5]), x_in[6]);
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
@@ -38,7 +39,6 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
     }
     case AXIS_ANGLE_SCALED:
     {
-        x_out.resize(6);
         x_out[3] = x_in[3];
         x_out[4] = x_in[4];
         x_out[5] = x_in[5];
@@ -46,7 +46,6 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
     }
     case RPY:
     {
-        x_out.resize(6);
         KDL::Rotation rot = KDL::Rotation::RPY(x_in[3], x_in[4], x_in[5]);
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
@@ -56,7 +55,6 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
     }
     case EULER_YZ:
     {
-        x_out.resize(5);
         double alpha = std::atan2(x_in[1], x_in[0]);
         KDL::Rotation rot = KDL::Rotation::EulerZYZ(alpha, x_in[4], x_in[5]);
         KDL::Vector axis = rot.GetRot();
@@ -67,7 +65,6 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
     }
     case EULER_ZYZ:
     {
-        x_out.resize(6);
         KDL::Rotation rot = KDL::Rotation::EulerZYZ(x_in[3], x_in[4], x_in[5]);
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
@@ -78,6 +75,8 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
     default:
         return false;
     }
+
+    x_out.resize(6);
 
     switch (coord)
     {
@@ -116,26 +115,28 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
     {
     case AXIS_ANGLE:
     {
-        x_out.resize(7);
+        x_out.reserve(7);
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         x_out[6] = axis.Norm();
         axis.Normalize();
         x_out[3] = axis.x();
         x_out[4] = axis.y();
         x_out[5] = axis.z();
+        x_out.resize(7);
         break;
     }
     case AXIS_ANGLE_SCALED:
     {
-        x_out.resize(6);
+        x_out.reserve(6);
         x_out[3] = x_in[3];
         x_out[4] = x_in[4];
         x_out[5] = x_in[5];
+        x_out.resize(6);
         break;
     }
     case RPY:
     {
-        x_out.resize(6);
+        x_out.reserve(6);
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double roll, pitch, yaw;
@@ -143,22 +144,24 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
         x_out[3] = roll;
         x_out[4] = pitch;
         x_out[5] = yaw;
+        x_out.resize(6);
         break;
     }
     case EULER_YZ:
     {
-        x_out.resize(5);
+        x_out.reserve(5);
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double alpha, beta, gamma;
         rot.GetEulerZYZ(alpha, beta, gamma);
         x_out[3] = beta;
         x_out[4] = gamma;
+        x_out.resize(5);
         break;
     }
     case EULER_ZYZ:
     {
-        x_out.resize(6);
+        x_out.reserve(6);
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double alpha, beta, gamma;
@@ -166,6 +169,7 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
         x_out[3] = alpha;
         x_out[4] = beta;
         x_out[5] = gamma;
+        x_out.resize(6);
         break;
     }
     default:

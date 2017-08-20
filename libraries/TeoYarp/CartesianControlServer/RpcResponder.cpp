@@ -176,14 +176,14 @@ bool roboticslab::RpcTransformResponder::transformIncomingData(yarp::os::Bottle&
         return true;
     }
 
-    std::vector<double> vin, vout;
+    std::vector<double> x;
 
     for (size_t i = 1; i < b.size(); i++)
     {
-        vin.push_back(b.get(i).asDouble());
+        x.push_back(b.get(i).asDouble());
     }
 
-    if (!KinRepresentation::encodePose(vin, vout, KinRepresentation::CARTESIAN, orient))
+    if (!KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, orient))
     {
         return false;
     }
@@ -193,9 +193,9 @@ bool roboticslab::RpcTransformResponder::transformIncomingData(yarp::os::Bottle&
     b.clear();
     b.add(firstValue);
 
-    for (size_t i = 0; i < vout.size(); i++)
+    for (size_t i = 0; i < x.size(); i++)
     {
-        b.addDouble(vout[i]);
+        b.addDouble(x[i]);
     }
 
     return true;
