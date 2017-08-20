@@ -32,6 +32,9 @@ public:
     /** Convert from KDL::Frame to std::vector<double> */
     static std::vector<double> frameToVector(const KDL::Frame& f);
 
+    /** Convert from std::vector<double> to KDL::Twist */
+    static KDL::Twist vectorToTwist(const std::vector<double> &xdot);
+
     /** Convert from KDL::Twist to std::vector<double> */
     static std::vector<double> twistToVector(const KDL::Twist& t);
 

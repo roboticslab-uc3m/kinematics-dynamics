@@ -42,6 +42,23 @@ std::vector<double> roboticslab::KdlVectorConverter::frameToVector(const KDL::Fr
 
 // -----------------------------------------------------------------------------
 
+KDL::Twist roboticslab::KdlVectorConverter::vectorToTwist(const std::vector<double> &xdot)
+{
+    KDL::Twist t;
+
+    t.vel.x(xdot[0]);
+    t.vel.y(xdot[1]);
+    t.vel.z(xdot[2]);
+
+    t.rot.x(xdot[3]);
+    t.rot.y(xdot[4]);
+    t.rot.z(xdot[5]);
+
+    return t;
+}
+
+// -----------------------------------------------------------------------------
+
 std::vector<double> roboticslab::KdlVectorConverter::twistToVector(const KDL::Twist& t)
 {
     std::vector<double> xdot(6);

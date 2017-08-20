@@ -69,13 +69,7 @@ bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const st
     fksolver.JntToCart(qInRad,f);
 
     KDL::Twist d = KDL::diff(f,frameXd);
-    x.resize(6);
-    x[0] = d.vel.x();
-    x[1] = d.vel.y();
-    x[2] = d.vel.z();
-    x[3] = d.rot.x();
-    x[4] = d.rot.y();
-    x[5] = d.rot.z();
+    x = KdlVectorConverter::twistToVector(d);
 
     return true;
 }
@@ -138,14 +132,7 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
         qInRad(motor) = KinRepresentation::degToRad(q[motor]);
 
-    KDL::Twist kdlxdot;
-    kdlxdot.vel.x(xdot[0]);
-    kdlxdot.vel.y(xdot[1]);
-    kdlxdot.vel.z(xdot[2]);
-    kdlxdot.rot.x(xdot[3]);
-    kdlxdot.rot.y(xdot[4]);
-    kdlxdot.rot.z(xdot[5]);
-
+    KDL::Twist kdlxdot = KdlVectorConverter::vectorToTwist(xdot);
     KDL::JntArray qDotOutRadS = KDL::JntArray(chain.getNrOfJoints());
     KDL::ChainIkSolverVel_pinv iksolverv(chain);
     int ret = iksolverv.CartToJnt(qInRad,kdlxdot,qDotOutRadS);
