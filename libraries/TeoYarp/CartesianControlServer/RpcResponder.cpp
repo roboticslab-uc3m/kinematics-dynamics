@@ -4,8 +4,6 @@
 
 #include <ColorDebug.hpp>
 
-#include "KinematicRepresentation.hpp"
-
 // ------------------- RpcResponder Related ------------------------------------
 
 bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)

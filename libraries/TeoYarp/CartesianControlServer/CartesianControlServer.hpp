@@ -11,6 +11,7 @@
 #include <iostream> // only windows
 
 #include "ICartesianControl.h"
+#include "KinematicRepresentation.hpp"
 
 namespace roboticslab
 {
@@ -34,7 +35,10 @@ class CartesianControlServer : public yarp::dev::DeviceDriver
 {
 public:
 
-    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL), rpcTransformResponder(NULL) {}
+    CartesianControlServer()
+        : iCartesianControl(NULL),
+          rpcResponder(NULL), rpcTransformResponder(NULL)
+    {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
@@ -124,12 +128,16 @@ class RpcTransformResponder : public RpcResponder
 {
 public:
 
-    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl) : RpcResponder(iCartesianControl)
+    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::orientation_system orient)
+        : RpcResponder(iCartesianControl),
+          orient(orient)
     {}
 
 protected:
 
     virtual void transformIncomingData(const yarp::os::Bottle& in);
+
+    KinRepresentation::orientation_system orient;
 };
 
 }  // namespace roboticslab
