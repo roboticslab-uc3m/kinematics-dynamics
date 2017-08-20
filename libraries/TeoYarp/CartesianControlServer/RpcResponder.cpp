@@ -183,7 +183,7 @@ bool roboticslab::RpcTransformResponder::transformIncomingData(yarp::os::Bottle&
         x.push_back(b.get(i).asDouble());
     }
 
-    if (!KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, orient))
+    if (!KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES))
     {
         return false;
     }
