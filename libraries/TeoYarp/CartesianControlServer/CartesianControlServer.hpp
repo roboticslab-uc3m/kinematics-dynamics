@@ -120,6 +120,11 @@ protected:
         return true;
     }
 
+    virtual bool transformOutgoingData(std::vector<double>& vout)
+    {
+        return true;
+    }
+
     roboticslab::ICartesianControl * iCartesianControl;
 };
 
@@ -139,6 +144,7 @@ public:
 protected:
 
     virtual bool transformIncomingData(std::vector<double>& vin);
+    virtual bool transformOutgoingData(std::vector<double>& vout);
 
     KinRepresentation::orientation_system orient;
 };
