@@ -115,7 +115,7 @@ protected:
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
     bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
 
-    virtual bool transformIncomingData(yarp::os::Bottle& b)
+    virtual bool transformIncomingData(std::vector<double>& vin)
     {
         return true;
     }
@@ -138,7 +138,7 @@ public:
 
 protected:
 
-    virtual bool transformIncomingData(yarp::os::Bottle& b);
+    virtual bool transformIncomingData(std::vector<double>& vin);
 
     KinRepresentation::orientation_system orient;
 };

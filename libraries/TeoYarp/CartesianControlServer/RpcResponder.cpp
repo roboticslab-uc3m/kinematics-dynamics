@@ -11,13 +11,6 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
     // process data "in", prepare "out"
     CD_DEBUG("Got: %s\n", in.toString().c_str());
 
-    // may be used by derived classes
-    if (!transformIncomingData(const_cast<yarp::os::Bottle &>(in)))
-    {
-        CD_ERROR("transformIncomingData failed.\n");
-        return false;
-    }
-
     switch (in.get(0).asVocab())
     {
     case VOCAB_CC_STAT:
@@ -112,6 +105,12 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
             vin.push_back(in.get(i).asDouble());
         }
 
+        if (!transformIncomingData(vin))
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+
         if ((iCartesianControl->*cmd)(vin))
         {
             out.addVocab(VOCAB_OK);
@@ -144,6 +143,12 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
             vin.push_back(in.get(i).asDouble());
         }
 
+        if (!transformIncomingData(vin))
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+
         if ((iCartesianControl->*cmd)(vin, vout))
         {
             for (size_t i = 0; i < vout.size(); i++)
@@ -169,31 +174,9 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcTransformResponder::transformIncomingData(yarp::os::Bottle& b)
+bool roboticslab::RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
 {
-    if (b.size() < 2)
-    {
-        return true;
-    }
-
-    std::vector<double> x(b.size() - 1);
-
-    for (size_t i = b.size() - 2; i >= 0; i--)
-    {
-        x[i] = b.pop().asDouble();
-    }
-
-    if (!KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES))
-    {
-        return false;
-    }
-
-    for (size_t i = 0; i < x.size(); i++)
-    {
-        b.addDouble(x[i]);
-    }
-
-    return true;
+    return KinRepresentation::encodePose(vin, vin, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 }
 
 // -----------------------------------------------------------------------------
