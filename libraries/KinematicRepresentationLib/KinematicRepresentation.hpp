@@ -36,7 +36,7 @@ public:
     //! Lists available rotational representations.
     enum orientation_system
     {
-        AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis need not to be normalized]
+        AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis needs not to be normalized]
         AXIS_ANGLE_SCALED, ///< (axis_x, axis_y, axis_z) [axis' norm is the rotation angle]
         RPY,               ///< fixed axes, roll is axis_x
         EULER_YZ,          ///< as @ref EULER_ZYZ, preceded by rotation about the azimuthal angle got from x-y coordinates
@@ -99,7 +99,7 @@ public:
             coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
 
     /**
-     * @brief Retrieves the translation and rotation values of a specific velocity to the chosen representation systems.
+     * @brief Converts the translation and rotation values of a specific velocity to the chosen representation systems.
      *
      * Supports in-place transformation.
      *
@@ -131,7 +131,7 @@ public:
             coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
 
     /**
-     * @brief Retrieves the translation and rotation values of a specific acceleration to the chosen representation systems.
+     * @brief Converts the translation and rotation values of a specific acceleration to the chosen representation systems.
      *
      * Supports in-place transformation.
      *
