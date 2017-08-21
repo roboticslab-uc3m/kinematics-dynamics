@@ -116,6 +116,8 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    isStopped = true;
+
     return true;
 }
 
@@ -165,8 +167,16 @@ bool StreamingSpnav::updateModule()
 
     if (isZero)
     {
-        iCartesianControl->stopControl();
+        if (!isStopped)
+        {
+            isStopped = iCartesianControl->stopControl();
+        }
+
         return true;
+    }
+    else
+    {
+        isStopped = false;
     }
 
     if (!iCartesianControl->vmos(xdot))
