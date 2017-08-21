@@ -2,6 +2,8 @@
 
 #include "KinematicRepresentation.hpp"
 
+#include <cmath>
+
 #include <kdl/frames.hpp>
 
 #include <ColorDebug.hpp>
@@ -35,7 +37,8 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
         return false;
     }
 
-    x_out.reserve(6);
+    // expand current size if needed, but never truncate
+    x_out.resize(std::max<int>(6, x_out.size()));
 
     switch (orient)
     {
@@ -87,6 +90,7 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
         return false;
     }
 
+    // truncate extra elements
     x_out.resize(6);
 
     switch (coord)
@@ -126,7 +130,7 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
     {
     case AXIS_ANGLE:
     {
-        x_out.reserve(7);
+        x_out.resize(std::max<int>(7, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         x_out[6] = axis.Norm();
         axis.Normalize();
@@ -138,7 +142,7 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
     }
     case AXIS_ANGLE_SCALED:
     {
-        x_out.reserve(6);
+        x_out.resize(std::max<int>(6, x_out.size()));
         x_out[3] = radToDegHelper(angle, x_in[3]);
         x_out[4] = radToDegHelper(angle, x_in[4]);
         x_out[5] = radToDegHelper(angle, x_in[5]);
@@ -147,7 +151,7 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
     }
     case RPY:
     {
-        x_out.reserve(6);
+        x_out.resize(std::max<int>(6, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double roll, pitch, yaw;
@@ -160,7 +164,7 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
     }
     case EULER_YZ:
     {
-        x_out.reserve(5);
+        x_out.resize(std::max<int>(5, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double alpha, beta, gamma;
@@ -172,7 +176,7 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
     }
     case EULER_ZYZ:
     {
-        x_out.reserve(6);
+        x_out.resize(std::max<int>(6, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double alpha, beta, gamma;
