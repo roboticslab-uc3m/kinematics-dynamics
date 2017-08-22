@@ -168,16 +168,26 @@ bool StreamingSpnav::updateModule()
         data[5] = axis[2] * angle;
     }
 
+    double local_scaling = scaling;
+
+    if (iProximitySensors->getAlertLevel()==IProximitySensors::LOW) //Decrease velocity
+    {
+
+	    local_scaling *= 2; //Half velocity
+	    CD_WARNING("Obstacle detected\n");
+    }
+
     for (int i = 0; i < data.size(); i++)
     {
         if (!fixedAxes[i] && data[i] != 0.0)
         {
             isZero = false;
-            xdot[i] = data[i] / scaling;
+            xdot[i] = data[i] / local_scaling;
         }
     }
 
-    if (isZero || iProximitySensors->hasObstacle())
+
+    if (isZero || iProximitySensors->getAlertLevel()==IProximitySensors::HIGH)
     {
         if (!isStopped)
         {
