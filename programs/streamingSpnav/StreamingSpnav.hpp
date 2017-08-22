@@ -15,6 +15,9 @@
 #define DEFAULT_SPNAV_LOCAL "/StreamingSpnavClient"
 #define DEFAULT_SPNAV_REMOTE "/spacenavigator/mouse"
 
+#define DEFAULT_ACTUATOR_LOCAL "/StreamingActuatorClient"
+#define DEFAULT_ACTUATOR_REMOTE "/spacenavigator/buttons"
+
 #define DEFAULT_CARTESIAN_LOCAL "/SpnavCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 #define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
@@ -43,10 +46,12 @@ public:
 
 private:
     yarp::dev::PolyDriver spnavClientDevice;
+    yarp::dev::PolyDriver actuatorClientDevice;
     yarp::dev::PolyDriver cartesianControlClientDevice;
     yarp::dev::PolyDriver proximitySensorsDevice;
 
     yarp::dev::IAnalogSensor *iAnalogSensor;
+    yarp::dev::IAnalogSensor *iAnalogSensorAct;
     roboticslab::ICartesianControl *iCartesianControl;
     roboticslab::IProximitySensors *iProximitySensors;
 
@@ -55,6 +60,7 @@ private:
     std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled
 
     bool isStopped;
+    int actuatorState;
 };
 
 }  // namespace roboticslab

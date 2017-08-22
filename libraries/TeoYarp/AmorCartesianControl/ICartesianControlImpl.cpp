@@ -146,6 +146,14 @@ bool roboticslab::AmorCartesianControl::act(int commandCode)
             return false;
         }
     }
+    else if (commandCode == 2)
+    {
+        if (amor_stop_hand(handle) != AMOR_SUCCESS)
+        {
+            CD_ERROR("%s\n", amor_error());
+            return false;
+        }
+    }
     else
     {
         CD_ERROR("Unrecognized command code: %d.\n", commandCode);
