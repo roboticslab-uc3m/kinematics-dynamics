@@ -31,6 +31,10 @@ namespace
         {
             return q + 360;
         }
+        else if (std::abs(q) < eps)
+        {
+            return 0.0;
+        }
         else
         {
             return q;
