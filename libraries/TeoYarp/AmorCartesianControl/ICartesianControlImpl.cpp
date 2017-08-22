@@ -128,6 +128,35 @@ bool roboticslab::AmorCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::AmorCartesianControl::act(int commandCode)
+{
+    if (commandCode == 0)
+    {
+        if (amor_close_hand(handle) != AMOR_SUCCESS)
+        {
+            CD_ERROR("%s\n", amor_error());
+            return false;
+        }
+    }
+    else if (commandCode == 1)
+    {
+        if (amor_open_hand(handle) != AMOR_SUCCESS)
+        {
+            CD_ERROR("%s\n", amor_error());
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("Unrecognized command code: %d.\n", commandCode);
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot)
 {
     return true;

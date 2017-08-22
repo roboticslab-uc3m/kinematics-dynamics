@@ -251,6 +251,13 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::act(int commandCode)
+{
+    CD_ERROR("Not implemented.\n");
+    return false;
+}
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot)
 {
     return true;

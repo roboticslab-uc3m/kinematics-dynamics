@@ -31,6 +31,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleConsumerCmdMsg(in, out, &ICartesianControl::forc);
     case VOCAB_CC_STOP:
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
+    case VOCAB_CC_ACT:
+        return handleActMsg(in, out);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -145,6 +147,33 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
                 out.addDouble(vout[i]);
             }
 
+            return true;
+        }
+        else
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 1)
+    {
+        int commandCode = in.get(1).asInt();
+
+        if (iCartesianControl->act(commandCode))
+        {
+            out.addVocab(VOCAB_OK);
             return true;
         }
         else

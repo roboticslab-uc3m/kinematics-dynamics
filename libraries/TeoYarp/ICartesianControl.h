@@ -17,6 +17,7 @@
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
 #define VOCAB_CC_FORC VOCAB4('f','o','r','c')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
+#define VOCAB_CC_ACT VOCAB3('a','c','t')
 
 // Streaming commands
 #define VOCAB_CC_FWD VOCAB3('f','w','d')
@@ -77,6 +78,9 @@ class ICartesianControl
 
         /** stop */
         virtual bool stopControl() = 0;
+
+        /** actuate tool */
+        virtual bool act(int commandCode) = 0;
 
         //--------------------- Streaming commands ---------------------
         /** fwd */

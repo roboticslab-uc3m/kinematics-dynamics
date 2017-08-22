@@ -198,6 +198,25 @@ bool roboticslab::CartesianControlClient::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::CartesianControlClient::act(int commandCode)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_ACT);
+    cmd.addInt(commandCode);
+
+    rpcClient.write(cmd,response);
+
+    if( response.get(0).asVocab() == VOCAB_FAILED )
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();

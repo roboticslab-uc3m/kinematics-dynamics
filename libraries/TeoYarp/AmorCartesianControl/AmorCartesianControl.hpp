@@ -71,6 +71,9 @@ public:
     /** stop */
     virtual bool stopControl();
 
+    /** act */
+    virtual bool act(int commandCode);
+
     /** fwd */
     virtual bool fwd(const std::vector<double> &rot);
 
