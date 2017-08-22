@@ -42,7 +42,6 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
 
 void roboticslab::RpcResponder::makeUsage()
 {
-    // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
     addUsage("[stat]", "get current position in cartesian space");
     addUsage("[inv] $fCoord1 $fCoord2 ...", "accept desired position in cartesian space, return result in joint space");
     addUsage("[movj] $fCoord1 $fCoord2 ...", "joint move to desired position (absolute coordinates in cartesian space)");

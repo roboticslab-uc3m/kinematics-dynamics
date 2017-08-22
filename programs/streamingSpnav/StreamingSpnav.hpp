@@ -10,12 +10,14 @@
 #include <yarp/dev/IAnalogSensor.h>
 
 #include "ICartesianControl.h"
+#include "IProximitySensors.h"
 
 #define DEFAULT_SPNAV_LOCAL "/StreamingSpnavClient"
 #define DEFAULT_SPNAV_REMOTE "/spacenavigator/mouse"
 
 #define DEFAULT_CARTESIAN_LOCAL "/SpnavCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
+#define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
 
 #define DEFAULT_SCALING 10.0
 
@@ -28,7 +30,7 @@ namespace roboticslab
  * @ingroup streamingSpnav
  *
  * @brief Sends streaming commands to the cartesian controller from
- * a 3D input device like the 3Dconnection Space Navigator.
+ * a 3D input device like the 3Dconnexion Space Navigator.
  */
 class StreamingSpnav : public yarp::os::RFModule
 {
@@ -42,13 +44,17 @@ public:
 private:
     yarp::dev::PolyDriver spnavClientDevice;
     yarp::dev::PolyDriver cartesianControlClientDevice;
+    yarp::dev::PolyDriver proximitySensorsDevice;
 
     yarp::dev::IAnalogSensor *iAnalogSensor;
     roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::IProximitySensors *iProximitySensors;
 
     double scaling;
 
     std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled
+
+    bool isStopped;
 };
 
 }  // namespace roboticslab

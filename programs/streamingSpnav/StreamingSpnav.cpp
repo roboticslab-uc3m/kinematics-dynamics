@@ -26,6 +26,8 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
     std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL), "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE), "remote cartesian port").asString();
 
+    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS), "remote sensors port").asString();
+
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
 
     yarp::os::Value axesValue = rf.check("fixedAxes", yarp::os::Value(DEFAULT_FIXED_AXES), "axes with restricted movement");
@@ -116,6 +118,25 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    yarp::os::Property sensorOptions;
+    sensorOptions.put("device", "ProximitySensors");
+
+    proximitySensorsDevice.open(sensorOptions);
+
+    if (!proximitySensorsDevice.isValid())
+    {
+        CD_ERROR("sensors device not valid.\n");
+        return false;
+    }
+
+    if (!proximitySensorsDevice.view(iProximitySensors))
+    {
+        CD_ERROR("Could not view iSensors.\n");
+        return false;
+    }
+
+    isStopped = true;
+
     return true;
 }
 
@@ -133,33 +154,41 @@ bool StreamingSpnav::updateModule()
     }
 
     std::vector<double> xdot(6, 0.0);
+    bool isZero = true;
 
     if (!fixedAxes[3] || !fixedAxes[4] || !fixedAxes[5])
     {
         yarp::sig::Matrix rot = yarp::math::rpy2dcm(data.subVector(3, 5));
         yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rot);
         yarp::sig::Vector axis = axisAngle.subVector(0, 2);
+        double angle = axisAngle[3];
 
-        if (std::abs(yarp::math::norm(axis)) > 1e-9)
-        {
-            data[3] /= axisAngle[3];
-            data[4] /= axisAngle[3];
-            data[5] /= axisAngle[3];
-        }
-        else
-        {
-            data[3] = 1.0;
-            data[4] = data[5] = 0.0;
-        }
+        data[3] = axis[0] * angle;
+        data[4] = axis[1] * angle;
+        data[5] = axis[2] * angle;
     }
 
     for (int i = 0; i < data.size(); i++)
     {
-        if (!fixedAxes[i])
+        if (!fixedAxes[i] && data[i] != 0.0)
         {
-
+            isZero = false;
             xdot[i] = data[i] / scaling;
         }
+    }
+
+    if (isZero || iProximitySensors->hasObstacle())
+    {
+        if (!isStopped)
+        {
+            isStopped = iCartesianControl->stopControl();
+        }
+
+        return true;
+    }
+    else
+    {
+        isStopped = false;
     }
 
     if (!iCartesianControl->vmos(xdot))
@@ -176,6 +205,7 @@ bool StreamingSpnav::interruptModule()
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
     ok &= spnavClientDevice.close();
+    ok &= proximitySensorsDevice.close();
     return ok;
 }
 
