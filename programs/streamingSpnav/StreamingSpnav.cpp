@@ -26,6 +26,8 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
     std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL), "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE), "remote cartesian port").asString();
 
+    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS), "remote sensors port").asString();
+
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
 
     yarp::os::Value axesValue = rf.check("fixedAxes", yarp::os::Value(DEFAULT_FIXED_AXES), "axes with restricted movement");
@@ -116,6 +118,23 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    yarp::os::Property sensorOptions;
+    sensorOptions.put("device", "ProximitySensors");
+
+    proximitySensorsDevice.open(sensorOptions);
+
+    if (!proximitySensorsDevice.isValid())
+    {
+        CD_ERROR("sensors device not valid.\n");
+        return false;
+    }
+
+    if (!proximitySensorsDevice.view(iProximitySensors))
+    {
+        CD_ERROR("Could not view iSensors.\n");
+        return false;
+    }
+
     isStopped = true;
 
     return true;
@@ -158,7 +177,7 @@ bool StreamingSpnav::updateModule()
         }
     }
 
-    if (isZero)
+    if (isZero || iProximitySensors->hasObstacle())
     {
         if (!isStopped)
         {
@@ -186,6 +205,7 @@ bool StreamingSpnav::interruptModule()
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
     ok &= spnavClientDevice.close();
+    ok &= proximitySensorsDevice.close();
     return ok;
 }
 

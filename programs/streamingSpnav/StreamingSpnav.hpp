@@ -10,12 +10,14 @@
 #include <yarp/dev/IAnalogSensor.h>
 
 #include "ICartesianControl.h"
+#include "IProximitySensors.h"
 
 #define DEFAULT_SPNAV_LOCAL "/StreamingSpnavClient"
 #define DEFAULT_SPNAV_REMOTE "/spacenavigator/mouse"
 
 #define DEFAULT_CARTESIAN_LOCAL "/SpnavCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
+#define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
 
 #define DEFAULT_SCALING 10.0
 
@@ -42,9 +44,11 @@ public:
 private:
     yarp::dev::PolyDriver spnavClientDevice;
     yarp::dev::PolyDriver cartesianControlClientDevice;
+    yarp::dev::PolyDriver proximitySensorsDevice;
 
     yarp::dev::IAnalogSensor *iAnalogSensor;
     roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::IProximitySensors *iProximitySensors;
 
     double scaling;
 
