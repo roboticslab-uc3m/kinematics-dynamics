@@ -17,6 +17,7 @@
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
 #define VOCAB_CC_FORC VOCAB4('f','o','r','c')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
+#define VOCAB_CC_TOOL VOCAB4('t','o','o','l')
 
 // Streaming commands
 #define VOCAB_CC_FWD VOCAB3('f','w','d')
@@ -77,6 +78,9 @@ class ICartesianControl
 
         /** stop */
         virtual bool stopControl() = 0;
+
+        /** tool */
+        virtual bool tool(const std::vector<double> &x) = 0;
 
         //--------------------- Streaming commands ---------------------
         /** fwd */

@@ -198,10 +198,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
+    // selects elbow-down on LeastOverallAngularDisplacement strategy
     ASSERT_NEAR(q[0], 130.0, EPS_JOINT);
-    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
-    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
-    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], -45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 45.0, EPS_JOINT);
     ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 
     // force REVERSED
@@ -244,10 +245,11 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
+    // selects elbow-down on LeastOverallAngularDisplacement strategy
     ASSERT_NEAR(q[0], 140.0, EPS_JOINT);
-    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
-    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
-    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], -45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 45.0, EPS_JOINT);
     ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 

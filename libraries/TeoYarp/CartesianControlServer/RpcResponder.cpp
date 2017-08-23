@@ -31,6 +31,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleConsumerCmdMsg(in, out, &ICartesianControl::forc);
     case VOCAB_CC_STOP:
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
+    case VOCAB_CC_TOOL:
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -49,6 +51,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[gcmp]", "enable gravity compensation");
     addUsage("[forc] $fCoord1 $fCoord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
+    addUsage("[tool] $fCoord1 $fCoord2 ...", "append fixed link to end effector");
 }
 
 // -----------------------------------------------------------------------------
