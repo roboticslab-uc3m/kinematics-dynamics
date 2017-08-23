@@ -128,6 +128,14 @@ bool roboticslab::AmorCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
+{
+    CD_WARNING("Tool change is not supported on AMOR.\n");
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot)
 {
     return true;
