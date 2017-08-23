@@ -116,6 +116,8 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    isStopped = true;
+
     return true;
 }
 
@@ -133,33 +135,41 @@ bool StreamingSpnav::updateModule()
     }
 
     std::vector<double> xdot(6, 0.0);
+    bool isZero = true;
 
     if (!fixedAxes[3] || !fixedAxes[4] || !fixedAxes[5])
     {
         yarp::sig::Matrix rot = yarp::math::rpy2dcm(data.subVector(3, 5));
         yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rot);
         yarp::sig::Vector axis = axisAngle.subVector(0, 2);
+        double angle = axisAngle[3];
 
-        if (std::abs(yarp::math::norm(axis)) > 1e-9)
-        {
-            data[3] /= axisAngle[3];
-            data[4] /= axisAngle[3];
-            data[5] /= axisAngle[3];
-        }
-        else
-        {
-            data[3] = 1.0;
-            data[4] = data[5] = 0.0;
-        }
+        data[3] = axis[0] * angle;
+        data[4] = axis[1] * angle;
+        data[5] = axis[2] * angle;
     }
 
     for (int i = 0; i < data.size(); i++)
     {
-        if (!fixedAxes[i])
+        if (!fixedAxes[i] && data[i] != 0.0)
         {
-
+            isZero = false;
             xdot[i] = data[i] / scaling;
         }
+    }
+
+    if (isZero)
+    {
+        if (!isStopped)
+        {
+            isStopped = iCartesianControl->stopControl();
+        }
+
+        return true;
+    }
+    else
+    {
+        isStopped = false;
     }
 
     if (!iCartesianControl->vmos(xdot))

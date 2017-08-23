@@ -28,7 +28,7 @@ namespace roboticslab
  * @ingroup streamingSpnav
  *
  * @brief Sends streaming commands to the cartesian controller from
- * a 3D input device like the 3Dconnection Space Navigator.
+ * a 3D input device like the 3Dconnexion Space Navigator.
  */
 class StreamingSpnav : public yarp::os::RFModule
 {
@@ -49,6 +49,8 @@ private:
     double scaling;
 
     std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled
+
+    bool isStopped;
 };
 
 }  // namespace roboticslab

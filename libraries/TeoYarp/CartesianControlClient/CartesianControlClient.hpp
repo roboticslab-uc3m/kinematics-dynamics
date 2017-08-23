@@ -66,6 +66,9 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         /** stop */
         virtual bool stopControl();
 
+        /** tool */
+        virtual bool tool(const std::vector<double> &x);
+
         /** fwd */
         virtual bool fwd(const std::vector<double> &rot);
 
