@@ -141,6 +141,9 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** stop */
         virtual bool stopControl();
 
+        /** tool */
+        virtual bool tool(const std::vector<double> &x);
+
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
         /** Loop function. This is the thread itself. */

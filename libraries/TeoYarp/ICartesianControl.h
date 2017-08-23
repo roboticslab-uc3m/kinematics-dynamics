@@ -16,6 +16,7 @@
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
 #define VOCAB_CC_FORC VOCAB4('f','o','r','c')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
+#define VOCAB_CC_TOOL VOCAB4('t','o','o','l')
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
 #define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c')
@@ -66,6 +67,9 @@ class ICartesianControl
 
         /** stop */
         virtual bool stopControl() = 0;
+
+        /** tool */
+        virtual bool tool(const std::vector<double> &x) = 0;
 
 };
 
