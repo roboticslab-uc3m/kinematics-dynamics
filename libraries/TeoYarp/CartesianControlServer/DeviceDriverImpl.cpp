@@ -52,19 +52,20 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         return false;
     }
 
-    // look for the portname to register (--name option)
+    rpcResponder = new RpcResponder(iCartesianControl);
+    streamResponder = new StreamResponder(iCartesianControl);
+
+    //Look for the portname to register (--name option)
     if (config.check("name", name))
     {
         rpcServer.open(name->asString() + "/rpc:s");
+        commandPort.open(name->asString() + "/command:i");
     }
     else
     {
         rpcServer.open("/CartesianControl/rpc:s");
+        commandPort.open("/CartesianControl/command:i");
     }
-
-    rpcResponder = new RpcResponder(iCartesianControl);
-
-    rpcServer.setReader(*rpcResponder);
 
     // check angle representation, leave this block last to allow inner return instruction
     if (config.check("angleRepr", angleRepr))
@@ -94,6 +95,8 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
             return true;
         }
 
+        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, orient);
+
         if (config.check("name", name))
         {
             rpcTransformServer.open(name->asString() + "/rpc_transform:s");
@@ -103,10 +106,11 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
             rpcTransformServer.open("/CartesianControl/rpc_transform:s");
         }
 
-        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, orient);
-
         rpcTransformServer.setReader(*rpcTransformResponder);
     }
+
+    rpcServer.setReader(*rpcResponder);
+    commandPort.useCallback(*streamResponder);
 
     return true;
 }
@@ -115,13 +119,20 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
 bool roboticslab::CartesianControlServer::close()
 {
+    rpcServer.interrupt();
     rpcServer.close();
     delete rpcResponder;
     rpcResponder = NULL;
 
+    rpcTransformServer.interrupt();
     rpcTransformServer.close();
     delete rpcTransformResponder;
     rpcTransformResponder = NULL;
+
+    commandPort.interrupt();
+    commandPort.close();
+    delete streamResponder;
+    streamResponder = NULL;
 
     cartesianControlDevice.close();
 
