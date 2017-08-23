@@ -17,7 +17,6 @@
 #include "Trajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
-#define DEFAULT_ANG_REPR "axisAngle"
 #define DEFAULT_REMOTE_A "/teoSim/rightLeg"
 #define DEFAULT_REMOTE_B "/teoSim/leftLeg"
 #define DEFAULT_KINEMATICS_A "rightLegKinematics.ini"

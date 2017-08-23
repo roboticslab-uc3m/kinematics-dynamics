@@ -14,7 +14,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config) {
     local += "/rpc:c";
     rpcClient.open(local);
 
-    remote += "/rpc:s";
+    remote += config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
 
     int tries = 0;
     while(tries++ < 10)

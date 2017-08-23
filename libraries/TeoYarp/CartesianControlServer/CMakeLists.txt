@@ -8,20 +8,22 @@ yarp_prepare_plugin(CartesianControlServer
                     CATEGORY device
                     TYPE roboticslab::CartesianControlServer
                     INCLUDE CartesianControlServer.hpp
-                    DEFAULT ON)
+                    DEFAULT ON
+                    DEPENDS ENABLE_KinematicRepresentationLib)
 
 if(NOT SKIP_CartesianControlServer)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
-                                       CartesianControlServer.cpp
-                                       DeviceDriverImpl.cpp)
+                                       DeviceDriverImpl.cpp
+                                       RpcResponder.cpp)
 
 add_dependencies(CartesianControlServer COLOR_DEBUG)
 
 target_link_libraries(CartesianControlServer YARP::YARP_OS
-                                             YARP::YARP_dev)
+                                             YARP::YARP_dev
+                                             KinematicRepresentationLib)
 
 yarp_install(TARGETS CartesianControlServer
              COMPONENT runtime
