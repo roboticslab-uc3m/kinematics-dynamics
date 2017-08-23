@@ -216,7 +216,8 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
 bool KinRepresentation::encodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    return true;
+    CD_ERROR("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -224,7 +225,8 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &xdot_in, std::
 bool KinRepresentation::decodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    return true;
+    CD_ERROR("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -232,7 +234,8 @@ bool KinRepresentation::decodeVelocity(const std::vector<double> &xdot_in, std::
 bool KinRepresentation::encodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    return true;
+    CD_ERROR("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -240,7 +243,8 @@ bool KinRepresentation::encodeAcceleration(const std::vector<double> &xdotdot_in
 bool KinRepresentation::decodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    return true;
+    CD_ERROR("Not implemented.\n");
+    return false;
 }
 
 // -----------------------------------------------------------------------------
