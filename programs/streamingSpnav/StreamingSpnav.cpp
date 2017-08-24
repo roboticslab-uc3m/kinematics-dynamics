@@ -115,22 +115,25 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    yarp::os::Property sensorsClientOptions;
-    sensorsClientOptions.fromString(rf.toString());
-    sensorsClientOptions.put("device", "ProximitySensorsClient");
-
-    sensorsClientDevice.open(sensorsClientOptions);
-
-    if (!sensorsClientDevice.isValid())
+    if (rf.check("useSensors"))
     {
-        CD_ERROR("sensors device not valid.\n");
-        return false;
-    }
+        yarp::os::Property sensorsClientOptions;
+        sensorsClientOptions.fromString(rf.toString());
+        sensorsClientOptions.put("device", "ProximitySensorsClient");
 
-    if (!sensorsClientDevice.view(iProximitySensors))
-    {
-        CD_ERROR("Could not view iSensors.\n");
-        return false;
+        sensorsClientDevice.open(sensorsClientOptions);
+
+        if (!sensorsClientDevice.isValid())
+        {
+            CD_ERROR("sensors device not valid.\n");
+            return false;
+        }
+
+        if (!sensorsClientDevice.view(iProximitySensors))
+        {
+            CD_ERROR("Could not view iSensors.\n");
+            return false;
+        }
     }
 
     isStopped = true;
@@ -156,7 +159,7 @@ bool StreamingSpnav::updateModule()
 
     double local_scaling = scaling;
 
-    if (iProximitySensors->getAlertLevel() == IProximitySensors::LOW) //Decrease velocity
+    if (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::LOW)
     {
 	    local_scaling *= 2; //Half velocity
 	    CD_WARNING("Obstacle detected\n");
@@ -171,7 +174,7 @@ bool StreamingSpnav::updateModule()
         }
     }
 
-    if (isZero || iProximitySensors->getAlertLevel() == IProximitySensors::HIGH)
+    if (isZero || (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::HIGH))
     {
         if (!isStopped)
         {
@@ -196,10 +199,16 @@ bool StreamingSpnav::updateModule()
 bool StreamingSpnav::interruptModule()
 {
     bool ok = true;
+
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
     ok &= spnavClientDevice.close();
-    ok &= sensorsClientDevice.close();
+
+    if (sensorsClientDevice.isValid())
+    {
+        ok &= sensorsClientDevice.close();
+    }
+
     return ok;
 }
 
