@@ -115,18 +115,18 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    yarp::os::Property sensorOptions;
-    sensorOptions.put("device", "ProximitySensors");
+    yarp::os::Property sensorsClientOptions;
+    sensorsClientOptions.put("device", "ProximitySensorsClient");
 
-    proximitySensorsDevice.open(sensorOptions);
+    sensorsClientDevice.open(sensorsClientOptions);
 
-    if (!proximitySensorsDevice.isValid())
+    if (!sensorsClientDevice.isValid())
     {
         CD_ERROR("sensors device not valid.\n");
         return false;
     }
 
-    if (!proximitySensorsDevice.view(iProximitySensors))
+    if (!sensorsClientDevice.view(iProximitySensors))
     {
         CD_ERROR("Could not view iSensors.\n");
         return false;
@@ -155,9 +155,8 @@ bool StreamingSpnav::updateModule()
 
     double local_scaling = scaling;
 
-    if (iProximitySensors->getAlertLevel()==IProximitySensors::LOW) //Decrease velocity
+    if (iProximitySensors->getAlertLevel() == IProximitySensors::LOW) //Decrease velocity
     {
-
 	    local_scaling *= 2; //Half velocity
 	    CD_WARNING("Obstacle detected\n");
     }
@@ -171,8 +170,7 @@ bool StreamingSpnav::updateModule()
         }
     }
 
-
-    if (isZero || iProximitySensors->getAlertLevel()==IProximitySensors::HIGH)
+    if (isZero || iProximitySensors->getAlertLevel() == IProximitySensors::HIGH)
     {
         if (!isStopped)
         {
@@ -200,7 +198,7 @@ bool StreamingSpnav::interruptModule()
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
     ok &= spnavClientDevice.close();
-    ok &= proximitySensorsDevice.close();
+    ok &= sensorsClientDevice.close();
     return ok;
 }
 

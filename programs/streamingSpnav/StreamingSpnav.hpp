@@ -44,7 +44,7 @@ public:
 private:
     yarp::dev::PolyDriver spnavClientDevice;
     yarp::dev::PolyDriver cartesianControlClientDevice;
-    yarp::dev::PolyDriver proximitySensorsDevice;
+    yarp::dev::PolyDriver sensorsClientDevice;
 
     yarp::dev::IAnalogSensor *iAnalogSensor;
     roboticslab::ICartesianControl *iCartesianControl;
