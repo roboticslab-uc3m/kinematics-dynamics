@@ -116,6 +116,7 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
     }
 
     yarp::os::Property sensorsClientOptions;
+    sensorsClientOptions.fromString(rf.toString());
     sensorsClientOptions.put("device", "ProximitySensorsClient");
 
     sensorsClientDevice.open(sensorsClientOptions);
