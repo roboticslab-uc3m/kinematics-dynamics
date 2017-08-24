@@ -7,23 +7,30 @@
 
 #include <yarp/os/Vocab.h>
 
-#define VOCAB_CC_STAT VOCAB4('s','t','a','t')
-#define VOCAB_CC_INV VOCAB3('i','n','v')
-#define VOCAB_CC_MOVJ VOCAB4('m','o','v','j')
-#define VOCAB_CC_RELJ VOCAB4('r','e','l','j')
-#define VOCAB_CC_MOVL VOCAB4('m','o','v','l')
-#define VOCAB_CC_MOVV VOCAB4('m','o','v','v')
-#define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
-#define VOCAB_CC_FORC VOCAB4('f','o','r','c')
-#define VOCAB_CC_STOP VOCAB4('s','t','o','p')
-#define VOCAB_CC_TOOL VOCAB4('t','o','o','l')
+/**
+ * @ingroup TeoYarp
+ * @{
+ */
 
-#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
-#define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c')
-#define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c')
-#define VOCAB_CC_MOVV_CONTROLLING VOCAB4('c','c','v','c')
-#define VOCAB_CC_GCMP_CONTROLLING VOCAB4('c','c','g','c')
-#define VOCAB_CC_FORC_CONTROLLING VOCAB4('c','c','f','c')
+#define VOCAB_CC_STAT VOCAB4('s','t','a','t') ///< Current state and position
+#define VOCAB_CC_INV VOCAB3('i','n','v')      ///< Inverse kinematics
+#define VOCAB_CC_MOVJ VOCAB4('m','o','v','j') ///< Move in joint space, absolute coordinates
+#define VOCAB_CC_RELJ VOCAB4('r','e','l','j') ///< Move in joint space, relative coordinates
+#define VOCAB_CC_MOVL VOCAB4('m','o','v','l') ///< Linear move (target position)
+#define VOCAB_CC_MOVV VOCAB4('m','o','v','v') ///< Linear move (target velocity)
+#define VOCAB_CC_GCMP VOCAB4('g','c','m','p') ///< Gravity compensation
+#define VOCAB_CC_FORC VOCAB4('f','o','r','c') ///< Force control
+#define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
+#define VOCAB_CC_TOOL VOCAB4('t','o','o','l') ///< Change tool
+
+#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
+#define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c') ///< Controlling MOVJ commands
+#define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c') ///< Controlling MOVL commands
+#define VOCAB_CC_MOVV_CONTROLLING VOCAB4('c','c','v','c') ///< Controlling MOVV commands
+#define VOCAB_CC_GCMP_CONTROLLING VOCAB4('c','c','g','c') ///< Controlling GCMP commands
+#define VOCAB_CC_FORC_CONTROLLING VOCAB4('c','c','f','c') ///< Controlling FORC commands
+
+/** @} */
 
 namespace roboticslab
 {

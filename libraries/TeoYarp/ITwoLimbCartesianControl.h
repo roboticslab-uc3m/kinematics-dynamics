@@ -7,12 +7,19 @@
 
 #include <yarp/os/Vocab.h>
 
-#define VOCAB_CC_STAT VOCAB4('s','t','a','t')
-#define VOCAB_CC_STOP VOCAB4('s','t','o','p')
-#define VOCAB_CC_STEP VOCAB4('s','t','e','p')
+/**
+ * @ingroup TeoYarp
+ * @{
+ */
 
-#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
-#define VOCAB_CC_MOVS_CONTROLLING VOCAB4('c','c','s','c')
+#define VOCAB_CC_STAT VOCAB4('s','t','a','t') ///< Current state and position
+#define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
+#define VOCAB_CC_STEP VOCAB4('s','t','e','p') ///< Step
+
+#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
+#define VOCAB_CC_MOVS_CONTROLLING VOCAB4('c','c','s','c') ///< Controlling step commands
+
+/** @} */
 
 #define DEFAULT_DURATION 15
 
