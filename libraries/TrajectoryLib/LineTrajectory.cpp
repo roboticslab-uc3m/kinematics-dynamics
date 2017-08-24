@@ -8,11 +8,12 @@
 
 #include <ColorDebug.hpp>
 
+#include "KdlVectorConverter.hpp"
+
 // -----------------------------------------------------------------------------
 
-roboticslab::LineTrajectory::LineTrajectory(const std::string & angleRepr)
-    : KdlVectorConverter(angleRepr),
-      currentTrajectory(0),
+roboticslab::LineTrajectory::LineTrajectory()
+    : currentTrajectory(0),
       _orient(0)
 {}
 
@@ -21,7 +22,7 @@ roboticslab::LineTrajectory::LineTrajectory(const std::string & angleRepr)
 bool roboticslab::LineTrajectory::getX(const double movementTime, std::vector<double>& x)
 {
     KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
-    frameToVector(xFrame,x);
+    x = KdlVectorConverter::frameToVector(xFrame);
     return true;
 }
 
@@ -30,7 +31,7 @@ bool roboticslab::LineTrajectory::getX(const double movementTime, std::vector<do
 bool roboticslab::LineTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
 {
     KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
-    twistToVector(xdotFrame,xdot);
+    xdot = KdlVectorConverter::twistToVector(xdotFrame);
     return true;
 }
 
@@ -38,9 +39,8 @@ bool roboticslab::LineTrajectory::getXdot(const double movementTime, std::vector
 
 bool roboticslab::LineTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
 {
-    KDL::Frame srcFrame, destFrame;
-    vectorToFrame(src,srcFrame);
-    vectorToFrame(dest,destFrame);
+    KDL::Frame srcFrame = KdlVectorConverter::vectorToFrame(src);
+    KDL::Frame destFrame = KdlVectorConverter::vectorToFrame(dest);
 
     _orient = new KDL::RotationalInterpolation_SingleAxis();
 

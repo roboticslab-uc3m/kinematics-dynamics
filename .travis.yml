@@ -54,6 +54,7 @@ before_script:
   - sudo ldconfig
 
 script:
+  - bin/testKinRepresentation
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
   - bin/testAsibotSolverFromFile

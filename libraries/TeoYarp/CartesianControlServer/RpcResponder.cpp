@@ -63,6 +63,12 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
     if (iCartesianControl->stat(state, x))
     {
+        if (!transformOutgoingData(x))
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+
         out.addVocab(state);
 
         for (size_t i = 0; i < x.size(); i++)
@@ -108,16 +114,14 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
             vin.push_back(in.get(i).asDouble());
         }
 
-        if ((iCartesianControl->*cmd)(vin))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
+        if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
         {
             out.addVocab(VOCAB_FAILED);
             return false;
         }
+
+        out.addVocab(VOCAB_OK);
+        return true;
     }
     else
     {
@@ -140,20 +144,18 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
             vin.push_back(in.get(i).asDouble());
         }
 
-        if ((iCartesianControl->*cmd)(vin, vout))
-        {
-            for (size_t i = 0; i < vout.size(); i++)
-            {
-                out.addDouble(vout[i]);
-            }
-
-            return true;
-        }
-        else
+        if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
         {
             out.addVocab(VOCAB_FAILED);
             return false;
         }
+
+        for (size_t i = 0; i < vout.size(); i++)
+        {
+            out.addDouble(vout[i]);
+        }
+
+        return true;
     }
     else
     {
@@ -161,6 +163,20 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
         out.addVocab(VOCAB_FAILED);
         return false;
     }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
+{
+    return KinRepresentation::encodePose(vin, vin, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcTransformResponder::transformOutgoingData(std::vector<double>& vout)
+{
+    return KinRepresentation::decodePose(vout, vout, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 }
 
 // -----------------------------------------------------------------------------
