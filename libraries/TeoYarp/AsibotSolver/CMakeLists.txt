@@ -3,7 +3,7 @@ yarp_prepare_plugin(AsibotSolver
                     TYPE roboticslab::AsibotSolver
                     INCLUDE AsibotSolver.hpp
                     DEFAULT ON
-                    DEPENDS ENABLE_YarpTinyMathLib)
+                    DEPENDS ENABLE_KinematicRepresentationLib)
 
 if(NOT SKIP_AsibotSolver)
 
@@ -20,7 +20,7 @@ add_dependencies(AsibotSolver COLOR_DEBUG)
 
 target_link_libraries(AsibotSolver YARP::YARP_OS
                                    YARP::YARP_dev
-                                   YarpTinyMathLib)
+                                   KinematicRepresentationLib)
 
 yarp_install(TARGETS AsibotSolver
              COMPONENT runtime

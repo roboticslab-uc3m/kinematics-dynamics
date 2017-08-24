@@ -8,6 +8,8 @@
 
 #include <ColorDebug.hpp>
 
+#include "KinematicRepresentation.hpp"
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
@@ -32,19 +34,6 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     //-- numlinks
     int numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt();
     CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
-
-    //-- angleRepr
-    angleRepr = fullConfig.check("angleRepr",yarp::os::Value(DEFAULT_ANGLE_REPR),"axisAngle, eulerYZ, eulerZYZ or RPY").asString();
-    CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANGLE_REPR);
-
-    if( ! ( (angleRepr == "axisAngle")
-            || (angleRepr == "eulerYZ")
-            || (angleRepr == "eulerZYZ")
-            || (angleRepr == "RPY") ) )
-    {
-        CD_ERROR("Did not recognize angleRepr: %s.\n",angleRepr.c_str());
-        return false;
-    }
 
     //-- gravity
     yarp::os::Bottle defaultGravityBottle;
@@ -99,7 +88,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
                 double linkMass = bLink.check("mass",yarp::os::Value(0.0)).asDouble();
                 yarp::os::Bottle linkCog = bLink.findGroup("cog").tail();
                 yarp::os::Bottle linkInertia = bLink.findGroup("inertia").tail();
-                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame::DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset)),
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset)),
                                               KDL::RigidBodyInertia(linkMass,KDL::Vector(linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble()),
                                                                     KDL::RotationalInertia(linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble(),0,0,0))));
                 CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
@@ -109,7 +98,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
             }
             else //-- No mass -> skip dynamics
             {
-                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(linkA,toRad(linkAlpha),linkD,toRad(linkOffset))));
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset))));
                 CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
             }
             continue;

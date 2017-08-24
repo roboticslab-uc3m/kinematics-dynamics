@@ -15,10 +15,8 @@
 #include <iostream> // only windows
 
 #include "ICartesianSolver.h"
-#include "KdlVectorConverter.hpp"
 
 #define DEFAULT_KINEMATICS "none.ini"  // string
-#define DEFAULT_ANGLE_REPR "axisAngle"  // string
 #define DEFAULT_NUM_LINKS 1  // int
 
 #define DEFAULT_EPSILON 0.005     // Precision tolerance
@@ -46,13 +44,12 @@ namespace roboticslab
  * @brief The KdlSolver class implements ICartesianSolver.
  */
 
-class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver, public KdlVectorConverter {
-
+class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
+{
     public:
 
         KdlSolver()
-            : KdlVectorConverter(DEFAULT_ANGLE_REPR),
-              eps(DEFAULT_EPS),
+            : eps(DEFAULT_EPS),
               maxIter(DEFAULT_MAXITER)
         {}
 

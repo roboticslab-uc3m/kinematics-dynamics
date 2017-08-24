@@ -14,6 +14,10 @@ include_directories(${gtest_SOURCE_DIR}/include
                     ${YARP_INCLUDE_DIRS}
                     ${_common_includes})
 
+add_executable(testKinRepresentation testKinRepresentation.cpp)
+add_dependencies(testKinRepresentation COLOR_DEBUG)
+target_link_libraries(testKinRepresentation gtest_main KinematicRepresentationLib)
+
 add_executable(testKdlSolver testKdlSolver.cpp)
 add_dependencies(testKdlSolver COLOR_DEBUG)
 target_link_libraries(testKdlSolver YARP::YARP_OS YARP::YARP_dev gtest_main)
@@ -24,7 +28,7 @@ target_link_libraries(testKdlSolverFromFile YARP::YARP_OS YARP::YARP_dev gtest_m
 
 add_executable(testAsibotSolverFromFile testAsibotSolverFromFile.cpp)
 add_dependencies(testAsibotSolverFromFile COLOR_DEBUG)
-target_link_libraries(testAsibotSolverFromFile YARP::YARP_OS YARP::YARP_dev gtest_main)
+target_link_libraries(testAsibotSolverFromFile YARP::YARP_OS YARP::YARP_dev gtest_main KinematicRepresentationLib)
 
 add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 add_dependencies(testBasicCartesianControl COLOR_DEBUG)

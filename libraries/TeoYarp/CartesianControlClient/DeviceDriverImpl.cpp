@@ -18,7 +18,8 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config) {
 
     while (tries++ < 10)
     {
-        yarp::os::Network::connect(local + "/rpc:c", remote + "/rpc:s");
+        std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
+        yarp::os::Network::connect(local + "/rpc:c", remote + suffix);
         if (rpcClient.getOutputCount() > 0) break;
         CD_DEBUG("Wait to connect to remote RPC server, try %d...\n", tries);
         yarp::os::Time::delay(0.5);

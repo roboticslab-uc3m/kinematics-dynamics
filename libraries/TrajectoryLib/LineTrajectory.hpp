@@ -10,7 +10,6 @@
 #include <kdl/trajectory_segment.hpp>
 
 #include "Trajectory.hpp"
-#include "KdlVectorConverter.hpp"
 
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
@@ -31,11 +30,11 @@ namespace roboticslab
  * @brief Implements a basic line trajectory.
  */
 
-class LineTrajectory : public Trajectory, public KdlVectorConverter
+class LineTrajectory : public Trajectory
 {
 public:
 
-    LineTrajectory(const std::string & angleRepr = "axisAngle");
+    LineTrajectory();
 
     /** Cartesian position of the trajectory at movementTime */
     virtual bool getX(const double movementTime, std::vector<double>& x);

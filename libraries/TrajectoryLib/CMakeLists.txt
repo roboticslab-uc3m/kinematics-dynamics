@@ -23,7 +23,7 @@ set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER Trajectory.hpp
                                                          LineTrajectory.hpp)
 
 target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
-                                           KdlVectorConverterLib)
+                                    PRIVATE KdlVectorConverterLib)
 
 target_include_directories(TrajectoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

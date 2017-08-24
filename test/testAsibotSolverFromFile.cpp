@@ -10,6 +10,7 @@
 #include <ColorDebug.hpp>
 
 #include "ICartesianSolver.h"
+#include "KinematicRepresentation.hpp"
 
 namespace roboticslab
 {
@@ -74,6 +75,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin1)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
     ASSERT_NEAR(x[0], 0.0, EPS_CART);  //-- x
@@ -94,6 +97,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
     q[4] = 90.0;
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -120,6 +125,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinError)
     q[3] = 45.0;
     q[4] = 0.0;
 
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
     ASSERT_TRUE(iCartesianSolver->fwdKinError(xd, q, x));
 
     ASSERT_EQ(x.size(), 6);  //-- twist
@@ -145,6 +152,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
     // forces FORWARD UP, compare with AsibotSolverSetLimits
     qGuess[2] = 90.0;
 
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
@@ -169,6 +178,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
     // force REVERSED
     qGuess[1] = 45.0;
 
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
@@ -183,7 +194,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 {
-    std::vector<double> xd(5), qGuess(5, 0.0), q;
+    std::vector<double> xd(5), xd_encoded, qGuess(5, 0.0), q;
 
     xd[0] = -0.318163634;  //-- x
     xd[1] = 0.379172654;  //-- y
@@ -194,7 +205,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
     // force FORWARD
     qGuess[1] = 45.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -208,7 +221,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
     // force REVERSED
     xd[4] = 180.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
     ASSERT_NEAR(q[0], -50.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
@@ -219,7 +234,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 {
-    std::vector<double> xd(5), qGuess(5, 0.0), q;
+    std::vector<double> xd(5), xd_encoded, qGuess(5, 0.0), q;
 
     xd[0] = -0.379172654;  //-- x
     xd[1] = 0.318163634;  //-- y
@@ -230,7 +245,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
     // force REVERSED
     qGuess[1] = 45.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -243,7 +260,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
     // force FORWARD
     xd[4] = 0.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
     // selects elbow-down on LeastOverallAngularDisplacement strategy
     ASSERT_NEAR(q[0], 140.0, EPS_JOINT);
@@ -255,7 +274,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
 {
-    std::vector<double> xd(5), qGuess(5, 0.0), q;
+    std::vector<double> xd(5), xd_encoded, qGuess(5, 0.0), q;
 
     xd[0] = -0.4;  //-- x
     xd[1] = 0.0;  //-- y
@@ -267,7 +286,9 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     qGuess[1] = 15.0;
     qGuess[2] = 30.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -281,7 +302,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     qGuess[1] = -30.0;
     qGuess[2] = 90.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
     ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(q[1], -68.57454095, EPS_JOINT);
@@ -333,6 +354,8 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
     xd[4] = 0.0;  //-- ozPP
 
     qGuess[2] = 90.0;
+
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
