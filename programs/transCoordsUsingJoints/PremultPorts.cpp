@@ -6,15 +6,10 @@
 
 #include <ColorDebug.hpp>
 
+#include "KdlVectorConverter.hpp"
+
 namespace roboticslab
 {
-
-/************************************************************************/
-
-PremultPorts::PremultPorts() : KdlVectorConverter("axisAngle")
-{
-    return;
-}
 
 /************************************************************************/
 
@@ -64,8 +59,7 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
     std::vector<double> currentX;
     iCartesianSolver->fwdKin(currentQ,currentX);
 
-    KDL::Frame H_root_camera;
-    vectorToFrame(currentX,H_root_camera);
+    KDL::Frame H_root_camera = KdlVectorConverter::vectorToFrame(currentX);
 
     KDL::Frame H_camera;
     H_camera.p.data[0] = b.get(0).asDouble();

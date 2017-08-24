@@ -55,7 +55,7 @@ This would mean we are using an axis/angle notation (par de rotación). Note tha
 
 We connect, can ask for help, etc. Here's an example interaction:
 \verbatim
-[on terminal 3] yarp rpc /CartesianControl/rpc:s
+[on terminal 3] yarp rpc /CartesianControl/rpc_transform:s
 [>>] help
 Response: [stat] [inv] [movj] [movl] [movv] [gcmp] [forc] [stop]
 [>>] stat
@@ -77,7 +77,7 @@ Response: [ok]
 What moslty changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
 [on terminal 2] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
-[on terminal 3] yarp rpc /teoSim/rightArm/CartesianControl/rpc:s
+[on terminal 3] yarp rpc /teoSim/rightArm/CartesianControl/rpc_transform:s
 \endverbatim
 
 
@@ -140,6 +140,9 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         /** stop */
         virtual bool stopControl();
+
+        /** tool */
+        virtual bool tool(const std::vector<double> &x);
 
         /** fwd */
         virtual bool fwd(const std::vector<double> &rot);

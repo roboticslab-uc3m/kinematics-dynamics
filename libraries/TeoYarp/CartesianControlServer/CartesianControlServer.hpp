@@ -11,6 +11,7 @@
 #include <iostream> // only windows
 
 #include "ICartesianControl.h"
+#include "KinematicRepresentation.hpp"
 
 namespace roboticslab
 {
@@ -23,6 +24,7 @@ namespace roboticslab
  */
 
 class RpcResponder;
+class RpcTransformResponder;
 class StreamResponder;
 
 /**
@@ -34,7 +36,10 @@ class CartesianControlServer : public yarp::dev::DeviceDriver
 {
 public:
 
-    CartesianControlServer() : iCartesianControl(NULL), rpcResponder(NULL), streamResponder(NULL)
+    CartesianControlServer()
+        : iCartesianControl(NULL),
+          rpcResponder(NULL), rpcTransformResponder(NULL),
+          streamResponder(NULL)
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -62,15 +67,15 @@ public:
 
 protected:
 
-    yarp::os::RpcServer rpcServer;
+    yarp::os::RpcServer rpcServer, rpcTransformServer;
 
     yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
 
-    yarp::dev::PolyDriver cartesianControlDevice;
-
     roboticslab::ICartesianControl *iCartesianControl;
 
-    RpcResponder *rpcResponder;
+    yarp::dev::PolyDriver cartesianControlDevice;
+
+    RpcResponder *rpcResponder, *rpcTransformResponder;
 
     StreamResponder *streamResponder;
 };
@@ -116,7 +121,38 @@ protected:
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
     bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
 
+    virtual bool transformIncomingData(std::vector<double>& vin)
+    {
+        return true;
+    }
+
+    virtual bool transformOutgoingData(std::vector<double>& vout)
+    {
+        return true;
+    }
+
     roboticslab::ICartesianControl *iCartesianControl;
+};
+
+/**
+ * @ingroup CartesianControlServer
+ * @brief Responds to RPC command messages, transforms incoming data.
+ */
+class RpcTransformResponder : public RpcResponder
+{
+public:
+
+    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::orientation_system orient)
+        : RpcResponder(iCartesianControl),
+          orient(orient)
+    {}
+
+protected:
+
+    virtual bool transformIncomingData(std::vector<double>& vin);
+    virtual bool transformOutgoingData(std::vector<double>& vout);
+
+    KinRepresentation::orientation_system orient;
 };
 
 /**

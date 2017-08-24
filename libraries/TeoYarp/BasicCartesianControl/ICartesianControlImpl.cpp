@@ -251,6 +251,25 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
+{
+    if ( ! iCartesianSolver->restoreOriginalChain() )
+    {
+        CD_ERROR("restoreOriginalChain failed\n");
+        return false;
+    }
+
+    if ( ! iCartesianSolver->appendLink(x) )
+    {
+        CD_ERROR("appendLink failed\n");
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot)
 {
     return true;

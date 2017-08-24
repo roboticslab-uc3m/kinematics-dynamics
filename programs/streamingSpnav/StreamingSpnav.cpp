@@ -7,9 +7,6 @@
 #include <yarp/os/Property.h>
 
 #include <yarp/sig/Vector.h>
-#include <yarp/sig/Matrix.h>
-
-#include <yarp/math/Math.h>
 
 #include <ColorDebug.hpp>
 
@@ -155,18 +152,6 @@ bool StreamingSpnav::updateModule()
 
     std::vector<double> xdot(6, 0.0);
     bool isZero = true;
-
-    if (!fixedAxes[3] || !fixedAxes[4] || !fixedAxes[5])
-    {
-        yarp::sig::Matrix rot = yarp::math::rpy2dcm(data.subVector(3, 5));
-        yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rot);
-        yarp::sig::Vector axis = axisAngle.subVector(0, 2);
-        double angle = axisAngle[3];
-
-        data[3] = axis[0] * angle;
-        data[4] = axis[1] * angle;
-        data[5] = axis[2] * angle;
-    }
 
     double local_scaling = scaling;
 
