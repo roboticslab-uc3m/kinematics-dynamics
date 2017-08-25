@@ -107,41 +107,33 @@ are YARP devices (further reading on why this is good: <a href="http://asrob.uc3
  * @brief The BasicCartesianControl class implements ICartesianControl.
  */
 
-class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread {
+class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread
+{
 
     public:
 
         BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_MS) {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-        /** Inform on control state, and get robot position and perform forward kinematics. */
+
         virtual bool stat(int &state, std::vector<double> &x);
 
-        /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
-        /** movj */
         virtual bool movj(const std::vector<double> &xd);
 
-        /** relj */
         virtual bool relj(const std::vector<double> &xd);
 
-        /** movl */
         virtual bool movl(const std::vector<double> &xd);
 
-        /** movv */
         virtual bool movv(const std::vector<double> &xdotd);
 
-        /** gcmp */
         virtual bool gcmp();
 
-        /** forc */
         virtual bool forc(const std::vector<double> &td);
 
-        /** stop */
         virtual bool stopControl();
 
-        /** tool */
         virtual bool tool(const std::vector<double> &x);
 
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
@@ -172,7 +164,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         */
         virtual bool close();
 
-protected:
+    protected:
 
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
