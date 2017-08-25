@@ -17,12 +17,7 @@ public:
     GaitTrajectory();
     ~GaitTrajectory();
 
-
-
-    /** Cartesian position of the trajectory at movementTime */
     virtual bool getX(const double movementTime, std::vector<double>& x);
-
-    /** Cartesian velocity of the trajectory at movementTime */
     virtual bool getXdot(const double movementTime, std::vector<double>& xdot);
 
 private:
