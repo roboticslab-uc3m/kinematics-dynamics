@@ -331,7 +331,7 @@ bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::pose(const std::vector<double> &x)
+bool roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
