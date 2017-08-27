@@ -10,8 +10,7 @@
 
 #include <ColorDebug.hpp>
 
-namespace roboticslab
-{
+using namespace roboticslab;
 
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
@@ -178,5 +177,3 @@ double StreamingDeviceController::getPeriod()
 {
     return 0.02;  // [s]
 }
-
-}  // namespace roboticslab
