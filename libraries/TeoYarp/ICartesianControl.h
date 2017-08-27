@@ -96,7 +96,7 @@ class ICartesianControl
         virtual bool vmos(const std::vector<double> &xdot) = 0;
 
         /** pose */
-        virtual bool pose(const std::vector<double> &x) = 0;
+        virtual bool pose(const std::vector<double> &x, double interval) = 0;
 
 };
 
