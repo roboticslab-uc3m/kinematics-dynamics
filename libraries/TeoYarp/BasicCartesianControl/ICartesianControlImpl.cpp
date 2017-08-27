@@ -2,7 +2,7 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <math.h>  //-- fabs
+#include <cmath>  //-- std::abs
 #include <algorithm>
 #include <functional>
 
@@ -65,10 +65,10 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     double max_time = 0;
     for(unsigned int joint=0;joint<numSolverJoints;joint++)
     {
-        CD_INFO("dist[%d]: %f\n",joint,fabs(qd[joint]-currentQ[joint]));
-        if (fabs((qd[joint]-currentQ[joint]) / MAX_ANG_VEL) > max_time)
+        CD_INFO("dist[%d]: %f\n",joint,std::abs(qd[joint]-currentQ[joint]));
+        if (std::abs((qd[joint]-currentQ[joint]) / MAX_ANG_VEL) > max_time)
         {
-            max_time = fabs( (qd[joint]-currentQ[joint]) / MAX_ANG_VEL);
+            max_time = std::abs( (qd[joint]-currentQ[joint]) / MAX_ANG_VEL);
             CD_INFO(" -->candidate: %f\n",max_time);
         }
     }
@@ -85,7 +85,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
         }
         else
         {
-            vmo.push_back( fabs(qd[joint] - currentQ[joint])/max_time );
+            vmo.push_back( std::abs(qd[joint] - currentQ[joint])/max_time );
             CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
         }
     }
@@ -316,7 +316,7 @@ bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( fabs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
             return false;
