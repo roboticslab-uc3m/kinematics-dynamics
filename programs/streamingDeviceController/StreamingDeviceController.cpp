@@ -23,6 +23,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL), "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE), "remote cartesian port").asString();
 
+    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS), "remote sensors port").asString();
+
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
 
     yarp::os::Value axesValue = rf.check("fixedAxes", yarp::os::Value(DEFAULT_FIXED_AXES), "axes with restricted movement");
@@ -113,6 +115,27 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    if (rf.check("useSensors"))
+    {
+        yarp::os::Property sensorsClientOptions;
+        sensorsClientOptions.fromString(rf.toString());
+        sensorsClientOptions.put("device", "ProximitySensorsClient");
+
+        sensorsClientDevice.open(sensorsClientOptions);
+
+        if (!sensorsClientDevice.isValid())
+        {
+            CD_ERROR("sensors device not valid.\n");
+            return false;
+        }
+
+        if (!sensorsClientDevice.view(iProximitySensors))
+        {
+            CD_ERROR("Could not view iSensors.\n");
+            return false;
+        }
+    }
+
     isStopped = true;
 
     return true;
@@ -134,6 +157,14 @@ bool StreamingDeviceController::updateModule()
     std::vector<double> xdot(6, 0.0);
     bool isZero = true;
 
+    double local_scaling = scaling;
+
+    if (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::LOW)
+    {
+        local_scaling *= 2; //Half velocity
+        CD_WARNING("Obstacle detected\n");
+    }
+
     for (int i = 0; i < data.size(); i++)
     {
         if (!fixedAxes[i] && data[i] != 0.0)
@@ -143,7 +174,7 @@ bool StreamingDeviceController::updateModule()
         }
     }
 
-    if (isZero)
+    if (isZero || (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::HIGH))
     {
         if (!isStopped)
         {
@@ -168,9 +199,16 @@ bool StreamingDeviceController::updateModule()
 bool StreamingDeviceController::interruptModule()
 {
     bool ok = true;
+
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
     ok &= streamingClientDevice.close();
+
+    if (sensorsClientDevice.isValid())
+    {
+        ok &= sensorsClientDevice.close();
+    }
+
     return ok;
 }
 
