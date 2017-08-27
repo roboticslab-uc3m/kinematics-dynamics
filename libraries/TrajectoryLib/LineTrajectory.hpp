@@ -19,17 +19,9 @@ namespace roboticslab
 {
 
 /**
- * @ingroup kinematics-dynamics-libraries
- * \defgroup TrajectoryLib
- *
- * @brief Contains classes related to trajectories.
- */
-
-/**
  * @ingroup TrajectoryLib
  * @brief Implements a basic line trajectory.
  */
-
 class LineTrajectory : public Trajectory
 {
 public:

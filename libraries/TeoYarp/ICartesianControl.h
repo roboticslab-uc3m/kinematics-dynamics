@@ -95,7 +95,7 @@ class ICartesianControl
          * Perform inverse kinematics and move to desired position in joint space using relative
          * coordinates.
          *
-         * @param xd 6-element vector describing desired position in cartesian space; first
+         * @param xd 6-element vector describing desired offset in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
          *

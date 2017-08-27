@@ -14,12 +14,12 @@ namespace roboticslab
  * @ingroup kinematics-dynamics-libraries
  * \defgroup KdlVectorConverterLib
  *
- * @brief Contains classes related to kdl and std::vector classes.
+ * @brief Contains classes related to KDL and std::vector classes.
  */
 
 /**
  * @ingroup KdlVectorConverterLib
- * @brief Implements related to kdl and std::vector classes.
+ * @brief Collection of utilities related to KDL and std::vector classes.
  */
 
 class KdlVectorConverter

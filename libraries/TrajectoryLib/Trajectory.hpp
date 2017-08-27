@@ -19,7 +19,6 @@ namespace roboticslab
  * @ingroup TrajectoryLib
  * @brief Implements a basic trajectory.
  */
-
 class Trajectory
 {
 public:

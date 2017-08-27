@@ -69,8 +69,8 @@ class ICartesianSolver
         /**
          * @brief Perform forward kinematics
          *
-         * @param q Vector of joint values expressed in degrees.
-         * @param x 6-element vector describing target position in cartesian space; first
+         * @param q Vector describing a position in joint space (degrees).
+         * @param x 6-element vector describing same position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
          *
@@ -87,7 +87,7 @@ class ICartesianSolver
          * @param xd 6-element vector describing desired position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param q Vector of joint values expressed in degrees.
+         * @param q Vector describing initial position in joint space (degrees).
          * @param x 6-element vector describing the position error in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
@@ -102,8 +102,8 @@ class ICartesianSolver
          * @param xd 6-element vector describing desired position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param qGuess Vector of current joint values expressed in degrees.
-         * @param q Vector of target joint values expressed in degrees.
+         * @param qGuess Vector describing current position in joint space (degrees).
+         * @param q Vector describing target position in joint space (degrees).
          *
          * @return true on success, false otherwise
          */
@@ -112,11 +112,11 @@ class ICartesianSolver
         /**
          * @brief Perform differential inverse kinematics
          *
-         * @param q Vector of current joint values expressed in degrees.
+         * @param q Vector describing current position in joint space (degrees).
          * @param xdot 6-element vector describing desired velocity in cartesian space; first
          * three elements denote translational velocity (meters/second), last three denote
          * angular velocity (radians/second).
-         * @param qdot Vector of target joint velocities expressed in degrees/second.
+         * @param qdot Vector describing target velocity in joint space (degrees/second).
          *
          * @return true on success, false otherwise
          */
@@ -127,7 +127,7 @@ class ICartesianSolver
          *
          * Assumes null joint velocities and accelerations, and no external forces.
          *
-         * @param q Vector of current joint values expressed in degrees.
+         * @param q Vector describing current position in joint space (degrees).
          * @param t 6-element vector describing desired forces in cartesian space; first
          * three elements denote translational acceleration (meters/second²), last three denote
          * angular acceleration (radians/second²).
@@ -139,9 +139,9 @@ class ICartesianSolver
         /**
          * @brief Perform inverse dynamics
          *
-         * @param q Vector of current joint values expressed in degrees.
-         * @param qdot Vector of current joint velocities expressed in degrees/second.
-         * @param qdotdot Vector of current joint accelerations expressed in degrees/second².
+         * @param q Vector describing current position in joint space (degrees).
+         * @param qdot Vector describing current velocity in joint space (degrees/second).
+         * @param qdotdot Vector describing current acceleration in joint space (degrees/second²).
          * @param fexts vector of external forces applied to each robot segment, expressed in
          * cartesian space; first three elements denote translational acceleration (meters/second²),
          * last three denote angular acceleration (radians/second²).

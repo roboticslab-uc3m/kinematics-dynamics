@@ -11,6 +11,10 @@
 namespace roboticslab
 {
 
+/**
+ * @ingroup TrajectoryLib
+ * @brief Implements a basic gait trajectory.
+ */
 class GaitTrajectory : public roboticslab::Trajectory
 {
 public:
