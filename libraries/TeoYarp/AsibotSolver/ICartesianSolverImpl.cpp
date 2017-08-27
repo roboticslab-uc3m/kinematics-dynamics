@@ -8,7 +8,7 @@
 #include <yarp/math/SVD.h>
 #include <yarp/sig/Matrix.h>
 
-#include "YarpTinyMath.hpp"
+#include "KinematicRepresentation.hpp"
 
 // -----------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
     {
-        *it = toRad(*it);
+        *it = KinRepresentation::degToRad(*it);
     }
 
     double s1 = std::sin(qInRad[0]);
@@ -69,6 +69,8 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
     x[3] = oyP;  // = pitchP
     x[4] = q[4];  // = ozPP
 
+    KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES);
+
     return true;
 }
 
@@ -85,21 +87,47 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
     x[1] = xd[1] - currentX[1];
     x[2] = xd[2] - currentX[2];
 
-    yarp::sig::Vector eulerDesired(3);
-    yarp::sig::Vector eulerCurrent(3);
+    yarp::sig::Vector axisAngleScaledDesired(3);
+    yarp::sig::Vector axisAngleScaledCurrent(3);
 
-    eulerDesired[0] = std::atan2(xd[1], xd[0]);
-    eulerDesired[1] = toRad(xd[3]);
-    eulerDesired[2] = toRad(xd[4]);
+    for (int i = 0; i < 3; i++)
+    {
+        axisAngleScaledDesired[i] = xd[i + 3];
+        axisAngleScaledCurrent[i] = currentX[i + 3];
+    }
 
-    eulerCurrent[0] = std::atan2(currentX[1], currentX[0]);
-    eulerCurrent[1] = toRad(currentX[3]);
-    eulerCurrent[2] = toRad(currentX[4]);
+    double rotAngleDesired = yarp::math::norm(axisAngleScaledDesired);
+    double rotAngleCurrent = yarp::math::norm(axisAngleScaledCurrent);
 
-    yarp::sig::Matrix rotDesired = yarp::math::euler2dcm(eulerDesired).submatrix(0, 2, 0, 2);
-    yarp::sig::Matrix rotCurrent = yarp::math::euler2dcm(eulerCurrent).submatrix(0, 2, 0, 2);
+    yarp::sig::Vector axisAngleDesired = axisAngleScaledDesired;
+    yarp::sig::Vector axisAngleCurrent = axisAngleScaledCurrent;
 
     using namespace yarp::math;
+
+    if (rotAngleDesired > 1e-9)
+    {
+        axisAngleDesired /= rotAngleDesired;
+    }
+    else
+    {
+        axisAngleDesired[0] = axisAngleDesired[1] = axisAngleDesired[2] = 0.0;
+    }
+
+    if (rotAngleCurrent > 1e-9)
+    {
+        axisAngleCurrent /= rotAngleCurrent;
+    }
+    else
+    {
+        axisAngleCurrent[0] = axisAngleCurrent[1] = axisAngleCurrent[2] = 0.0;
+    }
+
+    axisAngleDesired.push_back(rotAngleDesired);
+    axisAngleCurrent.push_back(rotAngleCurrent);
+
+    yarp::sig::Matrix rotDesired = yarp::math::axis2dcm(axisAngleDesired).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotCurrent = yarp::math::axis2dcm(axisAngleCurrent).submatrix(0, 2, 0, 2);
+
     yarp::sig::Matrix rotCurrentToDesired = rotCurrent.transposed() * rotDesired;
     yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rotCurrentToDesired);
     yarp::sig::Vector axis = axisAngle.subVector(0, 2) * axisAngle[3];
@@ -116,11 +144,19 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
 
 bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q)
 {
-    double ozdRad = std::atan2(xd[1], xd[0]);
+    std::vector<double> xd_eYZ;
 
-    double prPd = std::sqrt(xd[0] * xd[0] + xd[1] * xd[1]);
-    double phPd = xd[2] - A0;
-    double oyPd = xd[3];
+    if (!KinRepresentation::decodePose(xd, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
+    {
+        CD_ERROR("Unable to convert to eulerYZ angle representation.\n");
+        return false;
+    }
+
+    double ozdRad = std::atan2(xd_eYZ[1], xd_eYZ[0]);
+
+    double prPd = std::sqrt(xd_eYZ[0] * xd_eYZ[0] + xd_eYZ[1] * xd_eYZ[1]);
+    double phPd = xd_eYZ[2] - A0;
+    double oyPdRad = xd_eYZ[3];
 
     if (std::sqrt(prPd * prPd + phPd * phPd) > A1 + A2 + A3)
     {
@@ -128,8 +164,8 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
         return false;
     }
 
-    double prWd = prPd - A3 * std::sin(toRad(oyPd));
-    double phWd = phPd - A3 * std::cos(toRad(oyPd));
+    double prWd = prPd - A3 * std::sin(oyPdRad);
+    double phWd = phPd - A3 * std::cos(oyPdRad);
 
     double len_2 = phWd * phWd + prWd * prWd;
 
@@ -151,10 +187,16 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     double t1uRad = std::atan2(st1u, ct1u);
     double t1dRad = std::atan2(st1d, ct1d);
 
-    double t3uRad = toRad(oyPd) - t1uRad - t2Rad;
-    double t3dRad = toRad(oyPd) - t1dRad + t2Rad;
+    double t3uRad = oyPdRad - t1uRad - t2Rad;
+    double t3dRad = oyPdRad - t1dRad + t2Rad;
 
-    if (!conf->configure(toDeg(ozdRad), toDeg(t1uRad), toDeg(t1dRad), toDeg(t2Rad), toDeg(t3uRad), toDeg(t3dRad), xd[4]))
+    if (!conf->configure(KinRepresentation::radToDeg(ozdRad),
+            KinRepresentation::radToDeg(t1uRad),
+            KinRepresentation::radToDeg(t1dRad),
+            KinRepresentation::radToDeg(t2Rad),
+            KinRepresentation::radToDeg(t3uRad),
+            KinRepresentation::radToDeg(t3dRad),
+            KinRepresentation::radToDeg(xd_eYZ[4])))
     {
         CD_ERROR("Unable to find a valid configuration within joint limits.\n");
         return false;
@@ -179,7 +221,7 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
     {
-        *it = toRad(*it);
+        *it = KinRepresentation::degToRad(*it);
     }
 
     double s1 = std::sin(qInRad[0]);
@@ -249,11 +291,11 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
     qdot.resize(NUM_MOTORS);
 
-    qdot[0] = toDeg(qdotv[0]);
-    qdot[1] = toDeg(qdotv[1]);
-    qdot[2] = toDeg(qdotv[2]);
-    qdot[3] = toDeg(qdotv[3]);
-    qdot[4] = toDeg(qdotv[4]);
+    qdot[0] = KinRepresentation::radToDeg(qdotv[0]);
+    qdot[1] = KinRepresentation::radToDeg(qdotv[1]);
+    qdot[2] = KinRepresentation::radToDeg(qdotv[2]);
+    qdot[3] = KinRepresentation::radToDeg(qdotv[3]);
+    qdot[4] = KinRepresentation::radToDeg(qdotv[4]);
 
     return true;
 }

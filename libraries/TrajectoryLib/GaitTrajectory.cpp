@@ -113,7 +113,7 @@ bool roboticslab::GaitTrajectory::getXdot(const double movementTime, std::vector
     if(trf.GetSampleVelocity(movementTime,sampleVelocity)!=0)
     {
         //no velocities for that time.
-        xdot=std::vector <double> (14,0);
+        xdot=std::vector <double> (12,0);
         return true;
     }
     sampleVelocity.GetPosition(px,py,pz);
@@ -125,10 +125,9 @@ bool roboticslab::GaitTrajectory::getXdot(const double movementTime, std::vector
     xdot.push_back(py);
     xdot.push_back(pz);
 
-    xdot.push_back(rx);
-    xdot.push_back(ry);
-    xdot.push_back(rz);
-    xdot.push_back(ang*180/M_PI);
+    xdot.push_back(rx*ang);
+    xdot.push_back(ry*ang);
+    xdot.push_back(rz*ang);
 
     std::cout << "> rfXdot: " << px << ","<< py << ","<< pz << ",";
     std::cout << "> rotdot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";
@@ -138,7 +137,7 @@ bool roboticslab::GaitTrajectory::getXdot(const double movementTime, std::vector
     if (tlf.GetSampleVelocity(movementTime,sampleVelocity)!=0)
     {
         //no velocities for that time.
-        xdot=std::vector <double> (14,0);
+        xdot=std::vector <double> (12,0);
         return true;
     }
     sampleVelocity.GetPosition(px,py,pz);
@@ -148,10 +147,9 @@ bool roboticslab::GaitTrajectory::getXdot(const double movementTime, std::vector
     xdot.push_back(py);
     xdot.push_back(pz);
 
-    xdot.push_back(rx);
-    xdot.push_back(ry);
-    xdot.push_back(rz);
-    xdot.push_back(ang*180/M_PI);
+    xdot.push_back(rx*ang);
+    xdot.push_back(ry*ang);
+    xdot.push_back(rz*ang);
 
     std::cout << "> lfXdot: " << px << ","<< py << ","<< pz << ",";
     std::cout << "> rotdot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";

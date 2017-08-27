@@ -31,6 +31,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleConsumerCmdMsg(in, out, &ICartesianControl::forc);
     case VOCAB_CC_STOP:
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
+    case VOCAB_CC_TOOL:
+        return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
     case VOCAB_CC_ACT:
         return handleActMsg(in, out);
     default:
@@ -51,6 +53,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[gcmp]", "enable gravity compensation");
     addUsage("[forc] $fCoord1 $fCoord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
+    addUsage("[tool] $fCoord1 $fCoord2 ...", "append fixed link to end effector");
 }
 
 // -----------------------------------------------------------------------------
@@ -62,6 +65,12 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
     if (iCartesianControl->stat(state, x))
     {
+        if (!transformOutgoingData(x))
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+
         out.addVocab(state);
 
         for (size_t i = 0; i < x.size(); i++)
@@ -73,6 +82,33 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     }
     else
     {
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 1)
+    {
+        int commandCode = in.get(1).asInt();
+
+        if (iCartesianControl->act(commandCode))
+        {
+            out.addVocab(VOCAB_OK);
+            return true;
+        }
+        else
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
         out.addVocab(VOCAB_FAILED);
         return false;
     }
@@ -107,16 +143,14 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
             vin.push_back(in.get(i).asDouble());
         }
 
-        if ((iCartesianControl->*cmd)(vin))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
+        if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
         {
             out.addVocab(VOCAB_FAILED);
             return false;
         }
+
+        out.addVocab(VOCAB_OK);
+        return true;
     }
     else
     {
@@ -139,20 +173,18 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
             vin.push_back(in.get(i).asDouble());
         }
 
-        if ((iCartesianControl->*cmd)(vin, vout))
-        {
-            for (size_t i = 0; i < vout.size(); i++)
-            {
-                out.addDouble(vout[i]);
-            }
-
-            return true;
-        }
-        else
+        if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
         {
             out.addVocab(VOCAB_FAILED);
             return false;
         }
+
+        for (size_t i = 0; i < vout.size(); i++)
+        {
+            out.addDouble(vout[i]);
+        }
+
+        return true;
     }
     else
     {
@@ -164,29 +196,16 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool roboticslab::RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
 {
-    if (in.size() > 1)
-    {
-        int commandCode = in.get(1).asInt();
+    return KinRepresentation::encodePose(vin, vin, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+}
 
-        if (iCartesianControl->act(commandCode))
-        {
-            out.addVocab(VOCAB_OK);
-            return true;
-        }
-        else
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcTransformResponder::transformOutgoingData(std::vector<double>& vout)
+{
+    return KinRepresentation::decodePose(vout, vout, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 }
 
 // -----------------------------------------------------------------------------

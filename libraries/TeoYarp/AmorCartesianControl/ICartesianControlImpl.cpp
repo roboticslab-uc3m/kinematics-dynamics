@@ -128,6 +128,14 @@ bool roboticslab::AmorCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
+{
+    CD_WARNING("Tool change is not supported on AMOR.\n");
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AmorCartesianControl::act(int commandCode)
 {
     if (commandCode == 0)
@@ -209,7 +217,7 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x)
+bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     return true;
 }

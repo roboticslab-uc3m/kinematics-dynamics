@@ -31,17 +31,12 @@ bool roboticslab::BasicTwoLimbCartesianControl::configureLimbA(yarp::os::Bottle&
     std::string solver = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
     CD_INFO("solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
 
-    //-- angleRepr
-    std::string angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
-    CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANG_REPR);
-
     //-- kinematics
     std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS_A),"limb kinematic description").asString();
     CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS_A);
 
     yarp::os::Property solverOptions;
     solverOptions.put("device",solver);
-    solverOptions.put("angleRepr",angleRepr);
     solverOptions.put("kinematics",kinematics);
 
     solverDeviceA.open(solverOptions);
@@ -138,18 +133,12 @@ bool roboticslab::BasicTwoLimbCartesianControl::configureLimbB(yarp::os::Bottle&
     //-- solver
     std::string solver = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"solver device type").asString();
     CD_INFO("solver: %s [%s]\n",solver.c_str(),DEFAULT_SOLVER);
-
-    //-- angleRepr
-    std::string angleRepr = config.check("angleRepr",yarp::os::Value(DEFAULT_ANG_REPR),"angle representation").asString();
-    CD_INFO("angleRepr: %s [%s]\n",angleRepr.c_str(),DEFAULT_ANG_REPR);
-
     //-- kinematics
     std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS_B),"limb kinematic description").asString();
     CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS_B);
 
     yarp::os::Property solverOptions;
     solverOptions.put("device",solver);
-    solverOptions.put("angleRepr",angleRepr);
     solverOptions.put("kinematics",kinematics);
 
     solverDeviceB.open(solverOptions);

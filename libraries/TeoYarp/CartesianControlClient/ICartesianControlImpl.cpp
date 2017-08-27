@@ -198,6 +198,29 @@ bool roboticslab::CartesianControlClient::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_TOOL);
+    for(size_t i=0; i<x.size(); i++)
+        cmd.addDouble(x[i]);
+
+    rpcClient.write(cmd,response);
+
+    if( response.get(0).isVocab() )
+    {
+        if( response.get(0).asVocab() == VOCAB_FAILED )
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::act(int commandCode)
 {
     yarp::os::Bottle cmd, response;
@@ -281,12 +304,13 @@ bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x)
+bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_POSE);
+    cmd.addDouble(interval);
     for(size_t i=0; i<x.size(); i++)
         cmd.addDouble(x[i]);
 

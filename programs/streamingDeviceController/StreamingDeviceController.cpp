@@ -1,4 +1,4 @@
-#include "StreamingSpnav.hpp"
+#include "StreamingDeviceController.hpp"
 
 #include <string>
 #include <cmath>
@@ -7,21 +7,18 @@
 #include <yarp/os/Property.h>
 
 #include <yarp/sig/Vector.h>
-#include <yarp/sig/Matrix.h>
-
-#include <yarp/math/Math.h>
 
 #include <ColorDebug.hpp>
 
 namespace roboticslab
 {
 
-bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
+bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("StreamingSpnav config: %s.\n", rf.toString().c_str());
+    CD_DEBUG("streamingDeviceController config: %s.\n", rf.toString().c_str());
 
-    std::string localSpnav = rf.check("localSpnav", yarp::os::Value(DEFAULT_SPNAV_LOCAL), "local spnav port").asString();
-    std::string remoteSpnav = rf.check("remoteSpnav", yarp::os::Value(DEFAULT_SPNAV_REMOTE), "remote spnav port").asString();
+    std::string localDevice = rf.check("localDevice", yarp::os::Value(DEFAULT_DEVICE_PORT_LOCAL), "local device port").asString();
+    std::string remoteDevice = rf.check("remoteDevice", yarp::os::Value(DEFAULT_DEVICE_PORT_REMOTE), "remote device port").asString();
 
     std::string localActuator = rf.check("localActuator", yarp::os::Value(DEFAULT_ACTUATOR_LOCAL), "local actuator port").asString();
     std::string remoteActuator = rf.check("remoteActuator", yarp::os::Value(DEFAULT_ACTUATOR_REMOTE), "remote actuator port").asString();
@@ -78,25 +75,25 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
 
     if (rf.check("help"))
     {
-        printf("StreamingSpnav options:\n");
+        printf("StreamingDeviceController options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         return false;
     }
 
-    yarp::os::Property spnavClientOptions;
-    spnavClientOptions.put("device", "analogsensorclient");
-    spnavClientOptions.put("local", localSpnav);
-    spnavClientOptions.put("remote", remoteSpnav);
+    yarp::os::Property streamingClientOptions;
+    streamingClientOptions.put("device", "analogsensorclient");
+    streamingClientOptions.put("local", localDevice);
+    streamingClientOptions.put("remote", remoteDevice);
 
-    spnavClientDevice.open(spnavClientOptions);
+    streamingClientDevice.open(streamingClientOptions);
 
-    if (!spnavClientDevice.isValid())
+    if (!streamingClientDevice.isValid())
     {
         CD_ERROR("spnav client device not valid.\n");
         return false;
     }
 
-    if (!spnavClientDevice.view(iAnalogSensor))
+    if (!streamingClientDevice.view(iAnalogSensor))
     {
         CD_ERROR("Could not view iAnalogSensor.\n");
         return false;
@@ -140,19 +137,25 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    yarp::os::Property sensorOptions;
-    sensorOptions.put("device", "ProximitySensors");
-
-    proximitySensorsDevice.open(sensorOptions);
-
-    if (!proximitySensorsDevice.isValid())
+    if (rf.check("useSensors"))
     {
-        CD_WARNING("sensors device not valid.\n");
-    }
+        yarp::os::Property sensorsClientOptions;
+        sensorsClientOptions.fromString(rf.toString());
+        sensorsClientOptions.put("device", "ProximitySensorsClient");
 
-    if (!proximitySensorsDevice.view(iProximitySensors))
-    {
-        CD_WARNING("Could not view iSensors.\n");
+        sensorsClientDevice.open(sensorsClientOptions);
+
+        if (!sensorsClientDevice.isValid())
+        {
+            CD_ERROR("sensors device not valid.\n");
+            return false;
+        }
+
+        if (!sensorsClientDevice.view(iProximitySensors))
+        {
+            CD_ERROR("Could not view iSensors.\n");
+            return false;
+        }
     }
 
     isStopped = true;
@@ -161,7 +164,7 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
     return true;
 }
 
-bool StreamingSpnav::updateModule()
+bool StreamingDeviceController::updateModule()
 {
     yarp::sig::Vector data;
 
@@ -206,16 +209,12 @@ bool StreamingSpnav::updateModule()
     std::vector<double> xdot(6, 0.0);
     bool isZero = true;
 
-    if (!fixedAxes[3] || !fixedAxes[4] || !fixedAxes[5])
-    {
-        yarp::sig::Matrix rot = yarp::math::rpy2dcm(data.subVector(3, 5));
-        yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rot);
-        yarp::sig::Vector axis = axisAngle.subVector(0, 2);
-        double angle = axisAngle[3];
+    double local_scaling = scaling;
 
-        data[3] = axis[0] * angle;
-        data[4] = axis[1] * angle;
-        data[5] = axis[2] * angle;
+    if (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::LOW)
+    {
+        local_scaling *= 2; //Half velocity
+        CD_WARNING("Obstacle detected\n");
     }
 
     for (int i = 0; i < data.size(); i++)
@@ -227,7 +226,7 @@ bool StreamingSpnav::updateModule()
         }
     }
 
-    if (isZero || (proximitySensorsDevice.isValid() && iProximitySensors->hasObstacle()))
+    if (isZero || (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::HIGH))
     {
         if (!isStopped)
         {
@@ -249,18 +248,20 @@ bool StreamingSpnav::updateModule()
     return true;
 }
 
-bool StreamingSpnav::interruptModule()
+bool StreamingDeviceController::interruptModule()
 {
     bool ok = true;
+
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
+    ok &= streamingClientDevice.close();
     ok &= actuatorClientDevice.close();
-    ok &= spnavClientDevice.close();
-    ok &= proximitySensorsDevice.close();
+    ok &= sensorsClientDevice.close();
+
     return ok;
 }
 
-double StreamingSpnav::getPeriod()
+double StreamingDeviceController::getPeriod()
 {
     return 0.02;  // [s]
 }

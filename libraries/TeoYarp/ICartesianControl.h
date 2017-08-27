@@ -17,6 +17,7 @@
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p')
 #define VOCAB_CC_FORC VOCAB4('f','o','r','c')
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p')
+#define VOCAB_CC_TOOL VOCAB4('t','o','o','l')
 #define VOCAB_CC_ACT VOCAB3('a','c','t')
 
 // Streaming commands
@@ -79,6 +80,9 @@ class ICartesianControl
         /** stop */
         virtual bool stopControl() = 0;
 
+        /** tool */
+        virtual bool tool(const std::vector<double> &x) = 0;
+
         /** actuate tool */
         virtual bool act(int commandCode) = 0;
 
@@ -96,7 +100,7 @@ class ICartesianControl
         virtual bool vmos(const std::vector<double> &xdot) = 0;
 
         /** pose */
-        virtual bool pose(const std::vector<double> &x) = 0;
+        virtual bool pose(const std::vector<double> &x, double interval) = 0;
 
 };
 

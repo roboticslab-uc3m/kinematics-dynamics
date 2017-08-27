@@ -5,33 +5,33 @@
 
 #include <ColorDebug.hpp>
 
-#include "RateControllerConsole.hpp"
+#include "KeyboardController.hpp"
 
 /**
  * @ingroup kinematics-dynamics-programs
  *
- * \defgroup rateControllerConsole rateControllerConsole
+ * \defgroup keyboardController keyboardController
  *
- * @brief Creates an instance of roboticslab::RateControllerConsole.
+ * @brief Creates an instance of roboticslab::KeyboardController.
  */
 
 int main(int argc, char *argv[])
 {
     yarp::os::ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultContext("rateControllerConsole");
-    rf.setDefaultConfigFile("rateControllerConsole.ini");
+    rf.setDefaultContext("keyboardController");
+    rf.setDefaultConfigFile("keyboardController.ini");
     rf.configure(argc, argv);
 
-    roboticslab::RateControllerConsole mod;
+    roboticslab::KeyboardController mod;
 
-    CD_INFO("rateControllerConsole checking for yarp network... ");
+    CD_INFO("keyboardController checking for yarp network... ");
     std::fflush(stdout);
 
     if (!yarp::os::Network::checkNetwork())
     {
         CD_ERROR_NO_HEADER("[fail]\n");
-        CD_INFO("rateControllerConsole found no yarp network (try running \"yarpserver &\"), bye!\n");
+        CD_INFO("keyboardController found no yarp network (try running \"yarpserver &\"), bye!\n");
         return 1;
     } else CD_SUCCESS_NO_HEADER("[ok]\n");
 

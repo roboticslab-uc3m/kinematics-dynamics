@@ -71,6 +71,9 @@ public:
     /** stop */
     virtual bool stopControl();
 
+    /** stop */
+    virtual bool tool(const std::vector<double> &x);
+
     /** act */
     virtual bool act(int commandCode);
 
@@ -87,7 +90,7 @@ public:
     virtual bool vmos(const std::vector<double> &xdot);
 
     /** pose */
-    virtual bool pose(const std::vector<double> &x);
+    virtual bool pose(const std::vector<double> &x, double interval);
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
 
