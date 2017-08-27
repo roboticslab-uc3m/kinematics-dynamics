@@ -3,6 +3,9 @@
 #include "BasicCartesianControl.hpp"
 
 #include <math.h>  //-- fabs
+#include <algorithm>
+#include <functional>
+
 #include <ColorDebug.hpp>
 
 // ------------------- ICartesianControl Related ------------------------------------
@@ -347,13 +350,17 @@ bool roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return false;
     }
 
+    std::vector<double> xdot(xd.size());
+    const double factor = DEFAULT_GAIN / interval;
+    std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
+
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {
         iControlMode->setVelocityMode(joint);
     }
 
     std::vector<double> qdot;
-    if ( ! iCartesianSolver->diffInvKin(currentQ, xd, qdot) )
+    if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot) )
     {
         CD_ERROR("diffInvKin failed.\n");
         return false;
