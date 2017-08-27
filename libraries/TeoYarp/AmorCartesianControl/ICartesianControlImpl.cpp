@@ -180,7 +180,7 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x)
+bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     return true;
 }
