@@ -61,6 +61,21 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
 
         virtual bool tool(const std::vector<double> &x);
 
+        /** fwd */
+        virtual bool fwd(const std::vector<double> &rot);
+
+        /** bkwd*/
+        virtual bool bkwd(const std::vector<double> &rot);
+
+        /** rot */
+        virtual bool rot(const std::vector<double> &rot);
+
+        /** vmos */
+        virtual bool vmos(const std::vector<double> &xdot);
+
+        /** pose */
+        virtual bool pose(const std::vector<double> &x);
+
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
         /**
@@ -87,6 +102,10 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
     protected:
 
         yarp::os::RpcClient rpcClient;
+
+    yarp::os::Port commandPort;
+
+    yarp::os::PortWriterBuffer<yarp::os::Bottle> commandBuffer;
 
 };
 

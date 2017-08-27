@@ -12,6 +12,7 @@
  * @{
  */
 
+// RPC commands
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t') ///< Current state and position
 #define VOCAB_CC_INV VOCAB3('i','n','v')      ///< Inverse kinematics
 #define VOCAB_CC_MOVJ VOCAB4('m','o','v','j') ///< Move in joint space, absolute coordinates
@@ -23,6 +24,14 @@
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
 #define VOCAB_CC_TOOL VOCAB4('t','o','o','l') ///< Change tool
 
+// Streaming commands
+#define VOCAB_CC_FWD VOCAB3('f','w','d')
+#define VOCAB_CC_BKWD VOCAB4('b','k','w','d')
+#define VOCAB_CC_ROT VOCAB3('r','o','t')
+#define VOCAB_CC_VMOS VOCAB4('v','m','o','s')
+#define VOCAB_CC_POSE VOCAB4('p','o','s','e')
+
+// Control state
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
 #define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c') ///< Controlling MOVJ commands
 #define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c') ///< Controlling MOVL commands
@@ -46,6 +55,8 @@ class ICartesianControl
 
         //! Destructor
         virtual ~ICartesianControl() {}
+
+        //--------------------- RPC commands ---------------------
 
         /**
          * @brief Current state and position
@@ -172,6 +183,22 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool tool(const std::vector<double> &x) = 0;
+
+        //--------------------- Streaming commands ---------------------
+        /** fwd */
+        virtual bool fwd(const std::vector<double> &rot) = 0;
+
+        /** bkwd */
+        virtual bool bkwd(const std::vector<double> &rot) =0;
+
+        /** rot */
+        virtual bool rot(const std::vector<double> &rot) = 0;
+
+        /** vmos */
+        virtual bool vmos(const std::vector<double> &xdot) = 0;
+
+        /** pose */
+        virtual bool pose(const std::vector<double> &x) = 0;
 
 };
 
