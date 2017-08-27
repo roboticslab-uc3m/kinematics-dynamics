@@ -7,12 +7,19 @@
 
 #include <yarp/os/Vocab.h>
 
-#define VOCAB_CC_STAT VOCAB4('s','t','a','t')
-#define VOCAB_CC_STOP VOCAB4('s','t','o','p')
-#define VOCAB_CC_STEP VOCAB4('s','t','e','p')
+/**
+ * @ingroup TeoYarp
+ * @{
+ */
 
-#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')
-#define VOCAB_CC_MOVS_CONTROLLING VOCAB4('c','c','s','c')
+#define VOCAB_CC_STAT VOCAB4('s','t','a','t') ///< Current state and position
+#define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
+#define VOCAB_CC_STEP VOCAB4('s','t','e','p') ///< Step
+
+#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
+#define VOCAB_CC_MOVS_CONTROLLING VOCAB4('c','c','s','c') ///< Controlling step commands
+
+/** @} */
 
 #define DEFAULT_DURATION 15
 
@@ -20,25 +27,47 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup TeoYarp
  *
- * @brief Abstract base for a two limb cartesian control.
- *
+ * @brief Abstract base class for a two limb cartesian controller.
  */
 class ITwoLimbCartesianControl
 {
     public:
-        /**
-         * Destructor.
-         */
+
+        //! Destructor
         virtual ~ITwoLimbCartesianControl() {}
 
-        /** Inform on control state, and get robot position and perform forward kinematics. */
+        /**
+         * @brief Current state and position
+         *
+         * Inform on control state, get robot position and perform forward kinematics.
+         *
+         * @param state Identifier for a cartesian control vocab.
+         * @param x 12-element vector describing current position in cartesian space, in two
+         * sets of 6 elements for each limb; first three elements of the set denote translation
+         * (meters), last three denote rotation in scaled axis-angle representation (radians).
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool stat(int &state, std::vector<double> &x) = 0;
 
-        /** Step. */
+        /**
+         * @brief Step
+         *
+         * Create new gait trajectory and start control.
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool step() = 0;
 
-        /** stop */
+        /**
+         * @brief Stop control
+         *
+         * Halt current control loop if any and cease movement.
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool stopControl() = 0;
 
 };
@@ -46,4 +75,3 @@ class ITwoLimbCartesianControl
 }  // namespace roboticslab
 
 #endif  //  __I_TWO_LIMB_CARTESIAN_CONTROL__
-
