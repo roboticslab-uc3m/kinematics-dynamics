@@ -1,5 +1,5 @@
-#ifndef __RATE_CONTROLLER_CONSOLE_HPP__
-#define __RATE_CONTROLLER_CONSOLE_HPP__
+#ifndef __KEYBOARD_CONTROLLER_HPP__
+#define __KEYBOARD_CONTROLLER_HPP__
 
 #include <vector>
 #include <functional>
@@ -15,21 +15,21 @@
 
 #include "ICartesianControl.h"
 
-#define DEFAULT_ROBOT_LOCAL "/RateControllerClient"
+#define DEFAULT_ROBOT_LOCAL "/KeyboardControllerClient"
 #define DEFAULT_ROBOT_REMOTE "/asibot/asibotManipulator"
 
-#define DEFAULT_CARTESIAN_LOCAL "/RateCartesianControlClient"
+#define DEFAULT_CARTESIAN_LOCAL "/KeyboardCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 
 namespace roboticslab
 {
 
 /**
- * @ingroup rateControllerConsole
+ * @ingroup keyboardController
  *
  * @brief TBD
  */
-class RateControllerConsole : public yarp::os::RFModule
+class KeyboardController : public yarp::os::RFModule
 {
 public:
     virtual bool configure(yarp::os::ResourceFinder &rf);
@@ -82,4 +82,4 @@ private:
 
 }  // namespace roboticslab
 
-#endif  // __RATE_CONTROLLER_CONSOLE_HPP__
+#endif  // __KEYBOARD_CONTROLLER_HPP__
