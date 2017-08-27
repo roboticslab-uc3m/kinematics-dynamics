@@ -17,6 +17,7 @@
 #define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 
+#define DEFAULT_PERIOD 0.02  // [s]
 #define DEFAULT_SCALING 10.0
 
 #define DEFAULT_FIXED_AXES "none"
@@ -46,6 +47,7 @@ private:
     yarp::dev::IAnalogSensor *iAnalogSensor;
     roboticslab::ICartesianControl *iCartesianControl;
 
+    double period;
     double scaling;
 
     std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled

@@ -22,6 +22,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL), "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE), "remote cartesian port").asString();
 
+    period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
 
     yarp::os::Value axesValue = rf.check("fixedAxes", yarp::os::Value(DEFAULT_FIXED_AXES), "axes with restricted movement");
@@ -175,5 +176,5 @@ bool StreamingDeviceController::interruptModule()
 
 double StreamingDeviceController::getPeriod()
 {
-    return 0.02;  // [s]
+    return period;
 }
