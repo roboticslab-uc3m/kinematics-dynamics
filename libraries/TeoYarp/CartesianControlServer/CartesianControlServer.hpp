@@ -174,6 +174,7 @@ protected:
 
     typedef bool (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
 
+    void handlePoseMsg(const yarp::os::Bottle& in);
     void handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd);
 
     roboticslab::ICartesianControl *iCartesianControl;

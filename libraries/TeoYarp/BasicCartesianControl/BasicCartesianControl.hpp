@@ -157,7 +157,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         virtual bool vmos(const std::vector<double> &xdot);
 
         /** pose */
-        virtual bool pose(const std::vector<double> &x);
+        virtual bool pose(const std::vector<double> &x, double interval);
 
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
