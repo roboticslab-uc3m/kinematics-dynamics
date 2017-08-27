@@ -82,7 +82,7 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         virtual bool vmos(const std::vector<double> &xdot);
 
         /** pose */
-        virtual bool pose(const std::vector<double> &x);
+        virtual bool pose(const std::vector<double> &x, double interval);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

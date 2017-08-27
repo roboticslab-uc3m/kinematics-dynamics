@@ -1,5 +1,5 @@
-#ifndef __STREAMING_SPNAV_HPP__
-#define __STREAMING_SPNAV_HPP__
+#ifndef __STREAMING_DEVICE_CONTROLLER_HPP__
+#define __STREAMING_DEVICE_CONTROLLER_HPP__
 
 #include <vector>
 
@@ -12,10 +12,10 @@
 #include "ICartesianControl.h"
 #include "IProximitySensors.h"
 
-#define DEFAULT_SPNAV_LOCAL "/StreamingSpnavClient"
-#define DEFAULT_SPNAV_REMOTE "/spacenavigator/mouse"
+#define DEFAULT_DEVICE_PORT_LOCAL "/StreamingDeviceClient"
+#define DEFAULT_DEVICE_PORT_REMOTE "/spacenavigator/mouse"
 
-#define DEFAULT_CARTESIAN_LOCAL "/SpnavCartesianControlClient"
+#define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 #define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
 
@@ -27,12 +27,12 @@ namespace roboticslab
 {
 
 /**
- * @ingroup streamingSpnav
+ * @ingroup streamingDeviceController
  *
  * @brief Sends streaming commands to the cartesian controller from
- * a 3D input device like the 3Dconnexion Space Navigator.
+ * a streaming input device like the 3Dconnexion Space Navigator.
  */
-class StreamingSpnav : public yarp::os::RFModule
+class StreamingDeviceController : public yarp::os::RFModule
 {
 
 public:
@@ -42,7 +42,7 @@ public:
     virtual double getPeriod();
 
 private:
-    yarp::dev::PolyDriver spnavClientDevice;
+    yarp::dev::PolyDriver streamingClientDevice;
     yarp::dev::PolyDriver cartesianControlClientDevice;
     yarp::dev::PolyDriver sensorsClientDevice;
 
@@ -59,4 +59,4 @@ private:
 
 }  // namespace roboticslab
 
-#endif  // __STREAMING_SPNAV_HPP__
+#endif  // __STREAMING_DEVICE_CONTROLLER_HPP__

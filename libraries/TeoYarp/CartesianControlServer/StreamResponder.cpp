@@ -25,11 +25,36 @@ void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
         handleConsumerCmdMsg(b, &ICartesianControl::vmos);
         break;
     case VOCAB_CC_POSE:
-        handleConsumerCmdMsg(b, &ICartesianControl::pose);
+        handlePoseMsg(b);
         break;
     default:
         CD_ERROR("command not recognized\n");
         break;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::StreamResponder::handlePoseMsg(const yarp::os::Bottle& in)
+{
+    if (in.size() > 2)
+    {
+        double interval = in.get(1).asDouble();
+        std::vector<double> v;
+
+        for (size_t i = 2; i < in.size(); i++)
+        {
+            v.push_back(in.get(i).asDouble());
+        }
+
+        if (!iCartesianControl->pose(v, interval))
+        {
+            CD_ERROR("command failed\n");
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
     }
 }
 

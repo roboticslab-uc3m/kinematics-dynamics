@@ -1,4 +1,4 @@
-#include "StreamingSpnav.hpp"
+#include "StreamingDeviceController.hpp"
 
 #include <string>
 #include <cmath>
@@ -13,12 +13,12 @@
 namespace roboticslab
 {
 
-bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
+bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("StreamingSpnav config: %s.\n", rf.toString().c_str());
+    CD_DEBUG("streamingDeviceController config: %s.\n", rf.toString().c_str());
 
-    std::string localSpnav = rf.check("localSpnav", yarp::os::Value(DEFAULT_SPNAV_LOCAL), "local spnav port").asString();
-    std::string remoteSpnav = rf.check("remoteSpnav", yarp::os::Value(DEFAULT_SPNAV_REMOTE), "remote spnav port").asString();
+    std::string localDevice = rf.check("localDevice", yarp::os::Value(DEFAULT_DEVICE_PORT_LOCAL), "local device port").asString();
+    std::string remoteDevice = rf.check("remoteDevice", yarp::os::Value(DEFAULT_DEVICE_PORT_REMOTE), "remote device port").asString();
 
     std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL), "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE), "remote cartesian port").asString();
@@ -72,25 +72,25 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
 
     if (rf.check("help"))
     {
-        printf("StreamingSpnav options:\n");
+        printf("StreamingDeviceController options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         return false;
     }
 
-    yarp::os::Property spnavClientOptions;
-    spnavClientOptions.put("device", "analogsensorclient");
-    spnavClientOptions.put("local", localSpnav);
-    spnavClientOptions.put("remote", remoteSpnav);
+    yarp::os::Property streamingClientOptions;
+    streamingClientOptions.put("device", "analogsensorclient");
+    streamingClientOptions.put("local", localDevice);
+    streamingClientOptions.put("remote", remoteDevice);
 
-    spnavClientDevice.open(spnavClientOptions);
+    streamingClientDevice.open(streamingClientOptions);
 
-    if (!spnavClientDevice.isValid())
+    if (!streamingClientDevice.isValid())
     {
         CD_ERROR("spnav client device not valid.\n");
         return false;
     }
 
-    if (!spnavClientDevice.view(iAnalogSensor))
+    if (!streamingClientDevice.view(iAnalogSensor))
     {
         CD_ERROR("Could not view iAnalogSensor.\n");
         return false;
@@ -141,7 +141,7 @@ bool StreamingSpnav::configure(yarp::os::ResourceFinder &rf)
     return true;
 }
 
-bool StreamingSpnav::updateModule()
+bool StreamingDeviceController::updateModule()
 {
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
@@ -161,8 +161,8 @@ bool StreamingSpnav::updateModule()
 
     if (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::LOW)
     {
-	    local_scaling *= 2; //Half velocity
-	    CD_WARNING("Obstacle detected\n");
+        local_scaling *= 2; //Half velocity
+        CD_WARNING("Obstacle detected\n");
     }
 
     for (int i = 0; i < data.size(); i++)
@@ -170,7 +170,7 @@ bool StreamingSpnav::updateModule()
         if (!fixedAxes[i] && data[i] != 0.0)
         {
             isZero = false;
-            xdot[i] = data[i] / local_scaling;
+            xdot[i] = data[i] / scaling;
         }
     }
 
@@ -196,13 +196,13 @@ bool StreamingSpnav::updateModule()
     return true;
 }
 
-bool StreamingSpnav::interruptModule()
+bool StreamingDeviceController::interruptModule()
 {
     bool ok = true;
 
     ok &= iCartesianControl->stopControl();
     ok &= cartesianControlClientDevice.close();
-    ok &= spnavClientDevice.close();
+    ok &= streamingClientDevice.close();
 
     if (sensorsClientDevice.isValid())
     {
@@ -212,7 +212,7 @@ bool StreamingSpnav::interruptModule()
     return ok;
 }
 
-double StreamingSpnav::getPeriod()
+double StreamingDeviceController::getPeriod()
 {
     return 0.02;  // [s]
 }

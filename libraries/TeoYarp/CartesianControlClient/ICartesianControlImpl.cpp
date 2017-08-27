@@ -285,12 +285,13 @@ bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x)
+bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_POSE);
+    cmd.addDouble(interval);
     for(size_t i=0; i<x.size(); i++)
         cmd.addDouble(x[i]);
 
