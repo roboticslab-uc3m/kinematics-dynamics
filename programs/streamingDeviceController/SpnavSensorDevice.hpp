@@ -35,7 +35,6 @@ private:
     yarp::dev::IAnalogSensor * iAnalogSensor;
 };
 
-
 }  // namespace roboticslab
 
 #endif  // __SPNAV_SENSOR_DEVICE_HPP__

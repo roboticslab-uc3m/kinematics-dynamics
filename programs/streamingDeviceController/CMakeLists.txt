@@ -18,6 +18,8 @@ add_executable(streamingDeviceController main.cpp
                                          StreamingDevice.cpp
                                          SpnavSensorDevice.hpp
                                          SpnavSensorDevice.cpp
+                                         LeapMotionSensorDevice.hpp
+                                         LeapMotionSensorDevice.cpp
                                          StreamingDeviceController.hpp
                                          StreamingDeviceController.cpp)
 

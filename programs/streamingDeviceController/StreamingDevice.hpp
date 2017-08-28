@@ -62,6 +62,17 @@ public:
     virtual bool acquireInterfaces() = 0;
 
     /**
+     * @brief Perform any custom initialization needed.
+     * This method is called after the successful creation of the device
+     * and once all interface handles are acquired.
+     * @return true on success, false otherwise
+     */
+    virtual bool initialize()
+    {
+        return true;
+    }
+
+    /**
      * @brief Acquires data from remote device.
      * @return true on success, false otherwise
      */

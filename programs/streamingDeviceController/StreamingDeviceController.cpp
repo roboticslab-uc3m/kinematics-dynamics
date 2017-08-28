@@ -26,7 +26,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
 
-    streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf.findGroup(deviceName.c_str()));
+    streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf);
 
     if (!streamingDevice->isValid())
     {
@@ -36,7 +36,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!streamingDevice->acquireInterfaces())
     {
-        CD_ERROR("Unable to acquire plugin interfaces for streaming device.\n");
+        CD_ERROR("Unable to acquire plugin interfaces from streaming device.\n");
         return false;
     }
 
@@ -49,7 +49,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!cartesianControlClientDevice.isValid())
     {
-        CD_ERROR("cartesian control client device not valid.\n");
+        CD_ERROR("Cartesian control client device not valid.\n");
         cartesianControlClientDevice.close(); // release managed resources
         return false;
     }
@@ -62,6 +62,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     }
 
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
+
+    if (!streamingDevice->initialize())
+    {
+        CD_ERROR("Device initialization failed.\n");
+        cartesianControlClientDevice.close(); // close ports
+        return false;
+    }
 
     isStopped = true;
 

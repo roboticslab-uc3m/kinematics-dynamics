@@ -7,14 +7,30 @@
 #include <ColorDebug.hpp>
 
 #include "SpnavSensorDevice.hpp"
+#include "LeapMotionSensorDevice.hpp"
 
 using namespace roboticslab;
 
 StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
+    yarp::os::Searchable & deviceConfig = config.findGroup(deviceName.c_str());
+
+    CD_DEBUG("Device configuration: %s\n", deviceConfig.toString().c_str());
+
     if (deviceName == "SpaceNavigator")
     {
-        return new SpnavSensorDevice(config);
+        return new SpnavSensorDevice(deviceConfig);
+    }
+    else if (deviceName == "LeapMotionSensor")
+    {
+        if (!config.check("period"))
+        {
+            CD_WARNING("Missing \"period\" parameter.\n");
+            return new InvalidDevice();
+        }
+
+        double period = config.check("period", yarp::os::Value(1.0)).asDouble();
+        return new LeapMotionSensorDevice(deviceConfig, period);
     }
     else
     {
