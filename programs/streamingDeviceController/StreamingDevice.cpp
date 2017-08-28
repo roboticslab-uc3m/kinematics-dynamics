@@ -8,24 +8,13 @@
 
 #include "SpnavSensorDevice.hpp"
 
-roboticslab::StreamingDevice * roboticslab::StreamingDeviceFactory::makeDevice(yarp::os::Searchable & config)
+using namespace roboticslab;
+
+StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
-    const std::string prop = "streamingDevice";
-    std::string deviceName = config.check(prop.c_str(), yarp::os::Value::getNullValue(), "device name").asString();
-
-    yarp::os::Property options;
-    options.fromString(config.toString());
-    options.unput(prop.c_str());
-
     if (deviceName == "SpaceNavigator")
     {
-        options.put("device", "analogsensorclient");
         return new SpnavSensorDevice(config);
-    }
-    else if (deviceName.empty())
-    {
-        CD_ERROR("Missing or empty parameter \"%s\".\n", prop.c_str());
-        return new InvalidDevice();
     }
     else
     {
@@ -34,7 +23,7 @@ roboticslab::StreamingDevice * roboticslab::StreamingDeviceFactory::makeDevice(y
     }
 }
 
-roboticslab::StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
+StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
     : iCartesianControl(NULL)
 {
     data.resize(6, 0.0);
@@ -44,12 +33,12 @@ roboticslab::StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
     configureFixedAxes(config.find("fixedAxes"));
 }
 
-roboticslab::StreamingDevice::~StreamingDevice()
+StreamingDevice::~StreamingDevice()
 {
     PolyDriver::close();
 }
 
-bool roboticslab::StreamingDevice::transformData(double scaling)
+bool StreamingDevice::transformData(double scaling)
 {
     for (int i = 0; i < data.size(); i++)
     {
@@ -66,7 +55,20 @@ bool roboticslab::StreamingDevice::transformData(double scaling)
     return true;
 }
 
-void roboticslab::StreamingDevice::configureFixedAxes(const yarp::os::Value & v)
+bool StreamingDevice::hasValidMovementData() const
+{
+    for (int i = 0; i < data.size(); i++)
+    {
+        if (data[i] != 0.0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void StreamingDevice::configureFixedAxes(const yarp::os::Value & v)
 {
     if (!v.isList())
     {

@@ -1,6 +1,7 @@
 #ifndef __STREAMING_DEVICE_HPP__
 #define __STREAMING_DEVICE_HPP__
 
+#include <string>
 #include <vector>
 
 #include <yarp/os/Searchable.h>
@@ -23,11 +24,12 @@ class StreamingDeviceFactory
 {
 public:
     /**
-     * @brief Create a new YARP device handle
+     * @brief Creates a new YARP device handle
+     * @param deviceName Name of the device.
      * @param config List of options the YARP device should be opened with.
      * @return Pointer to an instance of a StreamingDevice.
      */
-    static StreamingDevice * makeDevice(yarp::os::Searchable & config);
+    static StreamingDevice * makeDevice(const std::string & deviceName, yarp::os::Searchable & config);
 
 private:
     StreamingDeviceFactory();
@@ -71,6 +73,13 @@ public:
      * @return true on success, false otherwise
      */
     virtual bool transformData(double scaling);
+
+    /**
+     * @brief Checks whether the device may forward acquired and
+     * processed data to the controller
+     * @return true if valid, false otherwise
+     */
+    virtual bool hasValidMovementData() const;
 
     /**
      * @brief Sends movement command to the cartesian controller.

@@ -6,13 +6,15 @@
 
 bool roboticslab::SpnavSensorDevice::acquireInterfaces()
 {
+    bool ok = true;
+
     if (!PolyDriver::view(iAnalogSensor))
     {
-        CD_ERROR("Could not view iAnalogSensor.\n");
-        return false;
+        CD_WARNING("Could not view iAnalogSensor.\n");
+        ok = false;
     }
 
-    return true;
+    return ok;
 }
 
 bool roboticslab::SpnavSensorDevice::acquireData()
@@ -24,7 +26,7 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
     if (data.size() != 6)
     {
-        CD_ERROR("Invalid data size: %d.\n", data.size());
+        CD_WARNING("Invalid data size: %d.\n", data.size());
         return false;
     }
 
