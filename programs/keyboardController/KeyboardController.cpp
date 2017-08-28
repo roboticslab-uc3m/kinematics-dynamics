@@ -1,4 +1,4 @@
-#include "RateControllerConsole.hpp"
+#include "KeyboardController.hpp"
 
 #include <unistd.h>
 #include <termios.h>
@@ -70,13 +70,13 @@ namespace
     }
 }
 
-const double roboticslab::RateControllerConsole::JOINT_VELOCITY_STEP = 0.5;  // [deg]
-const double roboticslab::RateControllerConsole::CARTESIAN_LINEAR_VELOCITY_STEP = 0.005;  // [m]
-const double roboticslab::RateControllerConsole::CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01;  // [deg]
+const double roboticslab::KeyboardController::JOINT_VELOCITY_STEP = 0.5;  // [deg]
+const double roboticslab::KeyboardController::CARTESIAN_LINEAR_VELOCITY_STEP = 0.005;  // [m]
+const double roboticslab::KeyboardController::CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01;  // [deg]
 
-bool roboticslab::RateControllerConsole::configure(yarp::os::ResourceFinder &rf)
+bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("RateControllerConsole config: %s.\n", rf.toString().c_str());
+    CD_DEBUG("KeyboardController config: %s.\n", rf.toString().c_str());
 
     bool skipControlboardController = rf.check("skipRCB", "don't load remote control board client");
     bool skipCartesianController = rf.check("skipCC", "don't load cartesian control client");
@@ -190,7 +190,7 @@ bool roboticslab::RateControllerConsole::configure(yarp::os::ResourceFinder &rf)
     return true;
 }
 
-bool roboticslab::RateControllerConsole::updateModule()
+bool roboticslab::KeyboardController::updateModule()
 {
     char key;
 
@@ -319,7 +319,7 @@ bool roboticslab::RateControllerConsole::updateModule()
     return true;
 }
 
-bool roboticslab::RateControllerConsole::interruptModule()
+bool roboticslab::KeyboardController::interruptModule()
 {
     issueStop();
     std::cout << "Exiting..." << std::endl;
@@ -328,12 +328,12 @@ bool roboticslab::RateControllerConsole::interruptModule()
     return true;
 }
 
-double roboticslab::RateControllerConsole::getPeriod()
+double roboticslab::KeyboardController::getPeriod()
 {
     return 0.01;  // [s]
 }
 
-bool roboticslab::RateControllerConsole::close()
+bool roboticslab::KeyboardController::close()
 {
     controlboardDevice.close();
     cartesianControlDevice.close();
@@ -342,7 +342,7 @@ bool roboticslab::RateControllerConsole::close()
 }
 
 template <typename func>
-void roboticslab::RateControllerConsole::incrementOrDecrementJointVelocity(joint q, func op)
+void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 {
     if (!controlboardDevice.isValid())
     {
@@ -385,7 +385,7 @@ void roboticslab::RateControllerConsole::incrementOrDecrementJointVelocity(joint
 }
 
 template <typename func>
-void roboticslab::RateControllerConsole::incrementOrDecrementCartesianVelocity(cart coord, func op)
+void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func op)
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -407,7 +407,7 @@ void roboticslab::RateControllerConsole::incrementOrDecrementCartesianVelocity(c
     }
 }
 
-void roboticslab::RateControllerConsole::printJointPositions()
+void roboticslab::KeyboardController::printJointPositions()
 {
     if (!controlboardDevice.isValid())
     {
@@ -421,7 +421,7 @@ void roboticslab::RateControllerConsole::printJointPositions()
     std::cout << "Current joint positions: " << encs << std::endl;
 }
 
-void roboticslab::RateControllerConsole::printCartesianPositions()
+void roboticslab::KeyboardController::printCartesianPositions()
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -436,7 +436,7 @@ void roboticslab::RateControllerConsole::printCartesianPositions()
     std::cout << "Current cartesian positions: " << x << std::endl;
 }
 
-void roboticslab::RateControllerConsole::issueStop()
+void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
@@ -460,7 +460,7 @@ void roboticslab::RateControllerConsole::issueStop()
     std::cout << "Stopped" << std::endl;
 }
 
-void roboticslab::RateControllerConsole::printHelp()
+void roboticslab::KeyboardController::printHelp()
 {
     std::cout << std::string(60, '-') << std::endl;
     std::cout << " [Esc] - close the application" << std::endl;
