@@ -2,6 +2,13 @@
 
 #include "AmorCartesianControl.hpp"
 
+#include <algorithm>
+#include <functional>
+
+#include <kdl/frames.hpp>
+
+#include "KdlVectorConverter.hpp"
+
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
@@ -20,9 +27,11 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
     x[1] = positions[1] * 0.001;
     x[2] = positions[2] * 0.001;
 
-    x[3] = toDeg(positions[3]);  // [deg]
-    x[4] = toDeg(positions[4]);
-    x[5] = toDeg(positions[5]);
+    x[3] = positions[3];  // [deg]
+    x[4] = positions[4];
+    x[5] = positions[5];
+
+    state = 0;  // dummy value
 
     return true;
 }
@@ -182,6 +191,41 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 
 bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
+    int state;
+    std::vector<double> xCurrent;
+
+    if (!stat(state, xCurrent))
+    {
+        CD_ERROR("stat failed.\n");
+        return false;
+    }
+
+    KDL::Frame fDesired = KdlVectorConverter::vectorToFrame(x);
+    KDL::Frame fCurrent = KdlVectorConverter::vectorToFrame(xCurrent);
+
+    KDL::Twist t = KDL::diff(fCurrent, fDesired, interval);
+
+    std::vector<double> xdot = KdlVectorConverter::twistToVector(t);
+
+    // gain value still experimental
+    std::transform(xdot.begin(), xdot.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), 0.005));
+
+    AMOR_VECTOR7 velocities;
+
+    velocities[0] = xdot[0] * 1000;  // [mm/s]
+    velocities[1] = xdot[1] * 1000;
+    velocities[2] = xdot[2] * 1000;
+
+    velocities[3] = xdot[3];  // [rad/s]
+    velocities[4] = xdot[4];
+    velocities[5] = xdot[5];
+
+    if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
     return true;
 }
 
