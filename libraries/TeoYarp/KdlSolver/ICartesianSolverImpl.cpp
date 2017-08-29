@@ -155,6 +155,13 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::KdlSolver::diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot) {
+
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t) {
 
     KDL::JntArray qInRad = KDL::JntArray(chain.getNrOfJoints());

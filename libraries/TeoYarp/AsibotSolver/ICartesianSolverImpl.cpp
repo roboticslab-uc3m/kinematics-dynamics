@@ -302,6 +302,13 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::AsibotSolver::diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot)
+{
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 {
     CD_WARNING("Not implemented.\n");
