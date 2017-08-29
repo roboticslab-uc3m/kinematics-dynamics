@@ -36,7 +36,7 @@ class ICartesianSolver
         ROBOTICSLAB_KINEMATICS_DYNAMICS_DEPRECATED virtual bool getNumLinks(int* numLinks)
         {
             CD_WARNING("getNumLinks deprecated: use getNumJoints instead.\n");
-            return false;
+            return getNumJoints(numLinks);
         }
 
         /**
