@@ -420,7 +420,10 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     }
     else
     {
-        CD_WARNING("Not supported yet!\n");
+        if (!iCartesianControl->eff(currentCartVels))
+        {
+            CD_ERROR("eff failed\n");
+        }
     }
 }
 
