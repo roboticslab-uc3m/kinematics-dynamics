@@ -70,8 +70,14 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         /** rot */
         virtual bool rot(const std::vector<double> &rot);
 
+        /** pan */
+        virtual bool pan(const std::vector<double> &transl);
+
         /** vmos */
         virtual bool vmos(const std::vector<double> &xdot);
+
+        /** eff */
+        virtual bool eff(const std::vector<double> &xdotee);
 
         /** pose */
         virtual bool pose(const std::vector<double> &x, double interval);

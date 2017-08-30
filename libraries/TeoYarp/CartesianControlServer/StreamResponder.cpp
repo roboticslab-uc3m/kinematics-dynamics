@@ -21,8 +21,14 @@ void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
     case VOCAB_CC_ROT:
         handleConsumerCmdMsg(b, &ICartesianControl::rot);
         break;
+    case VOCAB_CC_PAN:
+        handleConsumerCmdMsg(b, &ICartesianControl::pan);
+        break;
     case VOCAB_CC_VMOS:
         handleConsumerCmdMsg(b, &ICartesianControl::vmos);
+        break;
+    case VOCAB_CC_EFF:
+        handleConsumerCmdMsg(b, &ICartesianControl::eff);
         break;
     case VOCAB_CC_POSE:
         handleBiConsumerCmdMsg(b, &ICartesianControl::pose);

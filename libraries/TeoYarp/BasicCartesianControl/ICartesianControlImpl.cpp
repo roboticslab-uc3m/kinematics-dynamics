@@ -410,6 +410,13 @@ bool roboticslab::BasicCartesianControl::rot(const std::vector<double> &rot)
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::pan(const std::vector<double> &transl)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 {
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -445,6 +452,13 @@ bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
         return false;
     }
 
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::eff(const std::vector<double> &xdotee)
+{
     return true;
 }
 
