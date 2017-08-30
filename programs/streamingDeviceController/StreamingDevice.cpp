@@ -8,6 +8,7 @@
 
 #include "SpnavSensorDevice.hpp"
 #include "LeapMotionSensorDevice.hpp"
+#include "WiimoteSensorDevice.hpp"
 
 using namespace roboticslab;
 
@@ -31,6 +32,10 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 
         double period = config.check("period", yarp::os::Value(1.0)).asDouble();
         return new LeapMotionSensorDevice(deviceConfig, period);
+    }
+    else if (deviceName == "WiimoteSensor")
+    {
+        return new WiimoteSensorDevice(deviceConfig);
     }
     else
     {

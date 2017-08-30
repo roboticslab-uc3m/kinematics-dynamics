@@ -20,6 +20,8 @@ add_executable(streamingDeviceController main.cpp
                                          SpnavSensorDevice.cpp
                                          LeapMotionSensorDevice.hpp
                                          LeapMotionSensorDevice.cpp
+                                         WiimoteSensorDevice.hpp
+                                         WiimoteSensorDevice.cpp
                                          StreamingDeviceController.hpp
                                          StreamingDeviceController.cpp)
 
