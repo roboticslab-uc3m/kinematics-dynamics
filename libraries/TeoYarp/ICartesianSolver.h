@@ -36,7 +36,7 @@ class ICartesianSolver
         ROBOTICSLAB_KINEMATICS_DYNAMICS_DEPRECATED virtual bool getNumLinks(int* numLinks)
         {
             CD_WARNING("getNumLinks deprecated: use getNumJoints instead.\n");
-            return false;
+            return getNumJoints(numLinks);
         }
 
         /**
@@ -121,6 +121,22 @@ class ICartesianSolver
          * @return true on success, false otherwise
          */
         virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) = 0;
+
+        /**
+         * @brief Perform differential inverse kinematics on end effector
+         *
+         * Same as @ref diffInvKin, but the input velocity is expressed in terms of the
+         * end effector frame.
+         *
+         * @param q Vector describing current position in joint space (degrees).
+         * @param xdotee 6-element vector describing desired velocity in cartesian space,
+         * expressed in the frame of the end effector; first three elements denote translational
+         * velocity (meters/second), last three denote angular velocity (radians/second).
+         * @param qdot Vector describing target velocity in joint space (degrees/second).
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot) = 0;
 
         /**
          * @brief Perform inverse dynamics

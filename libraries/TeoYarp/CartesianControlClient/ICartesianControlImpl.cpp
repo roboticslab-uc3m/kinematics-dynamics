@@ -221,12 +221,13 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
+bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_FWD);
+    cmd.addDouble(step);
     for(size_t i=0; i<rot.size(); i++)
         cmd.addDouble(rot[i]);
 
@@ -237,12 +238,13 @@ bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot)
+bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_BKWD);
+    cmd.addDouble(step);
     for(size_t i=0; i<rot.size(); i++)
         cmd.addDouble(rot[i]);
 
@@ -269,6 +271,22 @@ bool roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_PAN);
+    for(size_t i=0; i<transl.size(); i++)
+        cmd.addDouble(transl[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
@@ -285,12 +303,29 @@ bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x)
+bool roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(VOCAB_CC_EFF);
+    for(size_t i=0; i<xdotee.size(); i++)
+        cmd.addDouble(xdotee[i]);
+
+    commandBuffer.write(true);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_POSE);
+    cmd.addDouble(interval);
     for(size_t i=0; i<x.size(); i++)
         cmd.addDouble(x[i]);
 

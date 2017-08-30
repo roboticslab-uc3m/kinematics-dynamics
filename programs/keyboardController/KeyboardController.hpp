@@ -1,5 +1,5 @@
-#ifndef __RATE_CONTROLLER_CONSOLE_HPP__
-#define __RATE_CONTROLLER_CONSOLE_HPP__
+#ifndef __KEYBOARD_CONTROLLER_HPP__
+#define __KEYBOARD_CONTROLLER_HPP__
 
 #include <vector>
 #include <functional>
@@ -15,21 +15,21 @@
 
 #include "ICartesianControl.h"
 
-#define DEFAULT_ROBOT_LOCAL "/RateControllerClient"
+#define DEFAULT_ROBOT_LOCAL "/KeyboardControllerClient"
 #define DEFAULT_ROBOT_REMOTE "/asibot/asibotManipulator"
 
-#define DEFAULT_CARTESIAN_LOCAL "/RateCartesianControlClient"
+#define DEFAULT_CARTESIAN_LOCAL "/KeyboardCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 
 namespace roboticslab
 {
 
 /**
- * @ingroup rateControllerConsole
+ * @ingroup keyboardController
  *
  * @brief TBD
  */
-class RateControllerConsole : public yarp::os::RFModule
+class KeyboardController : public yarp::os::RFModule
 {
 public:
     virtual bool configure(yarp::os::ResourceFinder &rf);
@@ -42,6 +42,7 @@ private:
     // used for array indexes and size checks
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
+    enum cart_frames { INERTIAL, END_EFFECTOR };
 
     std::plus<double> increment_functor;
     std::minus<double> decrement_functor;
@@ -52,6 +53,8 @@ private:
     template <typename func>
     void incrementOrDecrementCartesianVelocity(cart coord, func op);
 
+    void toggleReferenceFrame();
+
     void printJointPositions();
     void printCartesianPositions();
 
@@ -60,6 +63,7 @@ private:
     void printHelp();
 
     int axes;
+    cart_frames cart_frame;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;
@@ -82,4 +86,4 @@ private:
 
 }  // namespace roboticslab
 
-#endif  // __RATE_CONTROLLER_CONSOLE_HPP__
+#endif  // __KEYBOARD_CONTROLLER_HPP__
