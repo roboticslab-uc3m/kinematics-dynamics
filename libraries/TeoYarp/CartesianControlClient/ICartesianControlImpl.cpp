@@ -221,12 +221,13 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
+bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_FWD);
+    cmd.addDouble(step);
     for(size_t i=0; i<rot.size(); i++)
         cmd.addDouble(rot[i]);
 
@@ -237,12 +238,13 @@ bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot)
+bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
     cmd.clear();
     cmd.addVocab(VOCAB_CC_BKWD);
+    cmd.addDouble(step);
     for(size_t i=0; i<rot.size(); i++)
         cmd.addDouble(rot[i]);
 

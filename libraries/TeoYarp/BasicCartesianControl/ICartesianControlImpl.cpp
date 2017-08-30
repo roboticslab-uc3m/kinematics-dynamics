@@ -273,15 +273,93 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot)
+bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot, double step)
 {
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setVelocityMode(joint);
+    }
+
+    std::vector<double> currentQ(numRobotJoints), qdot;
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[2] = step;
+    xdotee[3] = rot[0];
+    xdotee[4] = rot[1];
+    xdotee[5] = rot[2];
+
+    if ( ! iCartesianSolver->diffInvKinEE( currentQ, xdotee, qdot ) )
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return false;
+    }
+
+    for (unsigned int i = 0; i < qdot.size(); i++)
+    {
+        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        {
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            return false;
+        }
+    }
+
+    if ( ! iVelocityControl->velocityMove( qdot.data() ) )
+    {
+        CD_ERROR("velocityMove failed.\n");
+        return false;
+    }
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot)
+bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot, double step)
 {
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setVelocityMode(joint);
+    }
+
+    std::vector<double> currentQ(numRobotJoints), qdot;
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[2] = -step;
+    xdotee[3] = rot[0];
+    xdotee[4] = rot[1];
+    xdotee[5] = rot[2];
+
+    if ( ! iCartesianSolver->diffInvKinEE( currentQ, xdotee, qdot ) )
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return false;
+    }
+
+    for (unsigned int i = 0; i < qdot.size(); i++)
+    {
+        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        {
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            return false;
+        }
+    }
+
+    if ( ! iVelocityControl->velocityMove( qdot.data() ) )
+    {
+        CD_ERROR("velocityMove failed.\n");
+        return false;
+    }
+
     return true;
 }
 
@@ -289,6 +367,44 @@ bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot)
 
 bool roboticslab::BasicCartesianControl::rot(const std::vector<double> &rot)
 {
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        iControlMode->setVelocityMode(joint);
+    }
+
+    std::vector<double> currentQ(numRobotJoints), qdot;
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[3] = rot[0];
+    xdotee[4] = rot[1];
+    xdotee[5] = rot[2];
+
+    if ( ! iCartesianSolver->diffInvKinEE( currentQ, xdotee, qdot ) )
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return false;
+    }
+
+    for (unsigned int i = 0; i < qdot.size(); i++)
+    {
+        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        {
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            return false;
+        }
+    }
+
+    if ( ! iVelocityControl->velocityMove( qdot.data() ) )
+    {
+        CD_ERROR("velocityMove failed.\n");
+        return false;
+    }
+
     return true;
 }
 
@@ -310,7 +426,7 @@ bool roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 
     if ( ! iCartesianSolver->diffInvKin( currentQ, xdot, qdot ) )
     {
-        CD_ERROR("currentQ, xdot, qdot failed.\n");
+        CD_ERROR("diffInvKin failed.\n");
         return false;
     }
 
