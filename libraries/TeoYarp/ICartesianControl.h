@@ -186,10 +186,10 @@ class ICartesianControl
 
         //--------------------- Streaming commands ---------------------
         /** fwd */
-        virtual bool fwd(const std::vector<double> &rot) = 0;
+        virtual bool fwd(const std::vector<double> &rot, double step) = 0;
 
         /** bkwd */
-        virtual bool bkwd(const std::vector<double> &rot) =0;
+        virtual bool bkwd(const std::vector<double> &rot, double step) =0;
 
         /** rot */
         virtual bool rot(const std::vector<double> &rot) = 0;

@@ -62,10 +62,10 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         virtual bool tool(const std::vector<double> &x);
 
         /** fwd */
-        virtual bool fwd(const std::vector<double> &rot);
+        virtual bool fwd(const std::vector<double> &rot, double step);
 
         /** bkwd*/
-        virtual bool bkwd(const std::vector<double> &rot);
+        virtual bool bkwd(const std::vector<double> &rot, double step);
 
         /** rot */
         virtual bool rot(const std::vector<double> &rot);

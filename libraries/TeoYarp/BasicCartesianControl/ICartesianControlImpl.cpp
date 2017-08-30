@@ -273,14 +273,14 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot)
+bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot, double step)
 {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot)
+bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot, double step)
 {
     return true;
 }
