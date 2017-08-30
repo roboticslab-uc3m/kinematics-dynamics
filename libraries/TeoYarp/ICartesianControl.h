@@ -25,13 +25,13 @@
 #define VOCAB_CC_TOOL VOCAB4('t','o','o','l') ///< Change tool
 
 // Streaming commands
-#define VOCAB_CC_FWD VOCAB3('f','w','d')
-#define VOCAB_CC_BKWD VOCAB4('b','k','w','d')
-#define VOCAB_CC_ROT VOCAB3('r','o','t')
-#define VOCAB_CC_PAN VOCAB3('p','a','n')
-#define VOCAB_CC_VMOS VOCAB4('v','m','o','s')
-#define VOCAB_CC_EFF VOCAB3('e','f','f')
-#define VOCAB_CC_POSE VOCAB4('p','o','s','e')
+#define VOCAB_CC_FWD VOCAB3('f','w','d')      ///< Move forward (relative to end-effector)
+#define VOCAB_CC_BKWD VOCAB4('b','k','w','d') ///< Move backwards (relative to end-effector)
+#define VOCAB_CC_ROT VOCAB3('r','o','t')      ///< Rotate in end-effector frame
+#define VOCAB_CC_PAN VOCAB3('p','a','n')      ///< Pan in end-effector frame
+#define VOCAB_CC_VMOS VOCAB4('v','m','o','s') ///< Instantaneous velocity steps (inertial frame)
+#define VOCAB_CC_EFF VOCAB3('e','f','f')      ///< Instantaneous velocity steps (end-effector frame)
+#define VOCAB_CC_POSE VOCAB4('p','o','s','e') ///< Achieve pose in inertial frame
 
 // Control state
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
@@ -187,25 +187,119 @@ class ICartesianControl
         virtual bool tool(const std::vector<double> &x) = 0;
 
         //--------------------- Streaming commands ---------------------
-        /** fwd */
+
+        /**
+         * @brief Move forward (relative to end-effector)
+         *
+         * Move along the Z (positive) axis in velocity increments, applying desired angular
+         * velocities. All coordinates are expressed in terms of the end-effector frame.
+         *
+         * @param rot 3-element vector describing desired angular velocity increments in
+         * cartesian space, expressed in radians/second.
+         * @param step Velocity step corresponding to Z axis, expressed in meters/second.
+         *
+         * @see bkwd (move backwards)
+         * @see eff (rotations + translations)
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool fwd(const std::vector<double> &rot, double step) = 0;
 
-        /** bkwd */
-        virtual bool bkwd(const std::vector<double> &rot, double step) =0;
+        /**
+         * @brief Move backwards (relative to end-effector)
+         *
+         * Move along the Z (negative) axis in velocity increments, applying desired angular
+         * velocities. All coordinates are expressed in terms of the end-effector frame.
+         *
+         * @param 3-element vector describing desired angular velocity increments in
+         * cartesian space, expressed in radians/second.
+         * @param step Velocity step corresponding to Z axis, expressed in meters/second.
+         *
+         * @see fwd (move forward)
+         * @see eff (rotations + translations)
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool bkwd(const std::vector<double> &rot, double step) = 0;
 
-        /** rot */
+        /**
+         * @brief Rotate in end-effector frame
+         *
+         * Apply desired angular velocities, but avoid translating, that is, only change the
+         * orientation of the TCP. All coordinates are expressed in terms of the end-effector frame.
+         *
+         * @param 3-element vector describing desired angular velocity increments in
+         * cartesian space, expressed in radians/second.
+         *
+         * @see pan (only translations)
+         * @see eff (rotations + translations)
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool rot(const std::vector<double> &rot) = 0;
 
-        /** pan */
+        /**
+         * @brief Pan in end-effector frame
+         *
+         * Apply desired linear velocities, but avoid rotating, that is, only change the position
+         * of the TCP. All coordinates are expressed in terms of the end-effector frame.
+         *
+         * @param transl 3-element vector describing desired translational velocity
+         * increments in cartesian space, expressed in meters/second.
+         *
+         * @see pan (only rotations)
+         * @see eff (rotations + translations)
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool pan(const std::vector<double> &transl) = 0;
 
-        /** vmos */
+        /**
+         * @brief Instantaneous velocity steps (inertial frame)
+         *
+         * Move in instantaneous velocity increments using the fixed (inertial) frame as the
+         * reference coordinate system.
+         *
+         * @param xdot 6-element vector describing velocity increments in cartesian space;
+         * first three elements denote translational velocity (meters/second), last three
+         * denote angular velocity (radians/second).
+         *
+         * @see eff (end-effector frame)
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool vmos(const std::vector<double> &xdot) = 0;
 
-        /** eff */
+        /**
+         * @brief Instantaneous velocity steps (end-effector frame)
+         *
+         * Move in instantaneous velocity increments using the end-effector frame as the
+         * reference coordinate system.
+         *
+         * @param xdotee 6-element vector describing velocity increments in cartesian space;
+         * first three elements denote translational velocity (meters/second), last three
+         * denote angular velocity (radians/second).
+         *
+         * @see vmos (inertial frame)
+         * @see fwd, bkwd, rot, pan (only translations/rotations)
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool eff(const std::vector<double> &xdotee) = 0;
 
-        /** pose */
+        /**
+         * @brief Achieve pose in inertial frame
+         *
+         * Move to desired position, computing the error with respect to the current pose. Then,
+         * perform numerical differentiation and obtain the final velocity increment (as in @ref vmos).
+         *
+         * @param x 6-element vector describing desired instantaneous pose in cartesian space;
+         * first three elements denote translation (meters), last three denote rotation (radians).
+         * @param interval Time interval between successive command invocations, expressed in seconds
+         * and used for numerical differentiation with desired/current poses.
+         *
+         * @return true on success, false otherwise
+         */
         virtual bool pose(const std::vector<double> &x, double interval) = 0;
 
 };
