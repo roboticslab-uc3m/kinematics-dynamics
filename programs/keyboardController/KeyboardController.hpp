@@ -1,6 +1,7 @@
 #ifndef __KEYBOARD_CONTROLLER_HPP__
 #define __KEYBOARD_CONTROLLER_HPP__
 
+#include <string>
 #include <vector>
 #include <functional>
 
@@ -14,12 +15,16 @@
 #include <yarp/dev/IVelocityControl.h>
 
 #include "ICartesianControl.h"
+#include "KinematicRepresentation.hpp"
 
 #define DEFAULT_ROBOT_LOCAL "/KeyboardControllerClient"
 #define DEFAULT_ROBOT_REMOTE "/asibot/asibotManipulator"
 
 #define DEFAULT_CARTESIAN_LOCAL "/KeyboardCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
+
+#define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
+                                       // fallback in ::open()
 
 namespace roboticslab
 {
@@ -69,6 +74,8 @@ private:
 
     int axes;
     cart_frames cart_frame;
+    std::string angleRepr;
+    KinRepresentation::orientation_system orient;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;
