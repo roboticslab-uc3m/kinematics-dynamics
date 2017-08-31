@@ -8,7 +8,17 @@
 #include <yarp/os/Vocab.h>
 
 /**
+ * @file
+ * @brief Contains roboticslab::ICartesianControl and related vocabs.
  * @ingroup TeoYarp
+ * @{
+ */
+
+/**
+ * @name RPC vocabs
+ *
+ * Used by @ref ICartesianControl_RPC_commands "RPC commands" in roboticslab::ICartesianControl.
+ *
  * @{
  */
 
@@ -24,6 +34,16 @@
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
 #define VOCAB_CC_TOOL VOCAB4('t','o','o','l') ///< Change tool
 
+/** @} */
+
+/**
+ * @name Streaming vocabs
+ *
+ * Used by @ref ICartesianControl_streaming_commands "streaming commands" in roboticslab::ICartesianControl.
+ *
+ * @{
+ */
+
 // Streaming commands
 #define VOCAB_CC_FWD VOCAB3('f','w','d')      ///< Move forward (relative to end-effector)
 #define VOCAB_CC_BKWD VOCAB4('b','k','w','d') ///< Move backwards (relative to end-effector)
@@ -32,6 +52,13 @@
 #define VOCAB_CC_VMOS VOCAB4('v','m','o','s') ///< Instantaneous velocity steps (inertial frame)
 #define VOCAB_CC_EFF VOCAB3('e','f','f')      ///< Instantaneous velocity steps (end-effector frame)
 #define VOCAB_CC_POSE VOCAB4('p','o','s','e') ///< Achieve pose in inertial frame
+
+/** @} */
+
+/**
+ * @name Control state vocabs
+ * @{
+ */
 
 // Control state
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
@@ -47,8 +74,6 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
- *
  * @brief Abstract base class for a cartesian controller.
  */
 class ICartesianControl
@@ -61,6 +86,7 @@ class ICartesianControl
         //--------------------- RPC commands ---------------------
 
         /**
+         * @anchor ICartesianControl_RPC_commands
          * @name RPC commands
          *
          * RPC commands with success/failure response.
@@ -199,6 +225,7 @@ class ICartesianControl
         //--------------------- Streaming commands ---------------------
 
         /**
+         * @anchor ICartesianControl_streaming_commands
          * @name Streaming commands
          *
          * High-frequency streaming commands, no acknowledge.
@@ -324,5 +351,7 @@ class ICartesianControl
 };
 
 }  // namespace roboticslab
+
+/** @} */
 
 #endif  //  __I_CARTESIAN_CONTROL__
