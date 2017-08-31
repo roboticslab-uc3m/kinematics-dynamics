@@ -55,34 +55,37 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
 
-        /** Get number of joints for which the solver has been configured. */
+        // Get number of joints for which the solver has been configured.
         virtual bool getNumJoints(int* numJoints);
 
-        /** Append an additional link. */
+        // Append an additional link.
         virtual bool appendLink(const std::vector<double>& x);
 
-        /** Restore original kinematic chain. */
+        // Restore original kinematic chain.
         virtual bool restoreOriginalChain();
 
-        /** Perform forward kinematics. */
+        // Perform forward kinematics.
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
-        /** Obtain error with respect to forward kinematics. */
+        // Obtain error with respect to forward kinematics.
         virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
 
-        /** Perform inverse kinematics. */
+        // Perform inverse kinematics.
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q);
 
-        /** Perform differential inverse kinematics. */
+        // Perform differential inverse kinematics.
         virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
 
-        /** Perform inverse dynamics. */
+        // Perform differential inverse kinematics on end effector
+        virtual bool diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot);
+
+        // Perform inverse dynamics.
         virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
 
-        /** Perform inverse dynamics. */
+        // Perform inverse dynamics.
         virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
-        /** Set joint limits. */
+        // Set joint limits.
         virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -138,4 +141,3 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 }  // namespace roboticslab
 
 #endif  // __KDL_SOLVER_HPP__
-
