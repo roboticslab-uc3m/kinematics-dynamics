@@ -238,6 +238,7 @@ class ICartesianControl
          *
          * Move along the Z (positive) axis in velocity increments, applying desired angular
          * velocities. All coordinates are expressed in terms of the end-effector frame.
+         * Negative step values will be ignored.
          *
          * @param rot 3-element vector describing desired angular velocity increments in
          * cartesian space, expressed in radians/second.
@@ -255,6 +256,7 @@ class ICartesianControl
          *
          * Move along the Z (negative) axis in velocity increments, applying desired angular
          * velocities. All coordinates are expressed in terms of the end-effector frame.
+         * Negative step values will be ignored.
          *
          * @param 3-element vector describing desired angular velocity increments in
          * cartesian space, expressed in radians/second.

@@ -288,7 +288,7 @@ bool roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot, dou
     }
 
     std::vector<double> xdotee(6);
-    xdotee[2] = step;
+    xdotee[2] = std::max(step, 0.0);
     xdotee[3] = rot[0];
     xdotee[4] = rot[1];
     xdotee[5] = rot[2];
@@ -334,7 +334,7 @@ bool roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot, do
     }
 
     std::vector<double> xdotee(6);
-    xdotee[2] = -step;
+    xdotee[2] = -std::max(step, 0.0);
     xdotee[3] = rot[0];
     xdotee[4] = rot[1];
     xdotee[5] = rot[2];
