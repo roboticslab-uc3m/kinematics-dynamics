@@ -61,19 +61,18 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
 
         virtual bool tool(const std::vector<double> &x);
 
-        /** fwd */
         virtual bool fwd(const std::vector<double> &rot, double step);
 
-        /** bkwd*/
         virtual bool bkwd(const std::vector<double> &rot, double step);
 
-        /** rot */
         virtual bool rot(const std::vector<double> &rot);
 
-        /** vmos */
+        virtual bool pan(const std::vector<double> &transl);
+
         virtual bool vmos(const std::vector<double> &xdot);
 
-        /** pose */
+        virtual bool eff(const std::vector<double> &xdotee);
+
         virtual bool pose(const std::vector<double> &x, double interval);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------

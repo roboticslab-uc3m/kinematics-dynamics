@@ -8,13 +8,27 @@
 #include <yarp/os/Vocab.h>
 
 /**
+ * @file
+ * @brief Contains roboticslab::ITwoLimbCartesianControl and related vocabs.
  * @ingroup TeoYarp
+ * @{
+ */
+
+/**
+ * @name RPC vocabs
  * @{
  */
 
 #define VOCAB_CC_STAT VOCAB4('s','t','a','t') ///< Current state and position
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
 #define VOCAB_CC_STEP VOCAB4('s','t','e','p') ///< Step
+
+/** @} */
+
+/**
+ * @name Control state vocabs
+ * @{
+ */
 
 #define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
 #define VOCAB_CC_MOVS_CONTROLLING VOCAB4('c','c','s','c') ///< Controlling step commands
@@ -27,8 +41,6 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
- *
  * @brief Abstract base class for a two limb cartesian controller.
  */
 class ITwoLimbCartesianControl
@@ -73,5 +85,7 @@ class ITwoLimbCartesianControl
 };
 
 }  // namespace roboticslab
+
+/** @} */
 
 #endif  //  __I_TWO_LIMB_CARTESIAN_CONTROL__
