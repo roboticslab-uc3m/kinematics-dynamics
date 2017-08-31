@@ -32,56 +32,47 @@ namespace roboticslab
  * @brief The CartesianControlClient class implements ICartesianControl client side.
  */
 
-class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesianControl {
+class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesianControl
+{
 
     public:
 
         CartesianControlClient() {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-        /** Inform on control state, and get robot position and perform forward kinematics. */
+
         virtual bool stat(int &state, std::vector<double> &x);
 
-        /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
         virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
-        /** movj */
         virtual bool movj(const std::vector<double> &xd);
 
-        /** relj */
         virtual bool relj(const std::vector<double> &xd);
 
-        /** movl */
         virtual bool movl(const std::vector<double> &xd);
 
-        /** movv */
         virtual bool movv(const std::vector<double> &xdotd);
 
-        /** gcmp */
         virtual bool gcmp();
 
-        /** forc */
         virtual bool forc(const std::vector<double> &td);
 
-        /** stop */
         virtual bool stopControl();
 
-        /** tool */
         virtual bool tool(const std::vector<double> &x);
 
-        /** fwd */
-        virtual bool fwd(const std::vector<double> &rot);
+        virtual bool fwd(const std::vector<double> &rot, double step);
 
-        /** bkwd*/
-        virtual bool bkwd(const std::vector<double> &rot);
+        virtual bool bkwd(const std::vector<double> &rot, double step);
 
-        /** rot */
         virtual bool rot(const std::vector<double> &rot);
 
-        /** vmos */
+        virtual bool pan(const std::vector<double> &transl);
+
         virtual bool vmos(const std::vector<double> &xdot);
 
-        /** pose */
+        virtual bool eff(const std::vector<double> &xdotee);
+
         virtual bool pose(const std::vector<double> &x, double interval);
 
         // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -107,9 +98,9 @@ class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesian
         */
         virtual bool close();
 
-protected:
+    protected:
 
-    yarp::os::RpcClient rpcClient;
+        yarp::os::RpcClient rpcClient;
 
     yarp::os::Port commandPort;
 
@@ -120,4 +111,3 @@ protected:
 }  // namespace roboticslab
 
 #endif  // __CARTESIAN_CONTROL_CLIENT_HPP__
-

@@ -42,6 +42,7 @@ private:
     // used for array indexes and size checks
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
+    enum cart_frames { INERTIAL, END_EFFECTOR };
 
     std::plus<double> increment_functor;
     std::minus<double> decrement_functor;
@@ -52,6 +53,8 @@ private:
     template <typename func>
     void incrementOrDecrementCartesianVelocity(cart coord, func op);
 
+    void toggleReferenceFrame();
+
     void printJointPositions();
     void printCartesianPositions();
 
@@ -60,6 +63,7 @@ private:
     void printHelp();
 
     int axes;
+    cart_frames cart_frame;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;
