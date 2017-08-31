@@ -9,12 +9,17 @@
 
 #include <ColorDebug.hpp>
 
+/**
+ * @file
+ * @brief Contains roboticslab::ICartesianSolver
+ * @ingroup TeoYarp
+ * @{
+ */
+
 namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
- *
  * @brief Abstract base class for a cartesian solver.
  */
 class ICartesianSolver
@@ -182,5 +187,7 @@ class ICartesianSolver
 };
 
 }  // namespace roboticslab
+
+/** @} */
 
 #endif  //  __I_CARTESIAN_SOLVER__
