@@ -61,6 +61,14 @@ class ICartesianControl
         //--------------------- RPC commands ---------------------
 
         /**
+         * @name RPC commands
+         *
+         * RPC commands with success/failure response.
+         *
+         * @{
+         */
+
+        /**
          * @brief Current state and position
          *
          * Inform on control state, get robot position and perform forward kinematics.
@@ -186,7 +194,17 @@ class ICartesianControl
          */
         virtual bool tool(const std::vector<double> &x) = 0;
 
+        /** @} */
+
         //--------------------- Streaming commands ---------------------
+
+        /**
+         * @name Streaming commands
+         *
+         * High-frequency streaming commands, no acknowledge.
+         *
+         * @{
+         */
 
         /**
          * @brief Move forward (relative to end-effector)
@@ -302,6 +320,7 @@ class ICartesianControl
          */
         virtual bool pose(const std::vector<double> &x, double interval) = 0;
 
+        /** @} */
 };
 
 }  // namespace roboticslab
