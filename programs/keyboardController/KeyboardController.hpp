@@ -27,7 +27,11 @@ namespace roboticslab
 /**
  * @ingroup keyboardController
  *
- * @brief TBD
+ * @brief Sends streaming commands to the cartesian controller from
+ * a standard keyboard.
+ *
+ * Uses the terminal as a simple user interface. Also accepts joint commands
+ * if connected to a remote controlboard.
  */
 class KeyboardController : public yarp::os::RFModule
 {
@@ -42,10 +46,11 @@ private:
     // used for array indexes and size checks
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
+
     enum cart_frames { INERTIAL, END_EFFECTOR };
 
-    std::plus<double> increment_functor;
-    std::minus<double> decrement_functor;
+    static const std::plus<double> increment_functor;
+    static const std::minus<double> decrement_functor;
 
     template <typename func>
     void incrementOrDecrementJointVelocity(joint q, func op);
