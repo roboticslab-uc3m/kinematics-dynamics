@@ -15,6 +15,7 @@
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Time.h>
 
 #include <ColorDebug.hpp>
 
@@ -208,7 +209,16 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
 
         cart_frame = INERTIAL;
+
+        cartesianThread = new KeyboardRateThread(iCartesianControl);
+
+        cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
+        cartesianThread->setCurrentData(currentCartVels);
+
+        cartesianThread->start(); // initialize the new thread
     }
+
+    issueStop(); // just in case
 
     ttyset();
 
@@ -366,6 +376,12 @@ double roboticslab::KeyboardController::getPeriod()
 
 bool roboticslab::KeyboardController::close()
 {
+    if (cartesianControlDevice.isValid())
+    {
+        cartesianThread->stop();
+        delete cartesianThread;
+    }
+
     controlboardDevice.close();
     cartesianControlDevice.close();
 
@@ -432,17 +448,8 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     std::cout << "New cartesian velocity: " << currentCartVels << std::endl;
 
-    if (cart_frame == INERTIAL)
-    {
-        if (!iCartesianControl->movv(currentCartVels))
-        {
-            CD_ERROR("movv failed\n");
-        }
-    }
-    else
-    {
-        iCartesianControl->eff(currentCartVels);
-    }
+    cartesianThread->setCurrentData(currentCartVels);
+    cartesianThread->resume();
 }
 
 void roboticslab::KeyboardController::toggleReferenceFrame()
@@ -462,10 +469,12 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
     {
     case INERTIAL:
         cart_frame = END_EFFECTOR;
+        cartesianThread->setCurrentCommand(&ICartesianControl::eff);
         std::cout << "end effector";
         break;
     case END_EFFECTOR:
         cart_frame = INERTIAL;
+        cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
         std::cout << "inertial";
         break;
     default:
@@ -515,6 +524,14 @@ void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
+        if (!cartesianThread->isSuspended())
+        {
+            cartesianThread->suspend();
+
+            // ensure that the thread stops before sending a stop command
+            yarp::os::Time::delay(2 * CMC_RATE_MS / 1000);
+        }
+
         iCartesianControl->stopControl();
     }
     else if (controlboardDevice.isValid())
