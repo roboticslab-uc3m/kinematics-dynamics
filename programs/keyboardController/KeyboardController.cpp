@@ -428,10 +428,7 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     }
     else
     {
-        if (!iCartesianControl->eff(currentCartVels))
-        {
-            CD_ERROR("eff failed\n");
-        }
+        iCartesianControl->eff(currentCartVels);
     }
 }
 

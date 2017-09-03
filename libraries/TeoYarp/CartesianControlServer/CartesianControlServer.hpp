@@ -172,8 +172,8 @@ public:
 
 protected:
 
-    typedef bool (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
-    typedef bool (ICartesianControl::*BiConsumerFun)(const std::vector<double>&, double);
+    typedef void (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
+    typedef void (ICartesianControl::*BiConsumerFun)(const std::vector<double>&, double);
 
     void handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd);
     void handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsumerFun cmd);

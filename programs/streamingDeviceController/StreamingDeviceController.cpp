@@ -157,10 +157,7 @@ bool StreamingDeviceController::updateModule()
         isStopped = false;
     }
 
-    if (!iCartesianControl->vmos(xdot))
-    {
-        CD_WARNING("vmos failed.\n");
-    }
+    iCartesianControl->vmos(xdot);
 
     return true;
 }
