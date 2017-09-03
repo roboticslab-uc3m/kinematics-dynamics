@@ -145,14 +145,14 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot)
+bool roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot, double step)
 {
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot)
+bool roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot, double step)
 {
     return true;
 }
@@ -160,6 +160,13 @@ bool roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot)
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AmorCartesianControl::rot(const std::vector<double> &rot)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::pan(const std::vector<double> &transl)
 {
     return true;
 }
@@ -184,6 +191,13 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
         return false;
     }
 
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::eff(const std::vector<double> &xdotee)
+{
     return true;
 }
 
