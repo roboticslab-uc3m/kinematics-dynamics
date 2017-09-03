@@ -6,7 +6,7 @@ yarp_prepare_plugin(AmorCartesianControl
                     TYPE roboticslab::AmorCartesianControl
                     INCLUDE AmorCartesianControl.hpp
                     DEFAULT ON
-                    DEPENDS ENABLE_KdlVectorConverterLib)
+                    DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib")
 
 if(NOT SKIP_AmorCartesianControl)
 
@@ -26,7 +26,8 @@ target_link_libraries(AmorCartesianControl YARP::YARP_OS
                                            YARP::YARP_dev
                                            AMOR::amor_api
                                            ${orocos_kdl_LIBRARIES}
-                                           KdlVectorConverterLib)
+                                           KdlVectorConverterLib
+                                           KinematicRepresentationLib)
 
 yarp_install(TARGETS AmorCartesianControl
              COMPONENT runtime

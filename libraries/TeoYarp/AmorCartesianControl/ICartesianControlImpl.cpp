@@ -8,6 +8,7 @@
 #include <kdl/frames.hpp>
 
 #include "KdlVectorConverter.hpp"
+#include "KinematicRepresentation.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------
 
@@ -27,9 +28,11 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
     x[1] = positions[1] * 0.001;
     x[2] = positions[2] * 0.001;
 
-    x[3] = positions[3];  // [deg]
+    x[3] = positions[3];  // [rad]
     x[4] = positions[4];
     x[5] = positions[5];
+
+    KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
 
     state = 0;  // dummy value
 
@@ -64,15 +67,19 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 {
+    std::vector<double> xd_rpy;
+
+    KinRepresentation::decodePose(xd, xd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+
     AMOR_VECTOR7 positions;
 
-    positions[0] = xd[0] * 1000;  // [mm]
-    positions[1] = xd[1] * 1000;
-    positions[2] = xd[2] * 1000;
+    positions[0] = xd_rpy[0] * 1000;  // [mm]
+    positions[1] = xd_rpy[1] * 1000;
+    positions[2] = xd_rpy[2] * 1000;
 
-    positions[3] = toRad(xd[3]);  // [rad]
-    positions[4] = toRad(xd[4]);
-    positions[5] = toRad(xd[5]);
+    positions[3] = xd_rpy[3];  // [rad]
+    positions[4] = xd_rpy[4];
+    positions[5] = xd_rpy[5];
 
     if (amor_set_cartesian_positions(handle, positions) != AMOR_SUCCESS)
     {
@@ -87,15 +94,28 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 {
+    int state;
+    std::vector<double> xCurrent;
+
+    if (!stat(state, xCurrent))
+    {
+        CD_ERROR("stat failed\n");
+        return false;
+    }
+
+    std::vector<double> xdotd_rpy;
+
+    KinRepresentation::decodeVelocity(xCurrent, xdotd, xdotd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+
     AMOR_VECTOR7 velocities;
 
-    velocities[0] = xdotd[0] * 1000;  // [mm/s]
-    velocities[1] = xdotd[1] * 1000;
-    velocities[2] = xdotd[2] * 1000;
+    velocities[0] = xdotd_rpy[0] * 1000;  // [mm/s]
+    velocities[1] = xdotd_rpy[1] * 1000;
+    velocities[2] = xdotd_rpy[2] * 1000;
 
-    velocities[3] = toRad(xdotd[3]);  // [rad/s]
-    velocities[4] = toRad(xdotd[4]);
-    velocities[5] = toRad(xdotd[5]);
+    velocities[3] = xdotd_rpy[3];  // [rad/s]
+    velocities[4] = xdotd_rpy[4];
+    velocities[5] = xdotd_rpy[5];
 
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
@@ -175,15 +195,28 @@ bool roboticslab::AmorCartesianControl::pan(const std::vector<double> &transl)
 
 bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 {
+    int state;
+    std::vector<double> xCurrent;
+
+    if (!stat(state, xCurrent))
+    {
+        CD_ERROR("stat failed\n");
+        return false;
+    }
+
+    std::vector<double> xdot_rpy;
+
+    KinRepresentation::decodeVelocity(xCurrent, xdot, xdot_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+
     AMOR_VECTOR7 velocities;
 
-    velocities[0] = xdot[0] * 1000;  // [mm/s]
-    velocities[1] = xdot[1] * 1000;
-    velocities[2] = xdot[2] * 1000;
+    velocities[0] = xdot_rpy[0] * 1000;  // [mm/s]
+    velocities[1] = xdot_rpy[1] * 1000;
+    velocities[2] = xdot_rpy[2] * 1000;
 
-    velocities[3] = toRad(xdot[3]);  // [rad/s]
-    velocities[4] = toRad(xdot[4]);
-    velocities[5] = toRad(xdot[5]);
+    velocities[3] = xdot_rpy[3];  // [rad/s]
+    velocities[4] = xdot_rpy[4];
+    velocities[5] = xdot_rpy[5];
 
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
@@ -223,6 +256,8 @@ bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     // gain value still experimental
     std::transform(xdot.begin(), xdot.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), 0.005));
+
+    KinRepresentation::decodeVelocity(xCurrent, xdot, xdot, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
 
     AMOR_VECTOR7 velocities;
 
