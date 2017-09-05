@@ -46,19 +46,15 @@ void roboticslab::BasicTwoLimbCartesianControl::run() {
         CD_DEBUG_NO_HEADER("\n");
 
 
-        //jmy
         std::vector<double> desiredXA(desiredX.begin(),desiredX.begin()+7);
         std::vector<double> desiredXB(desiredX.begin()+7,desiredX.end());
         std::vector<double> desiredXdotA(desiredXdot.begin(),desiredXdot.begin()+6);
         std::vector<double> desiredXdotB(desiredXdot.begin()+6,desiredXdot.end());
-        //jmyend
 
         //-- Apply control law to compute robot Cartesian velocity commands.
         std::vector<double> commandXdotA, commandXdotB;
         iCartesianSolverA->fwdKinError(desiredXA,currentQA, commandXdotA);
-        //jmy
         iCartesianSolverB->fwdKinError(desiredXB,currentQB, commandXdotB);
-        //jmyend
         for(unsigned int i=0; i<6; i++)
         {
             commandXdotA[i] *= DEFAULT_GAIN * (1000.0 / DEFAULT_MS);
@@ -87,7 +83,6 @@ void roboticslab::BasicTwoLimbCartesianControl::run() {
             CD_WARNING("velocityMove failed, not updating control this iteration.\n");
         }
 
-        //jmy
         std::vector<double> encodersA(numRobotJointsA);
         iEncodersA->getEncoders(encodersA.data());
         std::cout << "rightLeg encoders: " << encodersA << std::endl;
@@ -111,7 +106,6 @@ void roboticslab::BasicTwoLimbCartesianControl::run() {
         std::vector<double> encodersB(numRobotJointsB);
         iEncodersB->getEncoders(encodersB.data());
         std::cout << "leftLeg encoders: " << encodersB << std::endl;
-        //jmyend
 
     }
 
