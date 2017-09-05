@@ -46,8 +46,8 @@ void roboticslab::BasicTwoLimbCartesianControl::run() {
         CD_DEBUG_NO_HEADER("\n");
 
 
-        std::vector<double> desiredXA(desiredX.begin(),desiredX.begin()+7);
-        std::vector<double> desiredXB(desiredX.begin()+7,desiredX.end());
+        std::vector<double> desiredXA(desiredX.begin(),desiredX.begin()+6);
+        std::vector<double> desiredXB(desiredX.begin()+6,desiredX.end());
         std::vector<double> desiredXdotA(desiredXdot.begin(),desiredXdot.begin()+6);
         std::vector<double> desiredXdotB(desiredXdot.begin()+6,desiredXdot.end());
 
