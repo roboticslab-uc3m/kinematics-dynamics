@@ -337,15 +337,15 @@ bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const st
     {
         xdot_out.resize(std::max<int>(6, xdot_out.size()));
         KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
-        KDL::Rotation rotZ = KDL::Rotation::RotZ(degToRadHelper(angle, x_in[3]));
+        KDL::Rotation rotZ = KDL::Rotation::RotZ(x_in[3]);
         KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
-        KDL::Vector colZ = rotZ * KDL::Rotation::RotY(degToRadHelper(angle, x_in[4])) * KDL::Rotation::Identity().UnitX();
+        KDL::Vector colZ = rotZ * KDL::Rotation::RotY(x_in[4]) * KDL::Rotation::Identity().UnitX();
         KDL::Rotation rot(colX, colY, colZ);
-        KDL::Vector v_in(degToRadHelper(angle, xdot_in[3]), degToRadHelper(angle, xdot_in[4]), degToRadHelper(angle, xdot_in[5]));
+        KDL::Vector v_in(xdot_in[3], xdot_in[4], xdot_in[5]);
         KDL::Vector v_out = rot.Inverse() * v_in;
-        xdot_out[3] = v_out.x();
-        xdot_out[4] = v_out.y();
-        xdot_out[5] = v_out.z();
+        xdot_out[3] = radToDegHelper(angle, v_out.x());
+        xdot_out[4] = radToDegHelper(angle, v_out.y());
+        xdot_out[5] = radToDegHelper(angle, v_out.z());
         xdot_out.resize(6);
         break;
     }
