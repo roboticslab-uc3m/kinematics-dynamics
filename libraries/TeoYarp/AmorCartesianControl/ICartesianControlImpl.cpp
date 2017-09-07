@@ -113,9 +113,10 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
     velocities[1] = xdotd_rpy[1] * 1000;
     velocities[2] = xdotd_rpy[2] * 1000;
 
-    velocities[3] = xdotd_rpy[3];  // [rad/s]
-    velocities[4] = xdotd_rpy[4];
-    velocities[5] = xdotd_rpy[5];
+    // FIXME: un-shuffle coordinates
+    velocities[3] = xdotd_rpy[4];  // [rad/s]
+    velocities[4] = -xdotd_rpy[5];
+    velocities[5] = xdotd_rpy[3];
 
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
@@ -214,9 +215,10 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
     velocities[1] = xdot_rpy[1] * 1000;
     velocities[2] = xdot_rpy[2] * 1000;
 
-    velocities[3] = xdot_rpy[3];  // [rad/s]
-    velocities[4] = xdot_rpy[4];
-    velocities[5] = xdot_rpy[5];
+    // FIXME: un-shuffle coordinates
+    velocities[3] = xdot_rpy[4];  // [rad/s]
+    velocities[4] = -xdot_rpy[5];
+    velocities[5] = xdot_rpy[3];
 
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {

@@ -250,8 +250,10 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const st
         // [0 -sa ca*cb]
         // [0  ca sa*cb]
         // [1   0   -sb]
+        // where a (alpha): z, b (beta): y, g (gamma, unused): x
+        // FIXME: really? review this, check which angle corresponds to which coordinate
         KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
-        KDL::Rotation rotZ = KDL::Rotation::RotZ(degToRadHelper(angle, x_in[3]));
+        KDL::Rotation rotZ = KDL::Rotation::RotZ(degToRadHelper(angle, x_in[5]));
         KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
         KDL::Vector colZ = rotZ * KDL::Rotation::RotY(degToRadHelper(angle, x_in[4])) * KDL::Rotation::Identity().UnitX();
         KDL::Rotation rot(colX, colY, colZ);
@@ -335,9 +337,10 @@ bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const st
     }
     case RPY:
     {
+        // FIXME: see note at 'encodeVelocity'
         xdot_out.resize(std::max<int>(6, xdot_out.size()));
         KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
-        KDL::Rotation rotZ = KDL::Rotation::RotZ(x_in[3]);
+        KDL::Rotation rotZ = KDL::Rotation::RotZ(x_in[5]);
         KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
         KDL::Vector colZ = rotZ * KDL::Rotation::RotY(x_in[4]) * KDL::Rotation::Identity().UnitX();
         KDL::Rotation rot(colX, colY, colZ);
