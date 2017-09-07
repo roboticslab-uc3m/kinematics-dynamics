@@ -80,7 +80,7 @@ bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
     return true;
 }
 
-bool roboticslab::LeapMotionSensorDevice::sendMovementCommand()
+void roboticslab::LeapMotionSensorDevice::sendMovementCommand()
 {
-    return iCartesianControl->pose(data, period);
+    iCartesianControl->pose(data, period);
 }

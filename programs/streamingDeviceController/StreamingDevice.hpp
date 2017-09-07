@@ -94,9 +94,8 @@ public:
 
     /**
      * @brief Sends movement command to the cartesian controller.
-     * @return true on success, false otherwise
      */
-    virtual bool sendMovementCommand() = 0;
+    virtual void sendMovementCommand() = 0;
 
     /**
      * @brief Stores handle to an ICartesianControl instance
@@ -148,10 +147,8 @@ public:
         return false;
     }
 
-    virtual bool sendMovementCommand()
-    {
-        return false;
-    }
+    virtual void sendMovementCommand()
+    {}
 };
 
 }  // namespace roboticslab

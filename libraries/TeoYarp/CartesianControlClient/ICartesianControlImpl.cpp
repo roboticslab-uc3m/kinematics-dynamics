@@ -221,7 +221,7 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
+void roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -232,13 +232,11 @@ bool roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, do
         cmd.addDouble(rot[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
+void roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -249,13 +247,11 @@ bool roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, d
         cmd.addDouble(rot[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
+void roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -265,13 +261,11 @@ bool roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
         cmd.addDouble(rot[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
+void roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -281,13 +275,11 @@ bool roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
         cmd.addDouble(transl[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
+void roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -297,13 +289,11 @@ bool roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
         cmd.addDouble(xdot[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
+void roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -313,13 +303,11 @@ bool roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
         cmd.addDouble(xdotee[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
+void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
     yarp::os::Bottle& cmd = commandBuffer.get();
 
@@ -330,8 +318,6 @@ bool roboticslab::CartesianControlClient::pose(const std::vector<double> &x, dou
         cmd.addDouble(x[i]);
 
     commandBuffer.write(true);
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------

@@ -43,7 +43,7 @@ public:
 
     virtual bool hasValidMovementData() const;
 
-    virtual bool sendMovementCommand();
+    virtual void sendMovementCommand();
 
 private:
 

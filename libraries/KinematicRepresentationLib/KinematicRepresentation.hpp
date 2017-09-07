@@ -4,6 +4,7 @@
 #define __KINEMATIC_REPRESENTATION_HPP__
 
 #include <cmath>
+#include <string>
 #include <vector>
 
 namespace roboticslab
@@ -169,6 +170,25 @@ public:
     {
         return rad * 180.0 / M_PI;
     }
+
+    /**
+     * @brief Parses input string, returns matching enumerator value
+     *
+     * Input string    | Enum value
+     * --------------- | ----------
+     * axisAngle       | @ref AXIS_ANGLE
+     * axisAngleScaled | @ref AXIS_ANGLE_SCALED
+     * RPY             | @ref RPY
+     * eulerYZ         | @ref EULER_YZ
+     * eulerZYZ        | @ref EULER_ZYZ
+     *
+     * @param str Input string.
+     * @param orient See @ref orientation_system.
+     * @param fallback Default value if no match found.
+     *
+     * @return true if match found, false otherwise
+     */
+    static bool parseEnumerator(const std::string &str, orientation_system *orient, orientation_system fallback = AXIS_ANGLE_SCALED);
 
 private:
     KinRepresentation() {}

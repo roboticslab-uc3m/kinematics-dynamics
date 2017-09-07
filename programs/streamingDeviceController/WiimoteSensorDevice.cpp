@@ -85,17 +85,20 @@ bool roboticslab::WiimoteSensorDevice::hasValidMovementData() const
     return mode != NONE;
 }
 
-bool roboticslab::WiimoteSensorDevice::sendMovementCommand()
+void roboticslab::WiimoteSensorDevice::sendMovementCommand()
 {
     switch (mode)
     {
     case FWD:
-        return iCartesianControl->fwd(data, step);
+        iCartesianControl->fwd(data, step);
+        break;
     case BKWD:
-        return iCartesianControl->bkwd(data, step);
+        iCartesianControl->bkwd(data, step);
+        break;
     case ROT:
-        return iCartesianControl->rot(data);
+        iCartesianControl->rot(data);
+        break;
     default:
-        return false;
+        return;
     }
 }
