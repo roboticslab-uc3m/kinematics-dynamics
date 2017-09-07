@@ -28,7 +28,7 @@ public:
 
     virtual bool acquireData();
 
-    virtual bool sendMovementCommand();
+    virtual void sendMovementCommand();
 
 private:
 

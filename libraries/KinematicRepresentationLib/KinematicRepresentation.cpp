@@ -410,6 +410,39 @@ bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, cons
 
 // -----------------------------------------------------------------------------
 
+bool KinRepresentation::parseEnumerator(const std::string &str, orientation_system *orient, orientation_system fallback)
+{
+    if (str == "axisAngle")
+    {
+        *orient = AXIS_ANGLE;
+    }
+    else if (str == "axisAngleScaled")
+    {
+        *orient = AXIS_ANGLE_SCALED;
+    }
+    else if (str == "RPY")
+    {
+        *orient = RPY;
+    }
+    else if (str == "eulerYZ")
+    {
+        *orient = EULER_YZ;
+    }
+    else if (str == "eulerZYZ")
+    {
+        *orient = EULER_ZYZ;
+    }
+    else
+    {
+        *orient = fallback;
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool KinRepresentation::checkVectorSize(const std::vector<double> &v_in, orientation_system orient, int *expectedSize)
 {
     switch (orient)

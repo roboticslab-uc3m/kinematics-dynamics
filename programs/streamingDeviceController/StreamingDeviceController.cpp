@@ -103,10 +103,7 @@ bool StreamingDeviceController::updateModule()
         isStopped = false;
     }
 
-    if (!streamingDevice->sendMovementCommand())
-    {
-        CD_WARNING("Failed to send movement command to cartesian controller.\n");
-    }
+    streamingDevice->sendMovementCommand();
 
     return true;
 }

@@ -246,10 +246,8 @@ class ICartesianControl
          *
          * @see bkwd (move backwards)
          * @see eff (rotations + translations)
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool fwd(const std::vector<double> &rot, double step) = 0;
+        virtual void fwd(const std::vector<double> &rot, double step) = 0;
 
         /**
          * @brief Move backwards (relative to end-effector)
@@ -264,10 +262,8 @@ class ICartesianControl
          *
          * @see fwd (move forward)
          * @see eff (rotations + translations)
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool bkwd(const std::vector<double> &rot, double step) = 0;
+        virtual void bkwd(const std::vector<double> &rot, double step) = 0;
 
         /**
          * @brief Rotate in end-effector frame
@@ -280,10 +276,8 @@ class ICartesianControl
          *
          * @see pan (only translations)
          * @see eff (rotations + translations)
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool rot(const std::vector<double> &rot) = 0;
+        virtual void rot(const std::vector<double> &rot) = 0;
 
         /**
          * @brief Pan in end-effector frame
@@ -296,10 +290,8 @@ class ICartesianControl
          *
          * @see pan (only rotations)
          * @see eff (rotations + translations)
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool pan(const std::vector<double> &transl) = 0;
+        virtual void pan(const std::vector<double> &transl) = 0;
 
         /**
          * @brief Instantaneous velocity steps (inertial frame)
@@ -312,10 +304,8 @@ class ICartesianControl
          * denote angular velocity (radians/second).
          *
          * @see eff (end-effector frame)
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool vmos(const std::vector<double> &xdot) = 0;
+        virtual void vmos(const std::vector<double> &xdot) = 0;
 
         /**
          * @brief Instantaneous velocity steps (end-effector frame)
@@ -329,10 +319,8 @@ class ICartesianControl
          *
          * @see vmos (inertial frame)
          * @see fwd, bkwd, rot, pan (only translations/rotations)
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool eff(const std::vector<double> &xdotee) = 0;
+        virtual void eff(const std::vector<double> &xdotee) = 0;
 
         /**
          * @brief Achieve pose in inertial frame
@@ -344,10 +332,8 @@ class ICartesianControl
          * first three elements denote translation (meters), last three denote rotation (radians).
          * @param interval Time interval between successive command invocations, expressed in seconds
          * and used for numerical differentiation with desired/current poses.
-         *
-         * @return true on success, false otherwise
          */
-        virtual bool pose(const std::vector<double> &x, double interval) = 0;
+        virtual void pose(const std::vector<double> &x, double interval) = 0;
 
         /** @} */
 };

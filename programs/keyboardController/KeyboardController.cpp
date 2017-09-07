@@ -182,6 +182,14 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             close();
             return false;
         }
+
+        angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
+
+        if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
+        {
+            CD_WARNING("Unable to parse \"angleRepr\" option (%s), defaulting to %s.\n", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
+            angleRepr = DEFAULT_ANGLE_REPR;
+        }
     }
 
     currentJointVels.resize(axes, 0.0);
@@ -420,10 +428,7 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     }
     else
     {
-        if (!iCartesianControl->eff(currentCartVels))
-        {
-            CD_ERROR("eff failed\n");
-        }
+        iCartesianControl->eff(currentCartVels);
     }
 }
 
@@ -462,7 +467,9 @@ void roboticslab::KeyboardController::printJointPositions()
 
     std::vector<double> encs(axes);
     iEncoders->getEncoders(encs.data());
-    std::cout << "Current joint positions: " << encs << std::endl;
+
+    std::cout << "Current joint positions [degrees]:" << std::endl;
+    std::cout << encs << std::endl;
 }
 
 void roboticslab::KeyboardController::printCartesianPositions()
@@ -476,8 +483,12 @@ void roboticslab::KeyboardController::printCartesianPositions()
 
     int state;
     std::vector<double> x;
+
     iCartesianControl->stat(state, x);
-    std::cout << "Current cartesian positions: " << x << std::endl;
+    KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+
+    std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
+    std::cout << x << std::endl;
 }
 
 void roboticslab::KeyboardController::issueStop()
@@ -506,7 +517,9 @@ void roboticslab::KeyboardController::issueStop()
 
 void roboticslab::KeyboardController::printHelp()
 {
-    std::cout << std::string(60, '-') << std::endl;
+    const int markerWidth = 65;
+
+    std::cout << std::string(markerWidth, '-') << std::endl;
     std::cout << " [Esc] - close the application" << std::endl;
     std::cout << " '?' - print this help guide" << std::endl;
 
@@ -517,7 +530,7 @@ void roboticslab::KeyboardController::printHelp()
 
     if (cartesianControlDevice.isValid())
     {
-        std::cout << " 'p' - query current cartesian positions" << std::endl;
+        std::cout << " 'p' - query current cartesian positions (angleRepr: " << angleRepr << ")" << std::endl;
     }
 
     if (controlboardDevice.isValid())
@@ -560,5 +573,5 @@ void roboticslab::KeyboardController::printHelp()
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;
-    std::cout << std::string(60, '-') << std::endl;
+    std::cout << std::string(markerWidth, '-') << std::endl;
 }

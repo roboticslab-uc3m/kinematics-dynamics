@@ -37,7 +37,7 @@ public:
 
     virtual bool transformData(double scaling);
 
-    virtual bool sendMovementCommand();
+    virtual void sendMovementCommand();
 
 private:
 

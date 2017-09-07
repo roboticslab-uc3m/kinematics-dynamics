@@ -38,7 +38,7 @@ bool roboticslab::SpnavSensorDevice::acquireData()
     return true;
 }
 
-bool roboticslab::SpnavSensorDevice::sendMovementCommand()
+void roboticslab::SpnavSensorDevice::sendMovementCommand()
 {
-    return iCartesianControl->vmos(data);
+    iCartesianControl->vmos(data);
 }

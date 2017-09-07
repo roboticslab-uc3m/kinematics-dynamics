@@ -1,4 +1,5 @@
-option(ENABLE_keyboardController "Enable/disable keyboardController program" ON)
+cmake_dependent_option(ENABLE_keyboardController "Enable/disable keyboardController program" ON
+                       ENABLE_KinematicRepresentationLib OFF)
 
 if(ENABLE_keyboardController)
 
@@ -21,7 +22,8 @@ add_dependencies(keyboardController COLOR_DEBUG)
 
 target_link_libraries(keyboardController YARP::YARP_OS
                                          YARP::YARP_init
-                                         YARP::YARP_dev)
+                                         YARP::YARP_dev
+                                         KinematicRepresentationLib)
 
 install(TARGETS keyboardController
         DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -73,23 +73,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         std::string angleReprStr = angleRepr->asString();
         KinRepresentation::orientation_system orient;
 
-        if (angleReprStr == "axisAngle")
-        {
-            orient = KinRepresentation::AXIS_ANGLE;
-        }
-        else if (angleReprStr == "eulerYZ")
-        {
-            orient = KinRepresentation::EULER_YZ;
-        }
-        else if (angleReprStr == "eulerZYZ")
-        {
-            orient = KinRepresentation::EULER_ZYZ;
-        }
-        else if (angleReprStr == "RPY")
-        {
-            orient = KinRepresentation::RPY;
-        }
-        else
+        if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
             CD_WARNING("Unknown angleRepr \"%s\".\n", angleReprStr.c_str());
             return true;
@@ -124,19 +108,20 @@ bool roboticslab::CartesianControlServer::close()
     delete rpcResponder;
     rpcResponder = NULL;
 
-    rpcTransformServer.interrupt();
-    rpcTransformServer.close();
-    delete rpcTransformResponder;
-    rpcTransformResponder = NULL;
+    if (rpcTransformResponder != NULL)
+    {
+        rpcTransformServer.interrupt();
+        rpcTransformServer.close();
+        delete rpcTransformResponder;
+        rpcTransformResponder = NULL;
+    }
 
     commandPort.interrupt();
     commandPort.close();
     delete streamResponder;
     streamResponder = NULL;
 
-    cartesianControlDevice.close();
-
-    return true;
+    return cartesianControlDevice.close();
 }
 
 // -----------------------------------------------------------------------------
