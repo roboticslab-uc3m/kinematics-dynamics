@@ -108,19 +108,20 @@ bool roboticslab::CartesianControlServer::close()
     delete rpcResponder;
     rpcResponder = NULL;
 
-    rpcTransformServer.interrupt();
-    rpcTransformServer.close();
-    delete rpcTransformResponder;
-    rpcTransformResponder = NULL;
+    if (rpcTransformResponder != NULL)
+    {
+        rpcTransformServer.interrupt();
+        rpcTransformServer.close();
+        delete rpcTransformResponder;
+        rpcTransformResponder = NULL;
+    }
 
     commandPort.interrupt();
     commandPort.close();
     delete streamResponder;
     streamResponder = NULL;
 
-    cartesianControlDevice.close();
-
-    return true;
+    return cartesianControlDevice.close();
 }
 
 // -----------------------------------------------------------------------------
