@@ -43,9 +43,9 @@ void PremultPorts::setICartesianSolver(roboticslab::ICartesianSolver* iCartesian
 void PremultPorts::onRead(yarp::os::Bottle& b)
 {
     //printf("[PremultPorts] Got %s\n", b.toString().c_str());
-    if(b.size() != 3)
+    if(b.size() != 6)
     {
-        CD_ERROR("For now only parsing 3-double lists\n");
+        CD_ERROR("Size error, 6-double list expected\n");
         exit(1);  // case: other --> still not implemented
     }
 
@@ -62,9 +62,12 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
     KDL::Frame H_root_camera = KdlVectorConverter::vectorToFrame(currentX);
 
     KDL::Frame H_camera;
-    H_camera.p.data[0] = b.get(0).asDouble();
-    H_camera.p.data[1] = b.get(1).asDouble();
-    H_camera.p.data[2] = b.get(2).asDouble();
+    H_camera.p.x(b.get(0).asDouble());
+    H_camera.p.y(b.get(1).asDouble());
+    H_camera.p.z(b.get(2).asDouble());
+
+    KDL::Vector rotvec(b.get(3).asDouble(), b.get(4).asDouble(), b.get(5).asDouble());
+    H_camera.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
 
     KDL::Frame H_root = H_root_camera * H_camera;
 
@@ -72,6 +75,12 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
     outB.addDouble(H_root.p.x());
     outB.addDouble(H_root.p.y());
     outB.addDouble(H_root.p.z());
+
+    KDL::Vector rotvec_root = H_root.M.GetRot();
+    outB.addDouble(rotvec_root.x());
+    outB.addDouble(rotvec_root.y());
+    outB.addDouble(rotvec_root.z());
+
     outPort->write(outB);
 }
 
