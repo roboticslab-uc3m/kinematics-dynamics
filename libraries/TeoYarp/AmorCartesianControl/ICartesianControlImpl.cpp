@@ -166,35 +166,27 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot, double step)
-{
-    return true;
-}
+void roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot, double step)
+{}
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot, double step)
-{
-    return true;
-}
+void roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot, double step)
+{}
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::rot(const std::vector<double> &rot)
-{
-    return true;
-}
+void roboticslab::AmorCartesianControl::rot(const std::vector<double> &rot)
+{}
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::pan(const std::vector<double> &transl)
-{
-    return true;
-}
+void roboticslab::AmorCartesianControl::pan(const std::vector<double> &transl)
+{}
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
+void roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 {
     int state;
     std::vector<double> xCurrent;
@@ -202,7 +194,7 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
     if (!stat(state, xCurrent))
     {
         CD_ERROR("stat failed\n");
-        return false;
+        return;
     }
 
     std::vector<double> xdot_rpy;
@@ -223,22 +215,18 @@ bool roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         CD_ERROR("%s\n", amor_error());
-        return false;
+        return;
     }
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::eff(const std::vector<double> &xdotee)
-{
-    return true;
-}
+void roboticslab::AmorCartesianControl::eff(const std::vector<double> &xdotee)
+{}
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
+void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     int state;
     std::vector<double> xCurrent;
@@ -246,7 +234,7 @@ bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
     if (!stat(state, xCurrent))
     {
         CD_ERROR("stat failed.\n");
-        return false;
+        return;
     }
 
     KDL::Frame fDesired = KdlVectorConverter::vectorToFrame(x);
@@ -274,10 +262,8 @@ bool roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         CD_ERROR("%s\n", amor_error());
-        return false;
+        return;
     }
-
-    return true;
 }
 
 // -----------------------------------------------------------------------------
