@@ -13,6 +13,7 @@
 #include <amor.h>
 
 #include "ICartesianControl.h"
+#include "ICartesianSolver.h"
 #include "ColorDebug.hpp"
 
 #define DEFAULT_CAN_LIBRARY "libeddriver.so"
@@ -117,6 +118,9 @@ private:
 
     AMOR_HANDLE handle;
     bool ownsHandle;
+    
+    yarp::dev::PolyDriver cartesianDevice;
+    roboticslab::ICartesianSolver *iCartesianSolver;
 };
 
 }  // namespace roboticslab

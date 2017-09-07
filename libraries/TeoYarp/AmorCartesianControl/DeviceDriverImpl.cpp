@@ -8,6 +8,22 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 {
     CD_DEBUG("AmorCartesianControl config: %s.\n", config.toString().c_str());
 
+    yarp::os::Property cartesianDeviceOptions;
+    cartesianDeviceOptions.fromString(config.toString());
+    cartesianDeviceOptions.put("device", "KdlSolver");
+
+    if (!cartesianDevice.open(cartesianDeviceOptions))
+    {
+        CD_ERROR("Solver device not valid.\n");
+        return false;
+    }
+
+    if (!cartesianDevice.view(iCartesianSolver))
+    {
+        CD_ERROR("Could not view iCartesianSolver.\n");
+        return close();
+    }
+
     yarp::os::Value vHandle = config.find("handle");
 
     if (vHandle.isNull())
@@ -52,7 +68,7 @@ bool roboticslab::AmorCartesianControl::close()
 
     handle = AMOR_INVALID_HANDLE;
 
-    return true;
+    return cartesianDevice.close();
 }
 
 // -----------------------------------------------------------------------------
