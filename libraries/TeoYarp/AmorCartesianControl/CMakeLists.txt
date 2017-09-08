@@ -5,7 +5,8 @@ yarp_prepare_plugin(AmorCartesianControl
                     CATEGORY device
                     TYPE roboticslab::AmorCartesianControl
                     INCLUDE AmorCartesianControl.hpp
-                    DEFAULT ON)
+                    DEFAULT ON
+                    DEPENDS ENABLE_KinematicRepresentationLib)
 
 if(NOT SKIP_AmorCartesianControl)
 
@@ -14,6 +15,7 @@ find_package(AMOR_API REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
+                                     AmorCartesianControl.cpp
                                      DeviceDriverImpl.cpp
                                      ICartesianControlImpl.cpp)
 
@@ -21,7 +23,8 @@ add_dependencies(AmorCartesianControl COLOR_DEBUG)
 
 target_link_libraries(AmorCartesianControl YARP::YARP_OS
                                            YARP::YARP_dev
-                                           AMOR::amor_api)
+                                           AMOR::amor_api
+                                           KinematicRepresentationLib)
 
 yarp_install(TARGETS AmorCartesianControl
              COMPONENT runtime

@@ -48,13 +48,11 @@ class BasicTwoLimbCartesianControl : public yarp::dev::DeviceDriver, public ITwo
         BasicTwoLimbCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_MS) {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-        /** Inform on control state, and get robot position and perform forward kinematics. */
+
         virtual bool stat(int &state, std::vector<double> &x);
 
-        /** step */
         virtual bool step();
 
-        /** stop */
         virtual bool stopControl();
 
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------

@@ -9,22 +9,23 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/IAnalogSensor.h>
 
+#include "StreamingDevice.hpp"
+
 #include "ICartesianControl.h"
 #include "IProximitySensors.h"
 
-#define DEFAULT_DEVICE_PORT_LOCAL "/StreamingDeviceClient"
-#define DEFAULT_DEVICE_PORT_REMOTE "/spacenavigator/mouse"
+#define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
 #define DEFAULT_ACTUATOR_LOCAL "/StreamingActuatorClient"
 #define DEFAULT_ACTUATOR_REMOTE "/spacenavigator/buttons"
 
 #define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
-#define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
+#define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
+
 #define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
 
+#define DEFAULT_PERIOD 0.02  // [s]
 #define DEFAULT_SCALING 10.0
-
-#define DEFAULT_FIXED_AXES "none"
 
 namespace roboticslab
 {
@@ -37,7 +38,6 @@ namespace roboticslab
  */
 class StreamingDeviceController : public yarp::os::RFModule
 {
-
 public:
     virtual bool configure(yarp::os::ResourceFinder &rf);
     virtual bool updateModule();
@@ -45,22 +45,25 @@ public:
     virtual double getPeriod();
 
 private:
-    yarp::dev::PolyDriver streamingClientDevice;
-    yarp::dev::PolyDriver actuatorClientDevice;
+    StreamingDevice * streamingDevice;
+
     yarp::dev::PolyDriver cartesianControlClientDevice;
     yarp::dev::PolyDriver sensorsClientDevice;
+    yarp::dev::PolyDriver actuatorClientDevice;
 
-    yarp::dev::IAnalogSensor *iAnalogSensor;
     yarp::dev::IAnalogSensor *iAnalogSensorAct;
+
     roboticslab::ICartesianControl *iCartesianControl;
     roboticslab::IProximitySensors *iProximitySensors;
 
+    double period;
     double scaling;
 
-    std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled
-
     bool isStopped;
+
     int actuatorState;
+
+    static const double SCALING_FACTOR_ON_ALERT;
 };
 
 }  // namespace roboticslab

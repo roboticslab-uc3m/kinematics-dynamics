@@ -4,6 +4,7 @@
 #define __KINEMATIC_REPRESENTATION_HPP__
 
 #include <cmath>
+#include <string>
 #include <vector>
 
 namespace roboticslab
@@ -59,7 +60,7 @@ public:
      * @param x_out Output vector describing the same pose in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED notation.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @param Units in which angular values are expressed.
+     * @param angle Units in which angular values are expressed.
      *
      * @return true on success, false otherwise.
      */
@@ -75,7 +76,7 @@ public:
      * @param x_out Output vector describing the same pose in the chosen representation system.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @param Units in which angular values are expressed.
+     * @param angle Units in which angular values are expressed.
      *
      * @return true on success, false otherwise.
      */
@@ -87,47 +88,52 @@ public:
      *
      * Supports in-place transformation.
      *
-     * @param x_in Input vector describing a three-dimensional velocity (translation + rotation).
-     * @param x_out Output vector describing the same velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_in Input vector describing a three-dimensional pose (translation + rotation).
+     * @param xdot_in Input vector describing a three-dimensional velocity (translation + rotation).
+     * @param xdot_out Output vector describing the same velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @param Units in which angular values are expressed.
+     * @param angle Units in which angular values are expressed.
      *
      * @return true on success, false otherwise.
      */
-    static bool encodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
-            coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+    static bool encodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+            std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
 
     /**
      * @brief Converts the translation and rotation values of a specific velocity to the chosen representation systems.
      *
      * Supports in-place transformation.
      *
-     * @param x_in Input vector describing a three-dimensional velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
-     * @param x_out Output vector describing the same velocity in the chosen representation system.
+     * @param x_in Input vector describing a three-dimensional pose in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param xdot_in Input vector describing a three-dimensional velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param xdot_out Output vector describing the same velocity in the chosen representation system.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @param Units in which angular values are expressed.
+     * @param angle Units in which angular values are expressed.
      *
      * @return true on success, false otherwise.
      */
-    static bool decodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
-            coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+    static bool decodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+            std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
 
     /**
      * @brief Converts the translation and rotation values of a specific acceleration to @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
      *
      * Supports in-place transformation.
      *
-     * @param x_in Input vector describing a three-dimensional acceleration (translation + rotation).
-     * @param x_out Output vector describing the same acceleration in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param x_in Input vector describing a three-dimensional pose (translation + rotation).
+     * @param xdot_in Input vector describing a three-dimensional velocity (translation + rotation).
+     * @param xdotdot_in Input vector describing a three-dimensional acceleration (translation + rotation).
+     * @param xdotdot_out Output vector describing the same acceleration in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @param Units in which angular values are expressed.
+     * @param angle Units in which angular values are expressed.
      *
      * @return true on success, false otherwise.
      */
-    static bool encodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+    static bool encodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+            const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
             coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
 
     /**
@@ -135,15 +141,18 @@ public:
      *
      * Supports in-place transformation.
      *
-     * @param x_in Input vector describing a three-dimensional acceleration in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
-     * @param x_out Output vector describing the same acceleration in the chosen representation system.
+     * @param x_in Input vector describing a three-dimensional pose in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param xdot_in Input vector describing a three-dimensional velocity in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param xdotdot_in Input vector describing a three-dimensional acceleration in @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
+     * @param xdotdot_out Output vector describing the same acceleration in the chosen representation system.
      * @param coord Coordinate system for the translational part.
      * @param orient Orientation system for the rotational part.
-     * @param Units in which angular values are expressed.
+     * @param angle Units in which angular values are expressed.
      *
      * @return true on success, false otherwise.
      */
-    static bool decodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+    static bool decodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+            const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
             coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
 
     /**
@@ -169,6 +178,25 @@ public:
     {
         return rad * 180.0 / M_PI;
     }
+
+    /**
+     * @brief Parses input string, returns matching enumerator value
+     *
+     * Input string    | Enum value
+     * --------------- | ----------
+     * axisAngle       | @ref AXIS_ANGLE
+     * axisAngleScaled | @ref AXIS_ANGLE_SCALED
+     * RPY             | @ref RPY
+     * eulerYZ         | @ref EULER_YZ
+     * eulerZYZ        | @ref EULER_ZYZ
+     *
+     * @param str Input string.
+     * @param orient See @ref orientation_system.
+     * @param fallback Default value if no match found.
+     *
+     * @return true if match found, false otherwise
+     */
+    static bool parseEnumerator(const std::string &str, orientation_system *orient, orientation_system fallback = AXIS_ANGLE_SCALED);
 
 private:
     KinRepresentation() {}

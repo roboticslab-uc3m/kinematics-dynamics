@@ -89,8 +89,10 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
     if (!skipControlboardController)
     {
-        std::string localRobot = rf.check("localRobot", yarp::os::Value(DEFAULT_ROBOT_LOCAL), "local robot port").asString();
-        std::string remoteRobot = rf.check("remoteRobot", yarp::os::Value(DEFAULT_ROBOT_REMOTE), "remote robot port").asString();
+        std::string localRobot = rf.check("localRobot", yarp::os::Value(DEFAULT_ROBOT_LOCAL),
+                "local robot port").asString();
+        std::string remoteRobot = rf.check("remoteRobot", yarp::os::Value(DEFAULT_ROBOT_REMOTE),
+                "remote robot port").asString();
 
         yarp::os::Property controlboardClientOptions;
         controlboardClientOptions.put("device", "remote_controlboard");
@@ -151,12 +153,16 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             iControlLimits->getVelLimits(i, &min, &max);
             maxVelocityLimits[i] = max;
         }
+
+        currentJointVels.resize(axes, 0.0);
     }
 
     if (!skipCartesianController)
     {
-        std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL), "local cartesian port").asString();
-        std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE), "remote cartesian port").asString();
+        std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
+                "local cartesian port").asString();
+        std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
+                "remote cartesian port").asString();
 
         yarp::os::Property cartesianControlClientOptions;
         cartesianControlClientOptions.put("device", "CartesianControlClient");
@@ -178,10 +184,19 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             close();
             return false;
         }
-    }
 
-    currentJointVels.resize(axes, 0.0);
-    currentCartVels.resize(NUM_CART_COORDS, 0.0);
+        angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
+
+        if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
+        {
+            CD_WARNING("Unable to parse \"angleRepr\" option (%s), defaulting to %s.\n", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
+            angleRepr = DEFAULT_ANGLE_REPR;
+        }
+
+        currentCartVels.resize(NUM_CART_COORDS, 0.0);
+
+        cart_frame = INERTIAL;
+    }
 
     ttyset();
 
@@ -309,6 +324,10 @@ bool roboticslab::KeyboardController::updateModule()
     case 'n':
         incrementOrDecrementCartesianVelocity(ROTZ, decrement_functor);
         break;
+    // toggle reference frame for cartesian commands
+    case 'm':
+        toggleReferenceFrame();
+        break;
     // issue stop
     case 13:  // enter
     default:
@@ -401,10 +420,48 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     std::cout << "New cartesian velocity: " << currentCartVels << std::endl;
 
-    if (!iCartesianControl->movv(currentCartVels))
+    if (cart_frame == INERTIAL)
     {
-        CD_ERROR("movv failed\n");
+        if (!iCartesianControl->movv(currentCartVels))
+        {
+            CD_ERROR("movv failed\n");
+        }
     }
+    else
+    {
+        iCartesianControl->eff(currentCartVels);
+    }
+}
+
+void roboticslab::KeyboardController::toggleReferenceFrame()
+{
+    if (!cartesianControlDevice.isValid())
+    {
+        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        issueStop();
+        return;
+    }
+
+    issueStop();
+
+    std::cout << "Toggled reference frame for cartesian commands: ";
+
+    switch (cart_frame)
+    {
+    case INERTIAL:
+        cart_frame = END_EFFECTOR;
+        std::cout << "end effector";
+        break;
+    case END_EFFECTOR:
+        cart_frame = INERTIAL;
+        std::cout << "inertial";
+        break;
+    default:
+        std::cout << "unknown";
+        break;
+    }
+
+    std::cout << std::endl;
 }
 
 void roboticslab::KeyboardController::printJointPositions()
@@ -418,7 +475,9 @@ void roboticslab::KeyboardController::printJointPositions()
 
     std::vector<double> encs(axes);
     iEncoders->getEncoders(encs.data());
-    std::cout << "Current joint positions: " << encs << std::endl;
+
+    std::cout << "Current joint positions [degrees]:" << std::endl;
+    std::cout << encs << std::endl;
 }
 
 void roboticslab::KeyboardController::printCartesianPositions()
@@ -432,8 +491,12 @@ void roboticslab::KeyboardController::printCartesianPositions()
 
     int state;
     std::vector<double> x;
+
     iCartesianControl->stat(state, x);
-    std::cout << "Current cartesian positions: " << x << std::endl;
+    KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+
+    std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
+    std::cout << x << std::endl;
 }
 
 void roboticslab::KeyboardController::issueStop()
@@ -462,7 +525,9 @@ void roboticslab::KeyboardController::issueStop()
 
 void roboticslab::KeyboardController::printHelp()
 {
-    std::cout << std::string(60, '-') << std::endl;
+    const int markerWidth = 65;
+
+    std::cout << std::string(markerWidth, '-') << std::endl;
     std::cout << " [Esc] - close the application" << std::endl;
     std::cout << " '?' - print this help guide" << std::endl;
 
@@ -473,13 +538,13 @@ void roboticslab::KeyboardController::printHelp()
 
     if (cartesianControlDevice.isValid())
     {
-        std::cout << " 'p' - query current cartesian positions" << std::endl;
+        std::cout << " 'p' - query current cartesian positions (angleRepr: " << angleRepr << ")" << std::endl;
     }
 
     if (controlboardDevice.isValid())
     {
-        char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-        char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
+        const char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        const char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
 
         std::cout << " '" << jointPos[0] << "'";
 
@@ -510,8 +575,11 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'f'/'v' - rotate about x axis (+/-)" << std::endl;
         std::cout << " 'g'/'b' - rotate about y axis (+/-)" << std::endl;
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
+
+        std::cout << " 'm' - toggle reference frame (current: ";
+        std::cout << (cart_frame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;
-    std::cout << std::string(60, '-') << std::endl;
+    std::cout << std::string(markerWidth, '-') << std::endl;
 }

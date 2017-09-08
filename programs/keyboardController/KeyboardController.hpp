@@ -1,6 +1,7 @@
 #ifndef __KEYBOARD_CONTROLLER_HPP__
 #define __KEYBOARD_CONTROLLER_HPP__
 
+#include <string>
 #include <vector>
 #include <functional>
 
@@ -14,6 +15,7 @@
 #include <yarp/dev/IVelocityControl.h>
 
 #include "ICartesianControl.h"
+#include "KinematicRepresentation.hpp"
 
 #define DEFAULT_ROBOT_LOCAL "/KeyboardControllerClient"
 #define DEFAULT_ROBOT_REMOTE "/asibot/asibotManipulator"
@@ -21,13 +23,20 @@
 #define DEFAULT_CARTESIAN_LOCAL "/KeyboardCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
 
+#define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
+                                       // fallback in ::open()
+
 namespace roboticslab
 {
 
 /**
  * @ingroup keyboardController
  *
- * @brief TBD
+ * @brief Sends streaming commands to the cartesian controller from
+ * a standard keyboard.
+ *
+ * Uses the terminal as a simple user interface. Also accepts joint commands
+ * if connected to a remote controlboard.
  */
 class KeyboardController : public yarp::os::RFModule
 {
@@ -43,14 +52,18 @@ private:
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
 
-    std::plus<double> increment_functor;
-    std::minus<double> decrement_functor;
+    enum cart_frames { INERTIAL, END_EFFECTOR };
+
+    static const std::plus<double> increment_functor;
+    static const std::minus<double> decrement_functor;
 
     template <typename func>
     void incrementOrDecrementJointVelocity(joint q, func op);
 
     template <typename func>
     void incrementOrDecrementCartesianVelocity(cart coord, func op);
+
+    void toggleReferenceFrame();
 
     void printJointPositions();
     void printCartesianPositions();
@@ -60,6 +73,9 @@ private:
     void printHelp();
 
     int axes;
+    cart_frames cart_frame;
+    std::string angleRepr;
+    KinRepresentation::orientation_system orient;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;

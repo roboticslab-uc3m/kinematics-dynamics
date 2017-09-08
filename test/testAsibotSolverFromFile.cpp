@@ -334,6 +334,30 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKin)
     ASSERT_NEAR(qdot[4], 1.0, EPS_JOINT);
 }
 
+TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinEE)
+{
+    std::vector<double> q(5, 0.0), xdotee(6, 0.0), qdot;
+
+    q[0] = 45.0;
+    q[1] = -45.0;
+    q[2] = 90.0;
+    q[3] = 45.0;
+
+    xdotee[0] = -0.005;  //- m/step
+    xdotee[5] = 0.017453292;  //-- 1º/step
+
+    ASSERT_TRUE(iCartesianSolver->diffInvKinEE(q, xdotee, qdot));
+
+    ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
+
+    // increasing eps at q2-4
+    ASSERT_NEAR(qdot[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(qdot[1], 0.50869278, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[2], -1.017385551, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT* 10);
+    ASSERT_NEAR(qdot[4], 1.0, EPS_JOINT);
+}
+
 TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
 {
     // enable joints q1, q3, q4, q5 on all configs
