@@ -153,6 +153,8 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             iControlLimits->getVelLimits(i, &min, &max);
             maxVelocityLimits[i] = max;
         }
+
+        currentJointVels.resize(axes, 0.0);
     }
 
     if (!skipCartesianController)
@@ -190,12 +192,11 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             CD_WARNING("Unable to parse \"angleRepr\" option (%s), defaulting to %s.\n", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
             angleRepr = DEFAULT_ANGLE_REPR;
         }
+
+        currentCartVels.resize(NUM_CART_COORDS, 0.0);
+
+        cart_frame = INERTIAL;
     }
-
-    currentJointVels.resize(axes, 0.0);
-    currentCartVels.resize(NUM_CART_COORDS, 0.0);
-
-    cart_frame = INERTIAL;
 
     ttyset();
 
@@ -434,6 +435,13 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
 void roboticslab::KeyboardController::toggleReferenceFrame()
 {
+    if (!cartesianControlDevice.isValid())
+    {
+        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        issueStop();
+        return;
+    }
+
     issueStop();
 
     std::cout << "Toggled reference frame for cartesian commands: ";
