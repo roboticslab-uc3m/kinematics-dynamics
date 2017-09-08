@@ -55,6 +55,8 @@ private:
     double scaling;
 
     bool isStopped;
+
+    static const double SCALING_FACTOR_ON_ALERT;
 };
 
 }  // namespace roboticslab

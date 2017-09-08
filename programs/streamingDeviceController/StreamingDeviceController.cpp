@@ -12,6 +12,8 @@
 
 using namespace roboticslab;
 
+const double roboticslab::StreamingDeviceController::SCALING_FACTOR_ON_ALERT = 2.0;
+
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
     CD_DEBUG("streamingDeviceController config: %s.\n", rf.toString().c_str());
@@ -106,12 +108,19 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
+    IProximitySensors::alert_level alertLevel = IProximitySensors::ZERO;
+
+    if (sensorsClientDevice.isValid())
+    {
+        alertLevel = iProximitySensors->getAlertLevel();
+    }
+
     double localScaling = scaling;
 
-    if (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::LOW)
+    if (alertLevel == IProximitySensors::LOW)
     {
-        localScaling *= 2; //Half velocity
-        CD_WARNING("Obstacle detected\n");
+        localScaling *= SCALING_FACTOR_ON_ALERT;
+        CD_WARNING("Obstacle detected.\n");
     }
 
     if (!streamingDevice->transformData(localScaling))
@@ -120,7 +129,7 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
-    if (!streamingDevice->hasValidMovementData() || (sensorsClientDevice.isValid() && iProximitySensors->getAlertLevel() == IProximitySensors::HIGH))
+    if (!streamingDevice->hasValidMovementData() || alertLevel == IProximitySensors::HIGH)
     {
         if (!isStopped)
         {
