@@ -47,7 +47,6 @@ private:
     yarp::dev::PolyDriver cartesianControlClientDevice;
     yarp::dev::PolyDriver sensorsClientDevice;
 
-    yarp::dev::IAnalogSensor *iAnalogSensor;
     roboticslab::ICartesianControl *iCartesianControl;
     roboticslab::IProximitySensors *iProximitySensors;
 
