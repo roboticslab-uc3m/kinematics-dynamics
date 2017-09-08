@@ -21,7 +21,8 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     if (!cartesianDevice.view(iCartesianSolver))
     {
         CD_ERROR("Could not view iCartesianSolver.\n");
-        return close();
+        close();
+        return false;
     }
 
     yarp::os::Value vHandle = config.find("handle");
@@ -42,6 +43,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     if (handle == AMOR_INVALID_HANDLE)
     {
         CD_ERROR("Could not get AMOR handle (%s)\n", amor_error());
+        close();
         return false;
     }
 
