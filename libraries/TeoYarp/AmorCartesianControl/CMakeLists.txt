@@ -15,6 +15,7 @@ find_package(AMOR_API REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
+                                     AmorCartesianControl.cpp
                                      DeviceDriverImpl.cpp
                                      ICartesianControlImpl.cpp)
 

@@ -37,7 +37,8 @@ public:
 
     AmorCartesianControl() : handle(AMOR_INVALID_HANDLE),
                              ownsHandle(false),
-                             iCartesianSolver(NULL)
+                             iCartesianSolver(NULL),
+                             currentState(VOCAB_CC_NOT_CONTROLLING)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
@@ -101,11 +102,15 @@ public:
 
 private:
 
+    bool waitForCompletion(int vocab);
+
     AMOR_HANDLE handle;
     bool ownsHandle;
     
     yarp::dev::PolyDriver cartesianDevice;
     roboticslab::ICartesianSolver *iCartesianSolver;
+
+    int currentState;
 };
 
 }  // namespace roboticslab

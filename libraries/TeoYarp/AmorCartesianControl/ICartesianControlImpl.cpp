@@ -30,7 +30,7 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
     KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
 
-    state = 0;  // dummy value
+    state = currentState;
 
     return true;
 }
@@ -88,7 +88,7 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    return true;
+    return waitForCompletion(VOCAB_CC_MOVJ_CONTROLLING);
 }
 
 // -----------------------------------------------------------------------------
@@ -136,7 +136,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
-    return true;
+    return waitForCompletion(VOCAB_CC_MOVL_CONTROLLING);
 }
 
 // -----------------------------------------------------------------------------
@@ -173,6 +173,8 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
         return false;
     }
 
+    currentState = VOCAB_CC_MOVV_CONTROLLING;
+
     return true;
 }
 
@@ -196,6 +198,8 @@ bool roboticslab::AmorCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::AmorCartesianControl::stopControl()
 {
+    currentState = VOCAB_CC_NOT_CONTROLLING;
+
     if (amor_controlled_stop(handle) != AMOR_SUCCESS)
     {
         CD_ERROR("%s\n", amor_error());
