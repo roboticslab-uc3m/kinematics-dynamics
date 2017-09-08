@@ -15,8 +15,17 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 {
     CD_DEBUG("AmorCartesianControl config: %s.\n", config.toString().c_str());
 
+    std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
+            "AMOR kinematics description").asString();
+
     yarp::os::Property cartesianDeviceOptions;
-    cartesianDeviceOptions.fromString(config.toString());
+
+    if (!cartesianDeviceOptions.fromConfigFile(kinematicsFile))
+    {
+        CD_ERROR("Cannot read from --kinematics \"%s\".\n", kinematicsFile.c_str());
+        return false;
+    }
+
     cartesianDeviceOptions.put("device", "KdlSolver");
 
     if (!cartesianDevice.open(cartesianDeviceOptions))
