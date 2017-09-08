@@ -28,6 +28,8 @@ public:
 
     virtual bool acquireData();
 
+    virtual int getActuatorState();
+
     virtual void sendMovementCommand();
 
 private:

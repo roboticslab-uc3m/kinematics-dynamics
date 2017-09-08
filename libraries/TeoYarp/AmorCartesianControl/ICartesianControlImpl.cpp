@@ -221,7 +221,7 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::act(int commandCode)
 {
-    if (commandCode == 0)
+    if (commandCode == 1)
     {
         if (amor_close_hand(handle) != AMOR_SUCCESS)
         {
@@ -229,7 +229,7 @@ bool roboticslab::AmorCartesianControl::act(int commandCode)
             return false;
         }
     }
-    else if (commandCode == 1)
+    else if (commandCode == 2)
     {
         if (amor_open_hand(handle) != AMOR_SUCCESS)
         {
@@ -237,7 +237,7 @@ bool roboticslab::AmorCartesianControl::act(int commandCode)
             return false;
         }
     }
-    else if (commandCode == 2)
+    else if (commandCode == 3)
     {
         if (amor_stop_hand(handle) != AMOR_SUCCESS)
         {

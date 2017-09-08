@@ -45,7 +45,8 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 }
 
 StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
-    : iCartesianControl(NULL)
+    : iCartesianControl(NULL),
+      actuatorState(0)
 {
     data.resize(6, 0.0);
     fixedAxes.resize(6, false);

@@ -26,10 +26,6 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             "remote cartesian port").asString();
     std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
             "remote sensors port").asString();
-    std::string localActuator = rf.check("localActuator", yarp::os::Value(DEFAULT_ACTUATOR_LOCAL),
-            "local actuator port").asString();
-    std::string remoteActuator = rf.check("remoteActuator", yarp::os::Value(DEFAULT_ACTUATOR_REMOTE),
-            "remote actuator port").asString();
 
     period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
@@ -45,25 +41,6 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!streamingDevice->acquireInterfaces())
     {
         CD_ERROR("Unable to acquire plugin interfaces from streaming device.\n");
-        return false;
-    }
-
-    yarp::os::Property actuatorClientOptions;
-    actuatorClientOptions.put("device", "analogsensorclient");
-    actuatorClientOptions.put("local", localActuator);
-    actuatorClientOptions.put("remote", remoteActuator);
-
-    actuatorClientDevice.open(actuatorClientOptions);
-
-    if (!actuatorClientDevice.isValid())
-    {
-        CD_ERROR("actuator client device not valid.\n");
-        return false;
-    }
-
-    if (!actuatorClientDevice.view(iAnalogSensorAct))
-    {
-        CD_ERROR("Could not view iAnalogSensorAct.\n");
         return false;
     }
 
@@ -119,43 +96,12 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     }
 
     isStopped = true;
-    actuatorState = 2;
 
     return true;
 }
 
 bool StreamingDeviceController::updateModule()
 {
-    yarp::sig::Vector data;
-
-    iAnalogSensorAct->read(data);
-
-    if (data.size() == 2)
-    {
-        int button1 = data[0];
-        int button2 = data[1];
-
-        if (button1 == 1)
-        {
-            actuatorState = 0;
-            iCartesianControl->act(0);
-        }
-        else if (button2 == 1)
-        {
-            actuatorState = 1;
-            iCartesianControl->act(1);
-        }
-        else
-        {
-            if (actuatorState != 2)
-            {
-                iCartesianControl->act(2);
-            }
-
-            actuatorState = 2;
-        }
-    }
-
     if (!streamingDevice->acquireData())
     {
         CD_ERROR("Failed to acquire data from streaming device.\n");
@@ -181,6 +127,13 @@ bool StreamingDeviceController::updateModule()
     {
         CD_ERROR("Failed to transform acquired data from streaming device.\n");
         return true;
+    }
+
+    int actuatorState = streamingDevice->getActuatorState();
+
+    if (actuatorState != 0)
+    {
+        iCartesianControl->act(actuatorState);
     }
 
     if (!streamingDevice->hasValidMovementData() || alertLevel == IProximitySensors::HIGH)
@@ -212,7 +165,6 @@ bool StreamingDeviceController::interruptModule()
     bool ok = true;
 
     ok &= cartesianControlClientDevice.close();
-    ok &= actuatorClientDevice.close();
 
     if (sensorsClientDevice.isValid())
     {

@@ -5,9 +5,7 @@
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
-
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/IAnalogSensor.h>
 
 #include "StreamingDevice.hpp"
 
@@ -49,9 +47,6 @@ private:
 
     yarp::dev::PolyDriver cartesianControlClientDevice;
     yarp::dev::PolyDriver sensorsClientDevice;
-    yarp::dev::PolyDriver actuatorClientDevice;
-
-    yarp::dev::IAnalogSensor *iAnalogSensorAct;
 
     roboticslab::ICartesianControl *iCartesianControl;
     roboticslab::IProximitySensors *iProximitySensors;
@@ -60,8 +55,6 @@ private:
     double scaling;
 
     bool isStopped;
-
-    int actuatorState;
 
     static const double SCALING_FACTOR_ON_ALERT;
 };
