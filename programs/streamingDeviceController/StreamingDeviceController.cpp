@@ -12,6 +12,8 @@
 
 using namespace roboticslab;
 
+const double roboticslab::StreamingDeviceController::SCALING_FACTOR_ON_ALERT = 2.0;
+
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
     CD_DEBUG("streamingDeviceController config: %s.\n", rf.toString().c_str());
@@ -22,6 +24,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote cartesian port").asString();
+    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
+            "remote sensors port").asString();
 
     period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
@@ -70,6 +74,27 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    if (rf.check("useSensors"))
+    {
+        yarp::os::Property sensorsClientOptions;
+        sensorsClientOptions.fromString(rf.toString());
+        sensorsClientOptions.put("device", "ProximitySensorsClient");
+
+        sensorsClientDevice.open(sensorsClientOptions);
+
+        if (!sensorsClientDevice.isValid())
+        {
+            CD_ERROR("sensors device not valid.\n");
+            return false;
+        }
+
+        if (!sensorsClientDevice.view(iProximitySensors))
+        {
+            CD_ERROR("Could not view iSensors.\n");
+            return false;
+        }
+    }
+
     isStopped = true;
 
     return true;
@@ -83,13 +108,28 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
-    if (!streamingDevice->transformData(scaling))
+    IProximitySensors::alert_level alertLevel = IProximitySensors::ZERO;
+
+    if (sensorsClientDevice.isValid())
+    {
+        alertLevel = iProximitySensors->getAlertLevel();
+    }
+
+    double localScaling = scaling;
+
+    if (alertLevel == IProximitySensors::LOW)
+    {
+        localScaling *= SCALING_FACTOR_ON_ALERT;
+        CD_WARNING("Obstacle detected.\n");
+    }
+
+    if (!streamingDevice->transformData(localScaling))
     {
         CD_ERROR("Failed to transform acquired data from streaming device.\n");
         return true;
     }
 
-    if (!streamingDevice->hasValidMovementData())
+    if (!streamingDevice->hasValidMovementData() || alertLevel == IProximitySensors::HIGH)
     {
         if (!isStopped)
         {
@@ -115,7 +155,16 @@ bool StreamingDeviceController::interruptModule()
     delete streamingDevice;
     streamingDevice = NULL;
 
-    return cartesianControlClientDevice.close();
+    bool ok = true;
+
+    ok &= cartesianControlClientDevice.close();
+
+    if (sensorsClientDevice.isValid())
+    {
+        ok &= sensorsClientDevice.close();
+    }
+
+    return ok;
 }
 
 double StreamingDeviceController::getPeriod()

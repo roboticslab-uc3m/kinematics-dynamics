@@ -5,15 +5,21 @@
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
+
 #include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/IAnalogSensor.h>
+
+#include "StreamingDevice.hpp"
 
 #include "ICartesianControl.h"
-#include "StreamingDevice.hpp"
+#include "IProximitySensors.h"
 
 #define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
 #define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
+
+#define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
 
 #define DEFAULT_PERIOD 0.02  // [s]
 #define DEFAULT_SCALING 10.0
@@ -39,12 +45,17 @@ private:
     StreamingDevice * streamingDevice;
 
     yarp::dev::PolyDriver cartesianControlClientDevice;
-    ICartesianControl *iCartesianControl;
+    yarp::dev::PolyDriver sensorsClientDevice;
+
+    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::IProximitySensors *iProximitySensors;
 
     double period;
     double scaling;
 
     bool isStopped;
+
+    static const double SCALING_FACTOR_ON_ALERT;
 };
 
 }  // namespace roboticslab
