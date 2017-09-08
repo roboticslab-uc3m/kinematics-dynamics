@@ -213,7 +213,185 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
+bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+        std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+{
+    int expectedSize;
+
+    if (!checkVectorSize(xdot_in, orient, &expectedSize))
+    {
+        CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, xdot_in.size());
+        return false;
+    }
+
+    // expand current size if needed, but never truncate
+    xdot_out.resize(std::max<int>(6, xdot_out.size()));
+
+    switch (orient)
+    {
+    case AXIS_ANGLE:
+    {
+        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(xdot_in[3], xdot_in[4], xdot_in[5]), degToRadHelper(angle, xdot_in[6]));
+        KDL::Vector axis = rot.GetRot();
+        xdot_out[3] = axis.x();
+        xdot_out[4] = axis.y();
+        xdot_out[5] = axis.z();
+        break;
+    }
+    case AXIS_ANGLE_SCALED:
+    {
+        xdot_out[3] = degToRadHelper(angle, xdot_in[3]);
+        xdot_out[4] = degToRadHelper(angle, xdot_in[4]);
+        xdot_out[5] = degToRadHelper(angle, xdot_in[5]);
+        break;
+    }
+    case RPY:
+    {
+        // [0 -sa ca*cb]
+        // [0  ca sa*cb]
+        // [1   0   -sb]
+        // where a (alpha): z, b (beta): y, g (gamma, unused): x
+        // FIXME: really? review this, check which angle corresponds to which coordinate
+        KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
+        KDL::Rotation rotZ = KDL::Rotation::RotZ(degToRadHelper(angle, x_in[5]));
+        KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
+        KDL::Vector colZ = rotZ * KDL::Rotation::RotY(degToRadHelper(angle, x_in[4])) * KDL::Rotation::Identity().UnitX();
+        KDL::Rotation rot(colX, colY, colZ);
+        KDL::Vector v_in(degToRadHelper(angle, xdot_in[3]), degToRadHelper(angle, xdot_in[4]), degToRadHelper(angle, xdot_in[5]));
+        KDL::Vector v_out = rot * v_in;
+        xdot_out[3] = v_out.x();
+        xdot_out[4] = v_out.y();
+        xdot_out[5] = v_out.z();
+        break;
+    }
+    case EULER_YZ:
+    {
+        break;
+    }
+    case EULER_ZYZ:
+    {
+        break;
+    }
+    default:
+        return false;
+    }
+
+    // truncate extra elements
+    xdot_out.resize(6);
+
+    switch (coord)
+    {
+    case CARTESIAN:
+        xdot_out[0] = xdot_in[0];
+        xdot_out[1] = xdot_in[1];
+        xdot_out[2] = xdot_in[2];
+        break;
+    case CYLINDRICAL:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    case SPHERICAL:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    default:
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+        std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+{
+    int expectedSize;
+
+    if (!checkVectorSize(xdot_in, AXIS_ANGLE_SCALED, &expectedSize))
+    {
+        CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, xdot_in.size());
+        return false;
+    }
+
+    switch (orient)
+    {
+    case AXIS_ANGLE:
+    {
+        xdot_out.resize(std::max<int>(7, xdot_out.size()));
+        KDL::Vector axis(xdot_in[3], xdot_in[4], xdot_in[5]);
+        xdot_out[6] = radToDegHelper(angle, axis.Norm());
+        axis.Normalize();
+        xdot_out[3] = axis.x();
+        xdot_out[4] = axis.y();
+        xdot_out[5] = axis.z();
+        xdot_out.resize(7);
+        break;
+    }
+    case AXIS_ANGLE_SCALED:
+    {
+        xdot_out.resize(std::max<int>(6, xdot_out.size()));
+        xdot_out[3] = radToDegHelper(angle, xdot_in[3]);
+        xdot_out[4] = radToDegHelper(angle, xdot_in[4]);
+        xdot_out[5] = radToDegHelper(angle, xdot_in[5]);
+        xdot_out.resize(6);
+        break;
+    }
+    case RPY:
+    {
+        // FIXME: see note at 'encodeVelocity'
+        xdot_out.resize(std::max<int>(6, xdot_out.size()));
+        KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
+        KDL::Rotation rotZ = KDL::Rotation::RotZ(x_in[5]);
+        KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
+        KDL::Vector colZ = rotZ * KDL::Rotation::RotY(x_in[4]) * KDL::Rotation::Identity().UnitX();
+        KDL::Rotation rot(colX, colY, colZ);
+        KDL::Vector v_in(xdot_in[3], xdot_in[4], xdot_in[5]);
+        KDL::Vector v_out = rot.Inverse() * v_in;
+        xdot_out[3] = radToDegHelper(angle, v_out.x());
+        xdot_out[4] = radToDegHelper(angle, v_out.y());
+        xdot_out[5] = radToDegHelper(angle, v_out.z());
+        xdot_out.resize(6);
+        break;
+    }
+    case EULER_YZ:
+    {
+        xdot_out.resize(std::max<int>(5, xdot_out.size()));
+        xdot_out.resize(5);
+        break;
+    }
+    case EULER_ZYZ:
+    {
+        xdot_out.resize(std::max<int>(6, xdot_out.size()));
+        xdot_out.resize(6);
+        break;
+    }
+    default:
+        return false;
+    }
+
+    switch (coord)
+    {
+    case CARTESIAN:
+        xdot_out[0] = xdot_in[0];
+        xdot_out[1] = xdot_in[1];
+        xdot_out[2] = xdot_in[2];
+        break;
+    case CYLINDRICAL:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    case SPHERICAL:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    default:
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool KinRepresentation::encodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+        const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     CD_ERROR("Not implemented.\n");
@@ -222,25 +400,8 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &xdot_in, std::
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodeVelocity(const std::vector<double> &xdot_in, std::vector<double> &xdot_out,
-        coordinate_system coord, orientation_system orient, angular_units angle)
-{
-    CD_ERROR("Not implemented.\n");
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool KinRepresentation::encodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
-        coordinate_system coord, orientation_system orient, angular_units angle)
-{
-    CD_ERROR("Not implemented.\n");
-    return false;
-}
-
-// -----------------------------------------------------------------------------
-
-bool KinRepresentation::decodeAcceleration(const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
+        const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     CD_ERROR("Not implemented.\n");

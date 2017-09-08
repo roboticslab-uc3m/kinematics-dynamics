@@ -14,6 +14,14 @@ include_directories(${YARP_INCLUDE_DIRS}
 
 # Set up our main executable.
 add_executable(streamingDeviceController main.cpp
+                                         StreamingDevice.hpp
+                                         StreamingDevice.cpp
+                                         SpnavSensorDevice.hpp
+                                         SpnavSensorDevice.cpp
+                                         LeapMotionSensorDevice.hpp
+                                         LeapMotionSensorDevice.cpp
+                                         WiimoteSensorDevice.hpp
+                                         WiimoteSensorDevice.cpp
                                          StreamingDeviceController.hpp
                                          StreamingDeviceController.cpp)
 

@@ -5,21 +5,18 @@
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
-
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/IAnalogSensor.h>
 
 #include "ICartesianControl.h"
+#include "StreamingDevice.hpp"
 
-#define DEFAULT_DEVICE_PORT_LOCAL "/StreamingDeviceClient"
-#define DEFAULT_DEVICE_PORT_REMOTE "/spacenavigator/mouse"
+#define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
 #define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
-#define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
+#define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
+#define DEFAULT_PERIOD 0.02  // [s]
 #define DEFAULT_SCALING 10.0
-
-#define DEFAULT_FIXED_AXES "none"
 
 namespace roboticslab
 {
@@ -32,7 +29,6 @@ namespace roboticslab
  */
 class StreamingDeviceController : public yarp::os::RFModule
 {
-
 public:
     virtual bool configure(yarp::os::ResourceFinder &rf);
     virtual bool updateModule();
@@ -40,15 +36,13 @@ public:
     virtual double getPeriod();
 
 private:
-    yarp::dev::PolyDriver streamingClientDevice;
+    StreamingDevice * streamingDevice;
+
     yarp::dev::PolyDriver cartesianControlClientDevice;
+    ICartesianControl *iCartesianControl;
 
-    yarp::dev::IAnalogSensor *iAnalogSensor;
-    roboticslab::ICartesianControl *iCartesianControl;
-
+    double period;
     double scaling;
-
-    std::vector<bool> fixedAxes;  // 'true': disabled (fixed axis), 'false': enabled
 
     bool isStopped;
 };

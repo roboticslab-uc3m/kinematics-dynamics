@@ -555,6 +555,15 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
+    for (unsigned int i = 0; i < qdot.size(); i++)
+    {
+        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        {
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            return;
+        }
+    }
+
     if ( ! iVelocityControl->velocityMove( qdot.data() ) )
     {
         CD_ERROR("velocityMove failed.\n");
