@@ -3,17 +3,14 @@
 #ifndef __AMOR_CARTESIAN_CONTROL_HPP__
 #define __AMOR_CARTESIAN_CONTROL_HPP__
 
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
+#include <yarp/os/Searchable.h>
+#include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PolyDriver.h>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 #include <amor.h>
 
 #include "ICartesianControl.h"
-#include "ColorDebug.hpp"
+#include "ICartesianSolver.h"
 
 #define DEFAULT_CAN_LIBRARY "libeddriver.so"
 #define DEFAULT_CAN_PORT 0
@@ -39,55 +36,46 @@ class AmorCartesianControl : public yarp::dev::DeviceDriver, public ICartesianCo
 public:
 
     AmorCartesianControl() : handle(AMOR_INVALID_HANDLE),
-                             ownsHandle(false)
+                             ownsHandle(false),
+                             iCartesianSolver(NULL),
+                             currentState(VOCAB_CC_NOT_CONTROLLING)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
-    /** Inform on control state, and get robot position and perform forward kinematics. */
     virtual bool stat(int &state, std::vector<double> &x);
 
-    /** Perform inverse kinematics (using robot position as initial guess) but do not move. */
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
-    /** movj */
     virtual bool movj(const std::vector<double> &xd);
 
-    /** relj */
     virtual bool relj(const std::vector<double> &xd);
 
-    /** movl */
     virtual bool movl(const std::vector<double> &xd);
 
-    /** movv */
     virtual bool movv(const std::vector<double> &xdotd);
 
-    /** gcmp */
     virtual bool gcmp();
 
-    /** forc */
     virtual bool forc(const std::vector<double> &td);
 
-    /** stop */
     virtual bool stopControl();
 
-    /** stop */
     virtual bool tool(const std::vector<double> &x);
 
-    /** fwd */
-    virtual bool fwd(const std::vector<double> &rot);
+    virtual void fwd(const std::vector<double> &rot, double step);
 
-    /** bkwd*/
-    virtual bool bkwd(const std::vector<double> &rot);
+    virtual void bkwd(const std::vector<double> &rot, double step);
 
-    /** rot */
-    virtual bool rot(const std::vector<double> &rot);
+    virtual void rot(const std::vector<double> &rot);
 
-    /** vmos */
-    virtual bool vmos(const std::vector<double> &xdot);
+    virtual void pan(const std::vector<double> &transl);
 
-    /** pose */
-    virtual bool pose(const std::vector<double> &x, double interval);
+    virtual void vmos(const std::vector<double> &xdot);
+
+    virtual void eff(const std::vector<double> &xdotee);
+
+    virtual void pose(const std::vector<double> &x, double interval);
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
 
@@ -112,22 +100,17 @@ public:
     */
     virtual bool close();
 
-protected:
-
-    static double toDeg(double rad)
-    {
-        return rad * 180 / M_PI;
-    }
-
-    static double toRad(double deg)
-    {
-        return deg * M_PI / 180;
-    }
-
 private:
+
+    bool waitForCompletion(int vocab);
 
     AMOR_HANDLE handle;
     bool ownsHandle;
+    
+    yarp::dev::PolyDriver cartesianDevice;
+    roboticslab::ICartesianSolver *iCartesianSolver;
+
+    int currentState;
 };
 
 }  // namespace roboticslab

@@ -52,10 +52,7 @@ void roboticslab::StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& 
             v.push_back(in.get(i).asDouble());
         }
 
-        if (!(iCartesianControl->*cmd)(v))
-        {
-            CD_ERROR("command failed\n");
-        }
+        (iCartesianControl->*cmd)(v);
     }
     else
     {
@@ -77,10 +74,7 @@ void roboticslab::StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle
             v.push_back(in.get(i).asDouble());
         }
 
-        if (!(iCartesianControl->*cmd)(v, d))
-        {
-            CD_ERROR("command failed\n");
-        }
+        (iCartesianControl->*cmd)(v, d);
     }
     else
     {
