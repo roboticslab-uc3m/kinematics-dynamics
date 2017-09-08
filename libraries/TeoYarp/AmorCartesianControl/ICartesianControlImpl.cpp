@@ -2,12 +2,8 @@
 
 #include "AmorCartesianControl.hpp"
 
-#include <algorithm>
-#include <functional>
+#include <cmath>
 
-#include <kdl/frames.hpp>
-
-#include "KdlVectorConverter.hpp"
 #include "KinematicRepresentation.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------
@@ -43,24 +39,77 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    CD_ERROR("Not implemented.\n");
-    return false;
+    AMOR_VECTOR7 positions;
+
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS);
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    if (!iCartesianSolver->invKin(xd, currentQ, q))
+    {
+        CD_ERROR("invKin failed.\n");
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 {
-    CD_WARNING("Not implemented.\n");
-    return false;
+    std::vector<double> qd;
+
+    if (!inv(xd, qd))
+    {
+        CD_ERROR("inv failed.\n");
+        return false;
+    }
+
+    AMOR_VECTOR7 positions;
+
+    for (int i = 0; i < qd.size(); i++)
+    {
+        positions[i] = KinRepresentation::degToRad(qd[i]);
+    }
+
+    if (amor_set_positions(handle, positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 {
-    CD_WARNING("Not implemented.\n");
-    return false;
+    int state;
+    std::vector<double> x;
+
+    if (!stat(state, x))
+    {
+        CD_ERROR("stat failed.\n");
+        return false;
+    }
+
+    for (int i = 0; i < xd.size(); i++)
+    {
+        x[i] += xd[i];
+    }
+
+    return movj(x);
 }
 
 // -----------------------------------------------------------------------------
@@ -167,52 +216,214 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot, double step)
-{}
+{
+    AMOR_VECTOR7 positions;
+
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[2] = std::max(step, 0.0);
+    xdotee[3] = rot[0];
+    xdotee[4] = rot[1];
+    xdotee[5] = rot[2];
+
+    if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    AMOR_VECTOR7 velocities;
+
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
+
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+}
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot, double step)
-{}
+{
+    AMOR_VECTOR7 positions;
+
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[2] = -std::max(step, 0.0);
+    xdotee[3] = rot[0];
+    xdotee[4] = rot[1];
+    xdotee[5] = rot[2];
+
+    if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    AMOR_VECTOR7 velocities;
+
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
+
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+}
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::rot(const std::vector<double> &rot)
-{}
+{
+    AMOR_VECTOR7 positions;
+
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[3] = rot[0];
+    xdotee[4] = rot[1];
+    xdotee[5] = rot[2];
+
+    if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    AMOR_VECTOR7 velocities;
+
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
+
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+}
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::pan(const std::vector<double> &transl)
-{}
+{
+    AMOR_VECTOR7 positions;
+
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    std::vector<double> xdotee(6);
+    xdotee[0] = transl[0];
+    xdotee[1] = transl[1];
+    xdotee[2] = transl[2];
+
+    if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    AMOR_VECTOR7 velocities;
+
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
+
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+}
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 {
-    int state;
-    std::vector<double> xCurrent;
+    AMOR_VECTOR7 positions;
 
-    if (!stat(state, xCurrent))
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("stat failed\n");
+        CD_ERROR("%s\n", amor_error());
         return;
     }
 
-    std::vector<double> xdot_rpy;
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
 
-    KinRepresentation::decodeVelocity(xCurrent, xdot, xdot_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot))
+    {
+        CD_ERROR("diffInvKin failed.\n");
+        return;
+    }
 
     AMOR_VECTOR7 velocities;
 
-    velocities[0] = xdot_rpy[0] * 1000;  // [mm/s]
-    velocities[1] = xdot_rpy[1] * 1000;
-    velocities[2] = xdot_rpy[2] * 1000;
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
 
-    // FIXME: un-shuffle coordinates
-    velocities[3] = xdot_rpy[4];  // [rad/s]
-    velocities[4] = -xdot_rpy[5];
-    velocities[5] = xdot_rpy[3];
-
-    if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         CD_ERROR("%s\n", amor_error());
         return;
@@ -222,44 +433,93 @@ void roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::eff(const std::vector<double> &xdotee)
-{}
+{
+    AMOR_VECTOR7 positions;
+
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
+    {
+        CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    AMOR_VECTOR7 velocities;
+
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
+
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return;
+    }
+}
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
-    int state;
-    std::vector<double> xCurrent;
+    AMOR_VECTOR7 positions;
 
-    if (!stat(state, xCurrent))
+    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("stat failed.\n");
+        CD_ERROR("%s\n", amor_error());
         return;
     }
 
-    KDL::Frame fDesired = KdlVectorConverter::vectorToFrame(x);
-    KDL::Frame fCurrent = KdlVectorConverter::vectorToFrame(xCurrent);
+    std::vector<double> currentQ(AMOR_NUM_JOINTS);
 
-    KDL::Twist t = KDL::diff(fCurrent, fDesired, interval);
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
 
-    std::vector<double> xdot = KdlVectorConverter::twistToVector(t);
+    std::vector<double> xd;
 
-    // gain value still experimental
-    std::transform(xdot.begin(), xdot.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), 0.005));
+    if (!iCartesianSolver->fwdKinError(x, currentQ, xd))
+    {
+        CD_ERROR("fwdKinError failed.\n");
+        return;
+    }
 
-    KinRepresentation::decodeVelocity(xCurrent, xdot, xdot, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    std::vector<double> xdot(xd.size());
+    const double factor = 0.05 / interval;  // DEFAULT_GAIN = 0.05
+
+    for (int i = 0; i < xd.size(); i++)
+    {
+        xdot[i] = xd[i] * factor;
+    }
+
+    std::vector<double> qdot;
+
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot))
+    {
+        CD_ERROR("diffInvKin failed.\n");
+        return;
+    }
 
     AMOR_VECTOR7 velocities;
 
-    velocities[0] = xdot[0] * 1000;  // [mm/s]
-    velocities[1] = xdot[1] * 1000;
-    velocities[2] = xdot[2] * 1000;
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
 
-    velocities[3] = xdot[3];  // [rad/s]
-    velocities[4] = xdot[4];
-    velocities[5] = xdot[5];
-
-    if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
+    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         CD_ERROR("%s\n", amor_error());
         return;
