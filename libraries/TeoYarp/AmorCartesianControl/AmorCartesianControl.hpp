@@ -3,18 +3,14 @@
 #ifndef __AMOR_CARTESIAN_CONTROL_HPP__
 #define __AMOR_CARTESIAN_CONTROL_HPP__
 
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
+#include <yarp/os/Searchable.h>
+#include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PolyDriver.h>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 #include <amor.h>
 
 #include "ICartesianControl.h"
 #include "ICartesianSolver.h"
-#include "ColorDebug.hpp"
 
 #define DEFAULT_CAN_LIBRARY "libeddriver.so"
 #define DEFAULT_CAN_PORT 0
@@ -40,7 +36,8 @@ class AmorCartesianControl : public yarp::dev::DeviceDriver, public ICartesianCo
 public:
 
     AmorCartesianControl() : handle(AMOR_INVALID_HANDLE),
-                             ownsHandle(false)
+                             ownsHandle(false),
+                             iCartesianSolver(NULL)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
@@ -101,18 +98,6 @@ public:
     * @return true/false on success/failure.
     */
     virtual bool close();
-
-protected:
-
-    static double toDeg(double rad)
-    {
-        return rad * 180 / M_PI;
-    }
-
-    static double toRad(double deg)
-    {
-        return deg * M_PI / 180;
-    }
 
 private:
 

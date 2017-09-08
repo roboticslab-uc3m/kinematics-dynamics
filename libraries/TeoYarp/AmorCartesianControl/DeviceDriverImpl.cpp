@@ -2,6 +2,11 @@
 
 #include "AmorCartesianControl.hpp"
 
+#include <yarp/os/Property.h>
+#include <yarp/os/Value.h>
+
+#include <ColorDebug.hpp>
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
