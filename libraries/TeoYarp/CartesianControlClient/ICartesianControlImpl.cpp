@@ -221,12 +221,12 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::act(int commandCode)
+bool roboticslab::CartesianControlClient::act(int command)
 {
     yarp::os::Bottle cmd, response;
 
     cmd.addVocab(VOCAB_CC_ACT);
-    cmd.addInt(commandCode);
+    cmd.addInt(command);
 
     rpcClient.write(cmd,response);
 

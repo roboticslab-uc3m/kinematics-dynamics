@@ -46,7 +46,7 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 
 StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
     : iCartesianControl(NULL),
-      actuatorState(0)
+      actuatorState(VOCAB_CC_ACTUATOR_NONE)
 {
     data.resize(6, 0.0);
     fixedAxes.resize(6, false);

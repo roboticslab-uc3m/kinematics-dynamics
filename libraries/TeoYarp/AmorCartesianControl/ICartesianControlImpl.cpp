@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <yarp/os/Vocab.h>
+
 #include "KinematicRepresentation.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------
@@ -219,35 +221,29 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::act(int commandCode)
+bool roboticslab::AmorCartesianControl::act(int command)
 {
-    if (commandCode == 1)
+    AMOR_RESULT (*amor_command)(AMOR_HANDLE);
+
+    switch (command)
     {
-        if (amor_close_hand(handle) != AMOR_SUCCESS)
-        {
-            CD_ERROR("%s\n", amor_error());
-            return false;
-        }
+    case VOCAB_CC_ACTUATOR_CLOSE_GRIPPER:
+        amor_command = amor_close_hand;
+        break;
+    case VOCAB_CC_ACTUATOR_OPEN_GRIPPER:
+        amor_command = amor_open_hand;
+        break;
+    case VOCAB_CC_ACTUATOR_STOP_GRIPPER:
+        amor_command = amor_stop_hand;
+        break;
+    default:
+        CD_ERROR("Unrecognized command with code %d (%s).\n", command, yarp::os::Vocab::decode(command));
+        return false;
     }
-    else if (commandCode == 2)
+
+    if (amor_command(handle) != AMOR_SUCCESS)
     {
-        if (amor_open_hand(handle) != AMOR_SUCCESS)
-        {
-            CD_ERROR("%s\n", amor_error());
-            return false;
-        }
-    }
-    else if (commandCode == 3)
-    {
-        if (amor_stop_hand(handle) != AMOR_SUCCESS)
-        {
-            CD_ERROR("%s\n", amor_error());
-            return false;
-        }
-    }
-    else
-    {
-        CD_ERROR("Unrecognized command code: %d.\n", commandCode);
+        CD_ERROR("%s\n", amor_error());
         return false;
     }
 

@@ -131,7 +131,7 @@ bool StreamingDeviceController::updateModule()
 
     int actuatorState = streamingDevice->getActuatorState();
 
-    if (actuatorState != 0)
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
     {
         iCartesianControl->act(actuatorState);
     }

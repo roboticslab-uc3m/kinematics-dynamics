@@ -273,7 +273,7 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::act(int commandCode)
+bool roboticslab::BasicCartesianControl::act(int command)
 {
     CD_ERROR("Not implemented.\n");
     return false;

@@ -45,20 +45,20 @@ int roboticslab::SpnavSensorDevice::getActuatorState()
 
     if (button1 == 1)
     {
-        actuatorState = 1;
+        actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
     }
     else if (button2 == 1)
     {
-        actuatorState = 2;
+        actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
     }
     else
     {
-        if (actuatorState != 0)
+        if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
         {
-            actuatorState = 3;
+            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
         }
 
-        actuatorState = 0;
+        actuatorState = VOCAB_CC_ACTUATOR_NONE;
     }
 
     return actuatorState;
