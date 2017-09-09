@@ -57,6 +57,9 @@
 
 /**
  * @name Control state vocabs
+ *
+ * Used by roboticslab::ICartesianControl::stat to reflect current control state.
+ *
  * @{
  */
 
