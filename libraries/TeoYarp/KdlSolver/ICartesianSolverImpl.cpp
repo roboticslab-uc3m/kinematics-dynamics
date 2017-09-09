@@ -8,6 +8,9 @@
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainidsolver.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
+#ifdef _USE_LMA_
+    #include <kdl/chainiksolverpos_lma.hpp>
+#endif //_USE_LMA_
 
 #include <ColorDebug.hpp>
 
