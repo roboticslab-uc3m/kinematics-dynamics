@@ -26,7 +26,7 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
     if (data.size() != 6)
     {
-        CD_WARNING("Invalid data size: %d.\n", data.size());
+        CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;
     }
 
