@@ -14,9 +14,6 @@
 
 #define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
-#define DEFAULT_ACTUATOR_LOCAL "/StreamingActuatorClient"
-#define DEFAULT_ACTUATOR_REMOTE "/spacenavigator/buttons"
-
 #define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
