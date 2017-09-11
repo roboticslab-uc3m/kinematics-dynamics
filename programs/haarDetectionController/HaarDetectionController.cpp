@@ -76,6 +76,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
     }
 
     grabberResponder.setICartesianControlDriver(iCartesianControl);
+    grabberResponder.setNoApproachSetting(rf.check("noApproach"));
 
     grabberPort.useCallback(grabberResponder);
     grabberPort.open(localPort + "/state:i");

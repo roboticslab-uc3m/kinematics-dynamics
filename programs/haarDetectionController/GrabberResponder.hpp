@@ -22,7 +22,8 @@ class GrabberResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 public:
 
     GrabberResponder() : iCartesianControl(NULL),
-                         isStopped(true)
+                         isStopped(true),
+                         noApproach(false)
     {}
 
     virtual void onRead(yarp::os::Bottle &b);
@@ -32,11 +33,16 @@ public:
         this->iCartesianControl = iCartesianControl;
     }
 
+    void setNoApproachSetting(bool noApproach)
+    {
+        this->noApproach = noApproach;
+    }
+
 private:
 
     roboticslab::ICartesianControl *iCartesianControl;
 
-    bool isStopped;
+    bool isStopped, noApproach;
 };
 
 }  // namespace roboticslab

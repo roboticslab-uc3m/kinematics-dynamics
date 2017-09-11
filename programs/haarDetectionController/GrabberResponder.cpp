@@ -11,6 +11,7 @@ namespace
 {
     const double STEP_X = 0.0001;
     const double STEP_Y = 0.0001;
+    const double STEP_Z = 0.01;
 
     // just in case, not used by now
     const double DEADBAND_X_PX = 0.0;
@@ -52,6 +53,7 @@ void roboticslab::GrabberResponder::onRead(yarp::os::Bottle &b)
         std::vector<double> transl(3);
         transl[0] = target_x;
         transl[1] = -target_y;  // inverted for AMOR
+        transl[2] = noApproach ? 0.0 : STEP_Z;
 
         iCartesianControl->pan(transl);
 
