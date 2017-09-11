@@ -20,8 +20,6 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
             "remote vision port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_REMOTE_CARTESIAN),
             "remote cartesian port").asString();
-    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
-            "remote sensors port").asString();
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asDouble();
 
@@ -44,24 +42,30 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    yarp::os::Property sensorsClientOptions;
-    sensorsClientOptions.fromString(rf.toString());
-    sensorsClientOptions.put("device", "ProximitySensorsClient");
-    sensorsClientOptions.put("local", localPort);
-    sensorsClientOptions.put("remote", sensorsPort);
-
-    sensorsClientDevice.open(sensorsClientOptions);
-
-    if (!sensorsClientDevice.isValid())
+    if (!rf.check("disableSensors"))
     {
-        CD_ERROR("Proximity sensors device not valid.\n");
-        return false;
-    }
+        std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
+                "remote sensors port").asString();
 
-    if (!sensorsClientDevice.view(iProximitySensors))
-    {
-        CD_ERROR("Could not view iProximitySensors.\n");
-        return false;
+        yarp::os::Property sensorsClientOptions;
+        sensorsClientOptions.fromString(rf.toString());
+        sensorsClientOptions.put("device", "ProximitySensorsClient");
+        sensorsClientOptions.put("local", localPort);
+        sensorsClientOptions.put("remote", sensorsPort);
+
+        sensorsClientDevice.open(sensorsClientOptions);
+
+        if (!sensorsClientDevice.isValid())
+        {
+            CD_ERROR("Proximity sensors device not valid.\n");
+            return false;
+        }
+
+        if (!sensorsClientDevice.view(iProximitySensors))
+        {
+            CD_ERROR("Could not view iProximitySensors.\n");
+            return false;
+        }
     }
 
     if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER))
@@ -92,7 +96,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
 bool HaarDetectionController::updateModule()
 {
-    if (iProximitySensors->hasTarget())
+    if (sensorsClientDevice.isValid() && iProximitySensors->hasTarget())
     {
         CD_INFO("Target detected.\n");
 
