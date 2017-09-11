@@ -10,12 +10,14 @@
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianControl.h"
+#include "IProximitySensors.h"
 
 #include "GrabberResponder.hpp"
 
 #define DEFAULT_LOCAL_PORT "/HaarDetectionControl"
 #define DEFAULT_REMOTE_VISION "/haarDetection2D"
 #define DEFAULT_REMOTE_CARTESIAN "/CartesianControl"
+#define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
 
 #define DEFAULT_PERIOD 0.01 // [s]
 
@@ -45,6 +47,9 @@ private:
 
     yarp::dev::PolyDriver cartesianControlDevice;
     roboticslab::ICartesianControl *iCartesianControl;
+
+    yarp::dev::PolyDriver sensorsClientDevice;
+    roboticslab::IProximitySensors *iProximitySensors;
 
     double period;
 };
