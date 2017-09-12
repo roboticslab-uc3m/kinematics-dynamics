@@ -81,17 +81,20 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    grabberResponder.setICartesianControlDriver(iCartesianControl);
-    grabberResponder.setNoApproachSetting(rf.check("noApproach"));
-
-    grabberPort.useCallback(grabberResponder);
-    grabberPort.open(localPort + "/state:i");
-
-    if (!yarp::os::Network::connect(remoteVision + "/state:o", localPort + "/state:i"))
+    if (!rf.check("noMove"))
     {
-        CD_ERROR("Unable to connect to remote vision port with prefix: %s.\n", remoteVision.c_str());
-        close();
-        return false;
+        grabberResponder.setICartesianControlDriver(iCartesianControl);
+        grabberResponder.setNoApproachSetting(rf.check("noApproach"));
+
+        grabberPort.useCallback(grabberResponder);
+        grabberPort.open(localPort + "/state:i");
+
+        if (!yarp::os::Network::connect(remoteVision + "/state:o", localPort + "/state:i"))
+        {
+            CD_ERROR("Unable to connect to remote vision port with prefix: %s.\n", remoteVision.c_str());
+            close();
+            return false;
+        }
     }
 
     CD_INFO("Delaying %d seconds...\n", INITIAL_ACT_DELAY);
