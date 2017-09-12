@@ -12,6 +12,12 @@
 
 using namespace roboticslab;
 
+namespace
+{
+    const int INITIAL_ACT_DELAY = 3;
+    const int FINAL_ACT_DELAY = 5;
+}
+
 bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 {
     std::string localPort = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PORT),
@@ -88,9 +94,8 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    const int delay = 3;
-    CD_INFO("Delaying %d seconds...\n", delay);
-    yarp::os::Time::delay(delay);
+    CD_INFO("Delaying %d seconds...\n", INITIAL_ACT_DELAY);
+    yarp::os::Time::delay(INITIAL_ACT_DELAY);
 
     return true;
 }
@@ -101,9 +106,19 @@ bool HaarDetectionController::updateModule()
     {
         CD_INFO("Target detected.\n");
 
+        // disable servo control, stop motors and close stream of sensor data
         grabberPort.interrupt();
-        iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
-        yarp::os::Time::delay(5);
+        iCartesianControl->stopControl();
+        sensorsClientDevice.close();
+
+        // close gripper, delay needed for AMOR
+        const double now = yarp::os::Time::now();
+
+        while (yarp::os::Time::now() - now < FINAL_ACT_DELAY)
+        {
+            iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
+            yarp::os::Time::delay(0.1);
+        }
 
         return false;
     }
