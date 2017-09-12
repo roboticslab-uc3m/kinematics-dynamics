@@ -54,6 +54,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[forc] $fCoord1 $fCoord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
     addUsage("[tool] $fCoord1 $fCoord2 ...", "append fixed link to end effector");
+    addUsage("[act] [$Command]", "actuate tool using selected command"):
 }
 
 // -----------------------------------------------------------------------------
