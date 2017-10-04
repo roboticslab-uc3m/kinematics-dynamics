@@ -48,23 +48,18 @@ namespace
     }
 
     // configure the TTY for reading keyboard input (UNIX)
-    void ttyset(void)
+    void ttyset()
     {
         struct termios ts;
-        struct sigaction sact;
         tcgetattr(STDIN_FILENO, &ts);
         ots = ts;
+
         ts.c_lflag &= ~ICANON;  // raw data mode
         ts.c_lflag &= ~(ECHO | ECHOCTL | ECHONL);  // no echo
         ts.c_lflag |= IEXTEN;
 
-        // restore tty after these signals
-        sact.sa_handler = ttyreset;
-        sigaction(SIGHUP, &sact, NULL);
-        sigaction(SIGINT, &sact, NULL);
-        sigaction(SIGPIPE, &sact, NULL);
-        sigaction(SIGTERM, &sact, NULL);
         tcsetattr(STDIN_FILENO, TCSANOW, &ts);  // set raw data mode
+
         fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0) | O_NONBLOCK);  // make stdin non blocking
         fcntl(STDOUT_FILENO, F_SETFL, fcntl(STDOUT_FILENO, F_GETFL, 0) | O_NONBLOCK);  // make stdout non blocking
     }
