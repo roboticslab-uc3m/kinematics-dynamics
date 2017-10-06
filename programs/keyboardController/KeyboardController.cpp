@@ -40,6 +40,23 @@ namespace
         return out;
     }
 
+    std::vector<double> roundZeroes(const std::vector<double>& v_in)
+    {
+        static const double precision = 1e-6;
+
+        std::vector<double> v_out(v_in);
+
+        for (std::vector<double>::iterator it = v_out.begin(); it != v_out.end(); ++it)
+        {
+            if (std::abs(*it) < precision)
+            {
+                *it = 0.0;
+            }
+        }
+
+        return v_out;
+    }
+
     // reset the TTY configurations that was changed in the ttyset function (UNIX)
     void ttyreset(int signal)
     {
@@ -472,7 +489,7 @@ void roboticslab::KeyboardController::printJointPositions()
     iEncoders->getEncoders(encs.data());
 
     std::cout << "Current joint positions [degrees]:" << std::endl;
-    std::cout << encs << std::endl;
+    std::cout << roundZeroes(encs) << std::endl;
 }
 
 void roboticslab::KeyboardController::printCartesianPositions()
@@ -491,7 +508,7 @@ void roboticslab::KeyboardController::printCartesianPositions()
     KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
-    std::cout << x << std::endl;
+    std::cout << roundZeroes(x) << std::endl;
 }
 
 void roboticslab::KeyboardController::issueStop()
