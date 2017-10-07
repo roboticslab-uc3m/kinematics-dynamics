@@ -537,7 +537,7 @@ void roboticslab::KeyboardController::issueStop()
 
 void roboticslab::KeyboardController::printHelp()
 {
-    const int markerWidth = 65;
+    static const int markerWidth = 70;
 
     std::cout << std::string(markerWidth, '-') << std::endl;
     std::cout << " [Esc] - close the application" << std::endl;
@@ -555,8 +555,8 @@ void roboticslab::KeyboardController::printHelp()
 
     if (controlboardDevice.isValid())
     {
-        const char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-        const char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
+        static const char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        static const char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
 
         std::cout << " '" << jointPos[0] << "'";
 
