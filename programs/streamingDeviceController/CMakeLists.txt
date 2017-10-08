@@ -1,4 +1,5 @@
-option(ENABLE_streamingDeviceController "Enable/disable streamingDeviceController program" ON)
+cmake_dependent_option(ENABLE_streamingDeviceController "Enable/disable streamingDeviceController program" ON
+                       ENABLE_KdlVectorConverterLib OFF)
 
 if(ENABLE_streamingDeviceController)
 
@@ -35,7 +36,8 @@ target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
                                                 YARP::YARP_OS
                                                 YARP::YARP_init
                                                 YARP::YARP_dev
-                                                YARP::YARP_sig)
+                                                YARP::YARP_sig
+                                                KdlVectorConverterLib)
 
 install(TARGETS streamingDeviceController
         DESTINATION ${CMAKE_INSTALL_BINDIR})

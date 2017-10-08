@@ -2,15 +2,38 @@
 
 #include <cmath>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/sig/Vector.h>
 
 #include <kdl/frames.hpp>
+
+#include <KdlVectorConverter.hpp>
 
 #include <ColorDebug.hpp>
 
 namespace
 {
-    KDL::Frame2 frame;
+    KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
+}
+
+roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, double period)
+    : StreamingDevice(config),
+      iAnalogSensor(NULL),
+      period(period)
+{
+    yarp::os::Bottle *leapFrameRPY = config.find("leapFrameRPY").asList();
+
+    if (!leapFrameRPY->isNull() && leapFrameRPY->size() == 3)
+    {
+        double roll = leapFrameRPY->get(0).asDouble() * M_PI / 180.0;
+        double pitch = leapFrameRPY->get(1).asDouble() * M_PI / 180.0;
+        double yaw = leapFrameRPY->get(2).asDouble() * M_PI / 180.0;
+
+        CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+
+        frame_ee_leap = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
+        frame_leap_ee = frame_ee_leap.Inverse();
+    }
 }
 
 bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
@@ -41,10 +64,9 @@ bool roboticslab::LeapMotionSensorDevice::initialize()
             initialOffset[0], initialOffset[1], initialOffset[2],
             initialOffset[3], initialOffset[4], initialOffset[5]);
 
-    const KDL::Rotation2 rot(std::atan2(initialOffset[1], initialOffset[0]));
-    const KDL::Vector2 vec(initialOffset[0], initialOffset[1]);
+    KDL::Frame frame_base_ee = KdlVectorConverter::vectorToFrame(initialOffset);
 
-    frame = KDL::Frame2(rot, vec);
+    frame_base_leap = frame_base_ee * frame_ee_leap;
 
     return true;
 }
@@ -63,31 +85,35 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
     }
 
     // convert to meters
-    this->data[0] = -data[2] * 0.001;
-    this->data[1] = -data[0] * 0.001;
-    this->data[2] = data[1] * 0.001;
+    this->data[0] = data[0] * 0.001;
+    this->data[1] = data[1] * 0.001;
+    this->data[2] = data[2] * 0.001;
 
     // keep in radians
-    this->data[3] = initialOffset[3];
-    this->data[4] = initialOffset[4];
-    this->data[5] = initialOffset[5];
+    this->data[3] = data[3];
+    this->data[4] = data[4];
+    this->data[5] = data[5];
 
     return true;
 }
 
 bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
 {
+    data[1] -= VERTICAL_OFFSET;
+
     for (int i = 0; i < 3; i++)
     {
         data[i] /= scaling;
     }
 
-    KDL::Vector2 vec_leap(data[0], data[1]);
-    KDL::Vector2 vec_base = frame * vec_leap;
+    KDL::Vector vec_leap_hand(data[0], data[1], data[2]);
+    KDL::Rotation rot_leap_hand= KDL::Rotation::RPY(data[3], data[4], data[5]);
+    KDL::Frame frame_leap_hand(rot_leap_hand, vec_leap_hand);
 
-    data[0] = vec_base.x();
-    data[1] = vec_base.y();
-    data[2] += initialOffset[2] - VERTICAL_OFFSET;
+    // undo LM frame rotation with frame_leap_ee
+    KDL::Frame frame_base_hand = frame_base_leap * frame_leap_hand * frame_leap_ee;
+
+    data = KdlVectorConverter::frameToVector(frame_base_hand);
 
     return true;
 }
