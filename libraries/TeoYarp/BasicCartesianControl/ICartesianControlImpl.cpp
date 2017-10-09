@@ -304,6 +304,8 @@ void roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot, dou
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }
@@ -348,6 +350,8 @@ void roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot, do
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }
@@ -391,6 +395,8 @@ void roboticslab::BasicCartesianControl::rot(const std::vector<double> &rot)
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }
@@ -434,6 +440,8 @@ void roboticslab::BasicCartesianControl::pan(const std::vector<double> &transl)
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }
@@ -472,6 +480,8 @@ void roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }
@@ -510,6 +520,8 @@ void roboticslab::BasicCartesianControl::eff(const std::vector<double> &xdotee)
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }
@@ -560,6 +572,8 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         if ( std::abs(qdot[i]) > MAX_ANG_VEL )
         {
             CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            std::fill(qdot.begin(), qdot.end(), 0.0);
+            iVelocityControl->velocityMove(qdot.data());
             return;
         }
     }

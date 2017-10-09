@@ -15,6 +15,8 @@
 #define DEFAULT_CAN_LIBRARY "libeddriver.so"
 #define DEFAULT_CAN_PORT 0
 
+#define MAX_ANG_VEL 10.0
+
 namespace roboticslab
 {
 
@@ -103,6 +105,8 @@ public:
 private:
 
     bool waitForCompletion(int vocab);
+
+    bool checkJointVelocities(const std::vector<double> &qdot);
 
     AMOR_HANDLE handle;
     bool ownsHandle;
