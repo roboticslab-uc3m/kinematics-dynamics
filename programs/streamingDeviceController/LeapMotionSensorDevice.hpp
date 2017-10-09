@@ -23,11 +23,7 @@ class LeapMotionSensorDevice : public StreamingDevice
 public:
 
     //! Constructor
-    LeapMotionSensorDevice(yarp::os::Searchable & config, double period)
-        : StreamingDevice(config),
-          iAnalogSensor(NULL),
-          period(period)
-    {}
+    LeapMotionSensorDevice(yarp::os::Searchable & config, double period);
 
     virtual bool acquireInterfaces();
 

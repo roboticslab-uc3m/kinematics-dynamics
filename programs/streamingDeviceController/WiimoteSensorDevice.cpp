@@ -28,7 +28,7 @@ bool roboticslab::WiimoteSensorDevice::acquireData()
 
     if (data.size() != 5)
     {
-        CD_WARNING("Invalid data size: %d.\n", data.size());
+        CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;
     }
 

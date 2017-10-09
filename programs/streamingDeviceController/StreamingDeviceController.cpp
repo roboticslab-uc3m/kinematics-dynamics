@@ -35,12 +35,14 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!streamingDevice->isValid())
     {
         CD_ERROR("Streaming device not valid.\n");
+        close();
         return false;
     }
 
     if (!streamingDevice->acquireInterfaces())
     {
         CD_ERROR("Unable to acquire plugin interfaces from streaming device.\n");
+        close();
         return false;
     }
 
@@ -54,14 +56,14 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!cartesianControlClientDevice.isValid())
     {
         CD_ERROR("Cartesian control client device not valid.\n");
-        cartesianControlClientDevice.close(); // release managed resources
+        close();
         return false;
     }
 
     if (!cartesianControlClientDevice.view(iCartesianControl))
     {
         CD_ERROR("Could not view iCartesianControl.\n");
-        cartesianControlClientDevice.close(); // close ports
+        close();
         return false;
     }
 
@@ -70,7 +72,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!streamingDevice->initialize())
     {
         CD_ERROR("Device initialization failed.\n");
-        cartesianControlClientDevice.close(); // close ports
+        close();
         return false;
     }
 
@@ -85,12 +87,14 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         if (!sensorsClientDevice.isValid())
         {
             CD_ERROR("sensors device not valid.\n");
+            close();
             return false;
         }
 
         if (!sensorsClientDevice.view(iProximitySensors))
         {
             CD_ERROR("Could not view iSensors.\n");
+            close();
             return false;
         }
     }
@@ -157,21 +161,15 @@ bool StreamingDeviceController::updateModule()
 
 bool StreamingDeviceController::interruptModule()
 {
-    iCartesianControl->stopControl();
+    return iCartesianControl->stopControl();
+}
 
+bool StreamingDeviceController::close()
+{
     delete streamingDevice;
     streamingDevice = NULL;
 
-    bool ok = true;
-
-    ok &= cartesianControlClientDevice.close();
-
-    if (sensorsClientDevice.isValid())
-    {
-        ok &= sensorsClientDevice.close();
-    }
-
-    return ok;
+    return cartesianControlClientDevice.close() & sensorsClientDevice.close();
 }
 
 double StreamingDeviceController::getPeriod()

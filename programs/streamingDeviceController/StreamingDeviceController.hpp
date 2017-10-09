@@ -37,6 +37,7 @@ public:
     virtual bool configure(yarp::os::ResourceFinder &rf);
     virtual bool updateModule();
     virtual bool interruptModule();
+    virtual bool close();
     virtual double getPeriod();
 
 private:

@@ -281,6 +281,12 @@ void roboticslab::AmorCartesianControl::fwd(const std::vector<double> &rot, doub
         return;
     }
 
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
+        return;
+    }
+
     AMOR_VECTOR7 velocities;
 
     for (int i = 0; i < qdot.size(); i++)
@@ -323,6 +329,12 @@ void roboticslab::AmorCartesianControl::bkwd(const std::vector<double> &rot, dou
     if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
     {
         CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
         return;
     }
 
@@ -370,6 +382,12 @@ void roboticslab::AmorCartesianControl::rot(const std::vector<double> &rot)
         return;
     }
 
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
+        return;
+    }
+
     AMOR_VECTOR7 velocities;
 
     for (int i = 0; i < qdot.size(); i++)
@@ -414,6 +432,12 @@ void roboticslab::AmorCartesianControl::pan(const std::vector<double> &transl)
         return;
     }
 
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
+        return;
+    }
+
     AMOR_VECTOR7 velocities;
 
     for (int i = 0; i < qdot.size(); i++)
@@ -453,6 +477,12 @@ void roboticslab::AmorCartesianControl::vmos(const std::vector<double> &xdot)
         return;
     }
 
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
+        return;
+    }
+
     AMOR_VECTOR7 velocities;
 
     for (int i = 0; i < qdot.size(); i++)
@@ -489,6 +519,12 @@ void roboticslab::AmorCartesianControl::eff(const std::vector<double> &xdotee)
     if (!iCartesianSolver->diffInvKinEE(currentQ, xdotee, qdot))
     {
         CD_ERROR("diffInvKinEE failed.\n");
+        return;
+    }
+
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
         return;
     }
 
@@ -546,6 +582,12 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot))
     {
         CD_ERROR("diffInvKin failed.\n");
+        return;
+    }
+
+    if (!checkJointVelocities(qdot))
+    {
+        amor_controlled_stop(handle);
         return;
     }
 

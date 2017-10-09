@@ -40,6 +40,23 @@ namespace
         return out;
     }
 
+    std::vector<double> roundZeroes(const std::vector<double>& v_in)
+    {
+        static const double precision = 1e-6;
+
+        std::vector<double> v_out(v_in);
+
+        for (std::vector<double>::iterator it = v_out.begin(); it != v_out.end(); ++it)
+        {
+            if (std::abs(*it) < precision)
+            {
+                *it = 0.0;
+            }
+        }
+
+        return v_out;
+    }
+
     // reset the TTY configurations that was changed in the ttyset function (UNIX)
     void ttyreset(int signal)
     {
@@ -48,23 +65,18 @@ namespace
     }
 
     // configure the TTY for reading keyboard input (UNIX)
-    void ttyset(void)
+    void ttyset()
     {
         struct termios ts;
-        struct sigaction sact;
         tcgetattr(STDIN_FILENO, &ts);
         ots = ts;
+
         ts.c_lflag &= ~ICANON;  // raw data mode
         ts.c_lflag &= ~(ECHO | ECHOCTL | ECHONL);  // no echo
         ts.c_lflag |= IEXTEN;
 
-        // restore tty after these signals
-        sact.sa_handler = ttyreset;
-        sigaction(SIGHUP, &sact, NULL);
-        sigaction(SIGINT, &sact, NULL);
-        sigaction(SIGPIPE, &sact, NULL);
-        sigaction(SIGTERM, &sact, NULL);
         tcsetattr(STDIN_FILENO, TCSANOW, &ts);  // set raw data mode
+
         fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0) | O_NONBLOCK);  // make stdin non blocking
         fcntl(STDOUT_FILENO, F_SETFL, fcntl(STDOUT_FILENO, F_GETFL, 0) | O_NONBLOCK);  // make stdout non blocking
     }
@@ -477,7 +489,7 @@ void roboticslab::KeyboardController::printJointPositions()
     iEncoders->getEncoders(encs.data());
 
     std::cout << "Current joint positions [degrees]:" << std::endl;
-    std::cout << encs << std::endl;
+    std::cout << roundZeroes(encs) << std::endl;
 }
 
 void roboticslab::KeyboardController::printCartesianPositions()
@@ -496,7 +508,7 @@ void roboticslab::KeyboardController::printCartesianPositions()
     KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
-    std::cout << x << std::endl;
+    std::cout << roundZeroes(x) << std::endl;
 }
 
 void roboticslab::KeyboardController::issueStop()
@@ -525,7 +537,7 @@ void roboticslab::KeyboardController::issueStop()
 
 void roboticslab::KeyboardController::printHelp()
 {
-    const int markerWidth = 65;
+    static const int markerWidth = 70;
 
     std::cout << std::string(markerWidth, '-') << std::endl;
     std::cout << " [Esc] - close the application" << std::endl;
@@ -543,8 +555,8 @@ void roboticslab::KeyboardController::printHelp()
 
     if (controlboardDevice.isValid())
     {
-        const char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-        const char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
+        static const char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        static const char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};
 
         std::cout << " '" << jointPos[0] << "'";
 
