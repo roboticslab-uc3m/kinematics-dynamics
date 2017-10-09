@@ -101,13 +101,26 @@ bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
 {
     data[1] -= VERTICAL_OFFSET;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 6; i++)
     {
-        data[i] /= scaling;
+        if (fixedAxes[i])
+        {
+            data[i] = 0.0;
+        }
+        else if (i < 3)
+        {
+            data[i] /= scaling;
+        }
+    }
+
+    KDL::Rotation rot_leap_hand;
+
+    if (!fixedAxes[3] && !fixedAxes[4] && !fixedAxes[5])
+    {
+        rot_leap_hand = KDL::Rotation::RPY(data[3], data[4], data[5]);
     }
 
     KDL::Vector vec_leap_hand(data[0], data[1], data[2]);
-    KDL::Rotation rot_leap_hand= KDL::Rotation::RPY(data[3], data[4], data[5]);
     KDL::Frame frame_leap_hand(rot_leap_hand, vec_leap_hand);
 
     // undo LM frame rotation with frame_leap_ee
