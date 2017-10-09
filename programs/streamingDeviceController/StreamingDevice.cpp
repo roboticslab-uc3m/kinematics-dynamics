@@ -79,6 +79,11 @@ bool StreamingDevice::transformData(double scaling)
 
 bool StreamingDevice::hasValidMovementData() const
 {
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        return false;
+    }
+
     for (int i = 0; i < data.size(); i++)
     {
         if (data[i] != 0.0)

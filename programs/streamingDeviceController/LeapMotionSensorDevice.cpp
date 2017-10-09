@@ -19,7 +19,9 @@ namespace
 roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, double period)
     : StreamingDevice(config),
       iAnalogSensor(NULL),
-      period(period)
+      period(period),
+      hasActuator(false),
+      grab(false), pinch(false)
 {
     yarp::os::Bottle *leapFrameRPY = config.find("leapFrameRPY").asList();
 
@@ -94,6 +96,14 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
     this->data[4] = data[4];
     this->data[5] = data[5];
 
+    if (data.size() == 8)
+    {
+        hasActuator = true;
+
+        grab = data[6] == 1.0;
+        pinch = data[7] == 1.0;
+    }
+
     return true;
 }
 
@@ -129,6 +139,34 @@ bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
     data = KdlVectorConverter::frameToVector(frame_base_hand);
 
     return true;
+}
+
+int roboticslab::LeapMotionSensorDevice::getActuatorState()
+{
+    if (!hasActuator)
+    {
+        return VOCAB_CC_ACTUATOR_NONE;
+    }
+
+    if (grab)
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
+    }
+    else if (pinch)
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
+    }
+    else
+    {
+        if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+        }
+
+        actuatorState = VOCAB_CC_ACTUATOR_NONE;
+    }
+
+    return actuatorState;
 }
 
 void roboticslab::LeapMotionSensorDevice::sendMovementCommand()

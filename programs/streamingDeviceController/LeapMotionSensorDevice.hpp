@@ -33,6 +33,8 @@ public:
 
     virtual bool transformData(double scaling);
 
+    virtual int getActuatorState();
+
     virtual void sendMovementCommand();
 
 private:
@@ -42,6 +44,9 @@ private:
     double period;
 
     std::vector<double> initialOffset;
+
+    bool hasActuator;
+    bool grab, pinch;
 };
 
 }  // namespace roboticslab
