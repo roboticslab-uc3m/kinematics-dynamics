@@ -81,6 +81,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         yarp::os::Property sensorsClientOptions;
         sensorsClientOptions.fromString(rf.toString());
         sensorsClientOptions.put("device", "ProximitySensorsClient");
+        sensorsClientOptions.put("remote", sensorsPort);
 
         sensorsClientDevice.open(sensorsClientOptions);
 
