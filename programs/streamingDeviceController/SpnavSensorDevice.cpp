@@ -53,7 +53,14 @@ int roboticslab::SpnavSensorDevice::getActuatorState()
     }
     else if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
     {
-        actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+        if (actuatorState != VOCAB_CC_ACTUATOR_STOP_GRIPPER)
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+        }
+        else
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_NONE;
+        }
     }
     else
     {
