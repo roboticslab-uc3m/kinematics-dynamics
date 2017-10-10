@@ -102,6 +102,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     isStopped = true;
 
+    disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
+
     return true;
 }
 
@@ -122,7 +124,7 @@ bool StreamingDeviceController::updateModule()
 
     double localScaling = scaling;
 
-    if (alertLevel == IProximitySensors::LOW)
+    if (!disableSensorsLowLevel && alertLevel == IProximitySensors::LOW)
     {
         localScaling *= SCALING_FACTOR_ON_ALERT;
         CD_WARNING("Obstacle detected.\n");

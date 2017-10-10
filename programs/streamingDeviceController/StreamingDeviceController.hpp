@@ -55,6 +55,7 @@ private:
     double scaling;
 
     bool isStopped;
+    bool disableSensorsLowLevel;
 
     static const double SCALING_FACTOR_ON_ALERT;
 };
