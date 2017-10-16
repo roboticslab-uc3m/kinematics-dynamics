@@ -47,6 +47,7 @@ install:
   - cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_CanBusHico=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_TextilesHand=OFF -DENABLE_FakeJoint=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_Jr3=OFF -DENABLE_SpaceNavigator=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_tests=OFF
   - make
   - sudo make install
+  - export ROBOTICSLAB_YARP_DEVICES_DIR=$PWD
   - cd ../..
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
   - if [ "$CXX" = "g++" ]; then wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz; fi
