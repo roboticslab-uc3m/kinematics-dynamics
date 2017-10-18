@@ -141,6 +141,8 @@ private:
     std::vector<double> currentJointVels;
     std::vector<double> currentCartVels;
 
+    static const std::vector<double> ZERO_CARTESIAN_VELOCITY;
+
     static const double JOINT_VELOCITY_STEP;
     static const double CARTESIAN_LINEAR_VELOCITY_STEP;
     static const double CARTESIAN_ANGULAR_VELOCITY_STEP;

@@ -83,6 +83,8 @@ namespace
     }
 }
 
+const std::vector<double> roboticslab::KeyboardController::ZERO_CARTESIAN_VELOCITY(NUM_CART_COORDS);
+
 const double roboticslab::KeyboardController::JOINT_VELOCITY_STEP = 0.5;  // [deg]
 const double roboticslab::KeyboardController::CARTESIAN_LINEAR_VELOCITY_STEP = 0.005;  // [m]
 const double roboticslab::KeyboardController::CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01;  // [deg]
@@ -423,7 +425,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
         currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
     }
 
-    std::cout << "New joint velocity: " << currentJointVels << std::endl;
+    std::cout << "New joint velocity: " << roundZeroes(currentJointVels) << std::endl;
 
     if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
     {
@@ -446,10 +448,19 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     currentCartVels[coord] = op(currentCartVels[coord], step);
 
-    std::cout << "New cartesian velocity: " << currentCartVels << std::endl;
+    std::cout << "New cartesian velocity: " << roundZeroes(currentCartVels) << std::endl;
 
     cartesianThread->setCurrentData(currentCartVels);
-    cartesianThread->resume();
+
+    if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
+    {
+        cartesianThread->step(); // send vector of zeroes
+        cartesianThread->suspend();
+    }
+    else
+    {
+        cartesianThread->resume();
+    }
 }
 
 void roboticslab::KeyboardController::toggleReferenceFrame()
