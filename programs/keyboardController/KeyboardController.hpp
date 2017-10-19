@@ -102,6 +102,8 @@ private:
 
     enum cart_frames { INERTIAL, END_EFFECTOR };
 
+    enum control_modes { NOT_CONTROLLING, JOINT_MODE, CARTESIAN_MODE };
+
     static const std::plus<double> increment_functor;
     static const std::minus<double> decrement_functor;
 
@@ -121,9 +123,11 @@ private:
     void printHelp();
 
     int axes;
-    cart_frames cart_frame;
+
+    cart_frames cartFrame;
     std::string angleRepr;
     KinRepresentation::orientation_system orient;
+    control_modes controlMode;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;

@@ -210,7 +210,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
 
-        cart_frame = INERTIAL;
+        cartFrame = INERTIAL;
 
         cartesianThread = new KeyboardRateThread(iCartesianControl);
 
@@ -225,6 +225,8 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
     ttyset();
 
     printHelp();
+
+    controlMode = NOT_CONTROLLING;
 
     return true;
 }
@@ -400,6 +402,11 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
         return;
     }
 
+    if (controlMode == CARTESIAN_MODE)
+    {
+        issueStop();
+    }
+
     if (axes <= q)
     {
         CD_WARNING("Unrecognized key, only %d joints available.\n", axes);
@@ -430,6 +437,11 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
     if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
     {
         CD_ERROR("velocityMove failed\n");
+        issueStop();
+    }
+    else
+    {
+        controlMode = JOINT_MODE;
     }
 }
 
@@ -441,6 +453,11 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
         CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
         issueStop();
         return;
+    }
+
+    if (controlMode == JOINT_MODE)
+    {
+        issueStop();
     }
 
     bool isLinear = coord == X || coord == Y || coord == Z;
@@ -456,10 +473,12 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     {
         cartesianThread->step(); // send vector of zeroes
         cartesianThread->suspend();
+        controlMode = NOT_CONTROLLING;
     }
     else
     {
         cartesianThread->resume();
+        controlMode = CARTESIAN_MODE;
     }
 }
 
@@ -476,15 +495,15 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     std::cout << "Toggled reference frame for cartesian commands: ";
 
-    switch (cart_frame)
+    switch (cartFrame)
     {
     case INERTIAL:
-        cart_frame = END_EFFECTOR;
+        cartFrame = END_EFFECTOR;
         cartesianThread->setCurrentCommand(&ICartesianControl::eff);
         std::cout << "end effector";
         break;
     case END_EFFECTOR:
-        cart_frame = INERTIAL;
+        cartFrame = INERTIAL;
         cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
         std::cout << "inertial";
         break;
@@ -561,6 +580,8 @@ void roboticslab::KeyboardController::issueStop()
     }
 
     std::cout << "Stopped" << std::endl;
+
+    controlMode = NOT_CONTROLLING;
 }
 
 void roboticslab::KeyboardController::printHelp()
@@ -617,7 +638,7 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cart_frame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
+        std::cout << (cartFrame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;
