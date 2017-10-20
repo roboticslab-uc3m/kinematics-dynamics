@@ -16,6 +16,7 @@
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Time.h>
+#include <yarp/os/Vocab.h>
 
 #include <ColorDebug.hpp>
 
@@ -220,13 +221,14 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         cartesianThread->start(); // initialize the new thread
     }
 
+    controlMode = NOT_CONTROLLING;
+    currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
+
     issueStop(); // just in case
 
     ttyset();
 
     printHelp();
-
-    controlMode = NOT_CONTROLLING;
 
     return true;
 }
@@ -353,6 +355,14 @@ bool roboticslab::KeyboardController::updateModule()
     // toggle reference frame for cartesian commands
     case 'm':
         toggleReferenceFrame();
+        break;
+    // actuate tool (open gripper)
+    case 'k':
+        actuateTool(VOCAB_CC_ACTUATOR_OPEN_GRIPPER);
+        break;
+    // actuate tool (close gripper)
+    case 'l':
+        actuateTool(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
         break;
     // issue stop
     case 13:  // enter
@@ -515,6 +525,25 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
     std::cout << std::endl;
 }
 
+void roboticslab::KeyboardController::actuateTool(int command)
+{
+    if (!cartesianControlDevice.isValid())
+    {
+        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        issueStop();
+        return;
+    }
+
+    if (!iCartesianControl->act(command))
+    {
+        CD_ERROR("Unable to send '%s' command to actuator.\n", yarp::os::Vocab::decode(command).c_str());
+    }
+    else
+    {
+        currentActuatorCommand = command;
+    }
+}
+
 void roboticslab::KeyboardController::printJointPositions()
 {
     if (!controlboardDevice.isValid())
@@ -554,6 +583,18 @@ void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
+        if (currentActuatorCommand != VOCAB_CC_ACTUATOR_NONE)
+        {
+            if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER))
+            {
+                CD_WARNING("Unable to stop actuator.\n");
+            }
+            else
+            {
+                currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
+            }
+        }
+
         if (!cartesianThread->isSuspended())
         {
             cartesianThread->suspend();
@@ -639,6 +680,8 @@ void roboticslab::KeyboardController::printHelp()
 
         std::cout << " 'm' - toggle reference frame (current: ";
         std::cout << (cartFrame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
+
+        std::cout << " 'k'/'l' - open/close gripper" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;

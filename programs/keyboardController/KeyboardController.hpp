@@ -115,6 +115,8 @@ private:
 
     void toggleReferenceFrame();
 
+    void actuateTool(int command);
+
     void printJointPositions();
     void printCartesianPositions();
 
@@ -123,6 +125,7 @@ private:
     void printHelp();
 
     int axes;
+    int currentActuatorCommand;
 
     cart_frames cartFrame;
     std::string angleRepr;
