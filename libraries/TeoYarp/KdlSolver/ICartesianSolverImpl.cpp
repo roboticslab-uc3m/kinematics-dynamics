@@ -167,7 +167,9 @@ bool roboticslab::KdlSolver::diffInvKinEE(const std::vector<double> &q, const st
     KDL::ChainFkSolverPos_recursive fksolver = KDL::ChainFkSolverPos_recursive(chain);
     fksolver.JntToCart(qInRad,fOutCart);
 
-    KDL::Twist kdlxdot = fOutCart * kdlxdotee;
+    // transform the basis to which the twist is expressed, but leave the reference point intact
+    // "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
+    KDL::Twist kdlxdot = fOutCart.M * kdlxdotee;
 
     KDL::JntArray qDotOutRadS = KDL::JntArray(chain.getNrOfJoints());
     KDL::ChainIkSolverVel_pinv iksolverv(chain);

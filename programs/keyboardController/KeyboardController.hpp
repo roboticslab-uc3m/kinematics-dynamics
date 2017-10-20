@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 
+#include <yarp/os/RateThread.h>
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
 
@@ -26,8 +27,55 @@
 #define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
                                        // fallback in ::open()
 
+#define CMC_RATE_MS 10
+
 namespace roboticslab
 {
+
+/**
+ * @ingroup keyboardController
+ *
+ * @brief Helper thread for sending streaming cartesian
+ * commands to the controller.
+ */
+class KeyboardRateThread : public yarp::os::RateThread
+{
+public:
+    typedef std::vector<double> data_type;
+    typedef void (ICartesianControl::*cart_command)(const data_type &);
+
+    KeyboardRateThread(roboticslab::ICartesianControl * iCartesianControl)
+        : yarp::os::RateThread(CMC_RATE_MS),
+          iCartesianControl(iCartesianControl),
+          currentCommand(&ICartesianControl::vmos)
+    {}
+
+    virtual void run()
+    {
+        (iCartesianControl->*currentCommand)(currentData);
+    }
+
+    void setCurrentCommand(cart_command cmd)
+    {
+        currentCommand = cmd;
+    }
+
+    void setCurrentData(const data_type & data)
+    {
+        currentData = data;
+    }
+
+    void beforeStart()
+    {
+        // prevents execution of first run() step after start()
+        suspend();
+    }
+
+private:
+    roboticslab::ICartesianControl * iCartesianControl;
+    cart_command currentCommand;
+    data_type currentData;
+};
 
 /**
  * @ingroup keyboardController
@@ -54,6 +102,8 @@ private:
 
     enum cart_frames { INERTIAL, END_EFFECTOR };
 
+    enum control_modes { NOT_CONTROLLING, JOINT_MODE, CARTESIAN_MODE };
+
     static const std::plus<double> increment_functor;
     static const std::minus<double> decrement_functor;
 
@@ -73,9 +123,11 @@ private:
     void printHelp();
 
     int axes;
-    cart_frames cart_frame;
+
+    cart_frames cartFrame;
     std::string angleRepr;
     KinRepresentation::orientation_system orient;
+    control_modes controlMode;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;
@@ -87,9 +139,13 @@ private:
 
     roboticslab::ICartesianControl * iCartesianControl;
 
+    KeyboardRateThread * cartesianThread;
+
     std::vector<double> maxVelocityLimits;
     std::vector<double> currentJointVels;
     std::vector<double> currentCartVels;
+
+    static const std::vector<double> ZERO_CARTESIAN_VELOCITY;
 
     static const double JOINT_VELOCITY_STEP;
     static const double CARTESIAN_LINEAR_VELOCITY_STEP;
