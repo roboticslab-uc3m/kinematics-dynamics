@@ -226,7 +226,7 @@ bool roboticslab::CartesianControlClient::act(int command)
     yarp::os::Bottle cmd, response;
 
     cmd.addVocab(VOCAB_CC_ACT);
-    cmd.addInt(command);
+    cmd.addVocab(command);
 
     rpcClient.write(cmd,response);
 

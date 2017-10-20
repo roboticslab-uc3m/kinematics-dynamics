@@ -94,7 +94,7 @@ bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::o
 {
     if (in.size() > 1)
     {
-        int commandCode = in.get(1).asInt();
+        int commandCode = in.get(1).asVocab();
 
         if (iCartesianControl->act(commandCode))
         {
