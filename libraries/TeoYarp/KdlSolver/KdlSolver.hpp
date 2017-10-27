@@ -74,6 +74,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         // Perform differential inverse kinematics.
         virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
 
+        // Perform differential inverse kinematics on end effector
+        virtual bool diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot);
+
         // Perform inverse dynamics.
         virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
 

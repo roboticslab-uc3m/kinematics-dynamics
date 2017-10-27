@@ -25,6 +25,7 @@ namespace roboticslab
 
 class RpcResponder;
 class RpcTransformResponder;
+class StreamResponder;
 
 /**
  * @ingroup CartesianControlServer
@@ -37,7 +38,8 @@ public:
 
     CartesianControlServer()
         : iCartesianControl(NULL),
-          rpcResponder(NULL), rpcTransformResponder(NULL)
+          rpcResponder(NULL), rpcTransformResponder(NULL),
+          streamResponder(NULL)
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -67,11 +69,15 @@ protected:
 
     yarp::os::RpcServer rpcServer, rpcTransformServer;
 
-    yarp::dev::PolyDriver cartesianControlDevice;
+    yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
 
     roboticslab::ICartesianControl *iCartesianControl;
 
+    yarp::dev::PolyDriver cartesianControlDevice;
+
     RpcResponder *rpcResponder, *rpcTransformResponder;
+
+    StreamResponder *streamResponder;
 };
 
 /**
@@ -82,7 +88,7 @@ class RpcResponder : public yarp::dev::DeviceResponder
 {
 public:
 
-    RpcResponder(roboticslab::ICartesianControl * iCartesianControl)
+    RpcResponder(roboticslab::ICartesianControl *iCartesianControl)
     {
         this->iCartesianControl = iCartesianControl;
 
@@ -125,7 +131,7 @@ protected:
         return true;
     }
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    roboticslab::ICartesianControl *iCartesianControl;
 };
 
 /**
@@ -147,6 +153,32 @@ protected:
     virtual bool transformOutgoingData(std::vector<double>& vout);
 
     KinRepresentation::orientation_system orient;
+};
+
+/**
+ * @ingroup CartesianControlServer
+ * @brief Responds to streaming command messages.
+ */
+class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
+{
+public:
+
+    StreamResponder(roboticslab::ICartesianControl *iCartesianControl)
+    {
+        this->iCartesianControl = iCartesianControl;
+    }
+
+    void onRead(yarp::os::Bottle& b);
+
+protected:
+
+    typedef void (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
+    typedef void (ICartesianControl::*BiConsumerFun)(const std::vector<double>&, double);
+
+    void handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd);
+    void handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsumerFun cmd);
+
+    roboticslab::ICartesianControl *iCartesianControl;
 };
 
 }  // namespace roboticslab

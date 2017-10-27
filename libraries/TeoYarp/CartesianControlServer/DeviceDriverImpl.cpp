@@ -52,19 +52,20 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         return false;
     }
 
-    // look for the portname to register (--name option)
+    rpcResponder = new RpcResponder(iCartesianControl);
+    streamResponder = new StreamResponder(iCartesianControl);
+
+    //Look for the portname to register (--name option)
     if (config.check("name", name))
     {
         rpcServer.open(name->asString() + "/rpc:s");
+        commandPort.open(name->asString() + "/command:i");
     }
     else
     {
         rpcServer.open("/CartesianControl/rpc:s");
+        commandPort.open("/CartesianControl/command:i");
     }
-
-    rpcResponder = new RpcResponder(iCartesianControl);
-
-    rpcServer.setReader(*rpcResponder);
 
     // check angle representation, leave this block last to allow inner return instruction
     if (config.check("angleRepr", angleRepr))
@@ -72,27 +73,13 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         std::string angleReprStr = angleRepr->asString();
         KinRepresentation::orientation_system orient;
 
-        if (angleReprStr == "axisAngle")
-        {
-            orient = KinRepresentation::AXIS_ANGLE;
-        }
-        else if (angleReprStr == "eulerYZ")
-        {
-            orient = KinRepresentation::EULER_YZ;
-        }
-        else if (angleReprStr == "eulerZYZ")
-        {
-            orient = KinRepresentation::EULER_ZYZ;
-        }
-        else if (angleReprStr == "RPY")
-        {
-            orient = KinRepresentation::RPY;
-        }
-        else
+        if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
             CD_WARNING("Unknown angleRepr \"%s\".\n", angleReprStr.c_str());
             return true;
         }
+
+        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, orient);
 
         if (config.check("name", name))
         {
@@ -103,10 +90,11 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
             rpcTransformServer.open("/CartesianControl/rpc_transform:s");
         }
 
-        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, orient);
-
         rpcTransformServer.setReader(*rpcTransformResponder);
     }
+
+    rpcServer.setReader(*rpcResponder);
+    commandPort.useCallback(*streamResponder);
 
     return true;
 }
@@ -115,17 +103,25 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
 bool roboticslab::CartesianControlServer::close()
 {
+    rpcServer.interrupt();
     rpcServer.close();
     delete rpcResponder;
     rpcResponder = NULL;
 
-    rpcTransformServer.close();
-    delete rpcTransformResponder;
-    rpcTransformResponder = NULL;
+    if (rpcTransformResponder != NULL)
+    {
+        rpcTransformServer.interrupt();
+        rpcTransformServer.close();
+        delete rpcTransformResponder;
+        rpcTransformResponder = NULL;
+    }
 
-    cartesianControlDevice.close();
+    commandPort.interrupt();
+    commandPort.close();
+    delete streamResponder;
+    streamResponder = NULL;
 
-    return true;
+    return cartesianControlDevice.close();
 }
 
 // -----------------------------------------------------------------------------
