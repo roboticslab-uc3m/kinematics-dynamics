@@ -18,7 +18,7 @@ namespace roboticslab {}
 
 /**
  * @ingroup kinematics-dynamics-libraries
- * \defgroup TeoYarp
+ * \defgroup YarpPlugins
  *
  * @brief Contains kinematics-dynamics libraries that implement YARP device interfaces
  * and therefore can be invoked as YARP plugins.

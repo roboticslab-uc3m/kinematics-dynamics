@@ -24,7 +24,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * @defgroup AsibotSolver
  *
  * @brief Contains roboticslab::AsibotSolver.
