@@ -31,7 +31,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * \defgroup KdlSolver
  *
  * @brief Contains roboticslab::KdlSolver.

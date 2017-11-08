@@ -10,7 +10,7 @@
 /**
  * @file
  * @brief Contains roboticslab::ICartesianControl and related vocabs.
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * @{
  */
 

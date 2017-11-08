@@ -12,7 +12,7 @@
 /**
  * @file
  * @brief Contains roboticslab::ICartesianSolver
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * @{
  */
 
