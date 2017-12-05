@@ -6,13 +6,12 @@
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/ControlBoardInterfaces.h>  // VOCAB_OK, VOCAB_FAILED
 
 #include <vector>
 #include <iostream> // only windows
 
 #include "ICartesianControl.h"
-
-#define VOCAB_FAILED VOCAB4('f','a','i','l')  //-- from yarp::dev
 
 #define DEFAULT_CARTESIAN_LOCAL "/CartesianControl"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
