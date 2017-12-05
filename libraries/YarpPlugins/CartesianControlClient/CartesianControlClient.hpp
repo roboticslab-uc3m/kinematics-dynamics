@@ -99,6 +99,13 @@ public:
 
 protected:
 
+    bool handleRpcRunnableCmd(int vocab);
+    bool handleRpcConsumerCmd(int vocab, const std::vector<double>& in);
+    bool handleRpcFunctionCmd(int vocab, const std::vector<double>& in, std::vector<double>& out);
+
+    void handleStreamingConsumerCmd(int vocab, const std::vector<double>& in);
+    void handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2);
+
     yarp::os::RpcClient rpcClient;
     yarp::os::Port commandPort;
     yarp::os::PortWriterBuffer<yarp::os::Bottle> commandBuffer;
