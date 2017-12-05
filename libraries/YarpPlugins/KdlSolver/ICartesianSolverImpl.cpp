@@ -4,10 +4,16 @@
 
 #include <kdl/segment.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainidsolver.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
+
+#ifdef _USE_LMA_
+    #include <Eigen/Core> // Eigen::Matrix
+    #include <kdl/chainiksolverpos_lma.hpp>
+#else //_USE_LMA_
+    #include <kdl/chainiksolverpos_nr_jl.hpp>
+#endif //_USE_LMA_
 
 #include <ColorDebug.hpp>
 

@@ -26,7 +26,7 @@ make -j$(nproc)
  * What mostly changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
 [on terminal 2] teoSim
-[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControlServer --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
 [on terminal 4] ./cartesianControlExample
 \endverbatim
  */
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     yarp::os::Property options;
     options.put("device", "CartesianControlClient"); // our device (a dynamically loaded library)
-    options.put("cartesianRemote", "/teoSim/rightArm/CartesianControlServer"); // remote port through which we'll talk to the server
+    options.put("cartesianRemote", "/teoSim/rightArm/CartesianControl"); // remote port through which we'll talk to the server
     options.put("cartesianLocal", "/CartesianControlExample");
     options.put("transform", yarp::os::Value::getNullValue());
 

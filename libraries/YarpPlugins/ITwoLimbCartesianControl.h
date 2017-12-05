@@ -10,7 +10,7 @@
 /**
  * @file
  * @brief Contains roboticslab::ITwoLimbCartesianControl and related vocabs.
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * @{
  */
 

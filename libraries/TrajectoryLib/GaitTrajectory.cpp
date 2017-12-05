@@ -86,10 +86,10 @@ bool roboticslab::GaitTrajectory::getX(const double movementTime, std::vector<do
     x.push_back(py);
     x.push_back(pz);
 
-    x.push_back(rx);
-    x.push_back(ry);
-    x.push_back(rz);
-    x.push_back(ang*180/M_PI);
+    x.push_back(rx*ang);
+    x.push_back(ry*ang);
+    x.push_back(rz*ang);
+    //x.push_back(ang*180/M_PI);
 
     std::cout << "> lfX: " << px << ","<< py << ","<< pz << ",";
     std::cout << "> rot: " << rx << ","<< ry << ","<< rz << ","<< ang*180/M_PI << ",";

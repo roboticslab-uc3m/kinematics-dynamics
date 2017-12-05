@@ -30,7 +30,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * \defgroup BasicTwoLimbCartesianControl
  *
  * @brief Contains roboticslab::BasicTwoLimbCartesianControl.

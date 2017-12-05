@@ -16,7 +16,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * \defgroup TwoLimbCartesianControlServer
  *
  * @brief Contains roboticslab::TwoLimbCartesianControlServer.

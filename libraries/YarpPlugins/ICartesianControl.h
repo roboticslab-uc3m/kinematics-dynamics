@@ -10,7 +10,7 @@
 /**
  * @file
  * @brief Contains roboticslab::ICartesianControl and related vocabs.
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * @{
  */
 
@@ -154,6 +154,8 @@ class ICartesianControl
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
          *
+         * @see relj (relative coordinates)
+         *
          * @return true on success, false otherwise
          */
         virtual bool movj(const std::vector<double> &xd) = 0;
@@ -167,6 +169,8 @@ class ICartesianControl
          * @param xd 6-element vector describing desired offset in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
+         *
+         * @see movj (absolute coordinates)
          *
          * @return true on success, false otherwise
          */

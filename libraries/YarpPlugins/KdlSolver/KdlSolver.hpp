@@ -27,13 +27,11 @@
 #define DEFAULT_EPS 1e-9
 #define DEFAULT_MAXITER 1000
 
-//#define _USE_LMA_
-
 namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
+ * @ingroup YarpPlugins
  * \defgroup KdlSolver
  *
  * @brief Contains roboticslab::KdlSolver.

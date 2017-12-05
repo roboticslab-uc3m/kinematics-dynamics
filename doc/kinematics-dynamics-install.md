@@ -29,7 +29,6 @@ git clone --recursive https://github.com/roboticslab-uc3m/kinematics-dynamics.gi
 cd kinematics-dynamics; mkdir build; cd build; cmake ..  # Configure the kinematics-dynamics software
 make -j$(nproc) # Compile
 sudo make install  # Install :-)
-cp ../scripts/gnome/kinematics-dynamics.desktop $HOME/Desktop
 ```
 
 For CMake `find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
