@@ -116,6 +116,7 @@ protected:
     typedef bool (ICartesianControl::*FunctionFun)(const std::vector<double>&, std::vector<double>&);
 
     bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
 
     bool handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd);
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);

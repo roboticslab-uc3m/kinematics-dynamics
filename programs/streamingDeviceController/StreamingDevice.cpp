@@ -45,7 +45,8 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 }
 
 StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
-    : iCartesianControl(NULL)
+    : iCartesianControl(NULL),
+      actuatorState(VOCAB_CC_ACTUATOR_NONE)
 {
     data.resize(6, 0.0);
     fixedAxes.resize(6, false);
@@ -78,6 +79,11 @@ bool StreamingDevice::transformData(double scaling)
 
 bool StreamingDevice::hasValidMovementData() const
 {
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        return false;
+    }
+
     for (int i = 0; i < data.size(); i++)
     {
         if (data[i] != 0.0)

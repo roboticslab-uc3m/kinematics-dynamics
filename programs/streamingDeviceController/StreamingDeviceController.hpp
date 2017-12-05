@@ -5,9 +5,7 @@
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
-
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/IAnalogSensor.h>
 
 #include "StreamingDevice.hpp"
 

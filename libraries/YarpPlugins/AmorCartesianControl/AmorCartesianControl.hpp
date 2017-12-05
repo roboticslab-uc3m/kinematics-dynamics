@@ -65,6 +65,8 @@ public:
 
     virtual bool tool(const std::vector<double> &x);
 
+    virtual bool act(int command);
+
     virtual void fwd(const std::vector<double> &rot, double step);
 
     virtual void bkwd(const std::vector<double> &rot, double step);

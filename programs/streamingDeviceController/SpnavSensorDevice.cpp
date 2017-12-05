@@ -24,7 +24,7 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
     CD_DEBUG("%s\n", data.toString(4, 1).c_str());
 
-    if (data.size() != 6)
+    if (data.size() != 8)
     {
         CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;
@@ -36,6 +36,38 @@ bool roboticslab::SpnavSensorDevice::acquireData()
     }
 
     return true;
+}
+
+int roboticslab::SpnavSensorDevice::getActuatorState()
+{
+    int button1 = data[6];
+    int button2 = data[7];
+
+    if (button1 == 1)
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
+    }
+    else if (button2 == 1)
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
+    }
+    else if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        if (actuatorState != VOCAB_CC_ACTUATOR_STOP_GRIPPER)
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+        }
+        else
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_NONE;
+        }
+    }
+    else
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_NONE;
+    }
+
+    return actuatorState;
 }
 
 void roboticslab::SpnavSensorDevice::sendMovementCommand()

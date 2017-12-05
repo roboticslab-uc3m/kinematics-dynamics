@@ -86,6 +86,16 @@ public:
     virtual bool transformData(double scaling);
 
     /**
+     * @brief If actuator command data is available, return its
+     * current state.
+     * @return integer value describing current actuator state
+     */
+    virtual int getActuatorState()
+    {
+        return actuatorState;
+    }
+
+    /**
      * @brief Checks whether the device may forward acquired and
      * processed data to the controller
      * @return true if valid, false otherwise
@@ -112,6 +122,8 @@ protected:
 
     std::vector<double> data;
     std::vector<bool> fixedAxes;
+
+    int actuatorState;
 
 private:
 

@@ -136,6 +136,13 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
+    int actuatorState = streamingDevice->getActuatorState();
+
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        iCartesianControl->act(actuatorState);
+    }
+
     if (!streamingDevice->hasValidMovementData() || alertLevel == IProximitySensors::HIGH)
     {
         if (!isStopped)

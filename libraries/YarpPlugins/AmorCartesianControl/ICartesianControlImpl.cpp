@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <yarp/os/Vocab.h>
+
 #include "KinematicRepresentation.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------
@@ -215,6 +217,37 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 {
     CD_WARNING("Tool change is not supported on AMOR.\n");
     return false;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::act(int command)
+{
+    AMOR_RESULT (*amor_command)(AMOR_HANDLE);
+
+    switch (command)
+    {
+    case VOCAB_CC_ACTUATOR_CLOSE_GRIPPER:
+        amor_command = amor_close_hand;
+        break;
+    case VOCAB_CC_ACTUATOR_OPEN_GRIPPER:
+        amor_command = amor_open_hand;
+        break;
+    case VOCAB_CC_ACTUATOR_STOP_GRIPPER:
+        amor_command = amor_stop_hand;
+        break;
+    default:
+        CD_ERROR("Unrecognized command with code %d (%s).\n", command, yarp::os::Vocab::decode(command));
+        return false;
+    }
+
+    if (amor_command(handle) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------

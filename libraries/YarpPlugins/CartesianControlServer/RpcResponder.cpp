@@ -33,6 +33,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
+    case VOCAB_CC_ACT:
+        return handleActMsg(in, out);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -52,6 +54,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[forc] $fCoord1 $fCoord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
     addUsage("[tool] $fCoord1 $fCoord2 ...", "append fixed link to end effector");
+    addUsage("[act] [$Command]", "actuate tool using selected command");
 }
 
 // -----------------------------------------------------------------------------
@@ -80,6 +83,33 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     }
     else
     {
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 1)
+    {
+        int commandCode = in.get(1).asVocab();
+
+        if (iCartesianControl->act(commandCode))
+        {
+            out.addVocab(VOCAB_OK);
+            return true;
+        }
+        else
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
         out.addVocab(VOCAB_FAILED);
         return false;
     }
