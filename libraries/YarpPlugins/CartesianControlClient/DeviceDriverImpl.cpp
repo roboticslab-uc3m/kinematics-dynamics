@@ -2,12 +2,17 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <string>
+
+#include <yarp/os/Network.h>
+#include <yarp/os/Time.h>
+
 #include <ColorDebug.hpp>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config) {
-
+bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
+{
     std::string local = config.check("cartesianLocal",yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),"cartesianLocal").asString();
     std::string remote = config.check("cartesianRemote",yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),"cartesianRemote").asString();
 
