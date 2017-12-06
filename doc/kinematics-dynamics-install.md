@@ -10,9 +10,9 @@ cd  # go home
 mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
 git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
 cd openrave-yarp-plugins
-git checkout d58cfecf097ded53f014ac982e949b233b4e3c40
+git checkout 8b4a803b6f3443921fb8d8b9c28b723a06514529
 mkdir build && cd build
-cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_teoSim=OFF
+cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_OpenraveWorldRpcResponder=OFF -DENABLE_OpenraveYarpForceEstimator=OFF -DENABLE_OpenraveYarpPluginLoader=OFF -DENABLE_YarpOpenraveBase=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_YarpOpenraveGrabber=OFF -DENABLE_YarpOpenraveRGBDSensor=OFF -DENABLE_YarpOpenraveRobotManager=OFF -DENABLE_OpenraveYarpCoupled=OFF -DENABLE_teoSim=OFF -DENABLE_FakeControlboard=ON
 make -j$(nproc)  # compile
 sudo make install
 cd ../..
