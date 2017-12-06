@@ -67,6 +67,9 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         commandPort.open("/CartesianControl/command:i");
     }
 
+    rpcServer.setReader(*rpcResponder);
+    commandPort.useCallback(*streamResponder);
+
     // check angle representation, leave this block last to allow inner return instruction
     if (config.check("angleRepr", angleRepr))
     {
@@ -75,7 +78,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
-            CD_WARNING("Unknown angleRepr \"%s\".\n", angleReprStr.c_str());
+            CD_WARNING("Unknown angleRepr \"%s\", falling back to default.\n", angleReprStr.c_str());
             return true;
         }
 
@@ -92,9 +95,6 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         rpcTransformServer.setReader(*rpcTransformResponder);
     }
-
-    rpcServer.setReader(*rpcResponder);
-    commandPort.useCallback(*streamResponder);
 
     return true;
 }
