@@ -72,6 +72,12 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
 
+    if (config.check("fkPeriod"))
+    {
+        int periodInMs = config.find("fkPeriod").asInt();
+        yarp::os::RateThread::setRate(periodInMs);
+    }
+
     yarp::os::RateThread::start();
 
     // check angle representation, leave this block last to allow inner return instruction
