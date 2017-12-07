@@ -114,14 +114,17 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
 bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
 {
-    double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
-
-    if (yarp::os::Time::now() - localArrivalTime <= FK_STREAM_TIMEOUT_SECS)
+    if (fkStreamEnabled)
     {
-        return true;
-    }
+        double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
 
-    CD_WARNING("FK stream timeout, sending RPC request.\n");
+        if (yarp::os::Time::now() - localArrivalTime <= FK_STREAM_TIMEOUT_SECS)
+        {
+            return true;
+        }
+
+        CD_WARNING("FK stream timeout, sending RPC request.\n");
+    }
 
     yarp::os::Bottle cmd, response;
 

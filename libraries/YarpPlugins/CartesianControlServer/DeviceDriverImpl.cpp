@@ -55,30 +55,27 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     rpcResponder = new RpcResponder(iCartesianControl);
     streamResponder = new StreamResponder(iCartesianControl);
 
-    //Look for the portname to register (--name option)
-    if (config.check("name", name))
-    {
-        rpcServer.open(name->asString() + "/rpc:s");
-        commandPort.open(name->asString() + "/command:i");
-        fkOutPort.open(name->asString() + "/state:o");
-    }
-    else
-    {
-        rpcServer.open("/CartesianControl/rpc:s");
-        commandPort.open("/CartesianControl/command:i");
-        fkOutPort.open("/CartesianControl/state:o");
-    }
+    std::string prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
+
+    rpcServer.open(prefix + "/rpc:s");
+    commandPort.open(prefix + "/command:i");
 
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
 
-    if (config.check("fkPeriod"))
-    {
-        int periodInMs = config.find("fkPeriod").asInt();
-        yarp::os::RateThread::setRate(periodInMs);
-    }
+    int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period").asInt();
 
-    yarp::os::RateThread::start();
+    if (periodInMs >= 0)
+    {
+        fkOutPort.open(prefix + "/state:o");
+
+        yarp::os::RateThread::setRate(periodInMs);
+        yarp::os::RateThread::start();
+    }
+    else
+    {
+        fkStreamEnabled = false;
+    }
 
     // check angle representation, leave this block last to allow inner return instruction
     if (config.check("angleRepr", angleRepr))
@@ -94,15 +91,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         rpcTransformResponder = new RpcTransformResponder(iCartesianControl, orient);
 
-        if (config.check("name", name))
-        {
-            rpcTransformServer.open(name->asString() + "/rpc_transform:s");
-        }
-        else
-        {
-            rpcTransformServer.open("/CartesianControl/rpc_transform:s");
-        }
-
+        rpcTransformServer.open(prefix + "/rpc_transform:s");
         rpcTransformServer.setReader(*rpcTransformResponder);
     }
 
@@ -113,10 +102,13 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
 bool roboticslab::CartesianControlServer::close()
 {
-    yarp::os::RateThread::stop();
+    if (fkStreamEnabled)
+    {
+        yarp::os::RateThread::stop();
 
-    fkOutPort.interrupt();
-    fkOutPort.close();
+        fkOutPort.interrupt();
+        fkOutPort.close();
+    }
 
     rpcServer.interrupt();
     rpcServer.close();

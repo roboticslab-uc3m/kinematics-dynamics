@@ -137,6 +137,8 @@ protected:
     yarp::os::BufferedPort<yarp::os::Bottle> fkInPort, commandPort;
 
     FkStreamResponder fkStreamResponder;
+
+    bool fkStreamEnabled;
 };
 
 }  // namespace roboticslab

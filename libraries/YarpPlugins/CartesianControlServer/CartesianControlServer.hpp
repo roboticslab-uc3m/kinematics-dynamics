@@ -13,6 +13,7 @@
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
+#define DEFAULT_PREFIX "/CartesianServer"
 #define DEFAULT_MS 20
 
 namespace roboticslab
@@ -42,7 +43,8 @@ public:
         : yarp::os::RateThread(DEFAULT_MS),
           iCartesianControl(NULL),
           rpcResponder(NULL), rpcTransformResponder(NULL),
-          streamResponder(NULL)
+          streamResponder(NULL),
+          fkStreamEnabled(true)
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -84,6 +86,8 @@ protected:
 
     RpcResponder *rpcResponder, *rpcTransformResponder;
     StreamResponder *streamResponder;
+
+    bool fkStreamEnabled;
 };
 
 /**

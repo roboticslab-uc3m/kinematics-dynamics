@@ -47,14 +47,17 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 
     if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
     {
-        CD_ERROR("Error on connect to remote FK stream server.\n");
-        close();  // close ports
-        return false;
+        CD_INFO("FK stream disabled, using RPC instead.\n");
+        fkStreamEnabled = false;
+        fkInPort.close();
+    }
+    else
+    {
+        fkStreamEnabled = true;
+        fkInPort.useCallback(fkStreamResponder);
     }
 
     CD_SUCCESS("Connected to remote.\n");
-
-    fkInPort.useCallback(fkStreamResponder);
 
     return true;
 }
@@ -65,7 +68,11 @@ bool roboticslab::CartesianControlClient::close()
 {
     rpcClient.close();
     commandPort.close();
-    fkInPort.close();
+
+    if (fkStreamEnabled)
+    {
+        fkInPort.close();
+    }
 
     return true;
 }
