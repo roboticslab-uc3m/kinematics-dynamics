@@ -68,8 +68,6 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 
     CD_SUCCESS("Connected to remote.\n");
 
-    commandBuffer.attach(commandPort);
-
     return true;
 }
 
@@ -78,7 +76,6 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 bool roboticslab::CartesianControlClient::close()
 {
     rpcClient.close();
-    commandBuffer.detach();
     commandPort.close();
     return true;
 }

@@ -4,8 +4,7 @@
 #define __CARTESIAN_CONTROL_CLIENT_HPP__
 
 #include <yarp/os/Bottle.h>
-#include <yarp/os/Port.h>
-#include <yarp/os/PortWriterBuffer.h>
+#include <yarp/os/BufferedPort.h>
 #include <yarp/os/RpcClient.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
@@ -107,8 +106,7 @@ protected:
     void handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2);
 
     yarp::os::RpcClient rpcClient;
-    yarp::os::Port commandPort;
-    yarp::os::PortWriterBuffer<yarp::os::Bottle> commandBuffer;
+    yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
 
 };
 

@@ -75,7 +75,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
 void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::vector<double>& in)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
+    yarp::os::Bottle& cmd = commandPort.prepare();
 
     cmd.clear();
     cmd.addVocab(vocab);
@@ -85,14 +85,14 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
         cmd.addDouble(in[i]);
     }
 
-    commandBuffer.write(true);
+    commandPort.write(true);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
+    yarp::os::Bottle& cmd = commandPort.prepare();
 
     cmd.clear();
     cmd.addVocab(vocab);
@@ -103,7 +103,7 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
         cmd.addDouble(in1[i]);
     }
 
-    commandBuffer.write(true);
+    commandPort.write(true);
 }
 
 // -----------------------------------------------------------------------------
