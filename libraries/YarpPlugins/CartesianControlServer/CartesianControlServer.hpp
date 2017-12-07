@@ -75,18 +75,14 @@ public:
 
 protected:
 
+    yarp::dev::PolyDriver cartesianControlDevice;
+
     yarp::os::RpcServer rpcServer, rpcTransformServer;
-
-    yarp::os::Port fkOutPort;
-
-    yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
+    yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
     roboticslab::ICartesianControl *iCartesianControl;
 
-    yarp::dev::PolyDriver cartesianControlDevice;
-
     RpcResponder *rpcResponder, *rpcTransformResponder;
-
     StreamResponder *streamResponder;
 };
 

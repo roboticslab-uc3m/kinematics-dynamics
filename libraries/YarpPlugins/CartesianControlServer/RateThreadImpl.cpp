@@ -16,14 +16,15 @@ void roboticslab::CartesianControlServer::run()
         return;
     }
 
-    yarp::os::Bottle out;
+    yarp::os::Bottle &out = fkOutPort.prepare();
+    out.addVocab(state);
 
     for (size_t i = 0; i < x.size(); i++)
     {
         out.addDouble(x[i]);
     }
 
-    fkOutPort.write(out);
+    fkOutPort.write();
 
     return;
 }
