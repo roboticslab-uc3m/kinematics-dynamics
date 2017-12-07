@@ -120,9 +120,8 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
     ASSERT_NEAR(xToolB[4], M_PI / 4, 1e-9);
     ASSERT_NEAR(xToolB[5], 0, 1e-9);
 
-    // remote tool
+    // remove tool
     std::fill(x.begin(), x.end(), 0);
-    CD_DEBUG("%f %f %f %f %f %f %f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
     ASSERT_TRUE(iCartesianControl->tool(x));
     ASSERT_TRUE(iCartesianControl->stat(state, xNoTool));
     ASSERT_NEAR(xNoTool[0], 1, 1e-9);
@@ -134,4 +133,3 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
 }
 
 }  // namespace roboticslab
-
