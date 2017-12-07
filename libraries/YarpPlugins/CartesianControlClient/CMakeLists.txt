@@ -16,7 +16,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs thi
 
 yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
                                        DeviceDriverImpl.cpp
-                                       ICartesianControlImpl.cpp)
+                                       ICartesianControlImpl.cpp
+                                       FkStreamResponder.cpp)
 
 add_dependencies(CartesianControlClient COLOR_DEBUG)
 
