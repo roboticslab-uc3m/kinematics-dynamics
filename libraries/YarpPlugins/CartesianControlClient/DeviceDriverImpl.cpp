@@ -5,7 +5,6 @@
 #include <string>
 
 #include <yarp/os/Network.h>
-#include <yarp/os/Time.h>
 
 #include <ColorDebug.hpp>
 
@@ -30,66 +29,25 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
-    int tries = 0;
-    const int maxTries = 10;
-    const double waitInSeconds = 0.5;
+    std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
 
-    while (tries++ < maxTries)
+    if (!rpcClient.addOutput(remote + suffix))
     {
-        std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
-
-        if (rpcClient.addOutput(remote + suffix))
-        {
-            break;
-        }
-
-        CD_DEBUG("Wait to connect to remote RPC server, try %d...\n", tries);
-        yarp::os::Time::delay(waitInSeconds);
-    }
-
-    if (tries > maxTries)
-    {
-        CD_ERROR("Timeout on connect to remote RPC server!\n");
+        CD_ERROR("Error on connect to remote RPC server.\n");
         close();  // close ports
         return false;
     }
 
-    tries = 0;
-
-    while (tries++ < maxTries)
+    if (!commandPort.addOutput(remote + "/command:i", "udp"))
     {
-        if (commandPort.addOutput(remote + "/command:i", "udp"))
-        {
-            break;
-        }
-
-        CD_DEBUG("Wait to connect to remote command server, try %d...\n", tries);
-        yarp::os::Time::delay(waitInSeconds);
-    }
-
-    if (tries > maxTries)
-    {
-        CD_ERROR("Timeout on connect to remote command server!\n");
+        CD_ERROR("Error on connect to remote command server.\n");
         close();  // close ports
         return false;
     }
 
-    tries = 0;
-
-    while (tries++ < maxTries)
+    if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
     {
-        if (yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
-        {
-            break;
-        }
-
-        CD_DEBUG("Wait to connect to remote FK stream server, try %d...\n", tries);
-        yarp::os::Time::delay(waitInSeconds);
-    }
-
-    if (tries > maxTries)
-    {
-        CD_ERROR("Timeout on connect to remote FK stream server!\n");
+        CD_ERROR("Error on connect to remote FK stream server.\n");
         close();  // close ports
         return false;
     }
