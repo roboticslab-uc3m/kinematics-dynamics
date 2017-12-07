@@ -18,9 +18,17 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     std::string remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "cartesianRemote").asString();
 
-    rpcClient.open(local + "/rpc:c");
-    commandPort.open(local + "/command:o");
-    fkInPort.open(local + "/state:i");
+    bool portsOk = true;
+
+    portsOk = portsOk && rpcClient.open(local + "/rpc:c");
+    portsOk = portsOk && commandPort.open(local + "/command:o");
+    portsOk = portsOk && fkInPort.open(local + "/state:i");
+
+    if (!portsOk)
+    {
+        CD_ERROR("Unable to open ports.\n");
+        return false;
+    }
 
     int tries = 0;
     const int maxTries = 10;
