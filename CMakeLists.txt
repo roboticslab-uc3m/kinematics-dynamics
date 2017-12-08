@@ -2,9 +2,15 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 3.1.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
+
+# Safety check against missing dummy library for system-available COLOR_DEBUG.
+# Remove if cmake_minimum_required() above is set to 3.0 or later.
+if(POLICY CMP0046)
+    cmake_policy(SET CMP0046 NEW)
+endif()
 
 # Force building shared libraries and YARP DL modules.
 set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
@@ -148,7 +154,7 @@ install(FILES ${CMAKE_BINARY_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
 # https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/104
 if(_exported_targets)
     # <pkg>Targets.cmake (build tree).
-    export(EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
+    export(TARGETS ${_exported_targets}
            NAMESPACE ROBOTICSLAB::
            FILE ROBOTICSLAB_KINEMATICS_DYNAMICSTargets.cmake)
 
