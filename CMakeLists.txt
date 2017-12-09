@@ -17,7 +17,7 @@ set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
 # Add suffix for debug libraries.
 if(MSVC)
-    message(STATUS "Running on windows")    
+    message(STATUS "Running on windows")
     set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
@@ -125,7 +125,7 @@ endif()
 include(CMakePackageConfigHelpers)
 
 # Set exported variables (build tree).
-set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR ${_common_includes})
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR "${_common_includes}")
 
 # <pkg>Config.cmake (build tree).
 configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_KINEMATICS_DYNAMICSConfig.cmake.in
