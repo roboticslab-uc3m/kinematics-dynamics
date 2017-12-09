@@ -14,7 +14,7 @@ bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
 
     cmd.addVocab(vocab);
 
-    rpcClient.write(cmd,response);
+    rpcClient.write(cmd, response);
 
     if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
     {
@@ -131,6 +131,11 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
     cmd.addVocab(VOCAB_CC_STAT);
 
     rpcClient.write(cmd, response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
 
     state = response.get(0).asVocab();
     x.resize(response.size() - 1);
