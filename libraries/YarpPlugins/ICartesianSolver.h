@@ -30,21 +30,6 @@ class ICartesianSolver
         virtual ~ICartesianSolver() {}
 
         /**
-         * @deprecated Use @ref getNumJoints instead.
-         *
-         * @brief Get number of links for which the solver has been configured
-         *
-         * @param numLinks Number of links.
-         *
-         * @return true on success, false otherwise
-         */
-        ROBOTICSLAB_KINEMATICS_DYNAMICS_DEPRECATED virtual bool getNumLinks(int* numLinks)
-        {
-            CD_WARNING("getNumLinks deprecated: use getNumJoints instead.\n");
-            return getNumJoints(numLinks);
-        }
-
-        /**
          * @brief Get number of joints for which the solver has been configured
          *
          * @param numJoints Number of joints.
