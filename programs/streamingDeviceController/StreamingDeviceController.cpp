@@ -12,7 +12,9 @@
 
 using namespace roboticslab;
 
+#ifdef SDC_WITH_SENSORS
 const double roboticslab::StreamingDeviceController::SCALING_FACTOR_ON_ALERT = 2.0;
+#endif  // SDC_WITH_SENSORS
 
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
@@ -76,6 +78,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+#ifdef SDC_WITH_SENSORS
     if (rf.check("useSensors"))
     {
         yarp::os::Property sensorsClientOptions;
@@ -98,11 +101,12 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             close();
             return false;
         }
+
+        disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
     }
+#endif  // SDC_WITH_SENSORS
 
     isStopped = true;
-
-    disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
 
     return true;
 }
@@ -115,20 +119,33 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
+    double localScaling = scaling;
+
+#ifdef SDC_WITH_SENSORS
     IProximitySensors::alert_level alertLevel = IProximitySensors::ZERO;
 
     if (sensorsClientDevice.isValid())
     {
         alertLevel = iProximitySensors->getAlertLevel();
-    }
 
-    double localScaling = scaling;
+        if (!disableSensorsLowLevel && alertLevel == IProximitySensors::LOW)
+        {
+            localScaling *= SCALING_FACTOR_ON_ALERT;
+            CD_WARNING("Obstacle (low level) - decrease speed, factor %f.\n", SCALING_FACTOR_ON_ALERT);
+        }
+        else if (alertLevel == IProximitySensors::HIGH)
+        {
+            CD_WARNING("Obstacle (high level) - command stop.\n");
 
-    if (!disableSensorsLowLevel && alertLevel == IProximitySensors::LOW)
-    {
-        localScaling *= SCALING_FACTOR_ON_ALERT;
-        CD_WARNING("Obstacle detected.\n");
+            if (!isStopped)
+            {
+                isStopped = iCartesianControl->stopControl();
+            }
+
+            return true;
+        }
     }
+#endif  // SDC_WITH_SENSORS
 
     if (!streamingDevice->transformData(localScaling))
     {
@@ -136,7 +153,7 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
-    if (!streamingDevice->hasValidMovementData() || alertLevel == IProximitySensors::HIGH)
+    if (!streamingDevice->hasValidMovementData())
     {
         if (!isStopped)
         {
@@ -165,7 +182,13 @@ bool StreamingDeviceController::close()
     delete streamingDevice;
     streamingDevice = NULL;
 
-    return cartesianControlClientDevice.close() & sensorsClientDevice.close();
+    bool ok = cartesianControlClientDevice.close();
+
+#ifdef SDC_WITH_SENSORS
+    ok &= sensorsClientDevice.close();
+#endif  // SDC_WITH_SENSORS
+
+    return ok;
 }
 
 double StreamingDeviceController::getPeriod()

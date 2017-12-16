@@ -6,7 +6,7 @@ if(ENABLE_streamingDeviceController)
 # Find YARP.
 find_package(YARP REQUIRED)
 find_package(orocos_kdl REQUIRED)
-find_package(ROBOTICSLAB_YARP_DEVICES REQUIRED)
+find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
 # Retrieve global properties.
 get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
@@ -14,7 +14,6 @@ get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_IN
 # Include any directories needed for this target.
 include_directories(${YARP_INCLUDE_DIRS}
                     ${orocos_kdl_INCLUDE_DIRS}
-                    ${ROBOTICSLAB_YARP_DEVICES_INCLUDE_DIRS}
                     ${_common_includes})
 
 # Set up our main executable.
@@ -31,6 +30,14 @@ add_executable(streamingDeviceController main.cpp
                                          StreamingDeviceController.cpp)
 
 add_dependencies(streamingDeviceController COLOR_DEBUG)
+
+if(ROBOTICSLAB_YARP_DEVICES_FOUND)
+    message(STATUS "ROBOTICSLAB_YARP_DEVICES found, building streamingDeviceController with sensor support")
+    target_include_directories(streamingDeviceController PRIVATE ${ROBOTICSLAB_YARP_DEVICES_INCLUDE_DIRS})
+    target_compile_definitions(streamingDeviceController PRIVATE SDC_WITH_SENSORS)
+else()
+    message(STATUS "ROBOTICSLAB_YARP_DEVICES not found, building streamingDeviceController without sensor support")
+endif()
 
 target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
                                                 YARP::YARP_OS
