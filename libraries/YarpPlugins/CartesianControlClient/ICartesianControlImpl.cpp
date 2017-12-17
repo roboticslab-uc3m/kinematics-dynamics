@@ -4,18 +4,126 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
+bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(vocab);
+
+    rpcClient.write(cmd,response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const std::vector<double>& in)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(vocab);
+
+    for (size_t i = 0; i < in.size(); i++)
+    {
+        cmd.addDouble(in[i]);
+    }
+
+    rpcClient.write(cmd, response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const std::vector<double>& in, std::vector<double>& out)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(vocab);
+
+    for (size_t i = 0; i < in.size(); i++)
+    {
+        cmd.addDouble(in[i]);
+    }
+
+    rpcClient.write(cmd, response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < response.size(); i++)
+    {
+        out.push_back(response.get(i).asDouble());
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::vector<double>& in)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(vocab);
+
+    for (size_t i = 0; i < in.size(); i++)
+    {
+        cmd.addDouble(in[i]);
+    }
+
+    commandBuffer.write(true);
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2)
+{
+    yarp::os::Bottle& cmd = commandBuffer.get();
+
+    cmd.clear();
+    cmd.addVocab(vocab);
+    cmd.addDouble(in2);
+
+    for (size_t i = 0; i < in1.size(); i++)
+    {
+        cmd.addDouble(in1[i]);
+    }
+
+    commandBuffer.write(true);
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
 {
     yarp::os::Bottle cmd, response;
 
     cmd.addVocab(VOCAB_CC_STAT);
 
-    rpcClient.write(cmd,response);
+    rpcClient.write(cmd, response);
 
     state = response.get(0).asVocab();
-    x.resize(response.size()-1);
-    for(size_t i=0; i<response.size()-1; i++)
-        x[i] = response.get(i+1).asDouble();
+    x.resize(response.size() - 1);
+
+    for (size_t i = 0; i < x.size(); i++)
+    {
+        x[i] = response.get(i + 1).asDouble();
+    }
+
     return true;
 }
 
@@ -23,200 +131,63 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
 
 bool roboticslab::CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_INV);
-    for(size_t i=0; i<xd.size(); i++)
-        cmd.addDouble(xd[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    for(size_t i=0; i<response.size(); i++)
-        q.push_back(response.get(i).asDouble());
-
-    return true;
+    return handleRpcFunctionCmd(VOCAB_CC_INV, xd, q);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::movj(const std::vector<double> &xd)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_MOVJ);
-    for(size_t i=0; i<xd.size(); i++)
-        cmd.addDouble(xd[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return handleRpcConsumerCmd(VOCAB_CC_MOVJ, xd);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::relj(const std::vector<double> &xd)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_RELJ);
-    for(size_t i=0; i<xd.size(); i++)
-        cmd.addDouble(xd[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return handleRpcConsumerCmd(VOCAB_CC_RELJ, xd);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::movl(const std::vector<double> &xd)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_MOVL);
-    for(size_t i=0; i<xd.size(); i++)
-        cmd.addDouble(xd[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return handleRpcConsumerCmd(VOCAB_CC_MOVL, xd);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::movv(const std::vector<double> &xdotd)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_MOVV);
-    for(size_t i=0; i<xdotd.size(); i++)
-        cmd.addDouble(xdotd[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return handleRpcConsumerCmd(VOCAB_CC_MOVV, xdotd);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::gcmp()
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_GCMP);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).asVocab() == VOCAB_FAILED )
-    {
-        return false;
-    }
-
-    return true;
+    return handleRpcRunnableCmd(VOCAB_CC_GCMP);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::forc(const std::vector<double> &td)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_FORC);
-    for(size_t i=0; i<td.size(); i++)
-        cmd.addDouble(td[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return handleRpcConsumerCmd(VOCAB_CC_FORC, td);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::stopControl()
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_STOP);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).asVocab() == VOCAB_FAILED )
-    {
-        return false;
-    }
-
-    return true;
+    return handleRpcRunnableCmd(VOCAB_CC_STOP);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_TOOL);
-    for(size_t i=0; i<x.size(); i++)
-        cmd.addDouble(x[i]);
-
-    rpcClient.write(cmd,response);
-
-    if( response.get(0).isVocab() )
-    {
-        if( response.get(0).asVocab() == VOCAB_FAILED )
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return handleRpcConsumerCmd(VOCAB_CC_TOOL, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -243,101 +214,49 @@ bool roboticslab::CartesianControlClient::act(int command)
 
 void roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_FWD);
-    cmd.addDouble(step);
-    for(size_t i=0; i<rot.size(); i++)
-        cmd.addDouble(rot[i]);
-
-    commandBuffer.write(true);
+    handleStreamingBiConsumerCmd(VOCAB_CC_FWD, rot, step);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_BKWD);
-    cmd.addDouble(step);
-    for(size_t i=0; i<rot.size(); i++)
-        cmd.addDouble(rot[i]);
-
-    commandBuffer.write(true);
+    handleStreamingBiConsumerCmd(VOCAB_CC_BKWD, rot, step);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_ROT);
-    for(size_t i=0; i<rot.size(); i++)
-        cmd.addDouble(rot[i]);
-
-    commandBuffer.write(true);
+    handleStreamingConsumerCmd(VOCAB_CC_ROT, rot);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_PAN);
-    for(size_t i=0; i<transl.size(); i++)
-        cmd.addDouble(transl[i]);
-
-    commandBuffer.write(true);
+    handleStreamingConsumerCmd(VOCAB_CC_PAN, transl);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_VMOS);
-    for(size_t i=0; i<xdot.size(); i++)
-        cmd.addDouble(xdot[i]);
-
-    commandBuffer.write(true);
+    handleStreamingConsumerCmd(VOCAB_CC_VMOS, xdot);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_EFF);
-    for(size_t i=0; i<xdotee.size(); i++)
-        cmd.addDouble(xdotee[i]);
-
-    commandBuffer.write(true);
+    handleStreamingConsumerCmd(VOCAB_CC_EFF, xdotee);
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
-
-    cmd.clear();
-    cmd.addVocab(VOCAB_CC_POSE);
-    cmd.addDouble(interval);
-    for(size_t i=0; i<x.size(); i++)
-        cmd.addDouble(x[i]);
-
-    commandBuffer.write(true);
+    handleStreamingBiConsumerCmd(VOCAB_CC_POSE, x, interval);
 }
 
 // -----------------------------------------------------------------------------

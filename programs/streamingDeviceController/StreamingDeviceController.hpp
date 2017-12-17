@@ -10,7 +10,10 @@
 #include "StreamingDevice.hpp"
 
 #include "ICartesianControl.h"
+
+#ifdef SDC_WITH_SENSORS
 #include "IProximitySensors.h"
+#endif  // SDC_WITH_SENSORS
 
 #define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
@@ -44,18 +47,20 @@ private:
     StreamingDevice * streamingDevice;
 
     yarp::dev::PolyDriver cartesianControlClientDevice;
-    yarp::dev::PolyDriver sensorsClientDevice;
-
     roboticslab::ICartesianControl *iCartesianControl;
+
+#ifdef SDC_WITH_SENSORS
+    yarp::dev::PolyDriver sensorsClientDevice;
     roboticslab::IProximitySensors *iProximitySensors;
+
+    bool disableSensorsLowLevel;
+    static const double SCALING_FACTOR_ON_ALERT;
+#endif  // SDC_WITH_SENSORS
 
     double period;
     double scaling;
 
     bool isStopped;
-    bool disableSensorsLowLevel;
-
-    static const double SCALING_FACTOR_ON_ALERT;
 };
 
 }  // namespace roboticslab

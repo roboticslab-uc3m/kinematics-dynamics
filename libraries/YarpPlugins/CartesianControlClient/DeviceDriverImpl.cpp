@@ -2,30 +2,42 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <string>
+
+#include <yarp/os/Time.h>
+
 #include <ColorDebug.hpp>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config) {
-
-    std::string local = config.check("cartesianLocal",yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),"cartesianLocal").asString();
-    std::string remote = config.check("cartesianRemote",yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),"cartesianRemote").asString();
+bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
+{
+    std::string local = config.check("cartesianLocal", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
+            "cartesianLocal").asString();
+    std::string remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
+            "cartesianRemote").asString();
 
     rpcClient.open(local + "/rpc:c");
     commandPort.open(local + "/command:o");
 
     int tries = 0;
+    const int maxTries = 10;
+    const double waitInSeconds = 0.5;
 
-    while (tries++ < 10)
+    while (tries++ < maxTries)
     {
         std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
-        yarp::os::Network::connect(local + "/rpc:c", remote + suffix);
-        if (rpcClient.getOutputCount() > 0) break;
+
+        if (rpcClient.addOutput(remote + suffix))
+        {
+            break;
+        }
+
         CD_DEBUG("Wait to connect to remote RPC server, try %d...\n", tries);
-        yarp::os::Time::delay(0.5);
+        yarp::os::Time::delay(waitInSeconds);
     }
 
-    if (tries == 11)
+    if (tries > maxTries)
     {
         CD_ERROR("Timeout on connect to remote RPC server!\n");
         rpcClient.close();
@@ -35,15 +47,18 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config) {
 
     tries = 0;
 
-    while (tries++ < 10)
+    while (tries++ < maxTries)
     {
-        yarp::os::Network::connect(local + "/command:o", remote + "/command:i");
-        if (commandPort.getOutputCount() > 0) break;
+        if (commandPort.addOutput(remote + "/command:i", "udp"))
+        {
+            break;
+        }
+
         CD_DEBUG("Wait to connect to remote command server, try %d...\n", tries);
-        yarp::os::Time::delay(0.5);
+        yarp::os::Time::delay(waitInSeconds);
     }
 
-    if (tries == 11)
+    if (tries > maxTries)
     {
         CD_ERROR("Timeout on connect to remote command server!\n");
         rpcClient.close();

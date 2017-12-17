@@ -97,7 +97,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
 bool roboticslab::BasicCartesianControl::close()
 {
     this->stop();
-	robotDevice.close();
+    robotDevice.close();
     solverDevice.close();
     return true;
 }
