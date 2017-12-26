@@ -161,6 +161,7 @@ private:
 class AsibotConfigurationFactory
 {
 public:
+
     /**
      * @brief Creates an instance of the concrete class.
      * @return A pointer to the base class of the inheritance tree.
@@ -169,7 +170,17 @@ public:
     virtual ~AsibotConfigurationFactory() {}
 
 protected:
-    AsibotConfigurationFactory() {}
+
+    /**
+     * @brief Constructor
+     * @param qMin vector of minimum joint limits [deg]
+     * @param qMax vector of maximum joint limits [deg]
+     */
+    AsibotConfigurationFactory(AsibotConfiguration::JointsIn qMin, AsibotConfiguration::JointsIn qMax)
+        : _qMin(qMin), _qMax(qMax)
+    {}
+
+    AsibotConfiguration::JointsIn _qMin, _qMax;
 };
 
 /**
@@ -188,18 +199,13 @@ public:
      * @param qMax vector of maximum joint limits [deg]
      */
     AsibotConfigurationLeastOverallAngularDisplacementFactory(AsibotConfiguration::JointsIn qMin, AsibotConfiguration::JointsIn qMax)
-        : _qMin(qMin), _qMax(qMax)
+        : AsibotConfigurationFactory(qMin, qMax)
     {}
 
     virtual AsibotConfiguration * create() const
     {
         return new AsibotConfigurationLeastOverallAngularDisplacement(_qMin, _qMax);
     }
-
-private:
-
-    AsibotConfiguration::JointsIn _qMin;
-    AsibotConfiguration::JointsIn _qMax;
 };
 
 }  // namespace roboticslab
