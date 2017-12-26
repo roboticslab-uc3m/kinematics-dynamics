@@ -151,6 +151,57 @@ private:
     std::vector<double> getDiffs(JointsIn qGuess, const Pose & pose);
 };
 
+/**
+ * @ingroup AsibotSolver
+ * @brief Base factory class for AsibotConfiguration.
+ *
+ * Acts as the base class in the <a href="https://stackoverflow.com/a/1741424">
+ * abstract factory pattern</a>, encapsulates individual factories.
+ */
+class AsibotConfigurationFactory
+{
+public:
+    /**
+     * @brief Creates an instance of the concrete class.
+     * @return A pointer to the base class of the inheritance tree.
+     */
+    virtual AsibotConfiguration * create() const = 0;
+    virtual ~AsibotConfigurationFactory() {}
+
+protected:
+    AsibotConfigurationFactory();
+};
+
+/**
+ * @ingroup AsibotSolver
+ * @brief Implementation factory class for AsibotConfigurationLeastOverallAngularDisplacement.
+ *
+ * Implements AsibotConfigurationFactory::create.
+ */
+class AsibotConfigurationLeastOverallAngularDisplacementFactory : public AsibotConfigurationFactory
+{
+public:
+
+    /**
+     * @brief Constructor
+     * @param qMin vector of minimum joint limits [deg]
+     * @param qMax vector of maximum joint limits [deg]
+     */
+    AsibotConfigurationLeastOverallAngularDisplacementFactory(AsibotConfiguration::JointsIn qMin, AsibotConfiguration::JointsIn qMax)
+        : _qMin(qMin), _qMax(qMax)
+    {}
+
+    virtual AsibotConfiguration * create() const
+    {
+        return new AsibotConfigurationLeastOverallAngularDisplacement(_qMin, _qMax);
+    }
+
+private:
+
+    AsibotConfiguration::JointsIn _qMin;
+    AsibotConfiguration::JointsIn _qMax;
+};
+
 }  // namespace roboticslab
 
 #endif  // __ASIBOT_CONFIGURATION_HPP__

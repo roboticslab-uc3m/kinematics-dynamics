@@ -3,6 +3,7 @@
 #ifndef __ASIBOT_SOLVER_HPP__
 #define __ASIBOT_SOLVER_HPP__
 
+#include <string>
 #include <vector>
 
 #include <yarp/os/Searchable.h>
@@ -41,7 +42,7 @@ public:
 
     AsibotSolver()
         : A0(DEFAULT_A0), A1(DEFAULT_A1), A2(DEFAULT_A2), A3(DEFAULT_A3),
-          conf(NULL)
+          confFactory(NULL)
     {}
 
 // -------- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --------
@@ -104,11 +105,19 @@ public:
 
 private:
 
+    // defined in DeviceDriverImpl.cpp
+    bool buildStrategyFactory(const std::string & strategy);
+
+    AsibotConfiguration * getConfiguration() const
+    {
+        return confFactory->create();
+    }
+
     double A0, A1, A2, A3;  // link lengths
 
     std::vector<double> qMin, qMax;
 
-    AsibotConfiguration * conf;
+    AsibotConfigurationFactory * confFactory;
 };
 
 }  // namespace roboticslab
