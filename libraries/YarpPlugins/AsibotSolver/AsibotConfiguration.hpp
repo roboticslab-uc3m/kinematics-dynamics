@@ -169,7 +169,7 @@ public:
     virtual ~AsibotConfigurationFactory() {}
 
 protected:
-    AsibotConfigurationFactory();
+    AsibotConfigurationFactory() {}
 };
 
 /**
