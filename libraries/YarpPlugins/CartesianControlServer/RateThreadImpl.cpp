@@ -17,6 +17,7 @@ void roboticslab::CartesianControlServer::run()
     }
 
     yarp::os::Bottle &out = fkOutPort.prepare();
+    out.clear();
     out.addVocab(state);
 
     for (size_t i = 0; i < x.size(); i++)
