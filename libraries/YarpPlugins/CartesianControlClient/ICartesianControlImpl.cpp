@@ -89,7 +89,7 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
         cmd.addDouble(in[i]);
     }
 
-    commandPort.write(true);
+    commandPort.write();
 }
 
 // -----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
         cmd.addDouble(in1[i]);
     }
 
-    commandPort.write(true);
+    commandPort.write();
 }
 
 // -----------------------------------------------------------------------------
