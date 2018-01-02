@@ -74,11 +74,7 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     std::string strategy = config.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
 
-    if (strategy == DEFAULT_STRATEGY)
-    {
-        conf = new AsibotConfigurationLeastOverallAngularDisplacement(qMin, qMax);
-    }
-    else
+    if (!buildStrategyFactory(strategy))
     {
         CD_ERROR("Unsupported IK configuration strategy: %s.\n", strategy.c_str());
         return false;
@@ -95,8 +91,28 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::close() {
-    delete conf;
-    conf = NULL;
+    if (confFactory != NULL)
+    {
+        delete confFactory;
+        confFactory = NULL;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AsibotSolver::buildStrategyFactory(const std::string & strategy)
+{
+    if (strategy == DEFAULT_STRATEGY)
+    {
+        confFactory = new AsibotConfigurationLeastOverallAngularDisplacementFactory(qMin, qMax);
+    }
+    else
+    {
+        return false;
+    }
+
     return true;
 }
 
