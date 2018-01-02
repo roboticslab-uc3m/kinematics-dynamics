@@ -13,6 +13,9 @@
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
+#define DEFAULT_PREFIX "/CartesianServer"
+#define DEFAULT_MS 20
+
 namespace roboticslab
 {
 
@@ -32,14 +35,16 @@ class StreamResponder;
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 
-class CartesianControlServer : public yarp::dev::DeviceDriver
+class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::RateThread
 {
 public:
 
     CartesianControlServer()
-        : iCartesianControl(NULL),
+        : yarp::os::RateThread(DEFAULT_MS),
+          iCartesianControl(NULL),
           rpcResponder(NULL), rpcTransformResponder(NULL),
-          streamResponder(NULL)
+          streamResponder(NULL),
+          fkStreamEnabled(true)
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -65,19 +70,24 @@ public:
      */
     virtual bool close();
 
+    /**
+     * Loop function. This is the thread itself.
+     */
+    virtual void run();
+
 protected:
-
-    yarp::os::RpcServer rpcServer, rpcTransformServer;
-
-    yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
-
-    roboticslab::ICartesianControl *iCartesianControl;
 
     yarp::dev::PolyDriver cartesianControlDevice;
 
-    RpcResponder *rpcResponder, *rpcTransformResponder;
+    yarp::os::RpcServer rpcServer, rpcTransformServer;
+    yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
+    roboticslab::ICartesianControl *iCartesianControl;
+
+    RpcResponder *rpcResponder, *rpcTransformResponder;
     StreamResponder *streamResponder;
+
+    bool fkStreamEnabled;
 };
 
 /**

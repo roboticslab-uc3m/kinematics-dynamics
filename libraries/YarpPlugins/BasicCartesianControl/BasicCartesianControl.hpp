@@ -182,6 +182,11 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     protected:
 
+        void handleMovl();
+        void handleMovv();
+        void handleGcmp();
+        void handleForc();
+
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
 

@@ -3,6 +3,7 @@
 #include "AsibotSolver.hpp"
 
 #include <cmath>
+#include <memory>
 
 #include <yarp/math/Math.h>
 #include <yarp/math/SVD.h>
@@ -189,6 +190,8 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
     double t3uRad = oyPdRad - t1uRad - t2Rad;
     double t3dRad = oyPdRad - t1dRad + t2Rad;
+
+    std::auto_ptr<AsibotConfiguration> conf(getConfiguration());
 
     if (!conf->configure(KinRepresentation::radToDeg(ozdRad),
             KinRepresentation::radToDeg(t1uRad),

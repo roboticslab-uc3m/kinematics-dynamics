@@ -2,6 +2,10 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <yarp/os/Time.h>
+
+#include <ColorDebug.hpp>
+
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
@@ -10,7 +14,7 @@ bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
 
     cmd.addVocab(vocab);
 
-    rpcClient.write(cmd,response);
+    rpcClient.write(cmd, response);
 
     if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
     {
@@ -75,7 +79,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
 void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::vector<double>& in)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
+    yarp::os::Bottle& cmd = commandPort.prepare();
 
     cmd.clear();
     cmd.addVocab(vocab);
@@ -85,14 +89,14 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
         cmd.addDouble(in[i]);
     }
 
-    commandBuffer.write(true);
+    commandPort.write();
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2)
 {
-    yarp::os::Bottle& cmd = commandBuffer.get();
+    yarp::os::Bottle& cmd = commandPort.prepare();
 
     cmd.clear();
     cmd.addVocab(vocab);
@@ -103,18 +107,35 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
         cmd.addDouble(in1[i]);
     }
 
-    commandBuffer.write(true);
+    commandPort.write();
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
 {
+    if (fkStreamEnabled)
+    {
+        double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
+
+        if (yarp::os::Time::now() - localArrivalTime <= FK_STREAM_TIMEOUT_SECS)
+        {
+            return true;
+        }
+
+        CD_WARNING("FK stream timeout, sending RPC request.\n");
+    }
+
     yarp::os::Bottle cmd, response;
 
     cmd.addVocab(VOCAB_CC_STAT);
 
     rpcClient.write(cmd, response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
 
     state = response.get(0).asVocab();
     x.resize(response.size() - 1);

@@ -4,9 +4,11 @@
 #define __CARTESIAN_CONTROL_CLIENT_HPP__
 
 #include <yarp/os/Bottle.h>
-#include <yarp/os/Port.h>
-#include <yarp/os/PortWriterBuffer.h>
+#include <yarp/os/BufferedPort.h>
+#include <yarp/os/PortReaderBuffer.h>
 #include <yarp/os/RpcClient.h>
+#include <yarp/os/Semaphore.h>
+
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>  // VOCAB_OK, VOCAB_FAILED
@@ -17,6 +19,8 @@
 
 #define DEFAULT_CARTESIAN_LOCAL "/CartesianControl"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
+
+#define FK_STREAM_TIMEOUT_SECS 0.5
 
 namespace roboticslab
 {
@@ -30,13 +34,36 @@ namespace roboticslab
 
 /**
  * @ingroup CartesianControlClient
+ * @brief Responds to streaming FK messages.
+ */
+class FkStreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
+{
+public:
+
+    FkStreamResponder() : now(0.0),
+                          state(0)
+    {}
+
+    void onRead(yarp::os::Bottle& b);
+
+    double getLastStatData(int *state, std::vector<double> &x);
+
+protected:
+
+    double now;
+    int state;
+    std::vector<double> x;
+
+    yarp::os::Semaphore mutex;
+};
+
+/**
+ * @ingroup CartesianControlClient
  * @brief The CartesianControlClient class implements ICartesianControl client side.
  */
 class CartesianControlClient : public yarp::dev::DeviceDriver, public ICartesianControl
 {
 public:
-
-    CartesianControlClient() {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
@@ -109,9 +136,11 @@ protected:
     void handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2);
 
     yarp::os::RpcClient rpcClient;
-    yarp::os::Port commandPort;
-    yarp::os::PortWriterBuffer<yarp::os::Bottle> commandBuffer;
+    yarp::os::BufferedPort<yarp::os::Bottle> fkInPort, commandPort;
 
+    FkStreamResponder fkStreamResponder;
+
+    bool fkStreamEnabled;
 };
 
 }  // namespace roboticslab

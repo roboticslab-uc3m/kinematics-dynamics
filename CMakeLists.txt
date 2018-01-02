@@ -41,6 +41,14 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
     endif()
 endif()
 
+# Pick up our cmake modules.
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+# Bootstrap YCM.
+# https://github.com/robotology/ycm/issues/118
+set(YCM_TAG v0.2.2)
+include(YCMBootstrap)
+
 # Standard installation directories.
 include(GNUInstallDirs)
 
@@ -48,9 +56,6 @@ include(GNUInstallDirs)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-
-# Pick up our cmake modules.
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # Generate export header.
 include(GenerateExportHeader)
@@ -74,11 +79,6 @@ if(ENABLE_coverage)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     endif()
 endif()
-
-# Bootstrap YCM.
-# https://github.com/robotology/ycm/issues/118
-set(YCM_TAG v0.2.2)
-include(YCMBootstrap)
 
 # Superbuild phase - include color-debug.
 include(FindOrBuildPackage)

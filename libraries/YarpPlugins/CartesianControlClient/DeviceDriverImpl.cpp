@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include <yarp/os/Time.h>
+#include <yarp/os/Network.h>
 
 #include <ColorDebug.hpp>
 
@@ -17,58 +17,47 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     std::string remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "cartesianRemote").asString();
 
-    rpcClient.open(local + "/rpc:c");
-    commandPort.open(local + "/command:o");
+    bool portsOk = true;
 
-    int tries = 0;
-    const int maxTries = 10;
-    const double waitInSeconds = 0.5;
+    portsOk = portsOk && rpcClient.open(local + "/rpc:c");
+    portsOk = portsOk && commandPort.open(local + "/command:o");
+    portsOk = portsOk && fkInPort.open(local + "/state:i");
 
-    while (tries++ < maxTries)
+    if (!portsOk)
     {
-        std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
-
-        if (rpcClient.addOutput(remote + suffix))
-        {
-            break;
-        }
-
-        CD_DEBUG("Wait to connect to remote RPC server, try %d...\n", tries);
-        yarp::os::Time::delay(waitInSeconds);
-    }
-
-    if (tries > maxTries)
-    {
-        CD_ERROR("Timeout on connect to remote RPC server!\n");
-        rpcClient.close();
-        commandPort.close();
+        CD_ERROR("Unable to open ports.\n");
         return false;
     }
 
-    tries = 0;
+    std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
 
-    while (tries++ < maxTries)
+    if (!rpcClient.addOutput(remote + suffix))
     {
-        if (commandPort.addOutput(remote + "/command:i", "udp"))
-        {
-            break;
-        }
-
-        CD_DEBUG("Wait to connect to remote command server, try %d...\n", tries);
-        yarp::os::Time::delay(waitInSeconds);
+        CD_ERROR("Error on connect to remote RPC server.\n");
+        close();  // close ports
+        return false;
     }
 
-    if (tries > maxTries)
+    if (!commandPort.addOutput(remote + "/command:i", "udp"))
     {
-        CD_ERROR("Timeout on connect to remote command server!\n");
-        rpcClient.close();
-        commandPort.close();
+        CD_ERROR("Error on connect to remote command server.\n");
+        close();  // close ports
         return false;
+    }
+
+    if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
+    {
+        CD_INFO("FK stream disabled, using RPC instead.\n");
+        fkStreamEnabled = false;
+        fkInPort.close();
+    }
+    else
+    {
+        fkStreamEnabled = true;
+        fkInPort.useCallback(fkStreamResponder);
     }
 
     CD_SUCCESS("Connected to remote.\n");
-
-    commandBuffer.attach(commandPort);
 
     return true;
 }
@@ -78,8 +67,13 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 bool roboticslab::CartesianControlClient::close()
 {
     rpcClient.close();
-    commandBuffer.detach();
     commandPort.close();
+
+    if (fkStreamEnabled)
+    {
+        fkInPort.close();
+    }
+
     return true;
 }
 
