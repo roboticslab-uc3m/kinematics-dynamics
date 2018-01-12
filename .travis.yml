@@ -31,12 +31,12 @@ install:
   - make
   - sudo make install
   - cd ../../..
-  #-- (For testBasicCartesianControl) Install FakeControlboard currently at https://github.com/roboticslab-uc3m/openrave-yarp-plugins
-  - git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
-  - cd openrave-yarp-plugins
-  - git checkout 8b4a803b6f3443921fb8d8b9c28b723a06514529
+  #-- (For testBasicCartesianControl) Install FakeControlboard currently at https://github.com/roboticslab-uc3m/yarp-devices
+  - git clone https://github.com/roboticslab-uc3m/yarp-devices
+  - cd yarp-devices
+  - git checkout 5ffad0e616aa74549c7aa1dda7e4b43078ac703e
   - mkdir build && cd build
-  - cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_OpenraveWorldRpcResponder=OFF -DENABLE_OpenraveYarpForceEstimator=OFF -DENABLE_OpenraveYarpPluginLoader=OFF -DENABLE_YarpOpenraveBase=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_YarpOpenraveGrabber=OFF -DENABLE_YarpOpenraveRGBDSensor=OFF -DENABLE_YarpOpenraveRobotManager=OFF -DENABLE_OpenraveYarpCoupled=OFF -DENABLE_teoSim=OFF -DENABLE_FakeControlboard=ON
+  - cmake .. -DENABLE_tests=OFF -DENABLE_checkCanBus=OFF -DENABLE_dumpCanBus=OFF -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_CanBusControlBoard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=OFF -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF
   - make
   - sudo make install
   - cd ../..
