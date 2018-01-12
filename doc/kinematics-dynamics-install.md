@@ -17,7 +17,7 @@ cd  # go home
 mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
 git clone https://github.com/roboticslab-uc3m/yarp-devices
 cd yarp-devices
-git checkout 5ffad0e616aa74549c7aa1dda7e4b43078ac703e
+git checkout 012f610a584badb56e12450cc824569283050d23
 mkdir build && cd build
 cmake .. -DENABLE_tests=OFF -DENABLE_checkCanBus=OFF -DENABLE_dumpCanBus=OFF -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_CanBusControlBoard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=OFF -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF
 make -j$(nproc)  # compile
