@@ -10,16 +10,15 @@ Additionally, this project depends on YCM to download and build external package
 
 - [color-debug](https://github.com/roboticslab-uc3m/color-debug)
 
-Only for `testBasicCartesianControl`, we use `FakeControlboard` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices):
+Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `FakeControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
 
 ```bash
 cd  # go home
 mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
 git clone https://github.com/roboticslab-uc3m/yarp-devices
 cd yarp-devices
-git checkout 012f610a584badb56e12450cc824569283050d23
 mkdir build && cd build
-cmake .. -DENABLE_tests=OFF -DENABLE_checkCanBus=OFF -DENABLE_dumpCanBus=OFF -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_CanBusControlBoard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=OFF -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF
+cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeControlboard=ON -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=ON -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_tests=OFF
 make -j$(nproc)  # compile
 sudo make install
 cd ../..
