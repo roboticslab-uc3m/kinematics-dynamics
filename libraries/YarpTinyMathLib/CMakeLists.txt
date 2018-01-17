@@ -7,6 +7,8 @@ find_package(YARP REQUIRED)
 add_library(YarpTinyMathLib YarpTinyMath.hpp
                             YarpTinyMath.cpp)
 
+set_target_properties(YarpTinyMathLib PROPERTIES PUBLIC_HEADER YarpTinyMath.hpp)
+
 target_link_libraries(YarpTinyMathLib YARP::YARP_sig
                                       YARP::YARP_math)
 
