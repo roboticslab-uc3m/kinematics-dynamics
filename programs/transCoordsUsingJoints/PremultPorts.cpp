@@ -43,7 +43,7 @@ void PremultPorts::setNumRobotJoints(int numRobotJoints)
 
 void PremultPorts::onRead(yarp::os::Bottle& b)
 {
-    //printf("[PremultPorts] Got %s\n", b.toString().c_str());
+    CD_DEBUG("Got %s\n", b.toString().c_str());
     if(b.size() != 6)
     {
         CD_ERROR("Size error, 6-double list expected\n");

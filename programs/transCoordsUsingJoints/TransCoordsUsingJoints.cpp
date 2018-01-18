@@ -1,7 +1,5 @@
 #include "TransCoordsUsingJoints.hpp"
 
-#include <cstdio>
-
 #include <string>
 
 #include <yarp/os/Value.h>
@@ -19,7 +17,7 @@ namespace roboticslab
 /************************************************************************/
 bool TransCoordsUsingJoints::updateModule()
 {
-    std::printf("TransCoordsUsingJoints alive...\n");
+    CD_INFO("TransCoordsUsingJoints alive...\n");
     return true;
 }
 
@@ -40,8 +38,8 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
 
     if(rf.check("help"))
     {
-        printf("TransCoordsUsingJoints options:\n");
-        printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
+        CD_INFO_NO_HEADER("TransCoordsUsingJoints options:\n");
+        CD_INFO_NO_HEADER("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         return false;
     }
 
