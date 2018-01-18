@@ -27,6 +27,7 @@ public:
     void setOutPort(yarp::os::Port* outPort);
     void setIEncoders(yarp::dev::IEncoders* iEncoders);
     void setICartesianSolver(roboticslab::ICartesianSolver* iCartesianSolver);
+    void setNumRobotJoints(int numRobotJoints);
 
 private:
 

@@ -25,12 +25,6 @@ void PremultPorts::setOutPort(yarp::os::Port* outPort)
 void PremultPorts::setIEncoders(yarp::dev::IEncoders* iEncoders)
 {
     this->iEncoders = iEncoders;
-    if( ! iEncoders->getAxes(&numRobotJoints) )
-    {
-        CD_ERROR("Could not get axes.\n");
-        std::exit(1);
-    }
-    CD_SUCCESS("numRobotJoints: %d.\n",numRobotJoints);
 }
 
 /************************************************************************/
@@ -38,6 +32,13 @@ void PremultPorts::setIEncoders(yarp::dev::IEncoders* iEncoders)
 void PremultPorts::setICartesianSolver(roboticslab::ICartesianSolver* iCartesianSolver)
 {
     this->iCartesianSolver = iCartesianSolver;
+}
+
+/************************************************************************/
+
+void PremultPorts::setNumRobotJoints(int numRobotJoints)
+{
+    this->numRobotJoints = numRobotJoints;
 }
 
 /************************************************************************/

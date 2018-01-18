@@ -73,11 +73,19 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
         CD_ERROR("Could not view iEncoders.\n");
         return false;
     }
+    int numRobotJoints;
+    if( ! iEncoders->getAxes(&numRobotJoints) )
+    {
+        CD_ERROR("Could not get axes.\n");
+        return false;
+    }
+    CD_SUCCESS("numRobotJoints: %d.\n",numRobotJoints);
 
     outPort.open("/coords:o");
     premultPorts.setOutPort(&outPort);
     premultPorts.setIEncoders(iEncoders);
     premultPorts.setICartesianSolver(iCartesianSolver);
+    premultPorts.setNumRobotJoints(numRobotJoints);
     premultPorts.open("/coords:i");
     premultPorts.useCallback();
 
