@@ -43,4 +43,3 @@ private:
 }  // namespace roboticslab
 
 #endif  // __TRANS_COORDS_USING_JOINTS_HPP__
-

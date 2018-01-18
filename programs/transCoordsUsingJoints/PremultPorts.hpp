@@ -1,8 +1,6 @@
 #ifndef __PREMULT_PORTS__
 #define __PREMULT_PORTS__
 
-#include <stdlib.h>
-
 #include <yarp/os/Port.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Bottle.h>
@@ -47,4 +45,3 @@ private:
 }  // namespace roboticslab
 
 #endif
-

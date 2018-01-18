@@ -1,7 +1,9 @@
-#include <stdio.h>
+#include <cstdio>
 
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Network.h>
+
+#include <ColorDebug.hpp>
 
 #include "TransCoordsUsingJoints.hpp"
 
@@ -29,16 +31,15 @@ int main(int argc, char *argv[]) {
         return mod.runModule(rf);
     }
 
-    printf("Run \"transCoordsUsingJoints --help\" for options.\n");
-    printf("premultH checking for yarp network... ");
-    fflush(stdout);
+    std::printf("Run \"transCoordsUsingJoints --help\" for options.\n");
+    std::printf("premultH checking for yarp network... ");
+    std::fflush(stdout);
     yarp::os::Network yarp;
     if ( ! yarp.checkNetwork() )
     {
-        fprintf(stderr, "[fail]\ntransCoordsUsingJoints found no yarp network (try running \"yarpserver &\"), bye!\n");
+        std::fprintf(stderr, "[fail]\ntransCoordsUsingJoints found no yarp network (try running \"yarpserver &\"), bye!\n");
         return 1;
-    } else printf("[ok]\n");
+    } else std::printf("[ok]\n");
 
     return mod.runModule(rf);
 }
-

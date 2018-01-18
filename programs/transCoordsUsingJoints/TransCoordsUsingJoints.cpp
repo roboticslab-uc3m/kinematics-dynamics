@@ -1,5 +1,7 @@
 #include "TransCoordsUsingJoints.hpp"
 
+#include <cstdio>
+
 #include <string>
 
 #include <yarp/os/Value.h>
@@ -9,13 +11,15 @@
 
 #include <ColorDebug.hpp>
 
+#include "ICartesianSolver.h"
+
 namespace roboticslab
 {
 
 /************************************************************************/
 bool TransCoordsUsingJoints::updateModule()
 {
-    printf("TransCoordsUsingJoints alive...\n");
+    std::printf("TransCoordsUsingJoints alive...\n");
     return true;
 }
 
