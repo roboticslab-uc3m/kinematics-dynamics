@@ -1,7 +1,5 @@
 #include "PremultPorts.hpp"
 
-#include <cstdlib>
-
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -49,14 +47,14 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
     if(b.size() != 6)
     {
         CD_ERROR("Size error, 6-double list expected\n");
-        std::exit(1);  // case: other --> still not implemented
+        return;
     }
 
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
-        std::exit(1);
+        return;
     }
 
     std::vector<double> currentX;
