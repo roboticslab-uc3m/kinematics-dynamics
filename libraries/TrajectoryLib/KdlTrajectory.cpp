@@ -37,19 +37,26 @@ bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vec
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::create(const std::vector<double> &src, const std::vector<double> &dest)
+bool roboticslab::KdlTrajectory::configurePath(const std::vector<double> &src, const std::vector<double> &dest)
 {
     KDL::Frame srcFrame = KdlVectorConverter::vectorToFrame(src);
     KDL::Frame destFrame = KdlVectorConverter::vectorToFrame(dest);
 
+    double _eqradius = 1.0; //0.000001;
+    KDL::Path * path = new KDL::Path_Line(srcFrame, destFrame, _orient, _eqradius);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlTrajectory::create()
+{
     _orient = new KDL::RotationalInterpolation_SingleAxis();
 
-    double _eqradius = 1.0; //0.000001;
-
-    KDL::Path * pathLine = new KDL::Path_Line(srcFrame, destFrame, _orient, _eqradius);
     KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_MAXVEL, DEFAULT_MAXACC);
 
-    currentTrajectory = new KDL::Trajectory_Segment(pathLine, velocityProfile, DEFAULT_DURATION);
+    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, DEFAULT_DURATION);
 
     return true;
 }

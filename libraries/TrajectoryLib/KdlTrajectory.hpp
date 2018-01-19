@@ -52,13 +52,15 @@ public:
      */
     virtual bool getVelocity(const double movementTime, std::vector<double>& velocity);
 
-    bool create(const std::vector<double> &src, const std::vector<double> &dest);
+    bool configurePath(const std::vector<double> &src, const std::vector<double> &dest);
+    bool create();
     bool destroy();
 
 private:
 
     KDL::Trajectory_Segment* currentTrajectory;
     KDL::RotationalInterpolation_SingleAxis* _orient;
+    KDL::Path* path;
 
 };
 

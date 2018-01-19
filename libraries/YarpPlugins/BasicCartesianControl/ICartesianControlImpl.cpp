@@ -171,7 +171,8 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("stat failed.\n");
         return false;
     }
-    trajectory.create(x,xd);
+    trajectory.configurePath(x,xd);
+    trajectory.create();
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
