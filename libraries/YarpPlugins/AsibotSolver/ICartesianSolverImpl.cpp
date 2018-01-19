@@ -8,6 +8,8 @@
 #include <yarp/math/SVD.h>
 #include <yarp/sig/Matrix.h>
 
+#include <ColorDebug.hpp>
+
 #include "KinematicRepresentation.hpp"
 
 // -----------------------------------------------------------------------------

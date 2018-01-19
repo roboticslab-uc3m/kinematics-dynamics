@@ -5,10 +5,6 @@
 
 #include <vector>
 
-#include "roboticslab-kinematics-dynamics-export.h"
-
-#include <ColorDebug.hpp>
-
 /**
  * @file
  * @brief Contains roboticslab::ICartesianSolver
