@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __LINE_TRAJECTORY_HPP__
-#define __LINE_TRAJECTORY_HPP__
+#ifndef __KDL_TRAJECTORY_HPP__
+#define __KDL_TRAJECTORY_HPP__
 
 #include <string>
 #include <vector>
@@ -11,9 +11,7 @@
 
 #include "ICartesianTrajectory.hpp"
 
-#define DEFAULT_MAXVEL 7.5      // unit/s
-#define DEFAULT_MAXACC 0.2      // unit/s^2
-#define DEFAULT_DURATION 10.0
+#define DURATION_NOT_SET -1
 
 namespace roboticslab
 {
@@ -27,6 +25,15 @@ class KdlTrajectory : public ICartesianTrajectory
 public:
 
     KdlTrajectory();
+
+    /**
+     * @brief Get trajectory total duration in seconds
+     *
+     * @param duration Trajectory total duration in seconds.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool getDuration(double* duration) const;
 
     /**
      * @brief Cartesian position of the trajectory at a specific instant in time
@@ -52,16 +59,60 @@ public:
      */
     virtual bool getVelocity(const double movementTime, std::vector<double>& velocity);
 
-    bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
-    bool deleteLine();
+    /**
+     * @brief Cartesian acceleration of the trajectory at a specific instant in time
+     *
+     * @param movementTime Time in seconds since start.
+     * @param acceleration 6-element vector describing a acceleration in Cartesian space; first
+     * three elements denote translational acceleration (meters/second^2), last three
+     * denote angular velocity (radians/second^2).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool getAcceleration(const double movementTime, std::vector<double>& acceleration);
+
+    /**
+     * @brief Set trajectory total duration in seconds
+     *
+     * @param duration Trajectory total duration in seconds.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setDuration(const double duration);
+
+    /**
+     * @brief Add a waypoint to the trajectory
+     *
+     * @param waypoint Position information of a Cartesian waypoint, 6-element vector describing a
+     * position in Cartesian space; first three elements denote translation (meters), last three denote
+     * rotation in scaled axis-angle representation (radians).
+     * @param waypointVelocity Velocity information of a Cartesian waypoint, 6-element vector describing a
+     * velocity in Cartesian space; first three elements denote translational velocity (meters/second), last three
+     * denote angular velocity (radians/second).
+     * @param waypointAcceleration Acceleration information of a Cartesian waypoint, 6-element vector describing a
+     * acceleration in Cartesian space; first three elements denote translational acceleration (meters/second^2), last three
+     * denote angular acceleration (radians/second^2).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool addWaypoint(const std::vector<double>& waypoint,
+                             const std::vector<double>& waypointVelocity = std::vector<double>(),
+                             const std::vector<double>& waypointAcceleration = std::vector<double>());
+
+    virtual bool configurePath(const std::vector<double> &src, const std::vector<double> &dest);
+    virtual bool create();
+    virtual bool destroy();
 
 private:
 
+    double _duration;
+    bool configuredPath;
     KDL::Trajectory_Segment* currentTrajectory;
     KDL::RotationalInterpolation_SingleAxis* _orient;
+    KDL::Path* path;
 
 };
 
 }  // namespace roboticslab
 
-#endif  // __LINE_TRAJECTORY_HPP__
+#endif  // __KDL_TRAJECTORY_HPP__

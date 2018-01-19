@@ -33,9 +33,12 @@ void roboticslab::BasicCartesianControl::run()
 
 void roboticslab::BasicCartesianControl::handleMovl()
 {
+    double duration;
+    iCartesianTrajectory->getDuration(&duration);
+
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
-    if (movementTime > DEFAULT_DURATION)
+    if (movementTime > duration)
     {
         stopControl();
         return;
@@ -52,8 +55,8 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     //-- Obtain desired Cartesian position and velocity.
     std::vector<double> desiredX, desiredXdot;
-    trajectory.getPosition(movementTime, desiredX);
-    trajectory.getVelocity(movementTime, desiredXdot);
+    iCartesianTrajectory->getPosition(movementTime, desiredX);
+    iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
