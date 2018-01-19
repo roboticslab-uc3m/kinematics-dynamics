@@ -17,6 +17,11 @@ namespace roboticslab
 class ICartesianTrajectory : public ITrajectory
 {
 public:
+    //! Lists available cartesian paths.
+    enum cartesian_path
+    {
+        LINE        ///< A straight line
+    };
 
     /**
      * @brief Cartesian position of the trajectory at a specific instant in time
