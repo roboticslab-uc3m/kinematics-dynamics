@@ -25,6 +25,15 @@ public:
     KdlTrajectory();
 
     /**
+     * @brief Get trajectory total duration in seconds
+     *
+     * @param duration Trajectory total duration in seconds.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool getDuration(double* duration) const;
+
+    /**
      * @brief Cartesian position of the trajectory at a specific instant in time
      *
      * @param movementTime Time in seconds since start.

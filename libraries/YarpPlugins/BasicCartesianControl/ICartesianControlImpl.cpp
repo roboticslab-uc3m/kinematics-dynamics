@@ -194,6 +194,8 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         yarp::os::Time::delay(0.5);
     }
     iCartesianTrajectory->destroy();
+    delete iCartesianTrajectory;
+    iCartesianTrajectory = 0;
 
     return true;
 }

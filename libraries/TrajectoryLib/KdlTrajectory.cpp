@@ -19,6 +19,14 @@ roboticslab::KdlTrajectory::KdlTrajectory()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::KdlTrajectory::getDuration(double* duration) const
+{
+    *duration = currentTrajectory->Duration();
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlTrajectory::getPosition(const double movementTime, std::vector<double>& position)
 {
     KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
