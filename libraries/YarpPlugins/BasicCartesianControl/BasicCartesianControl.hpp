@@ -14,7 +14,7 @@
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
-#include "LineTrajectory.hpp"
+#include "ICartesianTrajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
@@ -23,6 +23,7 @@
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_REFERENCE_FRAME "base"
+#define DEFAULT_DURATION 10.0
 
 namespace roboticslab
 {
@@ -218,7 +219,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double movementStartTime;
 
         /** MOVL store Cartesian trajectory */
-        LineTrajectory trajectory;
+        ICartesianTrajectory* iCartesianTrajectory;
 
         /** MOVV desired Cartesian velocity */
         std::vector<double> xdotd;

@@ -34,8 +34,8 @@ void roboticslab::BasicTwoLimbCartesianControl::run() {
 
         //-- Obtain desired Cartesian position and velocity.
         std::vector<double> desiredX, desiredXdot;
-        trajectory->getX(movementTime, desiredX);
-        trajectory->getXdot(movementTime, desiredXdot);
+        trajectory->getPosition(movementTime, desiredX);
+        trajectory->getVelocity(movementTime, desiredXdot);
 
         CD_DEBUG_NO_HEADER("[STEP] [%f] x ",movementTime);
         for(int i=0;i<desiredX.size();i++)
