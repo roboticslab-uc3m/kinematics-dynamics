@@ -14,7 +14,7 @@
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
-#include "LineTrajectory.hpp"
+#include "KdlTrajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"

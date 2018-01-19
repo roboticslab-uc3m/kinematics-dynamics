@@ -1,6 +1,6 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "LineTrajectory.hpp"
+#include "KdlTrajectory.hpp"
 
 #include <kdl/frames.hpp>
 #include <kdl/velocityprofile_trap.hpp>
