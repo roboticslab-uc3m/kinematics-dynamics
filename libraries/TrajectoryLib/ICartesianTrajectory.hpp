@@ -1,25 +1,20 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __TRAJECTORY_HPP__
-#define __TRAJECTORY_HPP__
+#ifndef __I_CARTESIAN_TRAJECTORY_HPP__
+#define __I_CARTESIAN_TRAJECTORY_HPP__
 
 #include <vector>
+
+#include "ITrajectory.hpp"
 
 namespace roboticslab
 {
 
 /**
- * @ingroup kinematics-dynamics-libraries
- * \defgroup TrajectoryLib
- *
- * @brief Contains classes related to trajectories.
- */
-
-/**
  * @ingroup TrajectoryLib
- * @brief Implements a basic trajectory.
+ * @brief Represents a cartesian trajectory.
  */
-class ITrajectory
+class ICartesianTrajectory : public ITrajectory
 {
 public:
 
@@ -48,9 +43,9 @@ public:
     virtual bool getXdot(const double movementTime, std::vector<double>& xdot) = 0;
 
     /** Destructor */
-    virtual ~ITrajectory() {}
+    virtual ~ICartesianTrajectory() {}
 };
 
 }  // namespace roboticslab
 
-#endif  // __TRAJECTORY_HPP__
+#endif  // __I_CARTESIAN_TRAJECTORY_HPP__
