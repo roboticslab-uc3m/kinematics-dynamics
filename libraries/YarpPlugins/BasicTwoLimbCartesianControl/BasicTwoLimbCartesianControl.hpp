@@ -14,7 +14,7 @@
 #include "ICartesianSolver.h"
 #include "ITwoLimbCartesianControl.h"
 
-#include "Trajectory.hpp"
+#include "ITrajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_REMOTE_A "/teoSim/rightLeg"
