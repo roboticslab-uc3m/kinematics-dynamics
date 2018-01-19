@@ -14,8 +14,8 @@
 
 roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
-      _orient(0),
-      _duration(DURATION_NOT_SET),
+      orient(0),
+      duration(DURATION_NOT_SET),
       configuredPath(false),
       configuredVelocityProfile(false)
 {}
@@ -59,7 +59,7 @@ bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std:
 
 bool roboticslab::KdlTrajectory::setDuration(const double duration)
 {
-    _duration = duration;
+    this->duration = duration;
     return true;
 }
 
@@ -88,9 +88,9 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
             return false;
         }
 
-        _orient = new KDL::RotationalInterpolation_SingleAxis();
-        double _eqradius = 1.0; //0.000001;
-        KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], _orient, _eqradius);
+        orient = new KDL::RotationalInterpolation_SingleAxis();
+        double eqradius = 1.0; //0.000001;
+        KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], orient, eqradius);
 
         configuredPath = true;
         break;
@@ -128,7 +128,7 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProf
 
 bool roboticslab::KdlTrajectory::create()
 {
-    if( DURATION_NOT_SET == _duration )
+    if( DURATION_NOT_SET == duration )
     {
         CD_ERROR("Duration not set!");
         return false;
@@ -144,7 +144,7 @@ bool roboticslab::KdlTrajectory::create()
         return false;
     }
 
-    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, _duration);
+    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, duration);
 
     return true;
 }
@@ -155,7 +155,7 @@ bool roboticslab::KdlTrajectory::destroy()
 {
     delete currentTrajectory;  // deletes _orient, too
     currentTrajectory = 0;
-    _orient = 0;
+    orient = 0;
 
     return true;
 }

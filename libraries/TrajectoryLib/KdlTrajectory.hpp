@@ -12,6 +12,8 @@
 #include "ICartesianTrajectory.hpp"
 
 #define DURATION_NOT_SET -1
+#define DEFAULT_CARTESIAN_MAX_VEL 7.5      // unit/s
+#define DEFAULT_CARTESIAN_MAX_ACC 0.2      // unit/s^2
 
 namespace roboticslab
 {
@@ -106,10 +108,10 @@ public:
 
 private:
 
-    double _duration;
+    double duration;
     bool configuredPath, configuredVelocityProfile;
     KDL::Trajectory_Segment* currentTrajectory;
-    KDL::RotationalInterpolation_SingleAxis* _orient;
+    KDL::RotationalInterpolation_SingleAxis* orient;
     KDL::Path* path;
     KDL::VelocityProfile * velocityProfile;
     std::vector<KDL::Frame> frames;

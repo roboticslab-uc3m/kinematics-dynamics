@@ -7,9 +7,6 @@
 
 #include "ITrajectory.hpp"
 
-#define DEFAULT_CARTESIAN_MAX_VEL 7.5      // unit/s
-#define DEFAULT_CARTESIAN_MAX_ACC 0.2      // unit/s^2
-
 namespace roboticslab
 {
 
