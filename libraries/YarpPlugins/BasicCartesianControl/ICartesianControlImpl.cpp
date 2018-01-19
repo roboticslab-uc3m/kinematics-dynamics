@@ -68,9 +68,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     for(unsigned int joint=0;joint<numSolverJoints;joint++)
     {
         CD_INFO("dist[%d]: %f\n",joint,std::abs(qd[joint]-currentQ[joint]));
-        if (std::abs((qd[joint]-currentQ[joint]) / MAX_ANG_VEL) > max_time)
+        if (std::abs((qd[joint]-currentQ[joint]) / maxJointVelocity) > max_time)
         {
-            max_time = std::abs( (qd[joint]-currentQ[joint]) / MAX_ANG_VEL);
+            max_time = std::abs( (qd[joint]-currentQ[joint]) / maxJointVelocity);
             CD_INFO(" -->candidate: %f\n",max_time);
         }
     }
@@ -303,9 +303,9 @@ void roboticslab::BasicCartesianControl::fwd(const std::vector<double> &rot, dou
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -349,9 +349,9 @@ void roboticslab::BasicCartesianControl::bkwd(const std::vector<double> &rot, do
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -394,9 +394,9 @@ void roboticslab::BasicCartesianControl::rot(const std::vector<double> &rot)
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -439,9 +439,9 @@ void roboticslab::BasicCartesianControl::pan(const std::vector<double> &transl)
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -479,9 +479,9 @@ void roboticslab::BasicCartesianControl::vmos(const std::vector<double> &xdot)
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -519,9 +519,9 @@ void roboticslab::BasicCartesianControl::eff(const std::vector<double> &xdotee)
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -554,7 +554,7 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     }
 
     std::vector<double> xdot(xd.size());
-    const double factor = DEFAULT_GAIN / interval;
+    const double factor = gain / interval;
     std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
 
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -571,9 +571,9 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if ( std::abs(qdot[i]) > MAX_ANG_VEL )
+        if ( std::abs(qdot[i]) > maxJointVelocity )
         {
-            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], MAX_ANG_VEL);
+            CD_ERROR("Maximum angular velocity hit at joint %d (qdot[%d] = %f > %f [deg/s]).\n", i + 1, i, qdot[i], maxJointVelocity);
             std::fill(qdot.begin(), qdot.end(), 0.0);
             iVelocityControl->velocityMove(qdot.data());
             return;
@@ -596,7 +596,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, const std::stri
     case VOCAB_CC_CONFIG_FRAME:
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
@@ -612,7 +612,7 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, std::string & v
     case VOCAB_CC_CONFIG_FRAME:
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
@@ -626,13 +626,34 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
     switch (vocab)
     {
     case VOCAB_CC_CONFIG_GAIN:
+        if (value < 0.0)
+        {
+            CD_ERROR("Controller gain cannot be negative.\n");
+            return false;
+        }
+
+        gain = value;
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
+            return false;
+        }
+
+        maxJointVelocity = value;
         break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Trajectory duration cannot be negative nor zero.\n");
+            return false;
+        }
+
+        duration = value;
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
@@ -646,13 +667,16 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     switch (vocab)
     {
     case VOCAB_CC_CONFIG_GAIN:
+        *value = gain;
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
+        *value = maxJointVelocity;
         break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        *value = duration;
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 

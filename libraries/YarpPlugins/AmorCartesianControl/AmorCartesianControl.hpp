@@ -15,7 +15,8 @@
 #define DEFAULT_CAN_LIBRARY "libeddriver.so"
 #define DEFAULT_CAN_PORT 0
 
-#define MAX_ANG_VEL 10.0
+#define DEFAULT_GAIN 0.05
+#define DEFAULT_QDOT_LIMIT 10.0
 
 namespace roboticslab
 {
@@ -40,7 +41,9 @@ public:
     AmorCartesianControl() : handle(AMOR_INVALID_HANDLE),
                              ownsHandle(false),
                              iCartesianSolver(NULL),
-                             currentState(VOCAB_CC_NOT_CONTROLLING)
+                             currentState(VOCAB_CC_NOT_CONTROLLING),
+                             gain(DEFAULT_GAIN),
+                             maxJointVelocity(DEFAULT_QDOT_LIMIT)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
@@ -123,6 +126,9 @@ private:
     roboticslab::ICartesianSolver *iCartesianSolver;
 
     int currentState;
+
+    double gain;
+    double maxJointVelocity;
 };
 
 }  // namespace roboticslab

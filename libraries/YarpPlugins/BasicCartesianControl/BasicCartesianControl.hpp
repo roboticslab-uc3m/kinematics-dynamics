@@ -20,9 +20,8 @@
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_MS 50
-#define MAX_ANG_VEL 7.5
 #define DEFAULT_GAIN 0.05
-#define DEFAULT_QDOT_LIMIT 10
+#define DEFAULT_QDOT_LIMIT 10.0
 
 namespace roboticslab
 {
@@ -204,6 +203,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::ITorqueControl *iTorqueControl;
         yarp::dev::IControlMode *iControlMode;
 
+        double gain;
+        double maxJointVelocity;
         double duration; // [s]
         int numRobotJoints, numSolverJoints;
 

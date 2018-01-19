@@ -541,7 +541,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
     }
 
     std::vector<double> xdot(xd.size());
-    const double factor = 0.05 / interval;  // DEFAULT_GAIN = 0.05
+    const double factor = gain / interval;
 
     for (int i = 0; i < xd.size(); i++)
     {
@@ -585,7 +585,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, const std::strin
     case VOCAB_CC_CONFIG_FRAME:
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
@@ -601,7 +601,7 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, std::string & va
     case VOCAB_CC_CONFIG_FRAME:
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
@@ -615,13 +615,25 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
     switch (vocab)
     {
     case VOCAB_CC_CONFIG_GAIN:
+        if (value < 0.0)
+        {
+            CD_ERROR("Controller gain cannot be negative.\n");
+            return false;
+        }
+
+        gain = value;
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        break;
-    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
+            return false;
+        }
+
+        maxJointVelocity = value;
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
@@ -635,13 +647,13 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
     switch (vocab)
     {
     case VOCAB_CC_CONFIG_GAIN:
+        *value = gain;
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        break;
-    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        *value = maxJointVelocity;
         break;
     default:
-        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
     }
 
