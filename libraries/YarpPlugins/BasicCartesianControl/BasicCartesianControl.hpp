@@ -209,7 +209,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double movementStartTime;
 
         /** MOVL store Cartesian trajectory */
-        LineTrajectory trajectory;
+        KdlTrajectory trajectory;
 
         /** MOVV desired Cartesian velocity */
         std::vector<double> xdotd;
