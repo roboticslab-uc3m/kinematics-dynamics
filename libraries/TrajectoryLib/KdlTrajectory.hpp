@@ -20,7 +20,7 @@ namespace roboticslab
 
 /**
  * @ingroup TrajectoryLib
- * @brief Implements a line trajectory.
+ * @brief Implements Cartesian trajectory functionalities using KDL.
  */
 class KdlTrajectory : public ICartesianTrajectory
 {
