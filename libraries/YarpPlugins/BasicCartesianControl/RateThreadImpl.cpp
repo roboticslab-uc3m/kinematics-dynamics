@@ -35,7 +35,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 {
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
-    if (movementTime > DEFAULT_DURATION)
+    if (movementTime > duration)
     {
         stopControl();
         return;

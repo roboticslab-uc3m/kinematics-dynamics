@@ -10,6 +10,8 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
+    duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration").asDouble();
+
     std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
     std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
 
