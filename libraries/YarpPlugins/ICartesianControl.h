@@ -74,6 +74,22 @@
 
 /** @} */
 
+/**
+ * @name Controller configuration vocabs
+ *
+ * Used by @ref ICartesianControl_config_commands "Configuration accessors".
+ *
+ * @{
+ */
+
+// Controller configuration (parameter keys)
+#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
+#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
+#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
+#define VOCAB_CC_CONFIG_FRAME VOCAB4('c','p','r','f')         ///< Reference frame
+
+/** @} */
+
 namespace roboticslab
 {
 
@@ -342,6 +358,19 @@ class ICartesianControl
          * and used for numerical differentiation with desired/current poses.
          */
         virtual void pose(const std::vector<double> &x, double interval) = 0;
+
+        /** @} */
+
+        //--------------------- Configuration accessors ---------------------
+
+        /**
+         * @anchor ICartesianControl_config_commands
+         * @name Configuration accessors
+         *
+         * Configuration setters and getters with success/failure response.
+         *
+         * @{
+         */
 
         /**
          * @brief Set a configuration parameter.
