@@ -107,7 +107,7 @@ public:
 
     virtual bool setParameter(int vocab, double value);
 
-    virtual bool setParameter(int vocab, double * value);
+    virtual bool getParameter(int vocab, double * value);
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

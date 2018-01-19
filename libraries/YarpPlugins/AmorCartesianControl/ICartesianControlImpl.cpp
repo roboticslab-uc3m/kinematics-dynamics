@@ -597,7 +597,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::setParameter(int vocab, double * value)
+bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
 {
     return true;
 }

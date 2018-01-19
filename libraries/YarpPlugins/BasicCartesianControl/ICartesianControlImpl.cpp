@@ -608,7 +608,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::setParameter(int vocab, double * value)
+bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
 {
     return true;
 }

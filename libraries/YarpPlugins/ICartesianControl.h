@@ -83,6 +83,10 @@
  */
 
 // Controller configuration (parameter keys)
+#define VOCAB_CC_CONFIG_SET_STRING VOCAB4('c','p','s','s')    ///< Set parameter (string)
+#define VOCAB_CC_CONFIG_GET_STRING VOCAB4('c','p','g','s')    ///< Get parameter (string)
+#define VOCAB_CC_CONFIG_SET_DOUBLE VOCAB4('c','p','s','d')    ///< Set parameter (double)
+#define VOCAB_CC_CONFIG_GET_DOUBLE VOCAB4('c','p','g','d')    ///< Get parameter (double)
 #define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
 #define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
@@ -418,7 +422,7 @@ class ICartesianControl
          *
          * @return true on success, false otherwise
          */
-        virtual bool setParameter(int vocab, double * value) = 0;
+        virtual bool getParameter(int vocab, double * value) = 0;
 
         /** @} */
 };
