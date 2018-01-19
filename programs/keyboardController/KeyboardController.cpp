@@ -211,13 +211,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
 
         cartFrame = INERTIAL;
-
-        cartesianThread = new KeyboardRateThread(iCartesianControl);
-
-        cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
-        cartesianThread->setCurrentData(currentCartVels);
-
-        cartesianThread->start(); // initialize the new thread
     }
 
     issueStop(); // just in case
@@ -380,12 +373,6 @@ double roboticslab::KeyboardController::getPeriod()
 
 bool roboticslab::KeyboardController::close()
 {
-    if (cartesianControlDevice.isValid())
-    {
-        cartesianThread->stop();
-        delete cartesianThread;
-    }
-
     controlboardDevice.close();
     cartesianControlDevice.close();
 
@@ -467,19 +454,16 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     std::cout << "New cartesian velocity: " << roundZeroes(currentCartVels) << std::endl;
 
-    cartesianThread->setCurrentData(currentCartVels);
-
     if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
     {
-        cartesianThread->step(); // send vector of zeroes
-        cartesianThread->suspend();
-        controlMode = NOT_CONTROLLING;
+        iCartesianControl->twist(ZERO_CARTESIAN_VELOCITY); // send vector of zeroes
     }
     else
     {
-        cartesianThread->resume();
-        controlMode = CARTESIAN_MODE;
+        iCartesianControl->twist(currentCartVels);
     }
+
+    controlMode = CARTESIAN_MODE;
 }
 
 void roboticslab::KeyboardController::toggleReferenceFrame()
@@ -493,26 +477,39 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     issueStop();
 
-    std::cout << "Toggled reference frame for cartesian commands: ";
+    cart_frames newFrame;
+    std::string str;
+    int frameVocab = 0;
 
     switch (cartFrame)
     {
     case INERTIAL:
-        cartFrame = END_EFFECTOR;
-        cartesianThread->setCurrentCommand(&ICartesianControl::eff);
-        std::cout << "end effector";
+        newFrame = END_EFFECTOR;
+        str = "end effector";
+        frameVocab = VOCAB_CC_CONFIG_FRAME_TCP;
         break;
     case END_EFFECTOR:
-        cartFrame = INERTIAL;
-        cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
-        std::cout << "inertial";
+        newFrame = INERTIAL;
+        str = "inertial";
+        frameVocab = VOCAB_CC_CONFIG_FRAME_BASE;
         break;
     default:
-        std::cout << "unknown";
+        str = "unknown";
         break;
     }
 
-    std::cout << std::endl;
+    if (frameVocab)
+    {
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, frameVocab))
+        {
+            CD_ERROR("Unable to set reference frame: %s.\n", str.c_str());
+            return;
+        }
+
+        cartFrame = newFrame;
+    }
+
+    std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;
 }
 
 void roboticslab::KeyboardController::printJointPositions()
@@ -554,14 +551,6 @@ void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
-        if (!cartesianThread->isSuspended())
-        {
-            cartesianThread->suspend();
-
-            // ensure that the thread stops before sending a stop command
-            yarp::os::Time::delay(2 * CMC_RATE_MS / 1000);
-        }
-
         iCartesianControl->stopControl();
     }
     else if (controlboardDevice.isValid())

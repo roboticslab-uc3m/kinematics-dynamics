@@ -40,5 +40,5 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
 void roboticslab::SpnavSensorDevice::sendMovementCommand()
 {
-    iCartesianControl->vmos(data);
+    iCartesianControl->twist(data);
 }
