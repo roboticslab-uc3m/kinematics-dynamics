@@ -575,3 +575,31 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::setParameter(int vocab, const std::string & value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::getParameter(int vocab, std::string & value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::setParameter(int vocab, double * value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------

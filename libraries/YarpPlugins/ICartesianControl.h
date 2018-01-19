@@ -3,6 +3,7 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
+#include <string>
 #include <vector>
 
 #include <yarp/os/Vocab.h>
@@ -341,6 +342,54 @@ class ICartesianControl
          * and used for numerical differentiation with desired/current poses.
          */
         virtual void pose(const std::vector<double> &x, double interval) = 0;
+
+        /**
+         * @brief Set a configuration parameter.
+         *
+         * Ask the controller to store or update a parameter of type std::string.
+         *
+         * @param vocab YARP-encoded vocab (parameter key).
+         * @param value Parameter value encoded as a string.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool setParameter(int vocab, const std::string & value) = 0;
+
+        /**
+         * @brief Retrieve a configuration parameter.
+         *
+         * Ask the controller to retrieve a parameter of type std::string.
+         *
+         * @param vocab YARP-encoded vocab (parameter key).
+         * @param value Parameter value encoded as a string.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool getParameter(int vocab, std::string & value) = 0;
+
+        /**
+         * @brief Set a configuration parameter.
+         *
+         * Ask the controller to store or update a parameter of type double.
+         *
+         * @param vocab YARP-encoded vocab (parameter key).
+         * @param value Parameter value encoded as a double.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool setParameter(int vocab, double value) = 0;
+
+        /**
+         * @brief Retrieve a configuration parameter.
+         *
+         * Ask the controller to retrieve a parameter of type double.
+         *
+         * @param vocab YARP-encoded vocab (parameter key).
+         * @param value Parameter value encoded as a double.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool setParameter(int vocab, double * value) = 0;
 
         /** @} */
 };

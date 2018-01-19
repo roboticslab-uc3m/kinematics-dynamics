@@ -150,6 +150,14 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual void pose(const std::vector<double> &x, double interval);
 
+        virtual bool setParameter(int vocab, const std::string & value);
+
+        virtual bool getParameter(int vocab, std::string & value);
+
+        virtual bool setParameter(int vocab, double value);
+
+        virtual bool setParameter(int vocab, double * value);
+
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
         /** Loop function. This is the thread itself. */

@@ -261,3 +261,31 @@ void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, dou
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::setParameter(int vocab, const std::string & value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::getParameter(int vocab, std::string & value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::setParameter(int vocab, double * value)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
