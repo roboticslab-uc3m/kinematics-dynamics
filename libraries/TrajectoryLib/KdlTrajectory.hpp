@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __LINE_TRAJECTORY_HPP__
-#define __LINE_TRAJECTORY_HPP__
+#ifndef __KDL_TRAJECTORY_HPP__
+#define __KDL_TRAJECTORY_HPP__
 
 #include <string>
 #include <vector>
@@ -99,13 +99,13 @@ public:
                              const std::vector<double>& waypointVelocity = std::vector<double>(),
                              const std::vector<double>& waypointAcceleration = std::vector<double>());
 
-    bool configurePath(const std::vector<double> &src, const std::vector<double> &dest);
-    bool create();
-    bool destroy();
+    virtual bool configurePath(const std::vector<double> &src, const std::vector<double> &dest);
+    virtual bool create();
+    virtual bool destroy();
 
 private:
 
-    double duration;
+    double _duration;
     bool configuredPath;
     KDL::Trajectory_Segment* currentTrajectory;
     KDL::RotationalInterpolation_SingleAxis* _orient;
@@ -115,4 +115,4 @@ private:
 
 }  // namespace roboticslab
 
-#endif  // __LINE_TRAJECTORY_HPP__
+#endif  // __KDL_TRAJECTORY_HPP__

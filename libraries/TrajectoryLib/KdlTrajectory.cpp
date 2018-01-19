@@ -15,6 +15,7 @@
 roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
       _orient(0),
+      _duration(DURATION_NOT_SET),
       configuredPath(false)
 {}
 
@@ -46,6 +47,32 @@ bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vec
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std::vector<double>& acceleration)
+{
+    KDL::Twist xdotdotFrame = currentTrajectory->Acc(movementTime);
+    acceleration = KdlVectorConverter::twistToVector(xdotdotFrame);
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlTrajectory::setDuration(const double duration)
+{
+    _duration = duration;
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlTrajectory::addWaypoint(const std::vector<double>& waypoint,
+                         const std::vector<double>& waypointVelocity,
+                         const std::vector<double>& waypointAcceleration)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlTrajectory::configurePath(const std::vector<double> &src, const std::vector<double> &dest)
 {
     KDL::Frame srcFrame = KdlVectorConverter::vectorToFrame(src);
@@ -62,6 +89,11 @@ bool roboticslab::KdlTrajectory::configurePath(const std::vector<double> &src, c
 
 bool roboticslab::KdlTrajectory::create()
 {
+    if( DURATION_NOT_SET == _duration )
+    {
+        CD_ERROR("Duration not set!");
+        return false;
+    }
     if( ! configuredPath )
     {
         CD_ERROR("Path not configured!");
@@ -72,7 +104,7 @@ bool roboticslab::KdlTrajectory::create()
 
     KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);
 
-    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, DEFAULT_TRAJECTORY_DURATION);
+    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, _duration);
 
     return true;
 }

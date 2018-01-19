@@ -5,8 +5,6 @@
 
 #include <vector>
 
-#define DEFAULT_TRAJECTORY_DURATION 10.0
-
 namespace roboticslab
 {
 
