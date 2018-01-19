@@ -14,7 +14,8 @@
 
 roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
-      _orient(0)
+      _orient(0),
+      configuredPath(false)
 {}
 
 // -----------------------------------------------------------------------------
@@ -53,6 +54,7 @@ bool roboticslab::KdlTrajectory::configurePath(const std::vector<double> &src, c
     double _eqradius = 1.0; //0.000001;
     KDL::Path * path = new KDL::Path_Line(srcFrame, destFrame, _orient, _eqradius);
 
+    configuredPath = true;
     return true;
 }
 
@@ -60,6 +62,12 @@ bool roboticslab::KdlTrajectory::configurePath(const std::vector<double> &src, c
 
 bool roboticslab::KdlTrajectory::create()
 {
+    if( ! configuredPath )
+    {
+        CD_ERROR("Path not configured!");
+        return false;
+    }
+
     _orient = new KDL::RotationalInterpolation_SingleAxis();
 
     KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);

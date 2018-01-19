@@ -63,6 +63,7 @@ public:
 
 private:
 
+    bool configuredPath;
     KDL::Trajectory_Segment* currentTrajectory;
     KDL::RotationalInterpolation_SingleAxis* _orient;
     KDL::Path* path;
