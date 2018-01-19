@@ -75,23 +75,29 @@ bool roboticslab::KdlTrajectory::addWaypoint(const std::vector<double>& waypoint
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::configurePath(const int cartesian_path)
+bool roboticslab::KdlTrajectory::configurePath(const int pathType)
 {
-    if( LINE != cartesian_path )
+    switch( pathType )
     {
+    case ICartesianTrajectory::LINE:
+    {
+        if ( frames.size() != 2 )
+        {
+            CD_ERROR("Need exactly 2 waypoints for Cartesian line!\n");
+            return false;
+        }
+
+        double _eqradius = 1.0; //0.000001;
+        KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], _orient, _eqradius);
+
+        configuredPath = true;
+        break;
+    }
+    default:
         CD_ERROR("Only LINE cartesian path implemented for now!");
         return false;
     }
-    if ( frames.size() != 2 )
-    {
-        CD_ERROR("Need exactly 2 waypoints for line!\n");
-        return false;
-    }
 
-    double _eqradius = 1.0; //0.000001;
-    KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], _orient, _eqradius);
-
-    configuredPath = true;
     return true;
 }
 
