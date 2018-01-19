@@ -106,7 +106,7 @@ bool roboticslab::BasicCartesianControl::close()
 
 // -----------------------------------------------------------------------------
 
-int roboticslab::BasicCartesianControl::getCurrentState()
+int roboticslab::BasicCartesianControl::getCurrentState() const
 {
     int tmp;
     currentStateReady.wait();
