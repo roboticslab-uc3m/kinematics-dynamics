@@ -34,7 +34,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     }
     else
     {
-        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr);
+        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr.c_str());
         return false;
     }
 
