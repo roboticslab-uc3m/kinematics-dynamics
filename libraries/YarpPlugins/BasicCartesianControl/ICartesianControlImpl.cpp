@@ -196,6 +196,11 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("\n");
         return false;
     }
+    if( ! iCartesianTrajectory->configureVelocityProfile( ICartesianTrajectory::TRAPEZOIDAL ) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
     if( ! iCartesianTrajectory->create() )
     {
         CD_ERROR("\n");

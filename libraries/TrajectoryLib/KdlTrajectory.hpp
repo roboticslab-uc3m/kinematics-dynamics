@@ -100,16 +100,18 @@ public:
                              const std::vector<double>& waypointAcceleration = std::vector<double>());
 
     virtual bool configurePath(const int pathType);
+    virtual bool configureVelocityProfile(const int velocityProfileType);
     virtual bool create();
     virtual bool destroy();
 
 private:
 
     double _duration;
-    bool configuredPath;
+    bool configuredPath, configuredVelocityProfile;
     KDL::Trajectory_Segment* currentTrajectory;
     KDL::RotationalInterpolation_SingleAxis* _orient;
     KDL::Path* path;
+    KDL::VelocityProfile * velocityProfile;
     std::vector<KDL::Frame> frames;
 
 };

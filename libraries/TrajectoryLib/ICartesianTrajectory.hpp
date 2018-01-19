@@ -25,6 +25,11 @@ public:
     {
         LINE        ///< A straight line
     };
+    //! Lists available cartesian velocity profiles.
+    enum cartesian_velocity_profile
+    {
+        TRAPEZOIDAL        ///< A trapezoidal velocity profile
+    };
 
     /**
      * @brief Get trajectory total duration in seconds
@@ -100,6 +105,7 @@ public:
                              const std::vector<double>& waypointAcceleration = std::vector<double>()) = 0;
 
     virtual bool configurePath(const int pathType) = 0;
+    virtual bool configureVelocityProfile(const int velocityProfileType) = 0;
     virtual bool create() = 0;
     virtual bool destroy() = 0;
 

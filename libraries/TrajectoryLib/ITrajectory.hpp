@@ -85,6 +85,7 @@ public:
                              const std::vector<double>& waypointAcceleration = std::vector<double>()) = 0;
 
     virtual bool configurePath(const int pathType) = 0;
+    virtual bool configureVelocityProfile(const int velocityProfileType) = 0;
     virtual bool create() = 0;
     virtual bool destroy() = 0;
 

@@ -16,7 +16,8 @@ roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
       _orient(0),
       _duration(DURATION_NOT_SET),
-      configuredPath(false)
+      configuredPath(false),
+      configuredVelocityProfile(false)
 {}
 
 // -----------------------------------------------------------------------------
@@ -87,6 +88,7 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
             return false;
         }
 
+        _orient = new KDL::RotationalInterpolation_SingleAxis();
         double _eqradius = 1.0; //0.000001;
         KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], _orient, _eqradius);
 
@@ -95,6 +97,27 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
     }
     default:
         CD_ERROR("Only LINE cartesian path implemented for now!");
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProfileType)
+{
+    switch( velocityProfileType )
+    {
+    case ICartesianTrajectory::TRAPEZOIDAL:
+    {
+        velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);
+
+        configuredVelocityProfile = true;
+        break;
+    }
+    default:
+        CD_ERROR("Only TRAPEZOIDAL cartesian velocity profile implemented for now!");
         return false;
     }
 
@@ -115,10 +138,11 @@ bool roboticslab::KdlTrajectory::create()
         CD_ERROR("Path not configured!");
         return false;
     }
-
-    _orient = new KDL::RotationalInterpolation_SingleAxis();
-
-    KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);
+    if( ! configuredVelocityProfile )
+    {
+        CD_ERROR("Velocity profile not configured!");
+        return false;
+    }
 
     currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, _duration);
 
