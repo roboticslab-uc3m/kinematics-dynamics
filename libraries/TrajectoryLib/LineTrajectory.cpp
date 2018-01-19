@@ -19,19 +19,19 @@ roboticslab::LineTrajectory::LineTrajectory()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::LineTrajectory::getX(const double movementTime, std::vector<double>& x)
+bool roboticslab::LineTrajectory::getPosition(const double movementTime, std::vector<double>& position)
 {
     KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
-    x = KdlVectorConverter::frameToVector(xFrame);
+    position = KdlVectorConverter::frameToVector(xFrame);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::LineTrajectory::getXdot(const double movementTime, std::vector<double>& xdot)
+bool roboticslab::LineTrajectory::getVelocity(const double movementTime, std::vector<double>& velocity)
 {
     KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
-    xdot = KdlVectorConverter::twistToVector(xdotFrame);
+    velocity = KdlVectorConverter::twistToVector(xdotFrame);
     return true;
 }
 
