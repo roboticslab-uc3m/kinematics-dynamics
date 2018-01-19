@@ -83,14 +83,12 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_SET_STRING VOCAB4('c','p','s','s')    ///< Set parameter (string)
-#define VOCAB_CC_CONFIG_GET_STRING VOCAB4('c','p','g','s')    ///< Get parameter (string)
-#define VOCAB_CC_CONFIG_SET_DOUBLE VOCAB4('c','p','s','d')    ///< Set parameter (double)
-#define VOCAB_CC_CONFIG_GET_DOUBLE VOCAB4('c','p','g','d')    ///< Get parameter (double)
-#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain (double)
-#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity (double)
-#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration (double)
-#define VOCAB_CC_CONFIG_FRAME VOCAB4('c','p','r','f')         ///< Reference frame (string)
+#define VOCAB_CC_CONFIG_SET VOCAB3('c','p','s')               ///< Set parameter
+#define VOCAB_CC_CONFIG_GET VOCAB3('c','p','g')               ///< Get parameter
+#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
+#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
+#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
+#define VOCAB_CC_CONFIG_FRAME VOCAB4('c','p','r','f')         ///< Reference frame
 
 /** @} */
 
@@ -379,31 +377,7 @@ class ICartesianControl
         /**
          * @brief Set a configuration parameter.
          *
-         * Ask the controller to store or update a parameter of type std::string.
-         *
-         * @param vocab YARP-encoded vocab (parameter key).
-         * @param value Parameter value encoded as a string.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool setParameter(int vocab, const std::string & value) = 0;
-
-        /**
-         * @brief Retrieve a configuration parameter.
-         *
-         * Ask the controller to retrieve a parameter of type std::string.
-         *
-         * @param vocab YARP-encoded vocab (parameter key).
-         * @param value Parameter value encoded as a string.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool getParameter(int vocab, std::string & value) = 0;
-
-        /**
-         * @brief Set a configuration parameter.
-         *
-         * Ask the controller to store or update a parameter of type double.
+         * Ask the controller to store or update a parameter of 'double' type.
          *
          * @param vocab YARP-encoded vocab (parameter key).
          * @param value Parameter value encoded as a double.
@@ -415,7 +389,7 @@ class ICartesianControl
         /**
          * @brief Retrieve a configuration parameter.
          *
-         * Ask the controller to retrieve a parameter of type double.
+         * Ask the controller to retrieve a parameter of 'double' type.
          *
          * @param vocab YARP-encoded vocab (parameter key).
          * @param value Parameter value encoded as a double.

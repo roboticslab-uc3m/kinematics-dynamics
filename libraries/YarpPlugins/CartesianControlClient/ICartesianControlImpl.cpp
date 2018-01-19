@@ -262,52 +262,11 @@ void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, dou
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::setParameter(int vocab, const std::string & value)
-{
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_CONFIG_SET_STRING);
-    cmd.addVocab(vocab);
-    cmd.addString(value);
-
-    rpcClient.write(cmd, response);
-
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::CartesianControlClient::getParameter(int vocab, std::string & value)
-{
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab(VOCAB_CC_CONFIG_GET_STRING);
-    cmd.addVocab(vocab);
-
-    rpcClient.write(cmd, response);
-
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
-    {
-        return false;
-    }
-
-    value = response.get(0).asString();
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_CC_CONFIG_SET_DOUBLE);
+    cmd.addVocab(VOCAB_CC_CONFIG_SET);
     cmd.addVocab(vocab);
     cmd.addDouble(value);
 
@@ -327,7 +286,7 @@ bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_CC_CONFIG_GET_DOUBLE);
+    cmd.addVocab(VOCAB_CC_CONFIG_GET);
     cmd.addVocab(vocab);
 
     rpcClient.write(cmd, response);

@@ -578,38 +578,6 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::setParameter(int vocab, const std::string & value)
-{
-    switch (vocab)
-    {
-    case VOCAB_CC_CONFIG_FRAME:
-        break;
-    default:
-        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
-        return false;
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AmorCartesianControl::getParameter(int vocab, std::string & value)
-{
-    switch (vocab)
-    {
-    case VOCAB_CC_CONFIG_FRAME:
-        break;
-    default:
-        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
-        return false;
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
 bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 {
     switch (vocab)

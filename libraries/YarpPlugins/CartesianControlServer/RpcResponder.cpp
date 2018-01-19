@@ -35,14 +35,10 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
-    case VOCAB_CC_CONFIG_SET_STRING:
-        return handleStringParameterSetter(in, out);
-    case VOCAB_CC_CONFIG_GET_STRING:
-        return handleStringParameterGetter(in, out);
-    case VOCAB_CC_CONFIG_SET_DOUBLE:
-        return handleDoubleParameterSetter(in, out);
-    case VOCAB_CC_CONFIG_GET_DOUBLE:
-        return handleDoubleParameterGetter(in, out);
+    case VOCAB_CC_CONFIG_SET:
+        return handleParameterSetter(in, out);
+    case VOCAB_CC_CONFIG_GET:
+        return handleParameterGetter(in, out);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -62,10 +58,8 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[forc] coord1 coord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
     addUsage("[tool] coord1 coord2 ...", "append fixed link to end effector");
-    addUsage("[cpss] vocab value", "set configuration parameter (string values)");
-    addUsage("[cpgs] vocab", "get configuration parameter (string values)");
-    addUsage("[cpsd] vocab value", "set configuration parameter (double values)");
-    addUsage("[cpgd] vocab", "get configuration parameter (double values)");
+    addUsage("[cps] vocab value", "set configuration parameter");
+    addUsage("[cpg] vocab", "get configuration parameter");
 }
 
 // -----------------------------------------------------------------------------
@@ -181,59 +175,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleStringParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 2)
-    {
-        int vocab = in.get(1).asVocab();
-        std::string value = in.get(2).asString();
-
-        if (!iCartesianControl->setParameter(vocab, value))
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-
-        out.addVocab(VOCAB_OK);
-        return true;
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleStringParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
-{
-    if (in.size() > 1)
-    {
-        int vocab = in.get(1).asVocab();
-        std::string value;
-
-        if (!iCartesianControl->getParameter(vocab, value))
-        {
-            out.addVocab(VOCAB_FAILED);
-            return false;
-        }
-
-        out.addString(value);
-        return true;
-    }
-    else
-    {
-        CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
-        return false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::RpcResponder::handleDoubleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() > 2)
     {
@@ -259,7 +201,7 @@ bool roboticslab::RpcResponder::handleDoubleParameterSetter(const yarp::os::Bott
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleDoubleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() > 1)
     {
