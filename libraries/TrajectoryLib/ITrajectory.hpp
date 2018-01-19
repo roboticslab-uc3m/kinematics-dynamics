@@ -19,7 +19,7 @@ namespace roboticslab
  * @ingroup TrajectoryLib
  * @brief Implements a basic trajectory.
  */
-class Trajectory
+class ITrajectory
 {
 public:
 
@@ -48,7 +48,7 @@ public:
     virtual bool getXdot(const double movementTime, std::vector<double>& xdot) = 0;
 
     /** Destructor */
-    virtual ~Trajectory() {}
+    virtual ~ITrajectory() {}
 };
 
 }  // namespace roboticslab

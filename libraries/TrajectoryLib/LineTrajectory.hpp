@@ -22,7 +22,7 @@ namespace roboticslab
  * @ingroup TrajectoryLib
  * @brief Implements a basic line trajectory.
  */
-class LineTrajectory : public Trajectory
+class LineTrajectory : public ITrajectory
 {
 public:
 

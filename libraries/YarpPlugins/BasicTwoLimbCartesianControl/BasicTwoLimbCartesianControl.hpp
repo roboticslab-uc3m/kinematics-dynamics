@@ -120,7 +120,7 @@ private:
         double movementStartTime;
 
         /** STEP store Cartesian trajectory */
-        Trajectory* trajectory;
+        ITrajectory* trajectory;
 
         /** STEP desired Cartesian velocity */
         std::vector<double> xdotd;
