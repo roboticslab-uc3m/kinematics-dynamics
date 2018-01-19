@@ -600,6 +600,21 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 
         maxJointVelocity = value;
         break;
+    case VOCAB_CC_CONFIG_FRAME:
+        switch ((int)value)
+        {
+        case VOCAB_CC_CONFIG_FRAME_BASE:
+            referenceFrame = BASE_FRAME;
+            break;
+        case VOCAB_CC_CONFIG_FRAME_TCP:
+            referenceFrame = TCP_FRAME;
+            break;
+        default:
+            CD_ERROR("Unrecognized of unsupported reference frame vocab: %s.\n", yarp::os::Vocab::decode(value).c_str());
+            break;
+        }
+
+        break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
@@ -619,6 +634,9 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
         *value = maxJointVelocity;
+        break;
+    case VOCAB_CC_CONFIG_FRAME:
+        *value = referenceFrame;
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());

@@ -22,6 +22,7 @@
 #define DEFAULT_MS 50
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
+#define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
 {
@@ -198,6 +199,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::IControlLimits *iControlLimits;
         yarp::dev::ITorqueControl *iTorqueControl;
         yarp::dev::IControlMode *iControlMode;
+
+        reference_frame referenceFrame;
 
         double gain;
         double maxJointVelocity;

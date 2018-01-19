@@ -14,6 +14,23 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity").asDouble();
     duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration").asDouble();
 
+    std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
+                "reference frame").asString();
+
+    if (referenceFrameStr == "base")
+    {
+        referenceFrame = BASE_FRAME;
+    }
+    else if (referenceFrameStr == "tcp")
+    {
+        referenceFrame = TCP_FRAME;
+    }
+    else
+    {
+        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr);
+        return false;
+    }
+
     std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
     std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
 

@@ -21,6 +21,23 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
             "maximum joint velocity").asDouble();
 
+    std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
+            "reference frame").asString();
+
+    if (referenceFrameStr == "base")
+    {
+        referenceFrame = BASE_FRAME;
+    }
+    else if (referenceFrameStr == "tcp")
+    {
+        referenceFrame = TCP_FRAME;
+    }
+    else
+    {
+        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr);
+        return false;
+    }
+
     std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
             "AMOR kinematics description").asString();
 

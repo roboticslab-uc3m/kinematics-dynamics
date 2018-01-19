@@ -17,6 +17,7 @@
 
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
+#define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
 {
@@ -43,7 +44,8 @@ public:
                              iCartesianSolver(NULL),
                              currentState(VOCAB_CC_NOT_CONTROLLING),
                              gain(DEFAULT_GAIN),
-                             maxJointVelocity(DEFAULT_QDOT_LIMIT)
+                             maxJointVelocity(DEFAULT_QDOT_LIMIT),
+                             referenceFrame(BASE_FRAME)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
@@ -125,6 +127,8 @@ private:
 
     double gain;
     double maxJointVelocity;
+
+    reference_frame referenceFrame;
 };
 
 }  // namespace roboticslab

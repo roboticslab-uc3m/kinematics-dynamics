@@ -88,7 +88,9 @@
 #define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
 #define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
-#define VOCAB_CC_CONFIG_FRAME VOCAB4('c','p','r','f')         ///< Reference frame
+#define VOCAB_CC_CONFIG_FRAME VOCAB3('c','p','f')             ///< Reference frame
+#define VOCAB_CC_CONFIG_FRAME_BASE VOCAB4('c','p','f','b')    ///< Base frame
+#define VOCAB_CC_CONFIG_FRAME_TCP VOCAB4('c','p','f','t')     ///< End-effector frame (TCP)
 
 /** @} */
 
@@ -101,6 +103,13 @@ namespace roboticslab
 class ICartesianControl
 {
     public:
+
+        //! Lists supported reference frames.
+        enum reference_frame
+        {
+            BASE_FRAME, //!< Base frame
+            TCP_FRAME   //!< End-effector frame (TCP)
+        };
 
         //! Destructor
         virtual ~ICartesianControl() {}
