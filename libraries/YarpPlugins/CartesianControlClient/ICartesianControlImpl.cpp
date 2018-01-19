@@ -213,44 +213,9 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
+void roboticslab::CartesianControlClient::twist(const std::vector<double> &xdot)
 {
-    handleStreamingBiConsumerCmd(VOCAB_CC_FWD, rot, step);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
-{
-    handleStreamingBiConsumerCmd(VOCAB_CC_BKWD, rot, step);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_ROT, rot);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_PAN, transl);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_VMOS, xdot);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_EFF, xdotee);
+    handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------
