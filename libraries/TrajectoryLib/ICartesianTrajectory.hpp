@@ -1,32 +1,22 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __LINE_TRAJECTORY_HPP__
-#define __LINE_TRAJECTORY_HPP__
+#ifndef __I_CARTESIAN_TRAJECTORY_HPP__
+#define __I_CARTESIAN_TRAJECTORY_HPP__
 
-#include <string>
 #include <vector>
 
-#include <kdl/rotational_interpolation_sa.hpp>
-#include <kdl/trajectory_segment.hpp>
-
-#include "ICartesianTrajectory.hpp"
-
-#define DEFAULT_MAXVEL 7.5      // unit/s
-#define DEFAULT_MAXACC 0.2      // unit/s^2
-#define DEFAULT_DURATION 10.0
+#include "ITrajectory.hpp"
 
 namespace roboticslab
 {
 
 /**
  * @ingroup TrajectoryLib
- * @brief Implements a line trajectory.
+ * @brief Represents a cartesian trajectory.
  */
-class LineTrajectory : public ICartesianTrajectory
+class ICartesianTrajectory : public ITrajectory
 {
 public:
-
-    LineTrajectory();
 
     /**
      * @brief Cartesian position of the trajectory at a specific instant in time
@@ -38,7 +28,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getPosition(const double movementTime, std::vector<double>& position);
+    virtual bool getPosition(const double movementTime, std::vector<double>& position) = 0;
 
     /**
      * @brief Cartesian velocity of the trajectory at a specific instant in time
@@ -50,18 +40,12 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getVelocity(const double movementTime, std::vector<double>& velocity);
+    virtual bool getVelocity(const double movementTime, std::vector<double>& velocity) = 0;
 
-    bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
-    bool deleteLine();
-
-private:
-
-    KDL::Trajectory_Segment* currentTrajectory;
-    KDL::RotationalInterpolation_SingleAxis* _orient;
-
+    /** Destructor */
+    virtual ~ICartesianTrajectory() {}
 };
 
 }  // namespace roboticslab
 
-#endif  // __LINE_TRAJECTORY_HPP__
+#endif  // __I_CARTESIAN_TRAJECTORY_HPP__

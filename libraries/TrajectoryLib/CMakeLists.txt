@@ -5,7 +5,8 @@ if(ENABLE_TrajectoryLib)
 
 find_package(orocos_kdl REQUIRED)
 
-set(_trayectory_lib_sources ITrajectory.hpp
+set(_trayectory_lib_sources ICartesianTrajectory.hpp
+                            ITrajectory.hpp
                             LineTrajectory.cpp
                             LineTrajectory.hpp)
 
@@ -14,7 +15,8 @@ add_library(TrajectoryLib ${_trayectory_lib_sources})
 
 add_dependencies(TrajectoryLib COLOR_DEBUG)
 
-set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER ITrajectory.hpp
+set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER ICartesianTrajectory.hpp
+                                                         ITrajectory.hpp
                                                          LineTrajectory.hpp)
 
 target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
