@@ -84,19 +84,19 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
     {
         if ( frames.size() != 2 )
         {
-            CD_ERROR("Need exactly 2 waypoints for Cartesian line!\n");
+            CD_ERROR("Need exactly 2 waypoints for Cartesian line (have %d)!\n",frames.size());
             return false;
         }
 
         orient = new KDL::RotationalInterpolation_SingleAxis();
         double eqradius = 1.0; //0.000001;
-        KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], orient, eqradius);
+        path = new KDL::Path_Line(frames[0], frames[1], orient, eqradius);
 
         configuredPath = true;
         break;
     }
     default:
-        CD_ERROR("Only LINE cartesian path implemented for now!");
+        CD_ERROR("Only LINE cartesian path implemented for now!\n");
         return false;
     }
 
@@ -117,7 +117,7 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProf
         break;
     }
     default:
-        CD_ERROR("Only TRAPEZOIDAL cartesian velocity profile implemented for now!");
+        CD_ERROR("Only TRAPEZOIDAL cartesian velocity profile implemented for now!\n");
         return false;
     }
 
@@ -130,17 +130,17 @@ bool roboticslab::KdlTrajectory::create()
 {
     if( DURATION_NOT_SET == duration )
     {
-        CD_ERROR("Duration not set!");
+        CD_ERROR("Duration not set!\n");
         return false;
     }
     if( ! configuredPath )
     {
-        CD_ERROR("Path not configured!");
+        CD_ERROR("Path not configured!\n");
         return false;
     }
     if( ! configuredVelocityProfile )
     {
-        CD_ERROR("Velocity profile not configured!");
+        CD_ERROR("Velocity profile not configured!\n");
         return false;
     }
 
