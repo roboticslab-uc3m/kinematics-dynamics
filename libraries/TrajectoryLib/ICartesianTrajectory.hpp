@@ -12,17 +12,17 @@ namespace roboticslab
 
 /**
  * @ingroup TrajectoryLib
- * @brief Represents a cartesian trajectory.
+ * @brief Base class for a Cartesian trajectory.
  */
 class ICartesianTrajectory : public ITrajectory
 {
 public:
-    //! Lists available cartesian paths.
+    //! Lists available Cartesian paths.
     enum cartesian_path
     {
         LINE        ///< A straight line
     };
-    //! Lists available cartesian velocity profiles.
+    //! Lists available Cartesian velocity profiles.
     enum cartesian_velocity_profile
     {
         TRAPEZOIDAL        ///< A trapezoidal velocity profile
@@ -101,9 +101,34 @@ public:
                              const std::vector<double>& waypointVelocity = std::vector<double>(),
                              const std::vector<double>& waypointAcceleration = std::vector<double>()) = 0;
 
+    /**
+     * @brief Configure the type of Cartesian path upon creation
+     *
+     * @param pathType Use a \ref cartesian_path to define the type of Cartesian path
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool configurePath(const int pathType) = 0;
+
+    /**
+     * @brief Configure the type of Cartesian velocity profile upon creation
+     *
+     * @param velocityProfileType Use a \ref cartesian_velocity_profile to define the type of Cartesian velocity profile
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool configureVelocityProfile(const int velocityProfileType) = 0;
+
+    /** @brief Create the trajectory
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool create() = 0;
+
+    /** @brief Destroy the trajectory
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool destroy() = 0;
 
     /** Destructor */

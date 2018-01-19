@@ -30,6 +30,10 @@ add_executable(testAsibotSolverFromFile testAsibotSolverFromFile.cpp)
 add_dependencies(testAsibotSolverFromFile COLOR_DEBUG)
 target_link_libraries(testAsibotSolverFromFile YARP::YARP_OS YARP::YARP_dev gtest_main KinematicRepresentationLib)
 
+add_executable(testKdlTrajectory testKdlTrajectory.cpp)
+add_dependencies(testKdlTrajectory COLOR_DEBUG)
+target_link_libraries(testKdlTrajectory YARP::YARP_OS YARP::YARP_dev gtest_main TrajectoryLib)
+
 add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 add_dependencies(testBasicCartesianControl COLOR_DEBUG)
 target_link_libraries(testBasicCartesianControl YARP::YARP_OS YARP::YARP_dev gtest_main)

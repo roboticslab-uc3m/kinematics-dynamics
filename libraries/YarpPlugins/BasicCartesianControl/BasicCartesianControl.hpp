@@ -201,9 +201,9 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;
 
-        int getCurrentState();
+        int getCurrentState() const;
         void setCurrentState(int value);
-        yarp::os::Semaphore currentStateReady;
+        mutable yarp::os::Semaphore currentStateReady;
 
         /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;

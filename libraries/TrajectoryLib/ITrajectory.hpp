@@ -17,7 +17,7 @@ namespace roboticslab
 
 /**
  * @ingroup TrajectoryLib
- * @brief Represents a trajectory.
+ * @brief Base class for a generic trajectory.
  */
 class ITrajectory
 {
@@ -84,9 +84,34 @@ public:
                              const std::vector<double>& waypointVelocity = std::vector<double>(),
                              const std::vector<double>& waypointAcceleration = std::vector<double>()) = 0;
 
+    /**
+     * @brief Configure the type of path upon creation
+     *
+     * @param pathType See subclasses for types of paths
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool configurePath(const int pathType) = 0;
+
+    /**
+     * @brief Configure the type of velocity profile upon creation
+     *
+     * @param velocityProfileType See subclasses for types of velocity profiles
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool configureVelocityProfile(const int velocityProfileType) = 0;
+
+    /** @brief Create the trajectory
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool create() = 0;
+
+    /** @brief Destroy the trajectory
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool destroy() = 0;
 
     /** Destructor */
