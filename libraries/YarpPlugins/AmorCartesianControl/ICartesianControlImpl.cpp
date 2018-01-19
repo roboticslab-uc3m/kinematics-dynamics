@@ -385,8 +385,8 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
             referenceFrame = TCP_FRAME;
             break;
         default:
-            CD_ERROR("Unrecognized of unsupported reference frame vocab: %s.\n", yarp::os::Vocab::decode(value).c_str());
-            break;
+            CD_ERROR("Unrecognized of unsupported reference frame vocab: %s.\n", yarp::os::Vocab::decode((int)value).c_str());
+            return false;
         }
 
         break;
