@@ -99,7 +99,7 @@ public:
                              const std::vector<double>& waypointVelocity = std::vector<double>(),
                              const std::vector<double>& waypointAcceleration = std::vector<double>()) = 0;
 
-    virtual bool configurePath(const std::vector<double> &src, const std::vector<double> &dest) = 0;
+    virtual bool configurePath(const int cartesian_path) = 0;
     virtual bool create() = 0;
     virtual bool destroy() = 0;
 

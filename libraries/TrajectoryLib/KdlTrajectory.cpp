@@ -68,18 +68,28 @@ bool roboticslab::KdlTrajectory::addWaypoint(const std::vector<double>& waypoint
                          const std::vector<double>& waypointVelocity,
                          const std::vector<double>& waypointAcceleration)
 {
+    KDL::Frame frame = KdlVectorConverter::vectorToFrame(waypoint);
+    frames.push_back(frame);
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::configurePath(const std::vector<double> &src, const std::vector<double> &dest)
+bool roboticslab::KdlTrajectory::configurePath(const int cartesian_path)
 {
-    KDL::Frame srcFrame = KdlVectorConverter::vectorToFrame(src);
-    KDL::Frame destFrame = KdlVectorConverter::vectorToFrame(dest);
+    if( LINE != cartesian_path )
+    {
+        CD_ERROR("Only LINE cartesian path implemented for now!");
+        return false;
+    }
+    if ( frames.size() != 2 )
+    {
+        CD_ERROR("Need exactly 2 waypoints for line!\n");
+        return false;
+    }
 
     double _eqradius = 1.0; //0.000001;
-    KDL::Path * path = new KDL::Path_Line(srcFrame, destFrame, _orient, _eqradius);
+    KDL::Path * path = new KDL::Path_Line(frames[0], frames[1], _orient, _eqradius);
 
     configuredPath = true;
     return true;

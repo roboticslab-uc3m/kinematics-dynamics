@@ -173,10 +173,34 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("stat failed.\n");
         return false;
     }
+
+    //-- Create line trajectory
     iCartesianTrajectory = new KdlTrajectory;
-    iCartesianTrajectory->setDuration(duration);
-    iCartesianTrajectory->configurePath(x,xd);
-    iCartesianTrajectory->create();
+    if( ! iCartesianTrajectory->setDuration(duration) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartesianTrajectory->addWaypoint(x) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartesianTrajectory->addWaypoint(xd) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartesianTrajectory->configurePath( ICartesianTrajectory::LINE ) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartesianTrajectory->create() )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)

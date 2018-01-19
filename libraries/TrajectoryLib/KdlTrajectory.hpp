@@ -99,7 +99,7 @@ public:
                              const std::vector<double>& waypointVelocity = std::vector<double>(),
                              const std::vector<double>& waypointAcceleration = std::vector<double>());
 
-    virtual bool configurePath(const std::vector<double> &src, const std::vector<double> &dest);
+    virtual bool configurePath(const int cartesian_path);
     virtual bool create();
     virtual bool destroy();
 
@@ -110,6 +110,7 @@ private:
     KDL::Trajectory_Segment* currentTrajectory;
     KDL::RotationalInterpolation_SingleAxis* _orient;
     KDL::Path* path;
+    std::vector<KDL::Frame> frames;
 
 };
 
