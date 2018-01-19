@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <yarp/os/Vocab.h>
+
 #include <ColorDebug.hpp>
 
 #include "KinematicRepresentation.hpp"
@@ -578,6 +580,15 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
 bool roboticslab::AmorCartesianControl::setParameter(int vocab, const std::string & value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_FRAME:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
@@ -585,6 +596,15 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, const std::strin
 
 bool roboticslab::AmorCartesianControl::getParameter(int vocab, std::string & value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_FRAME:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
@@ -592,6 +612,19 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, std::string & va
 
 bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_GAIN:
+        break;
+    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
+        break;
+    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
@@ -599,6 +632,19 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 
 bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_GAIN:
+        break;
+    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
+        break;
+    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 

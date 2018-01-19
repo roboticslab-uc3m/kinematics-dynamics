@@ -87,10 +87,10 @@
 #define VOCAB_CC_CONFIG_GET_STRING VOCAB4('c','p','g','s')    ///< Get parameter (string)
 #define VOCAB_CC_CONFIG_SET_DOUBLE VOCAB4('c','p','s','d')    ///< Set parameter (double)
 #define VOCAB_CC_CONFIG_GET_DOUBLE VOCAB4('c','p','g','d')    ///< Get parameter (double)
-#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
-#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
-#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
-#define VOCAB_CC_CONFIG_FRAME VOCAB4('c','p','r','f')         ///< Reference frame
+#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain (double)
+#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity (double)
+#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration (double)
+#define VOCAB_CC_CONFIG_FRAME VOCAB4('c','p','r','f')         ///< Reference frame (string)
 
 /** @} */
 

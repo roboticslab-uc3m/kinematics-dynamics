@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <functional>
 
+#include <yarp/os/Vocab.h>
+
 #include <ColorDebug.hpp>
 
 // ------------------- ICartesianControl Related ------------------------------------
@@ -589,6 +591,15 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 bool roboticslab::BasicCartesianControl::setParameter(int vocab, const std::string & value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_FRAME:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
@@ -596,6 +607,15 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, const std::stri
 
 bool roboticslab::BasicCartesianControl::getParameter(int vocab, std::string & value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_FRAME:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
@@ -603,6 +623,19 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, std::string & v
 
 bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_GAIN:
+        break;
+    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
+        break;
+    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
@@ -610,6 +643,19 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
 
 bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
 {
+    switch (vocab)
+    {
+    case VOCAB_CC_CONFIG_GAIN:
+        break;
+    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
+        break;
+    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        break;
+    default:
+        CD_ERROR("Unrecognized config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        return false;
+    }
+
     return true;
 }
 
