@@ -9,7 +9,7 @@
 #include <kdl/rotational_interpolation_sa.hpp>
 #include <kdl/trajectory_segment.hpp>
 
-#include "Trajectory.hpp"
+#include "ITrajectory.hpp"
 
 #define DEFAULT_MAXVEL 7.5      // unit/s
 #define DEFAULT_MAXACC 0.2      // unit/s^2
@@ -22,7 +22,7 @@ namespace roboticslab
  * @ingroup TrajectoryLib
  * @brief Implements a basic line trajectory.
  */
-class LineTrajectory : public Trajectory
+class LineTrajectory : public ITrajectory
 {
 public:
 
