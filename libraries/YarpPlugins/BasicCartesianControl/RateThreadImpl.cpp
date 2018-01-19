@@ -64,7 +64,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= DEFAULT_GAIN * (1000.0 / DEFAULT_MS);
+        commandXdot[i] *= gain * (1000.0 / DEFAULT_MS);
         commandXdot[i] += desiredXdot[i];
     }
 
@@ -95,7 +95,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     for (int i = 0; i < commandQdot.size(); i++)
     {
-        if (std::abs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+        if (std::abs(commandQdot[i]) > maxJointVelocity)
         {
             CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
             stopControl();
@@ -149,7 +149,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
 
     for (int i = 0; i < commandQdot.size(); i++)
     {
-        if (std::abs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+        if (std::abs(commandQdot[i]) > maxJointVelocity)
         {
             CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
             stopControl();

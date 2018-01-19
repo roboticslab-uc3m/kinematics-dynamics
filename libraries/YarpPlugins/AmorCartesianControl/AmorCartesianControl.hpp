@@ -15,7 +15,9 @@
 #define DEFAULT_CAN_LIBRARY "libeddriver.so"
 #define DEFAULT_CAN_PORT 0
 
-#define MAX_ANG_VEL 10.0
+#define DEFAULT_GAIN 0.05
+#define DEFAULT_QDOT_LIMIT 10.0
+#define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
 {
@@ -40,7 +42,10 @@ public:
     AmorCartesianControl() : handle(AMOR_INVALID_HANDLE),
                              ownsHandle(false),
                              iCartesianSolver(NULL),
-                             currentState(VOCAB_CC_NOT_CONTROLLING)
+                             currentState(VOCAB_CC_NOT_CONTROLLING),
+                             gain(DEFAULT_GAIN),
+                             maxJointVelocity(DEFAULT_QDOT_LIMIT),
+                             referenceFrame(BASE_FRAME)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
@@ -65,19 +70,13 @@ public:
 
     virtual bool tool(const std::vector<double> &x);
 
-    virtual void fwd(const std::vector<double> &rot, double step);
-
-    virtual void bkwd(const std::vector<double> &rot, double step);
-
-    virtual void rot(const std::vector<double> &rot);
-
-    virtual void pan(const std::vector<double> &transl);
-
-    virtual void vmos(const std::vector<double> &xdot);
-
-    virtual void eff(const std::vector<double> &xdotee);
+    virtual void twist(const std::vector<double> &xdot);
 
     virtual void pose(const std::vector<double> &x, double interval);
+
+    virtual bool setParameter(int vocab, double value);
+
+    virtual bool getParameter(int vocab, double * value);
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
 
@@ -115,6 +114,11 @@ private:
     roboticslab::ICartesianSolver *iCartesianSolver;
 
     int currentState;
+
+    double gain;
+    double maxJointVelocity;
+
+    reference_frame referenceFrame;
 };
 
 }  // namespace roboticslab

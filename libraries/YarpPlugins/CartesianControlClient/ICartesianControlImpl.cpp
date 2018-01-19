@@ -213,44 +213,9 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::fwd(const std::vector<double> &rot, double step)
+void roboticslab::CartesianControlClient::twist(const std::vector<double> &xdot)
 {
-    handleStreamingBiConsumerCmd(VOCAB_CC_FWD, rot, step);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::bkwd(const std::vector<double> &rot, double step)
-{
-    handleStreamingBiConsumerCmd(VOCAB_CC_BKWD, rot, step);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::rot(const std::vector<double> &rot)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_ROT, rot);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::pan(const std::vector<double> &transl)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_PAN, transl);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::vmos(const std::vector<double> &xdot)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_VMOS, xdot);
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
-{
-    handleStreamingConsumerCmd(VOCAB_CC_EFF, xdotee);
+    handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------
@@ -258,6 +223,47 @@ void roboticslab::CartesianControlClient::eff(const std::vector<double> &xdotee)
 void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
     handleStreamingBiConsumerCmd(VOCAB_CC_POSE, x, interval);
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_CONFIG_SET);
+    cmd.addVocab(vocab);
+    cmd.addDouble(value);
+
+    rpcClient.write(cmd, response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_CONFIG_GET);
+    cmd.addVocab(vocab);
+
+    rpcClient.write(cmd, response);
+
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    {
+        return false;
+    }
+
+    *value = response.get(0).asDouble();
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------

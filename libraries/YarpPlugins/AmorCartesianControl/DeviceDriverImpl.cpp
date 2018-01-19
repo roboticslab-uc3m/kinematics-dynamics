@@ -15,6 +15,29 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 {
     CD_DEBUG("AmorCartesianControl config: %s.\n", config.toString().c_str());
 
+    gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
+            "controller gain").asDouble();
+
+    maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
+            "maximum joint velocity").asDouble();
+
+    std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
+            "reference frame").asString();
+
+    if (referenceFrameStr == "base")
+    {
+        referenceFrame = BASE_FRAME;
+    }
+    else if (referenceFrameStr == "tcp")
+    {
+        referenceFrame = TCP_FRAME;
+    }
+    else
+    {
+        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr.c_str());
+        return false;
+    }
+
     std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
             "AMOR kinematics description").asString();
 

@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <string>
+
 #include <ColorDebug.hpp>
 
 // ------------------- RpcResponder Related ------------------------------------
@@ -33,6 +35,10 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
+    case VOCAB_CC_CONFIG_SET:
+        return handleParameterSetter(in, out);
+    case VOCAB_CC_CONFIG_GET:
+        return handleParameterGetter(in, out);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -43,15 +49,17 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
 void roboticslab::RpcResponder::makeUsage()
 {
     addUsage("[stat]", "get current position in cartesian space");
-    addUsage("[inv] $fCoord1 $fCoord2 ...", "accept desired position in cartesian space, return result in joint space");
-    addUsage("[movj] $fCoord1 $fCoord2 ...", "joint move to desired position (absolute coordinates in cartesian space)");
-    addUsage("[relj] $fCoord1 $fCoord2 ...", "joint move to desired position (relative coordinates in cartesian space)");
-    addUsage("[movl] $fCoord1 $fCoord2 ...", "linear move to desired position (absolute coordinates in cartesian space)");
-    addUsage("[movv] $fCoord1 $fCoord2 ...", "velocity move using supplied vector (cartesian space)");
+    addUsage("[inv] coord1 coord2 ...", "accept desired position in cartesian space, return result in joint space");
+    addUsage("[movj] coord1 coord2 ...", "joint move to desired position (absolute coordinates in cartesian space)");
+    addUsage("[relj] coord1 coord2 ...", "joint move to desired position (relative coordinates in cartesian space)");
+    addUsage("[movl] coord1 coord2 ...", "linear move to desired position (absolute coordinates in cartesian space)");
+    addUsage("[movv] coord1 coord2 ...", "velocity move using supplied vector (cartesian space)");
     addUsage("[gcmp]", "enable gravity compensation");
-    addUsage("[forc] $fCoord1 $fCoord2 ...", "enable torque control, apply input forces (cartesian space)");
+    addUsage("[forc] coord1 coord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
-    addUsage("[tool] $fCoord1 $fCoord2 ...", "append fixed link to end effector");
+    addUsage("[tool] coord1 coord2 ...", "append fixed link to end effector");
+    addUsage("[cps] vocab value", "set configuration parameter");
+    addUsage("[cpg] vocab", "get configuration parameter");
 }
 
 // -----------------------------------------------------------------------------
@@ -155,6 +163,58 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
             out.addDouble(vout[i]);
         }
 
+        return true;
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 2)
+    {
+        int vocab = in.get(1).asVocab();
+        double value = in.get(2).asDouble();
+
+        if (!iCartesianControl->setParameter(vocab, value))
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+
+        out.addVocab(VOCAB_OK);
+        return true;
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 1)
+    {
+        int vocab = in.get(1).asVocab();
+        double value;
+
+        if (!iCartesianControl->getParameter(vocab, &value))
+        {
+            out.addVocab(VOCAB_FAILED);
+            return false;
+        }
+
+        out.addDouble(value);
         return true;
     }
     else
