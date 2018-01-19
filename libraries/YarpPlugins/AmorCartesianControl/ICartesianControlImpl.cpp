@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <ColorDebug.hpp>
+
 #include "KinematicRepresentation.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------

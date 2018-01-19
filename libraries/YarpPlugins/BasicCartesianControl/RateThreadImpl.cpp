@@ -33,12 +33,12 @@ void roboticslab::BasicCartesianControl::run()
 
 void roboticslab::BasicCartesianControl::handleMovl()
 {
-    double duration;
-    iCartesianTrajectory->getDuration(&duration);
+    double currentTrajectoryDuration;
+    iCartesianTrajectory->getDuration(&currentTrajectoryDuration);
 
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
-    if (movementTime > duration)
+    if (movementTime > currentTrajectoryDuration)
     {
         stopControl();
         return;

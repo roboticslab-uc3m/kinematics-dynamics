@@ -174,6 +174,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
     iCartesianTrajectory = new KdlTrajectory;
+    iCartesianTrajectory->setDuration(duration);
     iCartesianTrajectory->configurePath(x,xd);
     iCartesianTrajectory->create();
 

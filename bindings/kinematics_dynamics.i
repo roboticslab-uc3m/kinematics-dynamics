@@ -20,10 +20,12 @@
 
 %{
 /* Includes the header in the wrapper code */
+#include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 %}
 
 /* Parse the header file to generate wrappers */
+%include "ICartesianSolver.h"
 %include "ICartesianControl.h"
 
 %extend roboticslab::ICartesianControl
@@ -36,6 +38,17 @@
         return buffer;
     }
 }
+
+%{
+#include <yarp/dev/all.h>
+roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d)
+{
+    roboticslab::ICartesianSolver *result;
+    d.view(result);
+    return result;
+}
+%}
+extern roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d);
 
 %{
 #include <yarp/dev/all.h>
