@@ -204,6 +204,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::ITorqueControl *iTorqueControl;
         yarp::dev::IControlMode *iControlMode;
 
+        double duration; // [s]
         int numRobotJoints, numSolverJoints;
 
         /** State encoded as a VOCAB which can be stored as an int */
