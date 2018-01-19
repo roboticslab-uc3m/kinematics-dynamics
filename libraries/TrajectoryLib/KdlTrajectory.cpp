@@ -54,9 +54,9 @@ bool roboticslab::KdlTrajectory::create()
 {
     _orient = new KDL::RotationalInterpolation_SingleAxis();
 
-    KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_MAXVEL, DEFAULT_MAXACC);
+    KDL::VelocityProfile * velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);
 
-    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, DEFAULT_DURATION);
+    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, DEFAULT_TRAJECTORY_DURATION);
 
     return true;
 }

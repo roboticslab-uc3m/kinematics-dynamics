@@ -8,6 +8,8 @@
 
 #include <ColorDebug.hpp>
 
+#include "KdlTrajectory.hpp"
+
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x)
@@ -171,8 +173,9 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("stat failed.\n");
         return false;
     }
-    trajectory.configurePath(x,xd);
-    trajectory.create();
+    iCartesianTrajectory = new KdlTrajectory;
+    iCartesianTrajectory->configurePath(x,xd);
+    iCartesianTrajectory->create();
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -190,7 +193,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         fflush(stdout);
         yarp::os::Time::delay(0.5);
     }
-    trajectory.destroy();
+    iCartesianTrajectory->destroy();
 
     return true;
 }

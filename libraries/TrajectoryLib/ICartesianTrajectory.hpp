@@ -7,6 +7,9 @@
 
 #include "ITrajectory.hpp"
 
+#define DEFAULT_CARTESIAN_MAX_VEL 7.5      // unit/s
+#define DEFAULT_CARTESIAN_MAX_ACC 0.2      // unit/s^2
+
 namespace roboticslab
 {
 
@@ -46,6 +49,10 @@ public:
      * @return true on success, false otherwise
      */
     virtual bool getVelocity(const double movementTime, std::vector<double>& velocity) = 0;
+
+    virtual bool configurePath(const std::vector<double> &src, const std::vector<double> &dest) = 0;
+    virtual bool create() = 0;
+    virtual bool destroy() = 0;
 
     /** Destructor */
     virtual ~ICartesianTrajectory() {}
