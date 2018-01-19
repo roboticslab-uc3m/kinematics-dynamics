@@ -9,11 +9,6 @@ set(_trayectory_lib_sources Trajectory.hpp
                             LineTrajectory.cpp
                             LineTrajectory.hpp)
 
-if(HAVE_GAIT AND ENABLE_Gait)
-    list(APPEND _trayectory_lib_sources GaitTrajectory.cpp
-                                        GaitTrajectory.hpp)
-endif()
-
 # Set up our library.
 add_library(TrajectoryLib ${_trayectory_lib_sources})
 
@@ -28,11 +23,6 @@ target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
 target_include_directories(TrajectoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-
-if(HAVE_GAIT AND ENABLE_Gait)
-    set_property(TARGET TrajectoryLib APPEND PROPERTY PUBLIC_HEADER GaitTrajectory.hpp)
-    target_link_libraries(TrajectoryLib PUBLIC ROBOTICSLAB::Gait)
-endif()
 
 install(TARGETS TrajectoryLib
         EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
