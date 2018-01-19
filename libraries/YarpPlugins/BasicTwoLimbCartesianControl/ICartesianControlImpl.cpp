@@ -4,8 +4,6 @@
 
 #include <ColorDebug.hpp>
 
-#include <GaitTrajectory.hpp>
-
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool roboticslab::BasicTwoLimbCartesianControl::stat(int &state, std::vector<double> &x)
@@ -48,7 +46,7 @@ bool roboticslab::BasicTwoLimbCartesianControl::step()
     CD_WARNING("STEP mode still experimental.\n");
 
     // Initialize trajectory.
-    trajectory = new GaitTrajectory();
+    //trajectory = new GaitTrajectory();
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     for (unsigned int joint = 0; joint < numRobotJointsA; joint++)
