@@ -52,8 +52,8 @@ public:
      */
     virtual bool getVelocity(const double movementTime, std::vector<double>& velocity);
 
-    bool newLine(const std::vector<double> &src, const std::vector<double> &dest);
-    bool deleteLine();
+    bool create(const std::vector<double> &src, const std::vector<double> &dest);
+    bool destroy();
 
 private:
 

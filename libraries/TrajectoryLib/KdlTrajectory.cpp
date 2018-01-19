@@ -37,7 +37,7 @@ bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vec
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
+bool roboticslab::KdlTrajectory::create(const std::vector<double> &src, const std::vector<double> &dest)
 {
     KDL::Frame srcFrame = KdlVectorConverter::vectorToFrame(src);
     KDL::Frame destFrame = KdlVectorConverter::vectorToFrame(dest);
@@ -56,7 +56,7 @@ bool roboticslab::KdlTrajectory::newLine(const std::vector<double> &src, const s
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::deleteLine()
+bool roboticslab::KdlTrajectory::destroy()
 {
     delete currentTrajectory;  // deletes _orient, too
     currentTrajectory = 0;
