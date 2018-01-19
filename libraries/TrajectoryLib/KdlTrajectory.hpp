@@ -101,9 +101,34 @@ public:
                              const std::vector<double>& waypointVelocity = std::vector<double>(),
                              const std::vector<double>& waypointAcceleration = std::vector<double>());
 
+    /**
+     * @brief Configure the type of Cartesian path upon creation
+     *
+     * @param pathType Use a \ref cartesian_path to define the type of Cartesian path
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool configurePath(const int pathType);
+
+    /**
+     * @brief Configure the type of Cartesian velocity profile upon creation
+     *
+     * @param velocityProfileType Use a \ref cartesian_velocity_profile to define the type of Cartesian velocity profile
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool configureVelocityProfile(const int velocityProfileType);
+
+    /** @brief Create the trajectory
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool create();
+
+    /** @brief Destroy the trajectory
+     *
+     * @return true on success, false otherwise
+     */
     virtual bool destroy();
 
 private:
