@@ -22,11 +22,11 @@ namespace roboticslab
  * @ingroup TrajectoryLib
  * @brief Implements a line trajectory.
  */
-class LineTrajectory : public ICartesianTrajectory
+class KdlTrajectory : public ICartesianTrajectory
 {
 public:
 
-    LineTrajectory();
+    KdlTrajectory();
 
     /**
      * @brief Cartesian position of the trajectory at a specific instant in time

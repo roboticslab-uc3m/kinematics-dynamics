@@ -1,6 +1,6 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "LineTrajectory.hpp"
+#include "KdlTrajectory.hpp"
 
 #include <kdl/frames.hpp>
 #include <kdl/velocityprofile_trap.hpp>
@@ -12,14 +12,14 @@
 
 // -----------------------------------------------------------------------------
 
-roboticslab::LineTrajectory::LineTrajectory()
+roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
       _orient(0)
 {}
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::LineTrajectory::getPosition(const double movementTime, std::vector<double>& position)
+bool roboticslab::KdlTrajectory::getPosition(const double movementTime, std::vector<double>& position)
 {
     KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
     position = KdlVectorConverter::frameToVector(xFrame);
@@ -28,7 +28,7 @@ bool roboticslab::LineTrajectory::getPosition(const double movementTime, std::ve
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::LineTrajectory::getVelocity(const double movementTime, std::vector<double>& velocity)
+bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vector<double>& velocity)
 {
     KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
     velocity = KdlVectorConverter::twistToVector(xdotFrame);
@@ -37,7 +37,7 @@ bool roboticslab::LineTrajectory::getVelocity(const double movementTime, std::ve
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::LineTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
+bool roboticslab::KdlTrajectory::newLine(const std::vector<double> &src, const std::vector<double> &dest)
 {
     KDL::Frame srcFrame = KdlVectorConverter::vectorToFrame(src);
     KDL::Frame destFrame = KdlVectorConverter::vectorToFrame(dest);
@@ -56,7 +56,7 @@ bool roboticslab::LineTrajectory::newLine(const std::vector<double> &src, const 
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::LineTrajectory::deleteLine()
+bool roboticslab::KdlTrajectory::deleteLine()
 {
     delete currentTrajectory;  // deletes _orient, too
     currentTrajectory = 0;
