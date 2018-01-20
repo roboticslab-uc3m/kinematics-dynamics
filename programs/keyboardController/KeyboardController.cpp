@@ -210,10 +210,10 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         switch ((int)frameDouble)
         {
         case VOCAB_CC_CONFIG_FRAME_BASE:
-            cartFrame = INERTIAL;
+            cartFrame = ICartesianControl::BASE_FRAME;
             break;
         case VOCAB_CC_CONFIG_FRAME_TCP:
-            cartFrame = END_EFFECTOR;
+            cartFrame = ICartesianControl::TCP_FRAME;
             break;
         default:
             CD_ERROR("Unrecognized or unsupported frame.\n");
@@ -492,19 +492,19 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     issueStop();
 
-    cart_frames newFrame;
+    ICartesianControl::reference_frame newFrame;
     std::string str;
     int frameVocab = 0;
 
     switch (cartFrame)
     {
-    case INERTIAL:
-        newFrame = END_EFFECTOR;
+    case ICartesianControl::BASE_FRAME:
+        newFrame = ICartesianControl::TCP_FRAME;
         str = "end effector";
         frameVocab = VOCAB_CC_CONFIG_FRAME_TCP;
         break;
-    case END_EFFECTOR:
-        newFrame = INERTIAL;
+    case ICartesianControl::TCP_FRAME:
+        newFrame = ICartesianControl::BASE_FRAME;
         str = "inertial";
         frameVocab = VOCAB_CC_CONFIG_FRAME_BASE;
         break;
@@ -642,7 +642,7 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cartFrame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
+        std::cout << (cartFrame == ICartesianControl::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;

@@ -52,8 +52,6 @@ private:
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
 
-    enum cart_frames { INERTIAL, END_EFFECTOR };
-
     enum control_modes { NOT_CONTROLLING, JOINT_MODE, CARTESIAN_MODE };
 
     static const std::plus<double> increment_functor;
@@ -76,7 +74,7 @@ private:
 
     int axes;
 
-    cart_frames cartFrame;
+    ICartesianControl::reference_frame cartFrame;
     std::string angleRepr;
     KinRepresentation::orientation_system orient;
     control_modes controlMode;
