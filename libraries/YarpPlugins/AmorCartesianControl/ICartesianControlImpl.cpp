@@ -41,6 +41,12 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in inv command.\n");
+        return false;
+    }
+
     AMOR_VECTOR7 positions;
 
     if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
@@ -69,6 +75,12 @@ bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::
 
 bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in movj command.\n");
+        return false;
+    }
+
     std::vector<double> qd;
 
     if (!inv(xd, qd))
@@ -97,6 +109,12 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in relj command.\n");
+        return false;
+    }
+
     int state;
     std::vector<double> x;
 
@@ -118,6 +136,12 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in movl command.\n");
+        return false;
+    }
+
     std::vector<double> xd_rpy;
 
     KinRepresentation::decodePose(xd, xd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
@@ -145,6 +169,12 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in movv command.\n");
+        return false;
+    }
+
     int state;
     std::vector<double> xCurrent;
 
@@ -238,21 +268,10 @@ void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
         currentQ[i] = KinRepresentation::radToDeg(positions[i]);
     }
 
-    if (referenceFrame == BASE_FRAME)
+    if (!performDiffInvKin(currentQ, xdot, qdot))
     {
-        if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot))
-        {
-            CD_ERROR("diffInvKin failed.\n");
-            return;
-        }
-    }
-    else if (referenceFrame == TCP_FRAME)
-    {
-        if (!iCartesianSolver->diffInvKinEE(currentQ, xdot, qdot))
-        {
-            CD_ERROR("diffInvKinEE failed.\n");
-            return;
-        }
+        CD_ERROR("Cannot perform differential IK.\n");
+        return;
     }
 
     if (!checkJointVelocities(qdot))
@@ -312,21 +331,10 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     std::vector<double> qdot;
 
-    if (referenceFrame == BASE_FRAME)
+    if (!performDiffInvKin(currentQ, xdot, qdot))
     {
-        if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot))
-        {
-            CD_ERROR("diffInvKin failed.\n");
-            return;
-        }
-    }
-    else if (referenceFrame == TCP_FRAME)
-    {
-        if (!iCartesianSolver->diffInvKinEE(currentQ, xdot, qdot))
-        {
-            CD_ERROR("diffInvKinEE failed.\n");
-            return;
-        }
+        CD_ERROR("Cannot perform differential IK.\n");
+        return;
     }
 
     if (!checkJointVelocities(qdot))

@@ -35,6 +35,12 @@ bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x
 
 bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in inv command.\n");
+        return false;
+    }
+
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
@@ -53,6 +59,12 @@ bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std:
 
 bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in movj command.\n");
+        return false;
+    }
+
     std::vector<double> currentQ(numRobotJoints), qd;
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
@@ -148,6 +160,12 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in relj command.\n");
+        return false;
+    }
+
     int state;
     std::vector<double> x;
     if ( ! stat(state, x) )
@@ -168,12 +186,15 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
-    int state;
-    std::vector<double> x;
-    if ( ! stat(state, x) )
+    std::vector<double> x(6); // pose (3x transl, 3x orient)
+    if( referenceFrame == BASE_FRAME )
     {
-        CD_ERROR("stat failed.\n");
-        return false;
+        int state;
+        if ( ! stat(state, x) )
+        {
+            CD_ERROR("stat failed.\n");
+            return false;
+        }
     }
 
     //-- Create line trajectory
@@ -267,6 +288,12 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 {
     CD_WARNING("FORC mode still experimental.\n");
 
+    if (referenceFrame == TCP_FRAME)
+    {
+        CD_WARNING("TCP frame not supported yet in forc command.\n");
+        return false;
+    }
+
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -325,21 +352,10 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    if ( referenceFrame == BASE_FRAME )
+    if ( ! performDiffInvKin(currentQ, xdot, qdot) )
     {
-        if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot) )
-        {
-            CD_ERROR("diffInvKin failed.\n");
-            return;
-        }
-    }
-    else if ( referenceFrame == TCP_FRAME )
-    {
-        if ( ! iCartesianSolver->diffInvKinEE(currentQ, xdot, qdot) )
-        {
-            CD_ERROR("diffInvKinEE failed.\n");
-            return;
-        }
+        CD_ERROR("Cannot perform differential IK.\n");
+        return;
     }
 
     for (unsigned int i = 0; i < qdot.size(); i++)
@@ -388,21 +404,10 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     }
 
     std::vector<double> qdot;
-    if ( referenceFrame == BASE_FRAME )
+    if ( ! performDiffInvKin(currentQ, xdot, qdot) )
     {
-        if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot) )
-        {
-            CD_ERROR("diffInvKin failed.\n");
-            return;
-        }
-    }
-    else if ( referenceFrame == TCP_FRAME )
-    {
-        if ( ! iCartesianSolver->diffInvKinEE(currentQ, xdot, qdot) )
-        {
-            CD_ERROR("diffInvKinEE failed.\n");
-            return;
-        }
+        CD_ERROR("Cannot perform differential IK.\n");
+        return;
     }
 
     for (unsigned int i = 0; i < qdot.size(); i++)
