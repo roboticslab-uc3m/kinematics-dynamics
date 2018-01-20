@@ -1,6 +1,7 @@
 #include "WiimoteSensorDevice.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 #include <yarp/sig/Vector.h>
 
@@ -17,6 +18,17 @@ bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
     }
 
     return ok;
+}
+
+bool roboticslab::WiimoteSensorDevice::initialize()
+{
+    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianControl::TCP_FRAME))
+    {
+        CD_WARNING("Unable to set TCP reference frame.\n");
+        return false;
+    }
+
+    return true;
 }
 
 bool roboticslab::WiimoteSensorDevice::acquireData()
@@ -87,18 +99,23 @@ bool roboticslab::WiimoteSensorDevice::hasValidMovementData() const
 
 void roboticslab::WiimoteSensorDevice::sendMovementCommand()
 {
+    std::vector<double> xdot(6, 0.0);
+    std::copy(data.begin(), data.end(), xdot.begin() + 3);
+
     switch (mode)
     {
     case FWD:
-        iCartesianControl->fwd(data, step);
+        xdot[2] = step;
         break;
     case BKWD:
-        iCartesianControl->bkwd(data, step);
+        xdot[2] = -step;
         break;
     case ROT:
-        iCartesianControl->rot(data);
+        xdot[2] = 0.0; // for the sake of explicitness
         break;
     default:
         return;
     }
+
+    iCartesianControl->twist(xdot);
 }

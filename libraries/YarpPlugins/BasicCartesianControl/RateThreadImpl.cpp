@@ -33,9 +33,12 @@ void roboticslab::BasicCartesianControl::run()
 
 void roboticslab::BasicCartesianControl::handleMovl()
 {
+    double currentTrajectoryDuration;
+    iCartesianTrajectory->getDuration(&currentTrajectoryDuration);
+
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
-    if (movementTime > DEFAULT_DURATION)
+    if (movementTime > currentTrajectoryDuration)
     {
         stopControl();
         return;
@@ -52,8 +55,8 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     //-- Obtain desired Cartesian position and velocity.
     std::vector<double> desiredX, desiredXdot;
-    trajectory.getX(movementTime, desiredX);
-    trajectory.getXdot(movementTime, desiredXdot);
+    iCartesianTrajectory->getPosition(movementTime, desiredX);
+    iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
@@ -61,14 +64,14 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= DEFAULT_GAIN * (1000.0 / DEFAULT_MS);
+        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
         commandXdot[i] += desiredXdot[i];
     }
 
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(currentQ, commandXdot, commandQdot))
+    if (!performDiffInvKin(currentQ, commandXdot, commandQdot))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
@@ -92,7 +95,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     for (int i = 0; i < commandQdot.size(); i++)
     {
-        if (std::abs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+        if (std::abs(commandQdot[i]) > maxJointVelocity)
         {
             CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
             stopControl();
@@ -122,7 +125,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(currentQ, xdotd, commandQdot))
+    if (!performDiffInvKin(currentQ, xdotd, commandQdot))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
@@ -146,7 +149,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
 
     for (int i = 0; i < commandQdot.size(); i++)
     {
-        if (std::abs(commandQdot[i]) > DEFAULT_QDOT_LIMIT)
+        if (std::abs(commandQdot[i]) > maxJointVelocity)
         {
             CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
             stopControl();

@@ -14,15 +14,16 @@
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
-#include "LineTrajectory.hpp"
+#include "ICartesianTrajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
-#define DEFAULT_MS 50
-#define MAX_ANG_VEL 7.5
 #define DEFAULT_GAIN 0.05
-#define DEFAULT_QDOT_LIMIT 10
+#define DEFAULT_QDOT_LIMIT 10.0
+#define DEFAULT_DURATION 10.0
+#define DEFAULT_CMC_RATE_MS 50
+#define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
 {
@@ -112,7 +113,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     public:
 
-        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_MS) {}
+        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_CMC_RATE_MS) {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
@@ -138,19 +139,13 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual bool act(int command);
 
-        virtual void fwd(const std::vector<double> &rot, double step);
-
-        virtual void bkwd(const std::vector<double> &rot, double step);
-
-        virtual void rot(const std::vector<double> &rot);
-
-        virtual void pan(const std::vector<double> &transl);
-
-        virtual void vmos(const std::vector<double> &xdot);
-
-        virtual void eff(const std::vector<double> &xdotee);
+        virtual void twist(const std::vector<double> &xdot);
 
         virtual void pose(const std::vector<double> &x, double interval);
+
+        virtual bool setParameter(int vocab, double value);
+
+        virtual bool getParameter(int vocab, double * value);
 
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
@@ -187,6 +182,10 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         void handleGcmp();
         void handleForc();
 
+        bool performDiffInvKin(const std::vector<double> & currentQ,
+                               const std::vector<double> & xdot,
+                               std::vector<double> & qdot);
+
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
 
@@ -198,20 +197,26 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::ITorqueControl *iTorqueControl;
         yarp::dev::IControlMode *iControlMode;
 
+        reference_frame referenceFrame;
+
+        double gain;
+        double maxJointVelocity;
+        double duration; // [s]
+        int cmcRateMs;
         int numRobotJoints, numSolverJoints;
 
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;
 
-        int getCurrentState();
+        int getCurrentState() const;
         void setCurrentState(int value);
-        yarp::os::Semaphore currentStateReady;
+        mutable yarp::os::Semaphore currentStateReady;
 
         /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;
 
         /** MOVL store Cartesian trajectory */
-        LineTrajectory trajectory;
+        ICartesianTrajectory* iCartesianTrajectory;
 
         /** MOVV desired Cartesian velocity */
         std::vector<double> xdotd;

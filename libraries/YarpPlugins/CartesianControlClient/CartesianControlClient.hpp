@@ -89,19 +89,13 @@ public:
 
     virtual bool act(int command);
 
-    virtual void fwd(const std::vector<double> &rot, double step);
-
-    virtual void bkwd(const std::vector<double> &rot, double step);
-
-    virtual void rot(const std::vector<double> &rot);
-
-    virtual void pan(const std::vector<double> &transl);
-
-    virtual void vmos(const std::vector<double> &xdot);
-
-    virtual void eff(const std::vector<double> &xdotee);
+    virtual void twist(const std::vector<double> &xdot);
 
     virtual void pose(const std::vector<double> &x, double interval);
+
+    virtual bool setParameter(int vocab, double value);
+
+    virtual bool getParameter(int vocab, double * value);
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

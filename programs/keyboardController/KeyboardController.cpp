@@ -15,7 +15,6 @@
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
-#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.hpp>
@@ -201,6 +200,22 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
+        double frameDouble;
+
+        if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
+        {
+            CD_ERROR("Could not retrieve current frame.\n");
+            return false;
+        }
+
+        if (frameDouble != ICartesianControl::BASE_FRAME && frameDouble != ICartesianControl::TCP_FRAME)
+        {
+            CD_ERROR("Unrecognized or unsupported frame.\n");
+            return false;
+        }
+
+        cartFrame = static_cast<ICartesianControl::reference_frame>(frameDouble);
+
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
         if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
@@ -210,15 +225,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         }
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
-
-        cartFrame = INERTIAL;
-
-        cartesianThread = new KeyboardRateThread(iCartesianControl);
-
-        cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
-        cartesianThread->setCurrentData(currentCartVels);
-
-        cartesianThread->start(); // initialize the new thread
     }
 
     controlMode = NOT_CONTROLLING;
@@ -390,12 +396,6 @@ double roboticslab::KeyboardController::getPeriod()
 
 bool roboticslab::KeyboardController::close()
 {
-    if (cartesianControlDevice.isValid())
-    {
-        cartesianThread->stop();
-        delete cartesianThread;
-    }
-
     controlboardDevice.close();
     cartesianControlDevice.close();
 
@@ -477,19 +477,13 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     std::cout << "New cartesian velocity: " << roundZeroes(currentCartVels) << std::endl;
 
-    cartesianThread->setCurrentData(currentCartVels);
-
     if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
     {
-        cartesianThread->step(); // send vector of zeroes
-        cartesianThread->suspend();
-        controlMode = NOT_CONTROLLING;
+        currentCartVels = ZERO_CARTESIAN_VELOCITY; // send vector of zeroes
     }
-    else
-    {
-        cartesianThread->resume();
-        controlMode = CARTESIAN_MODE;
-    }
+
+    iCartesianControl->movv(currentCartVels);
+    controlMode = CARTESIAN_MODE;
 }
 
 void roboticslab::KeyboardController::toggleReferenceFrame()
@@ -503,26 +497,36 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     issueStop();
 
-    std::cout << "Toggled reference frame for cartesian commands: ";
+    ICartesianControl::reference_frame newFrame;
+    std::string str;
 
     switch (cartFrame)
     {
-    case INERTIAL:
-        cartFrame = END_EFFECTOR;
-        cartesianThread->setCurrentCommand(&ICartesianControl::eff);
-        std::cout << "end effector";
+    case ICartesianControl::BASE_FRAME:
+        newFrame = ICartesianControl::TCP_FRAME;
+        str = "end effector";
         break;
-    case END_EFFECTOR:
-        cartFrame = INERTIAL;
-        cartesianThread->setCurrentCommand(&ICartesianControl::vmos);
-        std::cout << "inertial";
+    case ICartesianControl::TCP_FRAME:
+        newFrame = ICartesianControl::BASE_FRAME;
+        str = "inertial";
         break;
     default:
-        std::cout << "unknown";
+        str = "unknown";
         break;
     }
 
-    std::cout << std::endl;
+    if (str != "unknown")
+    {
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, newFrame))
+        {
+            CD_ERROR("Unable to set reference frame: %s.\n", str.c_str());
+            return;
+        }
+
+        cartFrame = newFrame;
+    }
+
+    std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;
 }
 
 void roboticslab::KeyboardController::actuateTool(int command)
@@ -593,14 +597,6 @@ void roboticslab::KeyboardController::issueStop()
             {
                 currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
             }
-        }
-
-        if (!cartesianThread->isSuspended())
-        {
-            cartesianThread->suspend();
-
-            // ensure that the thread stops before sending a stop command
-            yarp::os::Time::delay(2 * CMC_RATE_MS / 1000);
         }
 
         iCartesianControl->stopControl();
@@ -679,7 +675,8 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cartFrame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
+
+        std::cout << (cartFrame == ICartesianControl::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
 
         std::cout << " 'k'/'l' - open/close gripper" << std::endl;
     }

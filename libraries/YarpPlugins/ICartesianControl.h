@@ -46,13 +46,8 @@
  */
 
 // Streaming commands
-#define VOCAB_CC_FWD VOCAB3('f','w','d')      ///< Move forward (relative to end-effector)
-#define VOCAB_CC_BKWD VOCAB4('b','k','w','d') ///< Move backwards (relative to end-effector)
-#define VOCAB_CC_ROT VOCAB3('r','o','t')      ///< Rotate in end-effector frame
-#define VOCAB_CC_PAN VOCAB3('p','a','n')      ///< Pan in end-effector frame
-#define VOCAB_CC_VMOS VOCAB4('v','m','o','s') ///< Instantaneous velocity steps (inertial frame)
-#define VOCAB_CC_EFF VOCAB3('e','f','f')      ///< Instantaneous velocity steps (end-effector frame)
-#define VOCAB_CC_POSE VOCAB4('p','o','s','e') ///< Achieve pose in inertial frame
+#define VOCAB_CC_TWIST VOCAB4('t','w','s','t') ///< Instantaneous velocity steps
+#define VOCAB_CC_POSE VOCAB4('p','o','s','e')  ///< Achieve pose in inertial frame
 
 /** @} */
 
@@ -90,6 +85,23 @@
 #define VOCAB_CC_ACTUATOR_STOP_GRIPPER VOCAB4('a','c','s','g')  ///< Stop gripper
 #define VOCAB_CC_ACTUATOR_GENERIC VOCAB3('a','c','g')           ///< Generic actuator
 
+/**
+ * @name Controller configuration vocabs
+ *
+ * Used by @ref ICartesianControl_config_commands "Configuration accessors".
+ *
+ * @{
+ */
+
+// Controller configuration (parameter keys)
+#define VOCAB_CC_CONFIG_SET VOCAB3('c','p','s')               ///< Set parameter
+#define VOCAB_CC_CONFIG_GET VOCAB3('c','p','g')               ///< Get parameter
+#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
+#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
+#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
+#define VOCAB_CC_CONFIG_CMC_RATE VOCAB4('c','p','c','r')      ///< CMC rate [ms]
+#define VOCAB_CC_CONFIG_FRAME VOCAB3('c','p','f')             ///< Reference frame
+
 /** @} */
 
 namespace roboticslab
@@ -101,6 +113,13 @@ namespace roboticslab
 class ICartesianControl
 {
     public:
+
+        //! Lists supported reference frames.
+        enum reference_frame
+        {
+            BASE_FRAME = VOCAB4('c','p','f','b'), //!< Base frame
+            TCP_FRAME = VOCAB4('c','p','f','t')   //!< End-effector frame (TCP)
+        };
 
         //! Destructor
         virtual ~ICartesianControl() {}
@@ -271,99 +290,21 @@ class ICartesianControl
          */
 
         /**
-         * @brief Move forward (relative to end-effector)
+         * @brief Instantaneous velocity steps
          *
-         * Move along the Z (positive) axis in velocity increments, applying desired angular
-         * velocities. All coordinates are expressed in terms of the end-effector frame.
-         * Negative step values will be ignored.
-         *
-         * @param rot 3-element vector describing desired angular velocity increments in
-         * cartesian space, expressed in radians/second.
-         * @param step Velocity step corresponding to Z axis, expressed in meters/second.
-         *
-         * @see bkwd (move backwards)
-         * @see eff (rotations + translations)
-         */
-        virtual void fwd(const std::vector<double> &rot, double step) = 0;
-
-        /**
-         * @brief Move backwards (relative to end-effector)
-         *
-         * Move along the Z (negative) axis in velocity increments, applying desired angular
-         * velocities. All coordinates are expressed in terms of the end-effector frame.
-         * Negative step values will be ignored.
-         *
-         * @param 3-element vector describing desired angular velocity increments in
-         * cartesian space, expressed in radians/second.
-         * @param step Velocity step corresponding to Z axis, expressed in meters/second.
-         *
-         * @see fwd (move forward)
-         * @see eff (rotations + translations)
-         */
-        virtual void bkwd(const std::vector<double> &rot, double step) = 0;
-
-        /**
-         * @brief Rotate in end-effector frame
-         *
-         * Apply desired angular velocities, but avoid translating, that is, only change the
-         * orientation of the TCP. All coordinates are expressed in terms of the end-effector frame.
-         *
-         * @param 3-element vector describing desired angular velocity increments in
-         * cartesian space, expressed in radians/second.
-         *
-         * @see pan (only translations)
-         * @see eff (rotations + translations)
-         */
-        virtual void rot(const std::vector<double> &rot) = 0;
-
-        /**
-         * @brief Pan in end-effector frame
-         *
-         * Apply desired linear velocities, but avoid rotating, that is, only change the position
-         * of the TCP. All coordinates are expressed in terms of the end-effector frame.
-         *
-         * @param transl 3-element vector describing desired translational velocity
-         * increments in cartesian space, expressed in meters/second.
-         *
-         * @see pan (only rotations)
-         * @see eff (rotations + translations)
-         */
-        virtual void pan(const std::vector<double> &transl) = 0;
-
-        /**
-         * @brief Instantaneous velocity steps (inertial frame)
-         *
-         * Move in instantaneous velocity increments using the fixed (inertial) frame as the
-         * reference coordinate system.
+         * Move in instantaneous velocity increments.
          *
          * @param xdot 6-element vector describing velocity increments in cartesian space;
          * first three elements denote translational velocity (meters/second), last three
          * denote angular velocity (radians/second).
-         *
-         * @see eff (end-effector frame)
          */
-        virtual void vmos(const std::vector<double> &xdot) = 0;
+        virtual void twist(const std::vector<double> &xdot) = 0;
 
         /**
-         * @brief Instantaneous velocity steps (end-effector frame)
-         *
-         * Move in instantaneous velocity increments using the end-effector frame as the
-         * reference coordinate system.
-         *
-         * @param xdotee 6-element vector describing velocity increments in cartesian space;
-         * first three elements denote translational velocity (meters/second), last three
-         * denote angular velocity (radians/second).
-         *
-         * @see vmos (inertial frame)
-         * @see fwd, bkwd, rot, pan (only translations/rotations)
-         */
-        virtual void eff(const std::vector<double> &xdotee) = 0;
-
-        /**
-         * @brief Achieve pose in inertial frame
+         * @brief Achieve pose
          *
          * Move to desired position, computing the error with respect to the current pose. Then,
-         * perform numerical differentiation and obtain the final velocity increment (as in @ref vmos).
+         * perform numerical differentiation and obtain the final velocity increment (as in @ref twist).
          *
          * @param x 6-element vector describing desired instantaneous pose in cartesian space;
          * first three elements denote translation (meters), last three denote rotation (radians).
@@ -371,6 +312,43 @@ class ICartesianControl
          * and used for numerical differentiation with desired/current poses.
          */
         virtual void pose(const std::vector<double> &x, double interval) = 0;
+
+        /** @} */
+
+        //--------------------- Configuration accessors ---------------------
+
+        /**
+         * @anchor ICartesianControl_config_commands
+         * @name Configuration accessors
+         *
+         * Configuration setters and getters with success/failure response.
+         *
+         * @{
+         */
+
+        /**
+         * @brief Set a configuration parameter.
+         *
+         * Ask the controller to store or update a parameter of 'double' type.
+         *
+         * @param vocab YARP-encoded vocab (parameter key).
+         * @param value Parameter value encoded as a double.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool setParameter(int vocab, double value) = 0;
+
+        /**
+         * @brief Retrieve a configuration parameter.
+         *
+         * Ask the controller to retrieve a parameter of 'double' type.
+         *
+         * @param vocab YARP-encoded vocab (parameter key).
+         * @param value Parameter value encoded as a double.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool getParameter(int vocab, double * value) = 0;
 
         /** @} */
 };

@@ -72,5 +72,5 @@ int roboticslab::SpnavSensorDevice::getActuatorState()
 
 void roboticslab::SpnavSensorDevice::sendMovementCommand()
 {
-    iCartesianControl->vmos(data);
+    iCartesianControl->twist(data);
 }

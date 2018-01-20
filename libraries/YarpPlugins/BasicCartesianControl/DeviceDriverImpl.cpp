@@ -10,6 +10,28 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
+    gain = config.check("controllerGain",yarp::os::Value(DEFAULT_GAIN),"controller gain").asDouble();
+    maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity").asDouble();
+    duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration").asDouble();
+    cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate [ms]").asInt();
+
+    std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
+                "reference frame").asString();
+
+    if (referenceFrameStr == "base")
+    {
+        referenceFrame = BASE_FRAME;
+    }
+    else if (referenceFrameStr == "tcp")
+    {
+        referenceFrame = TCP_FRAME;
+    }
+    else
+    {
+        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr.c_str());
+        return false;
+    }
+
     std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
     std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
 
@@ -104,7 +126,7 @@ bool roboticslab::BasicCartesianControl::close()
 
 // -----------------------------------------------------------------------------
 
-int roboticslab::BasicCartesianControl::getCurrentState()
+int roboticslab::BasicCartesianControl::getCurrentState() const
 {
     int tmp;
     currentStateReady.wait();

@@ -5,7 +5,6 @@
 #include <vector>
 #include <functional>
 
-#include <yarp/os/RateThread.h>
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
 
@@ -27,55 +26,8 @@
 #define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
                                        // fallback in ::open()
 
-#define CMC_RATE_MS 10
-
 namespace roboticslab
 {
-
-/**
- * @ingroup keyboardController
- *
- * @brief Helper thread for sending streaming cartesian
- * commands to the controller.
- */
-class KeyboardRateThread : public yarp::os::RateThread
-{
-public:
-    typedef std::vector<double> data_type;
-    typedef void (ICartesianControl::*cart_command)(const data_type &);
-
-    KeyboardRateThread(roboticslab::ICartesianControl * iCartesianControl)
-        : yarp::os::RateThread(CMC_RATE_MS),
-          iCartesianControl(iCartesianControl),
-          currentCommand(&ICartesianControl::vmos)
-    {}
-
-    virtual void run()
-    {
-        (iCartesianControl->*currentCommand)(currentData);
-    }
-
-    void setCurrentCommand(cart_command cmd)
-    {
-        currentCommand = cmd;
-    }
-
-    void setCurrentData(const data_type & data)
-    {
-        currentData = data;
-    }
-
-    void beforeStart()
-    {
-        // prevents execution of first run() step after start()
-        suspend();
-    }
-
-private:
-    roboticslab::ICartesianControl * iCartesianControl;
-    cart_command currentCommand;
-    data_type currentData;
-};
 
 /**
  * @ingroup keyboardController
@@ -99,8 +51,6 @@ private:
     // used for array indexes and size checks
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
-
-    enum cart_frames { INERTIAL, END_EFFECTOR };
 
     enum control_modes { NOT_CONTROLLING, JOINT_MODE, CARTESIAN_MODE };
 
@@ -127,7 +77,7 @@ private:
     int axes;
     int currentActuatorCommand;
 
-    cart_frames cartFrame;
+    ICartesianControl::reference_frame cartFrame;
     std::string angleRepr;
     KinRepresentation::orientation_system orient;
     control_modes controlMode;
@@ -141,8 +91,6 @@ private:
     yarp::dev::IVelocityControl * iVelocityControl;
 
     roboticslab::ICartesianControl * iCartesianControl;
-
-    KeyboardRateThread * cartesianThread;
 
     std::vector<double> maxVelocityLimits;
     std::vector<double> currentJointVels;

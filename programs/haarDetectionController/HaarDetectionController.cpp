@@ -84,6 +84,13 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
     if (!rf.check("noMove"))
     {
         grabberResponder.setICartesianControlDriver(iCartesianControl);
+
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianControl::TCP_FRAME))
+        {
+            CD_ERROR("Unable to set TCP reference frame.\n");
+            return false;
+        }
+
         grabberResponder.setNoApproachSetting(rf.check("noApproach"));
 
         grabberPort.useCallback(grabberResponder);

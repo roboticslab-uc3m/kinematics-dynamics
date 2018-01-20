@@ -132,6 +132,9 @@ protected:
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
     bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
 
+    bool handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
     virtual bool transformIncomingData(std::vector<double>& vin)
     {
         return true;

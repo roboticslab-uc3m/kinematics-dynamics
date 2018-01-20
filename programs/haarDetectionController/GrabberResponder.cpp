@@ -50,12 +50,12 @@ void roboticslab::GrabberResponder::onRead(yarp::os::Bottle &b)
 
     if (move)
     {
-        std::vector<double> transl(3);
-        transl[0] = target_x;
-        transl[1] = -target_y;  // inverted for AMOR
-        transl[2] = noApproach ? 0.0 : STEP_Z;
+        std::vector<double> xdot(6);
+        xdot[0] = target_x;
+        xdot[1] = -target_y;  // inverted for AMOR
+        xdot[2] = noApproach ? 0.0 : STEP_Z;
 
-        iCartesianControl->pan(transl);
+        iCartesianControl->twist(xdot);
 
         isStopped = false;
     }
