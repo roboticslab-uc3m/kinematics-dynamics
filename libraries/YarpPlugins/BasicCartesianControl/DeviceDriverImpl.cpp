@@ -13,6 +13,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     gain = config.check("controllerGain",yarp::os::Value(DEFAULT_GAIN),"controller gain").asDouble();
     maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity").asDouble();
     duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration").asDouble();
+    cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate [ms]").asInt();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
                 "reference frame").asString();

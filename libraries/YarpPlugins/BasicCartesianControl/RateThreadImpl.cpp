@@ -64,7 +64,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= gain * (1000.0 / DEFAULT_MS);
+        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
         commandXdot[i] += desiredXdot[i];
     }
 

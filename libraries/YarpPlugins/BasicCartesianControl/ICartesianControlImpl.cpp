@@ -461,6 +461,15 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
 
         duration = value;
         break;
+    case VOCAB_CC_CONFIG_CMC_RATE:
+        if (!RateThread::setRate(value))
+        {
+            CD_ERROR("Cannot set new CMC rate.\n");
+            return false;
+        }
+
+        cmcRateMs = value;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         switch ((int)value)
         {
@@ -498,6 +507,9 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
         break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         *value = duration;
+        break;
+    case VOCAB_CC_CONFIG_CMC_RATE:
+        *value = cmcRateMs;
         break;
     case VOCAB_CC_CONFIG_FRAME:
         switch (referenceFrame)
