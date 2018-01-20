@@ -207,18 +207,13 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
-        switch ((int)frameDouble)
+        if (frameDouble != ICartesianControl::BASE_FRAME && frameDouble != ICartesianControl::TCP_FRAME)
         {
-        case VOCAB_CC_CONFIG_FRAME_BASE:
-            cartFrame = ICartesianControl::BASE_FRAME;
-            break;
-        case VOCAB_CC_CONFIG_FRAME_TCP:
-            cartFrame = ICartesianControl::TCP_FRAME;
-            break;
-        default:
             CD_ERROR("Unrecognized or unsupported frame.\n");
             return false;
         }
+
+        cartFrame = static_cast<ICartesianControl::reference_frame>(frameDouble);
 
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
@@ -494,28 +489,25 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     ICartesianControl::reference_frame newFrame;
     std::string str;
-    int frameVocab = 0;
 
     switch (cartFrame)
     {
     case ICartesianControl::BASE_FRAME:
         newFrame = ICartesianControl::TCP_FRAME;
         str = "end effector";
-        frameVocab = VOCAB_CC_CONFIG_FRAME_TCP;
         break;
     case ICartesianControl::TCP_FRAME:
         newFrame = ICartesianControl::BASE_FRAME;
         str = "inertial";
-        frameVocab = VOCAB_CC_CONFIG_FRAME_BASE;
         break;
     default:
         str = "unknown";
         break;
     }
 
-    if (frameVocab)
+    if (str != "unknown")
     {
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, frameVocab))
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, newFrame))
         {
             CD_ERROR("Unable to set reference frame: %s.\n", str.c_str());
             return;

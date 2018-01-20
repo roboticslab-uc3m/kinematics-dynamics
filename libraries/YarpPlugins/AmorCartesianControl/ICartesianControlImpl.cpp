@@ -369,7 +369,6 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
             CD_ERROR("Controller gain cannot be negative.\n");
             return false;
         }
-
         gain = value;
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
@@ -378,23 +377,15 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
             CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
             return false;
         }
-
         maxJointVelocity = value;
         break;
     case VOCAB_CC_CONFIG_FRAME:
-        switch ((int)value)
+        if (value != BASE_FRAME && value != TCP_FRAME)
         {
-        case VOCAB_CC_CONFIG_FRAME_BASE:
-            referenceFrame = BASE_FRAME;
-            break;
-        case VOCAB_CC_CONFIG_FRAME_TCP:
-            referenceFrame = TCP_FRAME;
-            break;
-        default:
             CD_ERROR("Unrecognized of unsupported reference frame vocab.\n");
             return false;
         }
-
+        referenceFrame = static_cast<reference_frame>(value);
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
@@ -417,16 +408,7 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
         *value = maxJointVelocity;
         break;
     case VOCAB_CC_CONFIG_FRAME:
-        switch (referenceFrame)
-        {
-        case BASE_FRAME:
-            *value = VOCAB_CC_CONFIG_FRAME_BASE;
-            break;
-        case TCP_FRAME:
-            *value = VOCAB_CC_CONFIG_FRAME_TCP;
-            break;
-        }
-
+        *value = referenceFrame;
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());

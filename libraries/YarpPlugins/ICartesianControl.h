@@ -84,8 +84,6 @@
 #define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
 #define VOCAB_CC_CONFIG_CMC_RATE VOCAB4('c','p','c','r')      ///< CMC rate [ms]
 #define VOCAB_CC_CONFIG_FRAME VOCAB3('c','p','f')             ///< Reference frame
-#define VOCAB_CC_CONFIG_FRAME_BASE VOCAB4('c','p','f','b')    ///< Base frame
-#define VOCAB_CC_CONFIG_FRAME_TCP VOCAB4('c','p','f','t')     ///< End-effector frame (TCP)
 
 /** @} */
 
@@ -102,8 +100,8 @@ class ICartesianControl
         //! Lists supported reference frames.
         enum reference_frame
         {
-            BASE_FRAME, //!< Base frame
-            TCP_FRAME   //!< End-effector frame (TCP)
+            BASE_FRAME = VOCAB4('c','p','f','b'), //!< Base frame
+            TCP_FRAME = VOCAB4('c','p','f','t')   //!< End-effector frame (TCP)
         };
 
         //! Destructor
