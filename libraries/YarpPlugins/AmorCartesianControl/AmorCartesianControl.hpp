@@ -107,9 +107,13 @@ private:
 
     bool checkJointVelocities(const std::vector<double> &qdot);
 
+    bool performDiffInvKin(const std::vector<double> & currentQ,
+                           const std::vector<double> & xdot,
+                           std::vector<double> & qdot);
+
     AMOR_HANDLE handle;
     bool ownsHandle;
-    
+
     yarp::dev::PolyDriver cartesianDevice;
     roboticslab::ICartesianSolver *iCartesianSolver;
 

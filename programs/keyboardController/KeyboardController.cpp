@@ -15,7 +15,6 @@
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
-#include <yarp/os/Time.h>
 
 #include <ColorDebug.hpp>
 
@@ -200,6 +199,22 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
+        double frameDouble;
+
+        if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
+        {
+            CD_ERROR("Could not retrieve current frame.\n");
+            return false;
+        }
+
+        if (frameDouble != ICartesianControl::BASE_FRAME && frameDouble != ICartesianControl::TCP_FRAME)
+        {
+            CD_ERROR("Unrecognized or unsupported frame.\n");
+            return false;
+        }
+
+        cartFrame = static_cast<ICartesianControl::reference_frame>(frameDouble);
+
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
         if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
@@ -209,8 +224,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         }
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
-
-        cartFrame = INERTIAL;
     }
 
     issueStop(); // just in case
@@ -456,13 +469,10 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
     {
-        iCartesianControl->twist(ZERO_CARTESIAN_VELOCITY); // send vector of zeroes
-    }
-    else
-    {
-        iCartesianControl->twist(currentCartVels);
+        currentCartVels = ZERO_CARTESIAN_VELOCITY; // send vector of zeroes
     }
 
+    iCartesianControl->movv(currentCartVels);
     controlMode = CARTESIAN_MODE;
 }
 
@@ -477,30 +487,27 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     issueStop();
 
-    cart_frames newFrame;
+    ICartesianControl::reference_frame newFrame;
     std::string str;
-    int frameVocab = 0;
 
     switch (cartFrame)
     {
-    case INERTIAL:
-        newFrame = END_EFFECTOR;
+    case ICartesianControl::BASE_FRAME:
+        newFrame = ICartesianControl::TCP_FRAME;
         str = "end effector";
-        frameVocab = VOCAB_CC_CONFIG_FRAME_TCP;
         break;
-    case END_EFFECTOR:
-        newFrame = INERTIAL;
+    case ICartesianControl::TCP_FRAME:
+        newFrame = ICartesianControl::BASE_FRAME;
         str = "inertial";
-        frameVocab = VOCAB_CC_CONFIG_FRAME_BASE;
         break;
     default:
         str = "unknown";
         break;
     }
 
-    if (frameVocab)
+    if (str != "unknown")
     {
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, frameVocab))
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, newFrame))
         {
             CD_ERROR("Unable to set reference frame: %s.\n", str.c_str());
             return;
@@ -627,7 +634,7 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cartFrame == INERTIAL ? "inertial" : "end effector") << ")" << std::endl;
+        std::cout << (cartFrame == ICartesianControl::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;

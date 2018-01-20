@@ -19,11 +19,11 @@
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
-#define DEFAULT_MS 50
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
-#define DEFAULT_REFERENCE_FRAME "base"
 #define DEFAULT_DURATION 10.0
+#define DEFAULT_CMC_RATE_MS 50
+#define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
 {
@@ -113,7 +113,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     public:
 
-        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_MS) {}
+        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_CMC_RATE_MS) {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
@@ -180,6 +180,10 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         void handleGcmp();
         void handleForc();
 
+        bool performDiffInvKin(const std::vector<double> & currentQ,
+                               const std::vector<double> & xdot,
+                               std::vector<double> & qdot);
+
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
 
@@ -196,6 +200,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double gain;
         double maxJointVelocity;
         double duration; // [s]
+        int cmcRateMs;
         int numRobotJoints, numSolverJoints;
 
         /** State encoded as a VOCAB which can be stored as an int */
