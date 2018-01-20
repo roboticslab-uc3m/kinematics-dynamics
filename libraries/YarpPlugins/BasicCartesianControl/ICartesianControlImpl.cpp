@@ -471,7 +471,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
             referenceFrame = TCP_FRAME;
             break;
         default:
-            CD_ERROR("Unrecognized of unsupported reference frame vocab: %s.\n", yarp::os::Vocab::decode((int)value).c_str());
+            CD_ERROR("Unrecognized of unsupported reference frame vocab.\n");
             return false;
         }
 
@@ -500,7 +500,16 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
         *value = duration;
         break;
     case VOCAB_CC_CONFIG_FRAME:
-        *value = referenceFrame;
+        switch (referenceFrame)
+        {
+        case BASE_FRAME:
+            *value = VOCAB_CC_CONFIG_FRAME_BASE;
+            break;
+        case TCP_FRAME:
+            *value = VOCAB_CC_CONFIG_FRAME_TCP;
+            break;
+        }
+
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());

@@ -199,6 +199,27 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
+        double frameDouble;
+
+        if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
+        {
+            CD_ERROR("Could not retrieve current frame.\n");
+            return false;
+        }
+
+        switch ((int)frameDouble)
+        {
+        case VOCAB_CC_CONFIG_FRAME_BASE:
+            cartFrame = INERTIAL;
+            break;
+        case VOCAB_CC_CONFIG_FRAME_TCP:
+            cartFrame = END_EFFECTOR;
+            break;
+        default:
+            CD_ERROR("Unrecognized or unsupported frame.\n");
+            return false;
+        }
+
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
         if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
@@ -208,8 +229,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         }
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
-
-        cartFrame = INERTIAL;
     }
 
     issueStop(); // just in case
