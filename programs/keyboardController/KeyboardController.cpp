@@ -455,13 +455,10 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 
     if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
     {
-        iCartesianControl->twist(ZERO_CARTESIAN_VELOCITY); // send vector of zeroes
-    }
-    else
-    {
-        iCartesianControl->twist(currentCartVels);
+        currentCartVels = ZERO_CARTESIAN_VELOCITY; // send vector of zeroes
     }
 
+    iCartesianControl->movv(currentCartVels);
     controlMode = CARTESIAN_MODE;
 }
 
