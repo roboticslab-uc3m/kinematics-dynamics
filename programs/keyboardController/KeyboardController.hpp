@@ -5,7 +5,6 @@
 #include <vector>
 #include <functional>
 
-#include <yarp/os/RateThread.h>
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
 
@@ -26,8 +25,6 @@
 
 #define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
                                        // fallback in ::open()
-
-#define CMC_RATE_MS 10
 
 namespace roboticslab
 {

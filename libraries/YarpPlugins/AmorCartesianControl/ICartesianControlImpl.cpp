@@ -2,8 +2,6 @@
 
 #include "AmorCartesianControl.hpp"
 
-#include <cmath>
-
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.hpp>

@@ -3,7 +3,6 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
-#include <string>
 #include <vector>
 
 #include <yarp/os/Vocab.h>

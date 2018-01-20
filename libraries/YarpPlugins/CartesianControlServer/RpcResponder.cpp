@@ -2,8 +2,6 @@
 
 #include "CartesianControlServer.hpp"
 
-#include <string>
-
 #include <ColorDebug.hpp>
 
 // ------------------- RpcResponder Related ------------------------------------
