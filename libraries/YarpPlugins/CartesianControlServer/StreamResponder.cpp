@@ -12,23 +12,8 @@ void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
 
     switch (b.get(0).asVocab())
     {
-    case VOCAB_CC_FWD:
-        handleBiConsumerCmdMsg(b, &ICartesianControl::fwd);
-        break;
-    case VOCAB_CC_BKWD:
-        handleBiConsumerCmdMsg(b, &ICartesianControl::bkwd);
-        break;
-    case VOCAB_CC_ROT:
-        handleConsumerCmdMsg(b, &ICartesianControl::rot);
-        break;
-    case VOCAB_CC_PAN:
-        handleConsumerCmdMsg(b, &ICartesianControl::pan);
-        break;
-    case VOCAB_CC_VMOS:
-        handleConsumerCmdMsg(b, &ICartesianControl::vmos);
-        break;
-    case VOCAB_CC_EFF:
-        handleConsumerCmdMsg(b, &ICartesianControl::eff);
+    case VOCAB_CC_TWIST:
+        handleConsumerCmdMsg(b, &ICartesianControl::twist);
         break;
     case VOCAB_CC_POSE:
         handleBiConsumerCmdMsg(b, &ICartesianControl::pose);

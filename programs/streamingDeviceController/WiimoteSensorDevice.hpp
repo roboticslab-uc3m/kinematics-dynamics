@@ -37,6 +37,8 @@ public:
 
     virtual bool acquireInterfaces();
 
+    virtual bool initialize();
+
     virtual bool acquireData();
 
     virtual bool transformData(double scaling);

@@ -57,19 +57,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
-# Generate export header.
-include(GenerateExportHeader)
-
-# Dummy source file and library target for generate_export_header().
-file(WRITE ${CMAKE_BINARY_DIR}/generated_src/empty.c "")
-add_library(ROBOTICSLAB_KINEMATICS_DYNAMICS EXCLUDE_FROM_ALL ${CMAKE_BINARY_DIR}/generated_src/empty.c)
-
-generate_export_header(ROBOTICSLAB_KINEMATICS_DYNAMICS
-                       EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h)
-
-install(FILES ${CMAKE_BINARY_DIR}/generated_include/roboticslab-kinematics-dynamics-export.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
 # Enabling coverage.
 option(ENABLE_coverage "Choose if you want to enable coverage collection" OFF)
 
@@ -93,7 +80,7 @@ if(USE_SYSTEM_COLOR_DEBUG)
 endif()
 
 # Store common include directories in global scope.
-set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/generated_include)
+set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
 
 # Store list of exported targets in global scope.
 set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)

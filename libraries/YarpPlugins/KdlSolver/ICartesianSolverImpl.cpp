@@ -116,7 +116,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
 
     Eigen::Matrix<double, 6, 1> L;
     L(0) = 1; L(1) = 1; L(2) = 1;
-    L(3) = 0; L(4) = 0; L(5) = 0;
+    L(3) = 0.1; L(4) = 0.1; L(5) = 0.1;
 
     //-- Main invKin (pos) solver lines
     KDL::ChainIkSolverPos_LMA iksolver_pos(chain, L);
