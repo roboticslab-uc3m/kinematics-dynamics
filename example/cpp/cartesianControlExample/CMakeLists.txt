@@ -16,5 +16,7 @@ target_link_libraries(cartesianControlExample YARP::YARP_OS
                                               YARP::YARP_init
                                               YARP::YARP_dev)
 
+include(GNUInstallDirs)
+
 install(TARGETS cartesianControlExample
-        DESTINATION bin)
+        DESTINATION ${CMAKE_INSTALL_BINDIR})

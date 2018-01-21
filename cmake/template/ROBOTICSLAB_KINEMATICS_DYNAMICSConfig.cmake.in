@@ -15,9 +15,6 @@
 # Notes:
 #
 # * All target names are prepended with the ROBOTICSLAB:: namespace
-#
-# * This package may require the presence of ROBOTICSLAB_GAIT on your system if the
-#   ROBOTICSLAB::Gait library is not distributed along with kinematics-dynamics' binaries 
 
 @PACKAGE_INIT@
 
@@ -36,9 +33,4 @@ if(NOT "@_exported_targets@" STREQUAL "")
     foreach(_target @_exported_targets@)
         list(APPEND ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ROBOTICSLAB::${_target})
     endforeach()
-
-    if(NOT TARGET ROBOTICSLAB::Gait AND @ENABLE_Gait@)
-        include(CMakeFindDependencyMacro)
-        find_dependency(ROBOTICSLAB_GAIT)
-    endif()
 endif()
