@@ -3,6 +3,7 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
+#include <map>
 #include <vector>
 
 #include <yarp/os/Vocab.h>
@@ -93,6 +94,7 @@
  */
 
 // Controller configuration (parameter keys)
+#define VOCAB_CC_CONFIG_PARAMS VOCAB4('p','r','m','s')        ///< Parameter group
 #define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
 #define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
@@ -335,6 +337,28 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool getParameter(int vocab, double * value) = 0;
+
+        /**
+         * @brief Set multiple configuration parameters.
+         *
+         * Ask the controller to store or update multiple parameters at once.
+         *
+         * @param params Dictionary of YARP-encoded vocabs as keys and their values.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool setParameters(const std::map<int, double> & params) = 0;
+
+        /**
+         * @brief Retrieve multiple configuration parameters.
+         *
+         * Ask the controller to retrieve all available parameters at once.
+         *
+         * @param params Dictionary of YARP-encoded vocabs as keys and their values.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool getParameters(std::map<int, double> & params) = 0;
 
         /** @} */
 };

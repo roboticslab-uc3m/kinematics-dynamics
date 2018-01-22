@@ -512,3 +512,17 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, double> & params)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & params)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------

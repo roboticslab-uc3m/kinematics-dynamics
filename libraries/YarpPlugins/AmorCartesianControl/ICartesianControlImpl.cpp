@@ -419,3 +419,17 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
 }
 
 // -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double> & params)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & params)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------

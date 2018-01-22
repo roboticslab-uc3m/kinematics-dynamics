@@ -93,6 +93,10 @@ public:
 
     virtual bool getParameter(int vocab, double * value);
 
+    virtual bool setParameters(const std::map<int, double> & params);
+
+    virtual bool getParameters(std::map<int, double> & params);
+
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
     /**

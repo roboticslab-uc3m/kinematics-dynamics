@@ -145,6 +145,10 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual bool getParameter(int vocab, double * value);
 
+        virtual bool setParameters(const std::map<int, double> & params);
+
+        virtual bool getParameters(std::map<int, double> & params);
+
         // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
         /** Loop function. This is the thread itself. */
