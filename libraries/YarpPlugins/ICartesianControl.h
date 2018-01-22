@@ -77,8 +77,6 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_SET VOCAB3('c','p','s')               ///< Set parameter
-#define VOCAB_CC_CONFIG_GET VOCAB3('c','p','g')               ///< Get parameter
 #define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
 #define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration

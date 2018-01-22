@@ -3,6 +3,7 @@
 #include "CartesianControlClient.hpp"
 
 #include <yarp/os/Time.h>
+#include <yarp/dev/ControlBoardInterfaces.h> // vocabs: OK, FAIL, SET, GET
 
 #include <ColorDebug.hpp>
 
@@ -231,7 +232,7 @@ bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_CC_CONFIG_SET);
+    cmd.addVocab(VOCAB_SET);
     cmd.addVocab(vocab);
     cmd.addDouble(value);
 
@@ -251,7 +252,7 @@ bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_CC_CONFIG_GET);
+    cmd.addVocab(VOCAB_GET);
     cmd.addVocab(vocab);
 
     rpcClient.write(cmd, response);

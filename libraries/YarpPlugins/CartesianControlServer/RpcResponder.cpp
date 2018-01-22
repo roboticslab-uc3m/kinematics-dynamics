@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <yarp/dev/ControlBoardInterfaces.h> // vocabs: OK, FAIL, SET, GET
+
 #include <ColorDebug.hpp>
 
 // ------------------- RpcResponder Related ------------------------------------
@@ -33,9 +35,9 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
-    case VOCAB_CC_CONFIG_SET:
+    case VOCAB_SET:
         return handleParameterSetter(in, out);
-    case VOCAB_CC_CONFIG_GET:
+    case VOCAB_GET:
         return handleParameterGetter(in, out);
     default:
         return DeviceResponder::respond(in, out);

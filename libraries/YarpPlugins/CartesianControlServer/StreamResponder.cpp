@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <vector>
+
 #include <ColorDebug.hpp>
 
 // ------------------- StreamResponder Related ------------------------------------
