@@ -3,7 +3,6 @@
 #include "CartesianControlClient.hpp"
 
 #include <yarp/os/Time.h>
-#include <yarp/dev/ControlBoardInterfaces.h> // vocabs: OK, FAIL, SET, GET
 
 #include <ColorDebug.hpp>
 
@@ -17,7 +16,7 @@ bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_CC_FAILED)
     {
         return false;
     }
@@ -40,7 +39,7 @@ bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const 
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_CC_FAILED)
     {
         return false;
     }
@@ -63,7 +62,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_CC_FAILED)
     {
         return false;
     }
@@ -133,7 +132,7 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_CC_FAILED)
     {
         return false;
     }
@@ -232,13 +231,13 @@ bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_SET);
+    cmd.addVocab(VOCAB_CC_SET);
     cmd.addVocab(vocab);
     cmd.addDouble(value);
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_CC_FAILED)
     {
         return false;
     }
@@ -252,12 +251,12 @@ bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_GET);
+    cmd.addVocab(VOCAB_CC_GET);
     cmd.addVocab(vocab);
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_CC_FAILED)
     {
         return false;
     }

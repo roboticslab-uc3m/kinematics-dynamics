@@ -10,8 +10,6 @@
 #include <yarp/os/Semaphore.h>
 
 #include <yarp/dev/Drivers.h>
-#include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/ControlBoardInterfaces.h>  // VOCAB_OK, VOCAB_FAILED
 
 #include <vector>
 

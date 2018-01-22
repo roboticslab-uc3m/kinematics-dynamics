@@ -2,8 +2,6 @@
 
 #include "CartesianControlServer.hpp"
 
-#include <yarp/dev/ControlBoardInterfaces.h> // vocabs: OK, FAIL, SET, GET
-
 #include <ColorDebug.hpp>
 
 // ------------------- RpcResponder Related ------------------------------------
@@ -35,9 +33,9 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
-    case VOCAB_SET:
+    case VOCAB_CC_SET:
         return handleParameterSetter(in, out);
-    case VOCAB_GET:
+    case VOCAB_CC_GET:
         return handleParameterGetter(in, out);
     default:
         return DeviceResponder::respond(in, out);
@@ -73,7 +71,7 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     {
         if (!transformOutgoingData(x))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
@@ -88,7 +86,7 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     }
     else
     {
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -99,12 +97,12 @@ bool roboticslab::RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in,
 {
     if ((iCartesianControl->*cmd)())
     {
-        out.addVocab(VOCAB_OK);
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
     {
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -124,17 +122,17 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
-        out.addVocab(VOCAB_OK);
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -154,7 +152,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
@@ -168,7 +166,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -184,17 +182,17 @@ bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in
 
         if (!iCartesianControl->setParameter(vocab, value))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
-        out.addVocab(VOCAB_OK);
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -210,7 +208,7 @@ bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in
 
         if (!iCartesianControl->getParameter(vocab, &value))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
@@ -220,7 +218,7 @@ bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }

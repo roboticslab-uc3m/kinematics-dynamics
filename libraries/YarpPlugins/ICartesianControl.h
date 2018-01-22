@@ -15,6 +15,22 @@
  */
 
 /**
+ * @name General-purpose vocabs
+ *
+ * Used in acknowledge responses, @ref ICartesianControl_config_commands "configuration accessors", etc..
+ *
+ * @{
+ */
+
+// General-purpose vocabs
+#define VOCAB_CC_OK VOCAB2('o','k')             ///< Success
+#define VOCAB_CC_FAILED VOCAB4('f','a','i','l') ///< Failure
+#define VOCAB_CC_SET VOCAB3('s','e','t')        ///< Setter
+#define VOCAB_CC_GET VOCAB3('g','e','t')        ///< Getter
+
+ /** @} */
+
+/**
  * @name RPC vocabs
  *
  * Used by @ref ICartesianControl_RPC_commands "RPC commands" in roboticslab::ICartesianControl.
@@ -71,7 +87,7 @@
 /**
  * @name Controller configuration vocabs
  *
- * Used by @ref ICartesianControl_config_commands "Configuration accessors".
+ * Used by @ref ICartesianControl_config_commands "configuration accessors".
  *
  * @{
  */
