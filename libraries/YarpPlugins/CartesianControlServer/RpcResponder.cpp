@@ -12,6 +12,30 @@ namespace
     {
         return in.size() > 1 && in.get(1).asVocab() == VOCAB_CC_CONFIG_PARAMS;
     }
+
+    inline void addValue(yarp::os::Bottle& b, int vocab, double value)
+    {
+        if (vocab == VOCAB_CC_CONFIG_FRAME)
+        {
+            b.addVocab(value);
+        }
+        else
+        {
+            b.addDouble(value);
+        }
+    }
+
+    inline double asValue(int vocab, const yarp::os::Value& v)
+    {
+        if (vocab == VOCAB_CC_CONFIG_FRAME)
+        {
+            return v.asVocab();
+        }
+        else
+        {
+            return v.asDouble();
+        }
+    }
 }
 
 // ------------------- RpcResponder Related ------------------------------------
@@ -196,7 +220,7 @@ bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in
     if (in.size() > 2)
     {
         int vocab = in.get(1).asVocab();
-        double value = in.get(2).asDouble();
+        double value = asValue(vocab, in.get(2));
 
         if (!iCartesianControl->setParameter(vocab, value))
         {
@@ -230,7 +254,7 @@ bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in
             return false;
         }
 
-        out.addDouble(value);
+        addValue(out, vocab, value);
         return true;
     }
     else
@@ -259,7 +283,9 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
             }
 
             yarp::os::Bottle * b = in.get(i).asList();
-            std::pair<int, double> el(b->get(0).asVocab(), b->get(1).asDouble());
+            int vocab = b->get(0).asVocab();
+            double value = asValue(vocab, b->get(1));
+            std::pair<int, double> el(vocab, value);
             params.insert(el);
         }
 
@@ -298,7 +324,7 @@ bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottl
         {
             yarp::os::Bottle & b = out.addList();
             b.addVocab(it->first);
-            b.addDouble(it->second);
+            addValue(b, it->first, it->second);
         }
 
         return true;
