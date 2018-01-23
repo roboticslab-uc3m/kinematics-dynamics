@@ -15,6 +15,11 @@
  * @{
  */
 
+//-------------------------------------------------------------------
+// KEEP VOCAB LIST AND DOCUMENTATION IN SYNC WITH:
+// * roboticslab::RpcResponder::makeUsage at CartesianControlServer/
+//-------------------------------------------------------------------
+
 /**
  * @name General-purpose vocabs
  *

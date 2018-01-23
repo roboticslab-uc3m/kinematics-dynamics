@@ -70,6 +70,12 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[get] vocab", "get configuration parameter");
     addUsage("[set] [prms] (vocab value) ...", "set multiple configuration parameters");
     addUsage("[get] [prms]", "get all configuration parameters");
+    addUsage("... [cpcg] value", "(config param) controller gain");
+    addUsage("... [cpjv] value", "(config param) maximum joint velocity");
+    addUsage("... [cptd] value", "(config param) trajectory duration");
+    addUsage("... [cpcr] value", "(config param) CMC rate [ms]");
+    addUsage("... [cpf] [cpfb]", "(config param) reference frame (base)");
+    addUsage("... [cpf] [cpft]", "(config param) reference frame (TCP)");
 }
 
 // -----------------------------------------------------------------------------
