@@ -232,7 +232,14 @@ bool roboticslab::CartesianControlClient::stopControl()
 
 bool roboticslab::CartesianControlClient::wait(double timeout)
 {
-    return true;
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_WAIT);
+    cmd.addDouble(timeout);
+
+    rpcClient.write(cmd, response);
+
+    return checkSuccess(response);
 }
 
 // -----------------------------------------------------------------------------
