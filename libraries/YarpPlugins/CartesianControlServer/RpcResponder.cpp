@@ -10,7 +10,7 @@ namespace
 {
     inline bool isGroupParam(const yarp::os::Bottle& in)
     {
-        return in.size() > 1 && in.get(1).isVocab() && in.get(1).asVocab() == VOCAB_CC_CONFIG_PARAMS;
+        return in.size() > 1 && in.get(1).asVocab() == VOCAB_CC_CONFIG_PARAMS;
     }
 }
 
@@ -248,6 +248,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
             if (!in.get(i).isList() || in.get(i).asList()->size() != 2)
             {
                 CD_ERROR("bottle format error\n");
+                out.addVocab(VOCAB_CC_FAILED);
                 return false;
             }
 
@@ -262,6 +263,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
             return false;
         }
 
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
@@ -276,7 +278,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
 
 bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
-    if (in.size() != 2)
+    if (in.size() == 2)
     {
         std::map<int, double> params;
 
