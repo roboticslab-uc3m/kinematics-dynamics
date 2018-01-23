@@ -2,30 +2,14 @@ option(ENABLE_tests "Choose if you want to compile tests" ON)
 
 if(ENABLE_tests)
 
-find_path(GTEST_SOURCE_DIR src/gtest.cc
-                           HINTS $ENV{GTEST_ROOT}
-                                 ${GTEST_ROOT}
-                           PATHS /usr/src/gtest)
-
-find_path(GTEST_INCLUDE_DIR gtest/gtest.h
-                            HINTS $ENV{GTEST_ROOT}/include
-                                  ${GTEST_ROOT}/include)
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GTest DEFAULT_MSG GTEST_SOURCE_DIR GTEST_INCLUDE_DIR)
-mark_as_advanced(GTEST_SOURCE_DIR GTEST_INCLUDE_DIR)
-
-if(NOT GTest_FOUND)
-    message(SEND_ERROR "GTest not found")
-endif()
-
-add_subdirectory(${GTEST_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
-
 find_package(YARP REQUIRED)
+find_package(GTestSources REQUIRED)
+
+add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
 
 get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
 
-include_directories(${GTEST_INCLUDE_DIR}
+include_directories(${GTestSources_INCLUDE_DIR}
                     ${YARP_INCLUDE_DIRS}
                     ${_common_includes})
 
