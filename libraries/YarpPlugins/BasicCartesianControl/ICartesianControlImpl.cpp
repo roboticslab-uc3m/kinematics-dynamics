@@ -319,6 +319,13 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::wait(double timeout)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 {
     if ( ! iCartesianSolver->restoreOriginalChain() )

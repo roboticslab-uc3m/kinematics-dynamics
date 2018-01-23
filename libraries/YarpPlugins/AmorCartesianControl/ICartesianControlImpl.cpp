@@ -243,6 +243,13 @@ bool roboticslab::AmorCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::AmorCartesianControl::wait(double timeout)
+{
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 {
     CD_WARNING("Tool change is not supported on AMOR.\n");

@@ -135,6 +135,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual bool stopControl();
 
+        virtual bool wait(double timeout);
+
         virtual bool tool(const std::vector<double> &x);
 
         virtual void twist(const std::vector<double> &xdot);
