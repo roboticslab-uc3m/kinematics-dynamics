@@ -4,6 +4,40 @@
 
 #include <ColorDebug.hpp>
 
+// -----------------------------------------------------------------------------
+
+namespace
+{
+    inline bool isGroupParam(const yarp::os::Bottle& in)
+    {
+        return in.size() > 1 && in.get(1).asVocab() == VOCAB_CC_CONFIG_PARAMS;
+    }
+
+    inline void addValue(yarp::os::Bottle& b, int vocab, double value)
+    {
+        if (vocab == VOCAB_CC_CONFIG_FRAME)
+        {
+            b.addVocab(value);
+        }
+        else
+        {
+            b.addDouble(value);
+        }
+    }
+
+    inline double asValue(int vocab, const yarp::os::Value& v)
+    {
+        if (vocab == VOCAB_CC_CONFIG_FRAME)
+        {
+            return v.asVocab();
+        }
+        else
+        {
+            return v.asDouble();
+        }
+    }
+}
+
 // ------------------- RpcResponder Related ------------------------------------
 
 bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
@@ -35,10 +69,10 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
     case VOCAB_CC_ACT:
         return handleActMsg(in, out);
-    case VOCAB_CC_CONFIG_SET:
-        return handleParameterSetter(in, out);
-    case VOCAB_CC_CONFIG_GET:
-        return handleParameterGetter(in, out);
+    case VOCAB_CC_SET:
+        return isGroupParam(in) ? handleParameterSetterGroup(in, out) : handleParameterSetter(in, out);
+    case VOCAB_CC_GET:
+        return isGroupParam(in) ? handleParameterGetterGroup(in, out) : handleParameterGetter(in, out);
     default:
         return DeviceResponder::respond(in, out);
     }
@@ -58,9 +92,17 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[forc] coord1 coord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
     addUsage("[tool] coord1 coord2 ...", "append fixed link to end effector");
-    addUsage("[act] command", "actuate tool using selected command");
-    addUsage("[cps] vocab value", "set configuration parameter");
-    addUsage("[cpg] vocab", "get configuration parameter");
+    addUsage("[act] vocab", "actuate tool using selected command vocab");
+    addUsage("[set] vocab value", "set configuration parameter");
+    addUsage("[get] vocab", "get configuration parameter");
+    addUsage("[set] [prms] (vocab value) ...", "set multiple configuration parameters");
+    addUsage("[get] [prms]", "get all configuration parameters");
+    addUsage("... [cpcg] value", "(config param) controller gain");
+    addUsage("... [cpjv] value", "(config param) maximum joint velocity");
+    addUsage("... [cptd] value", "(config param) trajectory duration");
+    addUsage("... [cpcr] value", "(config param) CMC rate [ms]");
+    addUsage("... [cpf] [cpfb]", "(config param) reference frame (base)");
+    addUsage("... [cpf] [cpft]", "(config param) reference frame (TCP)");
 }
 
 // -----------------------------------------------------------------------------
@@ -74,7 +116,7 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     {
         if (!transformOutgoingData(x))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
@@ -89,7 +131,7 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     }
     else
     {
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -104,19 +146,19 @@ bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::o
 
         if (iCartesianControl->act(commandCode))
         {
-            out.addVocab(VOCAB_OK);
+            out.addVocab(VOCAB_CC_OK);
             return true;
         }
         else
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
     }
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -127,12 +169,12 @@ bool roboticslab::RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in,
 {
     if ((iCartesianControl->*cmd)())
     {
-        out.addVocab(VOCAB_OK);
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
     {
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -152,17 +194,17 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
-        out.addVocab(VOCAB_OK);
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -182,7 +224,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
@@ -196,7 +238,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -208,21 +250,21 @@ bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in
     if (in.size() > 2)
     {
         int vocab = in.get(1).asVocab();
-        double value = in.get(2).asDouble();
+        double value = asValue(vocab, in.get(2));
 
         if (!iCartesianControl->setParameter(vocab, value))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
-        out.addVocab(VOCAB_OK);
+        out.addVocab(VOCAB_CC_OK);
         return true;
     }
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }
@@ -238,17 +280,89 @@ bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in
 
         if (!iCartesianControl->getParameter(vocab, &value))
         {
-            out.addVocab(VOCAB_FAILED);
+            out.addVocab(VOCAB_CC_FAILED);
             return false;
         }
 
-        out.addDouble(value);
+        addValue(out, vocab, value);
         return true;
     }
     else
     {
         CD_ERROR("size error\n");
-        out.addVocab(VOCAB_FAILED);
+        out.addVocab(VOCAB_CC_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 2)
+    {
+        std::map<int, double> params;
+
+        for (int i = 2; i < in.size(); i++)
+        {
+            if (!in.get(i).isList() || in.get(i).asList()->size() != 2)
+            {
+                CD_ERROR("bottle format error\n");
+                out.addVocab(VOCAB_CC_FAILED);
+                return false;
+            }
+
+            yarp::os::Bottle * b = in.get(i).asList();
+            int vocab = b->get(0).asVocab();
+            double value = asValue(vocab, b->get(1));
+            std::pair<int, double> el(vocab, value);
+            params.insert(el);
+        }
+
+        if (!iCartesianControl->setParameters(params))
+        {
+            out.addVocab(VOCAB_CC_FAILED);
+            return false;
+        }
+
+        out.addVocab(VOCAB_CC_OK);
+        return true;
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_CC_FAILED);
+        return false;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() == 2)
+    {
+        std::map<int, double> params;
+
+        if (!iCartesianControl->getParameters(params))
+        {
+            out.addVocab(VOCAB_CC_FAILED);
+            return false;
+        }
+
+        for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
+        {
+            yarp::os::Bottle & b = out.addList();
+            b.addVocab(it->first);
+            addValue(b, it->first, it->second);
+        }
+
+        return true;
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
 }

@@ -6,9 +6,8 @@
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/ControlBoardInterfaces.h>
 
-#include <iostream> // only windows
+#include <vector>
 
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
@@ -134,6 +133,9 @@ protected:
 
     bool handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
     bool handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
+    bool handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out);
 
     virtual bool transformIncomingData(std::vector<double>& vin)
     {

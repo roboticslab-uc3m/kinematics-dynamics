@@ -285,7 +285,6 @@ bool roboticslab::AmorCartesianControl::act(int command)
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
->>>>>>> fix-121-controller-conf
 {
     AMOR_VECTOR7 positions;
 
@@ -449,6 +448,30 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
         return false;
     }
 
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double> & params)
+{
+    bool ok = true;
+
+    for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
+    {
+        ok &= setParameter(it->first, it->second);
+    }
+
+    return ok;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & params)
+{
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_GAIN, gain));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }
 

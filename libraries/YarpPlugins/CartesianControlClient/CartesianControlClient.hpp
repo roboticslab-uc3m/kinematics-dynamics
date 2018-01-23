@@ -10,8 +10,6 @@
 #include <yarp/os/Semaphore.h>
 
 #include <yarp/dev/Drivers.h>
-#include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/ControlBoardInterfaces.h>  // VOCAB_OK, VOCAB_FAILED
 
 #include <vector>
 
@@ -96,6 +94,10 @@ public:
     virtual bool setParameter(int vocab, double value);
 
     virtual bool getParameter(int vocab, double * value);
+
+    virtual bool setParameters(const std::map<int, double> & params);
+
+    virtual bool getParameters(std::map<int, double> & params);
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
