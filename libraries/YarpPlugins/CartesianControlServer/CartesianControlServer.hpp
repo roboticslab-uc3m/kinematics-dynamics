@@ -133,6 +133,9 @@ protected:
     bool handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
     bool handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
 
+    bool handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+
     virtual bool transformIncomingData(std::vector<double>& vin)
     {
         return true;

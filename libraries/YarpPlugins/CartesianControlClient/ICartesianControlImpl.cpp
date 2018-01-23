@@ -3,9 +3,18 @@
 #include "CartesianControlClient.hpp"
 
 #include <yarp/os/Time.h>
-#include <yarp/dev/ControlBoardInterfaces.h> // vocabs: OK, FAIL, SET, GET
 
 #include <ColorDebug.hpp>
+
+// -----------------------------------------------------------------------------
+
+namespace
+{
+    inline bool checkSuccess(const yarp::os::Bottle & response)
+    {
+        return !response.get(0).isVocab() || response.get(0).asVocab() != VOCAB_CC_FAILED;
+    }
+}
 
 // ------------------- ICartesianControl Related ------------------------------------
 
@@ -17,12 +26,7 @@ bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
-    {
-        return false;
-    }
-
-    return true;
+    return checkSuccess(response);
 }
 
 // -----------------------------------------------------------------------------
@@ -40,12 +44,7 @@ bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const 
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
-    {
-        return false;
-    }
-
-    return true;
+    return checkSuccess(response);
 }
 
 // -----------------------------------------------------------------------------
@@ -63,7 +62,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (!checkSuccess(response))
     {
         return false;
     }
@@ -133,7 +132,7 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (!checkSuccess(response))
     {
         return false;
     }
@@ -232,18 +231,13 @@ bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_SET);
+    cmd.addVocab(VOCAB_CC_SET);
     cmd.addVocab(vocab);
     cmd.addDouble(value);
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
-    {
-        return false;
-    }
-
-    return true;
+    return checkSuccess(response);
 }
 
 // -----------------------------------------------------------------------------
@@ -252,17 +246,64 @@ bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value
 {
     yarp::os::Bottle cmd, response;
 
-    cmd.addVocab(VOCAB_GET);
+    cmd.addVocab(VOCAB_CC_GET);
     cmd.addVocab(vocab);
 
     rpcClient.write(cmd, response);
 
-    if (response.get(0).isVocab() && response.get(0).asVocab() == VOCAB_FAILED)
+    if (!checkSuccess(response))
     {
         return false;
     }
 
     *value = response.get(0).asDouble();
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::setParameters(const std::map<int, double> & params)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_SET);
+    cmd.addVocab(VOCAB_CC_CONFIG_PARAMS);
+
+    for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
+    {
+        yarp::os::Bottle & b = cmd.addList();
+        b.addVocab(it->first);
+        b.addDouble(it->second);
+    }
+
+    rpcClient.write(cmd, response);
+
+    return checkSuccess(response);
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::CartesianControlClient::getParameters(std::map<int, double> & params)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_GET);
+    cmd.addVocab(VOCAB_CC_CONFIG_PARAMS);
+
+    rpcClient.write(cmd, response);
+
+    if (!checkSuccess(response))
+    {
+        return false;
+    }
+
+    for (int i = 0; i < response.size(); i++)
+    {
+        yarp::os::Bottle * b = response.get(i).asList();
+        std::pair<int, double> el(b->get(0).asVocab(), b->get(1).asDouble());
+        params.insert(el);
+    }
 
     return true;
 }
