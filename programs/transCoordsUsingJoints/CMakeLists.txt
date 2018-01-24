@@ -5,7 +5,7 @@ if(ENABLE_transCoordsUsingJoints)
 
 # Find YARP and Orocos KDL.
 find_package(YARP REQUIRED)
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl ${_target_kdl_version} REQUIRED)
 
 # Retrieve global properties.
 get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)

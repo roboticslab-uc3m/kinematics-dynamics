@@ -2,7 +2,7 @@ option(ENABLE_KdlVectorConverterLib "Enable/disable KdlVectorConverterLib librar
 
 if(ENABLE_KdlVectorConverterLib)
 
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl ${_target_kdl_version} REQUIRED)
 
 # Set up our library.
 add_library(KdlVectorConverterLib KdlVectorConverter.cpp

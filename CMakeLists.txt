@@ -88,6 +88,9 @@ set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
 
+# Dependency-related tweaks.
+set(_target_kdl_version 1.4)
+
 # Add main contents.
 add_subdirectory(share)
 add_subdirectory(libraries)

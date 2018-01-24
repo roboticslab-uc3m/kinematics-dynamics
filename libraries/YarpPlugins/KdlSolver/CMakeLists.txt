@@ -13,7 +13,7 @@ yarp_prepare_plugin(KdlSolver
 
 if(NOT SKIP_KdlSolver)
 
-find_package(orocos_kdl 1.4.0 REQUIRED)
+find_package(orocos_kdl ${_target_kdl_version} REQUIRED)
 
 option(USE_LMA "Use LMA algorithm in KdlSolver" OFF)
 
