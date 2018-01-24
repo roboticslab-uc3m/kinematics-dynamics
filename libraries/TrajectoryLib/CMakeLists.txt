@@ -3,7 +3,7 @@ cmake_dependent_option(ENABLE_TrajectoryLib "Enable/disable TrajectoryLib librar
 
 if(ENABLE_TrajectoryLib)
 
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl ${_target_kdl_version} REQUIRED)
 
 set(_trayectory_lib_sources ICartesianTrajectory.hpp
                             ITrajectory.hpp
