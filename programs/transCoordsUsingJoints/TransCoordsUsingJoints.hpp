@@ -1,11 +1,15 @@
 #ifndef __TRANS_COORDS_USING_JOINTS_HPP__
 #define __TRANS_COORDS_USING_JOINTS_HPP__
 
-#include <yarp/os/RFModule.h>
-#include <yarp/os/ResourceFinder.h>
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Port.h>
+#include <yarp/os/ResourceFinder.h>
+#include <yarp/os/RFModule.h>
+#include <yarp/os/Searchable.h>
 
 #include <yarp/dev/PolyDriver.h>
+
+#include <kdl/frames.hpp>
 
 #include "PremultPorts.hpp"
 
@@ -25,19 +29,20 @@ class TransCoordsUsingJoints : public yarp::os::RFModule
 
 public:
     bool configure(yarp::os::ResourceFinder &rf);
-
-private:
     bool updateModule();
     bool interruptModule();
     double getPeriod();
+
+private:
+    bool getMatrixFromProperties(const yarp::os::Bottle &b, KDL::Frame &frame);
 
     yarp::os::Port outPort;
     PremultPorts premultPorts;
 
     yarp::dev::PolyDriver robotDevice;
-
     yarp::dev::PolyDriver solverDevice;
 
+    KDL::Frame H_base_root;
 };
 
 }  // namespace roboticslab

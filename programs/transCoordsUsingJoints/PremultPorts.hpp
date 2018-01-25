@@ -7,6 +7,8 @@
 
 #include <yarp/dev/IEncoders.h>
 
+#include <kdl/frames.hpp>
+
 #include "ICartesianSolver.h"
 
 namespace roboticslab
@@ -28,6 +30,7 @@ public:
     void setIEncoders(yarp::dev::IEncoders* iEncoders);
     void setICartesianSolver(roboticslab::ICartesianSolver* iCartesianSolver);
     void setNumRobotJoints(int numRobotJoints);
+    void setRootFrame(KDL::Frame* H_base_root);
 
 private:
 
@@ -41,6 +44,7 @@ private:
 
     roboticslab::ICartesianSolver* iCartesianSolver;
 
+    KDL::Frame* H_base_root;
 };
 
 }  // namespace roboticslab
