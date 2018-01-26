@@ -1,5 +1,5 @@
 cmake_dependent_option(ENABLE_transCoords "Enable/disable transCoords program" ON
-                       ENABLE_KdlVectorConverterLib OFF)
+                       "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib" OFF)
 
 if(ENABLE_transCoords)
 
@@ -26,7 +26,8 @@ target_link_libraries(transCoords YARP::YARP_OS
                                   YARP::YARP_init
                                   YARP::YARP_dev
                                   ${orocos_kdl_LIBRARIES}
-                                  KdlVectorConverterLib)
+                                  KdlVectorConverterLib
+                                  KinematicRepresentationLib)
 
 install(TARGETS transCoords
         DESTINATION ${CMAKE_INSTALL_BINDIR})

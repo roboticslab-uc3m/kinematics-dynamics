@@ -99,6 +99,13 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
     }
 
+    std::string angleReprStr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
+
+    if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
+    {
+        CD_WARNING("Unknown angleRepr \"%s\", falling back to default.\n", angleReprStr.c_str());
+    }
+
     std::string prefix = rf.check("local", yarp::os::Value(DEFAULT_PREFIX), "port prefix").asString();
 
     inPort.open(prefix + "/coords:i");
@@ -171,18 +178,25 @@ void TransCoords::onRead(yarp::os::Bottle &b)
 {
     CD_DEBUG("Got %s\n", b.toString().c_str());
 
-    if (b.size() != 6)
+    std::vector<double> x;
+
+    for (int i = 0; i < b.size(); i++)
     {
-        CD_ERROR("Size error, 6-double list expected\n");
+        x.push_back(b.get(i).asDouble());
+    }
+
+    if (!KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, orient) || x.size() != 6)
+    {
+        CD_ERROR("encodePose failed.\n");
         return;
     }
 
     KDL::Frame HN;
-    HN.p.x(b.get(0).asDouble());
-    HN.p.y(b.get(1).asDouble());
-    HN.p.z(b.get(2).asDouble());
+    HN.p.x(x[0]);
+    HN.p.y(x[1]);
+    HN.p.z(x[2]);
 
-    KDL::Vector rotvec(b.get(3).asDouble(), b.get(4).asDouble(), b.get(5).asDouble());
+    KDL::Vector rotvec(x[3], x[4], x[5]);
     HN.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
 
     KDL::Frame H;
