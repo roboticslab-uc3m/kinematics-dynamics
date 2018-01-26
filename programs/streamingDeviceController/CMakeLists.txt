@@ -5,7 +5,7 @@ if(ENABLE_streamingDeviceController)
 
 # Find YARP.
 find_package(YARP REQUIRED)
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl ${_target_kdl_version} REQUIRED)
 find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
 # Retrieve global properties.

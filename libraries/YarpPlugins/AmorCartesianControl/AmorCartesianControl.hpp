@@ -25,7 +25,7 @@ namespace roboticslab
 /**
  * @ingroup YarpPlugins
  * @defgroup AmorCartesianControl
- * @brief Contains teo::AmorCartesianControl.
+ * @brief Contains roboticslab::AmorCartesianControl.
  */
 
 /**
@@ -77,6 +77,10 @@ public:
     virtual bool setParameter(int vocab, double value);
 
     virtual bool getParameter(int vocab, double * value);
+
+    virtual bool setParameters(const std::map<int, double> & params);
+
+    virtual bool getParameters(std::map<int, double> & params);
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
 

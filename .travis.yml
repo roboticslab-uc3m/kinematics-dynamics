@@ -10,13 +10,14 @@ compiler:
   - clang
 
 before_install:
+  - sudo apt-get -qq update
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
 install:
-  #-- Install cmake and eigen
-  - sudo apt-get install cmake libeigen3-dev
+  #-- Install eigen
+  - sudo apt-get install libeigen3-dev
   #-- Install yarp
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
