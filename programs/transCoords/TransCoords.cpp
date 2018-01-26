@@ -39,13 +39,19 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    if (!getMatrixFromProperties(rf.findGroup("H0").tail(), H0))
+    useRobot = !rf.check("noRobot");
+
+    if (!useRobot && !rf.check("fixedH"))
+    {
+        CD_ERROR("Missing --fixedH option when --noRobot was provided.\n");
+        return false;
+    }
+
+    if (!getMatrixFromProperties(rf.findGroup("fixedH").tail(), H0))
     {
         CD_ERROR("Could not parse H0.\n");
         return false;
     }
-
-    useRobot = !rf.check("noRobot");
 
     if (useRobot)
     {
@@ -169,7 +175,15 @@ void TransCoords::onRead(yarp::os::Bottle &b)
         return;
     }
 
-    KDL::Frame H_0_N;
+    KDL::Frame HN;
+    HN.p.x(b.get(0).asDouble());
+    HN.p.y(b.get(1).asDouble());
+    HN.p.z(b.get(2).asDouble());
+
+    KDL::Vector rotvec(b.get(3).asDouble(), b.get(4).asDouble(), b.get(5).asDouble());
+    HN.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
+
+    KDL::Frame H;
 
     if (useRobot)
     {
@@ -189,18 +203,14 @@ void TransCoords::onRead(yarp::os::Bottle &b)
             return;
         }
 
-        H_0_N = KdlVectorConverter::vectorToFrame(currentX);
+        KDL::Frame H_0_N = KdlVectorConverter::vectorToFrame(currentX);
+
+        H = H_0_N * HN;
     }
-
-    KDL::Frame HN;
-    HN.p.x(b.get(0).asDouble());
-    HN.p.y(b.get(1).asDouble());
-    HN.p.z(b.get(2).asDouble());
-
-    KDL::Vector rotvec(b.get(3).asDouble(), b.get(4).asDouble(), b.get(5).asDouble());
-    HN.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
-
-    KDL::Frame H = H0 * H_0_N * HN;
+    else
+    {
+        H = H0 * HN;
+    }
 
     yarp::os::Bottle &outB = outPort.prepare();
     outB.clear();
