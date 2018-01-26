@@ -47,7 +47,7 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    if (!getMatrixFromProperties(rf.findGroup("fixedH").tail(), H0))
+    if (!getMatrixFromProperties(rf.findGroup("fixedH").tail(), fixedH))
     {
         CD_ERROR("Could not parse H0.\n");
         return false;
@@ -225,7 +225,7 @@ void TransCoords::onRead(yarp::os::Bottle &b)
     }
     else
     {
-        H = H0 * HN;
+        H = fixedH * HN;
     }
 
     yarp::os::Bottle &outB = outPort.prepare();

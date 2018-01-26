@@ -49,7 +49,7 @@ private:
     yarp::dev::IEncoders* iEncoders;
     roboticslab::ICartesianSolver* iCartesianSolver;
 
-    KDL::Frame H0;
+    KDL::Frame fixedH;
 
     int numRobotJoints;
     bool useRobot;
