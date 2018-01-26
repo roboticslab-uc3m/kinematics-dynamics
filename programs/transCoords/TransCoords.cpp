@@ -36,25 +36,19 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
     {
         CD_INFO_NO_HEADER("TransCoords options:\n");
         CD_INFO_NO_HEADER("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
+        CD_INFO_NO_HEADER("\t--fixedH (16 doubles) <- skip robot, use fixed H matrix instead\n");
+        CD_INFO_NO_HEADER("\t--solver \"name\" <- solver device [KdlSolver]\n");
+        CD_INFO_NO_HEADER("\t--robot \"name\" <- robot device [remote_controlboard]\n");
+        CD_INFO_NO_HEADER("\t--angleRepr \"name\" <- angle representation [axisAngleScaled]\n");
         return false;
     }
 
-    useRobot = !rf.check("noRobot");
-
-    if (!useRobot && !rf.check("fixedH"))
-    {
-        CD_ERROR("Missing --fixedH option when --noRobot was provided.\n");
-        return false;
-    }
-
-    if (!getMatrixFromProperties(rf.findGroup("fixedH").tail(), fixedH))
-    {
-        CD_ERROR("Could not parse H0.\n");
-        return false;
-    }
+    useRobot = !rf.check("fixedH");
 
     if (useRobot)
     {
+        CD_INFO("Using robot parameters.\n");
+
         std::string solverStr = rf.check("solver", yarp::os::Value(DEFAULT_SOLVER), "cartesian solver").asString();
         std::string robotStr = rf.check("robot", yarp::os::Value(DEFAULT_ROBOT), "robot device").asString();
 
@@ -97,6 +91,16 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         }
 
         CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
+    }
+    else
+    {
+        CD_INFO("Using fixedH parameters.\n");
+
+        if (!getMatrixFromProperties(rf.findGroup("fixedH").tail(), fixedH))
+        {
+            CD_ERROR("Could not parse fixedH.\n");
+            return false;
+        }
     }
 
     std::string angleReprStr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
