@@ -1,16 +1,14 @@
 #include "TransCoords.hpp"
 
 #include <string>
+#include <vector>
 
-#include <yarp/os/Bottle.h>
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
 
-#include <yarp/dev/IEncoders.h>
-
 #include <ColorDebug.hpp>
 
-#include "ICartesianSolver.h"
+#include "KdlVectorConverter.hpp"
 
 namespace roboticslab
 {
@@ -64,8 +62,6 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
-        roboticslab::ICartesianSolver* iCartesianSolver;
-
         if (!solverDevice.view(iCartesianSolver))
         {
             CD_ERROR("Could not view iCartesianSolver in: %s.\n", solverStr.c_str());
@@ -82,15 +78,11 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
-        yarp::dev::IEncoders* iEncoders;
-
         if (!robotDevice.view(iEncoders))
         {
             CD_ERROR("Could not view iEncoders.\n");
             return false;
         }
-
-        int numRobotJoints;
 
         if (!iEncoders->getAxes(&numRobotJoints))
         {
@@ -99,17 +91,12 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         }
 
         CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
-
-        premultPorts.setIEncoders(iEncoders);
-        premultPorts.setICartesianSolver(iCartesianSolver);
-        premultPorts.setNumRobotJoints(numRobotJoints);
     }
 
+    inPort.open("/coords:i");
     outPort.open("/coords:o");
-    premultPorts.setOutPort(&outPort);
-    premultPorts.setRootFrame(&H0);
-    premultPorts.open("/coords:i");
-    premultPorts.useCallback();
+
+    inPort.useCallback(*this);
 
     return true;
 }
@@ -118,12 +105,14 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
 
 bool TransCoords::interruptModule()
 {
-    premultPorts.disableCallback();
-    premultPorts.close();
+    inPort.disableCallback();
+    inPort.close();
+
     outPort.close();
 
     if (useRobot)
     {
+        solverDevice.close();
         robotDevice.close();
     }
 
@@ -158,6 +147,59 @@ bool TransCoords::getMatrixFromProperties(const yarp::os::Bottle &b, KDL::Frame 
     frame.p.z(b.get(11).asDouble());
 
     return true;
+}
+
+/************************************************************************/
+
+void TransCoords::onRead(yarp::os::Bottle &b)
+{
+    CD_DEBUG("Got %s\n", b.toString().c_str());
+
+    if (b.size() != 6)
+    {
+        CD_ERROR("Size error, 6-double list expected\n");
+        return;
+    }
+
+    std::vector<double> currentQ(numRobotJoints);
+
+    if (!iEncoders->getEncoders(currentQ.data()))
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return;
+    }
+
+    std::vector<double> currentX;
+
+    if (!iCartesianSolver->fwdKin(currentQ, currentX))
+    {
+        CD_ERROR("fdwkin error.\n");
+        return;
+    }
+
+    KDL::Frame H_0_N = KdlVectorConverter::vectorToFrame(currentX);
+
+    KDL::Frame HN;
+    HN.p.x(b.get(0).asDouble());
+    HN.p.y(b.get(1).asDouble());
+    HN.p.z(b.get(2).asDouble());
+
+    KDL::Vector rotvec(b.get(3).asDouble(), b.get(4).asDouble(), b.get(5).asDouble());
+    HN.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
+
+    KDL::Frame H = H0 * H_0_N * HN;
+
+    yarp::os::Bottle &outB = outPort.prepare();
+    outB.addDouble(H.p.x());
+    outB.addDouble(H.p.y());
+    outB.addDouble(H.p.z());
+
+    KDL::Vector rotvec_root = H.M.GetRot();
+    outB.addDouble(rotvec_root.x());
+    outB.addDouble(rotvec_root.y());
+    outB.addDouble(rotvec_root.z());
+
+    outPort.write();
 }
 
 /************************************************************************/

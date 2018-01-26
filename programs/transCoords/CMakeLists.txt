@@ -18,9 +18,7 @@ include_directories(${YARP_INCLUDE_DIRS}
 # Set up our main executable.
 add_executable(transCoords main.cpp
                            TransCoords.cpp
-                           TransCoords.hpp
-                           PremultPorts.cpp
-                           PremultPorts.hpp)
+                           TransCoords.hpp)
 
 add_dependencies(transCoords COLOR_DEBUG)
 
