@@ -1,4 +1,4 @@
-#include "TransCoordsUsingJoints.hpp"
+#include "TransCoords.hpp"
 
 #include <string>
 
@@ -16,27 +16,27 @@ namespace roboticslab
 {
 
 /************************************************************************/
-bool TransCoordsUsingJoints::updateModule()
+bool TransCoords::updateModule()
 {
-    CD_INFO("TransCoordsUsingJoints alive...\n");
+    CD_INFO("TransCoords alive...\n");
     return true;
 }
 
 /************************************************************************/
-double TransCoordsUsingJoints::getPeriod()
+double TransCoords::getPeriod()
 {
     return 2.0;  // [s]
 }
 
 /************************************************************************/
 
-bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
+bool TransCoords::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_INFO("TransCoordsUsingJoints config: %s.\n", rf.toString().c_str());
+    CD_INFO("TransCoords config: %s.\n", rf.toString().c_str());
 
     if (rf.check("help"))
     {
-        CD_INFO_NO_HEADER("TransCoordsUsingJoints options:\n");
+        CD_INFO_NO_HEADER("TransCoords options:\n");
         CD_INFO_NO_HEADER("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         return false;
     }
@@ -116,7 +116,7 @@ bool TransCoordsUsingJoints::configure(yarp::os::ResourceFinder &rf)
 
 /************************************************************************/
 
-bool TransCoordsUsingJoints::interruptModule()
+bool TransCoords::interruptModule()
 {
     premultPorts.disableCallback();
     premultPorts.close();
@@ -130,7 +130,7 @@ bool TransCoordsUsingJoints::interruptModule()
     return true;
 }
 
-bool TransCoordsUsingJoints::getMatrixFromProperties(const yarp::os::Bottle &b, KDL::Frame &frame)
+bool TransCoords::getMatrixFromProperties(const yarp::os::Bottle &b, KDL::Frame &frame)
 {
     if (b.isNull())
     {

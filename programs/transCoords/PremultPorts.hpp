@@ -15,7 +15,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup transCoordsUsingJoints
+ * @ingroup transCoords
  *
  * @brief Implements a port with x callbacks.
  */

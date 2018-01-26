@@ -20,11 +20,11 @@ namespace roboticslab
 {
 
 /**
- * @ingroup transCoordsUsingJoints
+ * @ingroup transCoords
  *
- * @brief Transform Computer Vision values to root frame.
+ * @brief Transform values to root frame.
  */
-class TransCoordsUsingJoints : public yarp::os::RFModule
+class TransCoords : public yarp::os::RFModule
 {
 
 public:
