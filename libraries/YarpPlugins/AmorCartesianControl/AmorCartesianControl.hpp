@@ -25,7 +25,7 @@ namespace roboticslab
 /**
  * @ingroup YarpPlugins
  * @defgroup AmorCartesianControl
- * @brief Contains teo::AmorCartesianControl.
+ * @brief Contains roboticslab::AmorCartesianControl.
  */
 
 /**
