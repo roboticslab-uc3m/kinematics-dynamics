@@ -41,9 +41,9 @@ void PremultPorts::setNumRobotJoints(int numRobotJoints)
 
 /************************************************************************/
 
-void PremultPorts::setRootFrame(KDL::Frame* H_base_root)
+void PremultPorts::setRootFrame(KDL::Frame* H0)
 {
-    this->H_base_root = H_base_root;
+    this->H0 = H0;
 }
 
 
@@ -68,24 +68,24 @@ void PremultPorts::onRead(yarp::os::Bottle& b)
     std::vector<double> currentX;
     iCartesianSolver->fwdKin(currentQ,currentX);
 
-    KDL::Frame H_root_camera = KdlVectorConverter::vectorToFrame(currentX);
+    KDL::Frame H_0_N = KdlVectorConverter::vectorToFrame(currentX);
 
-    KDL::Frame H_camera;
-    H_camera.p.x(b.get(0).asDouble());
-    H_camera.p.y(b.get(1).asDouble());
-    H_camera.p.z(b.get(2).asDouble());
+    KDL::Frame HN;
+    HN.p.x(b.get(0).asDouble());
+    HN.p.y(b.get(1).asDouble());
+    HN.p.z(b.get(2).asDouble());
 
     KDL::Vector rotvec(b.get(3).asDouble(), b.get(4).asDouble(), b.get(5).asDouble());
-    H_camera.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
+    HN.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
 
-    KDL::Frame H_root = (*H_base_root) * H_root_camera * H_camera;
+    KDL::Frame H = (*H0) * H_0_N * HN;
 
     yarp::os::Bottle outB;
-    outB.addDouble(H_root.p.x());
-    outB.addDouble(H_root.p.y());
-    outB.addDouble(H_root.p.z());
+    outB.addDouble(H.p.x());
+    outB.addDouble(H.p.y());
+    outB.addDouble(H.p.z());
 
-    KDL::Vector rotvec_root = H_root.M.GetRot();
+    KDL::Vector rotvec_root = H.M.GetRot();
     outB.addDouble(rotvec_root.x());
     outB.addDouble(rotvec_root.y());
     outB.addDouble(rotvec_root.z());

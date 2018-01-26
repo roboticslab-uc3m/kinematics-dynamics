@@ -42,7 +42,9 @@ private:
     yarp::dev::PolyDriver robotDevice;
     yarp::dev::PolyDriver solverDevice;
 
-    KDL::Frame H_base_root;
+    KDL::Frame H0;
+
+    bool useRobot;
 };
 
 }  // namespace roboticslab
