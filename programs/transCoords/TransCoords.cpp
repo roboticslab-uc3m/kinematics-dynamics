@@ -161,23 +161,28 @@ void TransCoords::onRead(yarp::os::Bottle &b)
         return;
     }
 
-    std::vector<double> currentQ(numRobotJoints);
+    KDL::Frame H_0_N;
 
-    if (!iEncoders->getEncoders(currentQ.data()))
+    if (useRobot)
     {
-        CD_ERROR("getEncoders failed.\n");
-        return;
+        std::vector<double> currentQ(numRobotJoints);
+
+        if (!iEncoders->getEncoders(currentQ.data()))
+        {
+            CD_ERROR("getEncoders failed.\n");
+            return;
+        }
+
+        std::vector<double> currentX;
+
+        if (!iCartesianSolver->fwdKin(currentQ, currentX))
+        {
+            CD_ERROR("fdwkin error.\n");
+            return;
+        }
+
+        H_0_N = KdlVectorConverter::vectorToFrame(currentX);
     }
-
-    std::vector<double> currentX;
-
-    if (!iCartesianSolver->fwdKin(currentQ, currentX))
-    {
-        CD_ERROR("fdwkin error.\n");
-        return;
-    }
-
-    KDL::Frame H_0_N = KdlVectorConverter::vectorToFrame(currentX);
 
     KDL::Frame HN;
     HN.p.x(b.get(0).asDouble());
