@@ -99,8 +99,10 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
     }
 
-    inPort.open("/coords:i");
-    outPort.open("/coords:o");
+    std::string prefix = rf.check("local", yarp::os::Value(DEFAULT_PREFIX), "port prefix").asString();
+
+    inPort.open(prefix + "/coords:i");
+    outPort.open(prefix + "/coords:o");
 
     inPort.useCallback(*this);
 

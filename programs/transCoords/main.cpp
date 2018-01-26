@@ -15,8 +15,8 @@
  * Use example: transCoords --kinematics /usr/local/share/teo-configuration-files/contexts/kinematics/headKinematics.ini --local /transCoords --remote /teo/head
  */
 
-int main(int argc, char *argv[]) {
-
+int main(int argc, char *argv[])
+{
     yarp::os::ResourceFinder rf;
     rf.setVerbose(true);
     rf.setDefaultContext("transCoords");
@@ -24,14 +24,18 @@ int main(int argc, char *argv[]) {
     rf.configure(argc, argv);
 
     roboticslab::TransCoords mod;
-    if(rf.check("help")) {
+
+    if (rf.check("help"))
+    {
         CD_INFO("Use example: transCoords --kinematics /usr/local/share/teo-configuration-files/contexts/kinematics/headKinematics.ini --local /transCoords --remote /teo/head\n");
         return mod.runModule(rf);
     }
 
     CD_INFO_NO_HEADER("Run \"transCoords --help\" for options.\n");
     CD_INFO_NO_HEADER("premultH checking for yarp network... ");
+
     yarp::os::Network yarp;
+
     if ( ! yarp.checkNetwork() )
     {
         CD_ERROR_NO_HEADER("[fail]\n");
