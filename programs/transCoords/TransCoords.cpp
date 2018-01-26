@@ -121,30 +121,38 @@ bool TransCoords::interruptModule()
 
 bool TransCoords::getMatrixFromProperties(const yarp::os::Bottle &b, KDL::Frame &frame)
 {
-    if (b.isNull())
+    if (b.isNull() || b.size() == 0)
     {
         return true;
     }
 
-    if (b.size() != 16)
+    if (!b.get(0).isList())
+    {
+        CD_ERROR("Unsupported bottle format, data must be a list.\n");
+        return false;
+    }
+
+    yarp::os::Bottle *l = b.get(0).asList();
+
+    if (l->size() != 16)
     {
         CD_ERROR("Unsupported matrix size (not 4x4).\n");
         return false;
     }
 
-    if (b.get(12).asDouble() != 0 || b.get(13).asDouble() != 0 || b.get(14).asDouble() != 0 || b.get(15).asDouble() != 1)
+    if (l->get(12).asDouble() != 0 || l->get(13).asDouble() != 0 || l->get(14).asDouble() != 0 || l->get(15).asDouble() != 1)
     {
         CD_ERROR("Unsupported non-null frame components (perspective and scaling).\n");
         return false;
     }
 
-    frame.M.UnitX(KDL::Vector(b.get(0).asDouble(), b.get(4).asDouble(), b.get(8).asDouble()));
-    frame.M.UnitY(KDL::Vector(b.get(1).asDouble(), b.get(5).asDouble(), b.get(9).asDouble()));
-    frame.M.UnitZ(KDL::Vector(b.get(2).asDouble(), b.get(6).asDouble(), b.get(10).asDouble()));
+    frame.M.UnitX(KDL::Vector(l->get(0).asDouble(), l->get(4).asDouble(), l->get(8).asDouble()));
+    frame.M.UnitY(KDL::Vector(l->get(1).asDouble(), l->get(5).asDouble(), l->get(9).asDouble()));
+    frame.M.UnitZ(KDL::Vector(l->get(2).asDouble(), l->get(6).asDouble(), l->get(10).asDouble()));
 
-    frame.p.x(b.get(3).asDouble());
-    frame.p.y(b.get(7).asDouble());
-    frame.p.z(b.get(11).asDouble());
+    frame.p.x(l->get(3).asDouble());
+    frame.p.y(l->get(7).asDouble());
+    frame.p.z(l->get(11).asDouble());
 
     return true;
 }
