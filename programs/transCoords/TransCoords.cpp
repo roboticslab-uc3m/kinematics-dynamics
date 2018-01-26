@@ -195,6 +195,8 @@ void TransCoords::onRead(yarp::os::Bottle &b)
     KDL::Frame H = H0 * H_0_N * HN;
 
     yarp::os::Bottle &outB = outPort.prepare();
+    outB.clear();
+
     outB.addDouble(H.p.x());
     outB.addDouble(H.p.y());
     outB.addDouble(H.p.z());
