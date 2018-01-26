@@ -110,10 +110,8 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         CD_WARNING("Unknown angleRepr \"%s\", falling back to default.\n", angleReprStr.c_str());
     }
 
-    std::string prefix = rf.check("local", yarp::os::Value(DEFAULT_PREFIX), "port prefix").asString();
-
-    inPort.open(prefix + "/coords:i");
-    outPort.open(prefix + "/coords:o");
+    inPort.open("/coords:i");
+    outPort.open("/coords:o");
 
     inPort.useCallback(*this);
 

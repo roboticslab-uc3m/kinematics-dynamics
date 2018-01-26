@@ -14,7 +14,6 @@
 #include "KinematicRepresentation.hpp"
 #include "ICartesianSolver.h"
 
-#define DEFAULT_PREFIX "/transCoords"
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_ANGLE_REPR "axisAngleScaled"
