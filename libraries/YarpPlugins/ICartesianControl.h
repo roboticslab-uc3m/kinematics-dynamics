@@ -263,12 +263,12 @@ class ICartesianControl
          * Block execution until the movement is completed, errors occur or timeout
          * is reached.
          *
-         * @param timeout Timeout in seconds.
+         * @param timeout Timeout in seconds, '0.0' means no timeout.
          *
          * @return true on success, false if errors occurred during the execution
          * of the trajectory
          */
-        virtual bool wait(double timeout) = 0;
+        virtual bool wait(double timeout = 0.0) = 0;
 
         /**
          * @brief Change tool

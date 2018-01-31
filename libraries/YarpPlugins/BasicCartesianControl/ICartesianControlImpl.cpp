@@ -91,7 +91,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     CD_INFO("max_time[final]: %f\n",max_time);
 
     //-- Compute, store old and set joint velocities given this time
-    std::vector<double> vmo, vmoStored(numRobotJoints);
+    std::vector<double> vmo;
     for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
         if( joint >= numSolverJoints )
@@ -105,6 +105,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
             CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
         }
     }
+    vmoStored.resize(numRobotJoints);
     if ( ! iPositionControl->getRefSpeeds( vmoStored.data() ) )
     {
          CD_ERROR("getRefSpeeds (for storing) failed.\n");
@@ -133,25 +134,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
     //-- Set state, perform and wait for movement to be done
     setCurrentState( VOCAB_CC_MOVJ_CONTROLLING );
+    cmcSuccess = true;
 
     CD_SUCCESS("Waiting\n");
-    bool done = false;
-    while(!done)
-    {
-        iPositionControl->checkMotionDone(&done);
-        printf(".");
-        fflush(stdout);
-        yarp::os::Time::delay(0.5);
-    }
-
-    //-- Reestablish state and velocities
-    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
-
-    if ( ! iPositionControl->setRefSpeeds( vmoStored.data() ) )
-    {
-         CD_ERROR("setRefSpeeds (to restore) failed.\n");
-         return false;
-    }
 
     return true;
 }
@@ -237,18 +222,10 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     }
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
+    cmcSuccess = true;
 
-    //-- Wait for movement to be done, then delete
+    //-- Wait for movement to be done
     CD_SUCCESS("Waiting\n");
-    while( getCurrentState() == VOCAB_CC_MOVL_CONTROLLING )
-    {
-        printf(".");
-        fflush(stdout);
-        yarp::os::Time::delay(0.5);
-    }
-    iCartesianTrajectory->destroy();
-    delete iCartesianTrajectory;
-    iCartesianTrajectory = 0;
 
     return true;
 }
@@ -314,6 +291,12 @@ bool roboticslab::BasicCartesianControl::stopControl()
     }
     iPositionControl->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+    if (iCartesianTrajectory != 0)
+    {
+        iCartesianTrajectory->destroy();
+        delete iCartesianTrajectory;
+        iCartesianTrajectory = 0;
+    }
     return true;
 }
 
@@ -321,7 +304,29 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 bool roboticslab::BasicCartesianControl::wait(double timeout)
 {
-    return true;
+    int state = getCurrentState();
+
+    if (state != VOCAB_CC_MOVJ_CONTROLLING && state != VOCAB_CC_MOVL_CONTROLLING)
+    {
+        return true;
+    }
+
+    double start = yarp::os::Time::now();
+
+    while (state != VOCAB_CC_NOT_CONTROLLING)
+    {
+        if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
+        {
+            CD_WARNING("Timeout reached (%d seconds), stopping control.\n", timeout);
+            stopControl();
+            break;
+        }
+
+        yarp::os::Time::delay(0.5);
+        state = getCurrentState();
+    }
+
+    return cmcSuccess;
 }
 
 // -----------------------------------------------------------------------------

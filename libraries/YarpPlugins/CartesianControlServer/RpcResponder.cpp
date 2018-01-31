@@ -140,25 +140,25 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
 bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
+    bool res;
+
     if (in.size() > 1)
     {
-        double timeout = in.get(1).asDouble();
-
-        if (!iCartesianControl->wait(timeout))
-        {
-            out.addVocab(VOCAB_CC_FAILED);
-            return false;
-        }
-
-        out.addVocab(VOCAB_CC_OK);
-        return true;
+        res = iCartesianControl->wait(in.get(1).asDouble());
     }
     else
     {
-        CD_ERROR("size error\n");
+        res = iCartesianControl->wait();
+    }
+
+    if (!res)
+    {
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
+
+    out.addVocab(VOCAB_CC_OK);
+    return true;
 }
 
 // -----------------------------------------------------------------------------
