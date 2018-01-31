@@ -31,7 +31,7 @@ Our software integrates the previous dependencies. Note that you will be prompte
 ```bash
 cd  # go home
 mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
-git clone --recursive https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download kinematics-dynamics software from the repository; Use --recursive to get embedded repositories (technically, git submodules)
+git clone https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download kinematics-dynamics software from the repository
 cd kinematics-dynamics; mkdir build; cd build; cmake ..  # Configure the kinematics-dynamics software
 make -j$(nproc) # Compile
 sudo make install  # Install :-)
