@@ -91,7 +91,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[gcmp]", "enable gravity compensation");
     addUsage("[forc] coord1 coord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
-    addUsage("[wait] timeout", "wait until completion with timeout");
+    addUsage("[wait] timeout", "wait until completion with timeout (optional, 0.0 means no timeout)");
     addUsage("[tool] coord1 coord2 ...", "append fixed link to end effector");
     addUsage("[set] vocab value", "set configuration parameter");
     addUsage("[get] vocab", "get configuration parameter");
