@@ -54,6 +54,7 @@
 #define VOCAB_CC_GCMP VOCAB4('g','c','m','p') ///< Gravity compensation
 #define VOCAB_CC_FORC VOCAB4('f','o','r','c') ///< Force control
 #define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
+#define VOCAB_CC_WAIT VOCAB4('w','a','i','t') ///< Wait motion done
 #define VOCAB_CC_TOOL VOCAB4('t','o','o','l') ///< Change tool
 
 /** @} */
@@ -255,6 +256,19 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool stopControl() = 0;
+
+        /**
+         * @brief Wait until completion
+         *
+         * Block execution until the movement is completed, errors occur or timeout
+         * is reached.
+         *
+         * @param timeout Timeout in seconds, '0.0' means no timeout.
+         *
+         * @return true on success, false if errors occurred during the execution
+         * of the trajectory
+         */
+        virtual bool wait(double timeout = 0.0) = 0;
 
         /**
          * @brief Change tool

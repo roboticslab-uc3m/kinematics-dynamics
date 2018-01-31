@@ -68,6 +68,8 @@ public:
 
     virtual bool stopControl();
 
+    virtual bool wait(double timeout);
+
     virtual bool tool(const std::vector<double> &x);
 
     virtual void twist(const std::vector<double> &xdot);
@@ -106,8 +108,6 @@ public:
     virtual bool close();
 
 private:
-
-    bool waitForCompletion(int vocab);
 
     bool checkJointVelocities(const std::vector<double> &qdot);
 

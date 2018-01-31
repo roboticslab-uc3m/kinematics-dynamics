@@ -230,6 +230,20 @@ bool roboticslab::CartesianControlClient::stopControl()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::CartesianControlClient::wait(double timeout)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_WAIT);
+    cmd.addDouble(timeout);
+
+    rpcClient.write(cmd, response);
+
+    return checkSuccess(response);
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 {
     return handleRpcConsumerCmd(VOCAB_CC_TOOL, x);

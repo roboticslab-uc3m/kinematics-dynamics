@@ -2,6 +2,7 @@
 
 #include "AmorCartesianControl.hpp"
 
+#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.hpp>
@@ -102,7 +103,9 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    return waitForCompletion(VOCAB_CC_MOVJ_CONTROLLING);
+    currentState = VOCAB_CC_MOVJ_CONTROLLING;
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -162,7 +165,9 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
-    return waitForCompletion(VOCAB_CC_MOVL_CONTROLLING);
+    currentState = VOCAB_CC_MOVL_CONTROLLING;
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -239,6 +244,46 @@ bool roboticslab::AmorCartesianControl::stopControl()
     }
 
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::wait(double timeout)
+{
+    if (currentState != VOCAB_CC_MOVJ_CONTROLLING && currentState != VOCAB_CC_MOVL_CONTROLLING)
+    {
+        return true;
+    }
+
+    AMOR_RESULT res = AMOR_SUCCESS;
+    amor_movement_status status;
+
+    double start = yarp::os::Time::now();
+
+    do
+    {
+        if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
+        {
+            CD_WARNING("Timeout reached (%f seconds), stopping control.\n", timeout);
+            stopControl();
+            break;
+        }
+
+        res = amor_get_movement_status(handle, &status);
+
+        if (res == AMOR_FAILED)
+        {
+            CD_ERROR("%s\n", amor_error());
+            break;
+        }
+
+        yarp::os::Time::delay(0.5);  // seconds
+    }
+    while (status != AMOR_MOVEMENT_STATUS_FINISHED);
+
+    currentState = VOCAB_CC_NOT_CONTROLLING;
+
+    return res == AMOR_SUCCESS;
 }
 
 // -----------------------------------------------------------------------------

@@ -12,6 +12,9 @@ void roboticslab::BasicCartesianControl::run()
 {
     switch (getCurrentState())
     {
+    case VOCAB_CC_MOVJ_CONTROLLING:
+        handleMovj();
+        break;
     case VOCAB_CC_MOVL_CONTROLLING:
         handleMovl();
         break;
@@ -26,6 +29,31 @@ void roboticslab::BasicCartesianControl::run()
         break;
     default:
         break;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::BasicCartesianControl::handleMovj()
+{
+    bool done;
+
+    if (!iPositionControl->checkMotionDone(&done))
+    {
+        CD_ERROR("Unable to query current robot state.\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
+    }
+
+    if (done)
+    {
+        setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+
+        if (!iPositionControl->setRefSpeeds(vmoStored.data()))
+        {
+             CD_WARNING("setRefSpeeds (to restore) failed.\n");
+        }
     }
 }
 
@@ -98,6 +126,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
         if (std::abs(commandQdot[i]) > maxJointVelocity)
         {
             CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+            cmcSuccess = false;
             stopControl();
             return;
         }
