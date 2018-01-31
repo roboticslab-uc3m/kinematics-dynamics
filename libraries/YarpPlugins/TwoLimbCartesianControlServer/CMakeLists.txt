@@ -8,7 +8,7 @@ yarp_prepare_plugin(TwoLimbCartesianControlServer
                     CATEGORY device
                     TYPE roboticslab::TwoLimbCartesianControlServer
                     INCLUDE TwoLimbCartesianControlServer.hpp
-                    DEFAULT ON)
+                    DEFAULT OFF)
 
 if(NOT SKIP_TwoLimbCartesianControlServer)
 

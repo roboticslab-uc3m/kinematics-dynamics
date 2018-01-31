@@ -8,7 +8,7 @@ yarp_prepare_plugin(BasicTwoLimbCartesianControl
                     CATEGORY device
                     TYPE roboticslab::BasicTwoLimbCartesianControl
                     INCLUDE BasicTwoLimbCartesianControl.hpp
-                    DEFAULT ON
+                    DEFAULT OFF
                     DEPENDS "ENABLE_TrajectoryLib;ENABLE_Gait")
 
 if(NOT SKIP_BasicTwoLimbCartesianControl)
