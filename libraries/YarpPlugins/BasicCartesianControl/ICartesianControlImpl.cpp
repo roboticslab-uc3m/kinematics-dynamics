@@ -317,7 +317,7 @@ bool roboticslab::BasicCartesianControl::wait(double timeout)
     {
         if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
         {
-            CD_WARNING("Timeout reached (%d seconds), stopping control.\n", timeout);
+            CD_WARNING("Timeout reached (%f seconds), stopping control.\n", timeout);
             stopControl();
             break;
         }

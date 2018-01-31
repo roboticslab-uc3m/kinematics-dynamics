@@ -144,7 +144,8 @@ bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::
 
     if (in.size() > 1)
     {
-        res = iCartesianControl->wait(in.get(1).asDouble());
+        double timeout = in.get(1).asDouble();
+        res = iCartesianControl->wait(timeout);
     }
     else
     {
