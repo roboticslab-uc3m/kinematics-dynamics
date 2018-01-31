@@ -10,36 +10,36 @@ compiler:
   - clang
 
 before_install:
+  - sudo apt-get -qq update
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
 install:
-  #-- Install cmake
-  - sudo apt-get install cmake
+  #-- Install eigen
+  - sudo apt-get install libeigen3-dev
   #-- Install yarp
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
-  - cmake .. -DSKIP_ACE=ON
+  - cmake .. -DSKIP_ACE=ON -DCREATE_LIB_MATH=ON
   - make
   - sudo make install
   - cd ../..
   #-- Install kdl
-  - sudo apt-get install libeigen3-dev
   - git clone https://github.com/orocos/orocos_kinematics_dynamics
   - cd orocos_kinematics_dynamics/orocos_kdl && mkdir build && cd build
   - cmake ..
   - make
   - sudo make install
   - cd ../../..
-  #-- (For testBasicCartesianControl) Install FakeControlboard currently at https://github.com/roboticslab-uc3m/openrave-yarp-plugins
-  - git clone https://github.com/roboticslab-uc3m/openrave-yarp-plugins
-  - cd openrave-yarp-plugins
-  - git checkout 9f147182b4aaf984170f4ee9a42f8da2a1b44eb1
+  #-- (For testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
+  - git clone https://github.com/roboticslab-uc3m/yarp-devices
+  - cd yarp-devices
   - mkdir build && cd build
-  - cmake .. -DENABLE_OpenraveYarpControlboard=OFF -DENABLE_OpenraveYarpPaintSquares=OFF -DENABLE_YarpOpenraveControlboard=OFF -DENABLE_YarpOpenraveControlboardCollision=OFF -DENABLE_teoSim=OFF
+  - cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeControlboard=ON -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=ON -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_tests=OFF
   - make
   - sudo make install
+  - export ROBOTICSLAB_YARP_DEVICES_DIR=$PWD
   - cd ../..
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
   - if [ "$CXX" = "g++" ]; then wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz; fi
@@ -49,14 +49,16 @@ install:
 
 before_script:
   - mkdir -p build && cd build
-  - cmake .. -DENABLE_coverage=ON
+  - cmake .. -DENABLE_coverage=ON -DENABLE_AmorCartesianControl=OFF
   - make
   - sudo make install
   - sudo ldconfig
 
 script:
+  - bin/testKinRepresentation
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
+  - bin/testAsibotSolverFromFile
   - bin/testBasicCartesianControl
 
 after_success:

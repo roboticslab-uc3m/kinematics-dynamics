@@ -5,66 +5,76 @@
 
 #include <vector>
 
-#include <kdl/frames_io.hpp>
 #include <kdl/frames.hpp>
 
-#include "ColorDebug.hpp"
-
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup kinematics-dynamics-libraries
  * \defgroup KdlVectorConverterLib
  *
- * @brief Contains classes related to kdl and std::vector classes.
+ * @brief Contains classes related to KDL and std::vector classes.
  */
 
 /**
  * @ingroup KdlVectorConverterLib
- * @brief Implements related to kdl and std::vector classes.
+ * @brief Collection of utilities related to KDL and std::vector classes.
  */
 
 class KdlVectorConverter
 {
 public:
 
-    KdlVectorConverter(std::string angleRepr);
+    /**
+     * @brief Convert from std::vector<double> to KDL::Frame
+     *
+     * @param x 6-element vector describing a position in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in
+     * scaled axis-angle representation (radians).
+     *
+     * @return Resulting KDL::Frame object.
+     */
+    static KDL::Frame vectorToFrame(const std::vector<double> &x);
 
-protected:
+    /**
+     * @brief Convert from KDL::Frame to std::vector<double>
+     *
+     * @param f Input KDL::Frame object.
+     *
+     * @return Resulting 6-element vector describing a position in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in scaled
+     * axis-angle representation (radians).
+     */
+    static std::vector<double> frameToVector(const KDL::Frame& f);
 
-    /** Angle representation used to interpret the std::vector orientation components for all conversions */
-    std::string angleRepr;
+    /**
+     * @brief Convert from std::vector<double> to KDL::Twist
+     *
+     * @param xdot 6-element vector describing a velocity in cartesian space; first
+     * three elements denote translational velocity (meters/second), last three denote
+     * angular velocity (radians/second).
+     *
+     * @return Resulting KDL::Twist object.
+     */
+    static KDL::Twist vectorToTwist(const std::vector<double> &xdot);
 
-    /** Convert from std::vector<double> to KDL::Frame */
-    bool vectorToFrame(const std::vector<double> &x, KDL::Frame& f);
+    /**
+     * @brief Convert from KDL::Twist to std::vector<double>
+     *
+     * @param t Input KDL::Twist object
+     *
+     * @return Resulting 6-element vector describing a velocity in cartesian space; first
+     * three elements denote translational velocity (meters/second), last three denote
+     * angular velocity (radians/second).
+     */
+    static std::vector<double> twistToVector(const KDL::Twist& t);
 
-    /** Convert from KDL::Frame to std::vector<double> */
-    bool frameToVector(const KDL::Frame& f, std::vector<double> &x);
+private:
 
-    /** Convert from KDL::Twist to std::vector<double> */
-    bool twistToVector(const KDL::Twist& t, std::vector<double> &xdot);
-
+    KdlVectorConverter() {}
 };
 
-/**
-* Simple function to pass from radians to degrees.
-* @param inRad angle value in radians.
-* @return angle value in degrees.
-*/
-static double toDeg(const double inRad) {
-    return (inRad * 180.0 / M_PI);  // return (inRad * 180.0 / 3.14159265);
-}
-
-/**
-* Simple function to pass from degrees to radians.
-* @param inDeg angle value in degrees.
-* @return angle value in radians.
-*/
-static double toRad(const double inDeg) {
-    return (inDeg * M_PI / 180.0);  // return (inDeg * 3.14159265 / 180.0);
-}
-
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __KDL_VECTOR_CONVERTER_HPP__

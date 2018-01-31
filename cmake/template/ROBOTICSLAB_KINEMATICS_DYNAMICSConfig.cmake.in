@@ -1,24 +1,36 @@
-# Authors: Juan G Victores
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
-# Evident yet unstandarized names
 
 # Once you find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS), it defines:
 #
-# ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH   # as in: list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH}) <- not that we use them too much, but you never know...
-# ROBOTICSLAB_KINEMATICS_DYNAMICS_DEFINES       # as in: add_definitions(${ROBOTICSLAB_KINEMATICS_DYNAMICS_DEFINES}) <- not that we use them too much, but you never know...
-# ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS  # as in: include_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})  <- IMPORTANT to find headers!
-# ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS     # as in: link_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS}) <- not required so much any more, but may be useful.
-# ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES     # as in: target_link_libraries(${KEYWORD} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES})  <- IMPORTANT to find libraries!
+# * several targets; it's advised to link against individual libraries with the usual
+#   target_link_libraries() command - if you do this, you won't need to manually include
+#   the directories that these libraries require nor other compiler options
 #
-# ROBOTICSLAB_KINEMATICS_DYNAMICS_FOUND         # used internally by find_package(TEO)
+# * ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS; obligatory if you want to include
+#   interface headers, use include_directories(${ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS})
+#
+# * ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES; shorthand for linking against all targets at once,
+#   use target_link_libraries(${KEYWORD} ${ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES})
+#
+# Notes:
+#
+# * All target names are prepended with the ROBOTICSLAB:: namespace
 
-IF (NOT ROBOTICSLAB_KINEMATICS_DYNAMICS_FOUND)
+@PACKAGE_INIT@
 
-  SET(ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH "@ROBOTICSLAB_KINEMATICS_DYNAMICS_MODULE_PATH@")
-  SET(ROBOTICSLAB_KINEMATICS_DYNAMICS_DEFINES "@ROBOTICSLAB_KINEMATICS_DYNAMICS_DEFINES@")
-  SET(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS "@ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS@")
-  SET(ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS "@ROBOTICSLAB_KINEMATICS_DYNAMICS_LINK_DIRS@")
-  SET(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES "@ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES@")
+set(ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
 
-  SET (ROBOTICSLAB_KINEMATICS_DYNAMICS_FOUND TRUE)
-ENDIF (NOT ROBOTICSLAB_KINEMATICS_DYNAMICS_FOUND)
+foreach(_dir @PACKAGE_ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIR@)
+    set_and_check(_temp_var ${_dir})
+    list(APPEND ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${_temp_var})
+endforeach()
+
+if(NOT "@_exported_targets@" STREQUAL "")
+    include(${CMAKE_CURRENT_LIST_DIR}/ROBOTICSLAB_KINEMATICS_DYNAMICSTargets.cmake)
+
+    set(ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES)
+
+    foreach(_target @_exported_targets@)
+        list(APPEND ROBOTICSLAB_KINEMATICS_DYNAMICS_LIBRARIES ROBOTICSLAB::${_target})
+    endforeach()
+endif()

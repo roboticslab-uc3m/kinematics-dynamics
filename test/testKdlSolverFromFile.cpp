@@ -1,15 +1,17 @@
 #include "gtest/gtest.h"
 
+#include <string>
+#include <vector>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include <ColorDebug.hpp>
+
 #include "ICartesianSolver.h"
-#include "ColorDebug.hpp"
 
-//YARP_DECLARE_PLUGINS(TeoYarp)
-
-namespace teo
+namespace roboticslab
 {
 
 /**
@@ -20,8 +22,6 @@ class KdlSolverTestFromFile : public testing::Test
 
     public:
         virtual void SetUp() {
-            //YARP_REGISTER_PLUGINS(TeoYarp);
-
             yarp::os::ResourceFinder rf;
             rf.setVerbose(false);
             rf.setDefaultContext("testKdlSolverFromFile");
@@ -34,7 +34,6 @@ class KdlSolverTestFromFile : public testing::Test
                 return;
             }
             solverOptions.put("device","KdlSolver");
-            solverOptions.put("angleRepr","axisAngle");
 
             solverDevice.open(solverOptions);
             if( ! solverDevice.isValid() ) {
@@ -54,7 +53,7 @@ class KdlSolverTestFromFile : public testing::Test
 
     protected:
         yarp::dev::PolyDriver solverDevice;
-        teo::ICartesianSolver *iCartesianSolver;
+        roboticslab::ICartesianSolver *iCartesianSolver;
 };
 
 TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin1)
@@ -67,7 +66,7 @@ TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin1)
     q[4]=0.0;
     q[5]=0.0;
     iCartesianSolver->fwdKin(q,x);
-    ASSERT_EQ(x.size(), 7);  //-- axisAngle
+    ASSERT_EQ(x.size(), 6);  //-- axisAngle (scaled)
     ASSERT_NEAR(x[0], 0, 1e-9);  //-- x
     ASSERT_NEAR(x[1], 0.34692, 1e-9);  //-- y
     ASSERT_NEAR(x[2], -0.221806, 1e-9);  //-- z
@@ -84,12 +83,12 @@ TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin2)
     q[4]=0.0;
     q[5]=0.0;
     iCartesianSolver->fwdKin(q,x);
-    ASSERT_EQ(x.size(), 7);  //-- axisAngle
+    ASSERT_EQ(x.size(), 6);  //-- axisAngle (scaled)
     ASSERT_NEAR(x[0], 0.718506, 1e-9);  //-- x
     ASSERT_NEAR(x[1], 0.34692, 1e-9);  //-- y
     ASSERT_NEAR(x[2], 0.4967, 1e-9);  //-- z
     //-- Not checking orientation for now
 }
 
-}  // namespace teo
+}  // namespace roboticslab
 
