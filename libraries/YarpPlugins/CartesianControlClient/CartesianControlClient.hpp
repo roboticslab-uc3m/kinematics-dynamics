@@ -83,6 +83,8 @@ public:
 
     virtual bool stopControl();
 
+    virtual bool wait(double timeout);
+
     virtual bool tool(const std::vector<double> &x);
 
     virtual bool act(int command);

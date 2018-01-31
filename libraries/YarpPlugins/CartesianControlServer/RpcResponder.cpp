@@ -65,6 +65,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleConsumerCmdMsg(in, out, &ICartesianControl::forc);
     case VOCAB_CC_STOP:
         return handleRunnableCmdMsg(in, out, &ICartesianControl::stopControl);
+    case VOCAB_CC_WAIT:
+        return handleWaitMsg(in, out);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
     case VOCAB_CC_ACT:
@@ -91,6 +93,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("[gcmp]", "enable gravity compensation");
     addUsage("[forc] coord1 coord2 ...", "enable torque control, apply input forces (cartesian space)");
     addUsage("[stop]", "stop control");
+    addUsage("[wait] timeout", "wait until completion with timeout (optional, 0.0 means no timeout)");
     addUsage("[tool] coord1 coord2 ...", "append fixed link to end effector");
     addUsage("[act] vocab", "actuate tool using selected command vocab");
     addUsage("[set] vocab value", "set configuration parameter");
@@ -134,6 +137,32 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    bool res;
+
+    if (in.size() > 1)
+    {
+        double timeout = in.get(1).asDouble();
+        res = iCartesianControl->wait(timeout);
+    }
+    else
+    {
+        res = iCartesianControl->wait();
+    }
+
+    if (!res)
+    {
+        out.addVocab(VOCAB_CC_FAILED);
+        return false;
+    }
+
+    out.addVocab(VOCAB_CC_OK);
+    return true;
 }
 
 // -----------------------------------------------------------------------------

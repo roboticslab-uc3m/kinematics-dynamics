@@ -135,6 +135,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual bool stopControl();
 
+        virtual bool wait(double timeout);
+
         virtual bool tool(const std::vector<double> &x);
 
         virtual bool act(int command);
@@ -181,6 +183,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     protected:
 
+        void handleMovj();
         void handleMovl();
         void handleMovv();
         void handleGcmp();
@@ -216,6 +219,9 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         void setCurrentState(int value);
         mutable yarp::os::Semaphore currentStateReady;
 
+        /** MOVJ store previous reference speeds */
+        std::vector<double> vmoStored;
+
         /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
         double movementStartTime;
 
@@ -227,6 +233,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         /** FORC desired Cartesian force */
         std::vector<double> td;
+
+        bool cmcSuccess;
 };
 
 }  // namespace roboticslab
