@@ -109,8 +109,6 @@ public:
 
 private:
 
-    bool waitForCompletion(int vocab);
-
     bool checkJointVelocities(const std::vector<double> &qdot);
 
     bool performDiffInvKin(const std::vector<double> & currentQ,
