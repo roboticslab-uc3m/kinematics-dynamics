@@ -172,6 +172,12 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
     double len_2 = phWd * phWd + prWd * prWd;
 
+    if (std::sqrt(len_2) > A1 + A2)
+    {
+        CD_ERROR("Target out of reach.\n");
+        return false;
+    }
+
     double ct2 = (len_2 - A1 * A1 - A2 * A2) / (2 * A1 * A2);
     double st2 = std::sqrt(1 - ct2 * ct2);  // forces elbow-up in ASIBOT
     //double st2 = -std::sqrt(1 - ct2 * ct2);  // forces elbow-down in ASIBOT
