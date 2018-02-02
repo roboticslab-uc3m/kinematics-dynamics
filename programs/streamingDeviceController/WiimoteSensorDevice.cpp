@@ -22,7 +22,7 @@ bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
 
 bool roboticslab::WiimoteSensorDevice::initialize()
 {
-    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianControl::TCP_FRAME))
+    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
     {
         CD_WARNING("Unable to set TCP reference frame.\n");
         return false;
