@@ -8,9 +8,15 @@ yarp_prepare_plugin(AmorCartesianControl
                     DEFAULT ON
                     DEPENDS ENABLE_KinematicRepresentationLib)
 
+find_package(AMOR_API QUIET)
+
 if(NOT SKIP_AmorCartesianControl)
 
-find_package(AMOR_API REQUIRED)
+if(NOT AMOR_API_FOUND)
+    message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
+    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
+    return()
+endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 

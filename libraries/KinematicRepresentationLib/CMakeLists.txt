@@ -1,8 +1,14 @@
 option(ENABLE_KinematicRepresentationLib "Enable/disable KinematicRepresentationLib library" ON)
 
+find_package(orocos_kdl ${_target_kdl_version} QUIET)
+
 if(ENABLE_KinematicRepresentationLib)
 
-find_package(orocos_kdl ${_target_kdl_version} REQUIRED)
+if(NOT orocos_kdl_FOUND)
+    message(WARNING "orocos_kdl package not found, disabling KinematicRepresentationLib")
+    set(ENABLE_KinematicRepresentationLib OFF CACHE BOOL "Enable/disable KinematicRepresentationLib library" FORCE)
+    return()
+endif()
 
 add_library(KinematicRepresentationLib KinematicRepresentation.hpp
                                        KinematicRepresentation.cpp)
