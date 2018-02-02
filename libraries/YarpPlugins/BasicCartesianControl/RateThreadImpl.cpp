@@ -99,7 +99,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!performDiffInvKin(currentQ, commandXdot, commandQdot))
+    if (!iCartesianSolver->diffInvKin(currentQ, commandXdot, commandQdot, referenceFrame))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
@@ -154,7 +154,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!performDiffInvKin(currentQ, xdotd, commandQdot))
+    if (!iCartesianSolver->diffInvKin(currentQ, xdotd, commandQdot, referenceFrame))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;

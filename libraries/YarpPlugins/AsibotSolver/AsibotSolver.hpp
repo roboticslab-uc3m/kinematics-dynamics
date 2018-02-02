@@ -60,16 +60,13 @@ public:
     virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
     // Obtain error with respect to forward kinematics.
-    virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
+    virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x, reference_frame frame);
 
     // Perform inverse kinematics.
-    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q);
+    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame);
 
     // Perform differential inverse kinematics.
-    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
-
-    // Perform differential inverse kinematics on end effector
-    virtual bool diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot);
+    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame);
 
     // Perform inverse dynamics.
     virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);

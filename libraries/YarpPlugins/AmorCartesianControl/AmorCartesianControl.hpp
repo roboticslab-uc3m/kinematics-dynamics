@@ -45,7 +45,7 @@ public:
                              currentState(VOCAB_CC_NOT_CONTROLLING),
                              gain(DEFAULT_GAIN),
                              maxJointVelocity(DEFAULT_QDOT_LIMIT),
-                             referenceFrame(BASE_FRAME)
+                             referenceFrame(ICartesianSolver::BASE_FRAME)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
@@ -111,10 +111,6 @@ private:
 
     bool checkJointVelocities(const std::vector<double> &qdot);
 
-    bool performDiffInvKin(const std::vector<double> & currentQ,
-                           const std::vector<double> & xdot,
-                           std::vector<double> & qdot);
-
     AMOR_HANDLE handle;
     bool ownsHandle;
 
@@ -126,7 +122,7 @@ private:
     double gain;
     double maxJointVelocity;
 
-    reference_frame referenceFrame;
+    ICartesianSolver::reference_frame referenceFrame;
 };
 
 }  // namespace roboticslab

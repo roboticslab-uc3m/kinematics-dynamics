@@ -187,10 +187,6 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         void handleGcmp();
         void handleForc();
 
-        bool performDiffInvKin(const std::vector<double> & currentQ,
-                               const std::vector<double> & xdot,
-                               std::vector<double> & qdot);
-
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;
 
@@ -202,7 +198,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::ITorqueControl *iTorqueControl;
         yarp::dev::IControlMode *iControlMode;
 
-        reference_frame referenceFrame;
+        ICartesianSolver::reference_frame referenceFrame;
 
         double gain;
         double maxJointVelocity;

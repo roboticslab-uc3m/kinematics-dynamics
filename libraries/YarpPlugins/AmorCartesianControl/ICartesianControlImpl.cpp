@@ -42,7 +42,7 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    if (referenceFrame == TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         CD_WARNING("TCP frame not supported yet in inv command.\n");
         return false;
@@ -76,7 +76,7 @@ bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::
 
 bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 {
-    if (referenceFrame == TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         CD_WARNING("TCP frame not supported yet in movj command.\n");
         return false;
@@ -112,7 +112,7 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 {
-    if (referenceFrame == TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         CD_WARNING("TCP frame not supported yet in relj command.\n");
         return false;
@@ -139,7 +139,7 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 {
-    if (referenceFrame == TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         CD_WARNING("TCP frame not supported yet in movl command.\n");
         return false;
@@ -174,7 +174,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 {
-    if (referenceFrame == TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         CD_WARNING("TCP frame not supported yet in movv command.\n");
         return false;
@@ -313,9 +313,9 @@ void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
         currentQ[i] = KinRepresentation::radToDeg(positions[i]);
     }
 
-    if (!performDiffInvKin(currentQ, xdot, qdot))
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
-        CD_ERROR("Cannot perform differential IK.\n");
+        CD_ERROR("diffInvKin failed.\n");
         return;
     }
 
@@ -376,9 +376,9 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     std::vector<double> qdot;
 
-    if (!performDiffInvKin(currentQ, xdot, qdot))
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
-        CD_ERROR("Cannot perform differential IK.\n");
+        CD_ERROR("diffInvKin failed.\n");
         return;
     }
 
@@ -425,12 +425,12 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
         maxJointVelocity = value;
         break;
     case VOCAB_CC_CONFIG_FRAME:
-        if (value != BASE_FRAME && value != TCP_FRAME)
+        if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
             CD_ERROR("Unrecognized of unsupported reference frame vocab.\n");
             return false;
         }
-        referenceFrame = static_cast<reference_frame>(value);
+        referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
