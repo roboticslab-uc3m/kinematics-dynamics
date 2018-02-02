@@ -35,19 +35,13 @@ bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x
 
 bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
-    {
-        CD_WARNING("TCP frame not supported yet in inv command.\n");
-        return false;
-    }
-
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,currentQ,q) )
+    if ( ! iCartesianSolver->invKin(xd,currentQ,q,referenceFrame) )
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -59,19 +53,13 @@ bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std:
 
 bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
-    {
-        CD_WARNING("TCP frame not supported yet in movj command.\n");
-        return false;
-    }
-
     std::vector<double> currentQ(numRobotJoints), qd;
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,currentQ,qd) )
+    if ( ! iCartesianSolver->invKin(xd,currentQ,qd,referenceFrame) )
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -145,12 +133,6 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
-    {
-        CD_WARNING("TCP frame not supported yet in relj command.\n");
-        return false;
-    }
-
     int state;
     std::vector<double> x;
     if ( ! stat(state, x) )

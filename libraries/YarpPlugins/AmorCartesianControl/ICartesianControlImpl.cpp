@@ -42,12 +42,6 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
-    {
-        CD_WARNING("TCP frame not supported yet in inv command.\n");
-        return false;
-    }
-
     AMOR_VECTOR7 positions;
 
     if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
@@ -63,7 +57,7 @@ bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::
         currentQ[i] = KinRepresentation::radToDeg(positions[i]);
     }
 
-    if (!iCartesianSolver->invKin(xd, currentQ, q))
+    if (!iCartesianSolver->invKin(xd, currentQ, q, referenceFrame))
     {
         CD_ERROR("invKin failed.\n");
         return false;

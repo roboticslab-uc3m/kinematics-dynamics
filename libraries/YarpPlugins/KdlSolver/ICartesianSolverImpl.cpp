@@ -134,6 +134,25 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
 
 #endif //_USE_LMA_
 
+    if (frame == TCP_FRAME)
+    {
+        std::vector<double> currentX;
+
+        if (!fwdKin(qGuess, currentX))
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return false;
+        }
+
+        KDL::Frame frameX = KdlVectorConverter::vectorToFrame(currentX);
+        frameXd = frameX * frameXd;
+    }
+    else if (frame != BASE_FRAME)
+    {
+        CD_WARNING("Unsupported frame.\n");
+        return false;
+    }
+
     int ret = iksolver_pos.CartToJnt(qGuessInRad, frameXd, kdlq);
 
     if (ret < 0)
