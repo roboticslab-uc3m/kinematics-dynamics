@@ -103,7 +103,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
 
     const KDL::Chain & chain = getChain();
-    KDL::JntArray qGuessInRad = KDL::JntArray(chain.getNrOfJoints());
+    KDL::JntArray qGuessInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
