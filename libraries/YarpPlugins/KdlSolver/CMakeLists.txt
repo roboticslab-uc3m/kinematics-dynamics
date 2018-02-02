@@ -4,6 +4,14 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
+find_package(orocos_kdl ${_target_kdl_version} QUIET)
+
+if(ENABLE_KdlSolver AND NOT orocos_kdl_FOUND)
+    message(WARNING "orocos_kdl package not found, disabling KdlSolver")
+    set(ENABLE_KdlSolver OFF CACHE BOOL "Enable/disable KdlSolver device" FORCE)
+    return()
+endif()
+
 yarp_prepare_plugin(KdlSolver
                     CATEGORY device
                     TYPE roboticslab::KdlSolver
@@ -11,15 +19,7 @@ yarp_prepare_plugin(KdlSolver
                     DEFAULT ON
                     DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib")
 
-find_package(orocos_kdl ${_target_kdl_version} QUIET)
-
 if(NOT SKIP_KdlSolver)
-
-if(NOT orocos_kdl_FOUND)
-    message(WARNING "orocos_kdl package not found, disabling KdlSolver")
-    set(ENABLE_KdlSolver OFF CACHE BOOL "Enable/disable KdlSolver device" FORCE)
-    return()
-endif()
 
 option(USE_LMA "Use LMA algorithm in KdlSolver" OFF)
 

@@ -1,17 +1,17 @@
-cmake_dependent_option(ENABLE_transCoords "Enable/disable transCoords program" ON
-                       "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib" OFF)
-
 find_package(orocos_kdl ${_target_kdl_version} QUIET)
 
-if(ENABLE_transCoords)
-
-find_package(YARP REQUIRED)
-
-if(NOT orocos_kdl_FOUND)
+if(ENABLE_transCoords AND NOT orocos_kdl_FOUND)
     message(WARNING "orocos_kdl package not found, disabling transCoords")
     set(ENABLE_transCoords OFF CACHE BOOL "Enable/disable transCoords program" FORCE)
     return()
 endif()
+
+cmake_dependent_option(ENABLE_transCoords "Enable/disable transCoords program" ON
+                       "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib" OFF)
+
+if(ENABLE_transCoords)
+
+find_package(YARP REQUIRED)
 
 # Retrieve global properties.
 get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)

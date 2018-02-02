@@ -1,6 +1,14 @@
 # Copyright: (C) 2017 Universidad Carlos III de Madrid
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
+find_package(AMOR_API QUIET)
+
+if(ENABLE_AmorCartesianControl AND NOT AMOR_API_FOUND)
+    message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
+    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
+    return()
+endif()
+
 yarp_prepare_plugin(AmorCartesianControl
                     CATEGORY device
                     TYPE roboticslab::AmorCartesianControl
@@ -8,15 +16,7 @@ yarp_prepare_plugin(AmorCartesianControl
                     DEFAULT ON
                     DEPENDS ENABLE_KinematicRepresentationLib)
 
-find_package(AMOR_API QUIET)
-
 if(NOT SKIP_AmorCartesianControl)
-
-if(NOT AMOR_API_FOUND)
-    message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
-    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
-    return()
-endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 

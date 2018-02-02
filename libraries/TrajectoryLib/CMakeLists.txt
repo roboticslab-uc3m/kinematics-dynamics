@@ -1,15 +1,15 @@
-cmake_dependent_option(ENABLE_TrajectoryLib "Enable/disable TrajectoryLib library" ON
-                       ENABLE_KdlVectorConverterLib OFF)
-
 find_package(orocos_kdl ${_target_kdl_version} QUIET)
 
-if(ENABLE_TrajectoryLib)
-
-if(NOT orocos_kdl_FOUND)
+if(ENABLE_TrajectoryLib AND NOT orocos_kdl_FOUND)
     message(WARNING "orocos_kdl package not found, disabling TrajectoryLib")
     set(ENABLE_TrajectoryLib OFF CACHE BOOL "Enable/disable TrajectoryLib library" FORCE)
     return()
 endif()
+
+cmake_dependent_option(ENABLE_TrajectoryLib "Enable/disable TrajectoryLib library" ON
+                       ENABLE_KdlVectorConverterLib OFF)
+
+if(ENABLE_TrajectoryLib)
 
 set(_trayectory_lib_sources ICartesianTrajectory.hpp
                             ITrajectory.hpp

@@ -1,17 +1,17 @@
-cmake_dependent_option(ENABLE_streamingDeviceController "Enable/disable streamingDeviceController program" ON
-                       ENABLE_KdlVectorConverterLib OFF)
-
 find_package(orocos_kdl ${_target_kdl_version} QUIET)
 
-if(ENABLE_streamingDeviceController)
-
-find_package(YARP REQUIRED)
-
-if(NOT orocos_kdl_FOUND)
+if(ENABLE_streamingDeviceController AND NOT orocos_kdl_FOUND)
     message(WARNING "orocos_kdl package not found, disabling streamingDeviceController")
     set(ENABLE_streamingDeviceController OFF CACHE BOOL "Enable/disable streamingDeviceController program" FORCE)
     return()
 endif()
+
+cmake_dependent_option(ENABLE_streamingDeviceController "Enable/disable streamingDeviceController program" ON
+                       ENABLE_KdlVectorConverterLib OFF)
+
+if(ENABLE_streamingDeviceController)
+
+find_package(YARP REQUIRED)
 
 find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
