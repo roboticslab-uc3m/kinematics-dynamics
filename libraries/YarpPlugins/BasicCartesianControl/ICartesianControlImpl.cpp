@@ -234,8 +234,6 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
-    CD_WARNING("MOVV mode still experimental.\n");
-
     //-- Set velocity mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
