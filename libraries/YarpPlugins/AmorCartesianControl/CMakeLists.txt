@@ -3,10 +3,8 @@
 
 find_package(AMOR_API QUIET)
 
-if(ENABLE_AmorCartesianControl AND NOT AMOR_API_FOUND)
+if(NOT AMOR_API_FOUND AND (NOT DEFINED ENABLE_AmorCartesianControl OR ENABLE_AmorCartesianControl))
     message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
-    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
-    return()
 endif()
 
 yarp_prepare_plugin(AmorCartesianControl
@@ -14,31 +12,34 @@ yarp_prepare_plugin(AmorCartesianControl
                     TYPE roboticslab::AmorCartesianControl
                     INCLUDE AmorCartesianControl.hpp
                     DEFAULT ON
-                    DEPENDS ENABLE_KinematicRepresentationLib)
+                    DEPENDS "ENABLE_KinematicRepresentationLib;AMOR_API_FOUND")
 
 if(NOT SKIP_AmorCartesianControl)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
-yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
-                                     AmorCartesianControl.cpp
-                                     DeviceDriverImpl.cpp
-                                     ICartesianControlImpl.cpp)
+    yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
+                                         AmorCartesianControl.cpp
+                                         DeviceDriverImpl.cpp
+                                         ICartesianControlImpl.cpp)
 
-add_dependencies(AmorCartesianControl COLOR_DEBUG)
+    add_dependencies(AmorCartesianControl COLOR_DEBUG)
 
-target_link_libraries(AmorCartesianControl YARP::YARP_OS
-                                           YARP::YARP_dev
-                                           AMOR::amor_api
-                                           KinematicRepresentationLib)
+    target_link_libraries(AmorCartesianControl YARP::YARP_OS
+                                               YARP::YARP_dev
+                                               AMOR::amor_api
+                                               KinematicRepresentationLib)
 
-yarp_install(TARGETS AmorCartesianControl
-             COMPONENT runtime
-             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+    yarp_install(TARGETS AmorCartesianControl
+                 COMPONENT runtime
+                 LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
 
-yarp_install(FILES AmorCartesianControl.ini
-             COMPONENT runtime
-             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+    yarp_install(FILES AmorCartesianControl.ini
+                 COMPONENT runtime
+                 DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+else()
+
+    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
 
 endif()
