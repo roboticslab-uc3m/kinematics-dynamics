@@ -45,12 +45,12 @@ int main(int argc, char *argv[]) {
     
     printf("Lets say a 3D sensor grabbed a point at sensor coordinates %f, %f, %f.\n\n",x_k,y_k,z_k);
 
-    yarp::sig::Matrix H_0_c = rotZ(pan);
+    yarp::sig::Matrix H_0_c = roboticslab::rotZ(pan);
     H_0_c.resize(4,4);
     H_0_c(3,3)=1;
     printf("*** H_0_c *** \n(%s)\n\n", H_0_c.toString().c_str());
 
-    yarp::sig::Matrix H_c_k = rotY(tilt);
+    yarp::sig::Matrix H_c_k = roboticslab::rotY(tilt);
     H_c_k.resize(4,4);
     H_c_k(2,3)=height;
     H_c_k(3,3)=1;
