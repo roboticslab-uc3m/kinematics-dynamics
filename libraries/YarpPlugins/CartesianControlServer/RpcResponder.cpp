@@ -101,6 +101,7 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage("... [cpjv] value", "(config param) maximum joint velocity");
     addUsage("... [cptd] value", "(config param) trajectory duration");
     addUsage("... [cpcr] value", "(config param) CMC rate [ms]");
+    addUsage("... [cpwp] value", "(config param) check period of 'wait' command [ms]");
     addUsage("... [cpf] [cpfb]", "(config param) reference frame (base)");
     addUsage("... [cpf] [cpft]", "(config param) reference frame (TCP)");
 }

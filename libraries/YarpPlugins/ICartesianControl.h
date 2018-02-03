@@ -105,6 +105,7 @@
 #define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
 #define VOCAB_CC_CONFIG_CMC_RATE VOCAB4('c','p','c','r')      ///< CMC rate [ms]
+#define VOCAB_CC_CONFIG_WAIT_PERIOD VOCAB4('c','p','w','p')   ///< Check period of 'wait' command [ms]
 #define VOCAB_CC_CONFIG_FRAME VOCAB3('c','p','f')             ///< Reference frame
 
 /** @} */
