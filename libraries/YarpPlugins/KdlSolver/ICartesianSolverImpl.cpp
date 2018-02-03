@@ -208,7 +208,7 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
 
         //-- Transform the basis to which the twist is expressed, but leave the reference point intact
         //-- "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
-        KDL::Twist kdlxdot = fOutCart.M * kdlxdot;
+        kdlxdot = fOutCart.M * kdlxdot;
     }
     else if (frame != BASE_FRAME)
     {
