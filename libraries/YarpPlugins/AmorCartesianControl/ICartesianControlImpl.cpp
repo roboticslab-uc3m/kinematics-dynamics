@@ -277,7 +277,7 @@ bool roboticslab::AmorCartesianControl::wait(double timeout)
             break;
         }
 
-        yarp::os::Time::delay(0.5);  // seconds
+        yarp::os::Time::delay(waitPeriodMs / 1000.0);
     }
     while (status != AMOR_MOVEMENT_STATUS_FINISHED);
 
@@ -424,6 +424,14 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
         }
         maxJointVelocity = value;
         break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Wait period cannot be negative nor zero.\n");
+            return false;
+        }
+        waitPeriodMs = value;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         if (value != BASE_FRAME && value != TCP_FRAME)
         {
@@ -451,6 +459,9 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
         *value = maxJointVelocity;
+        break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        *value = waitPeriodMs;
         break;
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
@@ -483,6 +494,7 @@ bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & pa
 {
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_GAIN, gain));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }
