@@ -23,6 +23,7 @@
 #define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_DURATION 10.0
 #define DEFAULT_CMC_RATE_MS 50
+#define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
@@ -204,6 +205,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double maxJointVelocity;
         double duration; // [s]
         int cmcRateMs;
+        int waitPeriodMs;
         int numRobotJoints, numSolverJoints;
 
         /** State encoded as a VOCAB which can be stored as an int */
