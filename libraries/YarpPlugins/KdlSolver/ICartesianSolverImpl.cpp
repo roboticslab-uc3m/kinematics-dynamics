@@ -146,16 +146,10 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
 
     if (frame == TCP_FRAME)
     {
-        std::vector<double> currentX;
-
-        if (!fwdKin(qGuess, currentX))
-        {
-            CD_ERROR("fwdKin failed.\n");
-            return false;
-        }
-
-        KDL::Frame frameX = KdlVectorConverter::vectorToFrame(currentX);
-        frameXd = frameX * frameXd;
+        KDL::ChainFkSolverPos_recursive fksolver(chain);
+        KDL::Frame fOutCart;
+        fksolver.JntToCart(qGuessInRad, fOutCart);
+        frameXd = fOutCart * frameXd;
     }
     else if (frame != BASE_FRAME)
     {
