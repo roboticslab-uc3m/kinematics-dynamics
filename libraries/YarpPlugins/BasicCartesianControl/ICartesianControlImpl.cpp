@@ -234,8 +234,6 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
-    CD_WARNING("MOVV mode still experimental.\n");
-
     //-- Set velocity mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -322,7 +320,7 @@ bool roboticslab::BasicCartesianControl::wait(double timeout)
             break;
         }
 
-        yarp::os::Time::delay(0.5);
+        yarp::os::Time::delay(waitPeriodMs / 1000.0);
         state = getCurrentState();
     }
 
@@ -484,6 +482,14 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         cmcRateMs = value;
         break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Wait period cannot be negative nor zero.\n");
+            return false;
+        }
+        waitPeriodMs = value;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         if (value != BASE_FRAME && value != TCP_FRAME)
         {
@@ -518,6 +524,9 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_CMC_RATE:
         *value = cmcRateMs;
         break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        *value = waitPeriodMs;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
@@ -551,6 +560,7 @@ bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & p
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }
