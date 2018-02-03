@@ -1,13 +1,13 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 /**
- * @ingroup asibot_examples_cpp
+ * @ingroup examples_cpp
  *
- * \defgroup testTinyMath testTinyMath
+ * \defgroup exampleYarpTinyMath exampleYarpTinyMath
  *
- * @brief This is an example of the use of TinyMath.
+ * @brief This is an example of the use of YarpTinyMath.
  *
- * @section testTinyMath_legal Legal
+ * @section exampleYarpTinyMath_legal Legal
  *
  * Copyright: (C) 2013 Universidad Carlos III de Madrid
  *
@@ -15,16 +15,16 @@
  *
  * CopyPolicy: Released under the terms of the LGPLv2.1 or later, see license/LGPL.TXT
  *
- * @section testTinyMath_build Building
+ * @section exampleYarpTinyMath_build Building
 \verbatim
-cd repos/asibot-main/example/cpp
+cd repos/kinematics-dynamics/example/cpp
 mkdir build; cd build; cmake ..
 make -j3
 \endverbatim
  *
- * @section testTinyMath_run Running
+ * @section exampleYarpTinyMath_run Running
 \verbatim
-./testTinyMath
+./exampleYarpTinyMath
 \endverbatim
  *
  */
