@@ -354,7 +354,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     std::vector<double> xd;
 
-    if (!iCartesianSolver->fwdKinError(x, currentQ, xd))
+    if (!iCartesianSolver->fwdKinError(x, currentQ, xd, referenceFrame))
     {
         CD_ERROR("fwdKinError failed.\n");
         return;

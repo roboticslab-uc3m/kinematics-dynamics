@@ -91,6 +91,16 @@ bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const st
     KDL::Frame fOutCart;
     fksolver.JntToCart(qInRad, fOutCart);
 
+    if (frame == TCP_FRAME)
+    {
+        frameXd = fOutCart * frameXd;
+    }
+    else if (frame != BASE_FRAME)
+    {
+        CD_WARNING("Unsupported frame.\n");
+        return false;
+    }
+
     KDL::Twist diff = KDL::diff(fOutCart, frameXd);
     x = KdlVectorConverter::twistToVector(diff);
 
