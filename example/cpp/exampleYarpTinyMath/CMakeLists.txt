@@ -14,7 +14,8 @@ add_executable(exampleYarpTinyMath exampleYarpTinyMath.cpp)
 
 target_link_libraries(exampleYarpTinyMath YARP::YARP_OS
                                           YARP::YARP_init
-                                          YARP::YARP_dev)
+                                          YARP::YARP_math
+                                          YarpTinyMathLib)
 
 include(GNUInstallDirs)
 

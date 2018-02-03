@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
     H_k_P(2,3)=z_k;
     printf("*** H_k_P *** \n(%s)\n\n", H_k_P.toString().c_str());
 
+    using namespace yarp::math;
     yarp::sig::Matrix H_0_P = H_0_c * H_c_k * H_k_P;
 
     double x_0 = H_0_P(0,3);
