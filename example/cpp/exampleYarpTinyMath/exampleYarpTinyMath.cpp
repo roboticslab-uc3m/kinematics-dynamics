@@ -31,7 +31,7 @@ make -j3
 
 #include <stdio.h>
 
-#include "TinyMath.hpp"
+#include "YarpTinyMath.hpp"
 
 int main(int argc, char *argv[]) {
 
