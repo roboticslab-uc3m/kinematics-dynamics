@@ -21,6 +21,9 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
             "maximum joint velocity").asDouble();
 
+    waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
+            "wait period [ms]").asInt();
+
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
             "reference frame").asString();
 

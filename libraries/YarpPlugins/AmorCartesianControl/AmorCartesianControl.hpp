@@ -17,6 +17,7 @@
 
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
+#define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
@@ -45,6 +46,7 @@ public:
                              currentState(VOCAB_CC_NOT_CONTROLLING),
                              gain(DEFAULT_GAIN),
                              maxJointVelocity(DEFAULT_QDOT_LIMIT),
+                             waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
                              referenceFrame(BASE_FRAME)
     {}
 
@@ -67,6 +69,8 @@ public:
     virtual bool forc(const std::vector<double> &td);
 
     virtual bool stopControl();
+
+    virtual bool wait(double timeout);
 
     virtual bool tool(const std::vector<double> &x);
 
@@ -107,8 +111,6 @@ public:
 
 private:
 
-    bool waitForCompletion(int vocab);
-
     bool checkJointVelocities(const std::vector<double> &qdot);
 
     bool performDiffInvKin(const std::vector<double> & currentQ,
@@ -125,6 +127,7 @@ private:
 
     double gain;
     double maxJointVelocity;
+    int waitPeriodMs;
 
     reference_frame referenceFrame;
 };

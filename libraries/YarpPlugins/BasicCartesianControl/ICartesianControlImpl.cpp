@@ -91,7 +91,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     CD_INFO("max_time[final]: %f\n",max_time);
 
     //-- Compute, store old and set joint velocities given this time
-    std::vector<double> vmo, vmoStored(numRobotJoints);
+    std::vector<double> vmo;
     for(unsigned int joint=0;joint<numRobotJoints;joint++)
     {
         if( joint >= numSolverJoints )
@@ -105,6 +105,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
             CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
         }
     }
+    vmoStored.resize(numRobotJoints);
     if ( ! iPositionControl->getRefSpeeds( vmoStored.data() ) )
     {
          CD_ERROR("getRefSpeeds (for storing) failed.\n");
@@ -133,25 +134,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
     //-- Set state, perform and wait for movement to be done
     setCurrentState( VOCAB_CC_MOVJ_CONTROLLING );
+    cmcSuccess = true;
 
     CD_SUCCESS("Waiting\n");
-    bool done = false;
-    while(!done)
-    {
-        iPositionControl->checkMotionDone(&done);
-        printf(".");
-        fflush(stdout);
-        yarp::os::Time::delay(0.5);
-    }
-
-    //-- Reestablish state and velocities
-    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
-
-    if ( ! iPositionControl->setRefSpeeds( vmoStored.data() ) )
-    {
-         CD_ERROR("setRefSpeeds (to restore) failed.\n");
-         return false;
-    }
 
     return true;
 }
@@ -237,18 +222,10 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     }
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
+    cmcSuccess = true;
 
-    //-- Wait for movement to be done, then delete
+    //-- Wait for movement to be done
     CD_SUCCESS("Waiting\n");
-    while( getCurrentState() == VOCAB_CC_MOVL_CONTROLLING )
-    {
-        printf(".");
-        fflush(stdout);
-        yarp::os::Time::delay(0.5);
-    }
-    iCartesianTrajectory->destroy();
-    delete iCartesianTrajectory;
-    iCartesianTrajectory = 0;
 
     return true;
 }
@@ -257,8 +234,6 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
-    CD_WARNING("MOVV mode still experimental.\n");
-
     //-- Set velocity mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
@@ -314,7 +289,42 @@ bool roboticslab::BasicCartesianControl::stopControl()
     }
     iPositionControl->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+    if (iCartesianTrajectory != 0)
+    {
+        iCartesianTrajectory->destroy();
+        delete iCartesianTrajectory;
+        iCartesianTrajectory = 0;
+    }
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::wait(double timeout)
+{
+    int state = getCurrentState();
+
+    if (state != VOCAB_CC_MOVJ_CONTROLLING && state != VOCAB_CC_MOVL_CONTROLLING)
+    {
+        return true;
+    }
+
+    double start = yarp::os::Time::now();
+
+    while (state != VOCAB_CC_NOT_CONTROLLING)
+    {
+        if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
+        {
+            CD_WARNING("Timeout reached (%f seconds), stopping control.\n", timeout);
+            stopControl();
+            break;
+        }
+
+        yarp::os::Time::delay(waitPeriodMs / 1000.0);
+        state = getCurrentState();
+    }
+
+    return cmcSuccess;
 }
 
 // -----------------------------------------------------------------------------
@@ -466,6 +476,14 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         cmcRateMs = value;
         break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Wait period cannot be negative nor zero.\n");
+            return false;
+        }
+        waitPeriodMs = value;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         if (value != BASE_FRAME && value != TCP_FRAME)
         {
@@ -500,6 +518,9 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_CMC_RATE:
         *value = cmcRateMs;
         break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        *value = waitPeriodMs;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
@@ -533,6 +554,7 @@ bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & p
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }

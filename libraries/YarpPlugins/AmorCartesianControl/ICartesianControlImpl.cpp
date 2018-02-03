@@ -2,6 +2,7 @@
 
 #include "AmorCartesianControl.hpp"
 
+#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.hpp>
@@ -102,7 +103,9 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    return waitForCompletion(VOCAB_CC_MOVJ_CONTROLLING);
+    currentState = VOCAB_CC_MOVJ_CONTROLLING;
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -162,7 +165,9 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
-    return waitForCompletion(VOCAB_CC_MOVL_CONTROLLING);
+    currentState = VOCAB_CC_MOVL_CONTROLLING;
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -239,6 +244,46 @@ bool roboticslab::AmorCartesianControl::stopControl()
     }
 
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::wait(double timeout)
+{
+    if (currentState != VOCAB_CC_MOVJ_CONTROLLING && currentState != VOCAB_CC_MOVL_CONTROLLING)
+    {
+        return true;
+    }
+
+    AMOR_RESULT res = AMOR_SUCCESS;
+    amor_movement_status status;
+
+    double start = yarp::os::Time::now();
+
+    do
+    {
+        if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
+        {
+            CD_WARNING("Timeout reached (%f seconds), stopping control.\n", timeout);
+            stopControl();
+            break;
+        }
+
+        res = amor_get_movement_status(handle, &status);
+
+        if (res == AMOR_FAILED)
+        {
+            CD_ERROR("%s\n", amor_error());
+            break;
+        }
+
+        yarp::os::Time::delay(waitPeriodMs / 1000.0);
+    }
+    while (status != AMOR_MOVEMENT_STATUS_FINISHED);
+
+    currentState = VOCAB_CC_NOT_CONTROLLING;
+
+    return res == AMOR_SUCCESS;
 }
 
 // -----------------------------------------------------------------------------
@@ -379,6 +424,14 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
         }
         maxJointVelocity = value;
         break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Wait period cannot be negative nor zero.\n");
+            return false;
+        }
+        waitPeriodMs = value;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         if (value != BASE_FRAME && value != TCP_FRAME)
         {
@@ -406,6 +459,9 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
         break;
     case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
         *value = maxJointVelocity;
+        break;
+    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        *value = waitPeriodMs;
         break;
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
@@ -438,6 +494,7 @@ bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & pa
 {
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_GAIN, gain));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }
