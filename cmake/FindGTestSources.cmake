@@ -13,19 +13,26 @@
 # Tested with the Ubuntu package `libgtest-dev` and the googletest
 # repository hosted on GitHub and cloned to the local machine.
 #
-# Supported versions: v1.6, v1.7.
+# Supported versions: v1.6, v1.7, v1.8.
 
 if(NOT GTestSources_SOURCE_DIR)
     find_path(GTestSources_SOURCE_DIR src/gtest.cc
                                       HINTS $ENV{GTEST_ROOT}
                                             ${GTEST_ROOT}
-                                      PATHS /usr/src/gtest)
+                                      PATHS /usr/src/gtest
+                                            /usr/src/googletest
+                                      PATH_SUFFIXES googletest)
 endif()
 
 if(NOT GTestSources_INCLUDE_DIR)
+    # Look for local headers *before* /usr/include (hence the NO_X_PATH params)
     find_path(GTestSources_INCLUDE_DIR gtest/gtest.h
-                                       HINTS $ENV{GTEST_ROOT}/include
-                                             ${GTEST_ROOT}/include)
+                                       HINTS ${GTestSources_SOURCE_DIR}
+                                             $ENV{GTEST_ROOT}
+                                             ${GTEST_ROOT}
+                                       PATH_SUFFIXES include
+                                       NO_CMAKE_PATH
+                                       NO_CMAKE_ENVIRONMENT_PATH)
 endif()
 
 set(_cmake_include_dirs ${CMAKE_REQUIRED_INCLUDES})
@@ -51,7 +58,18 @@ check_cxx_source_compiles("
         }"
     _gtest_compatible_1_7_0)
 
-if(_gtest_compatible_1_7_0)
+check_cxx_source_compiles("
+        #include <gtest/gtest.h>
+        int main() {
+            typedef const char* (testing::TestInfo::*fun)() const;
+            fun f = &testing::TestInfo::file;
+            return 0;
+        }"
+    _gtest_compatible_1_8_0)
+
+if(_gtest_compatible_1_8_0)
+    set(GTestSources_VERSION 1.8.0)
+elseif(_gtest_compatible_1_7_0)
     set(GTestSources_VERSION 1.7.0)
 elseif(_gtest_compatible_1_6_0)
     set(GTestSources_VERSION 1.6.0)
