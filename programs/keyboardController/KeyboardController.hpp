@@ -10,7 +10,7 @@
 
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/IEncoders.h>
-#include <yarp/dev/IControlMode.h>
+#include <yarp/dev/IControlMode2.h>
 #include <yarp/dev/IControlLimits2.h>
 #include <yarp/dev/IVelocityControl.h>
 
@@ -83,7 +83,7 @@ private:
     yarp::dev::PolyDriver cartesianControlDevice;
 
     yarp::dev::IEncoders * iEncoders;
-    yarp::dev::IControlMode * iControlMode;
+    yarp::dev::IControlMode2 * iControlMode;
     yarp::dev::IControlLimits2 * iControlLimits;
     yarp::dev::IVelocityControl * iVelocityControl;
 

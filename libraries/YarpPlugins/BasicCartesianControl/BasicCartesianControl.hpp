@@ -201,7 +201,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IControlLimits *iControlLimits;
         yarp::dev::ITorqueControl *iTorqueControl;
-        yarp::dev::IControlMode *iControlMode;
+        yarp::dev::IControlMode2 *iControlMode;
 
         reference_frame referenceFrame;
 

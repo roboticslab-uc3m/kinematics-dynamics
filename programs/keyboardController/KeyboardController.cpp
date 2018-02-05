@@ -414,14 +414,13 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
         return;
     }
 
-    for (int i = 0; i < axes; i++)
+    std::vector<int> velModes(axes, VOCAB_CM_VELOCITY);
+
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        if (!iControlMode->setVelocityMode(i))
-        {
-            CD_ERROR("setVelocityMode failed\n");
-            issueStop();
-            return;
-        }
+        CD_ERROR("setVelocityModes failed\n");
+        issueStop();
+        return;
     }
 
     currentJointVels[q] = op(currentJointVels[q], JOINT_VELOCITY_STEP);

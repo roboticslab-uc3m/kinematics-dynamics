@@ -5,6 +5,7 @@
 #include <cmath>  //-- std::abs
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 #include <yarp/os/Vocab.h>
 
@@ -118,13 +119,11 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
 
     //-- Enter position mode and perform movement
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> posModes(numRobotJoints, VOCAB_CM_POSITION);
+    if (!iControlMode->setControlModes(posModes.data()))
     {
-        if ( ! iControlMode->setPositionMode(joint) )
-        {
-            CD_ERROR("setPositionMode failed at joint %d.\n", joint);
-            return false;
-        }
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     if ( ! iPositionControl->positionMove( qd.data() ) )
     {
@@ -216,9 +215,11 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     }
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
@@ -236,9 +237,11 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     //-- Set velocity mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     setCurrentState( VOCAB_CC_MOVV_CONTROLLING );
     return true;
@@ -249,9 +252,11 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 bool roboticslab::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> torqModes(numRobotJoints, VOCAB_CM_TORQUE);
+    if (!iControlMode->setControlModes(torqModes.data()))
     {
-        iControlMode->setTorqueMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
     return true;
@@ -271,9 +276,11 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> torqModes(numRobotJoints, VOCAB_CM_TORQUE);
+    if (!iControlMode->setControlModes(torqModes.data()))
     {
-        iControlMode->setTorqueMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     setCurrentState( VOCAB_CC_FORC_CONTROLLING );
     return true;
@@ -283,9 +290,11 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> posModes(numRobotJoints, VOCAB_CM_POSITION);
+    if (!iControlMode->setControlModes(posModes.data()))
     {
-        iControlMode->setPositionMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     iPositionControl->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
@@ -350,9 +359,11 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return;
     }
 
     std::vector<double> currentQ(numRobotJoints), qdot;
@@ -408,9 +419,11 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     const double factor = gain / interval;
     std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
 
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return;
     }
 
     std::vector<double> qdot;
