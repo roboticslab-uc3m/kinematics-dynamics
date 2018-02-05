@@ -3,7 +3,7 @@ option(ENABLE_tests "Choose if you want to compile tests" ON)
 if(ENABLE_tests)
 
 find_package(YARP REQUIRED)
-find_package(GTestSources REQUIRED)
+find_package(GTestSources 1.6.0 REQUIRED)
 
 add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
 
