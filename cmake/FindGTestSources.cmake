@@ -2,10 +2,10 @@
 #
 # Sets the following variables:
 #
-# GTestSources_FOUND       - system has GTest sources
-# GTestSources_SOURCE_DIR  - GTest source dir (with CMakeLists.txt)
-# GTestSources_INCLUDE_DIR - GTest include directory (public headers)
-# GTestSources_VERSION     - GTest version (if supported)
+# * GTestSources_FOUND       - system has GTest sources
+# * GTestSources_SOURCE_DIR  - GTest source dir (with CMakeLists.txt)
+# * GTestSources_INCLUDE_DIR - GTest include directory (public headers)
+# * GTestSources_VERSION     - GTest version (if supported)
 #
 # You can set the GTEST_ROOT environment variable to be used as a
 # hint by FindGTestSources to locate googletest source directory.
@@ -14,6 +14,12 @@
 # repository hosted on GitHub and cloned to the local machine.
 #
 # Supported versions: v1.6, v1.7, v1.8.
+#
+# Also, this module adds the following macros:
+#
+# * gtest_add_tests (as in FindGTest.cmake)
+
+find_package(GTest QUIET)
 
 if(NOT GTestSources_SOURCE_DIR)
     find_path(GTestSources_SOURCE_DIR src/gtest.cc
