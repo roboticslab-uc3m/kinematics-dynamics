@@ -62,6 +62,24 @@ class ICartesianSolver
         virtual bool restoreOriginalChain() = 0;
 
         /**
+         * @brief Express given pose in other reference frame
+         *
+         * @param x_in 6-element vector describing a pose in cartesian space, expressed in @p currentFrame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param currentQ Vector describing current robot position in joint space (degrees).
+         * @param x_out 6-element vector describing a pose in cartesian space, expressed in @p newFrame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param currentFrame Points at the @ref reference_frame the input pose is expressed in.
+         * @param newFrame Points at the @ref reference_frame the output pose should be expressed in.
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool changeReferenceFrame(const std::vector<double> x_in, const std::vector<double> currentQ,
+                std::vector<double> x_out, reference_frame currentFrame, reference_frame newFrame) = 0;
+
+        /**
          * @brief Perform forward kinematics
          *
          * @param q Vector describing a position in joint space (degrees).

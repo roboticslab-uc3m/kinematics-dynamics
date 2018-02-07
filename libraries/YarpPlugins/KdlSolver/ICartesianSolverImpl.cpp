@@ -51,6 +51,72 @@ bool roboticslab::KdlSolver::restoreOriginalChain()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::KdlSolver::changeReferenceFrame(const std::vector<double> x_in, const std::vector<double> currentQ,
+        std::vector<double> x_out, reference_frame currentFrame, reference_frame newFrame)
+{
+    if (newFrame == currentFrame)
+    {
+        CD_WARNING("New frame same as current frame.\n");
+        x_out = x_in;
+        return true;
+    }
+
+    std::vector<double> currentX;
+
+    if (!fwdKin(currentQ, currentX))
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+
+    KDL::Frame H_0_tcp = KdlVectorConverter::vectorToFrame(currentX);
+    //KDL::Frame H_W_0; // world-to-robot_base frame, not used (yet)
+
+    KDL::Frame H_0_ref, H_tcp_ref; //, H_W_ref;
+
+    switch (currentFrame)
+    {
+    case BASE_FRAME:
+        H_0_ref = KdlVectorConverter::vectorToFrame(x_in);
+        H_tcp_ref = H_0_tcp.Inverse() * H_0_ref;
+        //H_W_ref = H_W_0 * H_0_ref;
+        break;
+    case TCP_FRAME:
+        H_tcp_ref = KdlVectorConverter::vectorToFrame(x_in);
+        H_0_ref = H_0_tcp * H_tcp_ref;
+        //H_W_ref = H_W_0 * H_0_tcp * H_tcp_ref;
+        break;
+    /*case WORLD_FRAME:
+        H_W_ref = KdlVectorConverter::vectorToFrame(x_in);
+        H_0_ref = H_W_0.Inverse() * H_W_ref;
+        H_tcp_ref = H_0_tcp.Inverse() * H_W_0.Inverse() * H_W_ref;
+        break;*/
+    default:
+        CD_ERROR("Unsupported input reference frame.\n");
+        return false;
+    }
+
+    switch (newFrame)
+    {
+    case BASE_FRAME:
+        x_out = KdlVectorConverter::frameToVector(H_0_ref);
+        break;
+    case TCP_FRAME:
+        x_out = KdlVectorConverter::frameToVector(H_tcp_ref);
+        break;
+    /*case WORLD_FRAME:
+        x_out = KdlVectorConverter::frameToVector(H_W_ref);
+        break;*/
+    default:
+        CD_ERROR("Unsupported target reference frame.\n");
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 {
     const KDL::Chain & chain = getChain();
