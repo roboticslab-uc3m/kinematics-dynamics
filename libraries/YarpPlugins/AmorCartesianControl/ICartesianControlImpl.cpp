@@ -352,9 +352,24 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
         currentQ[i] = KinRepresentation::radToDeg(positions[i]);
     }
 
+    std::vector<double> x_base;
+
+    if (referenceFrame == ICartesianSolver::BASE_FRAME)
+    {
+        x_base = x;
+    }
+    else
+    {
+        if (!iCartesianSolver->changeReferenceFrame(x, currentQ, x_base, referenceFrame, ICartesianSolver::BASE_FRAME))
+        {
+            CD_ERROR("changeReferenceFrame failed.\n");
+            return;
+        }
+    }
+
     std::vector<double> xd;
 
-    if (!iCartesianSolver->fwdKinError(x, currentQ, xd, referenceFrame))
+    if (!iCartesianSolver->fwdKinError(x_base, currentQ, xd))
     {
         CD_ERROR("fwdKinError failed.\n");
         return;

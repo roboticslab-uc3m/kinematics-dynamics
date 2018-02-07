@@ -76,8 +76,8 @@ class ICartesianSolver
          *
          * @return true on success, false otherwise
          */
-        virtual bool changeReferenceFrame(const std::vector<double> x_in, const std::vector<double> currentQ,
-                std::vector<double> x_out, reference_frame currentFrame, reference_frame newFrame) = 0;
+        virtual bool changeReferenceFrame(const std::vector<double> &x_in, const std::vector<double> &currentQ,
+                std::vector<double> &x_out, reference_frame currentFrame, reference_frame newFrame) = 0;
 
         /**
          * @brief Perform forward kinematics
@@ -104,11 +104,10 @@ class ICartesianSolver
          * @param x 6-element vector describing the position error in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param frame Points at the @ref reference_frame the desired position is expressed in.
          *
          * @return true on success, false otherwise
          */
-        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x, reference_frame frame = BASE_FRAME) = 0;
+        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) = 0;
 
         /**
          * @brief Perform inverse kinematics

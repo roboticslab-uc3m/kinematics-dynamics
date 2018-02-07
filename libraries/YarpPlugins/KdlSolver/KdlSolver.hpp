@@ -63,14 +63,14 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         virtual bool restoreOriginalChain();
 
         // Change reference frame.
-        virtual bool changeReferenceFrame(const std::vector<double> x_in, const std::vector<double> currentQ,
-                        std::vector<double> x_out, reference_frame currentFrame, reference_frame newFrame);
+        virtual bool changeReferenceFrame(const std::vector<double> &x_in, const std::vector<double> &currentQ,
+                        std::vector<double> &x_out, reference_frame currentFrame, reference_frame newFrame);
 
         // Perform forward kinematics.
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
         // Obtain error with respect to forward kinematics.
-        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x, reference_frame frame);
+        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
 
         // Perform inverse kinematics.
         virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame);

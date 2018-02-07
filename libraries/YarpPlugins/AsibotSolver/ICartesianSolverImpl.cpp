@@ -39,8 +39,8 @@ bool roboticslab::AsibotSolver::restoreOriginalChain()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::changeReferenceFrame(const std::vector<double> x_in, const std::vector<double> currentQ,
-        std::vector<double> x_out, reference_frame currentFrame, reference_frame newFrame)
+bool roboticslab::AsibotSolver::changeReferenceFrame(const std::vector<double> &x_in, const std::vector<double> &currentQ,
+        std::vector<double> &x_out, reference_frame currentFrame, reference_frame newFrame)
 {
     CD_WARNING("Not implemented.\n");
     return false;
@@ -88,8 +88,7 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x,
-        reference_frame frame)
+bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x)
 {
     std::vector<double> currentX;
     fwdKin(q, currentX);

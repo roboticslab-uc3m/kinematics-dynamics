@@ -153,13 +153,30 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
-    std::vector<double> x(6); // pose (3x transl, 3x orient)
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> x;
+    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+
+    std::vector<double> xd_base;
     if( referenceFrame == ICartesianSolver::BASE_FRAME )
     {
-        int state;
-        if ( ! stat(state, x) )
+        xd_base = xd;
+    }
+    else
+    {
+        if( ! iCartesianSolver->changeReferenceFrame(xd, currentQ, xd_base, referenceFrame, ICartesianSolver::BASE_FRAME) )
         {
-            CD_ERROR("stat failed.\n");
+            CD_ERROR("changeReferenceFrame failed.\n");
             return false;
         }
     }
@@ -176,7 +193,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(xd) )
+    if( ! iCartesianTrajectory->addWaypoint(xd_base) )
     {
         CD_ERROR("\n");
         return false;
@@ -379,8 +396,22 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
+    std::vector<double> x_base;
+    if( referenceFrame == ICartesianSolver::BASE_FRAME )
+    {
+        x_base = x;
+    }
+    else
+    {
+        if( ! iCartesianSolver->changeReferenceFrame(x, currentQ, x_base, referenceFrame, ICartesianSolver::BASE_FRAME) )
+        {
+            CD_ERROR("changeReferenceFrame failed.\n");
+            return;
+        }
+    }
+
     std::vector<double> xd;
-    if ( ! iCartesianSolver->fwdKinError(x, currentQ, xd, referenceFrame) )
+    if ( ! iCartesianSolver->fwdKinError(x_base, currentQ, xd) )
     {
         CD_ERROR("fwdKinError failed.\n");
         return;

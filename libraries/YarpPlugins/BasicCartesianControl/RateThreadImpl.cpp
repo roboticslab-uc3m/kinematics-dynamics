@@ -88,7 +88,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
-    iCartesianSolver->fwdKinError(desiredX, currentQ, commandXdot, referenceFrame);
+    iCartesianSolver->fwdKinError(desiredX, currentQ, commandXdot);
 
     for (int i = 0; i < 6; i++)
     {
