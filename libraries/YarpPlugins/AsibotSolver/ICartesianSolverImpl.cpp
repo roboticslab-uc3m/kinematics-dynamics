@@ -189,9 +189,39 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
 bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
         reference_frame frame)
 {
+    std::vector<double> xd_base;
+
+    if (frame == TCP_FRAME)
+    {
+        using namespace yarp::math;
+
+        std::vector<double> x;
+
+        if (!fwdKin(qGuess, x))
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return false;
+        }
+
+        yarp::sig::Matrix H_0_tcp = vectorToMatrix(x, true);
+        yarp::sig::Matrix H_tcp_ref = vectorToMatrix(xd, true);
+        yarp::sig::Matrix H_0_ref = H_0_tcp * H_tcp_ref;
+
+        matrixToVector(H_0_ref, xd_base, true);
+    }
+    else if (frame == BASE_FRAME)
+    {
+        xd_base = xd;
+    }
+    else
+    {
+        CD_ERROR("Unsupported reference frame");
+        return false;
+    }
+
     std::vector<double> xd_eYZ;
 
-    if (!KinRepresentation::decodePose(xd, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
+    if (!KinRepresentation::decodePose(xd_base, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
     {
         CD_ERROR("Unable to convert to eulerYZ angle representation.\n");
         return false;
