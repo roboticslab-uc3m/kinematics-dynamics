@@ -43,7 +43,7 @@ namespace
 
         axisAngle.push_back(rotAngle);
 
-        yarp::sig::Matrix H = yarp::math::axis2dcm(axisAngle).submatrix(0, 2, 0, 2);
+        yarp::sig::Matrix H = yarp::math::axis2dcm(axisAngle);
 
         if (fillTransl)
         {
@@ -227,8 +227,8 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
     x[1] = xd[1] - currentX[1];
     x[2] = xd[2] - currentX[2];
 
-    yarp::sig::Matrix rotDesired = vectorToMatrix(xd, false);
-    yarp::sig::Matrix rotCurrent = vectorToMatrix(currentX, false);
+    yarp::sig::Matrix rotDesired = vectorToMatrix(xd, false).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotCurrent = vectorToMatrix(currentX, false).submatrix(0, 2, 0, 2);
 
     yarp::sig::Matrix rotCurrentToDesired = rotCurrent.transposed() * rotDesired;
 
