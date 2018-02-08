@@ -307,8 +307,6 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
         double s234 = std::sin(qInRad[1] + qInRad[2] + qInRad[3]);
         double c234 = std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
 
-        yarp::sig::Matrix Ja(6, 5);
-
         Ja(0, 0) = s5 * (A3 * s234 + A2 * s23 + A1 * s2);
         Ja(0, 1) = c5 * (A3 + A2 * c4 + A1 * c34);
         Ja(0, 2) = c5 * (A3 + A2 * c4);
