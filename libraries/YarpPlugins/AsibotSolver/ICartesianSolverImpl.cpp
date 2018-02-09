@@ -15,6 +15,73 @@
 
 // -----------------------------------------------------------------------------
 
+namespace
+{
+    yarp::sig::Matrix vectorToMatrix(const std::vector<double> &v, bool fillTransl)
+    {
+        using namespace yarp::math;
+
+        yarp::sig::Vector axisAngleScaled(3);
+
+        for (int i = 0; i < 3; i++)
+        {
+            axisAngleScaled[i] = v[i + 3];
+        }
+
+        double rotAngle = yarp::math::norm(axisAngleScaled);
+
+        yarp::sig::Vector axisAngle = axisAngleScaled;
+
+        if (rotAngle > 1e-9)
+        {
+            axisAngle /= rotAngle;
+        }
+        else
+        {
+            axisAngle[0] = axisAngle[1] = axisAngle[2] = 0.0;
+        }
+
+        axisAngle.push_back(rotAngle);
+
+        yarp::sig::Matrix H = yarp::math::axis2dcm(axisAngle);
+
+        if (fillTransl)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                H(i, 3) = v[i];
+            }
+        }
+
+        return H;
+    }
+
+    void matrixToVector(const yarp::sig::Matrix &H, std::vector<double> &v, bool fillTransl)
+    {
+        using namespace yarp::math;
+
+        yarp::sig::Vector axisAngle = yarp::math::dcm2axis(H);
+        yarp::sig::Vector axisAngleScaled = axisAngle.subVector(0, 2) * axisAngle[3];
+
+        v.resize(6);
+
+        for (int i = 0; i < 3; i++)
+        {
+            v[i + 3] = axisAngleScaled[i];
+        }
+
+        if (fillTransl)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                v[i] = H(i, 3);
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 {
     *numJoints = NUM_MOTORS;
@@ -42,8 +109,67 @@ bool roboticslab::AsibotSolver::restoreOriginalChain()
 bool roboticslab::AsibotSolver::changeReferenceFrame(const std::vector<double> &x_in, const std::vector<double> &currentQ,
         std::vector<double> &x_out, reference_frame currentFrame, reference_frame newFrame)
 {
-    CD_WARNING("Not implemented.\n");
-    return false;
+    using namespace yarp::math;
+
+    if (newFrame == currentFrame)
+    {
+        CD_WARNING("New frame same as current frame.\n");
+        x_out = x_in;
+        return true;
+    }
+
+    std::vector<double> currentX;
+
+    if (!fwdKin(currentQ, currentX))
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+
+    yarp::sig::Matrix H_0_tcp = vectorToMatrix(currentX, true);
+    //KDL::Frame H_W_0; // world-to-robot_base frame, not used (yet)
+
+    yarp::sig::Matrix H_0_ref, H_tcp_ref; //, H_W_ref;
+
+    switch (currentFrame)
+    {
+    case BASE_FRAME:
+        H_0_ref = vectorToMatrix(x_in, true);
+        H_tcp_ref = H_0_tcp.transposed() * H_0_ref;
+        //H_W_ref = H_W_0 * H_0_ref;
+        break;
+    case TCP_FRAME:
+        H_tcp_ref = vectorToMatrix(x_in, true);
+        H_0_ref = H_0_tcp * H_tcp_ref;
+        //H_W_ref = H_W_0 * H_0_tcp * H_tcp_ref;
+        break;
+    /*case WORLD_FRAME:
+        H_W_ref = vectorToMatrix(x_in, true);
+        H_0_ref = H_W_0.transposed() * H_W_ref;
+        H_tcp_ref = H_0_tcp.transposed() * H_W_0.transposed() * H_W_ref;
+        break;*/
+    default:
+        CD_ERROR("Unsupported input reference frame.\n");
+        return false;
+    }
+
+    switch (newFrame)
+    {
+    case BASE_FRAME:
+        matrixToVector(H_0_ref, x_out, true);
+        break;
+    case TCP_FRAME:
+        matrixToVector(H_tcp_ref, x_out, true);
+        break;
+    /*case WORLD_FRAME:
+        matrixToVector(H_W_ref, x_out, true);
+        break;*/
+    default:
+        CD_ERROR("Unsupported target reference frame.\n");
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -90,6 +216,8 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
 bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x)
 {
+    using namespace yarp::math;
+
     std::vector<double> currentX;
     fwdKin(q, currentX);
 
@@ -99,48 +227,11 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
     x[1] = xd[1] - currentX[1];
     x[2] = xd[2] - currentX[2];
 
-    yarp::sig::Vector axisAngleScaledDesired(3);
-    yarp::sig::Vector axisAngleScaledCurrent(3);
-
-    for (int i = 0; i < 3; i++)
-    {
-        axisAngleScaledDesired[i] = xd[i + 3];
-        axisAngleScaledCurrent[i] = currentX[i + 3];
-    }
-
-    double rotAngleDesired = yarp::math::norm(axisAngleScaledDesired);
-    double rotAngleCurrent = yarp::math::norm(axisAngleScaledCurrent);
-
-    yarp::sig::Vector axisAngleDesired = axisAngleScaledDesired;
-    yarp::sig::Vector axisAngleCurrent = axisAngleScaledCurrent;
-
-    using namespace yarp::math;
-
-    if (rotAngleDesired > 1e-9)
-    {
-        axisAngleDesired /= rotAngleDesired;
-    }
-    else
-    {
-        axisAngleDesired[0] = axisAngleDesired[1] = axisAngleDesired[2] = 0.0;
-    }
-
-    if (rotAngleCurrent > 1e-9)
-    {
-        axisAngleCurrent /= rotAngleCurrent;
-    }
-    else
-    {
-        axisAngleCurrent[0] = axisAngleCurrent[1] = axisAngleCurrent[2] = 0.0;
-    }
-
-    axisAngleDesired.push_back(rotAngleDesired);
-    axisAngleCurrent.push_back(rotAngleCurrent);
-
-    yarp::sig::Matrix rotDesired = yarp::math::axis2dcm(axisAngleDesired).submatrix(0, 2, 0, 2);
-    yarp::sig::Matrix rotCurrent = yarp::math::axis2dcm(axisAngleCurrent).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotDesired = vectorToMatrix(xd, false).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotCurrent = vectorToMatrix(currentX, false).submatrix(0, 2, 0, 2);
 
     yarp::sig::Matrix rotCurrentToDesired = rotCurrent.transposed() * rotDesired;
+
     yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rotCurrentToDesired);
     yarp::sig::Vector axis = axisAngle.subVector(0, 2) * axisAngle[3];
     yarp::sig::Vector rotd = rotCurrent * axis;
@@ -157,9 +248,39 @@ bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const
 bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
         reference_frame frame)
 {
+    std::vector<double> xd_base;
+
+    if (frame == TCP_FRAME)
+    {
+        using namespace yarp::math;
+
+        std::vector<double> x;
+
+        if (!fwdKin(qGuess, x))
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return false;
+        }
+
+        yarp::sig::Matrix H_0_tcp = vectorToMatrix(x, true);
+        yarp::sig::Matrix H_tcp_ref = vectorToMatrix(xd, true);
+        yarp::sig::Matrix H_0_ref = H_0_tcp * H_tcp_ref;
+
+        matrixToVector(H_0_ref, xd_base, true);
+    }
+    else if (frame == BASE_FRAME)
+    {
+        xd_base = xd;
+    }
+    else
+    {
+        CD_ERROR("Unsupported reference frame");
+        return false;
+    }
+
     std::vector<double> xd_eYZ;
 
-    if (!KinRepresentation::decodePose(xd, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
+    if (!KinRepresentation::decodePose(xd_base, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
     {
         CD_ERROR("Unable to convert to eulerYZ angle representation.\n");
         return false;
