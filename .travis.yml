@@ -16,8 +16,8 @@ before_install:
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
 install:
-  #-- Install eigen
-  - sudo apt-get install libeigen3-dev
+  #-- Install eigen and gtest
+  - sudo apt-get install libeigen3-dev libgtest-dev
   #-- Install yarp
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
