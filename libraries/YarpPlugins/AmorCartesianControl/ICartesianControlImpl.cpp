@@ -102,8 +102,7 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 {
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        CD_WARNING("TCP frame not supported yet in relj command.\n");
-        return false;
+        return movj(xd);
     }
 
     int state;

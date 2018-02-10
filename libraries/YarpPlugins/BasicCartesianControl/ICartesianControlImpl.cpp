@@ -133,6 +133,11 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
+    if ( referenceFrame == ICartesianSolver::TCP_FRAME )
+    {
+        return movj(xd);
+    }
+
     int state;
     std::vector<double> x;
     if ( ! stat(state, x) )
