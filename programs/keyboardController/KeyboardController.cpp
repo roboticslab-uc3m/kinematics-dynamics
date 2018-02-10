@@ -207,13 +207,13 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
-        if (frameDouble != ICartesianControl::BASE_FRAME && frameDouble != ICartesianControl::TCP_FRAME)
+        if (frameDouble != ICartesianSolver::BASE_FRAME && frameDouble != ICartesianSolver::TCP_FRAME)
         {
             CD_ERROR("Unrecognized or unsupported frame.\n");
             return false;
         }
 
-        cartFrame = static_cast<ICartesianControl::reference_frame>(frameDouble);
+        cartFrame = static_cast<ICartesianSolver::reference_frame>(frameDouble);
 
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
@@ -486,17 +486,17 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 
     issueStop();
 
-    ICartesianControl::reference_frame newFrame;
+    ICartesianSolver::reference_frame newFrame;
     std::string str;
 
     switch (cartFrame)
     {
-    case ICartesianControl::BASE_FRAME:
-        newFrame = ICartesianControl::TCP_FRAME;
+    case ICartesianSolver::BASE_FRAME:
+        newFrame = ICartesianSolver::TCP_FRAME;
         str = "end effector";
         break;
-    case ICartesianControl::TCP_FRAME:
-        newFrame = ICartesianControl::BASE_FRAME;
+    case ICartesianSolver::TCP_FRAME:
+        newFrame = ICartesianSolver::BASE_FRAME;
         str = "inertial";
         break;
     default:
@@ -633,7 +633,7 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cartFrame == ICartesianControl::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
+        std::cout << (cartFrame == ICartesianSolver::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;

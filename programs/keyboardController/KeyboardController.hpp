@@ -74,7 +74,7 @@ private:
 
     int axes;
 
-    ICartesianControl::reference_frame cartFrame;
+    ICartesianSolver::reference_frame cartFrame;
     std::string angleRepr;
     KinRepresentation::orientation_system orient;
     control_modes controlMode;

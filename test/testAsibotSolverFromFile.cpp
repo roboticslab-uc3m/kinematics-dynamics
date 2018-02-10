@@ -109,34 +109,34 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
     ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
 }
 
-TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinError)
+TEST_F(AsibotSolverTestFromFile, AsibotSolverPoseDiff)
 {
-    std::vector<double> xd(5), q(5), x;
+    std::vector<double> xd(6), xc(6), x;
 
-    xd[0] = 0.0;
-    xd[1] = 0.865685425;
-    xd[2] = 0.865685425;
-    xd[3] = 90.0;
-    xd[4] = -90.0;
+    xd[0] = 0.5;
+    xd[1] = 0.6;
+    xd[2] = 0.7;
+    xd[3] = 0.2;
+    xd[4] = 0.0;
+    xd[5] = 0.0;
 
-    q[0] = 0.0;
-    q[1] = 0.0;
-    q[2] = 45.0;
-    q[3] = 45.0;
-    q[4] = 0.0;
+    xc[0] = 0.1;
+    xc[1] = 0.2;
+    xc[2] = 0.3;
+    xc[3] = 0.1;
+    xc[4] = 0.0;
+    xc[5] = 0.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
-
-    ASSERT_TRUE(iCartesianSolver->fwdKinError(xd, q, x));
+    ASSERT_TRUE(iCartesianSolver->poseDiff(xd, xc, x));
 
     ASSERT_EQ(x.size(), 6);  //-- twist
 
-    ASSERT_NEAR(x[0], -0.582842712, EPS_CART);  //-- x
-    ASSERT_NEAR(x[1], 0.865685425, EPS_CART);  //-- y
-    ASSERT_NEAR(x[2], -0.117157287, EPS_CART);  //-- z
-    ASSERT_NEAR(x[3], -1.209199576, EPS_CART);  //-- rot_x
-    ASSERT_NEAR(x[4], -1.209199576, EPS_CART);  //-- rot_y
-    ASSERT_NEAR(x[5], 1.209199576, EPS_CART);  //-- rot_z
+    ASSERT_NEAR(x[0], 0.4, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.4, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.4, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 0.1, EPS_CART);  //-- rot_x
+    ASSERT_NEAR(x[4], 0.0, EPS_CART);  //-- rot_y
+    ASSERT_NEAR(x[5], 0.0, EPS_CART);  //-- rot_z
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
@@ -346,7 +346,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinEE)
     xdotee[0] = -0.005;  //- m/step
     xdotee[5] = 0.017453292;  //-- 1º/step
 
-    ASSERT_TRUE(iCartesianSolver->diffInvKinEE(q, xdotee, qdot));
+    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdotee, qdot, ICartesianSolver::TCP_FRAME));
 
     ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
 
