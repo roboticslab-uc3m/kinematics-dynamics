@@ -93,22 +93,24 @@ class ICartesianSolver
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
 
         /**
-         * @brief Obtain error with respect to forward kinematics
+         * @brief Obtain difference between supplied pose inputs
          *
-         * The result is a infinitesimal displacement twist, i.e. a vector, for which the
+         * The result is an infinitesimal displacement twist, i.e. a vector, for which the
          * operation of addition makes physical sense.
          *
-         * @param xd 6-element vector describing desired position in cartesian space; first
+         * @param xLhs 6-element vector describing a pose in cartesian space (left hand side); first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param q Vector describing initial position in joint space (degrees).
-         * @param x 6-element vector describing the position error in cartesian space; first
+         * @param xRhs 6-element vector describing a pose in cartesian space (right hand side); first
+         * three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param xOut 6-element vector describing a pose in cartesian space (result); first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
          *
          * @return true on success, false otherwise
          */
-        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) = 0;
+        virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) = 0;
 
         /**
          * @brief Perform inverse kinematics

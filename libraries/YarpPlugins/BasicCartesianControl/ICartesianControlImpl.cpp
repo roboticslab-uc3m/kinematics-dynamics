@@ -396,16 +396,16 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
+    std::vector<double> x_base_tcp;
+    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return;
+    }
+
     std::vector<double> xd_obj;
     if( referenceFrame == ICartesianSolver::TCP_FRAME )
     {
-        std::vector<double> x_base_tcp;
-        if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
-        {
-            CD_ERROR("fwdKin failed.\n");
-            return;
-        }
-
         if( ! iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj) )
         {
             CD_ERROR("changeOrigin failed.\n");
@@ -418,7 +418,7 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     }
 
     std::vector<double> xd;
-    if ( ! iCartesianSolver->fwdKinError(xd_obj, currentQ, xd) )
+    if ( ! iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd) )
     {
         CD_ERROR("fwdKinError failed.\n");
         return;

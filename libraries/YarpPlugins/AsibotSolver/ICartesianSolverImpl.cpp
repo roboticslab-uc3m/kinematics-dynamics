@@ -162,31 +162,28 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x)
+bool roboticslab::AsibotSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut)
 {
     using namespace yarp::math;
 
-    std::vector<double> currentX;
-    fwdKin(q, currentX);
+    xOut.resize(6);
 
-    x.resize(6);
+    xOut[0] = xLhs[0] - xRhs[0];
+    xOut[1] = xLhs[1] - xRhs[1];
+    xOut[2] = xLhs[2] - xRhs[2];
 
-    x[0] = xd[0] - currentX[0];
-    x[1] = xd[1] - currentX[1];
-    x[2] = xd[2] - currentX[2];
+    yarp::sig::Matrix rotLhs = vectorToMatrix(xLhs, true).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotRhs = vectorToMatrix(xRhs, true).submatrix(0, 2, 0, 2);
 
-    yarp::sig::Matrix rotDesired = vectorToMatrix(xd, false).submatrix(0, 2, 0, 2);
-    yarp::sig::Matrix rotCurrent = vectorToMatrix(currentX, false).submatrix(0, 2, 0, 2);
+    yarp::sig::Matrix rotRhsToLhs = rotRhs.transposed() * rotLhs;
 
-    yarp::sig::Matrix rotCurrentToDesired = rotCurrent.transposed() * rotDesired;
-
-    yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rotCurrentToDesired);
+    yarp::sig::Vector axisAngle = yarp::math::dcm2axis(rotRhsToLhs);
     yarp::sig::Vector axis = axisAngle.subVector(0, 2) * axisAngle[3];
-    yarp::sig::Vector rotd = rotCurrent * axis;
+    yarp::sig::Vector rotd = rotRhs * axis;
 
-    x[3] = rotd[0];
-    x[4] = rotd[1];
-    x[5] = rotd[2];
+    xOut[3] = rotd[0];
+    xOut[4] = rotd[1];
+    xOut[5] = rotd[2];
 
     return true;
 }

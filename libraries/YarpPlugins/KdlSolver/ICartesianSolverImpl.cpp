@@ -87,25 +87,13 @@ bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<do
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x)
+bool roboticslab::KdlSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut)
 {
-    KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
+    KDL::Frame fLhs = KdlVectorConverter::vectorToFrame(xLhs);
+    KDL::Frame fRhs = KdlVectorConverter::vectorToFrame(xRhs);
 
-    const KDL::Chain & chain = getChain();
-    KDL::JntArray qInRad(chain.getNrOfJoints());
-
-    for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
-    {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
-    }
-
-    //-- Main fwdKin (pos) solver lines
-    KDL::ChainFkSolverPos_recursive fksolver(chain);
-    KDL::Frame fOutCart;
-    fksolver.JntToCart(qInRad, fOutCart);
-
-    KDL::Twist diff = KDL::diff(fOutCart, frameXd);
-    x = KdlVectorConverter::twistToVector(diff);
+    KDL::Twist diff = KDL::diff(fRhs, fLhs); // [fLhs - fRhs] for translation
+    xOut = KdlVectorConverter::twistToVector(diff);
 
     return true;
 }

@@ -378,18 +378,18 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
         currentQ[i] = KinRepresentation::radToDeg(positions[i]);
     }
 
+    std::vector<double> x_base_tcp;
+
+    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return;
+    }
+
     std::vector<double> x_obj;
 
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        std::vector<double> x_base_tcp;
-
-        if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
-        {
-            CD_ERROR("fwdKin failed.\n");
-            return;
-        }
-
         if (!iCartesianSolver->changeOrigin(x, x_base_tcp, x_obj))
         {
             CD_ERROR("changeOrigin failed.\n");
@@ -403,7 +403,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     std::vector<double> xd;
 
-    if (!iCartesianSolver->fwdKinError(x_obj, currentQ, xd))
+    if (!iCartesianSolver->poseDiff(x_obj, x_base_tcp, xd))
     {
         CD_ERROR("fwdKinError failed.\n");
         return;

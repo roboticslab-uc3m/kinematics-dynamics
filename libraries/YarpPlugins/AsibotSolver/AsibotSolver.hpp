@@ -64,8 +64,8 @@ public:
     // Perform forward kinematics.
     virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
-    // Obtain error with respect to forward kinematics.
-    virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
+    // Obtain difference between supplied pose inputs.
+    virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut);
 
     // Perform inverse kinematics.
     virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame);
