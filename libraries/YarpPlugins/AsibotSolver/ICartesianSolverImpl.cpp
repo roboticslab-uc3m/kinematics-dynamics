@@ -106,68 +106,16 @@ bool roboticslab::AsibotSolver::restoreOriginalChain()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::changeReferenceFrame(const std::vector<double> &x_in, const std::vector<double> &currentQ,
-        std::vector<double> &x_out, reference_frame currentFrame, reference_frame newFrame)
+bool roboticslab::AsibotSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old,
+        std::vector<double> &x_new_obj)
 {
     using namespace yarp::math;
 
-    if (newFrame == currentFrame)
-    {
-        CD_WARNING("New frame same as current frame.\n");
-        x_out = x_in;
-        return true;
-    }
+    yarp::sig::Matrix H_old_obj = vectorToMatrix(x_old_obj, true);
+    yarp::sig::Matrix H_new_old = vectorToMatrix(x_new_old, true);
+    yarp::sig::Matrix H_new_obj = H_new_old * H_old_obj;
 
-    std::vector<double> currentX;
-
-    if (!fwdKin(currentQ, currentX))
-    {
-        CD_ERROR("fwdKin failed.\n");
-        return false;
-    }
-
-    yarp::sig::Matrix H_0_tcp = vectorToMatrix(currentX, true);
-    //KDL::Frame H_W_0; // world-to-robot_base frame, not used (yet)
-
-    yarp::sig::Matrix H_0_ref, H_tcp_ref; //, H_W_ref;
-
-    switch (currentFrame)
-    {
-    case BASE_FRAME:
-        H_0_ref = vectorToMatrix(x_in, true);
-        H_tcp_ref = H_0_tcp.transposed() * H_0_ref;
-        //H_W_ref = H_W_0 * H_0_ref;
-        break;
-    case TCP_FRAME:
-        H_tcp_ref = vectorToMatrix(x_in, true);
-        H_0_ref = H_0_tcp * H_tcp_ref;
-        //H_W_ref = H_W_0 * H_0_tcp * H_tcp_ref;
-        break;
-    /*case WORLD_FRAME:
-        H_W_ref = vectorToMatrix(x_in, true);
-        H_0_ref = H_W_0.transposed() * H_W_ref;
-        H_tcp_ref = H_0_tcp.transposed() * H_W_0.transposed() * H_W_ref;
-        break;*/
-    default:
-        CD_ERROR("Unsupported input reference frame.\n");
-        return false;
-    }
-
-    switch (newFrame)
-    {
-    case BASE_FRAME:
-        matrixToVector(H_0_ref, x_out, true);
-        break;
-    case TCP_FRAME:
-        matrixToVector(H_tcp_ref, x_out, true);
-        break;
-    /*case WORLD_FRAME:
-        matrixToVector(H_W_ref, x_out, true);
-        break;*/
-    default:
-        CD_ERROR("Unsupported target reference frame.\n");
-        return false;
-    }
+    matrixToVector(H_new_obj, x_new_obj, true);
 
     return true;
 }

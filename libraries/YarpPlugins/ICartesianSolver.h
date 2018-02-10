@@ -62,22 +62,23 @@ class ICartesianSolver
         virtual bool restoreOriginalChain() = 0;
 
         /**
-         * @brief Express given pose in other reference frame
+         * @brief Change origin in which a pose is expressed
          *
-         * @param x_in 6-element vector describing a pose in cartesian space, expressed in @p currentFrame;
+         * @param x_old_obj_in 6-element vector describing a pose in cartesian space, expressed in the old frame;
          * first three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param currentQ Vector describing current robot position in joint space (degrees).
-         * @param x_out 6-element vector describing a pose in cartesian space, expressed in @p newFrame;
+         * @param x_new_old 6-element vector describing a transformation from the new to the old frame;
          * first three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param currentFrame Points at the @ref reference_frame the input pose is expressed in.
-         * @param newFrame Points at the @ref reference_frame the output pose should be expressed in.
+         * @param x_new_obj 6-element vector describing a pose in cartesian space, expressed in the new frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
          *
          * @return true on success, false otherwise
          */
-        virtual bool changeReferenceFrame(const std::vector<double> &x_in, const std::vector<double> &currentQ,
-                std::vector<double> &x_out, reference_frame currentFrame, reference_frame newFrame) = 0;
+        virtual bool changeOrigin(const std::vector<double> &x_old_obj,
+                                  const std::vector<double> &x_new_old,
+                                  std::vector<double> &x_new_obj) = 0;
 
         /**
          * @brief Perform forward kinematics

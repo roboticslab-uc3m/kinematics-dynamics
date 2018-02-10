@@ -127,9 +127,9 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 
 bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 {
-    std::vector<double> xd_base;
+    std::vector<double> xd_obj;
 
-    if (referenceFrame != ICartesianSolver::BASE_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         AMOR_VECTOR7 positions;
 
@@ -146,20 +146,28 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
             currentQ[i] = KinRepresentation::radToDeg(positions[i]);
         }
 
-        if (!iCartesianSolver->changeReferenceFrame(xd, currentQ, xd_base, referenceFrame, ICartesianSolver::BASE_FRAME))
+        std::vector<double> x_base_tcp;
+
+        if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
         {
-            CD_ERROR("changeReferenceFrame failed.\n");
+            CD_ERROR("fwdKin failed.\n");
+            return false;
+        }
+
+        if (!iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj))
+        {
+            CD_ERROR("changeOrigin failed.\n");
             return false;
         }
     }
     else
     {
-        xd_base = xd;
+        xd_obj = xd;
     }
 
     std::vector<double> xd_rpy;
 
-    KinRepresentation::decodePose(xd_base, xd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::decodePose(xd_obj, xd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
 
     AMOR_VECTOR7 positions;
 
@@ -370,24 +378,32 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
         currentQ[i] = KinRepresentation::radToDeg(positions[i]);
     }
 
-    std::vector<double> x_base;
+    std::vector<double> x_obj;
 
-    if (referenceFrame == ICartesianSolver::BASE_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        x_base = x;
+        std::vector<double> x_base_tcp;
+
+        if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return;
+        }
+
+        if (!iCartesianSolver->changeOrigin(x, x_base_tcp, x_obj))
+        {
+            CD_ERROR("changeOrigin failed.\n");
+            return;
+        }
     }
     else
     {
-        if (!iCartesianSolver->changeReferenceFrame(x, currentQ, x_base, referenceFrame, ICartesianSolver::BASE_FRAME))
-        {
-            CD_ERROR("changeReferenceFrame failed.\n");
-            return;
-        }
+        x_obj = x;
     }
 
     std::vector<double> xd;
 
-    if (!iCartesianSolver->fwdKinError(x_base, currentQ, xd))
+    if (!iCartesianSolver->fwdKinError(x_obj, currentQ, xd))
     {
         CD_ERROR("fwdKinError failed.\n");
         return;
