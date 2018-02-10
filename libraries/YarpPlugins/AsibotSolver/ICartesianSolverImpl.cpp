@@ -191,7 +191,7 @@ bool roboticslab::AsibotSolver::poseDiff(const std::vector<double> &xLhs, const 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-        reference_frame frame)
+        const reference_frame frame)
 {
     std::vector<double> xd_base;
 
@@ -303,7 +303,7 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 // -----------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-        reference_frame frame)
+        const reference_frame frame)
 {
     std::vector<double> qInRad(q);
 

@@ -68,10 +68,10 @@ public:
     virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut);
 
     // Perform inverse kinematics.
-    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame);
+    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, const reference_frame frame);
 
     // Perform differential inverse kinematics.
-    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame);
+    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, const reference_frame frame);
 
     // Perform inverse dynamics.
     virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);

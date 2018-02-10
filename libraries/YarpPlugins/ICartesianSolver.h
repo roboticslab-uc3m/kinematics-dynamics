@@ -124,7 +124,8 @@ class ICartesianSolver
          *
          * @return true on success, false otherwise
          */
-        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame = BASE_FRAME) = 0;
+        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
+                const reference_frame frame = BASE_FRAME) = 0;
 
         /**
          * @brief Perform differential inverse kinematics
@@ -138,7 +139,8 @@ class ICartesianSolver
          *
          * @return true on success, false otherwise
          */
-        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame = BASE_FRAME) = 0;
+        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
+                const reference_frame frame = BASE_FRAME) = 0;
 
         /**
          * @brief Perform inverse dynamics
