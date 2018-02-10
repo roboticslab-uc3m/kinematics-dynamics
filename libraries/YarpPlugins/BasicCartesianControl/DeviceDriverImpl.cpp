@@ -21,11 +21,11 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
 
     if (referenceFrameStr == "base")
     {
-        referenceFrame = BASE_FRAME;
+        referenceFrame = ICartesianSolver::BASE_FRAME;
     }
     else if (referenceFrameStr == "tcp")
     {
-        referenceFrame = TCP_FRAME;
+        referenceFrame = ICartesianSolver::TCP_FRAME;
     }
     else
     {

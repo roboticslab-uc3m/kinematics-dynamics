@@ -81,6 +81,14 @@ void roboticslab::BasicCartesianControl::handleMovl()
         return;
     }
 
+    std::vector<double> currentX;
+
+    if (!iCartesianSolver->fwdKin(currentQ, currentX))
+    {
+        CD_WARNING("fwdKin failed, not updating control this iteration.\n");
+        return;
+    }
+
     //-- Obtain desired Cartesian position and velocity.
     std::vector<double> desiredX, desiredXdot;
     iCartesianTrajectory->getPosition(movementTime, desiredX);
@@ -88,7 +96,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
-    iCartesianSolver->fwdKinError(desiredX, currentQ, commandXdot);
+    iCartesianSolver->poseDiff(desiredX, currentX, commandXdot);
 
     for (int i = 0; i < 6; i++)
     {
@@ -99,7 +107,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!performDiffInvKin(currentQ, commandXdot, commandQdot))
+    if (!iCartesianSolver->diffInvKin(currentQ, commandXdot, commandQdot))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
@@ -154,7 +162,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!performDiffInvKin(currentQ, xdotd, commandQdot))
+    if (!iCartesianSolver->diffInvKin(currentQ, xdotd, commandQdot, referenceFrame))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;

@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <yarp/os/Vocab.h>
+
 /**
  * @file
  * @brief Contains roboticslab::ICartesianSolver
@@ -21,6 +23,13 @@ namespace roboticslab
 class ICartesianSolver
 {
     public:
+
+        //! Lists supported reference frames.
+        enum reference_frame
+        {
+            BASE_FRAME = VOCAB4('c','p','f','b'), //!< Base frame
+            TCP_FRAME = VOCAB4('c','p','f','t')   //!< End-effector frame (TCP)
+        };
 
         //! Destructor
         virtual ~ICartesianSolver() {}
@@ -53,6 +62,25 @@ class ICartesianSolver
         virtual bool restoreOriginalChain() = 0;
 
         /**
+         * @brief Change origin in which a pose is expressed
+         *
+         * @param x_old_obj_in 6-element vector describing a pose in cartesian space, expressed in the old frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param x_new_old 6-element vector describing a transformation from the new to the old frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param x_new_obj 6-element vector describing a pose in cartesian space, expressed in the new frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool changeOrigin(const std::vector<double> &x_old_obj,
+                                  const std::vector<double> &x_new_old,
+                                  std::vector<double> &x_new_obj) = 0;
+
+        /**
          * @brief Perform forward kinematics
          *
          * @param q Vector describing a position in joint space (degrees).
@@ -65,22 +93,24 @@ class ICartesianSolver
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
 
         /**
-         * @brief Obtain error with respect to forward kinematics
+         * @brief Obtain difference between supplied pose inputs
          *
-         * The result is a infinitesimal displacement twist, i.e. a vector, for which the
+         * The result is an infinitesimal displacement twist, i.e. a vector, for which the
          * operation of addition makes physical sense.
          *
-         * @param xd 6-element vector describing desired position in cartesian space; first
+         * @param xLhs 6-element vector describing a pose in cartesian space (left hand side); first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param q Vector describing initial position in joint space (degrees).
-         * @param x 6-element vector describing the position error in cartesian space; first
+         * @param xRhs 6-element vector describing a pose in cartesian space (right hand side); first
+         * three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param xOut 6-element vector describing a pose in cartesian space (result); first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
          *
          * @return true on success, false otherwise
          */
-        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) = 0;
+        virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) = 0;
 
         /**
          * @brief Perform inverse kinematics
@@ -90,10 +120,12 @@ class ICartesianSolver
          * axis-angle representation (radians).
          * @param qGuess Vector describing current position in joint space (degrees).
          * @param q Vector describing target position in joint space (degrees).
+         * @param frame Points at the @ref reference_frame the desired position is expressed in.
          *
          * @return true on success, false otherwise
          */
-        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q) = 0;
+        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
+                const reference_frame frame = BASE_FRAME) = 0;
 
         /**
          * @brief Perform differential inverse kinematics
@@ -103,26 +135,12 @@ class ICartesianSolver
          * three elements denote translational velocity (meters/second), last three denote
          * angular velocity (radians/second).
          * @param qdot Vector describing target velocity in joint space (degrees/second).
+         * @param frame Points at the @ref reference_frame the desired position is expressed in.
          *
          * @return true on success, false otherwise
          */
-        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot) = 0;
-
-        /**
-         * @brief Perform differential inverse kinematics on end effector
-         *
-         * Same as @ref diffInvKin, but the input velocity is expressed in terms of the
-         * end effector frame.
-         *
-         * @param q Vector describing current position in joint space (degrees).
-         * @param xdotee 6-element vector describing desired velocity in cartesian space,
-         * expressed in the frame of the end effector; first three elements denote translational
-         * velocity (meters/second), last three denote angular velocity (radians/second).
-         * @param qdot Vector describing target velocity in joint space (degrees/second).
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot) = 0;
+        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
+                const reference_frame frame = BASE_FRAME) = 0;
 
         /**
          * @brief Perform inverse dynamics
