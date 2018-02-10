@@ -153,15 +153,32 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
-    std::vector<double> x(6); // pose (3x transl, 3x orient)
-    if( referenceFrame == ICartesianSolver::BASE_FRAME )
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
-        int state;
-        if ( ! stat(state, x) )
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> x_base_tcp;
+    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+
+    std::vector<double> xd_obj;
+    if( referenceFrame == ICartesianSolver::TCP_FRAME )
+    {
+        if( ! iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj) )
         {
-            CD_ERROR("stat failed.\n");
+            CD_ERROR("changeOrigin failed.\n");
             return false;
         }
+    }
+    else
+    {
+        xd_obj = xd;
     }
 
     //-- Create line trajectory
@@ -171,12 +188,12 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(x) )
+    if( ! iCartesianTrajectory->addWaypoint(x_base_tcp) )
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(xd) )
+    if( ! iCartesianTrajectory->addWaypoint(xd_obj) )
     {
         CD_ERROR("\n");
         return false;
@@ -379,8 +396,29 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
+    std::vector<double> xd_obj;
+    if( referenceFrame == ICartesianSolver::TCP_FRAME )
+    {
+        std::vector<double> x_base_tcp;
+        if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return;
+        }
+
+        if( ! iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj) )
+        {
+            CD_ERROR("changeOrigin failed.\n");
+            return;
+        }
+    }
+    else
+    {
+        xd_obj = x;
+    }
+
     std::vector<double> xd;
-    if ( ! iCartesianSolver->fwdKinError(x, currentQ, xd, referenceFrame) )
+    if ( ! iCartesianSolver->fwdKinError(xd_obj, currentQ, xd) )
     {
         CD_ERROR("fwdKinError failed.\n");
         return;

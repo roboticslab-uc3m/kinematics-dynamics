@@ -51,6 +51,20 @@ bool roboticslab::KdlSolver::restoreOriginalChain()
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::KdlSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old,
+        std::vector<double> &x_new_obj)
+{
+    KDL::Frame H_old_obj = KdlVectorConverter::vectorToFrame(x_old_obj);
+    KDL::Frame H_new_old = KdlVectorConverter::vectorToFrame(x_new_old);
+    KDL::Frame H_new_obj = H_new_old * H_old_obj;
+
+    x_new_obj = KdlVectorConverter::frameToVector(H_new_obj);
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 {
     const KDL::Chain & chain = getChain();
@@ -73,8 +87,7 @@ bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<do
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x,
-        reference_frame frame)
+bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x)
 {
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
 
@@ -90,16 +103,6 @@ bool roboticslab::KdlSolver::fwdKinError(const std::vector<double> &xd, const st
     KDL::ChainFkSolverPos_recursive fksolver(chain);
     KDL::Frame fOutCart;
     fksolver.JntToCart(qInRad, fOutCart);
-
-    if (frame == TCP_FRAME)
-    {
-        frameXd = fOutCart * frameXd;
-    }
-    else if (frame != BASE_FRAME)
-    {
-        CD_WARNING("Unsupported frame.\n");
-        return false;
-    }
 
     KDL::Twist diff = KDL::diff(fOutCart, frameXd);
     x = KdlVectorConverter::twistToVector(diff);

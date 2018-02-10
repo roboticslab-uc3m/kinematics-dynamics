@@ -62,6 +62,25 @@ class ICartesianSolver
         virtual bool restoreOriginalChain() = 0;
 
         /**
+         * @brief Change origin in which a pose is expressed
+         *
+         * @param x_old_obj_in 6-element vector describing a pose in cartesian space, expressed in the old frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param x_new_old 6-element vector describing a transformation from the new to the old frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         * @param x_new_obj 6-element vector describing a pose in cartesian space, expressed in the new frame;
+         * first three elements denote translation (meters), last three denote rotation in scaled
+         * axis-angle representation (radians).
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool changeOrigin(const std::vector<double> &x_old_obj,
+                                  const std::vector<double> &x_new_old,
+                                  std::vector<double> &x_new_obj) = 0;
+
+        /**
          * @brief Perform forward kinematics
          *
          * @param q Vector describing a position in joint space (degrees).
@@ -86,11 +105,10 @@ class ICartesianSolver
          * @param x 6-element vector describing the position error in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param frame Points at the @ref reference_frame the desired position is expressed in.
          *
          * @return true on success, false otherwise
          */
-        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x, reference_frame frame = BASE_FRAME) = 0;
+        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x) = 0;
 
         /**
          * @brief Perform inverse kinematics
