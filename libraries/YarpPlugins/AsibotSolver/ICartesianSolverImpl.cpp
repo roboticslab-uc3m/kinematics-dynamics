@@ -7,7 +7,6 @@
 
 #include <yarp/math/Math.h>
 #include <yarp/math/SVD.h>
-#include <yarp/sig/Matrix.h>
 
 #include <ColorDebug.hpp>
 
@@ -92,16 +91,27 @@ bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 
 bool roboticslab::AsibotSolver::appendLink(const std::vector<double> &x)
 {
-    CD_WARNING("Not implemented.\n");
-    return false;
+    using namespace yarp::math;
+
+    yarp::sig::Matrix newFrame = vectorToMatrix(x, true);
+
+    AsibotTcpFrame tcpFrameStruct = getTcpFrame();
+    tcpFrameStruct.hasFrame = true;
+    tcpFrameStruct.frameTcp *= newFrame;
+    setTcpFrame(tcpFrameStruct);
+
+    return true;
 }
 
 // --------------------------------------------------------------------------
 
 bool roboticslab::AsibotSolver::restoreOriginalChain()
 {
-    CD_WARNING("Not implemented.\n");
-    return false;
+    AsibotTcpFrame tcpFrameStruct = getTcpFrame();
+    tcpFrameStruct.hasFrame = false;
+    tcpFrameStruct.frameTcp = yarp::math::eye(4);
+    setTcpFrame(tcpFrameStruct);
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -157,6 +167,15 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
     KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES);
 
+    const AsibotTcpFrame & tcpFrameStruct = getTcpFrame();
+
+    if (tcpFrameStruct.hasFrame)
+    {
+        using namespace yarp::math;
+        yarp::sig::Matrix H_base_tcp = vectorToMatrix(x, true) * tcpFrameStruct.frameTcp;
+        matrixToVector(H_base_tcp, x, true);
+    }
+
     return true;
 }
 
@@ -193,29 +212,23 @@ bool roboticslab::AsibotSolver::poseDiff(const std::vector<double> &xLhs, const 
 bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
         const reference_frame frame)
 {
-    std::vector<double> xd_base;
+    std::vector<double> xd_base_obj;
 
     if (frame == TCP_FRAME)
     {
-        using namespace yarp::math;
+        std::vector<double> x_base_tcp;
 
-        std::vector<double> x;
-
-        if (!fwdKin(qGuess, x))
+        if (!fwdKin(qGuess, x_base_tcp))
         {
             CD_ERROR("fwdKin failed.\n");
             return false;
         }
 
-        yarp::sig::Matrix H_0_tcp = vectorToMatrix(x, true);
-        yarp::sig::Matrix H_tcp_ref = vectorToMatrix(xd, true);
-        yarp::sig::Matrix H_0_ref = H_0_tcp * H_tcp_ref;
-
-        matrixToVector(H_0_ref, xd_base, true);
+        changeOrigin(xd, x_base_tcp, xd_base_obj);
     }
     else if (frame == BASE_FRAME)
     {
-        xd_base = xd;
+        xd_base_obj = xd;
     }
     else
     {
@@ -223,9 +236,18 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
         return false;
     }
 
+    const AsibotTcpFrame & tcpFrameStruct = getTcpFrame();
+
+    if (tcpFrameStruct.hasFrame)
+    {
+        using namespace yarp::math;
+        yarp::sig::Matrix H_0_N = tcpFrameStruct.frameTcp.transposed() * vectorToMatrix(xd_base_obj, true);
+        matrixToVector(H_0_N, xd_base_obj, true);
+    }
+
     std::vector<double> xd_eYZ;
 
-    if (!KinRepresentation::decodePose(xd_base, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
+    if (!KinRepresentation::decodePose(xd_base_obj, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
     {
         CD_ERROR("Unable to convert to eulerYZ angle representation.\n");
         return false;
