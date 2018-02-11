@@ -327,6 +327,8 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
         const reference_frame frame)
 {
+    using namespace yarp::math;
+
     std::vector<double> qInRad(q);
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
@@ -445,6 +447,29 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
         return false;
     }
 
+    const AsibotTcpFrame & tcpFrameStruct = getTcpFrame();
+
+    if (tcpFrameStruct.hasFrame)
+    {
+        std::vector<double> x;
+
+        if (!fwdKin(q, x))
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return false;
+        }
+
+        yarp::sig::Matrix R_0_N = vectorToMatrix(x, true).submatrix(0, 2, 0, 2);
+        yarp::sig::Vector transl = tcpFrameStruct.frameTcp.subcol(0, 3, 3);
+        yarp::sig::Matrix skewSM = yarp::math::crossProductMatrix(transl);
+        yarp::sig::Matrix similTransform = (-1) * R_0_N * skewSM * R_0_N.transposed();
+
+        yarp::sig::Matrix S = yarp::math::eye(6);
+        S.setSubmatrix(similTransform, 3, 3);
+
+        Ja = S * Ja;
+    }
+
     yarp::sig::Matrix Ja_inv = yarp::math::pinv(Ja, 1e-2);
 
     yarp::sig::Vector xdotv(6);
@@ -456,7 +481,6 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     xdotv[4] = xdot[4];
     xdotv[5] = xdot[5];
 
-    using namespace yarp::math;
     yarp::sig::Vector qdotv = Ja_inv * xdotv;
 
     qdot.resize(NUM_MOTORS);
