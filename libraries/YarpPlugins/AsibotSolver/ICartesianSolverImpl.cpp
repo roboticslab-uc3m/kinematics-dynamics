@@ -217,13 +217,7 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     if (frame == TCP_FRAME)
     {
         std::vector<double> x_base_tcp;
-
-        if (!fwdKin(qGuess, x_base_tcp))
-        {
-            CD_ERROR("fwdKin failed.\n");
-            return false;
-        }
-
+        fwdKin(qGuess, x_base_tcp);
         changeOrigin(xd, x_base_tcp, xd_base_obj);
     }
     else if (frame == BASE_FRAME)
@@ -452,12 +446,7 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
     if (tcpFrameStruct.hasFrame)
     {
         std::vector<double> x;
-
-        if (!fwdKin(q, x))
-        {
-            CD_ERROR("fwdKin failed.\n");
-            return false;
-        }
+        fwdKin(q, x);
 
         yarp::sig::Matrix R_0_N = vectorToMatrix(x, true).submatrix(0, 2, 0, 2);
         yarp::sig::Vector transl = tcpFrameStruct.frameTcp.subcol(0, 3, 3);
@@ -474,22 +463,19 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
     yarp::sig::Vector xdotv(6);
 
-    xdotv[0] = xdot[0];
-    xdotv[1] = xdot[1];
-    xdotv[2] = xdot[2];
-    xdotv[3] = xdot[3];
-    xdotv[4] = xdot[4];
-    xdotv[5] = xdot[5];
+    for (unsigned int i = 0; i < xdot.size(); i++)
+    {
+        xdotv[i] = xdot[i];
+    }
 
     yarp::sig::Vector qdotv = Ja_inv * xdotv;
 
     qdot.resize(NUM_MOTORS);
 
-    qdot[0] = KinRepresentation::radToDeg(qdotv[0]);
-    qdot[1] = KinRepresentation::radToDeg(qdotv[1]);
-    qdot[2] = KinRepresentation::radToDeg(qdotv[2]);
-    qdot[3] = KinRepresentation::radToDeg(qdotv[3]);
-    qdot[4] = KinRepresentation::radToDeg(qdotv[4]);
+    for (unsigned int i = 0; i < qdot.size(); i++)
+    {
+        qdot[i] = KinRepresentation::radToDeg(qdotv[i]);
+    }
 
     return true;
 }
