@@ -465,7 +465,7 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
         yarp::sig::Matrix similTransform = (-1) * R_0_N * skewSM * R_0_N.transposed();
 
         yarp::sig::Matrix S = yarp::math::eye(6);
-        S.setSubmatrix(similTransform, 3, 3);
+        S.setSubmatrix(similTransform, 0, 3);
 
         Ja = S * Ja;
     }

@@ -469,7 +469,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKin)
     ASSERT_NEAR(qdot[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(qdot[1], 0.50869278, EPS_JOINT * 10);
     ASSERT_NEAR(qdot[2], -1.017385551, EPS_JOINT * 10);
-    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT* 10);
+    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT * 10);
     ASSERT_NEAR(qdot[4], 1.0, EPS_JOINT);
 }
 
@@ -493,8 +493,33 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinEE)
     ASSERT_NEAR(qdot[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(qdot[1], 0.50869278, EPS_JOINT * 10);
     ASSERT_NEAR(qdot[2], -1.017385551, EPS_JOINT * 10);
-    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT* 10);
+    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT * 10);
     ASSERT_NEAR(qdot[4], 1.0, EPS_JOINT);
+}
+
+TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinTool)
+{
+    std::vector<double> q(5, 0.0), xdot(6, 0.0), tool(6, 0.1), qdot;
+
+    q[1] = -45.0;
+    q[2] = 90.0;
+    q[3] = 45.0;
+
+    xdot[2] = 0.005;  //- m/step
+
+    // no rotation in 'xdot', so 'tool' may take whatever value
+    ASSERT_TRUE(iCartesianSolver->appendLink(tool));
+
+    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot));
+
+    ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
+
+    // increasing eps at q2-4
+    ASSERT_NEAR(qdot[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(qdot[1], 0.50869278, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[2], -1.017385551, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT * 10);
+    ASSERT_NEAR(qdot[4], 0.0, EPS_JOINT);
 }
 
 TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
