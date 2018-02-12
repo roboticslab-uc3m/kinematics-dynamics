@@ -191,6 +191,33 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
     ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
 }
 
+TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinTool)
+{
+    std::vector<double> q(5), tool(6), x;
+
+    q[0] = 90.0;
+    q[1] = 45.0;
+    q[2] = 90.0;
+    q[3] = -45.0;
+    q[4] = 90.0;
+
+    tool[2] = 0.1;  //-- z
+
+    ASSERT_TRUE(iCartesianSolver->appendLink(tool));
+
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_EQ(x.size(), 5);  //-- eulerYZ
+
+    ASSERT_NEAR(x[0], 0.0, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.965685425, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.3, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 90.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
+}
+
 TEST_F(AsibotSolverTestFromFile, AsibotSolverPoseDiff)
 {
     std::vector<double> xd(6), xc(6), x;
@@ -390,6 +417,36 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     ASSERT_NEAR(q[1], -68.57454095, EPS_JOINT);
     ASSERT_NEAR(q[2], 84.01897954, EPS_JOINT);
     ASSERT_NEAR(q[3], -42.00948977, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
+}
+
+TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKinTool)
+{
+    std::vector<double> xd(5), qGuess(5, 0.0), tool(6), q;
+
+    xd[0] = 0.565685425;  //-- x
+    xd[1] = 0.0;  //-- y
+    xd[2] = 1.265685425;  //-- z
+    xd[3] = 45.0;  //-- oyP
+    xd[4] = 0.0;  //-- ozPP
+
+    // forces FORWARD UP, compare with AsibotSolverSetLimits
+    qGuess[2] = 90.0;
+
+    tool[2] = 0.1;  //-- z
+
+    ASSERT_TRUE(iCartesianSolver->appendLink(tool));
+
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
+
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
     ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
