@@ -14,6 +14,7 @@ if(NOT SKIP_AsibotSolver)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
     yarp_add_plugin(AsibotSolver AsibotSolver.hpp
+                                 AsibotSolver.cpp
                                  DeviceDriverImpl.cpp
                                  ICartesianSolverImpl.cpp
                                  AsibotConfiguration.hpp

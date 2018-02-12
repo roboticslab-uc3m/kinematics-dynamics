@@ -11,6 +11,8 @@
 #include <yarp/os/Property.h>
 #include <yarp/os/Bottle.h>
 
+#include <yarp/math/Math.h>
+
 #include <ColorDebug.hpp>
 
 // ------------------- DeviceDriver Related ------------------------------------
@@ -85,6 +87,9 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         std::exit(0);
     }
 
+    tcpFrameStruct.hasFrame = false;
+    tcpFrameStruct.frameTcp = yarp::math::eye(4);
+
     return true;
 }
 
@@ -95,22 +100,6 @@ bool roboticslab::AsibotSolver::close() {
     {
         delete confFactory;
         confFactory = NULL;
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::buildStrategyFactory(const std::string & strategy)
-{
-    if (strategy == DEFAULT_STRATEGY)
-    {
-        confFactory = new AsibotConfigurationLeastOverallAngularDisplacementFactory(qMin, qMax);
-    }
-    else
-    {
-        return false;
     }
 
     return true;
