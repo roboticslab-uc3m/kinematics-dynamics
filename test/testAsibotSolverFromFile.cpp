@@ -69,6 +69,88 @@ protected:
 const double AsibotSolverTestFromFile::EPS_CART = 1e-6;
 const double AsibotSolverTestFromFile::EPS_JOINT = 1e-3;
 
+TEST_F(AsibotSolverTestFromFile, AsibotSolverAppendLink)
+{
+    std::vector<double> tool1(6), tool2(6), q(6), x;
+
+    tool1[0] = 0.05;
+    tool1[1] = 0.2;
+    tool1[2] = 0.1;
+    tool1[5] = 1.5707963267948966192313216916398;  //-- pi/2
+
+    tool2[2] = 0.15;
+
+    ASSERT_TRUE(iCartesianSolver->appendLink(tool1));
+
+    q[2] = 90.0;
+
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_EQ(x.size(), 5);  //-- eulerYZ
+
+    ASSERT_NEAR(x[0], 0.8, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.2, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.65, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 90.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
+
+    ASSERT_TRUE(iCartesianSolver->appendLink(tool2));
+
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_EQ(x.size(), 5);  //-- eulerYZ
+
+    ASSERT_NEAR(x[0], 0.95, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.2, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.65, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 90.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
+}
+
+TEST_F(AsibotSolverTestFromFile, AsibotSolverRestoreOriginalChain)
+{
+    std::vector<double> tool(6), q(6), x;
+
+    tool[0] = 0.05;
+    tool[1] = 0.2;
+    tool[2] = 0.1;
+    tool[5] = 1.5707963267948966192313216916398;  //-- pi/2
+
+    ASSERT_TRUE(iCartesianSolver->appendLink(tool));
+
+    q[2] = 90.0;
+
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_EQ(x.size(), 5);  //-- eulerYZ
+
+    ASSERT_NEAR(x[0], 0.8, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.2, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.65, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 90.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 90.0, EPS_CART);  //-- ozPP
+
+    ASSERT_TRUE(iCartesianSolver->restoreOriginalChain());
+
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+
+    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+
+    ASSERT_EQ(x.size(), 5);  //-- eulerYZ
+
+    ASSERT_NEAR(x[0], 0.7, EPS_CART);  //-- x
+    ASSERT_NEAR(x[1], 0.0, EPS_CART);  //-- y
+    ASSERT_NEAR(x[2], 0.7, EPS_CART);  //-- z
+    ASSERT_NEAR(x[3], 90.0, EPS_CART);  //-- oyP
+    ASSERT_NEAR(x[4], 0.0, EPS_CART);  //-- ozPP
+}
+
 TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin1)
 {
     std::vector<double> q(5, 0.0), x;
