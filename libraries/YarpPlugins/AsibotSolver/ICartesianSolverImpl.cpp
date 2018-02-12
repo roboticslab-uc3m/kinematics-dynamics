@@ -241,7 +241,7 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
     if (tcpFrameStruct.hasFrame)
     {
         using namespace yarp::math;
-        yarp::sig::Matrix H_0_N = tcpFrameStruct.frameTcp.transposed() * vectorToMatrix(xd_base_obj, true);
+        yarp::sig::Matrix H_0_N = vectorToMatrix(xd_base_obj, true) * yarp::math::luinv(tcpFrameStruct.frameTcp);
         matrixToVector(H_0_N, xd_base_obj, true);
     }
 
