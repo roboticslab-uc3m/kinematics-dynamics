@@ -14,7 +14,7 @@
  *
  * <b>Building</b>
 \verbatim
-cd example/cpp/cartesianControlExample/
+cd examples/cpp/cartesianControlExample/
 mkdir build; cd build; cmake ..
 make -j$(nproc)
 \endverbatim
