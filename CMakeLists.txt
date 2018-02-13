@@ -101,7 +101,7 @@ set(_target_kdl_version 1.4)
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
-add_subdirectory(test)
+add_subdirectory(tests)
 
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
