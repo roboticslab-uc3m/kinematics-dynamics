@@ -5,6 +5,7 @@
 #include <cmath>  //-- std::abs
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 #include <yarp/os/Vocab.h>
 
@@ -35,19 +36,13 @@ bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x
 
 bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    if (referenceFrame == TCP_FRAME)
-    {
-        CD_WARNING("TCP frame not supported yet in inv command.\n");
-        return false;
-    }
-
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,currentQ,q) )
+    if ( ! iCartesianSolver->invKin(xd,currentQ,q,referenceFrame) )
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -59,19 +54,13 @@ bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std:
 
 bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
-    if (referenceFrame == TCP_FRAME)
-    {
-        CD_WARNING("TCP frame not supported yet in movj command.\n");
-        return false;
-    }
-
     std::vector<double> currentQ(numRobotJoints), qd;
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,currentQ,qd) )
+    if ( ! iCartesianSolver->invKin(xd,currentQ,qd,referenceFrame) )
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -118,13 +107,11 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
 
     //-- Enter position mode and perform movement
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> posModes(numRobotJoints, VOCAB_CM_POSITION);
+    if (!iControlMode->setControlModes(posModes.data()))
     {
-        if ( ! iControlMode->setPositionMode(joint) )
-        {
-            CD_ERROR("setPositionMode failed at joint %d.\n", joint);
-            return false;
-        }
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     if ( ! iPositionControl->positionMove( qd.data() ) )
     {
@@ -145,10 +132,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
-    if (referenceFrame == TCP_FRAME)
+    if ( referenceFrame == ICartesianSolver::TCP_FRAME )
     {
-        CD_WARNING("TCP frame not supported yet in relj command.\n");
-        return false;
+        return movj(xd);
     }
 
     int state;
@@ -171,15 +157,32 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     CD_WARNING("MOVL mode still experimental.\n");
 
-    std::vector<double> x(6); // pose (3x transl, 3x orient)
-    if( referenceFrame == BASE_FRAME )
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
-        int state;
-        if ( ! stat(state, x) )
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> x_base_tcp;
+    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+
+    std::vector<double> xd_obj;
+    if( referenceFrame == ICartesianSolver::TCP_FRAME )
+    {
+        if( ! iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj) )
         {
-            CD_ERROR("stat failed.\n");
+            CD_ERROR("changeOrigin failed.\n");
             return false;
         }
+    }
+    else
+    {
+        xd_obj = xd;
     }
 
     //-- Create line trajectory
@@ -189,12 +192,12 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(x) )
+    if( ! iCartesianTrajectory->addWaypoint(x_base_tcp) )
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(xd) )
+    if( ! iCartesianTrajectory->addWaypoint(xd_obj) )
     {
         CD_ERROR("\n");
         return false;
@@ -216,9 +219,11 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     }
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     movementStartTime = yarp::os::Time::now();
     setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
@@ -236,9 +241,11 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     //-- Set velocity mode and set state which makes rate thread implement control.
     this->xdotd = xdotd;
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     setCurrentState( VOCAB_CC_MOVV_CONTROLLING );
     return true;
@@ -249,9 +256,11 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 bool roboticslab::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> torqModes(numRobotJoints, VOCAB_CM_TORQUE);
+    if (!iControlMode->setControlModes(torqModes.data()))
     {
-        iControlMode->setTorqueMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
     return true;
@@ -263,7 +272,7 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 {
     CD_WARNING("FORC mode still experimental.\n");
 
-    if (referenceFrame == TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         CD_WARNING("TCP frame not supported yet in forc command.\n");
         return false;
@@ -271,9 +280,11 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> torqModes(numRobotJoints, VOCAB_CM_TORQUE);
+    if (!iControlMode->setControlModes(torqModes.data()))
     {
-        iControlMode->setTorqueMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     setCurrentState( VOCAB_CC_FORC_CONTROLLING );
     return true;
@@ -283,9 +294,11 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> posModes(numRobotJoints, VOCAB_CM_POSITION);
+    if (!iControlMode->setControlModes(posModes.data()))
     {
-        iControlMode->setPositionMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return false;
     }
     iPositionControl->stop();
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
@@ -350,9 +363,11 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return;
     }
 
     std::vector<double> currentQ(numRobotJoints), qdot;
@@ -362,9 +377,9 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    if ( ! performDiffInvKin(currentQ, xdot, qdot) )
+    if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame) )
     {
-        CD_ERROR("Cannot perform differential IK.\n");
+        CD_ERROR("diffInvKin failed.\n");
         return;
     }
 
@@ -397,8 +412,29 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
+    std::vector<double> x_base_tcp;
+    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return;
+    }
+
+    std::vector<double> xd_obj;
+    if( referenceFrame == ICartesianSolver::TCP_FRAME )
+    {
+        if( ! iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj) )
+        {
+            CD_ERROR("changeOrigin failed.\n");
+            return;
+        }
+    }
+    else
+    {
+        xd_obj = x;
+    }
+
     std::vector<double> xd;
-    if ( ! iCartesianSolver->fwdKinError(x, currentQ, xd) )
+    if ( ! iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd) )
     {
         CD_ERROR("fwdKinError failed.\n");
         return;
@@ -408,15 +444,17 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     const double factor = gain / interval;
     std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
 
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
+    if (!iControlMode->setControlModes(velModes.data()))
     {
-        iControlMode->setVelocityMode(joint);
+        CD_ERROR("setControlModes failed.\n");
+        return;
     }
 
     std::vector<double> qdot;
-    if ( ! performDiffInvKin(currentQ, xdot, qdot) )
+    if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame) )
     {
-        CD_ERROR("Cannot perform differential IK.\n");
+        CD_ERROR("diffInvKin failed.\n");
         return;
     }
 
@@ -485,12 +523,12 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         waitPeriodMs = value;
         break;
     case VOCAB_CC_CONFIG_FRAME:
-        if (value != BASE_FRAME && value != TCP_FRAME)
+        if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
             CD_ERROR("Unrecognized of unsupported reference frame vocab.\n");
             return false;
         }
-        referenceFrame = static_cast<reference_frame>(value);
+        referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());

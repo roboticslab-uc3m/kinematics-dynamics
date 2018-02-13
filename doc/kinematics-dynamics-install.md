@@ -24,6 +24,8 @@ sudo make install
 cd ../..
 ```
 
+For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-googletest.md).
+
 ### Install kinematics-dynamics on Ubuntu (working on all tested versions)
 
 Our software integrates the previous dependencies. Note that you will be prompted for your password upon using `sudo` a couple of times:

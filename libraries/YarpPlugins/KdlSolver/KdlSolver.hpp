@@ -62,20 +62,22 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         // Restore original kinematic chain.
         virtual bool restoreOriginalChain();
 
+        // Change reference frame.
+        virtual bool changeOrigin(const std::vector<double> &x_old_obj,
+                                  const std::vector<double> &x_new_old,
+                                  std::vector<double> &x_new_obj);
+
         // Perform forward kinematics.
         virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
 
-        // Obtain error with respect to forward kinematics.
-        virtual bool fwdKinError(const std::vector<double> &xd, const std::vector<double> &q, std::vector<double> &x);
+        // Obtain difference between supplied pose inputs.
+        virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut);
 
         // Perform inverse kinematics.
-        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q);
+        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, const reference_frame frame);
 
         // Perform differential inverse kinematics.
-        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot);
-
-        // Perform differential inverse kinematics on end effector
-        virtual bool diffInvKinEE(const std::vector<double> &q, const std::vector<double> &xdotee, std::vector<double> &qdot);
+        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, const reference_frame frame);
 
         // Perform inverse dynamics.
         virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);

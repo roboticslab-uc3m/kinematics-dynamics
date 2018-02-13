@@ -8,6 +8,8 @@
 
 #include <yarp/os/Vocab.h>
 
+#include "ICartesianSolver.h"
+
 /**
  * @file
  * @brief Contains roboticslab::ICartesianControl and related vocabs.
@@ -119,13 +121,6 @@ namespace roboticslab
 class ICartesianControl
 {
     public:
-
-        //! Lists supported reference frames.
-        enum reference_frame
-        {
-            BASE_FRAME = VOCAB4('c','p','f','b'), //!< Base frame
-            TCP_FRAME = VOCAB4('c','p','f','t')   //!< End-effector frame (TCP)
-        };
 
         //! Destructor
         virtual ~ICartesianControl() {}
