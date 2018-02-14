@@ -26,7 +26,7 @@ make -j$(nproc)
  * What mostly changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
 [on terminal 2] teoSim
-[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/righ --angleRepr axisAngletArm
+[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/righArm --angleRepr axisAnglet
 [on terminal 4] ./cartesianControlExample
 [on possible terminal 5] yarp rpc /teoSim/rightArm/CartesianControl/rpc_transform:s (for manual operation)
 \endverbatim
