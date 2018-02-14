@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     options.put("device", "CartesianControlClient"); // our device (a dynamically loaded library)
     options.put("cartesianRemote", "/teoSim/rightArm/CartesianControl"); // remote port through which we'll talk to the server
     options.put("cartesianLocal", "/CartesianControlExample");
-    options.unput("transform", 1);  // Was yarp::os::Value::getNullValue()
+    options.put("transform", 1);  // Was yarp::os::Value::getNullValue()
 
     yarp::dev::PolyDriver dd(options);
     if (!dd.isValid())
