@@ -26,8 +26,9 @@ make -j$(nproc)
  * What mostly changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
 [on terminal 2] teoSim
-[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
+[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm --angleRepr axisAngle
 [on terminal 4] ./cartesianControlExample
+[on possible terminal 5] yarp rpc /teoSim/rightArm/CartesianControl/rpc_transform:s (for manual operation)
 \endverbatim
  */
 
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
     options.put("device", "CartesianControlClient"); // our device (a dynamically loaded library)
     options.put("cartesianRemote", "/teoSim/rightArm/CartesianControl"); // remote port through which we'll talk to the server
     options.put("cartesianLocal", "/CartesianControlExample");
-    options.put("transform", yarp::os::Value::getNullValue());
+    options.put("transform", 1);  // Was yarp::os::Value::getNullValue()
 
     yarp::dev::PolyDriver dd(options);
     if (!dd.isValid())
@@ -98,28 +99,59 @@ int main(int argc, char *argv[])
     // movl -> go to end position in task space
     printf("Position 1: poss (0 0 0 90 0 0 0)\n");
     iCartesianControl->movj(position);
+    yarp::os::Time::delay(8);
 
     // -- Position 2: move forward along axis X
     printf("Position 2: move forward along axis X\n");
     position[0] = 0.5;
     iCartesianControl->movj(position);
+    yarp::os::Time::delay(4);
 
     // -- Position 3: move right along axis Y
     printf("Position 3: move right along axis Y\n");
-    position[1] = -0.5;
+    position[1] = -0.4;
     iCartesianControl->movj(position);
+    yarp::os::Time::delay(4);
 
-    // -- Position 4: rotate 10 degrees about axis Y
-    printf("Position 4: rotate 10 degrees about axis Y\n");
+    // -- Position 4: rotate -12 degrees about axis Y
+    printf("Position 4: rotate -12 degrees about axis Y\n");
     position[3] = 0.0;
     position[4] = 1.0;
     position[5] = 0.0;
-    position[6] = 10.0;
+    position[6] = -12.0;
     iCartesianControl->movj(position);
+    yarp::os::Time::delay(4);
 
-    // -- Position 5: rotate 30 degrees about axis Y
-    printf("Position 5: rotate 30 degrees about axis Y\n");
-    position[6] = 30.0;
+    // -- Position 5: rotate 50 degrees about axis X
+    printf("Position 5: rotate 50 degrees about axis X\n");
+    position[3] = 1.0;
+    position[4] = 0.0;
+    position[5] = 0.0;
+    position[6] = -50.0;
+    iCartesianControl->movj(position);
+    yarp::os::Time::delay(4);
+
+    // -- Position 6:
+    printf("Position 6: poss (0 0 0 90 0 0 0)\n");
+    position[0] = 0.390926; // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
+    position[1] = -0.346663;
+    position[2] = 0.166873;
+    position[3] = -0.004334;
+    position[4] = 0.70944;
+    position[5] = 0.704752;
+    position[6] = 0.353119;
+    iCartesianControl->movj(position);
+    yarp::os::Time::delay(4);
+
+    // 3.25149848407618e-17 -0.34692 -0.221806 1.53080849893419e-16 1.0 -3.06161699786838e-17 90.0
+    printf("Position 7: Homing\n");
+    position[0] = 3.25149848407618e-17;
+    position[1] = -0.34692;
+    position[2] = -0.221806;
+    position[3] = 1.53080849893419e-16;
+    position[4] = 1.0;
+    position[5] = -3.06161699786838e-17;
+    position[6] = 90.0;
     iCartesianControl->movj(position);
 
     dd.close();
