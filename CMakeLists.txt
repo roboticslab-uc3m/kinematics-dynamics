@@ -83,6 +83,7 @@ find_or_build_package(COLOR_DEBUG)
 if(USE_SYSTEM_COLOR_DEBUG)
     find_package(COLOR_DEBUG REQUIRED)
     include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
+    add_library(COLOR_DEBUG UNKNOWN IMPORTED)
 endif()
 
 # Store common include directories in global scope.
