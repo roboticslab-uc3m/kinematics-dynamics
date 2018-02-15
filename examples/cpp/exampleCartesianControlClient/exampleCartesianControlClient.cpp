@@ -99,19 +99,20 @@ int main(int argc, char *argv[])
     // movl -> go to end position in task space
     printf("Position 1: poss (0 0 0 90 0 0 0)\n");
     iCartesianControl->movj(position);
-    yarp::os::Time::delay(8);
+    iCartesianControl->wait();
+
 
     // -- Position 2: move forward along axis X
     printf("Position 2: move forward along axis X\n");
     position[0] = 0.5;
     iCartesianControl->movj(position);
-    yarp::os::Time::delay(4);
+    iCartesianControl->wait();
 
     // -- Position 3: move right along axis Y
     printf("Position 3: move right along axis Y\n");
     position[1] = -0.4;
     iCartesianControl->movj(position);
-    yarp::os::Time::delay(4);
+    iCartesianControl->wait();
 
     // -- Position 4: rotate -12 degrees about axis Y
     printf("Position 4: rotate -12 degrees about axis Y\n");
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
     position[5] = 0.0;
     position[6] = -12.0;
     iCartesianControl->movj(position);
-    yarp::os::Time::delay(4);
+    iCartesianControl->wait();
 
     // -- Position 5: rotate 50 degrees about axis X
     printf("Position 5: rotate 50 degrees about axis X\n");
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
     position[5] = 0.0;
     position[6] = -50.0;
     iCartesianControl->movj(position);
-    yarp::os::Time::delay(4);
+    iCartesianControl->wait();
 
     // -- Position 6:
     printf("Position 6: poss (0 0 0 90 0 0 0)\n");
@@ -141,9 +142,9 @@ int main(int argc, char *argv[])
     position[5] = 0.704752;
     position[6] = 0.353119;
     iCartesianControl->movj(position);
-    yarp::os::Time::delay(4);
+    iCartesianControl->wait();
 
-    // 3.25149848407618e-17 -0.34692 -0.221806 1.53080849893419e-16 1.0 -3.06161699786838e-17 90.0
+    // -- Initial position
     printf("Position 7: Homing\n");
     position[0] = 3.25149848407618e-17;
     position[1] = -0.34692;
@@ -153,6 +154,7 @@ int main(int argc, char *argv[])
     position[5] = -3.06161699786838e-17;
     position[6] = 90.0;
     iCartesianControl->movj(position);
+    iCartesianControl->wait();
 
     dd.close();
 
