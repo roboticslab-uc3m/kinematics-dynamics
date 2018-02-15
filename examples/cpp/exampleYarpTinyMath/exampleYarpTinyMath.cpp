@@ -17,7 +17,7 @@
  *
  * @section exampleYarpTinyMath_build Building
 \verbatim
-cd repos/kinematics-dynamics/example/cpp
+cd examples/cpp/exampleYarpTinyMath/
 mkdir build; cd build; cmake ..
 make -j3
 \endverbatim
