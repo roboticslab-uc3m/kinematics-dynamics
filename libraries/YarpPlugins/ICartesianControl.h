@@ -158,7 +158,7 @@ class ICartesianControl
          * @param xd 6-element vector describing desired position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
-         * @param q Vector describing current position in joint space (degrees).
+         * @param q Vector describing current position in joint space (meters or degrees).
          *
          * @return true on success, false otherwise
          */
