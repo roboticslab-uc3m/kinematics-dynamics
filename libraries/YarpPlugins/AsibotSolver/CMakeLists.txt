@@ -1,4 +1,4 @@
-if(NOT YARP_HAS_MATH_LIB)
+if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_AsibotSolver OR ENABLE_AsibotSolver))
     message(WARNING "YARP math lib not found, disabling AsibotSolver")
 endif()
 
