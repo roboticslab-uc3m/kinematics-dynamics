@@ -5,6 +5,7 @@
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
+#include <yarp/dev/ControlBoardInterfaces.h>
 
 #include <ColorDebug.hpp>
 
@@ -88,6 +89,29 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         {
             CD_ERROR("Could not get axes.\n");
             return false;
+        }
+
+        yarp::dev::IControlLimits * iControlLimits;
+
+        if (!robotDevice.view(iControlLimits))
+        {
+            CD_ERROR("Could not view iControlLimits.\n");
+            return false;
+        }
+
+        std::vector<double> qMin, qMax;
+
+        for (int i = 0; i < numRobotJoints; i++)
+        {
+            double min, max;
+            iControlLimits->getLimits(i, &min, &max);
+            qMin.push_back(min);
+            qMax.push_back(max);
+        }
+
+        if (qMin[0] != qMax[0])
+        {
+            iCartesianSolver->setLimits(qMin, qMax);
         }
 
         CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
