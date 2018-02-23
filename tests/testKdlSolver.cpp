@@ -124,28 +124,5 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn3)
     ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
 
-TEST_F( KdlSolverTest, KdlSolverSetLimits)
-{
-    std::vector<double> qMin(1), qMax(1);
-    qMin[0] = 340.0;
-    qMax[0] = 380.0;
-    iCartesianSolver->setLimits(qMin,qMax);
-    std::vector<double> xd(6),qGuess(1),q;
-    xd[0] = 1;  // x
-    xd[1] = 0;  // y
-    xd[2] = 0;  // z
-    xd[3] = 0;  // o(x)
-    xd[4] = 0;  // o(y)
-    xd[5] = 0;  // o(z)
-    qGuess[0] = 350;
-    iCartesianSolver->invKin(xd,qGuess,q);
-    ASSERT_EQ(q.size(), 1 );
-    ASSERT_NEAR(q[0], 360, 1e-3);
-    //--Restore default limits
-    qMin[0] = -180.0;
-    qMax[0] = 180.0;
-    iCartesianSolver->setLimits(qMin,qMax);
-}
-
 }  // namespace roboticslab
 
