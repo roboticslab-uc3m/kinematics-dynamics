@@ -4,10 +4,13 @@
 
 #include <string>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
 
 #include <ColorDebug.hpp>
+
+#include "KinematicRepresentation.hpp"
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -41,32 +44,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
-            "AMOR kinematics description").asString();
-
-    yarp::os::Property cartesianDeviceOptions;
-
-    if (!cartesianDeviceOptions.fromConfigFile(kinematicsFile))
-    {
-        CD_ERROR("Cannot read from --kinematics \"%s\".\n", kinematicsFile.c_str());
-        return false;
-    }
-
-    cartesianDeviceOptions.put("device", "KdlSolver");
-
-    if (!cartesianDevice.open(cartesianDeviceOptions))
-    {
-        CD_ERROR("Solver device not valid.\n");
-        return false;
-    }
-
-    if (!cartesianDevice.view(iCartesianSolver))
-    {
-        CD_ERROR("Could not view iCartesianSolver.\n");
-        close();
-        return false;
-    }
-
     yarp::os::Value vHandle = config.find("handle");
 
     if (vHandle.isNull())
@@ -96,6 +73,53 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     }
 
     CD_SUCCESS("Acquired AMOR handle!\n");
+
+    yarp::os::Bottle qMin, qMax;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        AMOR_JOINT_INFO jointInfo;
+
+        if (amor_get_joint_info(handle, i, &jointInfo) != AMOR_SUCCESS)
+        {
+            CD_ERROR("%s\n", amor_error());
+            close();
+            return false;
+        }
+
+        qMin.addDouble(KinRepresentation::radToDeg(jointInfo.lowerJointLimit));
+        qMax.addDouble(KinRepresentation::radToDeg(jointInfo.upperJointLimit));
+    }
+
+    std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
+            "AMOR kinematics description").asString();
+
+    yarp::os::Property cartesianDeviceOptions;
+
+    if (!cartesianDeviceOptions.fromConfigFile(kinematicsFile))
+    {
+        CD_ERROR("Cannot read from --kinematics \"%s\".\n", kinematicsFile.c_str());
+        return false;
+    }
+
+    cartesianDeviceOptions.put("device", "KdlSolver");
+    cartesianDeviceOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
+    cartesianDeviceOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+
+    if (!cartesianDevice.open(cartesianDeviceOptions))
+    {
+        CD_ERROR("Solver device not valid.\n");
+        return false;
+    }
+
+    if (!cartesianDevice.view(iCartesianSolver))
+    {
+        CD_ERROR("Could not view iCartesianSolver.\n");
+        close();
+        return false;
+    }
+
+    CD_SUCCESS("Created solver device!\n");
 
     return true;
 }

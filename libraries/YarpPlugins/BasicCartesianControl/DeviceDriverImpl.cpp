@@ -33,22 +33,8 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
         return false;
     }
 
-    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
     std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
-
-    yarp::os::Property solverOptions;
-    solverOptions.fromString( config.toString() );
-    solverOptions.put("device",solverStr);
-
-    solverDevice.open(solverOptions);
-    if( ! solverDevice.isValid() ) {
-        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
-        return false;
-    }
-    if( ! solverDevice.view(iCartesianSolver) ) {
-        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
-        return false;
-    }
+    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
 
     yarp::os::Property robotOptions;
     robotOptions.fromString( config.toString() );
@@ -86,30 +72,38 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
+    yarp::os::Bottle qMin, qMax;
+    for(unsigned int joint=0;joint<numRobotJoints;joint++)
+    {
+        double min, max;
+        iControlLimits->getLimits(joint,&min,&max);
+        qMin.addDouble(min);
+        qMax.addDouble(max);
+        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
+    }
+
+    yarp::os::Property solverOptions;
+    solverOptions.fromString( config.toString() );
+    solverOptions.put("device",solverStr);
+    solverOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
+    solverOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+
+    solverDevice.open(solverOptions);
+    if( ! solverDevice.isValid() ) {
+        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
+        return false;
+    }
+    if( ! solverDevice.view(iCartesianSolver) ) {
+        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
+        return false;
+    }
+
     iCartesianSolver->getNumJoints( &numSolverJoints );
     CD_INFO("numSolverJoints: %d.\n",numSolverJoints);
 
     if( numRobotJoints != numSolverJoints )
     {
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJoints,numSolverJoints);
-    }
-
-    std::vector<double> qMin, qMax;
-    for(unsigned int joint=0;joint<numRobotJoints;joint++)
-    {
-        double min, max;
-        iControlLimits->getLimits(joint,&min,&max);
-        qMin.push_back(min);
-        qMax.push_back(max);
-        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
-    }
-    if( qMin[0] == qMax[0] )
-    {
-        CD_WARNING("Not setting joint limits on solver, because qMin[0] == qMax[0].\n");
-    }
-    else
-    {
-        iCartesianSolver->setLimits(qMin,qMax);
     }
 
     return this->start();

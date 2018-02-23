@@ -38,6 +38,7 @@ public:
         }
 
         solverOptions.put("device", "AsibotSolver");
+        solverOptions.fromString("(mins (-180.0 -135.0 -135.0 -135.0 -180.0)) (maxs ( 180.0  135.0  135.0  135.0  180.0))", false);
         solverDevice.open(solverOptions);
 
         if (!solverDevice.isValid())
@@ -520,40 +521,6 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinTool)
     ASSERT_NEAR(qdot[2], -1.017385551, EPS_JOINT * 10);
     ASSERT_NEAR(qdot[3], 0.50869278, EPS_JOINT * 10);
     ASSERT_NEAR(qdot[4], 0.0, EPS_JOINT);
-}
-
-TEST_F(AsibotSolverTestFromFile, AsibotSolverSetLimits)
-{
-    // enable joints q1, q3, q4, q5 on all configs
-    std::vector<double> qMin(5, -180.0), qMax(5, 180.0);
-
-    // restrict movement on joint q2, force FORWARD DOWN
-    qMin[1] = 45.0;
-    qMax[1] = 90.0;
-
-    ASSERT_TRUE(iCartesianSolver->setLimits(qMin, qMax));
-
-    std::vector<double> xd(5), qGuess(5, 0.0), q;
-
-    xd[0] = 0.494974746;  //-- x
-    xd[1] = 0.0;  //-- y
-    xd[2] = 1.194974747;  //-- z
-    xd[3] = 45.0;  //-- oyP
-    xd[4] = 0.0;  //-- ozPP
-
-    qGuess[2] = 90.0;
-
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
-
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
-
-    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
-
-    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
-    ASSERT_NEAR(q[1], 45.0, EPS_JOINT);
-    ASSERT_NEAR(q[2], -45.0, EPS_JOINT);
-    ASSERT_NEAR(q[3], 45.0, EPS_JOINT);
-    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
 }  // namespace roboticslab

@@ -331,15 +331,3 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vect
 }
 
 // -----------------------------------------------------------------------------
-
-bool roboticslab::KdlSolver::setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax)
-{
-    for (int motor = 0; motor < getChain().getNrOfJoints(); motor++)
-    {
-        this->qMax(motor) = KinRepresentation::degToRad(qMax[motor]);
-        this->qMin(motor) = KinRepresentation::degToRad(qMin[motor]);
-    }
-    return true;
-}
-
-// -----------------------------------------------------------------------------

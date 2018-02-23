@@ -22,7 +22,7 @@ class KdlSolverTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            yarp::os::Property solverOptions("(device KdlSolver) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+            yarp::os::Property solverOptions("(device KdlSolver) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
 
             solverDevice.open(solverOptions);
             if( ! solverDevice.isValid() ) {
@@ -122,29 +122,6 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn3)
     iCartesianSolver->invDyn(q,qdot,qdotdot,fexts,t);
     ASSERT_EQ(t.size(), 1 );
     ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
-}
-
-TEST_F( KdlSolverTest, KdlSolverSetLimits)
-{
-    std::vector<double> qMin(1), qMax(1);
-    qMin[0] = 340.0;
-    qMax[0] = 380.0;
-    iCartesianSolver->setLimits(qMin,qMax);
-    std::vector<double> xd(6),qGuess(1),q;
-    xd[0] = 1;  // x
-    xd[1] = 0;  // y
-    xd[2] = 0;  // z
-    xd[3] = 0;  // o(x)
-    xd[4] = 0;  // o(y)
-    xd[5] = 0;  // o(z)
-    qGuess[0] = 350;
-    iCartesianSolver->invKin(xd,qGuess,q);
-    ASSERT_EQ(q.size(), 1 );
-    ASSERT_NEAR(q[0], 360, 1e-3);
-    //--Restore default limits
-    qMin[0] = -180.0;
-    qMax[0] = 180.0;
-    iCartesianSolver->setLimits(qMin,qMax);
 }
 
 }  // namespace roboticslab
