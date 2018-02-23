@@ -42,36 +42,28 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
-    yarp::os::Value mins = config.check("mins", yarp::os::Value::getNullValue(), "minimum joint limits");
+    yarp::os::Bottle mins = config.findGroup("mins", "joint lower limits").tail();
+    yarp::os::Bottle maxs = config.findGroup("maxs", "joint upper limits").tail();
 
-    if (!mins.isNull())
+    if (mins.size() != NUM_MOTORS || maxs.size() != NUM_MOTORS)
     {
-        yarp::os::Bottle * b = mins.asList();
+        CD_ERROR("mins.size(), maxs.size() (%d, %d) != NUM_MOTORS (%d)\n", mins.size(), maxs.size(), NUM_MOTORS);
+        return false;
+    }
 
-        for (int i = 0; i < b->size(); i++)
+    qMin.resize(NUM_MOTORS);
+    qMax.resize(NUM_MOTORS);
+
+    for (int i = 0; i < NUM_MOTORS; i++)
+    {
+        qMin[i] = mins.get(i).asDouble();
+        qMax[i] = maxs.get(i).asDouble();
+
+        if (qMin[i] > qMax[i])
         {
-            qMin.push_back(b->get(i).asDouble());
+            CD_ERROR("qMin > qMax (%f > %f) at joint %d\n", qMin[i], qMax[i], i);
+            return false;
         }
-    }
-    else
-    {
-        qMin.resize(NUM_MOTORS, -90);
-    }
-
-    yarp::os::Value maxs = config.check("maxs", yarp::os::Value::getNullValue(), "maximum joint limits");
-
-    if (!maxs.isNull())
-    {
-        yarp::os::Bottle * b = maxs.asList();
-
-        for (int i = 0; i < b->size(); i++)
-        {
-            qMax.push_back(b->get(i).asDouble());
-        }
-    }
-    else
-    {
-        qMax.resize(NUM_MOTORS, 90);
     }
 
     std::string strategy = config.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
