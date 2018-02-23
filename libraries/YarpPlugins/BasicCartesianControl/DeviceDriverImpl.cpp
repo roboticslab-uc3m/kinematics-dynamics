@@ -81,10 +81,6 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
         qMax.addDouble(max);
         CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
     }
-    if( qMin.get(0).asDouble() == qMax.get(0).asDouble() )
-    {
-        CD_WARNING("Not setting joint limits on solver, because qMin[0] == qMax[0].\n");
-    }
 
     yarp::os::Property solverOptions;
     solverOptions.fromString( config.toString() );
