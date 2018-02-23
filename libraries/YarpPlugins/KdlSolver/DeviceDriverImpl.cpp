@@ -174,19 +174,31 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     qMin.resize(chain.getNrOfJoints());
 
     //-- Joint limits
-    yarp::os::Bottle maxs = fullConfig.findGroup("maxs", "joint upper limits").tail();
-    yarp::os::Bottle mins = fullConfig.findGroup("mins", "joint lower limits").tail();
-
-    if (maxs.size() != chain.getNrOfJoints() || mins.size() != chain.getNrOfJoints())
+    if (!fullConfig.check("mins") || !fullConfig.check("maxs"))
     {
-        CD_ERROR("chain.getNrOfJoints (%d) != maxs.size(), mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs.size(), mins.size());
+        CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+        return false;
+    }
+
+    yarp::os::Bottle *maxs = fullConfig.findGroup("maxs", "joint upper limits").get(1).asList();
+    yarp::os::Bottle *mins = fullConfig.findGroup("mins", "joint lower limits").get(1).asList();
+
+    if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
+    {
+        CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+        return false;
+    }
+
+    if (maxs->size() != chain.getNrOfJoints() || mins->size() != chain.getNrOfJoints())
+    {
+        CD_ERROR("chain.getNrOfJoints (%d) != maxs.size(), mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
         return false;
     }
 
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
     {
-        qMax(motor) = maxs.get(motor).asDouble();
-        qMin(motor) = mins.get(motor).asDouble();
+        qMax(motor) = maxs->get(motor).asDouble();
+        qMin(motor) = mins->get(motor).asDouble();
 
         if (qMin(motor) > qMax(motor))
         {

@@ -42,12 +42,24 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
-    yarp::os::Bottle mins = config.findGroup("mins", "joint lower limits").tail();
-    yarp::os::Bottle maxs = config.findGroup("maxs", "joint upper limits").tail();
-
-    if (mins.size() != NUM_MOTORS || maxs.size() != NUM_MOTORS)
+    if (!config.check("mins") || !config.check("maxs"))
     {
-        CD_ERROR("mins.size(), maxs.size() (%d, %d) != NUM_MOTORS (%d)\n", mins.size(), maxs.size(), NUM_MOTORS);
+        CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+        return false;
+    }
+
+    yarp::os::Bottle *mins = config.findGroup("mins", "joint lower limits").get(1).asList();
+    yarp::os::Bottle *maxs = config.findGroup("maxs", "joint upper limits").get(1).asList();
+
+    if (mins == YARP_NULLPTR || maxs == YARP_NULLPTR)
+    {
+        CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+        return false;
+    }
+
+    if (mins->size() != NUM_MOTORS || maxs->size() != NUM_MOTORS)
+    {
+        CD_ERROR("mins.size(), maxs.size() (%d, %d) != NUM_MOTORS (%d)\n", mins->size(), maxs->size(), NUM_MOTORS);
         return false;
     }
 
@@ -56,8 +68,8 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     for (int i = 0; i < NUM_MOTORS; i++)
     {
-        qMin[i] = mins.get(i).asDouble();
-        qMax[i] = maxs.get(i).asDouble();
+        qMin[i] = mins->get(i).asDouble();
+        qMax[i] = maxs->get(i).asDouble();
 
         if (qMin[i] > qMax[i])
         {
