@@ -38,6 +38,7 @@ public:
         }
 
         solverOptions.put("device", "AsibotSolver");
+        solverOptions.fromString("(mins (-180.0 -135.0 -135.0 -135.0 -180.0)) (maxs ( 180.0  135.0  135.0  135.0  180.0))", false);
         solverDevice.open(solverOptions);
 
         if (!solverDevice.isValid())
