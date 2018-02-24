@@ -7,7 +7,9 @@
 #include <vector>
 
 #include <yarp/os/Searchable.h>
+#include <yarp/os/Semaphore.h>
 #include <yarp/dev/DeviceDriver.h>
+#include <yarp/sig/Matrix.h>
 
 #include "AsibotConfiguration.hpp"
 #include "ICartesianSolver.h"
@@ -79,13 +81,10 @@ public:
     // Perform inverse dynamics.
     virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
-    // Set joint limits.
-    virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
-
 // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
     /**
-    * Open the DeviceDriver. 
+    * Open the DeviceDriver.
     * @param config is a list of parameters for the device.
     * Which parameters are effective for your device can vary.
     * See \ref dev_examples "device invocation examples".
@@ -93,7 +92,7 @@ public:
     * you can run the "yarpdev" program with the verbose flag
     * set to probe what parameters the device is checking.
     * If that fails too,
-    * you'll need to read the source code (please nag one of the 
+    * you'll need to read the source code (please nag one of the
     * yarp developers to add documentation for your device).
     * @return true/false upon success/failure
     */
@@ -107,19 +106,28 @@ public:
 
 private:
 
-    // defined in DeviceDriverImpl.cpp
+    struct AsibotTcpFrame
+    {
+        bool hasFrame;
+        yarp::sig::Matrix frameTcp;
+    };
+
     bool buildStrategyFactory(const std::string & strategy);
 
-    AsibotConfiguration * getConfiguration() const
-    {
-        return confFactory->create();
-    }
+    AsibotConfiguration * getConfiguration() const;
+
+    AsibotTcpFrame getTcpFrame() const;
+    void setTcpFrame(const AsibotTcpFrame & tcpFrameStruct);
 
     double A0, A1, A2, A3;  // link lengths
 
     std::vector<double> qMin, qMax;
 
     AsibotConfigurationFactory * confFactory;
+
+    AsibotTcpFrame tcpFrameStruct;
+
+    mutable yarp::os::Semaphore mutex;
 };
 
 }  // namespace roboticslab

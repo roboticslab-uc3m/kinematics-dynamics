@@ -11,6 +11,8 @@
 #include <yarp/os/Property.h>
 #include <yarp/os/Bottle.h>
 
+#include <yarp/math/Math.h>
+
 #include <ColorDebug.hpp>
 
 // ------------------- DeviceDriver Related ------------------------------------
@@ -40,36 +42,40 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
-    yarp::os::Value mins = config.check("mins", yarp::os::Value::getNullValue(), "minimum joint limits");
-
-    if (!mins.isNull())
+    if (!config.check("mins") || !config.check("maxs"))
     {
-        yarp::os::Bottle * b = mins.asList();
+        CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+        return false;
+    }
 
-        for (int i = 0; i < b->size(); i++)
+    yarp::os::Bottle *mins = config.findGroup("mins", "joint lower limits").get(1).asList();
+    yarp::os::Bottle *maxs = config.findGroup("maxs", "joint upper limits").get(1).asList();
+
+    if (mins == YARP_NULLPTR || maxs == YARP_NULLPTR)
+    {
+        CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+        return false;
+    }
+
+    if (mins->size() != NUM_MOTORS || maxs->size() != NUM_MOTORS)
+    {
+        CD_ERROR("mins.size(), maxs.size() (%d, %d) != NUM_MOTORS (%d)\n", mins->size(), maxs->size(), NUM_MOTORS);
+        return false;
+    }
+
+    qMin.resize(NUM_MOTORS);
+    qMax.resize(NUM_MOTORS);
+
+    for (int i = 0; i < NUM_MOTORS; i++)
+    {
+        qMin[i] = mins->get(i).asDouble();
+        qMax[i] = maxs->get(i).asDouble();
+
+        if (qMin[i] >= qMax[i])
         {
-            qMin.push_back(b->get(i).asDouble());
+            CD_ERROR("qMin >= qMax (%f >= %f) at joint %d\n", qMin[i], qMax[i], i);
+            return false;
         }
-    }
-    else
-    {
-        qMin.resize(NUM_MOTORS, -90);
-    }
-
-    yarp::os::Value maxs = config.check("maxs", yarp::os::Value::getNullValue(), "maximum joint limits");
-
-    if (!maxs.isNull())
-    {
-        yarp::os::Bottle * b = maxs.asList();
-
-        for (int i = 0; i < b->size(); i++)
-        {
-            qMax.push_back(b->get(i).asDouble());
-        }
-    }
-    else
-    {
-        qMax.resize(NUM_MOTORS, 90);
     }
 
     std::string strategy = config.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
@@ -85,6 +91,9 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         std::exit(0);
     }
 
+    tcpFrameStruct.hasFrame = false;
+    tcpFrameStruct.frameTcp = yarp::math::eye(4);
+
     return true;
 }
 
@@ -95,22 +104,6 @@ bool roboticslab::AsibotSolver::close() {
     {
         delete confFactory;
         confFactory = NULL;
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::buildStrategyFactory(const std::string & strategy)
-{
-    if (strategy == DEFAULT_STRATEGY)
-    {
-        confFactory = new AsibotConfigurationLeastOverallAngularDisplacementFactory(qMin, qMax);
-    }
-    else
-    {
-        return false;
     }
 
     return true;

@@ -83,6 +83,7 @@ find_or_build_package(COLOR_DEBUG)
 if(USE_SYSTEM_COLOR_DEBUG)
     find_package(COLOR_DEBUG REQUIRED)
     include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
+    add_library(COLOR_DEBUG UNKNOWN IMPORTED)
 endif()
 
 # Store common include directories in global scope.
@@ -101,7 +102,7 @@ set(_target_kdl_version 1.4)
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
-add_subdirectory(test)
+add_subdirectory(tests)
 
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)

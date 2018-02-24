@@ -41,53 +41,58 @@ if(NOT GTestSources_INCLUDE_DIR)
                                        NO_CMAKE_ENVIRONMENT_PATH)
 endif()
 
-set(_cmake_include_dirs ${CMAKE_REQUIRED_INCLUDES})
+set(GTestSources_VERSION GTestSources_VERSION-NOT_FOUND)
 
-include(CheckCXXSourceCompiles)
-list(APPEND CMAKE_REQUIRED_INCLUDES ${GTestSources_INCLUDE_DIR})
+if(GTestSources_SOURCE_DIR AND GTestSources_INCLUDE_DIR)
+    set(_cmake_include_dirs ${CMAKE_REQUIRED_INCLUDES})
 
-check_cxx_source_compiles("
-        #include <gtest/gtest.h>
-        int main() {
-            typedef const char* (testing::TestInfo::*fun)() const;
-            fun f = &testing::TestInfo::type_param;
-            return 0;
-        }"
-    _gtest_compatible_1_6_0)
+    include(CheckCXXSourceCompiles)
+    list(APPEND CMAKE_REQUIRED_INCLUDES ${GTestSources_INCLUDE_DIR})
 
-check_cxx_source_compiles("
-        #include <gtest/gtest.h>
-        int main() {
-            typedef bool (testing::TestInfo::*fun)() const;
-            fun f = &testing::TestInfo::is_reportable;
-            return 0;
-        }"
-    _gtest_compatible_1_7_0)
+    check_cxx_source_compiles("
+            #include <gtest/gtest.h>
+            int main() {
+                typedef const char* (testing::TestInfo::*fun)() const;
+                fun f = &testing::TestInfo::type_param;
+                return 0;
+            }"
+        _gtest_compatible_1_6_0)
 
-check_cxx_source_compiles("
-        #include <gtest/gtest.h>
-        int main() {
-            typedef const char* (testing::TestInfo::*fun)() const;
-            fun f = &testing::TestInfo::file;
-            return 0;
-        }"
-    _gtest_compatible_1_8_0)
+    check_cxx_source_compiles("
+            #include <gtest/gtest.h>
+            int main() {
+                typedef bool (testing::TestInfo::*fun)() const;
+                fun f = &testing::TestInfo::is_reportable;
+                return 0;
+            }"
+        _gtest_compatible_1_7_0)
 
-if(_gtest_compatible_1_8_0)
-    set(GTestSources_VERSION 1.8.0)
-elseif(_gtest_compatible_1_7_0)
-    set(GTestSources_VERSION 1.7.0)
-elseif(_gtest_compatible_1_6_0)
-    set(GTestSources_VERSION 1.6.0)
-else()
-    message(STATUS "FindGTestSources.cmake reports unhandled GTest version (<1.6.0)")
-    set(GTestSources_VERSION GTestSources_VERSION-NOT_FOUND)
+    check_cxx_source_compiles("
+            #include <gtest/gtest.h>
+            int main() {
+                typedef const char* (testing::TestInfo::*fun)() const;
+                fun f = &testing::TestInfo::file;
+                return 0;
+            }"
+        _gtest_compatible_1_8_0)
+
+    if(_gtest_compatible_1_8_0)
+        set(GTestSources_VERSION 1.8.0)
+    elseif(_gtest_compatible_1_7_0)
+        set(GTestSources_VERSION 1.7.0)
+    elseif(_gtest_compatible_1_6_0)
+        set(GTestSources_VERSION 1.6.0)
+    else()
+        message(STATUS "FindGTestSources.cmake reports unhandled GTest version (<1.6.0)")
+    endif()
+
+    set(CMAKE_REQUIRED_INCLUDES "${_cmake_include_dirs}")
+    unset(_cmake_include_dirs)
 endif()
 
-set(CMAKE_REQUIRED_INCLUDES "${_cmake_include_dirs}")
-
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GTestSources REQUIRED_VARS GTestSources_SOURCE_DIR
+find_package_handle_standard_args(GTestSources FOUND_VAR GTestSources_FOUND
+                                               REQUIRED_VARS GTestSources_SOURCE_DIR
                                                              GTestSources_INCLUDE_DIR
                                                VERSION_VAR GTestSources_VERSION)
 

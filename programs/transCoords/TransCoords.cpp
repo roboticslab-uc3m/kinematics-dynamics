@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 
-#include <yarp/os/Value.h>
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Value.h>
 
 #include <ColorDebug.hpp>
 
@@ -52,22 +53,6 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         std::string solverStr = rf.check("solver", yarp::os::Value(DEFAULT_SOLVER), "cartesian solver").asString();
         std::string robotStr = rf.check("robot", yarp::os::Value(DEFAULT_ROBOT), "robot device").asString();
 
-        yarp::os::Property solverOptions;
-        solverOptions.fromString(rf.toString());
-        solverOptions.put("device", solverStr);
-
-        if (!solverDevice.open(solverOptions))
-        {
-            CD_ERROR("solver device not valid: %s.\n", solverStr.c_str());
-            return false;
-        }
-
-        if (!solverDevice.view(iCartesianSolver))
-        {
-            CD_ERROR("Could not view iCartesianSolver in: %s.\n", solverStr.c_str());
-            return false;
-        }
-
         yarp::os::Property robotOptions;
         robotOptions.fromString(rf.toString());
         robotOptions.put("device", robotStr);
@@ -84,13 +69,46 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
+        if (!robotDevice.view(iControlLimits))
+        {
+            CD_ERROR("Could not view iControlLimits.\n");
+            return false;
+        }
+
         if (!iEncoders->getAxes(&numRobotJoints))
         {
             CD_ERROR("Could not get axes.\n");
             return false;
         }
 
-        CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
+        yarp::os::Bottle qMin, qMax;
+
+        for (int i = 0; i < numRobotJoints; i++)
+        {
+            double min, max;
+            iControlLimits->getLimits(i, &min, &max);
+            qMin.addDouble(min);
+            qMax.addDouble(max);
+        }
+
+        yarp::os::Property solverOptions;
+
+        solverOptions.fromString(rf.toString());
+        solverOptions.put("device", solverStr);
+        solverOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
+        solverOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+
+        if (!solverDevice.open(solverOptions))
+        {
+            CD_ERROR("solver device not valid: %s.\n", solverStr.c_str());
+            return false;
+        }
+
+        if (!solverDevice.view(iCartesianSolver))
+        {
+            CD_ERROR("Could not view iCartesianSolver in: %s.\n", solverStr.c_str());
+            return false;
+        }
     }
     else
     {

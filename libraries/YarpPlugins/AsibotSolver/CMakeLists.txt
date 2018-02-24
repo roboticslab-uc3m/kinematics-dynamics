@@ -1,34 +1,45 @@
+if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_AsibotSolver OR ENABLE_AsibotSolver))
+    message(WARNING "YARP math lib not found, disabling AsibotSolver")
+endif()
+
 yarp_prepare_plugin(AsibotSolver
                     CATEGORY device
                     TYPE roboticslab::AsibotSolver
                     INCLUDE AsibotSolver.hpp
                     DEFAULT ON
-                    DEPENDS ENABLE_KinematicRepresentationLib)
+                    DEPENDS "YARP_HAS_MATH_LIB;ENABLE_KinematicRepresentationLib")
 
 if(NOT SKIP_AsibotSolver)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
-yarp_add_plugin(AsibotSolver AsibotSolver.hpp
-                             DeviceDriverImpl.cpp
-                             ICartesianSolverImpl.cpp
-                             AsibotConfiguration.hpp
-                             AsibotConfiguration.cpp
-                             AsibotConfigurationLeastOverallAngularDisplacement.cpp)
+    yarp_add_plugin(AsibotSolver AsibotSolver.hpp
+                                 AsibotSolver.cpp
+                                 DeviceDriverImpl.cpp
+                                 ICartesianSolverImpl.cpp
+                                 AsibotConfiguration.hpp
+                                 AsibotConfiguration.cpp
+                                 AsibotConfigurationLeastOverallAngularDisplacement.cpp)
 
-add_dependencies(AsibotSolver COLOR_DEBUG)
+    add_dependencies(AsibotSolver COLOR_DEBUG)
 
-target_link_libraries(AsibotSolver YARP::YARP_OS
-                                   YARP::YARP_dev
-                                   KinematicRepresentationLib)
+    target_link_libraries(AsibotSolver YARP::YARP_OS
+                                       YARP::YARP_dev
+                                       YARP::YARP_sig
+                                       YARP::YARP_math
+                                       KinematicRepresentationLib)
 
-yarp_install(TARGETS AsibotSolver
-             COMPONENT runtime
-             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+    yarp_install(TARGETS AsibotSolver
+                 COMPONENT runtime
+                 LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
 
-yarp_install(FILES AsibotSolver.ini
-             COMPONENT runtime
-             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR}) 
+    yarp_install(FILES AsibotSolver.ini
+                 COMPONENT runtime
+                 DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+
+else()
+
+    set(ENABLE_AsibotSolver OFF CACHE BOOL "Enable/disable AsibotSolver device" FORCE)
 
 endif()

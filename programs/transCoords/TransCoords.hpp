@@ -7,7 +7,7 @@
 #include <yarp/os/RFModule.h>
 
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/dev/IEncoders.h>
+#include <yarp/dev/ControlBoardInterfaces.h>
 
 #include <kdl/frames.hpp>
 
@@ -46,6 +46,7 @@ private:
     yarp::dev::PolyDriver solverDevice;
 
     yarp::dev::IEncoders* iEncoders;
+    yarp::dev::IControlLimits* iControlLimits;
     roboticslab::ICartesianSolver* iCartesianSolver;
 
     KDL::Frame fixedH;
