@@ -39,6 +39,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     yarp::os::Property robotOptions;
     robotOptions.fromString( config.toString() );
     robotOptions.put("device",robotStr);
+    robotOptions.setMonitor(config.getMonitor(), robotStr.c_str());
     robotDevice.open(robotOptions);
     if( ! robotDevice.isValid() ) {
         CD_ERROR("robot device not valid: %s.\n",robotStr.c_str());
@@ -87,6 +88,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     solverOptions.put("device",solverStr);
     solverOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
     solverOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+    solverOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     solverDevice.open(solverOptions);
     if( ! solverDevice.isValid() ) {

@@ -102,9 +102,11 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    cartesianDeviceOptions.put("device", "KdlSolver");
+    std::string solverStr = "KdlSolver";
+    cartesianDeviceOptions.put("device", solverStr);
     cartesianDeviceOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
     cartesianDeviceOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+    cartesianDeviceOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     if (!cartesianDevice.open(cartesianDeviceOptions))
     {
