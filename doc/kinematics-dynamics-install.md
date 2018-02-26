@@ -64,7 +64,7 @@ Make sure you have previously installed `kinematics-dynamics`.
 ```bash
 cd  # go home
 cd repos/kinematics-dynamics/bindings
-mkdir build
+mkdir build && cd build
 cmake .. -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON
 make -j$(nproc)  # compile
 sudo make install; sudo ldconfig; cd # install and go home
