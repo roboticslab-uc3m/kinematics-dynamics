@@ -11,13 +11,13 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
     gain = config.check("controllerGain",yarp::os::Value(DEFAULT_GAIN),"controller gain").asDouble();
-    maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity").asDouble();
-    duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration").asDouble();
-    cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate [ms]").asInt();
-    waitPeriodMs = config.check("waitPeriodMs",yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),"wait period [ms]").asInt();
+    maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity (meters/second or degrees/second)").asDouble();
+    duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration (seconds)").asDouble();
+    cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate (milliseconds)").asInt();
+    waitPeriodMs = config.check("waitPeriodMs",yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),"wait command period (milliseconds)").asInt();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-                "reference frame").asString();
+                "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
@@ -34,7 +34,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     }
 
     std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
-    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
+    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver device").asString();
 
     yarp::os::Property robotOptions;
     robotOptions.fromString( config.toString() );

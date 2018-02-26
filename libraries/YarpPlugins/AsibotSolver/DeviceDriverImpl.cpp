@@ -35,10 +35,10 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         // Do not exit: let last layer exit so we get help from the complete chain.
     }
 
-    A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1").asDouble();
-    A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2").asDouble();
-    A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3").asDouble();
-    A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4").asDouble();
+    A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asDouble();
+    A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asDouble();
+    A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3 (meters)").asDouble();
+    A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4 (meters)").asDouble();
 
     CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
@@ -48,8 +48,8 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         return false;
     }
 
-    yarp::os::Bottle *mins = config.findGroup("mins", "joint lower limits").get(1).asList();
-    yarp::os::Bottle *maxs = config.findGroup("maxs", "joint upper limits").get(1).asList();
+    yarp::os::Bottle *mins = config.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+    yarp::os::Bottle *maxs = config.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
 
     if (mins == YARP_NULLPTR || maxs == YARP_NULLPTR)
     {
