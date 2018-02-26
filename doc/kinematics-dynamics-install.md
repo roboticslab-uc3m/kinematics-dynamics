@@ -46,6 +46,10 @@ export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build
 
 For additional options use `ccmake` instead of `cmake`.
 
+# Install Bindings
+
+Swig is needed in order to build all language bindings. Refer to [Install SWIG](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-swig.md).
+
 ## Install Python bindings
 
 First, install Python development packages.
