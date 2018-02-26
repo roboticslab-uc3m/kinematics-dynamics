@@ -22,13 +22,13 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
             "controller gain").asDouble();
 
     maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity").asDouble();
+            "maximum joint velocity (meters/second or degrees/second)").asDouble();
 
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
-            "wait period [ms]").asInt();
+            "wait command period (milliseconds)").asInt();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-            "reference frame").asString();
+            "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
@@ -92,7 +92,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     }
 
     std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
-            "AMOR kinematics description").asString();
+            "path to file with description of AMOR kinematics").asString();
 
     yarp::os::Property cartesianDeviceOptions;
 
@@ -102,9 +102,11 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    cartesianDeviceOptions.put("device", "KdlSolver");
+    std::string solverStr = "KdlSolver";
+    cartesianDeviceOptions.put("device", solverStr);
     cartesianDeviceOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
     cartesianDeviceOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+    cartesianDeviceOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     if (!cartesianDevice.open(cartesianDeviceOptions))
     {

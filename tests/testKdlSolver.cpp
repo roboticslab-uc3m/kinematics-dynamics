@@ -22,7 +22,7 @@ class KdlSolverTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            yarp::os::Property solverOptions("(device KdlSolver) (gravity 0 -10 0) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
+            yarp::os::Property solverOptions("(device KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
 
             solverDevice.open(solverOptions);
             if( ! solverDevice.isValid() ) {

@@ -13,9 +13,9 @@
 bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 {
     std::string local = config.check("cartesianLocal", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
-            "cartesianLocal").asString();
+            "local port").asString();
     std::string remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
-            "cartesianRemote").asString();
+            "remote port").asString();
 
     bool portsOk = true;
 
@@ -29,7 +29,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
-    std::string suffix = config.check("transform") ? "/rpc_transform:s" : "/rpc:s";
+    std::string suffix = config.check("transform", "connect to server transform port") ? "/rpc_transform:s" : "/rpc:s";
 
     if (!rpcClient.addOutput(remote + suffix))
     {
