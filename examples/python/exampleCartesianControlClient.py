@@ -7,7 +7,7 @@ yarp.Network.init()
 
 if yarp.Network.checkNetwork() != True:
     print '[error] Please try running yarp server'
-    quit()
+    raise SystemExit
 
 options = yarp.Property()
 options.put('device','CartesianControlClient')
@@ -47,4 +47,3 @@ print 'delay(1)'
 yarp.Time.delay(1)
 
 print 'bye!'
-
