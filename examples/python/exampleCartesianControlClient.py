@@ -17,7 +17,7 @@ dd = yarp.PolyDriver(options)  # calls open -> connects
 
 if not dd.isValid():
     print 'Cannot open the device!'
-    sys.exit()
+    raise SystemExit
 
 cartesianControl = kinematics_dynamics.viewICartesianControl(dd)  # view the actual interface
 
