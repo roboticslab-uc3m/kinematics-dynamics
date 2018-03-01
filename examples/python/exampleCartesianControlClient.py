@@ -11,7 +11,7 @@ if yarp.Network.checkNetwork() != True:
 
 options = yarp.Property()
 options.put('device','CartesianControlClient')
-options.put('cartesianRemote','/teoSim/rightArm/CartesianControlServer')
+options.put('cartesianRemote','/teoSim/rightArm/CartesianControl')
 options.put('cartesianLocal','/cartesianControlExample')
 dd = yarp.PolyDriver(options)  # calls open -> connects
 
