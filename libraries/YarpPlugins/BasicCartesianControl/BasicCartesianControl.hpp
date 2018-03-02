@@ -114,7 +114,27 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     public:
 
-        BasicCartesianControl() : currentState(DEFAULT_INIT_STATE), RateThread(DEFAULT_CMC_RATE_MS) {}
+        BasicCartesianControl() : yarp::os::RateThread(DEFAULT_CMC_RATE_MS),
+                                  iCartesianSolver(NULL),
+                                  iEncoders(NULL),
+                                  iPositionControl(NULL),
+                                  iVelocityControl(NULL),
+                                  iControlLimits(NULL),
+                                  iTorqueControl(NULL),
+                                  iControlMode(NULL),
+                                  referenceFrame(ICartesianSolver::BASE_FRAME),
+                                  gain(DEFAULT_GAIN),
+                                  maxJointVelocity(DEFAULT_QDOT_LIMIT),
+                                  duration(DEFAULT_DURATION),
+                                  cmcRateMs(DEFAULT_CMC_RATE_MS),
+                                  waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
+                                  numRobotJoints(0),
+                                  numSolverJoints(0),
+                                  currentState(DEFAULT_INIT_STATE),
+                                  movementStartTime(0),
+                                  iCartesianTrajectory(NULL),
+                                  cmcSuccess(true)
+        {}
 
         // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
