@@ -507,7 +507,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         duration = value;
         break;
     case VOCAB_CC_CONFIG_CMC_RATE:
-        if (!RateThread::setRate(value))
+        if (!yarp::os::RateThread::setRate(value))
         {
             CD_ERROR("Cannot set new CMC rate.\n");
             return false;

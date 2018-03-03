@@ -6,8 +6,8 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
-
+bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
+{
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
     gain = config.check("controllerGain",yarp::os::Value(DEFAULT_GAIN),"controller gain").asDouble();
@@ -108,14 +108,19 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJoints,numSolverJoints);
     }
 
-    return this->start();
+    if( cmcRateMs != DEFAULT_CMC_RATE_MS )
+    {
+        yarp::os::RateThread::setRate(cmcRateMs);
+    }
+
+    return yarp::os::RateThread::start();
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::BasicCartesianControl::close()
 {
-    this->stop();
+    yarp::os::RateThread::stop();
     robotDevice.close();
     solverDevice.close();
     return true;
