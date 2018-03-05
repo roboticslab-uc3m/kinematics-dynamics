@@ -27,7 +27,7 @@ x = yarp.DVector()
 stat = cartesianControl.stat(x)
 print '<',yarp.Vocab.decode(stat),'[%s]' % ', '.join(map(str, x))
 
-xd = [0,-0.346927436108, -0.221801094416,0,1,0,90]
+xd = [0.389496, -0.34692, 0.16769, 1.0, 0.0, 0.0, 20.0]
 
 print '> inv [%s]' % ', '.join(map(str, xd))
 xd_vector = yarp.DVector(xd)
