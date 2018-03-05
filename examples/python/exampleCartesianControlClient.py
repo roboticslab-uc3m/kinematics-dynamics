@@ -13,6 +13,7 @@ options = yarp.Property()
 options.put('device','CartesianControlClient')
 options.put('cartesianRemote','/teoSim/rightArm/CartesianControl')
 options.put('cartesianLocal','/cartesianControlExample')
+options.put('transform', 1)
 dd = yarp.PolyDriver(options)  # calls open -> connects
 
 if not dd.isValid():
