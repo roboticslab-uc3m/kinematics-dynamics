@@ -5,6 +5,7 @@
 #include <string>
 
 #include <yarp/os/Network.h>
+#include <yarp/os/Time.h>
 
 #include <ColorDebug.hpp>
 
@@ -58,6 +59,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     {
         fkStreamEnabled = true;
         fkInPort.useCallback(fkStreamResponder);
+        yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
     }
 
     CD_SUCCESS("Connected to remote.\n");
