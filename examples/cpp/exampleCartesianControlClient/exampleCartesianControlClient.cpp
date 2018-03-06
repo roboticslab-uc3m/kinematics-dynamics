@@ -97,22 +97,49 @@ int main(int argc, char *argv[])
 
     // movj -> go to end position in joint space
     // movl -> go to end position in task space
-    printf("Position 1: poss (0 0 0 90 0 0 0)\n");
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
 
+    printf("Position 1: poss (0 0 0 90 0 0 0)\n");
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     // -- Position 2: move forward along axis X
     printf("Position 2: move forward along axis X\n");
     position[0] = 0.5;
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     // -- Position 3: move right along axis Y
     printf("Position 3: move right along axis Y\n");
     position[1] = -0.4;
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     // -- Position 4: rotate -12 degrees about axis Y
     printf("Position 4: rotate -12 degrees about axis Y\n");
@@ -120,8 +147,17 @@ int main(int argc, char *argv[])
     position[4] = 1.0;
     position[5] = 0.0;
     position[6] = -12.0;
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     // -- Position 5: rotate 50 degrees about axis X
     printf("Position 5: rotate 50 degrees about axis X\n");
@@ -129,8 +165,17 @@ int main(int argc, char *argv[])
     position[4] = 0.0;
     position[5] = 0.0;
     position[6] = -50.0;
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     // -- Position 6:
     printf("Position 6: poss (0 0 0 90 0 0 0)\n");
@@ -141,20 +186,38 @@ int main(int argc, char *argv[])
     position[4] = 0.70944;
     position[5] = 0.704752;
     position[6] = 0.353119;
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     // -- Initial position
     printf("Position 7: Homing\n");
-    position[0] = 3.25149848407618e-17;
+    position[0] = 0.0;
     position[1] = -0.34692;
     position[2] = -0.221806;
-    position[3] = 1.53080849893419e-16;
+    position[3] = 0.0;
     position[4] = 1.0;
-    position[5] = -3.06161699786838e-17;
+    position[5] = 0.0;
     position[6] = 90.0;
-    iCartesianControl->movj(position);
-    iCartesianControl->wait();
+
+    if(iCartesianControl->movj(position))
+    {
+        printf("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        printf("[error]\n");
+        return 1;
+    }
 
     dd.close();
 
