@@ -5,6 +5,7 @@
 #include <string>
 
 #include <yarp/os/Network.h>
+#include <yarp/os/Time.h>
 
 #include <ColorDebug.hpp>
 
@@ -45,9 +46,12 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
+    fkStreamTimeoutSecs = config.check("fkStreamTimeoutSecs", yarp::os::Value(DEFAULT_FK_STREAM_TIMEOUT_SECS),
+            "FK stream timeout (seconds)").asDouble();
+
     if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
     {
-        CD_INFO("FK stream disabled, using RPC instead.\n");
+        CD_WARNING("FK stream disabled, using RPC instead.\n");
         fkStreamEnabled = false;
         fkInPort.close();
     }
@@ -55,6 +59,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     {
         fkStreamEnabled = true;
         fkInPort.useCallback(fkStreamResponder);
+        yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
     }
 
     CD_SUCCESS("Connected to remote.\n");

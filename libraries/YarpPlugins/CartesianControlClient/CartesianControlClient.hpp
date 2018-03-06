@@ -18,7 +18,7 @@
 #define DEFAULT_CARTESIAN_LOCAL "/CartesianControl"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
-#define FK_STREAM_TIMEOUT_SECS 0.5
+#define DEFAULT_FK_STREAM_TIMEOUT_SECS 0.5
 
 namespace roboticslab
 {
@@ -135,6 +135,7 @@ protected:
     yarp::os::BufferedPort<yarp::os::Bottle> fkInPort, commandPort;
 
     FkStreamResponder fkStreamResponder;
+    double fkStreamTimeoutSecs;
 
     bool fkStreamEnabled;
 };
