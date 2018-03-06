@@ -50,7 +50,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 
     if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
     {
-        CD_INFO("FK stream disabled, using RPC instead.\n");
+        CD_WARNING("FK stream disabled, using RPC instead.\n");
         fkStreamEnabled = false;
         fkInPort.close();
     }
