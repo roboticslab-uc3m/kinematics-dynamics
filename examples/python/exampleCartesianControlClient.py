@@ -35,10 +35,10 @@ xd[2] = [0.5, -0.4, 0.16769, 1.0, 0.0, 0.0, 0.0]
 xd[3] = [0.5, -0.4, 0.16769, 0.0, 1.0, 0.0, -12.0]
 xd[4] = [0.5, -0.4, 0.16769, 1.0, 0.0, 0.0, -50.0]
 xd[5] = [0.389496, -0.34692, 0.16769, 1.0, 0.0, 0.0, 0.0]
-xd[6] = [3.25149848407618e-17, -0.34692, -0.221806, 1.53080849893419e-16, 1.0, -3.06161699786838e-17, 90.0]
+xd[6] = [0.0, -0.34692, -0.221806, 0.0, 1.0, 0.0, 90.0]
 
 for i in range(len(xd)):
-    print '-- movement '+str(i)+':'
+    print '-- movement '+str(i+1)+':'
     print '> inv [%s]' % ', '.join(map(str, xd[i]))
     xd_vector = yarp.DVector(xd[i])
     qd_vector = yarp.DVector()
@@ -46,15 +46,17 @@ for i in range(len(xd)):
         print '< [%s]' % ', '.join(map(str, qd_vector))
     else:
         print '< [fail]'
+        continue
     
     print '> movj [%s]' % ', '.join(map(str, xd[i]))
     xd_vector = yarp.DVector(xd[i])
     if cartesianControl.movj(xd_vector):
         print '< [ok]'
+        print '< [wait...]'
+        cartesianControl.wait()
     else:
         print '< [fail]'
     
-    print '< [wait...]'
-    cartesianControl.wait()
+    
 
 print 'bye!'
