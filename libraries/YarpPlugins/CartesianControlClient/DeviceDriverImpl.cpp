@@ -45,6 +45,9 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
+    fkStreamTimeoutSecs = config.check("fkStreamTimeoutSecs", yarp::os::Value(DEFAULT_FK_STREAM_TIMEOUT_SECS),
+            "FK stream timeout (seconds)").asDouble();
+
     if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
     {
         CD_INFO("FK stream disabled, using RPC instead.\n");
