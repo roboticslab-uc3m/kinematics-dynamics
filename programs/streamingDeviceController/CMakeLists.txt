@@ -32,14 +32,6 @@ if(ENABLE_streamingDeviceController)
 
     add_dependencies(streamingDeviceController COLOR_DEBUG)
 
-    if(ROBOTICSLAB_YARP_DEVICES_FOUND)
-        message(STATUS "ROBOTICSLAB_YARP_DEVICES found, building streamingDeviceController with sensor support")
-        target_include_directories(streamingDeviceController PRIVATE ${ROBOTICSLAB_YARP_DEVICES_INCLUDE_DIRS})
-        target_compile_definitions(streamingDeviceController PRIVATE SDC_WITH_SENSORS)
-    else()
-        message(STATUS "ROBOTICSLAB_YARP_DEVICES not found, building streamingDeviceController without sensor support")
-    endif()
-
     target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
                                                     YARP::YARP_OS
                                                     YARP::YARP_init
@@ -47,6 +39,14 @@ if(ENABLE_streamingDeviceController)
                                                     YARP::YARP_sig
                                                     KdlVectorConverterLib
                                                     KinematicsDynamicsInterfaces)
+
+    if(ROBOTICSLAB_YARP_DEVICES_FOUND)
+        message(STATUS "ROBOTICSLAB_YARP_DEVICES found, building streamingDeviceController with sensor support")
+        target_link_libraries(streamingDeviceController ROBOTICSLAB::YarpDevicesInterfaces)
+        target_compile_definitions(streamingDeviceController PRIVATE SDC_WITH_SENSORS)
+    else()
+        message(STATUS "ROBOTICSLAB_YARP_DEVICES not found, building streamingDeviceController without sensor support")
+    endif()
 
     install(TARGETS streamingDeviceController
             DESTINATION ${CMAKE_INSTALL_BINDIR})
