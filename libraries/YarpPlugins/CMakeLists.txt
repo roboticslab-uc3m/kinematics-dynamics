@@ -19,8 +19,8 @@ target_include_directories(KinematicsDynamicsInterfaces INTERFACE ${YARP_INCLUDE
                                                                   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Install interface headers.
-install(FILES ICartesianControl.hpp
-              ICartesianSolver.hpp
+install(FILES ICartesianControl.h
+              ICartesianSolver.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Register export set.
