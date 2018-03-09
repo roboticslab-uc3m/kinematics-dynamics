@@ -4,32 +4,38 @@
 # Find YARP (common dependency for all devices).
 find_package(YARP REQUIRED)
 
-# Include YARP CMake modules (needless since YARP 2.3.70).
-list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
+    list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+    include(YarpPlugin)
+    include_directories(${YARP_INCLUDE_DIRS})
+endif()
 
-# Utilities for creating YARP devices.
-include(YarpPlugin)
+# Create device interface target.
+add_library(KinematicsDynamicsInterfaces INTERFACE)
 
-# Common YARP includes for subdirectories (needless since YARP 2.3.70).
-include_directories(${YARP_INCLUDE_DIRS})
+# Configure usage requirements.
+target_include_directories(KinematicsDynamicsInterfaces INTERFACE ${YARP_INCLUDE_DIRS}
+                                                                  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                                                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# Make interface headers discoverable by subdirectories.
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+# Install interface headers.
+install(FILES ICartesianControl.hpp
+              ICartesianSolver.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+# Register export set.
+install(TARGETS KinematicsDynamicsInterfaces
+        EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
+
+# Store target in the global scope.
+set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS KinematicsDynamicsInterfaces)
+
+# Create devices.
 add_subdirectory(AmorCartesianControl)
 add_subdirectory(AsibotSolver)
 add_subdirectory(BasicCartesianControl)
-add_subdirectory(BasicTwoLimbCartesianControl)
+#add_subdirectory(BasicTwoLimbCartesianControl)
 add_subdirectory(CartesianControlClient)
 add_subdirectory(CartesianControlServer)
 add_subdirectory(KdlSolver)
-add_subdirectory(TwoLimbCartesianControlServer)
-
-# Install interface headers.
-install(FILES ICartesianControl.h
-              ICartesianSolver.h
-              ITwoLimbCartesianControl.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-# Export variables to the global scope.
-set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+#add_subdirectory(TwoLimbCartesianControlServer)

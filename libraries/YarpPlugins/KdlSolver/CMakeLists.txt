@@ -36,7 +36,8 @@ if(NOT SKIP_KdlSolver)
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
                                     KdlVectorConverterLib
-                                    KinematicRepresentationLib)
+                                    KinematicRepresentationLib
+                                    KinematicsDynamicsInterfaces)
 
     if(USE_LMA)
         target_compile_definitions(KdlSolver PRIVATE _USE_LMA_)

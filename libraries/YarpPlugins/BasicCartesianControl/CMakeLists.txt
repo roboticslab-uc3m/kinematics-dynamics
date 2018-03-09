@@ -24,7 +24,8 @@ add_dependencies(BasicCartesianControl COLOR_DEBUG)
 
 target_link_libraries(BasicCartesianControl YARP::YARP_OS
                                             YARP::YARP_dev
-                                            TrajectoryLib)
+                                            TrajectoryLib
+                                            KinematicsDynamicsInterfaces)
 
 yarp_install(TARGETS BasicCartesianControl
              COMPONENT runtime
