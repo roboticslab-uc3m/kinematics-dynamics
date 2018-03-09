@@ -36,7 +36,9 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Pick up our cmake modules.
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
+                              ${CMAKE_SOURCE_DIR}/cmake/find-modules
+                              ${CMAKE_SOURCE_DIR}/cmake/ycm-modules)
 
 # Bootstrap YCM.
 # https://github.com/robotology/ycm/issues/118
