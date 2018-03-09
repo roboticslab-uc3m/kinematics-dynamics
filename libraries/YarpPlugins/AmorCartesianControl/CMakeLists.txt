@@ -28,7 +28,8 @@ if(NOT SKIP_AmorCartesianControl)
     target_link_libraries(AmorCartesianControl YARP::YARP_OS
                                                YARP::YARP_dev
                                                AMOR::amor_api
-                                               KinematicRepresentationLib)
+                                               KinematicRepresentationLib
+                                               KinematicsDynamicsInterfaces)
 
     yarp_install(TARGETS AmorCartesianControl
                  COMPONENT runtime

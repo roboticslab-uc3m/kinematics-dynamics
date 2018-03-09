@@ -25,7 +25,8 @@ add_dependencies(CartesianControlServer COLOR_DEBUG)
 
 target_link_libraries(CartesianControlServer YARP::YARP_OS
                                              YARP::YARP_dev
-                                             KinematicRepresentationLib)
+                                             KinematicRepresentationLib
+                                             KinematicsDynamicsInterfaces)
 
 yarp_install(TARGETS CartesianControlServer
              COMPONENT runtime

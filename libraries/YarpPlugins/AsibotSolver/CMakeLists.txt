@@ -27,7 +27,8 @@ if(NOT SKIP_AsibotSolver)
                                        YARP::YARP_dev
                                        YARP::YARP_sig
                                        YARP::YARP_math
-                                       KinematicRepresentationLib)
+                                       KinematicRepresentationLib
+                                       KinematicsDynamicsInterfaces)
 
     yarp_install(TARGETS AsibotSolver
                  COMPONENT runtime

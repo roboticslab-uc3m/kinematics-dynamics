@@ -31,6 +31,9 @@ make -j3
 
 #include <stdio.h>
 
+#include <yarp/sig/Matrix.h>
+#include <yarp/math/Math.h>
+
 #include "YarpTinyMath.hpp"
 
 int main(int argc, char *argv[]) {
@@ -42,7 +45,7 @@ int main(int argc, char *argv[]) {
     double height=0.1;
     double tilt=90;  // 90 deg from vertical = horizontal std kinect looking position.
     double pan=10;  // deg, from front
-    
+
     printf("Lets say a 3D sensor grabbed a point at sensor coordinates %f, %f, %f.\n\n",x_k,y_k,z_k);
 
     yarp::sig::Matrix H_0_c = roboticslab::rotZ(pan);
@@ -67,7 +70,7 @@ int main(int argc, char *argv[]) {
 
     double x_0 = H_0_P(0,3);
     double y_0 = H_0_P(1,3);
-    double z_0 = H_0_P(2,3);    
+    double z_0 = H_0_P(2,3);
 
     printf("In origin coordinates this would be: %f, %f, %f.\n",x_0,y_0,z_0);
 
@@ -75,4 +78,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
