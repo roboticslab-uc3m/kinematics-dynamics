@@ -44,7 +44,33 @@ For CMake `find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)`, you may also
 export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
 ```
 
-For additional options use ccmake instead of cmake.
+For additional options use `ccmake` instead of `cmake`.
+
+# Install Bindings
+
+Swig is needed in order to build all language bindings. Refer to [Install SWIG](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-swig.md).
+
+## Install Python bindings
+
+First, install Python development packages.
+
+```bash
+sudo apt update
+sudo apt install libpython-dev  # not installed by default on clean distros
+```
+
+Make sure you have previously installed `kinematics-dynamics`.
+
+```bash
+cd  # go home
+cd repos/kinematics-dynamics/bindings
+mkdir build && cd build
+cmake .. -DCREATE_PYTHON=ON
+make -j$(nproc)  # compile
+sudo make install; sudo ldconfig; cd # install and go home
+```
+
+Also, extra care should be taken with Python 2 vs 3 (e.g. toggle `t` to see paths 2.7 vs 3.5m).
 
 ### Even more!
 

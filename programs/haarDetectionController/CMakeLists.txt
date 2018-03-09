@@ -8,13 +8,8 @@ find_package(YARP REQUIRED)
 # Find ROBOTICSLAB_YARP_DEVICES.
 find_package(ROBOTICSLAB_YARP_DEVICES REQUIRED)
 
-# Retrieve global properties.
-get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
-
 # Include any directories needed for this target.
-include_directories(${YARP_INCLUDE_DIRS}
-                    ${ROBOTICSLAB_YARP_DEVICES_INCLUDE_DIRS}
-                    ${_common_includes})
+include_directories(${YARP_INCLUDE_DIRS})
 
 # Set up our main executable.
 add_executable(haarDetectionController main.cpp
@@ -27,7 +22,9 @@ add_dependencies(haarDetectionController COLOR_DEBUG)
 
 target_link_libraries(haarDetectionController YARP::YARP_OS
                                               YARP::YARP_init
-                                              YARP::YARP_dev)
+                                              YARP::YARP_dev
+                                              KinematicsDynamicsInterfaces
+                                              ROBOTICSLAB::YarpDevicesInterfaces)
 
 install(TARGETS haarDetectionController
         DESTINATION ${CMAKE_INSTALL_BINDIR})
