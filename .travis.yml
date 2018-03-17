@@ -1,9 +1,7 @@
 language: cpp
 dist: trusty
 sudo: required
-
-os:
-  - linux
+os: linux
 
 compiler:
   - gcc
@@ -11,28 +9,53 @@ compiler:
 
 before_install:
   - sudo apt-get -qq update
+
+  #-- Configure Git (needed by YCM)
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
+  #-- Register SSH deploy key for AMOR API private repository
+  #-- https://gist.github.com/lukewpatterson/4242707#gistcomment-2382443
+  #-- http://anil.recoil.org/2013/10/06/travis-secure-ssh-integration.html
+  - mkdir -p ~/.ssh
+  - echo $DEPLOY_KEY_AMOR_API | base64 --decode | openssl aes-256-cbc -K $encrypted_9c9995b5c6b2_key -iv $encrypted_9c9995b5c6b2_iv -out ~/.ssh/id_rsa -d
+  - chmod 600 ~/.ssh/id_rsa
+  - echo "Host *" >> ~/.ssh/config
+  - echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+  - echo "    CheckHostIP no" >> ~/.ssh/config
+  - echo "    PasswordAuthentication no" >> ~/.ssh/config
+  - echo "    UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+
 install:
-  #-- Install eigen and gtest
-  - sudo apt-get install libeigen3-dev libgtest-dev
-  #-- Install yarp
+  #-- Install Boost (AMOR API), Eigen3 (AMOR API and YARP) and GTest
+  - sudo apt-get install libboost-all-dev libeigen3-dev libgtest-dev
+
+  #-- Install YARP
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
   - cmake .. -DSKIP_ACE=ON -DCREATE_LIB_MATH=ON
   - make
   - sudo make install
   - cd ../..
-  #-- Install kdl
+
+  #-- Install KDL
   - git clone https://github.com/orocos/orocos_kinematics_dynamics
   - cd orocos_kinematics_dynamics/orocos_kdl && mkdir build && cd build
   - cmake ..
   - make
   - sudo make install
   - cd ../../..
-  #-- (For testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
+
+  #-- (for AmorCartesianControl) Install AMOR API
+  - git clone git@github.com:roboticslab-uc3m/amor-api
+  - cd amor-api && mkdir build && cd build
+  - cmake ..
+  - make
+  - sudo make install
+  - cd ../..
+
+  #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
   - git clone https://github.com/roboticslab-uc3m/yarp-devices
   - cd yarp-devices
   - mkdir build && cd build
@@ -41,6 +64,7 @@ install:
   - sudo make install
   - export ROBOTICSLAB_YARP_DEVICES_DIR=$PWD
   - cd ../..
+
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
   - if [ "$CXX" = "g++" ]; then wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz; fi
   - if [ "$CXX" = "g++" ]; then tar xf lcov_1.11.orig.tar.gz; fi
@@ -75,4 +99,3 @@ after_success:
   - if [ "$CXX" = "g++" ]; then coveralls-lcov --source-encoding=ISO-8859-1 coverage.info; fi
 
   - sudo make uninstall
-
