@@ -13,6 +13,8 @@ before_install:
   #-- Configure Git (needed by YCM)
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
+
+  #-- Set YARP branch on cron jobs
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
   #-- Register SSH deploy key for AMOR API private repository
@@ -35,7 +37,7 @@ install:
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
   - cmake .. -DSKIP_ACE=ON -DCREATE_LIB_MATH=ON
-  - make
+  - make -j$(nproc)
   - sudo make install
   - cd ../..
 
@@ -43,7 +45,7 @@ install:
   - git clone https://github.com/orocos/orocos_kinematics_dynamics
   - cd orocos_kinematics_dynamics/orocos_kdl && mkdir build && cd build
   - cmake ..
-  - make
+  - make -j$(nproc)
   - sudo make install
   - cd ../../..
 
@@ -51,7 +53,7 @@ install:
   - git clone git@github.com:roboticslab-uc3m/amor-api
   - cd amor-api && mkdir build && cd build
   - cmake ..
-  - make
+  - make -j$(nproc)
   - sudo make install
   - cd ../..
 
@@ -60,9 +62,8 @@ install:
   - cd yarp-devices
   - mkdir build && cd build
   - cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeControlboard=ON -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=ON -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_tests=OFF
-  - make
+  - make -j$(nproc)
   - sudo make install
-  - export ROBOTICSLAB_YARP_DEVICES_DIR=$PWD
   - cd ../..
 
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
