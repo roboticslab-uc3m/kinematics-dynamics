@@ -59,6 +59,7 @@ script:
   - bin/testKdlSolver
   - bin/testKdlSolverFromFile
   - bin/testAsibotSolverFromFile
+  - bin/testKdlTrajectory
   - bin/testBasicCartesianControl
 
 after_success:
