@@ -25,4 +25,4 @@ else
 fi
 
 # make installed KDL discoverable by CMake's find_package() command
-if [ ! "$TRAVIS_EVENT_TYPE" = "cron" ]; then export orocos_kdl_DIR="$KDL_CACHE_DIR/share/orocos_kdl/cmake"; fi
+if [ ! "$TRAVIS_EVENT_TYPE" = "cron" ]; then export orocos_kdl_DIR="$KDL_CACHE_DIR/share/orocos_kdl"; fi
