@@ -10,7 +10,7 @@ if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
   git clone --depth=1 "$KDL_CLONE_URL" "$KDL_SOURCE_DIR"
   mkdir -p "$KDL_SOURCE_DIR/build"
   cmake -H"$KDL_SOURCE_DIR/orocos_kdl" -B"$KDL_BUILD_DIR"
-  sudo make -C "$KDL_BUILD_DIR" -j$(nproc) install
+  make -C "$KDL_BUILD_DIR" -j$(nproc)
 elif [ ! -d "$KDL_CACHE_DIR" ] || [ ! -f "$KDL_CACHE_DIR/.version" ] || [ ! $(cat "$KDL_CACHE_DIR/.version") = "$KDL_VER" ]; then
   echo "KDL not in cache or wrong version"
   rm -rf "$KDL_CACHE_DIR"/*
@@ -25,4 +25,10 @@ else
 fi
 
 # make installed KDL discoverable by CMake's find_package() command
-if [ ! "$TRAVIS_EVENT_TYPE" = "cron" ]; then export orocos_kdl_DIR="$KDL_CACHE_DIR/share/orocos_kdl"; fi
+if [ ! "$TRAVIS_EVENT_TYPE" = "cron" ]; then
+  export orocos_kdl_DIR="$KDL_CACHE_DIR/share/orocos_kdl"
+  export LD_LIBRARY_PATH="$KDL_CACHE_DIR/lib:$LD_LIBRARY_PATH"
+else
+  export orocos_kdl_DIR="$KDL_BUILD_DIR"
+  export LD_LIBRARY_PATH="$KDL_BUILD_DIR/lib:$LD_LIBRARY_PATH"
+fi
