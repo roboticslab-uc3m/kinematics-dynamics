@@ -41,6 +41,7 @@ install:
   - mkdir -p ~/amor-api/build
   - cmake -H~/amor-api -B~/amor-api/build
   - make -C ~/amor-api/build -j$(nproc)
+  - export AMOR_API_DIR=~/amor-api/build
   - export LD_LIBRARY_PATH=~/amor-api/build/lib:$LD_LIBRARY_PATH
 
   #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
@@ -48,6 +49,7 @@ install:
   - mkdir -p ~/yarp-devices/build
   - cmake -H~/yarp-devices -B~/yarp-devices/build
   - make -C ~/yarp-devices/build -j$(nproc)
+  - export ROBOTICSLAB_YARP_DEVICES_DIR=~/yarp-devices/build
   - export LD_LIBRARY_PATH=~/yarp-devices/build/lib:~/yarp-devices/build/lib/yarp:$LD_LIBRARY_PATH
   - export YARP_DATA_DIRS=~/yarp-devices/build:$YARP_DATA_DIRS
 
@@ -83,4 +85,4 @@ after_success:
   #- if [ "$CXX" = "g++" ]; then coveralls-lcov --source-encoding=ISO-8859-1 --repo-token InWqFy6VWMrEUzr2Rn8XV0cGqv3wXWo2d coverage.info; fi
   - if [ "$CXX" = "g++" ]; then coveralls-lcov --source-encoding=ISO-8859-1 coverage.info; fi
 
-  - sudo make uninstall
+  - make uninstall
