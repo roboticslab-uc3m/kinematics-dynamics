@@ -10,7 +10,7 @@ compiler:
 env:
   global:
     - YARP_VER=2.3.72
-    - KDL_VER=9330240
+    - KDL_VER=9330240 # 1.4.0
     - CACHE_DIR=~/cached-deps
 
 cache:

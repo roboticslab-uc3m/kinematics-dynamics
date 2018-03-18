@@ -3,17 +3,18 @@
 KDL_SOURCE_DIR="~/kdl-$KDL_VER"
 KDL_BUILD_DIR="$KDL_SOURCE_DIR/build"
 KDL_CACHE_DIR="$CACHE_DIR/kdl"
+KDL_CLONE_URL=https://github.com/orocos/orocos_kinematics_dynamics
 
 if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
   echo "Cloning KDL's default branch"
-  git clone --depth=1 https://github.com/orocos/orocos_kinematics_dynamics "$KDL_SOURCE_DIR"
+  git clone --depth=1 "$KDL_CLONE_URL" "$KDL_SOURCE_DIR"
   mkdir -p "$KDL_SOURCE_DIR/build"
   cmake -H"$KDL_SOURCE_DIR/orocos_kdl" -B"$KDL_BUILD_DIR"
   sudo make -C "$KDL_BUILD_DIR" -j$(nproc) install
 elif [ ! -d "$KDL_CACHE_DIR" ] || [ ! -f "$KDL_CACHE_DIR/.version" ] || [ ! $(cat "$KDL_CACHE_DIR/.version") = "$KDL_VER" ]; then
   echo "KDL not in cache or wrong version"
   rm -rf "$KDL_CACHE_DIR"/*
-  git clone https://github.com/orocos/orocos_kinematics_dynamics "$KDL_SOURCE_DIR"
+  git clone "$KDL_CLONE_URL" "$KDL_SOURCE_DIR"
   git -C "$KDL_SOURCE_DIR" checkout "$KDL_VER"
   mkdir -p "$KDL_BUILD_DIR"
   cmake -H"$KDL_SOURCE_DIR/orocos_kdl" -B"$KDL_BUILD_DIR" -DCMAKE_INSTALL_PREFIX:PATH="$KDL_CACHE_DIR"
