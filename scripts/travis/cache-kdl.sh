@@ -1,6 +1,6 @@
 #!/bin/sh
 
-KDL_SOURCE_DIR="~/kdl-$KDL_VER"
+KDL_SOURCE_DIR=~/"kdl-$KDL_VER"
 KDL_BUILD_DIR="$KDL_SOURCE_DIR/build"
 KDL_CACHE_DIR="$CACHE_DIR/kdl"
 KDL_CLONE_URL=https://github.com/orocos/orocos_kinematics_dynamics
@@ -18,7 +18,7 @@ elif [ ! -d "$KDL_CACHE_DIR" ] || [ ! -f "$KDL_CACHE_DIR/.version" ] || [ ! $(ca
   git -C "$KDL_SOURCE_DIR" checkout "$KDL_VER"
   mkdir -p "$KDL_BUILD_DIR"
   cmake -H"$KDL_SOURCE_DIR/orocos_kdl" -B"$KDL_BUILD_DIR" -DCMAKE_INSTALL_PREFIX:PATH="$KDL_CACHE_DIR"
-  sudo make -C "$KDL_BUILD_DIR" -j$(nproc) install
+  make -C "$KDL_BUILD_DIR" -j$(nproc) install
   echo "$KDL_VER" > "$KDL_CACHE_DIR/.version"
 else
   echo "KDL directory found in cache (version $(cat "$KDL_CACHE_DIR/.version"))"

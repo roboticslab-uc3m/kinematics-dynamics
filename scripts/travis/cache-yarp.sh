@@ -1,6 +1,6 @@
 #!/bin/sh
 
-YARP_SOURCE_DIR="~/yarp-$YARP_VER"
+YARP_SOURCE_DIR=~/"yarp-$YARP_VER"
 YARP_BUILD_DIR="$YARP_SOURCE_DIR/build"
 YARP_CACHE_DIR="$CACHE_DIR/yarp"
 YARP_CMAKE_OPTIONS="-DSKIP_ACE:BOOL=ON -DCREATE_LIB_MATH:BOOL=ON"
@@ -20,7 +20,7 @@ elif [ ! -d "$YARP_CACHE_DIR" ] || [ ! -f "$YARP_CACHE_DIR/.version" ] || [ ! $(
   tar xzf "$YARP_SOURCE_DIR/v$YARP_VER.tar.gz" "yarp-$YARP_VER" -C "$YARP_SOURCE_DIR"
   mkdir -p "$YARP_BUILD_DIR"
   cmake -H"$YARP_SOURCE_DIR" -B"$YARP_BUILD_DIR" -DCMAKE_INSTALL_PREFIX:PATH="$YARP_CACHE_DIR" $YARP_CMAKE_OPTIONS
-  sudo make -C "$YARP_BUILD_DIR" -j$(nproc) install
+  make -C "$YARP_BUILD_DIR" -j$(nproc) install
   echo "$YARP_VER" > "$YARP_CACHE_DIR/.version"
 else
   echo "YARP directory found in cache (version $(cat "$YARP_CACHE_DIR/.version"))"

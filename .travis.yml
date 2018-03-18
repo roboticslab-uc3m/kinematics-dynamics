@@ -39,13 +39,13 @@ install:
   #-- (for AmorCartesianControl) Install AMOR API
   - git clone git@github.com:roboticslab-uc3m/amor-api ~/amor-api
   - mkdir -p ~/amor-api/build
-  - cmake -H"~/amor-api" -B"~/amor-api/build"
+  - cmake -H~/amor-api -B~/amor-api/build
   - sudo make -C ~/amor-api/build -j$(nproc) install
 
   #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
   - git clone https://github.com/roboticslab-uc3m/yarp-devices ~/yarp-devices
   - mkdir -p ~/yarp-devices/build
-  - cmake -H"~/yarp-devices" -B"~/yarp-devices/build"
+  - cmake -H~/yarp-devices -B~/yarp-devices/build
   - sudo make -C ~/yarp-devices/build -j$(nproc) install
 
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
