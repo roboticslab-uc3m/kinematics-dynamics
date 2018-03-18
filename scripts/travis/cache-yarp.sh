@@ -17,7 +17,7 @@ elif [ ! -d "$YARP_CACHE_DIR" ] || [ ! -f "$YARP_CACHE_DIR/.version" ] || [ ! $(
   echo "YARP not in cache or wrong version"
   rm -rf "$YARP_CACHE_DIR"/*
   wget -q "$YARP_CLONE_URL/archive/v$YARP_VER.tar.gz" -P "$YARP_SOURCE_DIR"
-  tar xzf "$YARP_SOURCE_DIR/v$YARP_VER.tar.gz" "yarp-$YARP_VER" -C "$YARP_SOURCE_DIR"
+  tar xzf "$YARP_SOURCE_DIR/v$YARP_VER.tar.gz" -C "$YARP_SOURCE_DIR" --strip-components=1
   mkdir -p "$YARP_BUILD_DIR"
   cmake -H"$YARP_SOURCE_DIR" -B"$YARP_BUILD_DIR" -DCMAKE_INSTALL_PREFIX:PATH="$YARP_CACHE_DIR" $YARP_CMAKE_OPTIONS
   make -C "$YARP_BUILD_DIR" -j$(nproc) install
