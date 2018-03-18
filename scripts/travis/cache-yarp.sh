@@ -12,10 +12,9 @@ if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
   mkdir -p "$YARP_SOURCE_DIR/build"
   cmake -H"$YARP_SOURCE_DIR" -B"$YARP_BUILD_DIR" $YARP_CMAKE_OPTIONS
   sudo make -C "$YARP_BUILD_DIR" -j$(nproc) install
-elif [ ! "$(ls -A "$YARP_CACHE_DIR")" ] || [ ! -f "$YARP_CACHE_DIR/.version" ] || [ ! $(cat "$YARP_CACHE_DIR/.version") = "$YARP_VER" ]; then
+elif [ ! -d "$YARP_CACHE_DIR"] || [ ! -f "$YARP_CACHE_DIR/.version" ] || [ ! $(cat "$YARP_CACHE_DIR/.version") = "$YARP_VER" ]; then
   echo "YARP not in cache or wrong version"
   rm -rf "$YARP_CACHE_DIR"/*
-  cd
   wget -q "https://github.com/robotology/yarp/archive/v$YARP_VER.tar.gz" -P "$YARP_SOURCE_DIR"
   tar xzf "$YARP_SOURCE_DIR/v$YARP_VER.tar.gz" "yarp-$YARP_VER" -C "$YARP_SOURCE_DIR"
   mkdir -p "$YARP_BUILD_DIR"
