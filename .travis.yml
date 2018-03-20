@@ -27,8 +27,8 @@ before_install:
   - source "$TRAVIS_BUILD_DIR/scripts/travis/configure-ssh.sh"
 
 install:
-  #-- Install Boost (AMOR API), Eigen3 (AMOR API and YARP) and GTest
-  - sudo apt-get install libboost-all-dev libeigen3-dev libgtest-dev
+  #-- Install ACE (YARP), Boost (AMOR API), Eigen3 (AMOR API and YARP) and GTest
+  - sudo apt-get install libace-dev libboost-all-dev libeigen3-dev libgtest-dev
 
   #-- Install YARP
   - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-yarp.sh"
@@ -63,8 +63,8 @@ before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
   - cmake .. -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/build/install" -DENABLE_coverage:BOOL=ON
   - make install
-  - export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib/yarp:$LD_LIBRARY_PATH
-  - export YARP_DATA_DIRS=$PWD:$YARP_DATA_DIRS
+  - export LD_LIBRARY_PATH=$PWD/install/lib:$PWD/install/lib/yarp:$LD_LIBRARY_PATH
+  - export YARP_DATA_DIRS=$PWD/install:$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
 
 script:
   - bin/testKinRepresentation
