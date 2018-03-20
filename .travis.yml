@@ -27,8 +27,8 @@ before_install:
   - source "$TRAVIS_BUILD_DIR/scripts/travis/configure-ssh.sh"
 
 install:
-  #-- Install Boost (AMOR API), Eigen3 (AMOR API and YARP) and GTest
-  - sudo apt-get install libboost-all-dev libeigen3-dev libgtest-dev
+  #-- Install ACE (YARP), Boost (AMOR API), Eigen3 (AMOR API and YARP) and GTest
+  - sudo apt-get install libace-dev libboost-all-dev libeigen3-dev libgtest-dev
 
   #-- Install YARP
   - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-yarp.sh"
