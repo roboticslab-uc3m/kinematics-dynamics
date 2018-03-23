@@ -6,18 +6,18 @@
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
-
+bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
+{
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
     gain = config.check("controllerGain",yarp::os::Value(DEFAULT_GAIN),"controller gain").asDouble();
-    maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity").asDouble();
-    duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration").asDouble();
-    cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate [ms]").asInt();
-    waitPeriodMs = config.check("waitPeriodMs",yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),"wait period [ms]").asInt();
+    maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity (meters/second or degrees/second)").asDouble();
+    duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration (seconds)").asDouble();
+    cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate (milliseconds)").asInt();
+    waitPeriodMs = config.check("waitPeriodMs",yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),"wait command period (milliseconds)").asInt();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-                "reference frame").asString();
+                "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
@@ -33,26 +33,13 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
         return false;
     }
 
-    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver").asString();
     std::string robotStr = config.check("robot",yarp::os::Value(DEFAULT_ROBOT),"robot device").asString();
-
-    yarp::os::Property solverOptions;
-    solverOptions.fromString( config.toString() );
-    solverOptions.put("device",solverStr);
-
-    solverDevice.open(solverOptions);
-    if( ! solverDevice.isValid() ) {
-        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
-        return false;
-    }
-    if( ! solverDevice.view(iCartesianSolver) ) {
-        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
-        return false;
-    }
+    std::string solverStr = config.check("solver",yarp::os::Value(DEFAULT_SOLVER),"cartesian solver device").asString();
 
     yarp::os::Property robotOptions;
     robotOptions.fromString( config.toString() );
     robotOptions.put("device",robotStr);
+    robotOptions.setMonitor(config.getMonitor(), robotStr.c_str());
     robotDevice.open(robotOptions);
     if( ! robotDevice.isValid() ) {
         CD_ERROR("robot device not valid: %s.\n",robotStr.c_str());
@@ -86,6 +73,33 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n",numRobotJoints);
 
+    yarp::os::Bottle qMin, qMax;
+    for(unsigned int joint=0;joint<numRobotJoints;joint++)
+    {
+        double min, max;
+        iControlLimits->getLimits(joint,&min,&max);
+        qMin.addDouble(min);
+        qMax.addDouble(max);
+        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
+    }
+
+    yarp::os::Property solverOptions;
+    solverOptions.fromString( config.toString() );
+    solverOptions.put("device",solverStr);
+    solverOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
+    solverOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+    solverOptions.setMonitor(config.getMonitor(), solverStr.c_str());
+
+    solverDevice.open(solverOptions);
+    if( ! solverDevice.isValid() ) {
+        CD_ERROR("solver device not valid: %s.\n",solverStr.c_str());
+        return false;
+    }
+    if( ! solverDevice.view(iCartesianSolver) ) {
+        CD_ERROR("Could not view iCartesianSolver in: %s.\n",solverStr.c_str());
+        return false;
+    }
+
     iCartesianSolver->getNumJoints( &numSolverJoints );
     CD_INFO("numSolverJoints: %d.\n",numSolverJoints);
 
@@ -94,32 +108,19 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config) {
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJoints,numSolverJoints);
     }
 
-    std::vector<double> qMin, qMax;
-    for(unsigned int joint=0;joint<numRobotJoints;joint++)
+    if( cmcRateMs != DEFAULT_CMC_RATE_MS )
     {
-        double min, max;
-        iControlLimits->getLimits(joint,&min,&max);
-        qMin.push_back(min);
-        qMax.push_back(max);
-        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
-    }
-    if( qMin[0] == qMax[0] )
-    {
-        CD_WARNING("Not setting joint limits on solver, because qMin[0] == qMax[0].\n");
-    }
-    else
-    {
-        iCartesianSolver->setLimits(qMin,qMax);
+        yarp::os::RateThread::setRate(cmcRateMs);
     }
 
-    return this->start();
+    return yarp::os::RateThread::start();
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::BasicCartesianControl::close()
 {
-    this->stop();
+    yarp::os::RateThread::stop();
     robotDevice.close();
     solverDevice.close();
     return true;

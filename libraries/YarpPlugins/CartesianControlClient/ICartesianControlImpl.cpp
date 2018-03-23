@@ -142,7 +142,7 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
     {
         double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
 
-        if (yarp::os::Time::now() - localArrivalTime <= FK_STREAM_TIMEOUT_SECS)
+        if (yarp::os::Time::now() - localArrivalTime <= fkStreamTimeoutSecs)
         {
             return true;
         }

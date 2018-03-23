@@ -24,15 +24,16 @@ add_dependencies(BasicCartesianControl COLOR_DEBUG)
 
 target_link_libraries(BasicCartesianControl YARP::YARP_OS
                                             YARP::YARP_dev
-                                            TrajectoryLib)
+                                            TrajectoryLib
+                                            KinematicsDynamicsInterfaces)
 
 yarp_install(TARGETS BasicCartesianControl
              COMPONENT runtime
-             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+             LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+             ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
 yarp_install(FILES BasicCartesianControl.ini
              COMPONENT runtime
-             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 endif()

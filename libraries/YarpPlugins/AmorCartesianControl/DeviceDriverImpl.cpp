@@ -4,10 +4,13 @@
 
 #include <string>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
 
 #include <ColorDebug.hpp>
+
+#include "KinematicRepresentation.hpp"
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -19,13 +22,13 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
             "controller gain").asDouble();
 
     maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity").asDouble();
+            "maximum joint velocity (meters/second or degrees/second)").asDouble();
 
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
-            "wait period [ms]").asInt();
+            "wait command period (milliseconds)").asInt();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-            "reference frame").asString();
+            "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
@@ -38,32 +41,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     else
     {
         CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr.c_str());
-        return false;
-    }
-
-    std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
-            "AMOR kinematics description").asString();
-
-    yarp::os::Property cartesianDeviceOptions;
-
-    if (!cartesianDeviceOptions.fromConfigFile(kinematicsFile))
-    {
-        CD_ERROR("Cannot read from --kinematics \"%s\".\n", kinematicsFile.c_str());
-        return false;
-    }
-
-    cartesianDeviceOptions.put("device", "KdlSolver");
-
-    if (!cartesianDevice.open(cartesianDeviceOptions))
-    {
-        CD_ERROR("Solver device not valid.\n");
-        return false;
-    }
-
-    if (!cartesianDevice.view(iCartesianSolver))
-    {
-        CD_ERROR("Could not view iCartesianSolver.\n");
-        close();
         return false;
     }
 
@@ -96,6 +73,55 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     }
 
     CD_SUCCESS("Acquired AMOR handle!\n");
+
+    yarp::os::Bottle qMin, qMax;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        AMOR_JOINT_INFO jointInfo;
+
+        if (amor_get_joint_info(handle, i, &jointInfo) != AMOR_SUCCESS)
+        {
+            CD_ERROR("%s\n", amor_error());
+            close();
+            return false;
+        }
+
+        qMin.addDouble(KinRepresentation::radToDeg(jointInfo.lowerJointLimit));
+        qMax.addDouble(KinRepresentation::radToDeg(jointInfo.upperJointLimit));
+    }
+
+    std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
+            "path to file with description of AMOR kinematics").asString();
+
+    yarp::os::Property cartesianDeviceOptions;
+
+    if (!cartesianDeviceOptions.fromConfigFile(kinematicsFile))
+    {
+        CD_ERROR("Cannot read from --kinematics \"%s\".\n", kinematicsFile.c_str());
+        return false;
+    }
+
+    std::string solverStr = "KdlSolver";
+    cartesianDeviceOptions.put("device", solverStr);
+    cartesianDeviceOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
+    cartesianDeviceOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+    cartesianDeviceOptions.setMonitor(config.getMonitor(), solverStr.c_str());
+
+    if (!cartesianDevice.open(cartesianDeviceOptions))
+    {
+        CD_ERROR("Solver device not valid.\n");
+        return false;
+    }
+
+    if (!cartesianDevice.view(iCartesianSolver))
+    {
+        CD_ERROR("Could not view iCartesianSolver.\n");
+        close();
+        return false;
+    }
+
+    CD_SUCCESS("Created solver device!\n");
 
     return true;
 }

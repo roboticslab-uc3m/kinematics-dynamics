@@ -18,7 +18,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     CD_DEBUG("config: %s.\n", config.toString().c_str());
 
     //-- kinematics
-    std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"limb kinematic description").asString();
+    std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"path to file with description of robot kinematics").asString();
     CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS);
     yarp::os::ResourceFinder rf;
     rf.setVerbose(false);
@@ -28,6 +28,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     yarp::os::Property fullConfig;
     fullConfig.fromConfigFile(kinematicsFullPath.c_str());
     fullConfig.fromString(config.toString(),false);  //-- Can override kinematics file contents.
+    fullConfig.setMonitor(config.getMonitor(), "KdlSolver");
 
     CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
 
@@ -36,22 +37,16 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
 
     //-- gravity
-    yarp::os::Bottle defaultGravityBottle;
-    defaultGravityBottle.addDouble(0);
-    defaultGravityBottle.addDouble(0);
-    defaultGravityBottle.addDouble(-9.81);
+    yarp::os::Value defaultGravityValue;
+    yarp::os::Bottle *defaultGravityBottle = defaultGravityValue.asList();
+    defaultGravityBottle->addDouble(0);
+    defaultGravityBottle->addDouble(0);
+    defaultGravityBottle->addDouble(-9.81);
 
-    yarp::os::Bottle gravityBottle;
-    if( fullConfig.check("gravity") )
-    {
-        gravityBottle = fullConfig.findGroup("gravity").tail();
-    }
-    else
-    {
-        gravityBottle = defaultGravityBottle;
-    }
-    gravity = KDL::Vector(gravityBottle.get(0).asDouble(),gravityBottle.get(1).asDouble(),gravityBottle.get(2).asDouble());
-    CD_INFO("gravity: %s [%s]\n",gravityBottle.toString().c_str(),defaultGravityBottle.toString().c_str());
+    yarp::os::Value gravityValue = fullConfig.check("gravity", defaultGravityValue, "gravity vector (SI units)");
+    yarp::os::Bottle *gravityBottle = gravityValue.asList();
+    gravity = KDL::Vector(gravityBottle->get(0).asDouble(),gravityBottle->get(1).asDouble(),gravityBottle->get(2).asDouble());
+    CD_INFO("gravity: %s [%s]\n",gravityBottle->toString().c_str(),defaultGravityBottle->toString().c_str());
 
     //-- H0
     yarp::sig::Matrix defaultYmH0(4,4);
@@ -79,15 +74,15 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         yarp::os::Bottle &bLink = fullConfig.findGroup(link);
         if( ! bLink.isNull() ) {
             //-- Kinematic
-            double linkOffset = bLink.check("offset",yarp::os::Value(0.0)).asDouble();
-            double linkD = bLink.check("D",yarp::os::Value(0.0)).asDouble();
-            double linkA = bLink.check("A",yarp::os::Value(0.0)).asDouble();
-            double linkAlpha = bLink.check("alpha",yarp::os::Value(0.0)).asDouble();
+            double linkOffset = bLink.check("offset",yarp::os::Value(0.0), "DH joint angle (degrees)").asDouble();
+            double linkD = bLink.check("D",yarp::os::Value(0.0), "DH link offset (meters)").asDouble();
+            double linkA = bLink.check("A",yarp::os::Value(0.0), "DH link length (meters)").asDouble();
+            double linkAlpha = bLink.check("alpha",yarp::os::Value(0.0), "DH link twist (degrees)").asDouble();
             //-- Dynamic
             if( bLink.check("mass") && bLink.check("cog") && bLink.check("inertia")) {
-                double linkMass = bLink.check("mass",yarp::os::Value(0.0)).asDouble();
-                yarp::os::Bottle linkCog = bLink.findGroup("cog").tail();
-                yarp::os::Bottle linkInertia = bLink.findGroup("inertia").tail();
+                double linkMass = bLink.check("mass",yarp::os::Value(0.0), "link mass (SI units)").asDouble();
+                yarp::os::Bottle linkCog = bLink.findGroup("cog", "vector of link's center of gravity (SI units)").tail();
+                yarp::os::Bottle linkInertia = bLink.findGroup("inertia", "vector of link's inertia (SI units)").tail();
                 chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset)),
                                               KDL::RigidBodyInertia(linkMass,KDL::Vector(linkCog.get(0).asDouble(),linkCog.get(1).asDouble(),linkCog.get(2).asDouble()),
                                                                     KDL::RotationalInertia(linkInertia.get(0).asDouble(),linkInertia.get(1).asDouble(),linkInertia.get(2).asDouble(),0,0,0))));
@@ -114,11 +109,12 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
             CD_ERROR("Not found: \"%s\" either.\n", xyzLink.c_str());
             return false;
         }
-        double linkX = bXyzLink.check("x",yarp::os::Value(0.0)).asDouble();
-        double linkY = bXyzLink.check("y",yarp::os::Value(0.0)).asDouble();
-        double linkZ = bXyzLink.check("z",yarp::os::Value(0.0)).asDouble();
+        double linkX = bXyzLink.check("x",yarp::os::Value(0.0), "X coordinate of next frame (meters)").asDouble();
+        double linkY = bXyzLink.check("y",yarp::os::Value(0.0), "Y coordinate of next frame (meters)").asDouble();
+        double linkZ = bXyzLink.check("z",yarp::os::Value(0.0), "Z coordinate of next frame (meters)").asDouble();
 
-        std::string linkType = bXyzLink.check("Type",yarp::os::Value("NULL")).asString();
+        std::string linkTypes = "joint type (Rot[XYZ]|InvRot[XYZ]|Trans[XYZ]|InvTrans[XYZ]), e.g. 'RotZ'";
+        std::string linkType = bXyzLink.check("Type",yarp::os::Value("NULL"), linkTypes.c_str()).asString();
         if(linkType == "RotX") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
         } else if(linkType == "RotY") {
@@ -172,15 +168,43 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
     qMax.resize(chain.getNrOfJoints());
     qMin.resize(chain.getNrOfJoints());
-    //-- Limits [ -pi , pi ].
+
+    //-- Joint limits
+    if (!fullConfig.check("mins") || !fullConfig.check("maxs"))
+    {
+        CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+        return false;
+    }
+
+    yarp::os::Bottle *maxs = fullConfig.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
+    yarp::os::Bottle *mins = fullConfig.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+
+    if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
+    {
+        CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+        return false;
+    }
+
+    if (maxs->size() != chain.getNrOfJoints() || mins->size() != chain.getNrOfJoints())
+    {
+        CD_ERROR("chain.getNrOfJoints (%d) != maxs.size(), mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
+        return false;
+    }
+
     for (int motor=0; motor<chain.getNrOfJoints(); motor++)
     {
-        qMax(motor) = M_PI;
-        qMin(motor) = -M_PI;
+        qMax(motor) = maxs->get(motor).asDouble();
+        qMin(motor) = mins->get(motor).asDouble();
+
+        if (qMin(motor) >= qMax(motor))
+        {
+            CD_ERROR("qMin >= qMax (%f >= %f) at joint %d\n", qMin(motor), qMax(motor), motor);
+            return false;
+        }
     }
 
     //-- Precision and max iterations for IK solver.
-    eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision").asDouble();
+    eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asDouble();
     maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
 
     originalChain = chain;  // We have: Chain& operator = (const Chain& arg);

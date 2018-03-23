@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 
-#include <yarp/os/Value.h>
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Value.h>
 
 #include <ColorDebug.hpp>
 
@@ -52,22 +53,6 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         std::string solverStr = rf.check("solver", yarp::os::Value(DEFAULT_SOLVER), "cartesian solver").asString();
         std::string robotStr = rf.check("robot", yarp::os::Value(DEFAULT_ROBOT), "robot device").asString();
 
-        yarp::os::Property solverOptions;
-        solverOptions.fromString(rf.toString());
-        solverOptions.put("device", solverStr);
-
-        if (!solverDevice.open(solverOptions))
-        {
-            CD_ERROR("solver device not valid: %s.\n", solverStr.c_str());
-            return false;
-        }
-
-        if (!solverDevice.view(iCartesianSolver))
-        {
-            CD_ERROR("Could not view iCartesianSolver in: %s.\n", solverStr.c_str());
-            return false;
-        }
-
         yarp::os::Property robotOptions;
         robotOptions.fromString(rf.toString());
         robotOptions.put("device", robotStr);
@@ -84,13 +69,46 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
+        if (!robotDevice.view(iControlLimits))
+        {
+            CD_ERROR("Could not view iControlLimits.\n");
+            return false;
+        }
+
         if (!iEncoders->getAxes(&numRobotJoints))
         {
             CD_ERROR("Could not get axes.\n");
             return false;
         }
 
-        CD_SUCCESS("numRobotJoints: %d.\n", numRobotJoints);
+        yarp::os::Bottle qMin, qMax;
+
+        for (int i = 0; i < numRobotJoints; i++)
+        {
+            double min, max;
+            iControlLimits->getLimits(i, &min, &max);
+            qMin.addDouble(min);
+            qMax.addDouble(max);
+        }
+
+        yarp::os::Property solverOptions;
+
+        solverOptions.fromString(rf.toString());
+        solverOptions.put("device", solverStr);
+        solverOptions.put("mins", yarp::os::Value::makeList(qMin.toString().c_str()));
+        solverOptions.put("maxs", yarp::os::Value::makeList(qMax.toString().c_str()));
+
+        if (!solverDevice.open(solverOptions))
+        {
+            CD_ERROR("solver device not valid: %s.\n", solverStr.c_str());
+            return false;
+        }
+
+        if (!solverDevice.view(iCartesianSolver))
+        {
+            CD_ERROR("Could not view iCartesianSolver in: %s.\n", solverStr.c_str());
+            return false;
+        }
     }
     else
     {
@@ -180,25 +198,25 @@ void TransCoords::onRead(yarp::os::Bottle &b)
 {
     CD_DEBUG("Got %s\n", b.toString().c_str());
 
-    std::vector<double> x;
+    std::vector<double> x_in;
 
     for (int i = 0; i < b.size(); i++)
     {
-        x.push_back(b.get(i).asDouble());
+        x_in.push_back(b.get(i).asDouble());
     }
 
-    if (!KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, orient) || x.size() != 6)
+    if (!KinRepresentation::encodePose(x_in, x_in, KinRepresentation::CARTESIAN, orient))
     {
         CD_ERROR("encodePose failed.\n");
         return;
     }
 
     KDL::Frame HN;
-    HN.p.x(x[0]);
-    HN.p.y(x[1]);
-    HN.p.z(x[2]);
+    HN.p.x(x_in[0]);
+    HN.p.y(x_in[1]);
+    HN.p.z(x_in[2]);
 
-    KDL::Vector rotvec(x[3], x[4], x[5]);
+    KDL::Vector rotvec(x_in[3], x_in[4], x_in[5]);
     HN.M = KDL::Rotation::Rot(rotvec, rotvec.Norm());
 
     KDL::Frame H;
@@ -230,17 +248,29 @@ void TransCoords::onRead(yarp::os::Bottle &b)
         H = fixedH * HN;
     }
 
+    KDL::Vector rotvec_root = H.M.GetRot();
+
+    std::vector<double> x_out(6);
+    x_out[0] = H.p.x();
+    x_out[1] = H.p.y();
+    x_out[2] = H.p.z();
+    x_out[3] = rotvec_root.x();
+    x_out[4] = rotvec_root.y();
+    x_out[5] = rotvec_root.z();
+
+    if (!KinRepresentation::decodePose(x_out, x_out, KinRepresentation::CARTESIAN, orient))
+    {
+        CD_ERROR("decodePose failed.\n");
+        return;
+    }
+
     yarp::os::Bottle &outB = outPort.prepare();
     outB.clear();
 
-    outB.addDouble(H.p.x());
-    outB.addDouble(H.p.y());
-    outB.addDouble(H.p.z());
-
-    KDL::Vector rotvec_root = H.M.GetRot();
-    outB.addDouble(rotvec_root.x());
-    outB.addDouble(rotvec_root.y());
-    outB.addDouble(rotvec_root.z());
+    for (unsigned int i = 0; i < x_out.size(); i++)
+    {
+        outB.addDouble(x_out[i]);
+    }
 
     outPort.write();
 }

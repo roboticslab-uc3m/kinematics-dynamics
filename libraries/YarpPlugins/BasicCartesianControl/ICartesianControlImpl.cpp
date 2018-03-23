@@ -119,11 +119,11 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    //-- Set state, perform and wait for movement to be done
-    setCurrentState( VOCAB_CC_MOVJ_CONTROLLING );
+    //-- Set state, enable CMC thread and wait for movement to be done
     cmcSuccess = true;
-
     CD_SUCCESS("Waiting\n");
+
+    setCurrentState( VOCAB_CC_MOVJ_CONTROLLING );
 
     return true;
 }
@@ -225,12 +225,13 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         CD_ERROR("setControlModes failed.\n");
         return false;
     }
-    movementStartTime = yarp::os::Time::now();
-    setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
-    cmcSuccess = true;
 
-    //-- Wait for movement to be done
+    //-- Set state, enable CMC thread and wait for movement to be done
+    movementStartTime = yarp::os::Time::now();
+    cmcSuccess = true;
     CD_SUCCESS("Waiting\n");
+
+    setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
 
     return true;
 }
@@ -507,7 +508,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         duration = value;
         break;
     case VOCAB_CC_CONFIG_CMC_RATE:
-        if (!RateThread::setRate(value))
+        if (!yarp::os::RateThread::setRate(value))
         {
             CD_ERROR("Cannot set new CMC rate.\n");
             return false;

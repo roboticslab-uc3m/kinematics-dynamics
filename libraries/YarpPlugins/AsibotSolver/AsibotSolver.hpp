@@ -81,9 +81,6 @@ public:
     // Perform inverse dynamics.
     virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
 
-    // Set joint limits.
-    virtual bool setLimits(const std::vector<double> &qMin, const std::vector<double> &qMax);
-
 // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
     /**

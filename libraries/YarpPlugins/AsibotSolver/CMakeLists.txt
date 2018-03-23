@@ -1,4 +1,4 @@
-if(NOT YARP_HAS_MATH_LIB)
+if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_AsibotSolver OR ENABLE_AsibotSolver))
     message(WARNING "YARP math lib not found, disabling AsibotSolver")
 endif()
 
@@ -27,16 +27,17 @@ if(NOT SKIP_AsibotSolver)
                                        YARP::YARP_dev
                                        YARP::YARP_sig
                                        YARP::YARP_math
-                                       KinematicRepresentationLib)
+                                       KinematicRepresentationLib
+                                       KinematicsDynamicsInterfaces)
 
     yarp_install(TARGETS AsibotSolver
                  COMPONENT runtime
-                 LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
-                 ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
     yarp_install(FILES AsibotSolver.ini
                  COMPONENT runtime
-                 DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 else()
 

@@ -28,16 +28,17 @@ if(NOT SKIP_AmorCartesianControl)
     target_link_libraries(AmorCartesianControl YARP::YARP_OS
                                                YARP::YARP_dev
                                                AMOR::amor_api
-                                               KinematicRepresentationLib)
+                                               KinematicRepresentationLib
+                                               KinematicsDynamicsInterfaces)
 
     yarp_install(TARGETS AmorCartesianControl
                  COMPONENT runtime
-                 LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
-                 ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
     yarp_install(FILES AmorCartesianControl.ini
                  COMPONENT runtime
-                 DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 else()
 
     set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)

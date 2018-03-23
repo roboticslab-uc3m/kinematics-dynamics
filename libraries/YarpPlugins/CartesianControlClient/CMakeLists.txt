@@ -22,15 +22,16 @@ yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
 add_dependencies(CartesianControlClient COLOR_DEBUG)
 
 target_link_libraries(CartesianControlClient YARP::YARP_OS
-                                             YARP::YARP_dev)
+                                             YARP::YARP_dev
+                                             KinematicsDynamicsInterfaces)
 
 yarp_install(TARGETS CartesianControlClient
              COMPONENT runtime
-             LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR})
+             LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+             ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
 yarp_install(FILES CartesianControlClient.ini
              COMPONENT runtime
-             DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 endif()

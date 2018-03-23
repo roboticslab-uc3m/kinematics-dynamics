@@ -34,6 +34,7 @@ class KdlSolverTestFromFile : public testing::Test
                 return;
             }
             solverOptions.put("device","KdlSolver");
+            solverOptions.fromString("(mins (-70 -15 -10 -100 -90 -100)) (maxs (45 70 75 10 90 10))", false);
 
             solverDevice.open(solverOptions);
             if( ! solverDevice.isValid() ) {

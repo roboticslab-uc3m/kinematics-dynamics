@@ -9,15 +9,9 @@ cmake_dependent_option(ENABLE_transCoords "Enable/disable transCoords program" O
 
 if(ENABLE_transCoords)
 
-    find_package(YARP REQUIRED)
-
-    # Retrieve global properties.
-    get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_INCLUDE_DIRS)
-
     # Include any directories needed for this target.
     include_directories(${YARP_INCLUDE_DIRS}
-                        ${orocos_kdl_INCLUDE_DIRS}
-                        ${_common_includes})
+                        ${orocos_kdl_INCLUDE_DIRS})
 
     # Set up our main executable.
     add_executable(transCoords main.cpp
@@ -31,7 +25,8 @@ if(ENABLE_transCoords)
                                       YARP::YARP_dev
                                       ${orocos_kdl_LIBRARIES}
                                       KdlVectorConverterLib
-                                      KinematicRepresentationLib)
+                                      KinematicRepresentationLib
+                                      KinematicsDynamicsInterfaces)
 
     install(TARGETS transCoords
             DESTINATION ${CMAKE_INSTALL_BINDIR})
