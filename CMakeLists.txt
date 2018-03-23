@@ -93,7 +93,7 @@ if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
 endif()
 
 # Configure installation paths for YARP resources.
-yarp_configure_external_installation(roboticslab-kinematics-dynamics)
+yarp_configure_external_installation(roboticslab-kinematics-dynamics WITH_PLUGINS)
 
 # Dependency-related tweaks.
 set(_target_kdl_version 1.4)
