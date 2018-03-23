@@ -82,14 +82,30 @@ set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
 
+# Find YARP (main dependency).
+find_package(YARP REQUIRED)
+
+# Load YARP modules.
+if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
+    list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+    include(YarpPlugin)
+    include(YarpInstallationHelpers)
+endif()
+
+# Configure installation paths for YARP resources.
+yarp_configure_external_installation(roboticslab-kinematics-dynamics WITH_PLUGINS)
+
 # Dependency-related tweaks.
 set(_target_kdl_version 1.4)
 
 # Add main contents.
-add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(tests)
+add_subdirectory(share)
+
+# Store the package in the user registry.
+export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
 # Create and install config files.
 include(InstallBasicPackageFiles)

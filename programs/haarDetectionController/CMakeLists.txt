@@ -2,14 +2,13 @@ option(ENABLE_haarDetectionController "Enable/disable haarDetectionController pr
 
 if(ENABLE_haarDetectionController)
 
-# Find YARP.
-find_package(YARP REQUIRED)
-
 # Find ROBOTICSLAB_YARP_DEVICES.
 find_package(ROBOTICSLAB_YARP_DEVICES REQUIRED)
 
 # Include any directories needed for this target.
-include_directories(${YARP_INCLUDE_DIRS})
+if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
+    include_directories(${YARP_INCLUDE_DIRS})
+endif()
 
 # Set up our main executable.
 add_executable(haarDetectionController main.cpp
