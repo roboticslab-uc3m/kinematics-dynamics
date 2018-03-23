@@ -9,8 +9,6 @@ cmake_dependent_option(ENABLE_tests "Enable/disable unit tests" ON
 
 if(ENABLE_tests)
 
-    find_package(YARP REQUIRED)
-
     add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
 
     include_directories(${GTestSources_INCLUDE_DIR}

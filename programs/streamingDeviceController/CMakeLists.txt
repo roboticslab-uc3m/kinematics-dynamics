@@ -9,8 +9,6 @@ cmake_dependent_option(ENABLE_streamingDeviceController "Enable/disable streamin
 
 if(ENABLE_streamingDeviceController)
 
-    find_package(YARP REQUIRED)
-
     find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
     # Include any directories needed for this target.
