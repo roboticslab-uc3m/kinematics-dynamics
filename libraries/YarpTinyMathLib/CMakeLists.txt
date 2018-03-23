@@ -1,5 +1,3 @@
-find_package(YARP QUIET) # populate YARP_HAS_MATH_LIB variable
-
 if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_YarpTinyMathLib OR ENABLE_YarpTinyMathLib))
     message(WARNING "YARP math lib not found, disabling YarpTinyMathLib")
 endif()

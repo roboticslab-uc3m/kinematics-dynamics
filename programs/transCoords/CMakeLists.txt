@@ -9,8 +9,6 @@ cmake_dependent_option(ENABLE_transCoords "Enable/disable transCoords program" O
 
 if(ENABLE_transCoords)
 
-    find_package(YARP REQUIRED)
-
     # Include any directories needed for this target.
     include_directories(${YARP_INCLUDE_DIRS}
                         ${orocos_kdl_INCLUDE_DIRS})
