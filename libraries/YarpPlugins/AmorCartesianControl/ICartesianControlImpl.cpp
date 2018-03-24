@@ -333,7 +333,7 @@ bool roboticslab::AmorCartesianControl::act(int command)
         amor_command = amor_stop_hand;
         break;
     default:
-        CD_ERROR("Unrecognized command with code %d (%s).\n", command, yarp::os::Vocab::decode(command));
+        CD_ERROR("Unrecognized command with code %d (%s).\n", command, yarp::os::Vocab::decode(command).c_str());
         return false;
     }
 
