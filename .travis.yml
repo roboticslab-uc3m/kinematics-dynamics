@@ -10,10 +10,6 @@ compiler:
 before_install:
   - sudo apt-get -qq update
 
-  #-- Configure Git (needed by YCM)
-  - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
-  - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
-
   #-- Set YARP branch on cron jobs
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
 
@@ -52,7 +48,7 @@ install:
   #-- (for AmorCartesianControl) Install AMOR API
   - git clone git@github.com:roboticslab-uc3m/amor-api
   - cd amor-api && mkdir build && cd build
-  - cmake ..
+  - cmake .. -DNON_INTERACTIVE_BUILD=ON
   - make -j$(nproc)
   - sudo make install
   - cd ../..
@@ -61,7 +57,7 @@ install:
   - git clone https://github.com/roboticslab-uc3m/yarp-devices
   - cd yarp-devices
   - mkdir build && cd build
-  - cmake ..
+  - cmake .. -DNON_INTERACTIVE_BUILD=ON
   - make -j$(nproc)
   - sudo make install
   - cd ../..
@@ -74,7 +70,7 @@ install:
 
 before_script:
   - mkdir -p build && cd build
-  - cmake .. -DENABLE_coverage=ON
+  - cmake .. -DNON_INTERACTIVE_BUILD=ON -DENABLE_coverage=ON
   - make
   - sudo make install
   - sudo ldconfig
