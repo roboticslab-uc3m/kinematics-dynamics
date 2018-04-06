@@ -51,7 +51,7 @@ install:
   - make -C ~/yarp-devices/build -j$(nproc)
   - export ROBOTICSLAB_YARP_DEVICES_DIR=~/yarp-devices/build
   - export LD_LIBRARY_PATH=~/yarp-devices/build/lib:~/yarp-devices/build/lib/yarp:$LD_LIBRARY_PATH
-  - export YARP_DATA_DIRS=~/yarp-devices/build:$YARP_DATA_DIRS
+  - export YARP_DATA_DIRS=~/yarp-devices/build/share/roboticslab-yarp-devices:$YARP_DATA_DIRS
 
   # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
   - if [ "$CXX" = "g++" ]; then wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz; fi
@@ -61,10 +61,10 @@ install:
 
 before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
-  - cmake .. -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/build/install" -DENABLE_coverage:BOOL=ON
+  - cmake .. -DCMAKE_INSTALL_PREFIX="$PWD/install" -DENABLE_coverage:BOOL=ON
   - make install
   - export LD_LIBRARY_PATH=$PWD/install/lib:$PWD/install/lib/yarp:$LD_LIBRARY_PATH
-  - export YARP_DATA_DIRS=$PWD/install:$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
+  - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
 
 script:
   - bin/testKinRepresentation
