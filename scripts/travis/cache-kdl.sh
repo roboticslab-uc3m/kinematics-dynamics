@@ -14,8 +14,8 @@ if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
 elif [ ! -d "$KDL_CACHE_DIR" ] || [ ! -f "$KDL_CACHE_DIR/.version" ] || [ ! $(cat "$KDL_CACHE_DIR/.version") = "$KDL_VER" ]; then
   echo "KDL not in cache or wrong version"
   rm -rf "$KDL_CACHE_DIR"/*
-  git clone "$KDL_CLONE_URL" "$KDL_SOURCE_DIR"
-  git -C "$KDL_SOURCE_DIR" checkout "$KDL_VER"
+  wget -q "$KDL_CLONE_URL/archive/v$KDL_VER.tar.gz" -P "$KDL_SOURCE_DIR"
+  tar xzf "$KDL_SOURCE_DIR/v$KDL_VER.tar.gz" -C "$KDL_SOURCE_DIR" --strip-components=1
   mkdir -p "$KDL_BUILD_DIR"
   cmake -H"$KDL_SOURCE_DIR/orocos_kdl" -B"$KDL_BUILD_DIR" -DCMAKE_INSTALL_PREFIX:PATH="$KDL_CACHE_DIR"
   make -C "$KDL_BUILD_DIR" -j$(nproc) install
