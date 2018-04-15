@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include <yarp/os/Vocab.h>
+#define VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 
 /**
  * @file
@@ -27,8 +27,8 @@ class ICartesianSolver
         //! Lists supported reference frames.
         enum reference_frame
         {
-            BASE_FRAME = VOCAB4('c','p','f','b'), //!< Base frame
-            TCP_FRAME = VOCAB4('c','p','f','t')   //!< End-effector frame (TCP)
+            BASE_FRAME = VOCAB('c','p','f','b'), //!< Base frame
+            TCP_FRAME = VOCAB('c','p','f','t')   //!< End-effector frame (TCP)
         };
 
         //! Destructor

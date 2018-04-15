@@ -9,8 +9,7 @@ endif()
 add_library(KinematicsDynamicsInterfaces INTERFACE)
 
 # Configure usage requirements.
-target_include_directories(KinematicsDynamicsInterfaces INTERFACE ${YARP_INCLUDE_DIRS}
-                                                                  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+target_include_directories(KinematicsDynamicsInterfaces INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                                   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Install interface headers.
