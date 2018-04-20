@@ -6,9 +6,9 @@
 #include <map>
 #include <vector>
 
-#define VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
-
 #include "ICartesianSolver.h"
+
+#define VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 
 /**
  * @file
