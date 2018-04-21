@@ -18,6 +18,8 @@
 
 //%import "yarp.i"
 
+%define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS %enddef
+
 %{
 /* Includes the header in the wrapper code */
 #include "ICartesianSolver.h"
