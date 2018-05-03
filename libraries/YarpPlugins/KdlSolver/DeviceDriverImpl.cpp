@@ -196,9 +196,13 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         qMax(motor) = maxs->get(motor).asDouble();
         qMin(motor) = mins->get(motor).asDouble();
 
-        if (qMin(motor) >= qMax(motor))
+        if (qMin(motor) == qMax(motor))
         {
-            CD_ERROR("qMin >= qMax (%f >= %f) at joint %d\n", qMin(motor), qMax(motor), motor);
+            CD_WARNING("qMin == qMax (%f) at joint %d\n", qMin(motor), motor);
+        }
+        else if (qMin(motor) > qMax(motor))
+        {
+            CD_ERROR("qMin > qMax (%f > %f) at joint %d\n", qMin(motor), qMax(motor), motor);
             return false;
         }
     }
