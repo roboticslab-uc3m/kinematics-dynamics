@@ -185,9 +185,9 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (maxs->size() != chain.getNrOfJoints() || mins->size() != chain.getNrOfJoints())
+    if (maxs->size() < chain.getNrOfJoints() || mins->size() < chain.getNrOfJoints())
     {
-        CD_ERROR("chain.getNrOfJoints (%d) != maxs.size(), mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
+        CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
         return false;
     }
 
