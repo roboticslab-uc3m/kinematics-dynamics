@@ -30,8 +30,8 @@ before_install:
   - echo "    UserKnownHostsFile=/dev/null" >> ~/.ssh/config
 
 install:
-  #-- Install Boost (AMOR API), Eigen3 (AMOR API and YARP) and GTest
-  - sudo apt-get install libboost-all-dev libeigen3-dev libgtest-dev
+  #-- Install Boost.Thread (AMOR API), Eigen3 (AMOR API and YARP) and GTest
+  - sudo apt-get install libboost-thread-dev libeigen3-dev libgtest-dev
 
   #-- Install YARP
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp

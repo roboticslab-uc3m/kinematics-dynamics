@@ -185,9 +185,9 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (maxs->size() != chain.getNrOfJoints() || mins->size() != chain.getNrOfJoints())
+    if (maxs->size() < chain.getNrOfJoints() || mins->size() < chain.getNrOfJoints())
     {
-        CD_ERROR("chain.getNrOfJoints (%d) != maxs.size(), mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
+        CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
         return false;
     }
 
@@ -196,9 +196,13 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         qMax(motor) = maxs->get(motor).asDouble();
         qMin(motor) = mins->get(motor).asDouble();
 
-        if (qMin(motor) >= qMax(motor))
+        if (qMin(motor) == qMax(motor))
         {
-            CD_ERROR("qMin >= qMax (%f >= %f) at joint %d\n", qMin(motor), qMax(motor), motor);
+            CD_WARNING("qMin == qMax (%f) at joint %d\n", qMin(motor), motor);
+        }
+        else if (qMin(motor) > qMax(motor))
+        {
+            CD_ERROR("qMin > qMax (%f > %f) at joint %d\n", qMin(motor), qMax(motor), motor);
             return false;
         }
     }

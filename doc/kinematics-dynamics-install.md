@@ -70,7 +70,11 @@ make -j$(nproc)  # compile
 sudo make install; sudo ldconfig; cd # install and go home
 ```
 
-Also, extra care should be taken with Python 2 vs 3 (e.g. toggle `t` to see paths 2.7 vs 3.5m).
+Also, extra care should be taken with Python 2 vs 3 (e.g. toggle `t` to see paths 2.7 vs 3.5m). You may have to:
+```bash
+sudo ln -s /usr/local/lib/python3/dist-packages/_kinematics_dynamics.so /usr/local/lib/python3.5/dist-packages/
+sudo ln -s /usr/local/lib/python3/dist-packages/kinematics_dynamics.py /usr/local/lib/python3.5/dist-packages/
+```
 
 ### Even more!
 
