@@ -11,8 +11,7 @@ if(ENABLE_tests)
 
     add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
 
-    include_directories(${GTestSources_INCLUDE_DIR}
-                        ${YARP_INCLUDE_DIRS})
+    include_directories(${GTestSources_INCLUDE_DIR}})
 
     # testKinRepresentation
 

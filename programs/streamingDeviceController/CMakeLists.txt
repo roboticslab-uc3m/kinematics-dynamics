@@ -12,8 +12,7 @@ if(ENABLE_streamingDeviceController)
     find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
     # Include any directories needed for this target.
-    include_directories(${YARP_INCLUDE_DIRS}
-                        ${orocos_kdl_INCLUDE_DIRS})
+    include_directories(${orocos_kdl_INCLUDE_DIRS})
 
     # Set up our main executable.
     add_executable(streamingDeviceController main.cpp
