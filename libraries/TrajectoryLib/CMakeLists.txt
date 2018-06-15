@@ -9,16 +9,10 @@ cmake_dependent_option(ENABLE_TrajectoryLib "Enable/disable TrajectoryLib librar
 
 if(ENABLE_TrajectoryLib)
 
-    set(_trayectory_lib_sources ICartesianTrajectory.hpp
-                                ITrajectory.hpp
-                                KdlTrajectory.cpp
-                                KdlTrajectory.hpp)
-
-    # Set up our library.
-    add_library(TrajectoryLib ITrajectory.hpp
-                              ICartesianTrajectory.hpp
-                              KdlTrajectory.cpp
-                              KdlTrajectory.hpp)
+    add_library(TrajectoryLib SHARED ITrajectory.hpp
+                                     ICartesianTrajectory.hpp
+                                     KdlTrajectory.cpp
+                                     KdlTrajectory.hpp)
 
     set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER ICartesianTrajectory.hpp
                                                              ITrajectory.hpp
@@ -38,8 +32,6 @@ if(ENABLE_TrajectoryLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS TrajectoryLib)
 
 else()
 

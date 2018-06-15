@@ -7,8 +7,8 @@ cmake_dependent_option(ENABLE_YarpTinyMathLib "Enable/disable YarpTinyMathLib li
 
 if(ENABLE_YarpTinyMathLib)
 
-    add_library(YarpTinyMathLib YarpTinyMath.hpp
-                                YarpTinyMath.cpp)
+    add_library(YarpTinyMathLib SHARED YarpTinyMath.hpp
+                                       YarpTinyMath.cpp)
 
     set_target_properties(YarpTinyMathLib PROPERTIES PUBLIC_HEADER YarpTinyMath.hpp)
 
@@ -25,8 +25,6 @@ if(ENABLE_YarpTinyMathLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS YarpTinyMathLib)
 
 else()
 

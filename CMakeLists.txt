@@ -2,12 +2,9 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
-
-# Force building shared libraries and YARP DL modules.
-set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
 
 # Add suffix for debug libraries.
 if(MSVC)
@@ -40,7 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Find project's hard dependencies.
-find_package(YCM 0.6 REQUIRED)
+find_package(YCM 0.8 REQUIRED)
 find_package(YARP REQUIRED)
 find_package(COLOR_DEBUG REQUIRED)
 
@@ -50,6 +47,9 @@ if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
     include(YarpPlugin)
     include(YarpInstallationHelpers)
 endif()
+
+# Always build YARP devices as MODULE libraries.
+set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
 
 # Configure installation paths for YARP resources.
 yarp_configure_external_installation(roboticslab-kinematics-dynamics WITH_PLUGINS)
@@ -72,9 +72,6 @@ if(ENABLE_coverage)
     endif()
 endif()
 
-# Store list of exported targets in global scope.
-set_property(GLOBAL PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS)
-
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
 
@@ -96,7 +93,7 @@ include(InstallBasicPackageFiles)
 install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
                             VERSION 0.1.0
                             COMPATIBILITY AnyNewerVersion
-                            TARGETS_PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS
+                            FIRST_TARGET KinematicsDynamicsInterfaces
                             NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
                             NAMESPACE ROBOTICSLAB::

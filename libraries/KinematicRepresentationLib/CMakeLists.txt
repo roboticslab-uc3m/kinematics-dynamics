@@ -9,8 +9,8 @@ cmake_dependent_option(ENABLE_KinematicRepresentationLib "Enable/disable Kinemat
 
 if(ENABLE_KinematicRepresentationLib)
 
-    add_library(KinematicRepresentationLib KinematicRepresentation.hpp
-                                           KinematicRepresentation.cpp)
+    add_library(KinematicRepresentationLib SHARED KinematicRepresentation.hpp
+                                                  KinematicRepresentation.cpp)
 
     set_target_properties(KinematicRepresentationLib PROPERTIES PUBLIC_HEADER KinematicRepresentation.hpp)
 
@@ -27,8 +27,6 @@ if(ENABLE_KinematicRepresentationLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS KinematicRepresentationLib)
 
 else()
 

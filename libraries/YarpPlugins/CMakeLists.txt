@@ -21,9 +21,6 @@ install(FILES ICartesianControl.h
 install(TARGETS KinematicsDynamicsInterfaces
         EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
-# Store target in the global scope.
-set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS KinematicsDynamicsInterfaces)
-
 # Create devices.
 add_subdirectory(AmorCartesianControl)
 add_subdirectory(AsibotSolver)
