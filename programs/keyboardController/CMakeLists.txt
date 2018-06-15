@@ -13,11 +13,10 @@ add_executable(keyboardController main.cpp
                                   KeyboardController.hpp
                                   KeyboardController.cpp)
 
-add_dependencies(keyboardController COLOR_DEBUG)
-
 target_link_libraries(keyboardController YARP::YARP_OS
                                          YARP::YARP_init
                                          YARP::YARP_dev
+                                         ROBOTICSLAB::ColorDebug
                                          KinematicRepresentationLib
                                          KinematicsDynamicsInterfaces)
 

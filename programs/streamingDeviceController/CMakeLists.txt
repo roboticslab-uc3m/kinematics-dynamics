@@ -28,13 +28,12 @@ if(ENABLE_streamingDeviceController)
                                              StreamingDeviceController.hpp
                                              StreamingDeviceController.cpp)
 
-    add_dependencies(streamingDeviceController COLOR_DEBUG)
-
     target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
                                                     YARP::YARP_OS
                                                     YARP::YARP_init
                                                     YARP::YARP_dev
                                                     YARP::YARP_sig
+                                                    ROBOTICSLAB::ColorDebug
                                                     KdlVectorConverterLib
                                                     KinematicsDynamicsInterfaces)
 

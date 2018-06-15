@@ -6,7 +6,7 @@
 #include <kdl/rigidbodyinertia.hpp>
 #include <kdl/rotationalinertia.hpp>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "KinematicRepresentation.hpp"
 

@@ -18,12 +18,11 @@ if(ENABLE_transCoords)
                                TransCoords.cpp
                                TransCoords.hpp)
 
-    add_dependencies(transCoords COLOR_DEBUG)
-
     target_link_libraries(transCoords YARP::YARP_OS
                                       YARP::YARP_init
                                       YARP::YARP_dev
                                       ${orocos_kdl_LIBRARIES}
+                                      ROBOTICSLAB::ColorDebug
                                       KdlVectorConverterLib
                                       KinematicRepresentationLib
                                       KinematicsDynamicsInterfaces)

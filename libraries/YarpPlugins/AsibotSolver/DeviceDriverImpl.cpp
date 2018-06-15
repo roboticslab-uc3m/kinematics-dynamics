@@ -13,7 +13,7 @@
 
 #include <yarp/math/Math.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 

@@ -5,7 +5,7 @@
 #include <cmath>
 #include <sstream>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 using namespace roboticslab;
 

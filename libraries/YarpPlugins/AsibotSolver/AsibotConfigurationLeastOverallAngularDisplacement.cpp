@@ -7,7 +7,7 @@
 #include <numeric>
 #include <utility>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 using namespace roboticslab;
 

@@ -13,11 +13,10 @@ if(ENABLE_KdlVectorConverterLib)
     add_library(KdlVectorConverterLib KdlVectorConverter.cpp
                                       KdlVectorConverter.hpp)
 
-    add_dependencies(KdlVectorConverterLib COLOR_DEBUG)
-
     set_target_properties(KdlVectorConverterLib PROPERTIES PUBLIC_HEADER KdlVectorConverter.hpp)
 
-    target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES})
+    target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES}
+                                                       PRIVATE ROBOTICSLAB::ColorDebug)
 
     target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

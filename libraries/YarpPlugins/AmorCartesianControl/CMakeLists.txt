@@ -23,11 +23,10 @@ if(NOT SKIP_AmorCartesianControl)
                                          DeviceDriverImpl.cpp
                                          ICartesianControlImpl.cpp)
 
-    add_dependencies(AmorCartesianControl COLOR_DEBUG)
-
     target_link_libraries(AmorCartesianControl YARP::YARP_OS
                                                YARP::YARP_dev
                                                AMOR::amor_api
+                                               ROBOTICSLAB::ColorDebug
                                                KinematicRepresentationLib
                                                KinematicsDynamicsInterfaces)
 

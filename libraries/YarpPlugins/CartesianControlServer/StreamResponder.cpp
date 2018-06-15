@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- StreamResponder Related ------------------------------------
 

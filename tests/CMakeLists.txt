@@ -18,19 +18,17 @@ if(ENABLE_tests)
 
     add_executable(testKinRepresentation testKinRepresentation.cpp)
 
-    add_dependencies(testKinRepresentation COLOR_DEBUG)
-
     target_link_libraries(testKinRepresentation KinematicRepresentationLib
+                                                ROBOTICSLAB::ColorDebug
                                                 gtest_main)
 
     # testKdlSolver
 
     add_executable(testKdlSolver testKdlSolver.cpp)
 
-    add_dependencies(testKdlSolver COLOR_DEBUG)
-
     target_link_libraries(testKdlSolver YARP::YARP_OS
                                         YARP::YARP_dev
+                                        ROBOTICSLAB::ColorDebug
                                         KinematicsDynamicsInterfaces
                                         gtest_main)
 
@@ -38,10 +36,9 @@ if(ENABLE_tests)
 
     add_executable(testKdlSolverFromFile testKdlSolverFromFile.cpp)
 
-    add_dependencies(testKdlSolverFromFile COLOR_DEBUG)
-
     target_link_libraries(testKdlSolverFromFile YARP::YARP_OS
                                                 YARP::YARP_dev
+                                                ROBOTICSLAB::ColorDebug
                                                 KinematicsDynamicsInterfaces
                                                 gtest_main)
 
@@ -49,10 +46,9 @@ if(ENABLE_tests)
 
     add_executable(testAsibotSolverFromFile testAsibotSolverFromFile.cpp)
 
-    add_dependencies(testAsibotSolverFromFile COLOR_DEBUG)
-
     target_link_libraries(testAsibotSolverFromFile YARP::YARP_OS
                                                    YARP::YARP_dev
+                                                   ROBOTICSLAB::ColorDebug
                                                    KinematicRepresentationLib
                                                    KinematicsDynamicsInterfaces
                                                    gtest_main)
@@ -61,19 +57,17 @@ if(ENABLE_tests)
 
     add_executable(testKdlTrajectory testKdlTrajectory.cpp)
 
-    add_dependencies(testKdlTrajectory COLOR_DEBUG)
-
     target_link_libraries(testKdlTrajectory TrajectoryLib
+                                            ROBOTICSLAB::ColorDebug
                                             gtest_main)
 
     # testBasicCartesianControl
 
     add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 
-    add_dependencies(testBasicCartesianControl COLOR_DEBUG)
-
     target_link_libraries(testBasicCartesianControl YARP::YARP_OS
                                                     YARP::YARP_dev
+                                                    ROBOTICSLAB::ColorDebug
                                                     KinematicsDynamicsInterfaces
                                                     gtest_main)
 

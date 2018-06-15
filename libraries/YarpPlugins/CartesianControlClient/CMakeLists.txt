@@ -19,10 +19,9 @@ yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
                                        ICartesianControlImpl.cpp
                                        FkStreamResponder.cpp)
 
-add_dependencies(CartesianControlClient COLOR_DEBUG)
-
 target_link_libraries(CartesianControlClient YARP::YARP_OS
                                              YARP::YARP_dev
+                                             ROBOTICSLAB::ColorDebug
                                              KinematicsDynamicsInterfaces)
 
 yarp_install(TARGETS CartesianControlClient

@@ -15,16 +15,18 @@ if(ENABLE_TrajectoryLib)
                                 KdlTrajectory.hpp)
 
     # Set up our library.
-    add_library(TrajectoryLib ${_trayectory_lib_sources})
-
-    add_dependencies(TrajectoryLib COLOR_DEBUG)
+    add_library(TrajectoryLib ITrajectory.hpp
+                              ICartesianTrajectory.hpp
+                              KdlTrajectory.cpp
+                              KdlTrajectory.hpp)
 
     set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER ICartesianTrajectory.hpp
                                                              ITrajectory.hpp
                                                              KdlTrajectory.hpp)
 
     target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
-                                        PRIVATE KdlVectorConverterLib)
+                                        PRIVATE KdlVectorConverterLib
+                                                ROBOTICSLAB::ColorDebug)
 
     target_include_directories(TrajectoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

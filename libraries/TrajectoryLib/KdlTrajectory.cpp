@@ -6,7 +6,7 @@
 #include <kdl/velocityprofile_trap.hpp>
 #include <kdl/path_line.hpp>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "KdlVectorConverter.hpp"
 
