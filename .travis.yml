@@ -58,11 +58,11 @@ install:
   - cd ../../..
 
   # Install color-debug
-  - cd
   - git clone https://github.com/roboticslab-uc3m/color-debug
-  - mkdir -p color-debug/build && cd "$_"
+  - cd color-debug && mkdir build && cd build
   - cmake ..
   - sudo make install
+  - cd ../..
 
   #-- (for AmorCartesianControl) Install AMOR API
   - git clone git@github.com:roboticslab-uc3m/amor-api
