@@ -15,7 +15,7 @@
     #include <kdl/chainiksolverpos_nr_jl.hpp>
 #endif //_USE_LMA_
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "KdlVectorConverter.hpp"
 #include "KinematicRepresentation.hpp"

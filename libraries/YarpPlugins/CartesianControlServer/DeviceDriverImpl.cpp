@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -66,7 +66,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt();
 
-    if (periodInMs >= 0)
+    if (periodInMs > 0)
     {
         fkOutPort.open(prefix + "/state:o");
 

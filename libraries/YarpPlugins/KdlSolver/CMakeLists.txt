@@ -29,12 +29,11 @@ if(NOT SKIP_KdlSolver)
                               DeviceDriverImpl.cpp
                               ICartesianSolverImpl.cpp)
 
-    add_dependencies(KdlSolver COLOR_DEBUG)
-
     target_link_libraries(KdlSolver YARP::YARP_OS
                                     YARP::YARP_dev
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
+                                    ROBOTICSLAB::ColorDebug
                                     KdlVectorConverterLib
                                     KinematicRepresentationLib
                                     KinematicsDynamicsInterfaces)

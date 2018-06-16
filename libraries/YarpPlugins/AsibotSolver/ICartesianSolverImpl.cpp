@@ -8,7 +8,7 @@
 #include <yarp/math/Math.h>
 #include <yarp/math/SVD.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "KinematicRepresentation.hpp"
 

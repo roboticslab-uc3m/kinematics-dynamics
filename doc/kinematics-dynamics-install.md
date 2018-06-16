@@ -3,12 +3,10 @@
 First install the dependencies:
 
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
+- [Install YCM](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md)
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
 - [Install KDL](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)
-
-Additionally, this project depends on YCM to download and build external packages. Although this process is intended to run automatically during the CMake configuration phase, you may still want to install YCM and said packages by yourself. In that respect, refer to [Install YCM](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md) and to the installation guides of any package listed below:
-
-- [color-debug](https://github.com/roboticslab-uc3m/color-debug)
+- [Install color-debug](https://github.com/roboticslab-uc3m/color-debug)
 
 Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `FakeControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
 
@@ -70,7 +68,11 @@ make -j$(nproc)  # compile
 sudo make install; sudo ldconfig; cd # install and go home
 ```
 
-Also, extra care should be taken with Python 2 vs 3 (e.g. toggle `t` to see paths 2.7 vs 3.5m).
+Also, extra care should be taken with Python 2 vs 3 (e.g. toggle `t` to see paths 2.7 vs 3.5m). You may have to:
+```bash
+sudo ln -s /usr/local/lib/python3/dist-packages/_kinematics_dynamics.so /usr/local/lib/python3.5/dist-packages/
+sudo ln -s /usr/local/lib/python3/dist-packages/kinematics_dynamics.py /usr/local/lib/python3.5/dist-packages/
+```
 
 ### Even more!
 

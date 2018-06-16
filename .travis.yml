@@ -29,6 +29,9 @@ before_install:
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
 
+  #-- Set YARP branch on cron jobs
+  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export ROBOTOLOGY_CHECKOUT=devel || export ROBOTOLOGY_CHECKOUT=master'
+
   #-- Register SSH deploy key for AMOR API private repository
   - source "$TRAVIS_BUILD_DIR/scripts/travis/configure-ssh.sh"
 
@@ -36,11 +39,26 @@ before_install:
   - if [ "$CXX" = "g++" ]; then gem install coveralls-lcov; fi
 
 install:
+  #-- Install YCM
+  - git clone --branch="$ROBOTOLOGY_CHECKOUT" https://github.com/robotology/ycm
+  - cd ycm && mkdir build && cd build
+  - cmake ..
+  - make -j$(nproc)
+  - sudo make install
+  - cd ../..
+
   #-- Install YARP
   - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-yarp.sh"
 
   #-- Install KDL
   - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-kdl.sh"
+
+  # Install color-debug
+  - git clone https://github.com/roboticslab-uc3m/color-debug
+  - cd color-debug && mkdir build && cd build
+  - cmake ..
+  - sudo make install
+  - cd ../..
 
   #-- (for AmorCartesianControl) Install AMOR API
   - git clone git@github.com:roboticslab-uc3m/amor-api ~/amor-api
