@@ -18,7 +18,6 @@ if(ENABLE_tests)
     add_executable(testKinRepresentation testKinRepresentation.cpp)
 
     target_link_libraries(testKinRepresentation KinematicRepresentationLib
-                                                ROBOTICSLAB::ColorDebug
                                                 gtest_main)
 
     # testKdlSolver
@@ -57,7 +56,6 @@ if(ENABLE_tests)
     add_executable(testKdlTrajectory testKdlTrajectory.cpp)
 
     target_link_libraries(testKdlTrajectory TrajectoryLib
-                                            ROBOTICSLAB::ColorDebug
                                             gtest_main)
 
     # testBasicCartesianControl
