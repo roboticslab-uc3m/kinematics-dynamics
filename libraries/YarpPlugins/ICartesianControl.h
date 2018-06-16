@@ -6,9 +6,11 @@
 #include <map>
 #include <vector>
 
-#include <yarp/os/Vocab.h>
-
 #include "ICartesianSolver.h"
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+#define VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
+#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 
 /**
  * @file
@@ -31,10 +33,10 @@
  */
 
 // General-purpose vocabs
-#define VOCAB_CC_OK VOCAB2('o','k')             ///< Success
-#define VOCAB_CC_FAILED VOCAB4('f','a','i','l') ///< Failure
-#define VOCAB_CC_SET VOCAB3('s','e','t')        ///< Setter
-#define VOCAB_CC_GET VOCAB3('g','e','t')        ///< Getter
+#define VOCAB_CC_OK VOCAB('o','k',0,0)         ///< Success
+#define VOCAB_CC_FAILED VOCAB('f','a','i','l') ///< Failure
+#define VOCAB_CC_SET VOCAB('s','e','t',0)      ///< Setter
+#define VOCAB_CC_GET VOCAB('g','e','t',0)      ///< Getter
 
  /** @} */
 
@@ -47,17 +49,17 @@
  */
 
 // RPC commands
-#define VOCAB_CC_STAT VOCAB4('s','t','a','t') ///< Current state and position
-#define VOCAB_CC_INV VOCAB3('i','n','v')      ///< Inverse kinematics
-#define VOCAB_CC_MOVJ VOCAB4('m','o','v','j') ///< Move in joint space, absolute coordinates
-#define VOCAB_CC_RELJ VOCAB4('r','e','l','j') ///< Move in joint space, relative coordinates
-#define VOCAB_CC_MOVL VOCAB4('m','o','v','l') ///< Linear move to target position
-#define VOCAB_CC_MOVV VOCAB4('m','o','v','v') ///< Linear move with given velocity
-#define VOCAB_CC_GCMP VOCAB4('g','c','m','p') ///< Gravity compensation
-#define VOCAB_CC_FORC VOCAB4('f','o','r','c') ///< Force control
-#define VOCAB_CC_STOP VOCAB4('s','t','o','p') ///< Stop control
-#define VOCAB_CC_WAIT VOCAB4('w','a','i','t') ///< Wait motion done
-#define VOCAB_CC_TOOL VOCAB4('t','o','o','l') ///< Change tool
+#define VOCAB_CC_STAT VOCAB('s','t','a','t') ///< Current state and position
+#define VOCAB_CC_INV VOCAB('i','n','v',0)    ///< Inverse kinematics
+#define VOCAB_CC_MOVJ VOCAB('m','o','v','j') ///< Move in joint space, absolute coordinates
+#define VOCAB_CC_RELJ VOCAB('r','e','l','j') ///< Move in joint space, relative coordinates
+#define VOCAB_CC_MOVL VOCAB('m','o','v','l') ///< Linear move to target position
+#define VOCAB_CC_MOVV VOCAB('m','o','v','v') ///< Linear move with given velocity
+#define VOCAB_CC_GCMP VOCAB('g','c','m','p') ///< Gravity compensation
+#define VOCAB_CC_FORC VOCAB('f','o','r','c') ///< Force control
+#define VOCAB_CC_STOP VOCAB('s','t','o','p') ///< Stop control
+#define VOCAB_CC_WAIT VOCAB('w','a','i','t') ///< Wait motion done
+#define VOCAB_CC_TOOL VOCAB('t','o','o','l') ///< Change tool
 
 /** @} */
 
@@ -70,8 +72,8 @@
  */
 
 // Streaming commands
-#define VOCAB_CC_TWIST VOCAB4('t','w','s','t') ///< Instantaneous velocity steps
-#define VOCAB_CC_POSE VOCAB4('p','o','s','e')  ///< Achieve pose in inertial frame
+#define VOCAB_CC_TWIST VOCAB('t','w','s','t') ///< Instantaneous velocity steps
+#define VOCAB_CC_POSE VOCAB('p','o','s','e')  ///< Achieve pose in inertial frame
 
 /** @} */
 
@@ -84,12 +86,12 @@
  */
 
 // Control state
-#define VOCAB_CC_NOT_CONTROLLING VOCAB4('c','c','n','c')  ///< Not controlling
-#define VOCAB_CC_MOVJ_CONTROLLING VOCAB4('c','c','j','c') ///< Controlling MOVJ commands
-#define VOCAB_CC_MOVL_CONTROLLING VOCAB4('c','c','l','c') ///< Controlling MOVL commands
-#define VOCAB_CC_MOVV_CONTROLLING VOCAB4('c','c','v','c') ///< Controlling MOVV commands
-#define VOCAB_CC_GCMP_CONTROLLING VOCAB4('c','c','g','c') ///< Controlling GCMP commands
-#define VOCAB_CC_FORC_CONTROLLING VOCAB4('c','c','f','c') ///< Controlling FORC commands
+#define VOCAB_CC_NOT_CONTROLLING VOCAB('c','c','n','c')  ///< Not controlling
+#define VOCAB_CC_MOVJ_CONTROLLING VOCAB('c','c','j','c') ///< Controlling MOVJ commands
+#define VOCAB_CC_MOVL_CONTROLLING VOCAB('c','c','l','c') ///< Controlling MOVL commands
+#define VOCAB_CC_MOVV_CONTROLLING VOCAB('c','c','v','c') ///< Controlling MOVV commands
+#define VOCAB_CC_GCMP_CONTROLLING VOCAB('c','c','g','c') ///< Controlling GCMP commands
+#define VOCAB_CC_FORC_CONTROLLING VOCAB('c','c','f','c') ///< Controlling FORC commands
 
 /** @} */
 
@@ -102,13 +104,13 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_PARAMS VOCAB4('p','r','m','s')        ///< Parameter group
-#define VOCAB_CC_CONFIG_GAIN VOCAB4('c','p','c','g')          ///< Controller gain
-#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB4('c','p','j','v') ///< Maximum joint velocity
-#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB4('c','p','t','d') ///< Trajectory duration
-#define VOCAB_CC_CONFIG_CMC_RATE VOCAB4('c','p','c','r')      ///< CMC rate [ms]
-#define VOCAB_CC_CONFIG_WAIT_PERIOD VOCAB4('c','p','w','p')   ///< Check period of 'wait' command [ms]
-#define VOCAB_CC_CONFIG_FRAME VOCAB3('c','p','f')             ///< Reference frame
+#define VOCAB_CC_CONFIG_PARAMS VOCAB('p','r','m','s')        ///< Parameter group
+#define VOCAB_CC_CONFIG_GAIN VOCAB('c','p','c','g')          ///< Controller gain
+#define VOCAB_CC_CONFIG_MAX_JOINT_VEL VOCAB('c','p','j','v') ///< Maximum joint velocity
+#define VOCAB_CC_CONFIG_TRAJ_DURATION VOCAB('c','p','t','d') ///< Trajectory duration
+#define VOCAB_CC_CONFIG_CMC_RATE VOCAB('c','p','c','r')      ///< CMC rate [ms]
+#define VOCAB_CC_CONFIG_WAIT_PERIOD VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
+#define VOCAB_CC_CONFIG_FRAME VOCAB('c','p','f',0)           ///< Reference frame
 
 /** @} */
 

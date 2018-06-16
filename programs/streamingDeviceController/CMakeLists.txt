@@ -12,8 +12,7 @@ if(ENABLE_streamingDeviceController)
     find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
     # Include any directories needed for this target.
-    include_directories(${YARP_INCLUDE_DIRS}
-                        ${orocos_kdl_INCLUDE_DIRS})
+    include_directories(${orocos_kdl_INCLUDE_DIRS})
 
     # Set up our main executable.
     add_executable(streamingDeviceController main.cpp
@@ -28,13 +27,12 @@ if(ENABLE_streamingDeviceController)
                                              StreamingDeviceController.hpp
                                              StreamingDeviceController.cpp)
 
-    add_dependencies(streamingDeviceController COLOR_DEBUG)
-
     target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
                                                     YARP::YARP_OS
                                                     YARP::YARP_init
                                                     YARP::YARP_dev
                                                     YARP::YARP_sig
+                                                    ROBOTICSLAB::ColorDebug
                                                     KdlVectorConverterLib
                                                     KinematicsDynamicsInterfaces)
 

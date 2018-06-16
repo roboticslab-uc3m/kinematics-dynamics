@@ -9,7 +9,7 @@
 
 #include <yarp/os/Vocab.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "KdlTrajectory.hpp"
 

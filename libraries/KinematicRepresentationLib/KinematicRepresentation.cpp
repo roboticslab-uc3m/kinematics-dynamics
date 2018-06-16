@@ -6,7 +6,7 @@
 
 #include <kdl/frames.hpp>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 namespace roboticslab
 {

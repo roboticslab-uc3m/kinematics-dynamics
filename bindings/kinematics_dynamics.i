@@ -18,6 +18,8 @@
 
 //%import "yarp.i"
 
+%define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS %enddef
+
 %{
 /* Includes the header in the wrapper code */
 #include "ICartesianSolver.h"
@@ -40,7 +42,7 @@
 }
 
 %{
-#include <yarp/dev/all.h>
+#include <yarp/dev/PolyDriver.h>
 roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d)
 {
     roboticslab::ICartesianSolver *result;
@@ -51,7 +53,7 @@ roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d)
 extern roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d);
 
 %{
-#include <yarp/dev/all.h>
+#include <yarp/dev/PolyDriver.h>
 roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d)
 {
     roboticslab::ICartesianControl *result;

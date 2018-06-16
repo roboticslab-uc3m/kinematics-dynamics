@@ -9,14 +9,13 @@ cmake_dependent_option(ENABLE_KinematicRepresentationLib "Enable/disable Kinemat
 
 if(ENABLE_KinematicRepresentationLib)
 
-    add_library(KinematicRepresentationLib KinematicRepresentation.hpp
-                                           KinematicRepresentation.cpp)
-
-    add_dependencies(KinematicRepresentationLib COLOR_DEBUG)
+    add_library(KinematicRepresentationLib SHARED KinematicRepresentation.hpp
+                                                  KinematicRepresentation.cpp)
 
     set_target_properties(KinematicRepresentationLib PROPERTIES PUBLIC_HEADER KinematicRepresentation.hpp)
 
-    target_link_libraries(KinematicRepresentationLib PRIVATE ${orocos_kdl_LIBRARIES})
+    target_link_libraries(KinematicRepresentationLib PRIVATE ${orocos_kdl_LIBRARIES}
+                                                             ROBOTICSLAB::ColorDebug)
 
     target_include_directories(KinematicRepresentationLib PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -28,8 +27,6 @@ if(ENABLE_KinematicRepresentationLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS KinematicRepresentationLib)
 
 else()
 
