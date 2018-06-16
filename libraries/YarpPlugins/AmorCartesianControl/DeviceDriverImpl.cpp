@@ -8,7 +8,7 @@
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "KinematicRepresentation.hpp"
 

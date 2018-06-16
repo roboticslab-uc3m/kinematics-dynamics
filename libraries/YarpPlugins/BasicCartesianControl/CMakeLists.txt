@@ -20,10 +20,9 @@ yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
                                       ICartesianControlImpl.cpp
                                       RateThreadImpl.cpp)
 
-add_dependencies(BasicCartesianControl COLOR_DEBUG)
-
 target_link_libraries(BasicCartesianControl YARP::YARP_OS
                                             YARP::YARP_dev
+                                            ROBOTICSLAB::ColorDebug
                                             TrajectoryLib
                                             KinematicsDynamicsInterfaces)
 

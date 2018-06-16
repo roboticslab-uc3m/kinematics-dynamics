@@ -2,7 +2,7 @@
 
 #include "KdlVectorConverter.hpp"
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // -----------------------------------------------------------------------------
 

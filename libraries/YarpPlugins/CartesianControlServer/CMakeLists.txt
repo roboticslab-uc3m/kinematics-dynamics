@@ -21,10 +21,9 @@ yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
                                        RpcResponder.cpp
                                        StreamResponder.cpp)
 
-add_dependencies(CartesianControlServer COLOR_DEBUG)
-
 target_link_libraries(CartesianControlServer YARP::YARP_OS
                                              YARP::YARP_dev
+                                             ROBOTICSLAB::ColorDebug
                                              KinematicRepresentationLib
                                              KinematicsDynamicsInterfaces)
 

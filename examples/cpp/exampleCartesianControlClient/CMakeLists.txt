@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 # Start a project.
 project(exampleCartesianControlClient)
 
 find_package(YARP REQUIRED)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
-
-include_directories(${YARP_INCLUDE_DIRS}) # remove if YARP > v2.3.70
 
 # Set up our main executable.
 add_executable(exampleCartesianControlClient exampleCartesianControlClient.cpp)

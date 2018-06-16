@@ -16,7 +16,7 @@
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 namespace
 {

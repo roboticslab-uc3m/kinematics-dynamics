@@ -2,7 +2,7 @@
 
 #include "TwoLimbCartesianControlServer.hpp"
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- TwoLimbCartesianControlServer Related ------------------------------------
 

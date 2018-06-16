@@ -4,7 +4,7 @@
 
 #include <cmath>  //-- abs
 #include <yarp/os/Time.h>
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- RateThread Related ------------------------------------
 

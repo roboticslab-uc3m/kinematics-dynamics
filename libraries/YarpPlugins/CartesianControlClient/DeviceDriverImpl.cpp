@@ -7,7 +7,7 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/Time.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 

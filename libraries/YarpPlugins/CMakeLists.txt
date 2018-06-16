@@ -1,10 +1,6 @@
 # Copyright: (C) 2013 Universidad Carlos III de Madrid
 # Authors: Juan G. Victores
 
-if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
-    include_directories(${YARP_INCLUDE_DIRS})
-endif()
-
 # Create device interface target.
 add_library(KinematicsDynamicsInterfaces INTERFACE)
 
@@ -20,9 +16,6 @@ install(FILES ICartesianControl.h
 # Register export set.
 install(TARGETS KinematicsDynamicsInterfaces
         EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
-
-# Store target in the global scope.
-set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS KinematicsDynamicsInterfaces)
 
 # Create devices.
 add_subdirectory(AmorCartesianControl)
