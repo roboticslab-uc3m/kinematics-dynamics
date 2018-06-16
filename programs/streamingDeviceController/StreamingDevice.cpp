@@ -4,7 +4,7 @@
 
 #include <yarp/os/Property.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "SpnavSensorDevice.hpp"
 #include "LeapMotionSensorDevice.hpp"

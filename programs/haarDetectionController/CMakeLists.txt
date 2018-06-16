@@ -17,11 +17,10 @@ add_executable(haarDetectionController main.cpp
                                        GrabberResponder.hpp
                                        GrabberResponder.cpp)
 
-add_dependencies(haarDetectionController COLOR_DEBUG)
-
 target_link_libraries(haarDetectionController YARP::YARP_OS
                                               YARP::YARP_init
                                               YARP::YARP_dev
+                                              ROBOTICSLAB::ColorDebug
                                               KinematicsDynamicsInterfaces
                                               ROBOTICSLAB::YarpDevicesInterfaces)
 

@@ -10,14 +10,13 @@ cmake_dependent_option(ENABLE_KdlVectorConverterLib "Enable/disable KdlVectorCon
 if(ENABLE_KdlVectorConverterLib)
 
     # Set up our library.
-    add_library(KdlVectorConverterLib KdlVectorConverter.cpp
-                                      KdlVectorConverter.hpp)
-
-    add_dependencies(KdlVectorConverterLib COLOR_DEBUG)
+    add_library(KdlVectorConverterLib SHARED KdlVectorConverter.cpp
+                                             KdlVectorConverter.hpp)
 
     set_target_properties(KdlVectorConverterLib PROPERTIES PUBLIC_HEADER KdlVectorConverter.hpp)
 
-    target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES})
+    target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES}
+                                                PRIVATE ROBOTICSLAB::ColorDebug)
 
     target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -29,8 +28,6 @@ if(ENABLE_KdlVectorConverterLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_KINEMATICS_DYNAMICS_TARGETS KdlVectorConverterLib)
 
 else()
 

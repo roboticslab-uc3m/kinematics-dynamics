@@ -8,7 +8,7 @@
 
 #include <yarp/sig/Vector.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 using namespace roboticslab;
 

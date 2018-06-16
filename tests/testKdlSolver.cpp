@@ -7,7 +7,7 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "ICartesianSolver.h"
 

@@ -5,7 +5,7 @@
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Network.h>
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 #include "HaarDetectionController.hpp"
 

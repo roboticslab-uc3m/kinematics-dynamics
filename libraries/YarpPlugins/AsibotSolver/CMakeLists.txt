@@ -21,12 +21,11 @@ if(NOT SKIP_AsibotSolver)
                                  AsibotConfiguration.cpp
                                  AsibotConfigurationLeastOverallAngularDisplacement.cpp)
 
-    add_dependencies(AsibotSolver COLOR_DEBUG)
-
     target_link_libraries(AsibotSolver YARP::YARP_OS
                                        YARP::YARP_dev
                                        YARP::YARP_sig
                                        YARP::YARP_math
+                                       ROBOTICSLAB::ColorDebug
                                        KinematicRepresentationLib
                                        KinematicsDynamicsInterfaces)
 

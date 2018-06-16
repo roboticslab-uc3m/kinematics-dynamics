@@ -2,7 +2,7 @@
 
 #include "BasicTwoLimbCartesianControl.hpp"
 
-#include <ColorDebug.hpp>
+#include <ColorDebug.h>
 
 // ------------------- ICartesianControl Related ------------------------------------
 
