@@ -9,6 +9,7 @@ compiler:
 
 env:
   global:
+    - YCM_VER=0.8.1
     - YARP_VER=2.3.72
     - KDL_VER=1.4.0
     - CACHE_DIR=~/cached-deps
@@ -29,9 +30,6 @@ before_install:
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
 
-  #-- Set YARP branch on cron jobs
-  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export ROBOTOLOGY_CHECKOUT=devel || export ROBOTOLOGY_CHECKOUT=master'
-
   #-- Register SSH deploy key for AMOR API private repository
   - source "$TRAVIS_BUILD_DIR/scripts/travis/configure-ssh.sh"
 
@@ -40,12 +38,7 @@ before_install:
 
 install:
   #-- Install YCM
-  - git clone --branch="$ROBOTOLOGY_CHECKOUT" https://github.com/robotology/ycm
-  - cd ycm && mkdir build && cd build
-  - cmake ..
-  - make -j$(nproc)
-  - sudo make install
-  - cd ../..
+  - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-ycm.sh"
 
   #-- Install YARP
   - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-yarp.sh"
