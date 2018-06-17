@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
+project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
 
 # Add suffix for debug libraries.
 if(MSVC)
