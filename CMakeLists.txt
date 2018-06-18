@@ -41,7 +41,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
 find_package(YCM 0.8 REQUIRED)
 
 # https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
-find_package(YARP 3.0 QUIET COMPONENTS OS dev sig math)
+# YARP_math breaks builds at asibot-hmi (not installing Eigen3)
+find_package(YARP 3.0 QUIET) # COMPONENTS OS dev sig math)
 if(NOT YARP_FOUND)
     find_package(YARP 2.3.70 REQUIRED)
 endif()
