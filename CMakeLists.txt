@@ -36,8 +36,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
-# Find project's hard dependencies.
-
+# Hard dependencies.
 find_package(YCM 0.8 REQUIRED)
 
 # https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
@@ -48,6 +47,12 @@ if(NOT YARP_FOUND)
 endif()
 
 find_package(COLOR_DEBUG REQUIRED)
+
+# Soft dependencies.
+find_package(orocos_kdl 1.4 QUIET)
+find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
+find_package(AMOR_API QUIET)
+find_package(GTestSources 1.6.0 QUIET)
 
 # Always build YARP devices as MODULE libraries.
 set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
@@ -75,9 +80,6 @@ endif()
 
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
-
-# Dependency-related tweaks.
-set(_target_kdl_version 1.4)
 
 # Add main contents.
 add_subdirectory(libraries)
