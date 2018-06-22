@@ -3,6 +3,8 @@
 #ifndef __KDL_SOLVER_HPP__
 #define __KDL_SOLVER_HPP__
 
+#include <string>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
@@ -26,6 +28,7 @@
 
 #define DEFAULT_EPS 1e-9
 #define DEFAULT_MAXITER 1000
+#define DEFAULT_IK_SOLVER "lma"
 
 namespace roboticslab
 {
@@ -48,7 +51,8 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 
         KdlSolver()
             : eps(DEFAULT_EPS),
-              maxIter(DEFAULT_MAXITER)
+              maxIter(DEFAULT_MAXITER),
+              ikSolver(LMA)
         {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
@@ -110,6 +114,8 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 
     protected:
 
+        enum ik_solver { LMA, NRJL };
+
         // defined in DeviceDriverImpl.cpp
         KDL::Chain getChain() const;
         void setChain(const KDL::Chain & chain);
@@ -137,8 +143,12 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         /** Maximum number of iterations to calculate inverse kinematics. **/
         unsigned int maxIter;
 
+        /** User-selected IK solver algorithm. **/
+        ik_solver ikSolver;
+
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
+        bool parseIkSolverFromString(const std::string & str);
 };
 
 }  // namespace roboticslab

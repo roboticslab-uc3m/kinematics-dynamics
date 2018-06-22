@@ -17,8 +17,6 @@ yarp_prepare_plugin(KdlSolver
 
 if(NOT SKIP_KdlSolver)
 
-    option(USE_LMA "Use LMA algorithm in KdlSolver" OFF)
-
     # KDLConfig.cmake brings Eigen_INCLUDE_DIR into scope with orocos_kdl_INCLUDE_DIRS
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
                         ${orocos_kdl_INCLUDE_DIRS})
@@ -35,10 +33,6 @@ if(NOT SKIP_KdlSolver)
                                     KdlVectorConverterLib
                                     KinematicRepresentationLib
                                     KinematicsDynamicsInterfaces)
-
-    if(USE_LMA)
-        target_compile_definitions(KdlSolver PRIVATE _USE_LMA_)
-    endif()
 
     yarp_install(TARGETS KdlSolver
                  COMPONENT runtime
