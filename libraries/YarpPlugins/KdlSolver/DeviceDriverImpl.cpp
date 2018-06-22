@@ -219,6 +219,18 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         return false;
     }
 
+    if (ikSolver == LMA)
+    {
+        std::string weightsStr = fullConfig.check("weights", yarp::os::Value(DEFAULT_LMA_WEIGHTS), "LMA algorithm weights (bottle of 6 doubles)").asString();
+        yarp::os::Bottle weights(weightsStr);
+
+        if (!parseLmaFromBottle(weights))
+        {
+            CD_ERROR("Unable to parse LMA weights.\n");
+            return false;
+        }
+    }
+
     originalChain = chain;  // We have: Chain& operator = (const Chain& arg);
 
     return true;
@@ -265,6 +277,24 @@ bool roboticslab::KdlSolver::parseIkSolverFromString(const std::string & str)
     else
     {
         return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlSolver::parseLmaFromBottle(const yarp::os::Bottle & b)
+{
+    if (b.size() != 6)
+    {
+        CD_WARNING("Wrong bottle size (expected: %d, was: %d).", 6, b.size());
+        return false;
+    }
+
+    for (int i = 0; i < b.size(); i++)
+    {
+        L(i) = b.get(i).asDouble();
     }
 
     return true;

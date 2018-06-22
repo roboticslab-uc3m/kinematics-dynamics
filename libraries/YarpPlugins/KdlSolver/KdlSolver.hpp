@@ -14,6 +14,8 @@
 #include <kdl/chain.hpp>
 #include <kdl/jntarray.hpp>
 
+#include <Eigen/Core> // Eigen::Matrix
+
 #include <iostream> // only windows
 
 #include "ICartesianSolver.h"
@@ -29,6 +31,7 @@
 #define DEFAULT_EPS 1e-9
 #define DEFAULT_MAXITER 1000
 #define DEFAULT_IK_SOLVER "lma"
+#define DEFAULT_LMA_WEIGHTS "1 1 1 0.1 0.1 0.1"
 
 namespace roboticslab
 {
@@ -146,9 +149,14 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         /** User-selected IK solver algorithm. **/
         ik_solver ikSolver;
 
+        /** Vector of weights (LMA algorithm). **/
+        Eigen::Matrix<double, 6, 1> L;
+
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
         bool parseIkSolverFromString(const std::string & str);
+
+        bool parseLmaFromBottle(const yarp::os::Bottle & b);
 };
 
 }  // namespace roboticslab

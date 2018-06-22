@@ -2,8 +2,6 @@
 
 #include "KdlSolver.hpp"
 
-#include <Eigen/Core> // Eigen::Matrix
-
 #include <kdl/segment.hpp>
 #include <kdl/chainiksolverpos_lma.hpp> // --ik lma
 #include <kdl/chainiksolverpos_nr_jl.hpp>  // --ik nrjl
@@ -116,14 +114,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     switch (ikSolver)
     {
     case LMA:
-        {
-            Eigen::Matrix<double, 6, 1> L;
-            L(0) = 1; L(1) = 1; L(2) = 1;
-            L(3) = 0.1; L(4) = 0.1; L(5) = 0.1;
-
-            //-- Main invKin (pos) solver lines
-            iksolver_pos = new KDL::ChainIkSolverPos_LMA(chain, L);
-        }
+        iksolver_pos = new KDL::ChainIkSolverPos_LMA(chain, L);
         break;
     case NRJL:
         {
