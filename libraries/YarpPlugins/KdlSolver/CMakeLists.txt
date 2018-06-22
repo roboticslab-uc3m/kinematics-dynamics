@@ -4,8 +4,6 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-find_package(orocos_kdl ${_target_kdl_version} QUIET)
-
 if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_KdlSolver OR ENABLE_KdlSolver))
     message(WARNING "orocos_kdl package not found, disabling KdlSolver")
 endif()

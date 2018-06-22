@@ -1,5 +1,3 @@
-find_package(orocos_kdl ${_target_kdl_version} QUIET)
-
 if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_streamingDeviceController OR ENABLE_streamingDeviceController))
     message(WARNING "orocos_kdl package not found, disabling streamingDeviceController")
 endif()
@@ -8,8 +6,6 @@ cmake_dependent_option(ENABLE_streamingDeviceController "Enable/disable streamin
                        "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND" OFF)
 
 if(ENABLE_streamingDeviceController)
-
-    find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 
     # Include any directories needed for this target.
     include_directories(${orocos_kdl_INCLUDE_DIRS})

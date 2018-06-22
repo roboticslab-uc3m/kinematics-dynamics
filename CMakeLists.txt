@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(ROBOTICSLAB_KINEMATICS_DYNAMICS)
+project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
 
 # Add suffix for debug libraries.
 if(MSVC)
@@ -36,17 +36,23 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
-# Find project's hard dependencies.
-
+# Hard dependencies.
 find_package(YCM 0.8 REQUIRED)
 
 # https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
-find_package(YARP 3.0 QUIET COMPONENTS OS dev sig math)
+# YARP_math breaks builds at asibot-hmi (not installing Eigen3)
+find_package(YARP 3.0 QUIET) # COMPONENTS OS dev sig math)
 if(NOT YARP_FOUND)
     find_package(YARP 2.3.70 REQUIRED)
 endif()
 
 find_package(COLOR_DEBUG REQUIRED)
+
+# Soft dependencies.
+find_package(orocos_kdl 1.4 QUIET)
+find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
+find_package(AMOR_API QUIET)
+find_package(GTestSources 1.6.0 QUIET)
 
 # Always build YARP devices as MODULE libraries.
 set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
@@ -74,9 +80,6 @@ endif()
 
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
-
-# Dependency-related tweaks.
-set(_target_kdl_version 1.4)
 
 # Add main contents.
 add_subdirectory(libraries)
