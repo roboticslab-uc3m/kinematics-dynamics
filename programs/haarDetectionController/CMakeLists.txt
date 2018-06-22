@@ -1,30 +1,30 @@
-option(ENABLE_haarDetectionController "Enable/disable haarDetectionController program" ON)
+if(NOT ROBOTICSLAB_YARP_DEVICES_FOUND AND (NOT DEFINED ENABLE_haarDetectionController OR ENABLE_haarDetectionController))
+    message(WARNING "ROBOTICSLAB_YARP_DEVICES package not found, disabling haarDetectionController program")
+endif()
+
+cmake_dependent_option(ENABLE_haarDetectionController "Enable/disable haarDetectionController program" ON
+                       ROBOTICSLAB_YARP_DEVICES_FOUND OFF)
 
 if(ENABLE_haarDetectionController)
 
-# Find ROBOTICSLAB_YARP_DEVICES.
-find_package(ROBOTICSLAB_YARP_DEVICES REQUIRED)
+    add_executable(haarDetectionController main.cpp
+                                           HaarDetectionController.hpp
+                                           HaarDetectionController.cpp
+                                           GrabberResponder.hpp
+                                           GrabberResponder.cpp)
 
-# Include any directories needed for this target.
-if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
-    include_directories(${YARP_INCLUDE_DIRS})
-endif()
+    target_link_libraries(haarDetectionController YARP::YARP_OS
+                                                  YARP::YARP_init
+                                                  YARP::YARP_dev
+                                                  ROBOTICSLAB::ColorDebug
+                                                  KinematicsDynamicsInterfaces
+                                                  ROBOTICSLAB::YarpDevicesInterfaces)
 
-# Set up our main executable.
-add_executable(haarDetectionController main.cpp
-                                       HaarDetectionController.hpp
-                                       HaarDetectionController.cpp
-                                       GrabberResponder.hpp
-                                       GrabberResponder.cpp)
+    install(TARGETS haarDetectionController
+            DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-target_link_libraries(haarDetectionController YARP::YARP_OS
-                                              YARP::YARP_init
-                                              YARP::YARP_dev
-                                              ROBOTICSLAB::ColorDebug
-                                              KinematicsDynamicsInterfaces
-                                              ROBOTICSLAB::YarpDevicesInterfaces)
+else()
 
-install(TARGETS haarDetectionController
-        DESTINATION ${CMAKE_INSTALL_BINDIR})
+    set(ENABLE_haarDetectionController OFF CACHE BOOL "Enable/disable haarDetectionController program" FORCE)
 
 endif()
