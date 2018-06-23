@@ -7,15 +7,26 @@ compiler:
   - gcc
   - clang
 
+env:
+  - YARP_CHECKOUT=master
+  - YARP_CHECKOUT=v2.3.72.1
+  - YARP_CHECKOUT=v2.3.70.2
+
+matrix:
+  include:
+    - if: type = cron
+      compiler: gcc
+      env: ROBOTOLOGY_CHECKOUT=devel
+    - if: type = cron
+      compiler: clang
+      env: ROBOTOLOGY_CHECKOUT=devel
+
 before_install:
   - sudo apt-get -qq update
 
   #-- Configure Git (needed by YCM)
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
-
-  #-- Set YARP branch on cron jobs
-  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export ROBOTOLOGY_CHECKOUT=devel || export ROBOTOLOGY_CHECKOUT=master'
 
   #-- Register SSH deploy key for AMOR API private repository
   #-- https://gist.github.com/lukewpatterson/4242707#gistcomment-2382443
@@ -34,7 +45,7 @@ install:
   - sudo apt-get install libboost-thread-dev libeigen3-dev libgtest-dev
 
   #-- Install YCM
-  - git clone --branch="$ROBOTOLOGY_CHECKOUT" https://github.com/robotology/ycm
+  - git clone --branch="${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}" https://github.com/robotology/ycm
   - cd ycm && mkdir build && cd build
   - cmake ..
   - make -j$(nproc)
@@ -42,7 +53,7 @@ install:
   - cd ../..
 
   #-- Install YARP
-  - git clone --branch="$ROBOTOLOGY_CHECKOUT" https://github.com/robotology/yarp
+  - git clone --branch="${ROBOTOLOGY_CHECKOUT:-$YARP_CHECKOUT}" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
   - cmake .. -DSKIP_ACE=ON -DCREATE_LIB_MATH=ON
   - make -j$(nproc)
