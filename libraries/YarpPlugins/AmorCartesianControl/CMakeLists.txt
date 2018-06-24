@@ -1,8 +1,6 @@
 # Copyright: (C) 2017 Universidad Carlos III de Madrid
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-find_package(AMOR_API QUIET)
-
 if(NOT AMOR_API_FOUND AND (NOT DEFINED ENABLE_AmorCartesianControl OR ENABLE_AmorCartesianControl))
     message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
 endif()

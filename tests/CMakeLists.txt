@@ -1,5 +1,3 @@
-find_package(GTestSources 1.6.0 QUIET)
-
 if(NOT GTestSources_FOUND AND (NOT DEFINED ENABLE_tests OR ENABLE_tests))
     message(WARNING "GTestSources package not found, disabling tests")
 endif()

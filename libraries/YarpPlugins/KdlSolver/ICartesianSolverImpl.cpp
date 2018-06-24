@@ -3,17 +3,12 @@
 #include "KdlSolver.hpp"
 
 #include <kdl/segment.hpp>
+#include <kdl/chainiksolverpos_lma.hpp> // --ik lma
+#include <kdl/chainiksolverpos_nr_jl.hpp>  // --ik nrjl
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainidsolver.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
-
-#ifdef _USE_LMA_
-    #include <Eigen/Core> // Eigen::Matrix
-    #include <kdl/chainiksolverpos_lma.hpp>
-#else //_USE_LMA_
-    #include <kdl/chainiksolverpos_nr_jl.hpp>
-#endif //_USE_LMA_
 
 #include <ColorDebug.h>
 
@@ -114,26 +109,28 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     }
 
     KDL::JntArray kdlq(chain.getNrOfJoints());
+    KDL::ChainIkSolverPos * iksolver_pos;
 
-#ifdef _USE_LMA_
+    switch (ikSolver)
+    {
+    case LMA:
+        iksolver_pos = new KDL::ChainIkSolverPos_LMA(chain, L);
+        break;
+    case NRJL:
+        {
+            //-- Forward solvers, needed by the geometric solver
+            KDL::ChainFkSolverPos_recursive fksolver(chain);
+            KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
 
-    Eigen::Matrix<double, 6, 1> L;
-    L(0) = 1; L(1) = 1; L(2) = 1;
-    L(3) = 0.1; L(4) = 0.1; L(5) = 0.1;
-
-    //-- Main invKin (pos) solver lines
-    KDL::ChainIkSolverPos_LMA iksolver_pos(chain, L);
-
-#else //_USE_LMA_
-
-    //-- Forward solvers, needed by the geometric solver
-    KDL::ChainFkSolverPos_recursive fksolver(chain);
-    KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
-
-    //-- Geometric solver definition (with joint limits)
-    KDL::ChainIkSolverPos_NR_JL iksolver_pos(chain, qMin, qMax, fksolver, iksolver, maxIter, eps);
-
-#endif //_USE_LMA_
+            //-- Geometric solver definition (with joint limits)
+            iksolver_pos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, fksolver, iksolver, maxIter, eps);
+        }
+        break;
+    default:
+        CD_ERROR("Unsupported IK algorithm.\n");
+        return false;
+        break;
+    }
 
     if (frame == TCP_FRAME)
     {
@@ -145,19 +142,21 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     else if (frame != BASE_FRAME)
     {
         CD_WARNING("Unsupported frame.\n");
+        delete iksolver_pos;
         return false;
     }
 
-    int ret = iksolver_pos.CartToJnt(qGuessInRad, frameXd, kdlq);
+    int ret = iksolver_pos->CartToJnt(qGuessInRad, frameXd, kdlq);
 
     if (ret < 0)
     {
-        CD_ERROR("%d: %s\n", ret, iksolver_pos.strError(ret));
+        CD_ERROR("%d: %s\n", ret, iksolver_pos->strError(ret));
+        delete iksolver_pos;
         return false;
     }
     else if (ret > 0)
     {
-        CD_WARNING("%d: %s\n", ret, iksolver_pos.strError(ret));
+        CD_WARNING("%d: %s\n", ret, iksolver_pos->strError(ret));
     }
 
     q.resize(chain.getNrOfJoints());
@@ -167,6 +166,7 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
         q[motor] = KinRepresentation::radToDeg(kdlq(motor));
     }
 
+    delete iksolver_pos;
     return true;
 }
 

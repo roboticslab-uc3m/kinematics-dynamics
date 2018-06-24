@@ -1,5 +1,3 @@
-find_package(orocos_kdl ${_target_kdl_version} QUIET)
-
 if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_TrajectoryLib OR ENABLE_TrajectoryLib))
     message(WARNING "orocos_kdl package not found, disabling TrajectoryLib")
 endif()

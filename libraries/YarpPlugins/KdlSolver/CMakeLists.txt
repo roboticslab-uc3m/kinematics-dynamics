@@ -4,8 +4,6 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-find_package(orocos_kdl ${_target_kdl_version} QUIET)
-
 if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_KdlSolver OR ENABLE_KdlSolver))
     message(WARNING "orocos_kdl package not found, disabling KdlSolver")
 endif()
@@ -18,8 +16,6 @@ yarp_prepare_plugin(KdlSolver
                     DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
 
 if(NOT SKIP_KdlSolver)
-
-    option(USE_LMA "Use LMA algorithm in KdlSolver" OFF)
 
     # KDLConfig.cmake brings Eigen_INCLUDE_DIR into scope with orocos_kdl_INCLUDE_DIRS
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
@@ -37,10 +33,6 @@ if(NOT SKIP_KdlSolver)
                                     KdlVectorConverterLib
                                     KinematicRepresentationLib
                                     KinematicsDynamicsInterfaces)
-
-    if(USE_LMA)
-        target_compile_definitions(KdlSolver PRIVATE _USE_LMA_)
-    endif()
 
     yarp_install(TARGETS KdlSolver
                  COMPONENT runtime
