@@ -48,6 +48,6 @@ case "$YARP_CLONE_BRANCH" in
 esac
 
 # make installed YARP discoverable by CMake's find_package() command
-export YARP_DIR="$YARP_CACHE_DIR/lib/cmake/YARP"
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$YARP_CACHE_DIR"
 export LD_LIBRARY_PATH="$YARP_CACHE_DIR/lib:$LD_LIBRARY_PATH"
 export YARP_DATA_DIRS="$YARP_CACHE_DIR/share/yarp:$YARP_DATA_DIRS"

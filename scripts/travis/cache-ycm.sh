@@ -47,4 +47,4 @@ case "$YCM_CLONE_BRANCH" in
 esac
 
 # make installed YCM discoverable by CMake's find_package() command
-export YCM_DIR="$YCM_CACHE_DIR/share/YCM/cmake"
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$YCM_CACHE_DIR"

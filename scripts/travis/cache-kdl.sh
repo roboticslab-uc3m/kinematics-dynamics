@@ -25,5 +25,5 @@ else
 fi
 
 # make installed KDL discoverable by CMake's find_package() command
-export orocos_kdl_DIR="$KDL_CACHE_DIR/share/orocos_kdl"
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$KDL_CACHE_DIR"
 export LD_LIBRARY_PATH="$KDL_CACHE_DIR/lib:$LD_LIBRARY_PATH"
