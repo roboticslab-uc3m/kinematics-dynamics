@@ -9,10 +9,20 @@ compiler:
 
 env:
   global:
-    - YCM_VER=0.8.1
-    - YARP_VER=2.3.72
-    - KDL_VER=1.4.0
     - CACHE_DIR=~/cached-deps
+  matrix:
+    - YARP_CHECKOUT=master
+    - YARP_CHECKOUT=v2.3.72.1
+    - YARP_CHECKOUT=v2.3.70.2
+
+matrix:
+  include:
+    - if: type = cron
+      compiler: gcc
+      env: ROBOTOLOGY_CHECKOUT=devel
+    - if: type = cron
+      compiler: clang
+      env: ROBOTOLOGY_CHECKOUT=devel
 
 cache:
   directories: $CACHE_DIR
