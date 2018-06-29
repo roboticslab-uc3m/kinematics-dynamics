@@ -5,7 +5,7 @@ KDL_CLONE_URL=https://github.com/orocos/orocos_kinematics_dynamics
 KDL_SOURCE_DIR=~/"kdl-$KDL_VER"
 KDL_BUILD_DIR="$KDL_SOURCE_DIR/build"
 KDL_CACHE_DIR="$CACHE_DIR/kdl"
-KDL_CMAKE_OPTIONS=
+KDL_CMAKE_OPTIONS="-DCMAKE_INSTALL_PREFIX:PATH=$KDL_CACHE_DIR"
 
 echo "Cloning KDL's $KDL_CLONE_BRANCH branch"
 git clone --depth=1 --branch="$KDL_CLONE_BRANCH" "$KDL_CLONE_URL" "$KDL_SOURCE_DIR"
