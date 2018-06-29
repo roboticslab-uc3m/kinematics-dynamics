@@ -48,37 +48,54 @@ before_install:
 
 install:
   #-- Install YCM
-  - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-ycm.sh"
+  - >
+    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    --package-name YCM
+    --repo-url https://github.com/robotology/ycm
+    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}"
 
   #-- Install YARP
-  - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-yarp.sh"
+  - >
+    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    --package-name YARP
+    --repo-url https://github.com/robotology/yarp
+    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YARP_CHECKOUT}"
+    --additional-cmake-options "-DSKIP_ACE:BOOL=ON -DCREATE_LIB_MATH:BOOL=ON"
+    --prepend-to-linker-path lib
+    --additional-export-paths "YARP_DATA_DIRS;share/yarp"
 
   #-- Install KDL
-  - source "$TRAVIS_BUILD_DIR/scripts/travis/cache-kdl.sh"
+  - >
+    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    --package-name KDL
+    --repo-url https://github.com/orocos/orocos_kinematics_dynamics
+    --repo-checkout master
+    --cmake-home-dir orocos_kdl
+    --prepend-to-linker-path lib
 
-  # Install color-debug
-  - git clone https://github.com/roboticslab-uc3m/color-debug
-  - cd color-debug && mkdir build && cd build
-  - cmake ..
-  - sudo make install
-  - cd ../..
+  #-- Install color-debug
+  - >
+    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    --package-name COLOR_DEBUG
+    --repo-url https://github.com/roboticslab-uc3m/color-debug
+    --repo-checkout master
 
   #-- (for AmorCartesianControl) Install AMOR API
-  - git clone git@github.com:roboticslab-uc3m/amor-api ~/amor-api
-  - mkdir -p ~/amor-api/build
-  - cmake -H~/amor-api -B~/amor-api/build
-  - make -C ~/amor-api/build -j$(nproc)
-  - export AMOR_API_DIR=~/amor-api/build
-  - export LD_LIBRARY_PATH=~/amor-api/build/lib:$LD_LIBRARY_PATH
+  - >
+    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    --package-name AMOR_API
+    --repo-url git@github.com:roboticslab-uc3m/amor-api
+    --repo-checkout develop
+    --prepend-to-linker-path lib
 
   #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
-  - git clone https://github.com/roboticslab-uc3m/yarp-devices ~/yarp-devices
-  - mkdir -p ~/yarp-devices/build
-  - cmake -H~/yarp-devices -B~/yarp-devices/build
-  - make -C ~/yarp-devices/build -j$(nproc)
-  - export ROBOTICSLAB_YARP_DEVICES_DIR=~/yarp-devices/build
-  - export LD_LIBRARY_PATH=~/yarp-devices/build/lib:~/yarp-devices/build/lib/yarp:$LD_LIBRARY_PATH
-  - export YARP_DATA_DIRS=~/yarp-devices/build/share/roboticslab-yarp-devices:$YARP_DATA_DIRS
+  - >
+    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    --package-name ROBOTICSLAB_YARP_DEVICES
+    --repo-url https://github.com/roboticslab-uc3m/yarp-devices
+    --repo-checkout develop
+    --prepend-to-linker-path lib/yarp
+    --additional-export-paths "YARP_DATA_DIRS;share/roboticslab-yarp-devices"
 
 before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
