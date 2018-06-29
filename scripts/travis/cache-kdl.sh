@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e
 
 KDL_CLONE_BRANCH=master
 KDL_CLONE_URL=https://github.com/orocos/orocos_kinematics_dynamics

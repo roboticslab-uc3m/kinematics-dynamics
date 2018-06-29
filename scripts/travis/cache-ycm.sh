@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e
 
 YCM_CLONE_BRANCH="${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}"
 YCM_CLONE_URL=https://github.com/robotology/ycm

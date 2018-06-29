@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e
 
 YARP_CLONE_BRANCH="${ROBOTOLOGY_CHECKOUT:-$YARP_CHECKOUT}"
 YARP_CLONE_URL=https://github.com/robotology/yarp

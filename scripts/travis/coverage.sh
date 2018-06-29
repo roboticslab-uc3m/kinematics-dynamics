@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e
 
 # see http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/
 

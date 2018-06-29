@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e
 
 #-- Register SSH deploy key for AMOR API private repository
 #-- https://gist.github.com/lukewpatterson/4242707#gistcomment-2382443
