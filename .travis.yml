@@ -49,14 +49,14 @@ before_install:
 install:
   #-- Install YCM
   - >
-    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name YCM
     --repo-url https://github.com/robotology/ycm
     --repo-checkout "${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}"
 
   #-- Install YARP
   - >
-    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name YARP
     --repo-url https://github.com/robotology/yarp
     --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YARP_CHECKOUT}"
@@ -66,7 +66,7 @@ install:
 
   #-- Install KDL
   - >
-    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name KDL
     --repo-url https://github.com/orocos/orocos_kinematics_dynamics
     --repo-checkout master
@@ -75,14 +75,14 @@ install:
 
   #-- Install color-debug
   - >
-    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name COLOR_DEBUG
     --repo-url https://github.com/roboticslab-uc3m/color-debug
     --repo-checkout master
 
   #-- (for AmorCartesianControl) Install AMOR API
   - >
-    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name AMOR_API
     --repo-url git@github.com:roboticslab-uc3m/amor-api
     --repo-checkout develop
@@ -91,7 +91,7 @@ install:
 
   #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
   - >
-    "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
+    source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name ROBOTICSLAB_YARP_DEVICES
     --repo-url https://github.com/roboticslab-uc3m/yarp-devices
     --repo-checkout develop
