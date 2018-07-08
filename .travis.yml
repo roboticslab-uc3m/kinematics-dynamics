@@ -86,6 +86,7 @@ install:
     --package-name AMOR_API
     --repo-url git@github.com:roboticslab-uc3m/amor-api
     --repo-checkout develop
+    --additional-cmake-options "-DENABLE_udev_rules:BOOL=OFF"
     --prepend-to-linker-path lib
 
   #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
