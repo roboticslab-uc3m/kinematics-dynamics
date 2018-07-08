@@ -80,7 +80,7 @@ install:
     --repo-url https://github.com/roboticslab-uc3m/color-debug
     --repo-checkout master
 
-  #-- (for AmorCartesianControl) Install AMOR API
+  #-- Install AMOR API (for AmorCartesianControl)
   - >
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name AMOR_API
@@ -89,7 +89,7 @@ install:
     --additional-cmake-options "-DENABLE_udev_rules:BOOL=OFF"
     --prepend-to-linker-path lib
 
-  #-- (for testBasicCartesianControl and apps using proximity sensors) Install yarp-devices
+  #-- Install yarp-devices (for testBasicCartesianControl and apps using proximity sensors)
   - >
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name ROBOTICSLAB_YARP_DEVICES
@@ -102,7 +102,7 @@ before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
   - cmake .. -DCMAKE_INSTALL_PREFIX="$PWD/install" -DENABLE_coverage:BOOL=ON
   - make install
-  - export LD_LIBRARY_PATH=$PWD/install/lib:$PWD/install/lib/yarp:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
   - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
 
 script:
