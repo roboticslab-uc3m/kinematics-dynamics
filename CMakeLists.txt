@@ -81,6 +81,9 @@ endif()
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
 
+# Enable unit testing.
+include(CTest)
+
 # Add main contents.
 add_subdirectory(libraries)
 add_subdirectory(programs)

@@ -106,12 +106,7 @@ before_script:
   - sudo ldconfig
 
 script:
-  - bin/testKinRepresentation
-  - bin/testKdlSolver
-  - bin/testKdlSolverFromFile
-  - bin/testAsibotSolverFromFile
-  - bin/testKdlTrajectory
-  - bin/testBasicCartesianControl
+  - ctest -V
 
 after_success:
   #  - cd ${TRAVIS_BUILD_DIR}
