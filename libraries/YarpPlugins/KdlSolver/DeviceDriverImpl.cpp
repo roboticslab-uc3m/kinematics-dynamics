@@ -211,6 +211,26 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asDouble();
     maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
 
+    //-- IK solver algorithm.
+    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl)").asString();
+    if (!parseIkSolverFromString(ik))
+    {
+        CD_ERROR("Unsupported IK solver algorithm: %s.\n", ik.c_str());
+        return false;
+    }
+
+    if (ikSolver == LMA)
+    {
+        std::string weightsStr = fullConfig.check("weights", yarp::os::Value(DEFAULT_LMA_WEIGHTS), "LMA algorithm weights (bottle of 6 doubles)").asString();
+        yarp::os::Bottle weights(weightsStr);
+
+        if (!parseLmaFromBottle(weights))
+        {
+            CD_ERROR("Unable to parse LMA weights.\n");
+            return false;
+        }
+    }
+
     originalChain = chain;  // We have: Chain& operator = (const Chain& arg);
 
     return true;
@@ -239,6 +259,44 @@ bool roboticslab::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &optio
             j=0;
         }
     }
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlSolver::parseIkSolverFromString(const std::string & str)
+{
+    if (str == "lma")
+    {
+        ikSolver = LMA;
+    }
+    else if (str == "nrjl")
+    {
+        ikSolver = NRJL;
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlSolver::parseLmaFromBottle(const yarp::os::Bottle & b)
+{
+    if (b.size() != 6)
+    {
+        CD_WARNING("Wrong bottle size (expected: %d, was: %d).", 6, b.size());
+        return false;
+    }
+
+    for (int i = 0; i < b.size(); i++)
+    {
+        L(i) = b.get(i).asDouble();
+    }
+
     return true;
 }
 

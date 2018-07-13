@@ -6,7 +6,7 @@
 #include <vector>
 
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-#define VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
+#define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 
 /**
@@ -29,8 +29,8 @@ class ICartesianSolver
         //! Lists supported reference frames.
         enum reference_frame
         {
-            BASE_FRAME = VOCAB('c','p','f','b'), //!< Base frame
-            TCP_FRAME = VOCAB('c','p','f','t')   //!< End-effector frame (TCP)
+            BASE_FRAME = ROBOTICSLAB_VOCAB('c','p','f','b'), //!< Base frame
+            TCP_FRAME = ROBOTICSLAB_VOCAB('c','p','f','t')   //!< End-effector frame (TCP)
         };
 
         //! Destructor
