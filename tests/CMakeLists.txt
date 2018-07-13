@@ -1,11 +1,11 @@
-if(NOT GTestSources_FOUND AND (NOT DEFINED ENABLE_tests OR ENABLE_tests))
+if(NOT GTestSources_FOUND AND (NOT DEFINED ENABLE_TESTING OR ENABLE_TESTING))
     message(WARNING "GTestSources package not found, disabling tests")
 endif()
 
-cmake_dependent_option(ENABLE_tests "Enable/disable unit tests" ON
+cmake_dependent_option(ENABLE_TESTING "Enable/disable unit tests" ON
                        GTestSources_FOUND OFF)
 
-if(ENABLE_tests)
+if(ENABLE_TESTING)
 
     add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
 
@@ -18,6 +18,8 @@ if(ENABLE_tests)
     target_link_libraries(testKinRepresentation KinematicRepresentationLib
                                                 gtest_main)
 
+    gtest_add_tests(testKinRepresentation "" AUTO)
+
     # testKdlSolver
 
     add_executable(testKdlSolver testKdlSolver.cpp)
@@ -28,6 +30,8 @@ if(ENABLE_tests)
                                         KinematicsDynamicsInterfaces
                                         gtest_main)
 
+    gtest_add_tests(testKdlSolver "" AUTO)
+
     # testKdlSolverFromFile
 
     add_executable(testKdlSolverFromFile testKdlSolverFromFile.cpp)
@@ -37,6 +41,8 @@ if(ENABLE_tests)
                                                 ROBOTICSLAB::ColorDebug
                                                 KinematicsDynamicsInterfaces
                                                 gtest_main)
+
+    gtest_add_tests(testKdlSolverFromFile "" AUTO)
 
     # testAsibotSolverFromFile
 
@@ -49,12 +55,16 @@ if(ENABLE_tests)
                                                    KinematicsDynamicsInterfaces
                                                    gtest_main)
 
+    gtest_add_tests(testAsibotSolverFromFile "" AUTO)
+
     # testKdlTrajectory
 
     add_executable(testKdlTrajectory testKdlTrajectory.cpp)
 
     target_link_libraries(testKdlTrajectory TrajectoryLib
                                             gtest_main)
+
+    gtest_add_tests(testKdlTrajectory "" AUTO)
 
     # testBasicCartesianControl
 
@@ -66,8 +76,10 @@ if(ENABLE_tests)
                                                     KinematicsDynamicsInterfaces
                                                     gtest_main)
 
+    gtest_add_tests(testBasicCartesianControl "" AUTO)
+
 else()
 
-    set(ENABLE_tests OFF CACHE BOOL "Enable/disable unit tests" FORCE)
+    set(ENABLE_TESTING OFF CACHE BOOL "Enable/disable unit tests" FORCE)
 
 endif()
