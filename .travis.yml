@@ -106,7 +106,7 @@ before_script:
   - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
 
 script:
-  - ctest -V
+  - (cd tests && ctest -V)
 
 after_success:
   #-- Code coverage
