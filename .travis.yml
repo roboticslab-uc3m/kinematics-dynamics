@@ -95,7 +95,6 @@ install:
     --package-name ROBOTICSLAB_YARP_DEVICES
     --repo-url https://github.com/roboticslab-uc3m/yarp-devices
     --repo-checkout develop
-    --prepend-to-linker-path lib/yarp
     --additional-export-paths "YARP_DATA_DIRS;share/roboticslab-yarp-devices"
 
 before_script:
