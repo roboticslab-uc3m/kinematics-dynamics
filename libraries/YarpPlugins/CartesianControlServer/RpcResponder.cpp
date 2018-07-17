@@ -168,6 +168,10 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "(config param) check period of 'wait' command [ms]");
     ss.str("");
 
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STIFFNESS) << "] value";
+    addUsage(ss.str().c_str(), "(config param) stiffness (impedance control)");
+    ss.str("");
+
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::BASE_FRAME) << "]";
     addUsage(ss.str().c_str(), "(config param) reference frame (base)");
     ss.str("");

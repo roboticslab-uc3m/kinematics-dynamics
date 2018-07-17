@@ -524,6 +524,14 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         waitPeriodMs = value;
         break;
+    case VOCAB_CC_CONFIG_STIFFNESS:
+        if (value < 0.0)
+        {
+            CD_ERROR("Stiffness cannot be negative.\n");
+            return false;
+        }
+        stiffness = value;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
@@ -561,6 +569,9 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         *value = waitPeriodMs;
         break;
+    case VOCAB_CC_CONFIG_STIFFNESS:
+        *value = stiffness;
+        break;
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
@@ -595,6 +606,7 @@ bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & p
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
+    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_STIFFNESS, stiffness));
     params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }

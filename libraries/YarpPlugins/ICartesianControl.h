@@ -110,6 +110,7 @@
 #define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d') ///< Trajectory duration
 #define VOCAB_CC_CONFIG_CMC_RATE ROBOTICSLAB_VOCAB('c','p','c','r')      ///< CMC rate [ms]
 #define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
+#define VOCAB_CC_CONFIG_STIFFNESS ROBOTICSLAB_VOCAB('c','p','s','t')     ///< Stiffness (impedance control)
 #define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)           ///< Reference frame
 
 /** @} */
