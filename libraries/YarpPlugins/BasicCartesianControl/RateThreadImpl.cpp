@@ -8,6 +8,13 @@
 
 // ------------------- RateThread Related ------------------------------------
 
+namespace
+{
+    std::vector<double> xRef(3, 0.0);
+}
+
+// -----------------------------------------------------------------------------
+
 void roboticslab::BasicCartesianControl::run()
 {
     switch (getCurrentState())
@@ -215,10 +222,59 @@ void roboticslab::BasicCartesianControl::handleGcmp()
 
     std::vector<double> t(numRobotJoints);
 
-    if (!iCartesianSolver->invDyn(currentQ, t))
+    if (stiffness == 0.0)
     {
-        CD_WARNING("invDyn failed, not updating control this iteration.\n");
-        return;
+        if (!iCartesianSolver->invDyn(currentQ, t))
+        {
+            CD_WARNING("invDyn failed, not updating control this iteration.\n");
+            return;
+        }
+    }
+    else
+    {
+        std::vector<double> currentX;
+
+        if (!iCartesianSolver->fwdKin(currentQ, currentX))
+        {
+            CD_ERROR("fwdKin failed.\n");
+            return;
+        }
+
+        if (!preservePose)
+        {
+            for (unsigned int i = 0; i < xRef.size(); i++)
+            {
+                xRef[i] = currentX[i];
+            }
+
+            preservePose = true;
+        }
+
+        std::vector<double> ftcp(6, 0.0);
+
+        for (unsigned int i = 0; i < xRef.size(); i++)
+        {
+            ftcp[i] = (xRef[i] - currentX[i]) * stiffness;
+        }
+
+        std::vector< std::vector<double> > fexts(numRobotJoints);
+
+        for (int i = 0; i < numRobotJoints - 1; i++)  //-- "numRobotJoints-1" is important
+        {
+            std::vector<double> fext(6, 0.0);
+            fexts.push_back(fext);
+        }
+
+        fexts.push_back(ftcp);
+
+        std::vector<double> qdot(numRobotJoints, 0.0);
+        std::vector<double> qdotdot(numRobotJoints, 0.0);
+
+        if (!iCartesianSolver->invDyn(currentQ, qdot, qdotdot, fexts, t))
+        {
+            CD_WARNING("invDyn failed, not updating control this iteration.\n");
+            return;
+        }
     }
 
     if (!iTorqueControl->setRefTorques(t.data()))

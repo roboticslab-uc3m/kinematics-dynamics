@@ -22,6 +22,7 @@
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_DURATION 10.0
+#define DEFAULT_STIFFNESS 0.0
 #define DEFAULT_CMC_RATE_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
@@ -126,6 +127,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
                                   gain(DEFAULT_GAIN),
                                   maxJointVelocity(DEFAULT_QDOT_LIMIT),
                                   duration(DEFAULT_DURATION),
+                                  stiffness(DEFAULT_STIFFNESS),
+                                  preservePose(false),
                                   cmcRateMs(DEFAULT_CMC_RATE_MS),
                                   waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
                                   numRobotJoints(0),
@@ -224,6 +227,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double gain;
         double maxJointVelocity;
         double duration; // [s]
+        double stiffness;
+        bool preservePose;
         int cmcRateMs;
         int waitPeriodMs;
         int numRobotJoints, numSolverJoints;

@@ -13,6 +13,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     gain = config.check("controllerGain",yarp::os::Value(DEFAULT_GAIN),"controller gain").asDouble();
     maxJointVelocity = config.check("maxJointVelocity",yarp::os::Value(DEFAULT_QDOT_LIMIT),"maximum joint velocity (meters/second or degrees/second)").asDouble();
     duration = config.check("trajectoryDuration",yarp::os::Value(DEFAULT_DURATION),"trajectory duration (seconds)").asDouble();
+    stiffness = config.check("stiffness",yarp::os::Value(DEFAULT_STIFFNESS),"stiffness for impedance control").asDouble();
     cmcRateMs = config.check("cmcRateMs",yarp::os::Value(DEFAULT_CMC_RATE_MS),"CMC rate (milliseconds)").asInt();
     waitPeriodMs = config.check("waitPeriodMs",yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),"wait command period (milliseconds)").asInt();
 

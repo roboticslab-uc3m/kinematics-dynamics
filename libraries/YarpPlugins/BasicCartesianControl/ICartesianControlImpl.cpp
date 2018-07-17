@@ -263,6 +263,7 @@ bool roboticslab::BasicCartesianControl::gcmp()
         CD_ERROR("setControlModes failed.\n");
         return false;
     }
+    preservePose = false;
     setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
     return true;
 }
