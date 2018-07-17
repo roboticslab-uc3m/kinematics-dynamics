@@ -215,9 +215,16 @@ void roboticslab::BasicCartesianControl::handleGcmp()
 
     std::vector<double> t(numRobotJoints);
 
-    iCartesianSolver->invDyn(currentQ, t);
+    if (!iCartesianSolver->invDyn(currentQ, t))
+    {
+        CD_WARNING("invDyn failed, not updating control this iteration.\n");
+        return;
+    }
 
-    iTorqueControl->setRefTorques(t.data());
+    if (!iTorqueControl->setRefTorques(t.data()))
+    {
+        CD_WARNING("setRefTorques failed, not updating control this iteration.\n");
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -246,9 +253,16 @@ void roboticslab::BasicCartesianControl::handleForc()
 
     std::vector<double> t(numRobotJoints);
 
-    iCartesianSolver->invDyn(currentQ, qdot, qdotdot, fexts, t);
+    if (!iCartesianSolver->invDyn(currentQ, qdot, qdotdot, fexts, t))
+    {
+        CD_WARNING("invDyn failed, not updating control this iteration.\n");
+        return;
+    }
 
-    iTorqueControl->setRefTorques(t.data());
+    if (!iTorqueControl->setRefTorques(t.data()))
+    {
+        CD_WARNING("setRefTorques failed, not updating control this iteration.\n");
+    }
 }
 
 // -----------------------------------------------------------------------------
