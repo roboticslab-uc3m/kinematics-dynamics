@@ -2,6 +2,10 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <sstream>
+
+#include <yarp/os/Vocab.h>
+
 #include <ColorDebug.h>
 
 // -----------------------------------------------------------------------------
@@ -82,28 +86,95 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
 
 void roboticslab::RpcResponder::makeUsage()
 {
-    addUsage("[stat]", "get current position in cartesian space");
-    addUsage("[inv] coord1 coord2 ...", "accept desired position in cartesian space, return result in joint space");
-    addUsage("[movj] coord1 coord2 ...", "joint move to desired position (absolute coordinates in cartesian space)");
-    addUsage("[relj] coord1 coord2 ...", "joint move to desired position (relative coordinates in cartesian space)");
-    addUsage("[movl] coord1 coord2 ...", "linear move to desired position (absolute coordinates in cartesian space)");
-    addUsage("[movv] coord1 coord2 ...", "velocity move using supplied vector (cartesian space)");
-    addUsage("[gcmp]", "enable gravity compensation");
-    addUsage("[forc] coord1 coord2 ...", "enable torque control, apply input forces (cartesian space)");
-    addUsage("[stop]", "stop control");
-    addUsage("[wait] timeout", "wait until completion with timeout (optional, 0.0 means no timeout)");
-    addUsage("[tool] coord1 coord2 ...", "append fixed link to end effector");
-    addUsage("[set] vocab value", "set configuration parameter");
-    addUsage("[get] vocab", "get configuration parameter");
-    addUsage("[set] [prms] (vocab value) ...", "set multiple configuration parameters");
-    addUsage("[get] [prms]", "get all configuration parameters");
-    addUsage("... [cpcg] value", "(config param) controller gain");
-    addUsage("... [cpjv] value", "(config param) maximum joint velocity");
-    addUsage("... [cptd] value", "(config param) trajectory duration");
-    addUsage("... [cpcr] value", "(config param) CMC rate [ms]");
-    addUsage("... [cpwp] value", "(config param) check period of 'wait' command [ms]");
-    addUsage("... [cpf] [cpfb]", "(config param) reference frame (base)");
-    addUsage("... [cpf] [cpft]", "(config param) reference frame (TCP)");
+    std::stringstream ss;
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_STAT) << "]";
+    addUsage(ss.str().c_str(), "get current position in cartesian space");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_INV) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "accept desired position in cartesian space, return result in joint space");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_MOVJ) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "joint move to desired position (absolute coordinates in cartesian space)");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_RELJ) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "joint move to desired position (relative coordinates in cartesian space)");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_MOVL) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "linear move to desired position (absolute coordinates in cartesian space)");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_MOVV) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "velocity move using supplied vector (cartesian space)");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_GCMP) << "]";
+    addUsage(ss.str().c_str(), "enable gravity compensation");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_FORC) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "enable torque control, apply input forces (cartesian space)");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_STOP) << "]";
+    addUsage(ss.str().c_str(), "stop control");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_WAIT) << "] timeout";
+    addUsage(ss.str().c_str(), "wait until completion with timeout (optional, 0.0 means no timeout)");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_TOOL) << "] coord1 coord2 ...";
+    addUsage(ss.str().c_str(), "append fixed link to end effector");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_SET) << "] vocab value";
+    addUsage(ss.str().c_str(), "set configuration parameter");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_GET) << "] vocab";
+    addUsage(ss.str().c_str(), "get configuration parameter");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_SET) << "] [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_PARAMS) << "] (vocab value) ...";
+    addUsage(ss.str().c_str(), "set multiple configuration parameters");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_GET) << "] [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_PARAMS) << "]";
+    addUsage(ss.str().c_str(), "get all configuration parameters");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_GAIN) << "] value";
+    addUsage(ss.str().c_str(), "(config param) controller gain");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_MAX_JOINT_VEL) << "] value";
+    addUsage(ss.str().c_str(), "(config param) maximum joint velocity");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_TRAJ_DURATION) << "] value";
+    addUsage(ss.str().c_str(), "(config param) trajectory duration");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_RATE) << "] value";
+    addUsage(ss.str().c_str(), "(config param) CMC rate [ms]");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_WAIT_PERIOD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) check period of 'wait' command [ms]");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::BASE_FRAME) << "]";
+    addUsage(ss.str().c_str(), "(config param) reference frame (base)");
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::TCP_FRAME) << "]";
+    addUsage(ss.str().c_str(), "(config param) reference frame (TCP)");
+    ss.str("");
 }
 
 // -----------------------------------------------------------------------------
