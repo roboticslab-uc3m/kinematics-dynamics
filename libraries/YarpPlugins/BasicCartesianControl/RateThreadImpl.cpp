@@ -254,7 +254,7 @@ void roboticslab::BasicCartesianControl::handleGcmp()
 
         for (unsigned int i = 0; i < xRef.size(); i++)
         {
-            ftcp[i] = (xRef[i] - currentX[i]) * stiffness;
+            ftcp[i] = (currentX[i] - xRef[i]) * stiffness;
         }
 
         std::vector< std::vector<double> > fexts;
