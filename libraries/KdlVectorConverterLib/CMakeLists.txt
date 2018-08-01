@@ -1,5 +1,3 @@
-find_package(orocos_kdl ${_target_kdl_version} QUIET)
-
 if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_KdlVectorConverterLib OR ENABLE_KdlVectorConverterLib))
     message(WARNING "orocos_kdl package not found, disabling KdlVectorConverterLib")
 endif()
