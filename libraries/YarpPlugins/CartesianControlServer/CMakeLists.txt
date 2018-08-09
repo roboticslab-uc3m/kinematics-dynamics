@@ -11,29 +11,29 @@ yarp_prepare_plugin(CartesianControlServer
                     DEFAULT ON
                     DEPENDS ENABLE_KinematicRepresentationLib)
 
-if(NOT SKIP_CartesianControlServer)
+if(ENABLE_CartesianControlServer)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
-yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
-                                       DeviceDriverImpl.cpp
-                                       RateThreadImpl.cpp
-                                       RpcResponder.cpp
-                                       StreamResponder.cpp)
+    yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
+                                           DeviceDriverImpl.cpp
+                                           RateThreadImpl.cpp
+                                           RpcResponder.cpp
+                                           StreamResponder.cpp)
 
-target_link_libraries(CartesianControlServer YARP::YARP_OS
-                                             YARP::YARP_dev
-                                             ROBOTICSLAB::ColorDebug
-                                             KinematicRepresentationLib
-                                             KinematicsDynamicsInterfaces)
+    target_link_libraries(CartesianControlServer YARP::YARP_OS
+                                                 YARP::YARP_dev
+                                                 ROBOTICSLAB::ColorDebug
+                                                 KinematicRepresentationLib
+                                                 KinematicsDynamicsInterfaces)
 
-yarp_install(TARGETS CartesianControlServer
-             COMPONENT runtime
-             LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
+    yarp_install(TARGETS CartesianControlServer
+                 COMPONENT runtime
+                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
-yarp_install(FILES CartesianControlServer.ini
-             COMPONENT runtime
-             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    yarp_install(FILES CartesianControlServer.ini
+                 COMPONENT runtime
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 endif()

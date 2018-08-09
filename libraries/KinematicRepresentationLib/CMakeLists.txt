@@ -1,9 +1,24 @@
-if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_KinematicRepresentationLib OR ENABLE_KinematicRepresentationLib))
-    message(WARNING "orocos_kdl package not found, disabling KinematicRepresentationLib")
-endif()
-
 cmake_dependent_option(ENABLE_KinematicRepresentationLib "Enable/disable KinematicRepresentationLib library" ON
                        orocos_kdl_FOUND OFF)
+
+unset(ENABLE_KinematicRepresentationLib)
+
+if(NOT DEFINED ENABLE_KinematicRepresentationLib)
+    set(ENABLE_KinematicRepresentationLib ON CACHE BOOL "")
+endif()
+
+if(NOT orocos_kdl_FOUND)
+    if(ENABLE_KinematicRepresentationLib)
+        message(WARNING "orocos_kdl package not found, disabling KinematicRepresentationLib")
+    endif()
+    if(NOT DEFINED ENABLE_KinematicRepresentationLib-STORED)
+        set(ENABLE_KinematicRepresentationLib-STORED "${ENABLE_KinematicRepresentationLib}" CACHE INTERNAL "Stored value of ENABLE_KinematicRepresentationLib prior to forcing OFF")
+    endif()
+    set(ENABLE_KinematicRepresentationLib OFF CACHE BOOL "Enable/disable KinematicRepresentationLib" FORCE)
+elseif(DEFINED ENABLE_KinematicRepresentationLib-STORED AND NOT ENABLE_KinematicRepresentationLib)
+    set(ENABLE_KinematicRepresentationLib "${ENABLE_KinematicRepresentationLib-STORED}" CACHE BOOL "" FORCE)
+    unset(ENABLE_KinematicRepresentationLib-STORED CACHE)
+endif()
 
 if(ENABLE_KinematicRepresentationLib)
 
@@ -25,9 +40,5 @@ if(ENABLE_KinematicRepresentationLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-else()
-
-    set(ENABLE_KinematicRepresentationLib OFF CACHE BOOL "Enable/disable KinematicRepresentationLib library" FORCE)
 
 endif()

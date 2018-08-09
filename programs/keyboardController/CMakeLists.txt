@@ -3,19 +3,18 @@ cmake_dependent_option(ENABLE_keyboardController "Enable/disable keyboardControl
 
 if(ENABLE_keyboardController)
 
-# Set up our main executable.
-add_executable(keyboardController main.cpp
-                                  KeyboardController.hpp
-                                  KeyboardController.cpp)
+    add_executable(keyboardController main.cpp
+                                      KeyboardController.hpp
+                                      KeyboardController.cpp)
 
-target_link_libraries(keyboardController YARP::YARP_OS
-                                         YARP::YARP_init
-                                         YARP::YARP_dev
-                                         ROBOTICSLAB::ColorDebug
-                                         KinematicRepresentationLib
-                                         KinematicsDynamicsInterfaces)
+    target_link_libraries(keyboardController YARP::YARP_OS
+                                             YARP::YARP_init
+                                             YARP::YARP_dev
+                                             ROBOTICSLAB::ColorDebug
+                                             KinematicRepresentationLib
+                                             KinematicsDynamicsInterfaces)
 
-install(TARGETS keyboardController
-        DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS keyboardController
+            DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 endif()

@@ -1,9 +1,24 @@
-if(NOT GTestSources_FOUND AND (NOT DEFINED ENABLE_tests OR ENABLE_tests))
-    message(WARNING "GTestSources package not found, disabling tests")
-endif()
-
 cmake_dependent_option(ENABLE_tests "Enable/disable unit tests" ON
                        GTestSources_FOUND OFF)
+
+unset(ENABLE_tests)
+
+if(NOT DEFINED ENABLE_tests)
+    set(ENABLE_tests ON CACHE BOOL "")
+endif()
+
+if(NOT GTestSources_FOUND)
+    if(ENABLE_tests)
+        message(WARNING "GTestSources package not found, disabling tests")
+    endif()
+    if(NOT DEFINED ENABLE_tests-STORED)
+        set(ENABLE_tests-STORED "${ENABLE_tests}" CACHE INTERNAL "Stored value of ENABLE_tests prior to forcing OFF")
+    endif()
+    set(ENABLE_tests OFF CACHE BOOL "Enable/disable tests" FORCE)
+elseif(DEFINED ENABLE_tests-STORED AND NOT ENABLE_tests)
+    set(ENABLE_tests "${ENABLE_tests-STORED}" CACHE BOOL "" FORCE)
+    unset(ENABLE_tests-STORED CACHE)
+endif()
 
 if(ENABLE_tests)
 
@@ -79,9 +94,5 @@ if(ENABLE_tests)
                                                     gtest_main)
 
     gtest_add_tests(testBasicCartesianControl "" AUTO)
-
-else()
-
-    set(ENABLE_tests OFF CACHE BOOL "Enable/disable unit tests" FORCE)
 
 endif()

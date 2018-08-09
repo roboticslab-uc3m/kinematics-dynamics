@@ -1,9 +1,24 @@
-if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_TrajectoryLib OR ENABLE_TrajectoryLib))
-    message(WARNING "orocos_kdl package not found, disabling TrajectoryLib")
-endif()
-
 cmake_dependent_option(ENABLE_TrajectoryLib "Enable/disable TrajectoryLib library" ON
                        "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND" OFF)
+
+unset(ENABLE_TrajectoryLib)
+
+if(NOT DEFINED ENABLE_TrajectoryLib)
+    set(ENABLE_TrajectoryLib ON CACHE BOOL "")
+endif()
+
+if(NOT orocos_kdl_FOUND)
+    if(ENABLE_TrajectoryLib)
+        message(WARNING "orocos_kdl package not found, disabling TrajectoryLib")
+    endif()
+    if(NOT DEFINED ENABLE_TrajectoryLib-STORED)
+        set(ENABLE_TrajectoryLib-STORED "${ENABLE_TrajectoryLib}" CACHE INTERNAL "Stored value of ENABLE_TrajectoryLib prior to forcing OFF")
+    endif()
+    set(ENABLE_TrajectoryLib OFF CACHE BOOL "Enable/disable TrajectoryLib" FORCE)
+elseif(DEFINED ENABLE_TrajectoryLib-STORED AND NOT ENABLE_TrajectoryLib)
+    set(ENABLE_TrajectoryLib "${ENABLE_TrajectoryLib-STORED}" CACHE BOOL "" FORCE)
+    unset(ENABLE_TrajectoryLib-STORED CACHE)
+endif()
 
 if(ENABLE_TrajectoryLib)
 
@@ -30,9 +45,5 @@ if(ENABLE_TrajectoryLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-else()
-
-    set(ENABLE_TrajectoryLib OFF CACHE BOOL "Enable/disable TrajectoryLib library" FORCE)
 
 endif()

@@ -4,10 +4,6 @@
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_KdlSolver OR ENABLE_KdlSolver))
-    message(WARNING "orocos_kdl package not found, disabling KdlSolver")
-endif()
-
 yarp_prepare_plugin(KdlSolver
                     CATEGORY device
                     TYPE roboticslab::KdlSolver
@@ -15,7 +11,26 @@ yarp_prepare_plugin(KdlSolver
                     DEFAULT ON
                     DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
 
-if(NOT SKIP_KdlSolver)
+unset(ENABLE_KdlSolver)
+
+if(NOT DEFINED ENABLE_KdlSolver)
+    set(ENABLE_KdlSolver ON CACHE BOOL "")
+endif()
+
+if(NOT orocos_kdl_FOUND)
+    if(ENABLE_KdlSolver)
+        message(WARNING "orocos_kdl package not found, disabling KdlSolver")
+    endif()
+    if(NOT DEFINED ENABLE_KdlSolver-STORED)
+        set(ENABLE_KdlSolver-STORED "${ENABLE_KdlSolver}" CACHE INTERNAL "Stored value of ENABLE_KdlSolver prior to forcing OFF")
+    endif()
+    set(ENABLE_KdlSolver OFF CACHE BOOL "Enable/disable KdlSolver" FORCE)
+elseif(DEFINED ENABLE_KdlSolver-STORED AND NOT ENABLE_KdlSolver)
+    set(ENABLE_KdlSolver "${ENABLE_KdlSolver-STORED}" CACHE BOOL "" FORCE)
+    unset(ENABLE_KdlSolver-STORED CACHE)
+endif()
+
+if(ENABLE_KdlSolver)
 
     # KDLConfig.cmake brings Eigen_INCLUDE_DIR into scope with orocos_kdl_INCLUDE_DIRS
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
@@ -42,9 +57,5 @@ if(NOT SKIP_KdlSolver)
     yarp_install(FILES KdlSolver.ini
                  COMPONENT runtime
                  DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
-
-else()
-
-    set(ENABLE_KdlSolver OFF CACHE BOOL "Enable/disable KdlSolver device" FORCE)
 
 endif()

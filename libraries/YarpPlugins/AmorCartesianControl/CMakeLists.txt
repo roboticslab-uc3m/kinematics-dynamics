@@ -1,10 +1,6 @@
 # Copyright: (C) 2017 Universidad Carlos III de Madrid
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-if(NOT AMOR_API_FOUND AND (NOT DEFINED ENABLE_AmorCartesianControl OR ENABLE_AmorCartesianControl))
-    message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
-endif()
-
 yarp_prepare_plugin(AmorCartesianControl
                     CATEGORY device
                     TYPE roboticslab::AmorCartesianControl
@@ -12,7 +8,26 @@ yarp_prepare_plugin(AmorCartesianControl
                     DEFAULT ON
                     DEPENDS "ENABLE_KinematicRepresentationLib;AMOR_API_FOUND")
 
-if(NOT SKIP_AmorCartesianControl)
+unset(ENABLE_AmorCartesianControl)
+
+if(NOT DEFINED ENABLE_AmorCartesianControl)
+    set(ENABLE_AmorCartesianControl ON CACHE BOOL "")
+endif()
+
+if(NOT AMOR_API_FOUND)
+    if(ENABLE_AmorCartesianControl)
+        message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
+    endif()
+    if(NOT DEFINED ENABLE_AmorCartesianControl-STORED)
+        set(ENABLE_AmorCartesianControl-STORED "${ENABLE_AmorCartesianControl}" CACHE INTERNAL "Stored value of ENABLE_AmorCartesianControl prior to forcing OFF")
+    endif()
+    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl" FORCE)
+elseif(DEFINED ENABLE_AmorCartesianControl-STORED AND NOT ENABLE_AmorCartesianControl)
+    set(ENABLE_AmorCartesianControl "${ENABLE_AmorCartesianControl-STORED}" CACHE BOOL "" FORCE)
+    unset(ENABLE_AmorCartesianControl-STORED CACHE)
+endif()
+
+if(ENABLE_AmorCartesianControl)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
@@ -36,8 +51,5 @@ if(NOT SKIP_AmorCartesianControl)
     yarp_install(FILES AmorCartesianControl.ini
                  COMPONENT runtime
                  DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
-else()
-
-    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
 
 endif()
