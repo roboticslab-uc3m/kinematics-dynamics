@@ -1,28 +1,10 @@
 yarp_prepare_plugin(AsibotSolver
                     CATEGORY device
                     TYPE roboticslab::AsibotSolver
-                    INCLUDE AsibotSolver.hpp
-                    DEFAULT ON
-                    DEPENDS "YARP_HAS_MATH_LIB;ENABLE_KinematicRepresentationLib")
+                    INCLUDE AsibotSolver.hpp)
 
-unset(ENABLE_AsibotSolver)
-
-if(NOT DEFINED ENABLE_AsibotSolver)
-    set(ENABLE_AsibotSolver ON CACHE BOOL "")
-endif()
-
-if(NOT YARP_HAS_MATH_LIB)
-    if(ENABLE_AsibotSolver)
-        message(WARNING "YARP::YARP_math package not found, disabling AsibotSolver")
-    endif()
-    if(NOT DEFINED ENABLE_AsibotSolver-STORED)
-        set(ENABLE_AsibotSolver-STORED "${ENABLE_AsibotSolver}" CACHE INTERNAL "Stored value of ENABLE_AsibotSolver prior to forcing OFF")
-    endif()
-    set(ENABLE_AsibotSolver OFF CACHE BOOL "Enable/disable AsibotSolver" FORCE)
-elseif(DEFINED ENABLE_AsibotSolver-STORED AND NOT ENABLE_AsibotSolver)
-    set(ENABLE_AsibotSolver "${ENABLE_AsibotSolver-STORED}" CACHE BOOL "" FORCE)
-    unset(ENABLE_AsibotSolver-STORED CACHE)
-endif()
+verbose_dependent_option(AsibotSolver DEPENDS_WARNING YARP_HAS_MATH_LIB
+                                      DEPENDS_OTHER ENABLE_KinematicRepresentationLib)
 
 if(ENABLE_AsibotSolver)
 

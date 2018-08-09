@@ -4,28 +4,10 @@
 yarp_prepare_plugin(AmorCartesianControl
                     CATEGORY device
                     TYPE roboticslab::AmorCartesianControl
-                    INCLUDE AmorCartesianControl.hpp
-                    DEFAULT ON
-                    DEPENDS "ENABLE_KinematicRepresentationLib;AMOR_API_FOUND")
+                    INCLUDE AmorCartesianControl.hpp)
 
-unset(ENABLE_AmorCartesianControl)
-
-if(NOT DEFINED ENABLE_AmorCartesianControl)
-    set(ENABLE_AmorCartesianControl ON CACHE BOOL "")
-endif()
-
-if(NOT AMOR_API_FOUND)
-    if(ENABLE_AmorCartesianControl)
-        message(WARNING "AMOR_API package not found, disabling AmorCartesianControl")
-    endif()
-    if(NOT DEFINED ENABLE_AmorCartesianControl-STORED)
-        set(ENABLE_AmorCartesianControl-STORED "${ENABLE_AmorCartesianControl}" CACHE INTERNAL "Stored value of ENABLE_AmorCartesianControl prior to forcing OFF")
-    endif()
-    set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl" FORCE)
-elseif(DEFINED ENABLE_AmorCartesianControl-STORED AND NOT ENABLE_AmorCartesianControl)
-    set(ENABLE_AmorCartesianControl "${ENABLE_AmorCartesianControl-STORED}" CACHE BOOL "" FORCE)
-    unset(ENABLE_AmorCartesianControl-STORED CACHE)
-endif()
+verbose_dependent_option(AmorCartesianControl DEPENDS_WARNING AMOR_API_FOUND
+                                              DEPENDS_OTHER ENABLE_KinematicRepresentationLib)
 
 if(ENABLE_AmorCartesianControl)
 

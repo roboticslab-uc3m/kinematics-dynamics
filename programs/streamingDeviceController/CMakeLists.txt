@@ -1,24 +1,5 @@
-cmake_dependent_option(ENABLE_streamingDeviceController "Enable/disable streamingDeviceController program" ON
-                       "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND" OFF)
-
-unset(ENABLE_streamingDeviceController)
-
-if(NOT DEFINED ENABLE_streamingDeviceController)
-    set(ENABLE_streamingDeviceController ON CACHE BOOL "")
-endif()
-
-if(NOT orocos_kdl_FOUND)
-    if(ENABLE_streamingDeviceController)
-        message(WARNING "orocos_kdl package not found, disabling streamingDeviceController")
-    endif()
-    if(NOT DEFINED ENABLE_streamingDeviceController-STORED)
-        set(ENABLE_streamingDeviceController-STORED "${ENABLE_streamingDeviceController}" CACHE INTERNAL "Stored value of ENABLE_streamingDeviceController prior to forcing OFF")
-    endif()
-    set(ENABLE_streamingDeviceController OFF CACHE BOOL "Enable/disable streamingDeviceController" FORCE)
-elseif(DEFINED ENABLE_streamingDeviceController-STORED AND NOT ENABLE_streamingDeviceController)
-    set(ENABLE_streamingDeviceController "${ENABLE_streamingDeviceController-STORED}" CACHE BOOL "" FORCE)
-    unset(ENABLE_streamingDeviceController-STORED CACHE)
-endif()
+verbose_dependent_option(streamingDeviceController DEPENDS_WARNING orocos_kdl_FOUND
+                                                   DEPENDS_OTHER ENABLE_KdlVectorConverterLib)
 
 if(ENABLE_streamingDeviceController)
 

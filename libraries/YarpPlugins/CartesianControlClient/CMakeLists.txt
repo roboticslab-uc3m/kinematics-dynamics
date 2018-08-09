@@ -7,8 +7,9 @@
 yarp_prepare_plugin(CartesianControlClient
                     CATEGORY device
                     TYPE roboticslab::CartesianControlClient
-                    INCLUDE CartesianControlClient.hpp
-                    DEFAULT ON)
+                    INCLUDE CartesianControlClient.hpp)
+
+verbose_dependent_option(CartesianControlClient)
 
 if(ENABLE_CartesianControlClient)
 

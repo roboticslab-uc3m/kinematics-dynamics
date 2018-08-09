@@ -7,9 +7,9 @@
 yarp_prepare_plugin(BasicCartesianControl
                     CATEGORY device
                     TYPE roboticslab::BasicCartesianControl
-                    INCLUDE BasicCartesianControl.hpp
-                    DEFAULT ON
-                    DEPENDS ENABLE_TrajectoryLib)
+                    INCLUDE BasicCartesianControl.hpp)
+
+verbose_dependent_option(BasicCartesianControl DEPENDS_OTHER ENABLE_TrajectoryLib)
 
 if(ENABLE_BasicCartesianControl)
 

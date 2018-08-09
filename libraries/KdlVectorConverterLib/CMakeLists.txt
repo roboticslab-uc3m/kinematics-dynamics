@@ -1,24 +1,4 @@
-cmake_dependent_option(ENABLE_KdlVectorConverterLib "Enable/disable KdlVectorConverterLib library" ON
-                       orocos_kdl_FOUND OFF)
-
-unset(ENABLE_KdlVectorConverterLib)
-
-if(NOT DEFINED ENABLE_KdlVectorConverterLib)
-    set(ENABLE_KdlVectorConverterLib ON CACHE BOOL "")
-endif()
-
-if(NOT orocos_kdl_FOUND)
-    if(ENABLE_KdlVectorConverterLib)
-        message(WARNING "orocos_kdl package not found, disabling KdlVectorConverterLib")
-    endif()
-    if(NOT DEFINED ENABLE_KdlVectorConverterLib-STORED)
-        set(ENABLE_KdlVectorConverterLib-STORED "${ENABLE_KdlVectorConverterLib}" CACHE INTERNAL "Stored value of ENABLE_KdlVectorConverterLib prior to forcing OFF")
-    endif()
-    set(ENABLE_KdlVectorConverterLib OFF CACHE BOOL "Enable/disable KdlVectorConverterLib" FORCE)
-elseif(DEFINED ENABLE_KdlVectorConverterLib-STORED AND NOT ENABLE_KdlVectorConverterLib)
-    set(ENABLE_KdlVectorConverterLib "${ENABLE_KdlVectorConverterLib-STORED}" CACHE BOOL "" FORCE)
-    unset(ENABLE_KdlVectorConverterLib-STORED CACHE)
-endif()
+verbose_dependent_option(KdlVectorConverterLib DEPENDS_WARNING orocos_kdl_FOUND)
 
 if(ENABLE_KdlVectorConverterLib)
 

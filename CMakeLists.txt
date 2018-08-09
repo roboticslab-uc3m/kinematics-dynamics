@@ -34,6 +34,7 @@ endif()
 
 # Pick up our cmake modules.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
+                              ${CMAKE_SOURCE_DIR}/cmake/modules
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
@@ -78,7 +79,7 @@ if(ENABLE_coverage)
 endif()
 
 # Create targets if specific requirements are satisfied.
-include(CMakeDependentOption)
+include(VerboseDependentOption)
 
 # Add main contents.
 add_subdirectory(libraries)

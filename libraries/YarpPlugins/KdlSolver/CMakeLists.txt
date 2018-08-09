@@ -7,28 +7,11 @@
 yarp_prepare_plugin(KdlSolver
                     CATEGORY device
                     TYPE roboticslab::KdlSolver
-                    INCLUDE KdlSolver.hpp
-                    DEFAULT ON
-                    DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
+                    INCLUDE KdlSolver.hpp)
 
-unset(ENABLE_KdlSolver)
-
-if(NOT DEFINED ENABLE_KdlSolver)
-    set(ENABLE_KdlSolver ON CACHE BOOL "")
-endif()
-
-if(NOT orocos_kdl_FOUND)
-    if(ENABLE_KdlSolver)
-        message(WARNING "orocos_kdl package not found, disabling KdlSolver")
-    endif()
-    if(NOT DEFINED ENABLE_KdlSolver-STORED)
-        set(ENABLE_KdlSolver-STORED "${ENABLE_KdlSolver}" CACHE INTERNAL "Stored value of ENABLE_KdlSolver prior to forcing OFF")
-    endif()
-    set(ENABLE_KdlSolver OFF CACHE BOOL "Enable/disable KdlSolver" FORCE)
-elseif(DEFINED ENABLE_KdlSolver-STORED AND NOT ENABLE_KdlSolver)
-    set(ENABLE_KdlSolver "${ENABLE_KdlSolver-STORED}" CACHE BOOL "" FORCE)
-    unset(ENABLE_KdlSolver-STORED CACHE)
-endif()
+verbose_dependent_option(KdlSolver DEPENDS_WARNING orocos_kdl_FOUND
+                                   DEPENDS_OTHER ENABLE_KdlVectorConverterLib
+                                                 ENABLE_KinematicRepresentationLib)
 
 if(ENABLE_KdlSolver)
 

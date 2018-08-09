@@ -1,5 +1,4 @@
-cmake_dependent_option(ENABLE_keyboardController "Enable/disable keyboardController program" ON
-                       ENABLE_KinematicRepresentationLib OFF)
+verbose_dependent_option(keyboardController DEPENDS_OTHER ENABLE_KinematicRepresentationLib)
 
 if(ENABLE_keyboardController)
 

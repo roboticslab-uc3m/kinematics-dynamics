@@ -7,32 +7,32 @@
 yarp_prepare_plugin(BasicTwoLimbCartesianControl
                     CATEGORY device
                     TYPE roboticslab::BasicTwoLimbCartesianControl
-                    INCLUDE BasicTwoLimbCartesianControl.hpp
-                    DEFAULT OFF
-                    DEPENDS "ENABLE_TrajectoryLib;ENABLE_Gait")
+                    INCLUDE BasicTwoLimbCartesianControl.hpp)
+
+verbose_dependent_option(BasicTwoLimbCartesianControl DEFAULT OFF)
 
 if(NOT SKIP_BasicTwoLimbCartesianControl)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
-yarp_add_plugin(BasicTwoLimbCartesianControl BasicTwoLimbCartesianControl.hpp
-                                             DeviceDriverImpl.cpp
-                                             ICartesianControlImpl.cpp
-                                             RateThreadImpl.cpp)
+    yarp_add_plugin(BasicTwoLimbCartesianControl BasicTwoLimbCartesianControl.hpp
+                                                 DeviceDriverImpl.cpp
+                                                 ICartesianControlImpl.cpp
+                                                 RateThreadImpl.cpp)
 
-target_link_libraries(BasicTwoLimbCartesianControl YARP::YARP_OS
-                                                   YARP::YARP_dev
-                                                   ROBOTICSLAB::ColorDebug
-                                                   TrajectoryLib
-                                                   Gait)
+    target_link_libraries(BasicTwoLimbCartesianControl YARP::YARP_OS
+                                                       YARP::YARP_dev
+                                                       ROBOTICSLAB::ColorDebug
+                                                       TrajectoryLib
+                                                       Gait)
 
-yarp_install(TARGETS BasicTwoLimbCartesianControl
-             COMPONENT runtime
-             LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
+    yarp_install(TARGETS BasicTwoLimbCartesianControl
+                 COMPONENT runtime
+                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
-yarp_install(FILES BasicTwoLimbCartesianControl.ini
-             COMPONENT runtime
-             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    yarp_install(FILES BasicTwoLimbCartesianControl.ini
+                 COMPONENT runtime
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 endif()

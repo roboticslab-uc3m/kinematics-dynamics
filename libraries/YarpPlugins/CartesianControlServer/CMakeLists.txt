@@ -7,9 +7,9 @@
 yarp_prepare_plugin(CartesianControlServer
                     CATEGORY device
                     TYPE roboticslab::CartesianControlServer
-                    INCLUDE CartesianControlServer.hpp
-                    DEFAULT ON
-                    DEPENDS ENABLE_KinematicRepresentationLib)
+                    INCLUDE CartesianControlServer.hpp)
+
+verbose_dependent_option(CartesianControlServer DEPENDS_OTHER ENABLE_KinematicRepresentationLib)
 
 if(ENABLE_CartesianControlServer)
 
