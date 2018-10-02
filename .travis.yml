@@ -12,6 +12,7 @@ env:
     - CACHE_DIR=~/cached-deps
   matrix:
     - YARP_CHECKOUT=master
+    - YARP_CHECKOUT=30dce54 # hotfix for v3.0.1
     - YARP_CHECKOUT=v2.3.72.1
     - YARP_CHECKOUT=v2.3.70.2
 
@@ -95,7 +96,6 @@ install:
     --package-name ROBOTICSLAB_YARP_DEVICES
     --repo-url https://github.com/roboticslab-uc3m/yarp-devices
     --repo-checkout develop
-    --prepend-to-linker-path lib/yarp
     --additional-export-paths "YARP_DATA_DIRS;share/roboticslab-yarp-devices"
 
 before_script:
@@ -106,7 +106,7 @@ before_script:
   - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
 
 script:
-  - ctest -V
+  - (cd tests && ctest -V)
 
 after_success:
   #-- Code coverage

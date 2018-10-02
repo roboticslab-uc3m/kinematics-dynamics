@@ -1,11 +1,13 @@
-if(NOT GTestSources_FOUND AND (NOT DEFINED ENABLE_TESTING OR ENABLE_TESTING))
+if(NOT GTestSources_FOUND AND (NOT DEFINED ENABLE_tests OR ENABLE_tests))
     message(WARNING "GTestSources package not found, disabling tests")
 endif()
 
-cmake_dependent_option(ENABLE_TESTING "Enable/disable unit tests" ON
+cmake_dependent_option(ENABLE_tests "Enable/disable unit tests" ON
                        GTestSources_FOUND OFF)
 
-if(ENABLE_TESTING)
+if(ENABLE_tests)
+
+    enable_testing()
 
     add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
 
@@ -80,6 +82,6 @@ if(ENABLE_TESTING)
 
 else()
 
-    set(ENABLE_TESTING OFF CACHE BOOL "Enable/disable unit tests" FORCE)
+    set(ENABLE_tests OFF CACHE BOOL "Enable/disable unit tests" FORCE)
 
 endif()

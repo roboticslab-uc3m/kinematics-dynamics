@@ -114,6 +114,9 @@ else
 
 fi
 
+#-- Remove clone/download tree (QA#70)
+rm -rf "$repo_source_dir"
+
 #-- Make installed package discoverable by CMake's find_package() command
 export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$repo_cache_dir"
 
