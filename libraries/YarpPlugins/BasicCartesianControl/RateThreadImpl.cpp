@@ -36,6 +36,13 @@ bool roboticslab::BasicCartesianControl::checkJointLimits()
 
 void roboticslab::BasicCartesianControl::run()
 {
+    int currentState = getCurrentState();
+
+    if (currentState == VOCAB_CC_NOT_CONTROLLING)
+    {
+        return;
+    }
+
     if (!checkJointLimits())
     {
         CD_ERROR("checkJointLimits failed, stopping control.\n");
@@ -44,7 +51,7 @@ void roboticslab::BasicCartesianControl::run()
         return;
     }
 
-    switch (getCurrentState())
+    switch (currentState)
     {
     case VOCAB_CC_MOVJ_CONTROLLING:
         handleMovj();
