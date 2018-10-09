@@ -8,8 +8,42 @@
 
 // ------------------- RateThread Related ------------------------------------
 
+bool roboticslab::BasicCartesianControl::checkJointLimits()
+{
+    std::vector<double> currentQ(numRobotJoints);
+
+    if (!iEncoders->getEncoders(currentQ.data()))
+    {
+        CD_WARNING("getEncoders failed, unable to check joint limits.\n");
+        return false;
+    }
+
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        double value = currentQ[joint];
+
+        if (value < qMin[joint] || value > qMax[joint])
+        {
+            CD_WARNING("Joint q%d out of limits [%f,%f]: %f.\n", joint + 1, qMin[joint], qMax[joint], value);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 void roboticslab::BasicCartesianControl::run()
 {
+    if (!checkJointLimits())
+    {
+        CD_ERROR("checkJointLimits failed, stopping control.\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
+    }
+
     switch (getCurrentState())
     {
     case VOCAB_CC_MOVJ_CONTROLLING:
