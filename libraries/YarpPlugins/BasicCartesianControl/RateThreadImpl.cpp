@@ -6,6 +6,11 @@
 #include <yarp/os/Time.h>
 #include <ColorDebug.h>
 
+namespace
+{
+    double epsilon = 0.00001;
+}
+
 // ------------------- RateThread Related ------------------------------------
 
 bool roboticslab::BasicCartesianControl::checkJointLimits()
@@ -22,7 +27,7 @@ bool roboticslab::BasicCartesianControl::checkJointLimits()
     {
         double value = currentQ[joint];
 
-        if (value < qMin[joint] || value > qMax[joint])
+        if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
             CD_WARNING("Joint q%d out of limits [%f,%f]: %f.\n", joint + 1, qMin[joint], qMax[joint], value);
             return false;
