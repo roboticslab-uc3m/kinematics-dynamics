@@ -8,7 +8,7 @@
 
 namespace
 {
-    double epsilon = 0.00001;
+    double epsilon = 1e-5;
 }
 
 // ------------------- RateThread Related ------------------------------------
@@ -27,6 +27,8 @@ bool roboticslab::BasicCartesianControl::checkJointLimits()
     {
         double value = currentQ[joint];
 
+        // Report limit before reaching the actual value.
+        // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
             CD_WARNING("Joint q%d out of limits [%f,%f]: %f.\n", joint + 1, qMin[joint], qMax[joint], value);
@@ -41,7 +43,7 @@ bool roboticslab::BasicCartesianControl::checkJointLimits()
 
 void roboticslab::BasicCartesianControl::run()
 {
-    int currentState = getCurrentState();
+    const int currentState = getCurrentState();
 
     if (currentState == VOCAB_CC_NOT_CONTROLLING)
     {
