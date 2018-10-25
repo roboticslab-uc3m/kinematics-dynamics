@@ -86,7 +86,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         qMax[joint] = max;
         bMin.addDouble(min);
         bMax.addDouble(max);
-        CD_INFO("Joint %d limits: [%f,%f]\n",joint,min,max);
+        CD_INFO("Joint q%d limits: [%f,%f]\n",joint+1,min,max);
     }
 
     yarp::os::Property solverOptions;
