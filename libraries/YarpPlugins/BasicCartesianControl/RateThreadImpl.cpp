@@ -31,7 +31,7 @@ bool roboticslab::BasicCartesianControl::checkJointLimits()
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            CD_WARNING("Joint q%d near or out of limits [%f,%f]: %f.\n", joint + 1, qMin[joint], qMax[joint], value);
+            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
             return false;
         }
     }
