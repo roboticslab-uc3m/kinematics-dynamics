@@ -14,7 +14,9 @@
 
 roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
+      path(0),
       orient(0),
+      velocityProfile(0),
       duration(DURATION_NOT_SET),
       configuredPath(false),
       configuredVelocityProfile(false)
