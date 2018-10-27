@@ -3,8 +3,10 @@
 #include "KdlTrajectory.hpp"
 
 #include <kdl/frames.hpp>
-#include <kdl/velocityprofile_trap.hpp>
+#include <kdl/trajectory_segment.hpp>
 #include <kdl/path_line.hpp>
+#include <kdl/rotational_interpolation_sa.hpp>
+#include <kdl/velocityprofile_trap.hpp>
 
 #include <ColorDebug.h>
 
