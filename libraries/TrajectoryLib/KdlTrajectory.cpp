@@ -2,14 +2,24 @@
 
 #include "KdlTrajectory.hpp"
 
+#include <limits>
+
 #include <kdl/trajectory_segment.hpp>
 #include <kdl/path_line.hpp>
 #include <kdl/rotational_interpolation_sa.hpp>
 #include <kdl/velocityprofile_trap.hpp>
+#include <kdl/velocityprofile_rect.hpp>
 
 #include <ColorDebug.h>
 
 #include "KdlVectorConverter.hpp"
+
+// -----------------------------------------------------------------------------
+
+// In C++11, declare starting with with std::numeric_limits<int>::min()
+// https://stackoverflow.com/a/21027383
+const int roboticslab::KdlTrajectory::DURATION_NOT_SET = -1;
+const int roboticslab::KdlTrajectory::DURATION_INFINITE = -2;
 
 // -----------------------------------------------------------------------------
 
@@ -74,6 +84,16 @@ bool roboticslab::KdlTrajectory::addWaypoint(const std::vector<double>& waypoint
 {
     KDL::Frame frame = KdlVectorConverter::vectorToFrame(waypoint);
     frames.push_back(frame);
+
+    KDL::Twist twist;
+
+    if ( ! waypointVelocity.empty() )
+    {
+        twist = KdlVectorConverter::vectorToTwist(waypointVelocity);
+    }
+
+    twists.push_back(twist);
+
     return true;
 }
 
@@ -85,23 +105,32 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
     {
     case ICartesianTrajectory::LINE:
     {
-        if ( frames.size() != 2 )
+        if ( frames.empty() || frames.size() > 2 )
         {
-            CD_ERROR("Need exactly 2 waypoints for Cartesian line (have %d)!\n",frames.size());
+            CD_ERROR("Need 2 waypoints (or 1 with initial twist) for Cartesian line (have %d)!\n", frames.size());
             return false;
         }
 
         orient = new KDL::RotationalInterpolation_SingleAxis();
         double eqradius = 1.0; //0.000001;
-        path = new KDL::Path_Line(frames[0], frames[1], orient, eqradius);
 
-        configuredPath = true;
+        if ( frames.size() == 1 )
+        {
+            path = new KDL::Path_Line(frames[0], twists[0], orient, eqradius);
+        }
+        else
+        {
+            path = new KDL::Path_Line(frames[0], frames[1], orient, eqradius);
+        }
+
         break;
     }
     default:
         CD_ERROR("Only LINE cartesian path implemented for now!\n");
         return false;
     }
+
+    configuredPath = true;
 
     return true;
 }
@@ -115,14 +144,19 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProf
     case ICartesianTrajectory::TRAPEZOIDAL:
     {
         velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);
-
-        configuredVelocityProfile = true;
+        break;
+    }
+    case ICartesianTrajectory::RECTANGULAR:
+    {
+        velocityProfile = new KDL::VelocityProfile_Rectangular(DEFAULT_CARTESIAN_MAX_VEL);
         break;
     }
     default:
-        CD_ERROR("Only TRAPEZOIDAL cartesian velocity profile implemented for now!\n");
+        CD_ERROR("Only TRAPEZOIDAL and RECTANGULAR cartesian velocity profiles implemented for now!\n");
         return false;
     }
+
+    configuredVelocityProfile = true;
 
     return true;
 }
@@ -145,6 +179,11 @@ bool roboticslab::KdlTrajectory::create()
     if( duration == DURATION_NOT_SET )
     {
         velocityProfile->SetProfile(0, path->PathLength());
+        currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
+    }
+    else if( duration == DURATION_INFINITE )
+    {
+        velocityProfile->SetProfile(0, std::numeric_limits<double>::infinity());
         currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
     }
     else
@@ -170,6 +209,7 @@ bool roboticslab::KdlTrajectory::destroy()
     configuredPath = configuredVelocityProfile = false;
 
     frames.clear();
+    twists.clear();
 
     return true;
 }
