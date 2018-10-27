@@ -153,9 +153,13 @@ bool roboticslab::KdlTrajectory::create()
 
 bool roboticslab::KdlTrajectory::destroy()
 {
-    delete currentTrajectory;  // deletes _orient, too
+    delete currentTrajectory; // deletes aggregated path and profile instances, too
     currentTrajectory = 0;
+    path = 0;
     orient = 0;
+    velocityProfile = 0;
+
+    frames.clear();
 
     return true;
 }
