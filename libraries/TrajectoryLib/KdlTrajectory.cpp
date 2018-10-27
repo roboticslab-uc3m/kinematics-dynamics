@@ -131,11 +131,6 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProf
 
 bool roboticslab::KdlTrajectory::create()
 {
-    if( DURATION_NOT_SET == duration )
-    {
-        CD_ERROR("Duration not set!\n");
-        return false;
-    }
     if( ! configuredPath )
     {
         CD_ERROR("Path not configured!\n");
@@ -147,7 +142,16 @@ bool roboticslab::KdlTrajectory::create()
         return false;
     }
 
-    currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, duration);
+    if( duration == DURATION_NOT_SET )
+    {
+        velocityProfile->SetProfile(0, path->PathLength());
+        currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
+    }
+    else
+    {
+        // velocity profile is set under the hood
+        currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, duration);
+    }
 
     return true;
 }
