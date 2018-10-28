@@ -97,14 +97,16 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrapNoDuration)
     double movementTime;
     std::vector<double> position, velocity, acceleration;
 
+    // ramp up
     movementTime = 2.0;
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
     ASSERT_NEAR(position[0], x1[0] + 0.1, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
-    ASSERT_NEAR(velocity[0], 0.1, EPS);
+    ASSERT_NEAR(velocity[0], MAX_ACC * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
     ASSERT_NEAR(acceleration[0], MAX_ACC, EPS);
 
+    // steady
     movementTime = 4.5;
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
     ASSERT_NEAR(position[0], x1[0] + 0.5, EPS);
@@ -113,11 +115,12 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrapNoDuration)
     ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
     ASSERT_NEAR(acceleration[0], 0.0, EPS);
 
+    // ramp down
     movementTime = 7.0;
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
     ASSERT_NEAR(position[0], x1[0] + 0.9, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
-    ASSERT_NEAR(velocity[0], 0.1, EPS);
+    ASSERT_NEAR(velocity[0], MAX_ACC * (duration - movementTime), EPS);
     ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
     ASSERT_NEAR(acceleration[0], -MAX_ACC, EPS);
 
@@ -145,9 +148,9 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRect)
     std::vector<double> position, velocity, acceleration;
 
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
-    ASSERT_NEAR(position[0], x1[0] + 0.5, EPS);
+    ASSERT_NEAR(position[0], x1[0] + (x2[0] - x1[0]) * (movementTime / duration), EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
-    ASSERT_NEAR(velocity[0], 0.1, EPS);
+    ASSERT_NEAR(velocity[0], (x2[0] - x1[0]) / duration, EPS);
     //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
     //ASSERT_NEAR(acceleration[0], MAX_ACC, eps);
 
@@ -174,7 +177,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectNoDuration)
     std::vector<double> position, velocity, acceleration;
 
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
-    ASSERT_NEAR(position[0], x1[0] + 0.4, EPS);
+    ASSERT_NEAR(position[0], x1[0] + MAX_VEL * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], MAX_VEL, EPS);
     //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
@@ -203,7 +206,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwist)
     std::vector<double> position, velocity, acceleration;
 
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
-    ASSERT_NEAR(position[0], x1[0] + 0.5, EPS);
+    ASSERT_NEAR(position[0], x1[0] + v1[0] * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], v1[0], EPS);
     //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
@@ -226,7 +229,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDuration)
     std::vector<double> position, velocity, acceleration;
 
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
-    ASSERT_NEAR(position[0], x1[0] + 0.5, EPS);
+    ASSERT_NEAR(position[0], x1[0] + v1[0] * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], v1[0], EPS);
     //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
@@ -249,7 +252,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDurationCapped)
     std::vector<double> position, velocity, acceleration;
 
     ASSERT_TRUE(iCartesianTrajectory->getPosition(movementTime, position));
-    ASSERT_NEAR(position[0], x1[0] + 1.0, EPS);
+    ASSERT_NEAR(position[0], x1[0] + MAX_VEL * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], MAX_VEL, EPS);
     //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
