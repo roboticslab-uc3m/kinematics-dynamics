@@ -27,7 +27,13 @@ class KdlTrajectory : public ICartesianTrajectory
 {
 public:
 
-    KdlTrajectory();
+    /**
+     * @brief Constructor
+     *
+     * @param maxVelocity Maximum allowed path velocity (meters/second)
+     * @param maxAcceleration Maximum allowed path acceleration (meters/second^2)
+     */
+    KdlTrajectory(double maxVelocity = DEFAULT_CARTESIAN_MAX_VEL, double maxAcceleration = DEFAULT_CARTESIAN_MAX_ACC);
 
     /**
      * @brief Get trajectory total duration in seconds
@@ -141,6 +147,7 @@ public:
 private:
 
     double duration;
+    double maxVelocity, maxAcceleration;
     bool configuredPath, configuredVelocityProfile;
     KDL::Trajectory* currentTrajectory;
     KDL::Path* path;

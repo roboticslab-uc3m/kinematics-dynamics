@@ -16,21 +16,23 @@
 
 // -----------------------------------------------------------------------------
 
-// In C++11, declare starting with with std::numeric_limits<int>::min()
+// In C++11, declare enum starting with std::numeric_limits<int>::min()
 // https://stackoverflow.com/a/21027383
 const int roboticslab::KdlTrajectory::DURATION_NOT_SET = -1;
 const int roboticslab::KdlTrajectory::DURATION_INFINITE = -2;
 
 // -----------------------------------------------------------------------------
 
-roboticslab::KdlTrajectory::KdlTrajectory()
-    : currentTrajectory(0),
+roboticslab::KdlTrajectory::KdlTrajectory(double maxVelocity, double maxAcceleration)
+    : duration(DURATION_NOT_SET),
+      maxVelocity(maxVelocity),
+      maxAcceleration(maxAcceleration),
+      configuredPath(false),
+      configuredVelocityProfile(false),
+      currentTrajectory(0),
       path(0),
       orient(0),
-      velocityProfile(0),
-      duration(DURATION_NOT_SET),
-      configuredPath(false),
-      configuredVelocityProfile(false)
+      velocityProfile(0)
 {}
 
 // -----------------------------------------------------------------------------
@@ -143,12 +145,12 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProf
     {
     case ICartesianTrajectory::TRAPEZOIDAL:
     {
-        velocityProfile = new KDL::VelocityProfile_Trap(DEFAULT_CARTESIAN_MAX_VEL, DEFAULT_CARTESIAN_MAX_ACC);
+        velocityProfile = new KDL::VelocityProfile_Trap(maxVelocity, maxAcceleration);
         break;
     }
     case ICartesianTrajectory::RECTANGULAR:
     {
-        velocityProfile = new KDL::VelocityProfile_Rectangular(DEFAULT_CARTESIAN_MAX_VEL);
+        velocityProfile = new KDL::VelocityProfile_Rectangular(maxVelocity);
         break;
     }
     default:
