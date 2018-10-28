@@ -247,9 +247,6 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** MOVL store Cartesian trajectory */
         ICartesianTrajectory* iCartesianTrajectory;
 
-        /** MOVV desired Cartesian velocity */
-        std::vector<double> xdotd;
-
         /** FORC desired Cartesian force */
         std::vector<double> td;
 
