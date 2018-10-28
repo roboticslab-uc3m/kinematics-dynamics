@@ -9,6 +9,7 @@
 #include <kdl/rotational_interpolation_sa.hpp>
 #include <kdl/velocityprofile_trap.hpp>
 #include <kdl/velocityprofile_rect.hpp>
+#include <kdl/utilities/error.h>
 
 #include <ColorDebug.h>
 
@@ -50,18 +51,34 @@ bool roboticslab::KdlTrajectory::getPosition(const double movementTime, std::vec
 
 bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vector<double>& velocity)
 {
-    KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
-    velocity = KdlVectorConverter::twistToVector(xdotFrame);
-    return true;
+    try
+    {
+        KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
+        velocity = KdlVectorConverter::twistToVector(xdotFrame);
+        return true;
+    }
+    catch (const KDL::Error_MotionPlanning &e)
+    {
+        CD_ERROR("Unable to retrieve velocity at %f.\n", movementTime);
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std::vector<double>& acceleration)
 {
-    KDL::Twist xdotdotFrame = currentTrajectory->Acc(movementTime);
-    acceleration = KdlVectorConverter::twistToVector(xdotdotFrame);
-    return true;
+    try
+    {
+        KDL::Twist xdotdotFrame = currentTrajectory->Acc(movementTime);
+        acceleration = KdlVectorConverter::twistToVector(xdotdotFrame);
+        return true;
+    }
+    catch (const KDL::Error_MotionPlanning &e)
+    {
+        CD_ERROR("Unable to retrieve acceleration at %f.\n", movementTime);
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------

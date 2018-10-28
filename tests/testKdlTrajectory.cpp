@@ -151,8 +151,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRect)
     ASSERT_NEAR(position[0], x1[0] + (x2[0] - x1[0]) * (movementTime / duration), EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], (x2[0] - x1[0]) / duration, EPS);
-    //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
-    //ASSERT_NEAR(acceleration[0], MAX_ACC, eps);
+    ASSERT_FALSE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
 
     //-- Destroy line
     ASSERT_TRUE(iCartesianTrajectory->destroy());
@@ -180,8 +179,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectNoDuration)
     ASSERT_NEAR(position[0], x1[0] + MAX_VEL * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], MAX_VEL, EPS);
-    //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
-    //ASSERT_NEAR(acceleration[0], MAX_ACC, eps);
+    ASSERT_FALSE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
 
     //-- Destroy line
     ASSERT_TRUE(iCartesianTrajectory->destroy());
@@ -209,8 +207,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwist)
     ASSERT_NEAR(position[0], x1[0] + v1[0] * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], v1[0], EPS);
-    //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
-    //ASSERT_NEAR(acceleration[0], MAX_ACC, eps);
+    ASSERT_FALSE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
 
     //-- Destroy line
     ASSERT_TRUE(iCartesianTrajectory->destroy());
@@ -232,8 +229,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDuration)
     ASSERT_NEAR(position[0], x1[0] + v1[0] * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], v1[0], EPS);
-    //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
-    //ASSERT_NEAR(acceleration[0], MAX_ACC, eps);
+    ASSERT_FALSE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
 
     //-- Destroy line
     ASSERT_TRUE(iCartesianTrajectory->destroy());
@@ -255,8 +251,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDurationCapped)
     ASSERT_NEAR(position[0], x1[0] + MAX_VEL * movementTime, EPS);
     ASSERT_TRUE(iCartesianTrajectory->getVelocity(movementTime, velocity));
     ASSERT_NEAR(velocity[0], MAX_VEL, EPS);
-    //ASSERT_TRUE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
-    //ASSERT_NEAR(acceleration[0], MAX_ACC, eps);
+    ASSERT_FALSE(iCartesianTrajectory->getAcceleration(movementTime, acceleration));
 
     //-- Destroy line
     ASSERT_TRUE(iCartesianTrajectory->destroy());
