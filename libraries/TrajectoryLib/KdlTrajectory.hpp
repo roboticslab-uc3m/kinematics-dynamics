@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <kdl/frames.hpp>
 #include <kdl/trajectory.hpp>
 #include <kdl/path.hpp>
 #include <kdl/rotational_interpolation.hpp>

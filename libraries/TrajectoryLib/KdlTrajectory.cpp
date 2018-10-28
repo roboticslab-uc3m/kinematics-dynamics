@@ -2,7 +2,6 @@
 
 #include "KdlTrajectory.hpp"
 
-#include <kdl/frames.hpp>
 #include <kdl/trajectory_segment.hpp>
 #include <kdl/path_line.hpp>
 #include <kdl/rotational_interpolation_sa.hpp>
@@ -162,6 +161,9 @@ bool roboticslab::KdlTrajectory::destroy()
     path = 0;
     orient = 0;
     velocityProfile = 0;
+
+    duration = DURATION_NOT_SET;
+    configuredPath = configuredVelocityProfile = false;
 
     frames.clear();
 
