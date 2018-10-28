@@ -13,6 +13,8 @@
 
 #include "ICartesianTrajectory.hpp"
 
+#define DURATION_NOT_SET -1
+
 #define DEFAULT_CARTESIAN_MAX_VEL 7.5      // unit/s, enforces a min duration of KDL::Trajectory_Segment
 #define DEFAULT_CARTESIAN_MAX_ACC 0.2      // unit/s^2
 
@@ -138,21 +140,19 @@ public:
      */
     virtual bool destroy();
 
-    /** @brief Denotes that the trajectory duration was not set */
-    static const int DURATION_NOT_SET;
-
-    /** @brief Denotes an infinite trajectory duration */
-    static const int DURATION_INFINITE;
-
 private:
 
     double duration;
     double maxVelocity, maxAcceleration;
+
     bool configuredPath, configuredVelocityProfile;
+    bool velocityDrivenPath;
+
     KDL::Trajectory* currentTrajectory;
     KDL::Path* path;
     KDL::RotationalInterpolation* orient;
     KDL::VelocityProfile * velocityProfile;
+
     std::vector<KDL::Frame> frames;
     std::vector<KDL::Twist> twists;
 };

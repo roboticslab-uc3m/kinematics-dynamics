@@ -16,19 +16,13 @@
 
 // -----------------------------------------------------------------------------
 
-// In C++11, declare enum starting with std::numeric_limits<int>::min()
-// https://stackoverflow.com/a/21027383
-const int roboticslab::KdlTrajectory::DURATION_NOT_SET = -1;
-const int roboticslab::KdlTrajectory::DURATION_INFINITE = -2;
-
-// -----------------------------------------------------------------------------
-
 roboticslab::KdlTrajectory::KdlTrajectory(double maxVelocity, double maxAcceleration)
     : duration(DURATION_NOT_SET),
       maxVelocity(maxVelocity),
       maxAcceleration(maxAcceleration),
       configuredPath(false),
       configuredVelocityProfile(false),
+      velocityDrivenPath(false),
       currentTrajectory(0),
       path(0),
       orient(0),
@@ -118,10 +112,12 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
 
         if ( frames.size() == 1 )
         {
+            velocityDrivenPath = true;
             path = new KDL::Path_Line(frames[0], twists[0], orient, eqradius);
         }
         else
         {
+            velocityDrivenPath = false;
             path = new KDL::Path_Line(frames[0], frames[1], orient, eqradius);
         }
 
@@ -172,6 +168,7 @@ bool roboticslab::KdlTrajectory::create()
         CD_ERROR("Path not configured!\n");
         return false;
     }
+
     if( ! configuredVelocityProfile )
     {
         CD_ERROR("Velocity profile not configured!\n");
@@ -180,18 +177,42 @@ bool roboticslab::KdlTrajectory::create()
 
     if( duration == DURATION_NOT_SET )
     {
-        velocityProfile->SetProfile(0, path->PathLength());
-        currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
-    }
-    else if( duration == DURATION_INFINITE )
-    {
-        velocityProfile->SetProfile(0, std::numeric_limits<double>::infinity());
-        currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
+        if (velocityDrivenPath)
+        {
+            // assume we'll execute this trajectory indefinitely; since velocity
+            // depends on the path to travel along and the total duration, let's
+            // fix both to adjust the resulting velocity as requested by the user
+
+            double vel = path->PathLength(); // distance traveled during 1 time unit
+            double dummyGoal = 1e9; // somewhere far away
+            double dummyDuration = dummyGoal / vel;
+
+            velocityProfile->SetProfileDuration(0, dummyGoal, dummyDuration);
+            currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
+        }
+        else
+        {
+            velocityProfile->SetProfile(0, path->PathLength());
+            currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
+        }
     }
     else
     {
-        // velocity profile is set under the hood
-        currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, duration);
+        if (velocityDrivenPath)
+        {
+            // execute the trajectory given an initial velocity and duration
+
+            double vel = path->PathLength(); // distance traveled during 1 time unit
+            double guessedGoal = vel * duration;
+
+            velocityProfile->SetProfileDuration(0, guessedGoal, duration);
+            currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile);
+        }
+        else
+        {
+            // velocity profile is set under the hood
+            currentTrajectory = new KDL::Trajectory_Segment(path, velocityProfile, duration);
+        }
     }
 
     return true;
@@ -209,6 +230,7 @@ bool roboticslab::KdlTrajectory::destroy()
 
     duration = DURATION_NOT_SET;
     configuredPath = configuredVelocityProfile = false;
+    velocityDrivenPath = false;
 
     frames.clear();
     twists.clear();
