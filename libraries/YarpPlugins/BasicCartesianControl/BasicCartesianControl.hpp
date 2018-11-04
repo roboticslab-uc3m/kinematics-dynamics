@@ -204,6 +204,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     protected:
 
+        bool checkJointLimits();
+
         void handleMovj();
         void handleMovl();
         void handleMovv();
@@ -226,6 +228,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         double gain;
         double maxJointVelocity;
         double duration; // [s]
+
         int cmcRateMs;
         int waitPeriodMs;
         int numRobotJoints, numSolverJoints;
@@ -253,6 +256,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         std::vector<double> td;
 
         bool cmcSuccess;
+
+        std::vector<double> qMin, qMax;
 };
 
 }  // namespace roboticslab

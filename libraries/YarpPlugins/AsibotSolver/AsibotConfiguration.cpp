@@ -113,7 +113,7 @@ bool AsibotConfiguration::Pose::checkJointsInLimits(JointsIn qMin, JointsIn qMax
 
         if (!checkJointInLimits(joint, qMin[i], qMax[i]))
         {
-            CD_WARNING("Joint %d out of limits: %f not in [%f, %f].\n", i + 1, joint, qMin[i], qMax[i]);
+            CD_WARNING("Joint out of limits: q[%d] = %f not in [%f,%f].\n", i, joint, qMin[i], qMax[i]);
             ok = false;
         }
     }

@@ -6,8 +6,11 @@
 #include <string>
 #include <vector>
 
-#include <kdl/rotational_interpolation_sa.hpp>
-#include <kdl/trajectory_segment.hpp>
+#include <kdl/frames.hpp>
+#include <kdl/trajectory.hpp>
+#include <kdl/path.hpp>
+#include <kdl/rotational_interpolation.hpp>
+#include <kdl/velocityprofile.hpp>
 
 #include "ICartesianTrajectory.hpp"
 
@@ -135,9 +138,9 @@ private:
 
     double duration;
     bool configuredPath, configuredVelocityProfile;
-    KDL::Trajectory_Segment* currentTrajectory;
-    KDL::RotationalInterpolation_SingleAxis* orient;
+    KDL::Trajectory* currentTrajectory;
     KDL::Path* path;
+    KDL::RotationalInterpolation* orient;
     KDL::VelocityProfile * velocityProfile;
     std::vector<KDL::Frame> frames;
 
