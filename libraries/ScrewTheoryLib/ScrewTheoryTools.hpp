@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __SCREW_THEORY_IK_SOLVER_HPP__
-#define __SCREW_THEORY_IK_SOLVER_HPP__
+#ifndef __SCREW_THEORY_TOOLS_HPP__
+#define __SCREW_THEORY_TOOLS_HPP__
 
 #include <vector>
 
@@ -14,13 +14,13 @@ namespace roboticslab
 
 /**
  * @ingroup kinematics-dynamics-libraries
- * \defgroup ScrewTheoryIkSolverLib
+ * \defgroup ScrewTheoryLib
  *
- * @brief Contains classes related to Screw Theory IK solvers.
+ * @brief Contains classes related to Screw Theory solvers and tools.
  */
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class MatrixExponential
@@ -39,7 +39,7 @@ public:
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class PoeExpression
@@ -65,14 +65,14 @@ class PoeExpression
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class ScrewTheorySubproblem
 {};
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class PadenKahan1 : public ScrewTheorySubproblem
@@ -82,7 +82,7 @@ public:
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class PadenKahan2 : public ScrewTheorySubproblem
@@ -92,7 +92,7 @@ public:
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class PadenKahan3 : public ScrewTheorySubproblem
@@ -102,7 +102,7 @@ public:
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class PardosGotor4 : public ScrewTheorySubproblem
@@ -112,7 +112,7 @@ public:
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class ScrewTheoryProblem
@@ -127,7 +127,7 @@ private:
 };
 
 /**
- * @ingroup ScrewTheoryIkSolverLib
+ * @ingroup ScrewTheoryLib
  * @brief ...
  */
 class ScrewTheoryProblemBuilder
@@ -140,4 +140,4 @@ public:
 
 }  // namespace roboticslab
 
-#endif  // __SCREW_THEORY_IK_SOLVER_HPP__
+#endif  // __SCREW_THEORY_TOOLS_HPP__
