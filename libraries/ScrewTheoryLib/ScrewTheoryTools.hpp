@@ -45,21 +45,16 @@ public:
 class PoeExpression
 {
     public:
-        PoeExpression();
-        explicit PoeExpression(const KDL::Frame & H_ST);
-        PoeExpression(const PoeExpression & poe);
-        void append(const PoeExpression & poe);
-        void append(const MatrixExponential & exp, const KDL::Frame & H_TN = KDL::Frame::Identity());
+        PoeExpression(const std::vector<MatrixExponential> & exps, const KDL::Frame & H_ST);
         KDL::Frame getTransform() const;
-        void setTransform(const KDL::Frame & H_ST);
         int size() const;
         const MatrixExponential & exponentialAtJoint(int i) const;
-        MatrixExponential & exponentialAtJoint(int i);
         KDL::Frame evaluate(const KDL::JntArray & q);
         KDL::Chain toChain() const;
         static PoeExpression fromChain(const KDL::Chain & chain);
 
     private:
+        PoeExpression();
         std::vector<MatrixExponential> exps;
         KDL::Frame H_ST;
 };
