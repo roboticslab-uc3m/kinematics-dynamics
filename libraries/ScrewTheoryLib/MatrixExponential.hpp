@@ -29,6 +29,12 @@ public:
     motion getMotionType() const
     { return motionType; }
 
+    KDL::Vector getAxis() const
+    { return axis; }
+
+    KDL::Vector getOrigin() const
+    { return origin; }
+
     bool liesOnAxis(const KDL::Vector & point) const;
 
 private:

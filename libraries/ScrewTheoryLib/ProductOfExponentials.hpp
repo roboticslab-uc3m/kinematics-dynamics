@@ -22,10 +22,10 @@ class PoeExpression
 {
     public:
 
-        PoeExpression(const std::vector<MatrixExponential> & exps, const KDL::Frame & H_ST);
+        PoeExpression(const std::vector<MatrixExponential> & exps, const KDL::Frame & H_S_T);
 
         KDL::Frame getTransform() const
-        { return H_ST; }
+        { return H_S_T; }
 
         int size() const
         { return exps.size(); }
@@ -44,7 +44,7 @@ class PoeExpression
         PoeExpression();
 
         std::vector<MatrixExponential> exps;
-        KDL::Frame H_ST;
+        KDL::Frame H_S_T;
 };
 
 }  // namespace roboticslab
