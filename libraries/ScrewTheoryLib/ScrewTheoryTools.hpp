@@ -5,9 +5,10 @@
 
 #include <vector>
 
-#include <kdl/chain.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
+
+#include "MatrixExponential.hpp"
 
 namespace roboticslab
 {
@@ -18,46 +19,6 @@ namespace roboticslab
  *
  * @brief Contains classes related to Screw Theory solvers and tools.
  */
-
-/**
- * @ingroup ScrewTheoryLib
- * @brief ...
- */
-class MatrixExponential
-{
-public:
-    enum motion
-    {
-        ROTATION,
-        TRANSLATION
-    };
-
-    MatrixExponential(motion motionType, const KDL::Vector & axis, const KDL::Vector & origin);
-    KDL::Frame asFrame() const;
-    motion getMotionType() const;
-    bool liesOnAxis(const KDL::Vector & point) const;
-};
-
-/**
- * @ingroup ScrewTheoryLib
- * @brief ...
- */
-class PoeExpression
-{
-    public:
-        PoeExpression(const std::vector<MatrixExponential> & exps, const KDL::Frame & H_ST);
-        KDL::Frame getTransform() const;
-        int size() const;
-        const MatrixExponential & exponentialAtJoint(int i) const;
-        KDL::Frame evaluate(const KDL::JntArray & q);
-        KDL::Chain toChain() const;
-        static PoeExpression fromChain(const KDL::Chain & chain);
-
-    private:
-        PoeExpression();
-        std::vector<MatrixExponential> exps;
-        KDL::Frame H_ST;
-};
 
 /**
  * @ingroup ScrewTheoryLib

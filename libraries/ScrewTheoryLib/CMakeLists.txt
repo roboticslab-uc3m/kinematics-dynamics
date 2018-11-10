@@ -8,9 +8,15 @@ cmake_dependent_option(ENABLE_ScrewTheoryLib "Enable/disable ScrewTheoryLib libr
 if(ENABLE_ScrewTheoryLib)
 
     add_library(ScrewTheoryLib SHARED ScrewTheoryTools.cpp
-                                      ScrewTheoryTools.hpp)
+                                      ScrewTheoryTools.hpp
+                                      MatrixExponential.hpp
+                                      MatrixExponential.cpp
+                                      ProductOfExponentials.hpp
+                                      ProductOfExponentials.cpp)
 
-    set_target_properties(ScrewTheoryLib PROPERTIES PUBLIC_HEADER ScrewTheoryTools.hpp)
+    set_target_properties(ScrewTheoryLib PROPERTIES PUBLIC_HEADER ScrewTheoryTools.hpp
+                                                                  MatrixExponential.hpp
+                                                                  ProductOfExponentials.hpp)
 
     target_link_libraries(ScrewTheoryLib PUBLIC ${orocos_kdl_LIBRARIES}
                                          PRIVATE ROBOTICSLAB::ColorDebug)
