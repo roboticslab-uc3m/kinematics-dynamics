@@ -2,9 +2,18 @@
 
 #include "KdlSolver.hpp"
 
-#include <kdl/segment.hpp>
+#include <kdl/frames.hpp>
+#include <kdl/jntarray.hpp>
+#include <kdl/joint.hpp>
 #include <kdl/rigidbodyinertia.hpp>
 #include <kdl/rotationalinertia.hpp>
+#include <kdl/segment.hpp>
+
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolverpos_lma.hpp>
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainidsolver_recursive_newton_euler.hpp>
 
 #include <ColorDebug.h>
 
@@ -14,7 +23,6 @@
 
 bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 {
-
     CD_DEBUG("config: %s.\n", config.toString().c_str());
 
     //-- kinematics
@@ -45,7 +53,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
     yarp::os::Value gravityValue = fullConfig.check("gravity", defaultGravityValue, "gravity vector (SI units)");
     yarp::os::Bottle *gravityBottle = gravityValue.asList();
-    gravity = KDL::Vector(gravityBottle->get(0).asDouble(),gravityBottle->get(1).asDouble(),gravityBottle->get(2).asDouble());
+    KDL::Vector gravity(gravityBottle->get(0).asDouble(),gravityBottle->get(1).asDouble(),gravityBottle->get(2).asDouble());
     CD_INFO("gravity: %s [%s]\n",gravityBottle->toString().c_str(),defaultGravityBottle->toString().c_str());
 
     //-- H0
@@ -166,8 +174,8 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     CD_INFO("Chain number of segments (post- H0 and HN): %d\n",chain.getNrOfSegments());
     CD_INFO("Chain number of joints (post- H0 and HN): %d\n",chain.getNrOfJoints());
 
-    qMax.resize(chain.getNrOfJoints());
-    qMin.resize(chain.getNrOfJoints());
+    KDL::JntArray qMax(chain.getNrOfJoints());
+    KDL::JntArray qMin(chain.getNrOfJoints());
 
     //-- Joint limits
     if (!fullConfig.check("mins") || !fullConfig.check("maxs"))
@@ -208,44 +216,61 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     }
 
     //-- Precision and max iterations for IK solver.
-    eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asDouble();
-    maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
+    double eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asDouble();
+    double maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
+
+    fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
+    ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain);
+    idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
     //-- IK solver algorithm.
     std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl)").asString();
-    if (!parseIkSolverFromString(ik))
+
+    if (ik == "lma")
+    {
+        std::string weightsStr = fullConfig.check("weights", yarp::os::Value(DEFAULT_LMA_WEIGHTS), "LMA algorithm weights (bottle of 6 doubles)").asString();
+        yarp::os::Bottle weights(weightsStr);
+        Eigen::Matrix<double, 6, 1> L;
+
+        if (!parseLmaFromBottle(weights, L))
+        {
+            CD_ERROR("Unable to parse LMA weights.\n");
+            return false;
+        }
+
+        ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L);
+    }
+    else if (ik == "nrjl")
+    {
+        ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, maxIter, eps);
+    }
+    else
     {
         CD_ERROR("Unsupported IK solver algorithm: %s.\n", ik.c_str());
         return false;
     }
 
-    if (ikSolver == LMA)
-    {
-        std::string weightsStr = fullConfig.check("weights", yarp::os::Value(DEFAULT_LMA_WEIGHTS), "LMA algorithm weights (bottle of 6 doubles)").asString();
-        yarp::os::Bottle weights(weightsStr);
-
-        if (!parseLmaFromBottle(weights))
-        {
-            CD_ERROR("Unable to parse LMA weights.\n");
-            return false;
-        }
-    }
-
-    originalChain = chain;  // We have: Chain& operator = (const Chain& arg);
+    originalChain = chain;
 
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::close() {
+bool roboticslab::KdlSolver::close()
+{
+    delete fkSolverPos;
+    delete ikSolverPos;
+    delete ikSolverVel;
+    delete idSolver;
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H) {
-
+bool roboticslab::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H)
+{
     yarp::os::Bottle *bH=options.find(tag).asList();
     if (!bH) return false;
 
@@ -264,27 +289,7 @@ bool roboticslab::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &optio
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::parseIkSolverFromString(const std::string & str)
-{
-    if (str == "lma")
-    {
-        ikSolver = LMA;
-    }
-    else if (str == "nrjl")
-    {
-        ikSolver = NRJL;
-    }
-    else
-    {
-        return false;
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::KdlSolver::parseLmaFromBottle(const yarp::os::Bottle & b)
+bool roboticslab::KdlSolver::parseLmaFromBottle(const yarp::os::Bottle & b, Eigen::Matrix<double, 6, 1> & L)
 {
     if (b.size() != 6)
     {

@@ -10,9 +10,10 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/all.h>
 
-#include <kdl/frames.hpp>
 #include <kdl/chain.hpp>
-#include <kdl/jntarray.hpp>
+#include <kdl/chainfksolver.hpp>
+#include <kdl/chainiksolver.hpp>
+#include <kdl/chainidsolver.hpp>
 
 #include <Eigen/Core> // Eigen::Matrix
 
@@ -53,9 +54,10 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
     public:
 
         KdlSolver()
-            : eps(DEFAULT_EPS),
-              maxIter(DEFAULT_MAXITER),
-              ikSolver(LMA)
+            : fkSolverPos(NULL),
+              ikSolverPos(NULL),
+              ikSolverVel(NULL),
+              idSolver(NULL)
         {}
 
         // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
@@ -117,8 +119,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 
     protected:
 
-        enum ik_solver { LMA, NRJL };
-
         mutable yarp::os::Semaphore mutex;
 
         /** The chain. **/
@@ -127,32 +127,14 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         /** To store a copy of the original chain. **/
         KDL::Chain originalChain;
 
-        /** Define used gravity for the chain, important to think of DH. **/
-        KDL::Vector gravity;
-
-        /** Minimum joint limits. **/
-        KDL::JntArray qMin;
-
-        /** Maximum joint limits. **/
-        KDL::JntArray qMax;
-
-        /** Precision value used by the IK solver. **/
-        double eps;
-
-        /** Maximum number of iterations to calculate inverse kinematics. **/
-        unsigned int maxIter;
-
-        /** User-selected IK solver algorithm. **/
-        ik_solver ikSolver;
-
-        /** Vector of weights (LMA algorithm). **/
-        Eigen::Matrix<double, 6, 1> L;
+        KDL::ChainFkSolverPos * fkSolverPos;
+        KDL::ChainIkSolverPos * ikSolverPos;
+        KDL::ChainIkSolverVel * ikSolverVel;
+        KDL::ChainIdSolver * idSolver;
 
         bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
 
-        bool parseIkSolverFromString(const std::string & str);
-
-        bool parseLmaFromBottle(const yarp::os::Bottle & b);
+        bool parseLmaFromBottle(const yarp::os::Bottle & b, Eigen::Matrix<double, 6, 1> & L);
 };
 
 }  // namespace roboticslab
