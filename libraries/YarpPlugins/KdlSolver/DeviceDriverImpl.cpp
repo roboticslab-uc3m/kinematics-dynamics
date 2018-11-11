@@ -170,54 +170,8 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN,kdlVecN)));
     CD_INFO("HN:\n%s\n[%s]\n",ymHN.toString().c_str(),defaultYmHN.toString().c_str());
 
-    //--
     CD_INFO("Chain number of segments (post- H0 and HN): %d\n",chain.getNrOfSegments());
     CD_INFO("Chain number of joints (post- H0 and HN): %d\n",chain.getNrOfJoints());
-
-    KDL::JntArray qMax(chain.getNrOfJoints());
-    KDL::JntArray qMin(chain.getNrOfJoints());
-
-    //-- Joint limits
-    if (!fullConfig.check("mins") || !fullConfig.check("maxs"))
-    {
-        CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
-        return false;
-    }
-
-    yarp::os::Bottle *maxs = fullConfig.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
-    yarp::os::Bottle *mins = fullConfig.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
-
-    if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
-    {
-        CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
-        return false;
-    }
-
-    if (maxs->size() < chain.getNrOfJoints() || mins->size() < chain.getNrOfJoints())
-    {
-        CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
-        return false;
-    }
-
-    for (int motor=0; motor<chain.getNrOfJoints(); motor++)
-    {
-        qMax(motor) = maxs->get(motor).asDouble();
-        qMin(motor) = mins->get(motor).asDouble();
-
-        if (qMin(motor) == qMax(motor))
-        {
-            CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", motor, qMin(motor));
-        }
-        else if (qMin(motor) > qMax(motor))
-        {
-            CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", motor, qMin(motor), qMax(motor));
-            return false;
-        }
-    }
-
-    //-- Precision and max iterations for IK solver.
-    double eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asDouble();
-    double maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
 
     fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
     ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain);
@@ -242,6 +196,51 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     }
     else if (ik == "nrjl")
     {
+        KDL::JntArray qMax(chain.getNrOfJoints());
+        KDL::JntArray qMin(chain.getNrOfJoints());
+
+        //-- Joint limits.
+        if (!fullConfig.check("mins") || !fullConfig.check("maxs"))
+        {
+            CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+            return false;
+        }
+
+        yarp::os::Bottle *maxs = fullConfig.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
+        yarp::os::Bottle *mins = fullConfig.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+
+        if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
+        {
+            CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+            return false;
+        }
+
+        if (maxs->size() < chain.getNrOfJoints() || mins->size() < chain.getNrOfJoints())
+        {
+            CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
+            return false;
+        }
+
+        for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
+        {
+            qMax(motor) = maxs->get(motor).asDouble();
+            qMin(motor) = mins->get(motor).asDouble();
+
+            if (qMin(motor) == qMax(motor))
+            {
+                CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", motor, qMin(motor));
+            }
+            else if (qMin(motor) > qMax(motor))
+            {
+                CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", motor, qMin(motor), qMax(motor));
+                return false;
+            }
+        }
+
+        //-- Precision and max iterations.
+        double eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asDouble();
+        double maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
+
         ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, maxIter, eps);
     }
     else
