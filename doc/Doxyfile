@@ -593,7 +593,7 @@ LAYOUT_FILE            =
 # of the bibliography can be controlled using LATEX_BIB_STYLE. To use this
 # feature you need bibtex and perl available in the search path.
 
-CITE_BIB_FILES         =
+CITE_BIB_FILES         = bibtex/pardosgotor2018str_handbook.bib
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
