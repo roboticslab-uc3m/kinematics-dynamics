@@ -301,23 +301,3 @@ bool roboticslab::KdlSolver::parseLmaFromBottle(const yarp::os::Bottle & b)
 }
 
 // -----------------------------------------------------------------------------
-
-KDL::Chain roboticslab::KdlSolver::getChain() const
-{
-    KDL::Chain localChain;
-    mutex.wait();
-    localChain = chain;
-    mutex.post();
-    return localChain;
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::KdlSolver::setChain(const KDL::Chain & chain)
-{
-    mutex.wait();
-    this->chain = chain;
-    mutex.post();
-}
-
-// -----------------------------------------------------------------------------

@@ -119,10 +119,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 
         enum ik_solver { LMA, NRJL };
 
-        // defined in DeviceDriverImpl.cpp
-        KDL::Chain getChain() const;
-        void setChain(const KDL::Chain & chain);
-
         mutable yarp::os::Semaphore mutex;
 
         /** The chain. **/
