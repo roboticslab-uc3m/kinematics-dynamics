@@ -2,6 +2,15 @@
 
 #include "KdlSolver.hpp"
 
+#include <string>
+
+#include <yarp/os/Bottle.h>
+#include <yarp/os/Property.h>
+#include <yarp/os/ResourceFinder.h>
+#include <yarp/os/Value.h>
+
+#include <yarp/sig/Matrix.h>
+
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/joint.hpp>
@@ -15,11 +24,63 @@
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
 
+#include <Eigen/Core> // Eigen::Matrix
+
 #include <ColorDebug.h>
 
 #include "KinematicRepresentation.hpp"
 
 // ------------------- DeviceDriver Related ------------------------------------
+
+namespace
+{
+    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & H)
+    {
+        yarp::os::Bottle * bH = options.find(tag).asList();
+
+        if (!bH)
+        {
+            CD_WARNING("Unable to find tag %s.\n", 6, tag.c_str());
+            return false;
+        }
+
+        int i = 0;
+        int j = 0;
+
+        H.zero();
+
+        for (int cnt = 0; cnt < bH->size() && cnt < H.rows() * H.cols(); cnt++)
+        {
+            H(i, j) = bH->get(cnt).asDouble();
+
+            if (++j >= H.cols())
+            {
+                i++;
+                j = 0;
+            }
+        }
+
+        return true;
+    }
+
+    bool parseLmaFromBottle(const yarp::os::Bottle & b, Eigen::Matrix<double, 6, 1> & L)
+    {
+        if (b.size() != 6)
+        {
+            CD_WARNING("Wrong bottle size (expected: %d, was: %d).\n", 6, b.size());
+            return false;
+        }
+
+        for (int i = 0; i < b.size(); i++)
+        {
+            L(i) = b.get(i).asDouble();
+        }
+
+        return true;
+    }
+}
+
+// -----------------------------------------------------------------------------
 
 bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 {
@@ -262,44 +323,6 @@ bool roboticslab::KdlSolver::close()
     delete ikSolverPos;
     delete ikSolverVel;
     delete idSolver;
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::KdlSolver::getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H)
-{
-    yarp::os::Bottle *bH=options.find(tag).asList();
-    if (!bH) return false;
-
-    int i=0;
-    int j=0;
-    H.zero();
-    for (int cnt=0; (cnt<bH->size()) && (cnt<H.rows()*H.cols()); cnt++) {
-        H(i,j)=bH->get(cnt).asDouble();
-        if (++j>=H.cols()) {
-            i++;
-            j=0;
-        }
-    }
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool roboticslab::KdlSolver::parseLmaFromBottle(const yarp::os::Bottle & b, Eigen::Matrix<double, 6, 1> & L)
-{
-    if (b.size() != 6)
-    {
-        CD_WARNING("Wrong bottle size (expected: %d, was: %d).", 6, b.size());
-        return false;
-    }
-
-    for (int i = 0; i < b.size(); i++)
-    {
-        L(i) = b.get(i).asDouble();
-    }
 
     return true;
 }

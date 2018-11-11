@@ -3,19 +3,13 @@
 #ifndef __KDL_SOLVER_HPP__
 #define __KDL_SOLVER_HPP__
 
-#include <string>
-
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
-#include <yarp/dev/PolyDriver.h>
-#include <yarp/sig/all.h>
+#include <yarp/os/Semaphore.h>
+#include <yarp/dev/DeviceDriver.h>
 
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainiksolver.hpp>
 #include <kdl/chainidsolver.hpp>
-
-#include <Eigen/Core> // Eigen::Matrix
 
 #include <iostream> // only windows
 
@@ -131,10 +125,6 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         KDL::ChainIkSolverPos * ikSolverPos;
         KDL::ChainIkSolverVel * ikSolverVel;
         KDL::ChainIdSolver * idSolver;
-
-        bool getMatrixFromProperties(yarp::os::Searchable &options, std::string &tag, yarp::sig::Matrix &H);
-
-        bool parseLmaFromBottle(const yarp::os::Bottle & b, Eigen::Matrix<double, 6, 1> & L);
 };
 
 }  // namespace roboticslab
