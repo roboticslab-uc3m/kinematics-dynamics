@@ -40,7 +40,7 @@ namespace
 
         if (!bH)
         {
-            CD_WARNING("Unable to find tag %s.\n", 6, tag.c_str());
+            CD_WARNING("Unable to find tag %s.\n", tag.c_str());
             return false;
         }
 
