@@ -36,6 +36,8 @@ public:
 
     bool solve(const KDL::Frame & H_S_T, std::vector<KDL::JntArray> & solutions);
 
+    static ScrewTheoryIkProblem * create(const std::vector<ScrewTheoryIkSubproblem *> & steps);
+
 private:
 
     // disable instantiation, force users to call builder class
@@ -59,19 +61,11 @@ public:
 
     ScrewTheoryIkProblemBuilder(const PoeExpression & poe);
 
-    void setWorldFrame(const KDL::Frame H_0)
-    { this->H_0 = H_0; }
-
-    void setToolFrame(const KDL::Frame H_N)
-    { this->H_N = H_N; }
-
-    ScrewTheoryIkProblem build();
+    ScrewTheoryIkProblem * build();
 
 private:
 
     void addStep(ScrewTheoryIkSubproblem * subproblem);
-
-    KDL::Frame H_0, H_N;
 };
 
 }  // namespace roboticslab

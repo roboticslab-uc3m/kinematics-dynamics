@@ -17,6 +17,17 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 // -----------------------------------------------------------------------------
 
 bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntArray> & solutions)
-{}
+{
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+
+ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const std::vector<ScrewTheoryIkSubproblem *> & steps)
+{
+    ScrewTheoryIkProblem * stProblem;
+    // TODO: instantiate, validate
+    return stProblem;
+}
 
 // -----------------------------------------------------------------------------
