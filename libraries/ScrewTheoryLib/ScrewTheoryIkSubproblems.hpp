@@ -15,41 +15,30 @@ namespace roboticslab
  * @ingroup ScrewTheoryLib
  * @brief ...
  */
-class PadenKahan1 : public ScrewTheoryIkSubproblem
+class PadenKahanOne : public ScrewTheoryIkSubproblem
 {
 public:
-    PadenKahan1(const MatrixExponential & exp, const KDL::Vector & p);
+    PadenKahanOne(const MatrixExponential & exp, const KDL::Vector & p);
 };
 
 /**
  * @ingroup ScrewTheoryLib
  * @brief ...
  */
-class PadenKahan2 : public ScrewTheoryIkSubproblem
+class PadenKahanTwo : public ScrewTheoryIkSubproblem
 {
 public:
-    PadenKahan2(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PadenKahanTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 };
 
 /**
  * @ingroup ScrewTheoryLib
  * @brief ...
  */
-class PadenKahan3 : public ScrewTheoryIkSubproblem
+class PadenKahanThree : public ScrewTheoryIkSubproblem
 {
 public:
-    PadenKahan3(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
-};
-
-/**
- * @ingroup ScrewTheoryLib
- * @brief ...
- * @cite pardosgotor2018str_handbook
- */
-class PardosGotor1 : public ScrewTheoryIkSubproblem
-{
-public:
-    PardosGotor1(const MatrixExponential & exp, const KDL::Vector & p);
+    PadenKahanThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 };
 
 /**
@@ -57,10 +46,10 @@ public:
  * @brief ...
  * @cite pardosgotor2018str_handbook
  */
-class PardosGotor2 : public ScrewTheoryIkSubproblem
+class PardosOne : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosGotor2(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosOne(const MatrixExponential & exp, const KDL::Vector & p);
 };
 
 /**
@@ -68,10 +57,10 @@ public:
  * @brief ...
  * @cite pardosgotor2018str_handbook
  */
-class PardosGotor3 : public ScrewTheoryIkSubproblem
+class PardosTwo : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosGotor3(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+    PardosTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 };
 
 /**
@@ -79,10 +68,21 @@ public:
  * @brief ...
  * @cite pardosgotor2018str_handbook
  */
-class PardosGotor4 : public ScrewTheoryIkSubproblem
+class PardosThree : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosGotor4(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+};
+
+/**
+ * @ingroup ScrewTheoryLib
+ * @brief ...
+ * @cite pardosgotor2018str_handbook
+ */
+class PardosFour : public ScrewTheoryIkSubproblem
+{
+public:
+    PardosFour(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 };
 
 }  // namespace roboticslab

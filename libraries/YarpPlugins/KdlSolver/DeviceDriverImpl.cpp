@@ -309,6 +309,12 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     else if (ik == "st")
     {
         ikSolverPos = ChainIkSolverPos_ST::create(chain);
+
+        if (ikSolverPos == NULL)
+        {
+            CD_ERROR("Unable to solve IK.\n");
+            return false;
+        }
     }
     else
     {
