@@ -60,11 +60,3 @@ KDL::Frame MatrixExponential::asFrame(double theta) const
 }
 
 // -----------------------------------------------------------------------------
-
-bool MatrixExponential::liesOnAxis(const KDL::Vector & point) const
-{
-    // TODO
-    return false;
-}
-
-// -----------------------------------------------------------------------------

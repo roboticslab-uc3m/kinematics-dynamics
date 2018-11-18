@@ -65,7 +65,7 @@ public:
 
 private:
 
-    void addStep(ScrewTheoryIkSubproblem * subproblem);
+    std::vector<KDL::Vector> searchPoints(const PoeExpression & poe);
 };
 
 }  // namespace roboticslab

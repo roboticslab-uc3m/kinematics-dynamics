@@ -22,7 +22,7 @@ public:
         TRANSLATION
     };
 
-    MatrixExponential(motion motionType, const KDL::Vector & axis, const KDL::Vector & origin);
+    MatrixExponential(motion motionType, const KDL::Vector & axis, const KDL::Vector & origin = KDL::Vector::Zero());
 
     KDL::Frame asFrame(double theta) const;
 
@@ -34,8 +34,6 @@ public:
 
     KDL::Vector getOrigin() const
     { return origin; }
-
-    bool liesOnAxis(const KDL::Vector & point) const;
 
 private:
 
