@@ -3,6 +3,7 @@
 #ifndef __SCREW_THEORY_IK_PROBLEM_HPP__
 #define __SCREW_THEORY_IK_PROBLEM_HPP__
 
+#include <deque>
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -65,7 +66,21 @@ public:
 
 private:
 
-    std::vector<KDL::Vector> searchPoints(const PoeExpression & poe);
+    void searchPoints();
+
+    ScrewTheoryIkSubproblem * trySolve();
+
+    bool simplify();
+
+    PoeExpression poe;
+
+    std::vector<KDL::Vector> points;
+    std::vector<KDL::Vector> testPoints;
+
+    std::deque<bool> unknowns;
+    std::deque<bool> simplified;
+
+    // TODO: addStep()
 };
 
 }  // namespace roboticslab

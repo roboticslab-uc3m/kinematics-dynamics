@@ -18,7 +18,7 @@ namespace roboticslab
 class PadenKahanOne : public ScrewTheoryIkSubproblem
 {
 public:
-    PadenKahanOne(const MatrixExponential & exp, const KDL::Vector & p);
+    PadenKahanOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 };
 
 /**
@@ -28,7 +28,7 @@ public:
 class PadenKahanTwo : public ScrewTheoryIkSubproblem
 {
 public:
-    PadenKahanTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 };
 
 /**
@@ -38,7 +38,7 @@ public:
 class PadenKahanThree : public ScrewTheoryIkSubproblem
 {
 public:
-    PadenKahanThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+    PadenKahanThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 };
 
 /**
@@ -49,7 +49,7 @@ public:
 class PardosOne : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosOne(const MatrixExponential & exp, const KDL::Vector & p);
+    PardosOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 };
 
 /**
@@ -60,7 +60,7 @@ public:
 class PardosTwo : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 };
 
 /**
@@ -71,7 +71,7 @@ public:
 class PardosThree : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+    PardosThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 };
 
 /**
@@ -82,7 +82,7 @@ public:
 class PardosFour : public ScrewTheoryIkSubproblem
 {
 public:
-    PardosFour(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 };
 
 }  // namespace roboticslab

@@ -3,6 +3,7 @@
 #include "ScrewTheoryIkProblem.hpp"
 
 #include <algorithm>
+#include <deque>
 #include <functional>
 #include <set>
 
@@ -84,9 +85,17 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 
 // -----------------------------------------------------------------------------
 
-std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpression & poe)
+ScrewTheoryIkProblemBuilder::ScrewTheoryIkProblemBuilder(const PoeExpression & _poe)
+    : poe(_poe),
+      unknowns(poe.size(), true),
+      simplified(_poe.size(), false)
+{}
+
+// -----------------------------------------------------------------------------
+
+void ScrewTheoryIkProblemBuilder::searchPoints()
 {
-    std::set<KDL::Vector, compare_vectors> points;
+    std::set<KDL::Vector, compare_vectors> set;
 
     for (int i = 0; i < poe.size(); i++)
     {
@@ -97,7 +106,7 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
             continue;
         }
 
-        points.insert(exp.getOrigin());
+        set.insert(exp.getOrigin());
 
         for (int j = 1; j < poe.size(); j++)
         {
@@ -122,15 +131,13 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
 
             if (intersectingAxes(exp, exp2, p))
             {
-                points.insert(p);
+                set.insert(p);
             }
         }
     }
 
-    std::vector<KDL::Vector> out(points.size());
-    std::copy(points.begin(), points.end(), out.begin());
-
-    return out;
+    points.resize(set.size());
+    std::copy(set.begin(), set.end(), points.begin());
 }
 
 // -----------------------------------------------------------------------------
@@ -147,6 +154,77 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const std::vector<ScrewTheor
     ScrewTheoryIkProblem * stProblem;
     // TODO: instantiate, validate
     return stProblem;
+}
+
+// -----------------------------------------------------------------------------
+
+ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
+{
+    // TODO: clear vectors, deallocate memory, implement destructor
+
+    testPoints.resize(1);
+
+    std::vector<ScrewTheoryIkSubproblem *> steps;
+
+    searchPoints();
+
+    std::deque<bool> unknowns(poe.size(), true);
+    std::vector<KDL::Vector>::const_iterator pointIt = points.begin();
+
+    do
+    {
+        testPoints[0] = *pointIt;
+
+        do
+        {
+            ScrewTheoryIkSubproblem * subProblem = trySolve();
+
+            if (subProblem != NULL)
+            {
+                steps.push_back(subProblem);
+                break;
+            }
+        }
+        while (simplify());
+
+        ++pointIt;
+
+        if (pointIt == points.end())
+        {
+            break;
+        }
+    }
+    while (true); // TODO
+
+    if (true) // TODO
+    {
+        return ScrewTheoryIkProblem::create(steps);
+    }
+    else
+    {
+        for (std::vector<ScrewTheoryIkSubproblem *>::iterator it = steps.begin(); it != steps.end(); ++it)
+        {
+            delete (*it);
+            *it = NULL;
+        }
+
+        return NULL;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
+{
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------
+
+
+bool ScrewTheoryIkProblemBuilder::simplify()
+{
+    return true;
 }
 
 // -----------------------------------------------------------------------------
