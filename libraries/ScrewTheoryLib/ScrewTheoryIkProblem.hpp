@@ -3,7 +3,6 @@
 #ifndef __SCREW_THEORY_IK_PROBLEM_HPP__
 #define __SCREW_THEORY_IK_PROBLEM_HPP__
 
-#include <deque>
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -77,8 +76,8 @@ private:
     std::vector<KDL::Vector> points;
     std::vector<KDL::Vector> testPoints;
 
-    std::deque<bool> unknowns;
-    std::deque<bool> simplified;
+    std::vector<bool> unknowns;
+    std::vector<bool> simplified;
 
     // TODO: addStep()
 };

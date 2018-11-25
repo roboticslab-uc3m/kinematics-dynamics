@@ -3,9 +3,11 @@
 #include "ScrewTheoryIkProblem.hpp"
 
 #include <algorithm>
-#include <deque>
 #include <functional>
+#include <iterator>
 #include <set>
+
+#include "ScrewTheoryIkSubproblems.hpp"
 
 using namespace roboticslab;
 
@@ -168,7 +170,6 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 
     searchPoints();
 
-    std::deque<bool> unknowns(poe.size(), true);
     std::vector<KDL::Vector>::const_iterator pointIt = points.begin();
 
     do
@@ -194,7 +195,7 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
             break;
         }
     }
-    while (true); // TODO
+    while (std::count(unknowns.begin(), unknowns.end(), true) != 0);
 
     if (true) // TODO
     {
@@ -216,6 +217,84 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 
 ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
 {
+    int unknownsCount = std::count(unknowns.begin(), unknowns.end(), true);
+
+    if (unknownsCount > 2)
+    {
+        return NULL;
+    }
+
+    std::vector<bool>::reverse_iterator lastUnknown = std::find(unknowns.rbegin(), unknowns.rend(), true);
+    int lastExpId = std::distance(unknowns.begin(), lastUnknown.base()) - 1;
+    const MatrixExponential & lastExp = poe.exponentialAtJoint(lastExpId);
+
+    if (unknownsCount == 1)
+    {
+        if (testPoints.size() == 1)
+        {
+            if (lastExp.getMotionType() == MatrixExponential::ROTATION
+                    && !liesOnAxis(lastExp, testPoints[0]))
+            {
+                return new PadenKahanOne(lastExpId, lastExp, testPoints[0]);
+            }
+
+            if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
+            {
+                return new PardosOne(lastExpId, lastExp, testPoints[0]);
+            }
+        }
+
+        if (testPoints.size() == 2)
+        {
+            if (lastExp.getMotionType() == MatrixExponential::ROTATION
+                    && !liesOnAxis(lastExp, testPoints[0])
+                    && !liesOnAxis(lastExp, testPoints[1]))
+            {
+                return new PadenKahanThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
+            }
+
+            if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
+            {
+                return new PardosThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
+            }
+        }
+    }
+    else if (unknownsCount == 2)
+    {
+        std::vector<bool>::reverse_iterator nextToLastUnknown = std::find(lastUnknown, unknowns.rend(), true);
+        int nextToLastExpId = std::distance(unknowns.begin(), nextToLastUnknown.base()) - 1;
+        const MatrixExponential & nextToLastExp = poe.exponentialAtJoint(nextToLastExpId);
+
+        if (testPoints.size() == 1)
+        {
+            KDL::Vector _;
+
+            if (lastExp.getMotionType() == MatrixExponential::ROTATION
+                    && nextToLastExp.getMotionType() == MatrixExponential::ROTATION
+                    && !parallelAxes(lastExp, nextToLastExp)
+                    && intersectingAxes(lastExp, nextToLastExp, _))
+            {
+                return new PadenKahanTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+            }
+
+            if (lastExp.getMotionType() == MatrixExponential::TRANSLATION
+                    && nextToLastExp.getMotionType() == MatrixExponential::TRANSLATION
+                    && !parallelAxes(lastExp, nextToLastExp)
+                    && intersectingAxes(lastExp, nextToLastExp, _))
+            {
+                return new PardosTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+            }
+
+            if (lastExp.getMotionType() == MatrixExponential::ROTATION
+                    && nextToLastExp.getMotionType() == MatrixExponential::ROTATION
+                    && parallelAxes(lastExp, nextToLastExp)
+                    && !colinearAxes(lastExp, nextToLastExp))
+            {
+                return new PardosFour(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+            }
+        }
+    }
+
     return NULL;
 }
 
