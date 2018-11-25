@@ -21,7 +21,7 @@ public:
 
     PadenKahanOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 
@@ -40,7 +40,7 @@ public:
 
     PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 
@@ -59,7 +59,7 @@ public:
 
     PadenKahanThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 
@@ -79,7 +79,7 @@ public:
 
     PardosOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 
@@ -99,7 +99,7 @@ public:
 
     PardosTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 
@@ -119,7 +119,7 @@ public:
 
     PardosThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 
@@ -139,7 +139,7 @@ public:
 
     PardosFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs);
 
 private:
 

@@ -16,12 +16,14 @@ PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector 
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosOne::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PardosOne::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(1);
     std::vector< std::pair<int, double> > jointIdsToSolutions(1);
 
-    double theta = KDL::dot(exp.getAxis(), rhs - p);
+    KDL::Vector k = rhs * p;
+
+    double theta = KDL::dot(exp.getAxis(), k - p);
 
     jointIdsToSolutions[0] = std::make_pair(id, theta);
     solutions[0] = jointIdsToSolutions;
@@ -41,12 +43,14 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosTwo::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PardosTwo::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(1);
     std::vector< std::pair<int, double> > jointIdsToSolutions(2);
 
-    KDL::Vector crossPr1 = exp2.getAxis() * (p - rhs);
+    KDL::Vector k = rhs * p;
+
+    KDL::Vector crossPr1 = exp2.getAxis() * (p - k);
     KDL::Vector crossPr2 = exp2.getAxis() * exp1.getAxis();
 
     double num = crossPr1.Norm();
@@ -56,14 +60,14 @@ std::vector< std::vector< std::pair<int, double> > > PardosTwo::solve(const KDL:
 
     if (num * den >= 0)
     {
-        c = rhs + (num / den) * exp1.getAxis();
+        c = k + (num / den) * exp1.getAxis();
     }
     else
     {
-        c = rhs - (num / den) * exp1.getAxis();
+        c = k - (num / den) * exp1.getAxis();
     }
 
-    double theta1 = KDL::dot(exp1.getAxis(), rhs - c);
+    double theta1 = KDL::dot(exp1.getAxis(), k - c);
     double theta2 = KDL::dot(exp2.getAxis(), c - p);
 
     jointIdsToSolutions[0] = std::make_pair(id1, theta1);
@@ -85,15 +89,18 @@ PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vec
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosThree::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PardosThree::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(2);
     std::vector< std::pair<int, double> > jointIdsToSolution1(1), jointIdsToSolution2(1);
 
+    KDL::Vector rhsAsVector = rhs * p - k;
+    double delta = rhsAsVector.Norm();
+
     KDL::Vector diff = k - p;
 
     double dotPr = KDL::dot(exp.getAxis(), diff);
-    double sq = std::sqrt(std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(rhs.Norm(), 2));
+    double sq = std::sqrt(std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(delta, 2));
 
     double theta1 = dotPr + sq;
     double theta2 = dotPr - sq;
@@ -119,13 +126,15 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosFour::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PardosFour::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(2);
     std::vector< std::pair<int, double> > jointIdsToSolution1(2), jointIdsToSolution2(2);
 
+    KDL::Vector k = rhs * p;
+
     KDL::Vector u = p - exp2.getAxis();
-    KDL::Vector v = rhs - exp1.getAxis();
+    KDL::Vector v = k - exp1.getAxis();
 
     KDL::Rotation axisPow1 = vectorPow2(exp1.getAxis());
     KDL::Rotation axisPow2 = vectorPow2(exp2.getAxis());

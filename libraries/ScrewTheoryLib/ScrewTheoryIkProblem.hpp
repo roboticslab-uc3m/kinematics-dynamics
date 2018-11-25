@@ -24,7 +24,7 @@ public:
 
     virtual ~ScrewTheoryIkSubproblem() {}
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs) = 0;
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs) = 0;
 };
 
 /**
@@ -39,9 +39,16 @@ public:
 
     bool solve(const KDL::Frame & H_S_T, std::vector<KDL::JntArray> & solutions);
 
-    static ScrewTheoryIkProblem * create(const std::vector<ScrewTheoryIkSubproblem *> & steps);
+    static ScrewTheoryIkProblem * create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps);
 
 private:
+
+    enum poe_term
+    {
+        EXP_KNOWN,
+        EXP_COMPUTED,
+        EXP_UNKNOWN
+    };
 
     // disable instantiation, force users to call builder class
     ScrewTheoryIkProblem();
@@ -50,8 +57,15 @@ private:
     ScrewTheoryIkProblem(const ScrewTheoryIkProblem &);
     ScrewTheoryIkProblem & operator=(const ScrewTheoryIkProblem &);
 
+    void recalculateFrames(const std::vector<KDL::JntArray> & solutions);
+
+    PoeExpression poe;
+
     // we own these, resources freed in destructor
     std::vector<ScrewTheoryIkSubproblem *> steps;
+
+    std::vector<KDL::Frame> rhsFrames;
+    std::vector<poe_term> poeTerms;
 };
 
 /**

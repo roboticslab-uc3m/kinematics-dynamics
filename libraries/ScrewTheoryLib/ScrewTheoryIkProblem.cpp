@@ -150,12 +150,127 @@ void ScrewTheoryIkProblemBuilder::searchPoints()
 
 bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntArray> & solutions)
 {
-    return false;
+    solutions.clear();
+    solutions.push_back(KDL::JntArray(poe.size()));
+
+    poeTerms.assign(poe.size(), EXP_UNKNOWN);
+
+    rhsFrames.push_back(H_S_T * poe.getTransform().Inverse());
+
+    bool firstIteration = true;
+
+    for (int i = 0; i < steps.size(); i++)
+    {
+        if (!firstIteration)
+        {
+            recalculateFrames(solutions);
+        }
+
+        int previousSize = solutions.size();
+
+        for (int j = 0; j < previousSize; j++)
+        {
+            const std::vector< std::vector< std::pair<int, double> > > & partialSolutions = steps[i]->solve(rhsFrames[j]);
+
+            if (partialSolutions.size() > 1)
+            {
+                solutions.resize(previousSize * partialSolutions.size());
+                rhsFrames.resize(solutions.size());
+
+                for (int k = 1; k < partialSolutions.size(); k++)
+                {
+                    solutions[j + previousSize * k] = KDL::JntArray(solutions[j]);
+                    rhsFrames[j + previousSize * k] = rhsFrames[j];
+                }
+            }
+
+            for (int k = 0; k < partialSolutions.size(); k++)
+            {
+                const std::vector< std::pair<int, double> > & jointIdsToSolutions = partialSolutions[k];
+
+                for (int l = 0; l < jointIdsToSolutions.size(); l++)
+                {
+                    const std::pair<int, double> & jointIdToSolution = jointIdsToSolutions[l];
+                    poeTerms[jointIdToSolution.first] = EXP_KNOWN;
+                    solutions[j + previousSize * k](jointIdToSolution.first) = jointIdToSolution.second;
+                }
+            }
+        }
+
+        firstIteration = false;
+    }
+
+    return std::count(poeTerms.begin(), poeTerms.end(), EXP_UNKNOWN) == 0;
 }
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const std::vector<ScrewTheoryIkSubproblem *> & steps)
+void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & solutions)
+{
+    std::vector<KDL::Frame> pre(solutions.size(), KDL::Frame::Identity());
+    bool hasPremultipliedTerms = false;
+
+    for (int i = 0; i < poeTerms.size(); i++)
+    {
+        if (poeTerms[i] == EXP_KNOWN)
+        {
+            for (int j = 0; j < solutions.size(); j++)
+            {
+                const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                pre[j] = pre[j] * exp.asFrame(solutions[j](i));
+            }
+
+            poeTerms[i] = EXP_COMPUTED;
+            hasPremultipliedTerms = true;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (hasPremultipliedTerms)
+    {
+        for (int i = 0; i < rhsFrames.size(); i++)
+        {
+            rhsFrames[i] = pre[i].Inverse() * rhsFrames[i];
+        }
+    }
+
+    std::vector<KDL::Frame> post(solutions.size(), KDL::Frame::Identity());
+    bool hasPostmultipliedTerms = false;
+
+    for (int i = poeTerms.size() - 1; i >= 0; i++)
+    {
+        if (poeTerms[i] == EXP_KNOWN)
+        {
+            for (int j = 0; j < solutions.size(); j++)
+            {
+                const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                post[j] = post[j] * exp.asFrame(solutions[j](i));
+            }
+
+            poeTerms[i] = EXP_COMPUTED;
+            hasPostmultipliedTerms = true;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (hasPostmultipliedTerms)
+    {
+        for (int i = 0; i < rhsFrames.size(); i++)
+        {
+            rhsFrames[i] = rhsFrames[i] * post[i];
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps)
 {
     ScrewTheoryIkProblem * stProblem;
     // TODO: instantiate, validate
@@ -209,7 +324,7 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 
     if (std::count(poeTerms.begin(), poeTerms.end(), EXP_KNOWN) == poe.size())
     {
-        return ScrewTheoryIkProblem::create(steps);
+        return ScrewTheoryIkProblem::create(poe, steps);
     }
     else
     {

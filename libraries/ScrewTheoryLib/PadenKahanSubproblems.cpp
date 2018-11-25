@@ -18,13 +18,15 @@ PadenKahanOne::PadenKahanOne(int _id, const MatrixExponential & _exp, const KDL:
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PadenKahanOne::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PadenKahanOne::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(1);
     std::vector< std::pair<int, double> > jointIdsToSolutions(1);
 
+    KDL::Vector k = rhs * p;
+
     KDL::Vector u = p - exp.getOrigin();
-    KDL::Vector v = rhs - exp.getOrigin();
+    KDL::Vector v = k - exp.getOrigin();
 
     KDL::Rotation axisPow = vectorPow2(exp.getAxis());
 
@@ -51,13 +53,15 @@ PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PadenKahanTwo::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PadenKahanTwo::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(2);
     std::vector< std::pair<int, double> > jointIdsToSolution1(2), jointIdsToSolution2(2);
 
+    KDL::Vector k = rhs * p;
+
     KDL::Vector u = p - exp1.getOrigin();
-    KDL::Vector v = rhs - exp1.getOrigin();
+    KDL::Vector v = k - exp1.getOrigin();
 
     double axesDot = KDL::dot(exp1.getAxis(), exp2.getAxis());
     double axis1dot = KDL::dot(exp1.getAxis(), v);
@@ -124,10 +128,13 @@ PadenKahanThree::PadenKahanThree(int _id, const MatrixExponential & _exp, const 
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PadenKahanThree::solve(const KDL::Vector & rhs)
+std::vector< std::vector< std::pair<int, double> > > PadenKahanThree::solve(const KDL::Frame & rhs)
 {
     std::vector< std::vector< std::pair<int, double> > > solutions(2);
     std::vector< std::pair<int, double> > jointIdsToSolution1(1), jointIdsToSolution2(1);
+
+    KDL::Vector rhsAsVector = rhs * p - k;
+    double delta = rhsAsVector.Norm();
 
     KDL::Vector u = p - exp.getOrigin();
     KDL::Vector v = k - exp.getOrigin();
@@ -138,7 +145,7 @@ std::vector< std::vector< std::pair<int, double> > > PadenKahanThree::solve(cons
     KDL::Vector v_p = v - axisPow * v;
 
     double alpha = std::atan2(KDL::dot(exp.getAxis(), u_p * v_p), KDL::dot(u_p, v_p));
-    double delta_p_2 = std::pow(rhs.Norm(), 2) - std::pow(KDL::dot(exp.getAxis(), p - k), 2);
+    double delta_p_2 = std::pow(delta, 2) - std::pow(KDL::dot(exp.getAxis(), p - k), 2);
 
     double u_p_norm = u_p.Norm();
     double v_p_norm = v_p.Norm();
