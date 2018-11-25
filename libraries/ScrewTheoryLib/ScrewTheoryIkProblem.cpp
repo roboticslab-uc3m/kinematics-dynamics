@@ -97,6 +97,8 @@ void ScrewTheoryIkProblemBuilder::searchPoints()
 {
     std::set<KDL::Vector, compare_vectors> set;
 
+    set.insert(KDL::Vector::Zero());
+
     for (int i = 0; i < poe.size(); i++)
     {
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
@@ -135,6 +137,8 @@ void ScrewTheoryIkProblemBuilder::searchPoints()
             }
         }
     }
+
+    set.insert(poe.getTransform().p);
 
     points.resize(set.size());
     std::copy(set.begin(), set.end(), points.begin());
