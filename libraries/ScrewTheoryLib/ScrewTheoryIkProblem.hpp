@@ -68,19 +68,28 @@ public:
 
 private:
 
+    enum poe_term
+    {
+        EXP_KNOWN,
+        EXP_SIMPLIFIED,
+        EXP_UNKNOWN
+    };
+
     void searchPoints();
 
     ScrewTheoryIkSubproblem * trySolve();
 
-    bool simplify();
+    void resetSimplificationState();
+
+    void simplify(int depth);
 
     PoeExpression poe;
 
     std::vector<KDL::Vector> points;
     std::vector<KDL::Vector> testPoints;
+    std::vector<poe_term> poeTerms;
 
-    std::vector<bool> unknowns;
-    std::vector<bool> simplified;
+    static const int MAX_SIMPLIFICATION_DEPTH = 2;
 
     // TODO: addStep()
 };
