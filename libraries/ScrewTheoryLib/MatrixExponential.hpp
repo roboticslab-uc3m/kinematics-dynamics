@@ -29,10 +29,10 @@ public:
     motion getMotionType() const
     { return motionType; }
 
-    KDL::Vector getAxis() const
+    const KDL::Vector & getAxis() const
     { return axis; }
 
-    KDL::Vector getOrigin() const
+    const KDL::Vector & getOrigin() const
     { return origin; }
 
 private:
