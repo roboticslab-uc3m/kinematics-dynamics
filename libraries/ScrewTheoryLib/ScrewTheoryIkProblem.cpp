@@ -88,9 +88,7 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 // -----------------------------------------------------------------------------
 
 ScrewTheoryIkProblemBuilder::ScrewTheoryIkProblemBuilder(const PoeExpression & _poe)
-    : poe(_poe),
-      unknowns(poe.size(), true),
-      simplified(_poe.size(), false)
+    : poe(_poe)
 {}
 
 // -----------------------------------------------------------------------------
@@ -162,19 +160,23 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const std::vector<ScrewTheor
 
 ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 {
-    // TODO: clear vectors, deallocate memory, implement destructor
-
-    testPoints.resize(1);
-
-    std::vector<ScrewTheoryIkSubproblem *> steps;
+    // TODO: deallocate memory, implement destructor
 
     searchPoints();
+
+    testPoints.resize(1);
+    unknowns.assign(poe.size(), true);
+    simplified.assign(poe.size(), false);
+
+    std::vector<ScrewTheoryIkSubproblem *> steps;
 
     std::vector<KDL::Vector>::const_iterator pointIt = points.begin();
 
     do
     {
         testPoints[0] = *pointIt;
+
+        ++pointIt;
 
         do
         {
@@ -183,19 +185,13 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
             if (subProblem != NULL)
             {
                 steps.push_back(subProblem);
+                pointIt = points.begin();
                 break;
             }
         }
         while (simplify());
-
-        ++pointIt;
-
-        if (pointIt == points.end())
-        {
-            break;
-        }
     }
-    while (std::count(unknowns.begin(), unknowns.end(), true) != 0);
+    while (pointIt != points.end() && std::count(unknowns.begin(), unknowns.end(), true) != 0);
 
     if (true) // TODO
     {
@@ -235,11 +231,13 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
                     && !liesOnAxis(lastExp, testPoints[0]))
             {
+                unknowns[lastExpId] = false;
                 return new PadenKahanOne(lastExpId, lastExp, testPoints[0]);
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
+                unknowns[lastExpId] = false;
                 return new PardosOne(lastExpId, lastExp, testPoints[0]);
             }
         }
@@ -250,11 +248,13 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && !liesOnAxis(lastExp, testPoints[0])
                     && !liesOnAxis(lastExp, testPoints[1]))
             {
+                unknowns[lastExpId] = false;
                 return new PadenKahanThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
+                unknowns[lastExpId] = false;
                 return new PardosThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
             }
         }
@@ -274,6 +274,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && !parallelAxes(lastExp, nextToLastExp)
                     && intersectingAxes(lastExp, nextToLastExp, _))
             {
+                unknowns[lastExpId] = unknowns[nextToLastExpId] = false;
                 return new PadenKahanTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
 
@@ -282,6 +283,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && !parallelAxes(lastExp, nextToLastExp)
                     && intersectingAxes(lastExp, nextToLastExp, _))
             {
+                unknowns[lastExpId] = unknowns[nextToLastExpId] = false;
                 return new PardosTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
 
@@ -290,6 +292,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && parallelAxes(lastExp, nextToLastExp)
                     && !colinearAxes(lastExp, nextToLastExp))
             {
+                unknowns[lastExpId] = unknowns[nextToLastExpId] = false;
                 return new PardosFour(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
         }
