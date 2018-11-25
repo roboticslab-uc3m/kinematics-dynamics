@@ -18,7 +18,16 @@ namespace roboticslab
 class PadenKahanOne : public ScrewTheoryIkSubproblem
 {
 public:
+
     PadenKahanOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id;
+    MatrixExponential exp;
+    KDL::Vector p;
 };
 
 /**
@@ -28,7 +37,16 @@ public:
 class PadenKahanTwo : public ScrewTheoryIkSubproblem
 {
 public:
+
     PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id1, id2;
+    MatrixExponential exp1, exp2;
+    KDL::Vector p;
 };
 
 /**
@@ -38,7 +56,16 @@ public:
 class PadenKahanThree : public ScrewTheoryIkSubproblem
 {
 public:
+
     PadenKahanThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id;
+    MatrixExponential exp;
+    KDL::Vector p, k;
 };
 
 /**
@@ -49,7 +76,16 @@ public:
 class PardosOne : public ScrewTheoryIkSubproblem
 {
 public:
+
     PardosOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id;
+    MatrixExponential exp;
+    KDL::Vector p;
 };
 
 /**
@@ -60,7 +96,16 @@ public:
 class PardosTwo : public ScrewTheoryIkSubproblem
 {
 public:
+
     PardosTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id1, id2;
+    MatrixExponential exp1, exp2;
+    KDL::Vector p;
 };
 
 /**
@@ -71,7 +116,16 @@ public:
 class PardosThree : public ScrewTheoryIkSubproblem
 {
 public:
+
     PardosThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id;
+    MatrixExponential exp;
+    KDL::Vector p, k;
 };
 
 /**
@@ -82,7 +136,16 @@ public:
 class PardosFour : public ScrewTheoryIkSubproblem
 {
 public:
+
     PardosFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs);
+
+private:
+
+    int id1, id2;
+    MatrixExponential exp1, exp2;
+    KDL::Vector p;
 };
 
 }  // namespace roboticslab

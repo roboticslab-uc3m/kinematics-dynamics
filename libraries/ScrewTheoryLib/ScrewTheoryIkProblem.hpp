@@ -3,6 +3,7 @@
 #ifndef __SCREW_THEORY_IK_PROBLEM_HPP__
 #define __SCREW_THEORY_IK_PROBLEM_HPP__
 
+#include <utility>
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -22,6 +23,8 @@ class ScrewTheoryIkSubproblem
 public:
 
     virtual ~ScrewTheoryIkSubproblem() {}
+
+    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Vector & rhs) = 0;
 };
 
 /**

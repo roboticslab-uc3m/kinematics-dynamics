@@ -4,19 +4,14 @@
 
 #include <ColorDebug.h>
 
+#include "ScrewTheoryTools.hpp"
+
 using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
 namespace
 {
-    inline KDL::Rotation vectorPow2(const KDL::Vector & v)
-    {
-        return KDL::Rotation(v.x() * v.x(), v.x() * v.y(), v.x() * v.z(),
-                             v.x() * v.y(), v.y() * v.y(), v.y() * v.z(),
-                             v.x() * v.z(), v.y() * v.z(), v.z() * v.z());
-    }
-
     inline KDL::Rotation operator-(const KDL::Rotation & lhs, const KDL::Rotation & rhs)
     {
         return KDL::Rotation(lhs(0, 0) - rhs(0, 0), lhs(0, 1) - rhs(0, 1), lhs(0, 2) - rhs(0, 2),
