@@ -18,10 +18,10 @@ PadenKahanOne::PadenKahanOne(int _id, const MatrixExponential & _exp, const KDL:
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PadenKahanOne::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PadenKahanOne::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(1);
-    std::vector< std::pair<int, double> > jointIdsToSolutions(1);
+    SolutionsVector solutions(1);
+    JointIdsToSolutionsVector jointIdsToSolutions(1);
 
     KDL::Vector k = rhs * p;
 
@@ -53,10 +53,10 @@ PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PadenKahanTwo::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PadenKahanTwo::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(2);
-    std::vector< std::pair<int, double> > jointIdsToSolution1(2), jointIdsToSolution2(2);
+    SolutionsVector solutions(2);
+    JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector k = rhs * p;
 
@@ -128,10 +128,10 @@ PadenKahanThree::PadenKahanThree(int _id, const MatrixExponential & _exp, const 
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PadenKahanThree::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PadenKahanThree::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(2);
-    std::vector< std::pair<int, double> > jointIdsToSolution1(1), jointIdsToSolution2(1);
+    SolutionsVector solutions(2);
+    JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector rhsAsVector = rhs * p - k;
     double delta = rhsAsVector.Norm();

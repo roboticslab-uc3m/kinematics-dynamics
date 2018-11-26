@@ -22,9 +22,13 @@ class ScrewTheoryIkSubproblem
 {
 public:
 
+    typedef std::pair<int, double> JointIdToSolution;
+    typedef std::vector<JointIdToSolution> JointIdsToSolutionsVector;
+    typedef std::vector<JointIdsToSolutionsVector> SolutionsVector;
+
     virtual ~ScrewTheoryIkSubproblem() {}
 
-    virtual std::vector< std::vector< std::pair<int, double> > > solve(const KDL::Frame & rhs) = 0;
+    virtual SolutionsVector solve(const KDL::Frame & rhs) = 0;
 };
 
 /**

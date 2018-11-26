@@ -16,10 +16,10 @@ PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector 
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosOne::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosOne::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(1);
-    std::vector< std::pair<int, double> > jointIdsToSolutions(1);
+    SolutionsVector solutions(1);
+    JointIdsToSolutionsVector jointIdsToSolutions(1);
 
     KDL::Vector k = rhs * p;
 
@@ -43,10 +43,10 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosTwo::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(1);
-    std::vector< std::pair<int, double> > jointIdsToSolutions(2);
+    SolutionsVector solutions(1);
+    JointIdsToSolutionsVector jointIdsToSolutions(2);
 
     KDL::Vector k = rhs * p;
 
@@ -89,10 +89,10 @@ PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vec
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosThree::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosThree::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(2);
-    std::vector< std::pair<int, double> > jointIdsToSolution1(1), jointIdsToSolution2(1);
+    SolutionsVector solutions(2);
+    JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector rhsAsVector = rhs * p - k;
     double delta = rhsAsVector.Norm();
@@ -126,10 +126,10 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
 
 // -----------------------------------------------------------------------------
 
-std::vector< std::vector< std::pair<int, double> > > PardosFour::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rhs)
 {
-    std::vector< std::vector< std::pair<int, double> > > solutions(2);
-    std::vector< std::pair<int, double> > jointIdsToSolution1(2), jointIdsToSolution2(2);
+    SolutionsVector solutions(2);
+    JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector k = rhs * p;
 

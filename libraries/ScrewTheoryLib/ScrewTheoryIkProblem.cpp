@@ -170,7 +170,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
         for (int j = 0; j < previousSize; j++)
         {
-            const std::vector< std::vector< std::pair<int, double> > > & partialSolutions = steps[i]->solve(rhsFrames[j]);
+            const ScrewTheoryIkSubproblem::SolutionsVector & partialSolutions = steps[i]->solve(rhsFrames[j]);
 
             if (partialSolutions.size() > 1)
             {
@@ -186,11 +186,11 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
             for (int k = 0; k < partialSolutions.size(); k++)
             {
-                const std::vector< std::pair<int, double> > & jointIdsToSolutions = partialSolutions[k];
+                const ScrewTheoryIkSubproblem::JointIdsToSolutionsVector & jointIdsToSolutions = partialSolutions[k];
 
                 for (int l = 0; l < jointIdsToSolutions.size(); l++)
                 {
-                    const std::pair<int, double> & jointIdToSolution = jointIdsToSolutions[l];
+                    const ScrewTheoryIkSubproblem::JointIdToSolution & jointIdToSolution = jointIdsToSolutions[l];
                     poeTerms[jointIdToSolution.first] = EXP_KNOWN;
                     solutions[j + previousSize * k](jointIdToSolution.first) = jointIdToSolution.second;
                 }
