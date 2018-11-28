@@ -207,63 +207,69 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
 void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & solutions)
 {
-    std::vector<KDL::Frame> pre(solutions.size(), KDL::Frame::Identity());
-    bool hasPremultipliedTerms = false;
-
-    for (int i = 0; i < poeTerms.size(); i++)
+    if (poeTerms[0] == EXP_KNOWN)
     {
-        if (poeTerms[i] == EXP_KNOWN)
+        std::vector<KDL::Frame> pre(solutions.size(), KDL::Frame::Identity());
+        bool hasPremultipliedTerms = false;
+
+        for (int i = 0; i < poeTerms.size(); i++)
         {
-            for (int j = 0; j < solutions.size(); j++)
+            if (poeTerms[i] == EXP_KNOWN)
             {
-                const MatrixExponential & exp = poe.exponentialAtJoint(i);
-                pre[j] = pre[j] * exp.asFrame(solutions[j](i));
+                for (int j = 0; j < solutions.size(); j++)
+                {
+                    const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                    pre[j] = pre[j] * exp.asFrame(solutions[j](i));
+                }
+
+                poeTerms[i] = EXP_COMPUTED;
+                hasPremultipliedTerms = true;
             }
-
-            poeTerms[i] = EXP_COMPUTED;
-            hasPremultipliedTerms = true;
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    if (hasPremultipliedTerms)
-    {
-        for (int i = 0; i < rhsFrames.size(); i++)
-        {
-            rhsFrames[i] = pre[i].Inverse() * rhsFrames[i];
-        }
-    }
-
-    std::vector<KDL::Frame> post(solutions.size(), KDL::Frame::Identity());
-    bool hasPostmultipliedTerms = false;
-
-    for (int i = poeTerms.size() - 1; i >= 0; i++)
-    {
-        if (poeTerms[i] == EXP_KNOWN)
-        {
-            for (int j = 0; j < solutions.size(); j++)
+            else
             {
-                const MatrixExponential & exp = poe.exponentialAtJoint(i);
-                post[j] = post[j] * exp.asFrame(solutions[j](i));
+                break;
             }
-
-            poeTerms[i] = EXP_COMPUTED;
-            hasPostmultipliedTerms = true;
         }
-        else
+
+        if (hasPremultipliedTerms)
         {
-            break;
+            for (int i = 0; i < rhsFrames.size(); i++)
+            {
+                rhsFrames[i] = pre[i].Inverse() * rhsFrames[i];
+            }
         }
     }
 
-    if (hasPostmultipliedTerms)
+    if (poeTerms[poeTerms.size() - 1] == EXP_KNOWN)
     {
-        for (int i = 0; i < rhsFrames.size(); i++)
+        std::vector<KDL::Frame> post(solutions.size(), KDL::Frame::Identity());
+        bool hasPostmultipliedTerms = false;
+
+        for (int i = poeTerms.size() - 1; i >= 0; i++)
         {
-            rhsFrames[i] = rhsFrames[i] * post[i];
+            if (poeTerms[i] == EXP_KNOWN)
+            {
+                for (int j = 0; j < solutions.size(); j++)
+                {
+                    const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                    post[j] = post[j] * exp.asFrame(solutions[j](i));
+                }
+
+                poeTerms[i] = EXP_COMPUTED;
+                hasPostmultipliedTerms = true;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if (hasPostmultipliedTerms)
+        {
+            for (int i = 0; i < rhsFrames.size(); i++)
+            {
+                rhsFrames[i] = rhsFrames[i] * post[i].Inverse();
+            }
         }
     }
 }
