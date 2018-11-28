@@ -58,6 +58,11 @@ PoeExpression::PoeExpression(const std::vector<MatrixExponential> & _exps, const
 
 // -----------------------------------------------------------------------------
 
+PoeExpression::PoeExpression()
+{}
+
+// -----------------------------------------------------------------------------
+
 bool PoeExpression::evaluate(const KDL::JntArray & q, KDL::Frame & H)
 {
     if (exps.size() != q.rows())
