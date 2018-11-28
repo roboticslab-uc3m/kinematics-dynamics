@@ -28,7 +28,7 @@ public:
 
     virtual ~ScrewTheoryIkSubproblem() {}
 
-    virtual SolutionsVector solve(const KDL::Frame & rhs) = 0;
+    virtual SolutionsVector solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform = KDL::Frame::Identity()) = 0;
 };
 
 /**
@@ -62,6 +62,8 @@ private:
     ScrewTheoryIkProblem & operator=(const ScrewTheoryIkProblem &);
 
     void recalculateFrames(const std::vector<KDL::JntArray> & solutions);
+
+    KDL::Frame transformPoint(const KDL::JntArray & jointValues);
 
     PoeExpression poe;
 

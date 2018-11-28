@@ -16,14 +16,15 @@ PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector 
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosOne::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
 {
     SolutionsVector solutions(1);
     JointIdsToSolutionsVector jointIdsToSolutions(1);
 
-    KDL::Vector k = rhs * p;
+    KDL::Vector f = pointTransform * p;
+    KDL::Vector k = rhs * f;
 
-    double theta = KDL::dot(exp.getAxis(), k - p);
+    double theta = KDL::dot(exp.getAxis(), k - f);
 
     jointIdsToSolutions[0] = std::make_pair(id, theta);
     solutions[0] = jointIdsToSolutions;
@@ -43,14 +44,15 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
 {
     SolutionsVector solutions(1);
     JointIdsToSolutionsVector jointIdsToSolutions(2);
 
-    KDL::Vector k = rhs * p;
+    KDL::Vector f = pointTransform * p;
+    KDL::Vector k = rhs * f;
 
-    KDL::Vector crossPr1 = exp2.getAxis() * (p - k);
+    KDL::Vector crossPr1 = exp2.getAxis() * (f - k);
     KDL::Vector crossPr2 = exp2.getAxis() * exp1.getAxis();
 
     double num = crossPr1.Norm();
@@ -68,7 +70,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs
     }
 
     double theta1 = KDL::dot(exp1.getAxis(), k - c);
-    double theta2 = KDL::dot(exp2.getAxis(), c - p);
+    double theta2 = KDL::dot(exp2.getAxis(), c - f);
 
     jointIdsToSolutions[0] = std::make_pair(id1, theta1);
     jointIdsToSolutions[1] = std::make_pair(id2, theta2);
@@ -89,15 +91,16 @@ PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vec
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosThree::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
 {
     SolutionsVector solutions(2);
     JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
 
-    KDL::Vector rhsAsVector = rhs * p - k;
+    KDL::Vector f = pointTransform * p;
+    KDL::Vector rhsAsVector = rhs * f - k;
     double delta = rhsAsVector.Norm();
 
-    KDL::Vector diff = k - p;
+    KDL::Vector diff = k - f;
 
     double dotPr = KDL::dot(exp.getAxis(), diff);
     double sq = std::sqrt(std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(delta, 2));
@@ -126,14 +129,15 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rhs)
+ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
 {
     SolutionsVector solutions(2);
     JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
 
-    KDL::Vector k = rhs * p;
+    KDL::Vector f = pointTransform * p;
+    KDL::Vector k = rhs * f;
 
-    KDL::Vector u = p - exp2.getAxis();
+    KDL::Vector u = f - exp2.getAxis();
     KDL::Vector v = k - exp1.getAxis();
 
     KDL::Rotation axisPow1 = vectorPow2(exp1.getAxis());

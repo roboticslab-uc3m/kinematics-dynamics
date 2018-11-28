@@ -170,7 +170,8 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
         for (int j = 0; j < previousSize; j++)
         {
-            const ScrewTheoryIkSubproblem::SolutionsVector & partialSolutions = steps[i]->solve(rhsFrames[j]);
+            const KDL::Frame & H = transformPoint(solutions[j]);
+            const ScrewTheoryIkSubproblem::SolutionsVector & partialSolutions = steps[i]->solve(rhsFrames[j], H);
 
             if (partialSolutions.size() > 1)
             {
@@ -272,6 +273,32 @@ void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & 
             }
         }
     }
+}
+
+// -----------------------------------------------------------------------------
+
+KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValues)
+{
+    KDL::Frame H = KDL::Frame::Identity();
+
+    for (int i = poeTerms.size() - 1; i >= 0; i--)
+    {
+        if (poeTerms[i] == EXP_KNOWN)
+        {
+            const MatrixExponential & exp = poe.exponentialAtJoint(i);
+            H = exp.asFrame(jointValues(i)) * H;
+        }
+        else if (poeTerms[i] == EXP_UNKNOWN)
+        {
+            break;
+        }
+        else
+        {
+            continue;
+        }
+    }
+
+    return H;
 }
 
 // -----------------------------------------------------------------------------
