@@ -40,7 +40,7 @@ KDL::Frame MatrixExponential::asFrame(double theta) const
     {
         KDL::Vector v = - axis * origin;
         H.M = KDL::Rotation::Rot2(axis, theta);
-        H.p = (KDL::Rotation::Identity() - H.M) * (axis * v) + (vectorPow2(axis) * v * theta);
+        H.p = (KDL::Rotation::Identity() - H.M) * (axis * v);
     }
     else if (motionType == TRANSLATION)
     {
