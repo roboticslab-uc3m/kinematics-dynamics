@@ -127,16 +127,16 @@ PoeExpression PoeExpression::fromChain(const KDL::Chain & chain)
     {
         const KDL::Segment & segment = chain.getSegment(i);
         const KDL::Joint & joint = segment.getJoint();
-
-        KDL::Frame H_S_i = H_S_prev * segment.pose(0);
         int motionTypeId = jointTypeToMotionId(joint.getType());
 
         if (motionTypeId != UNKNOWN_OR_STATIC_JOINT)
         {
             MatrixExponential::motion motionType = static_cast<MatrixExponential::motion>(motionTypeId);
-            MatrixExponential exp(motionType, joint.JointAxis(), H_S_i.p);
+            MatrixExponential exp(motionType, H_S_prev.M * joint.JointAxis(), H_S_prev.p);
             poe.exps.push_back(exp);
         }
+
+        H_S_prev = H_S_prev * segment.pose(0);
     }
 
     poe.H_S_T = H_S_prev;

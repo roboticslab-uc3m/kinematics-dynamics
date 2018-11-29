@@ -1,9 +1,14 @@
 #include "gtest/gtest.h"
 
+#include <kdl/chain.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames.hpp>
+#include <kdl/jntarray.hpp>
+#include <kdl/joint.hpp>
 #include <kdl/utilities/utility.h>
 
 #include "MatrixExponential.hpp"
+#include "ProductOfExponentials.hpp"
 
 namespace roboticslab
 {
@@ -20,6 +25,21 @@ public:
 
     virtual void TearDown()
     {
+    }
+
+    static KDL::Chain makeTeoRightArmKinematics()
+    {
+        KDL::Joint rotZ(KDL::Joint::RotZ);
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,     0.0,          0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,     0.0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2, 0.32901, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0, -KDL::PI / 2,     0.0,          0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,   0.202,          0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.187496, -KDL::PI / 2,     0.0,  KDL::PI / 2)));
+
+        return chain;
     }
 };
 
@@ -56,6 +76,31 @@ TEST_F(ScrewTheoryTest, MatrixExponentialTranslation)
     KDL::Frame expected(KDL::Rotation::Identity(), theta * axis);
 
     ASSERT_EQ(actual, expected);
+}
+
+TEST_F(ScrewTheoryTest, ProductOfExponentialsFromChain)
+{
+    KDL::Chain chain = makeTeoRightArmKinematics();
+    PoeExpression poe = PoeExpression::fromChain(chain);
+    ASSERT_EQ(poe.size(), chain.getNrOfJoints());
+
+    KDL::ChainFkSolverPos_recursive fkSolver(chain);
+
+    KDL::Frame H_S_T_0;
+    ASSERT_EQ(fkSolver.JntToCart(KDL::JntArray(chain.getNrOfJoints()), H_S_T_0), KDL::SolverI::E_NOERROR);
+    ASSERT_EQ(poe.getTransform(), H_S_T_0);
+
+    KDL::JntArray q(chain.getNrOfJoints());
+
+    for (int i = 0; i < chain.getNrOfJoints(); i++)
+    {
+        q(i) = KDL::PI / 2;
+    }
+
+    KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
+    ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
+    ASSERT_TRUE(poe.evaluate(q, H_S_T_q_ST));
+    ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
 }
 
 }  // namespace roboticslab
