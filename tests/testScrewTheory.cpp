@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include <vector>
+
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames.hpp>
@@ -100,6 +102,49 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsFromChain)
     KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
     ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
     ASSERT_TRUE(poe.evaluate(q, H_S_T_q_ST));
+    ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
+}
+
+TEST_F(ScrewTheoryTest, ProductOfExponentialsToChain)
+{
+    std::vector<MatrixExponential> exps;
+
+    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
+    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
+    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1, 0, 0), KDL::Vector::Zero()));
+    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
+    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
+    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.53101, 0, 0)));
+
+    KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI), KDL::Vector(-0.718506, 0, 0));
+
+    PoeExpression poe(exps, H_S_T);
+
+    ASSERT_EQ(poe.size(), exps.size());
+    ASSERT_EQ(poe.getTransform(), H_S_T);
+
+    MatrixExponential exp3 = poe.exponentialAtJoint(3);
+    ASSERT_EQ(exp3.getMotionType(), exps[3].getMotionType());
+    ASSERT_EQ(exp3.getAxis(), exps[3].getAxis());
+    ASSERT_EQ(exp3.getOrigin(), exps[3].getOrigin());
+    ASSERT_EQ(exp3.asFrame(KDL::PI / 2), exps[3].asFrame(KDL::PI / 2));
+
+    KDL::Chain chainDH = makeTeoRightArmKinematics();
+    KDL::Chain chainST = poe.toChain();
+
+    KDL::ChainFkSolverPos_recursive fkSolverDH(chainDH);
+    KDL::ChainFkSolverPos_recursive fkSolverST(chainST);
+
+    KDL::JntArray q(exps.size());
+
+    for (int i = 0; i < exps.size(); i++)
+    {
+        q(i) = KDL::PI / 2;
+    }
+
+    KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
+    ASSERT_EQ(fkSolverDH.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
+    ASSERT_EQ(fkSolverST.JntToCart(q, H_S_T_q_ST), KDL::SolverI::E_NOERROR);
     ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
 }
 

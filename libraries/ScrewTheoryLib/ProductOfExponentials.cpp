@@ -95,22 +95,17 @@ KDL::Chain PoeExpression::toChain() const
         const MatrixExponential & exp = exps[i];
 
         KDL::Joint::JointType jointType = motionToJointType(exp.getMotionType());
-        KDL::Joint joint(exp.getOrigin(), exp.getAxis(), jointType);
+        KDL::Joint joint(H_S_prev.Inverse() * exp.getOrigin(), exp.getAxis(), jointType);
 
-        // update position, keep orientation
-        KDL::Frame H_prev_i;
-        KDL::Frame H_S_i = KDL::Frame(exp.getOrigin());
-        H_prev_i = H_S_prev.Inverse() * H_S_i;
-
-        KDL::Segment segment(joint, H_prev_i);
+        KDL::Segment segment(joint, KDL::Frame(joint.JointOrigin()));
         chain.addSegment(segment);
 
-        H_S_prev = H_S_i;
+        // update position, keep orientation
+        H_S_prev = KDL::Frame(exp.getOrigin());
     }
 
     KDL::Frame H_N_T = H_S_prev.Inverse() * H_S_T;
     KDL::Segment toolSegment(KDL::Joint(KDL::Joint::None), H_N_T);
-
     chain.addSegment(toolSegment);
 
     return chain;
