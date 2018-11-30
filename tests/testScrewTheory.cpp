@@ -29,9 +29,9 @@ public:
     {
     }
 
-    static KDL::Chain makeTeoRightArmKinematics()
+    static KDL::Chain makeTeoRightArmKinematicsFromDH()
     {
-        KDL::Joint rotZ(KDL::Joint::RotZ);
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
         chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,     0.0,          0.0)));
@@ -42,6 +42,23 @@ public:
         chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.187496, -KDL::PI / 2,     0.0,  KDL::PI / 2)));
 
         return chain;
+    }
+
+    static PoeExpression makeTeoRightArmKinematicsFromPoE()
+    {
+        std::vector<MatrixExponential> exps;
+        exps.reserve(6);
+
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0, -1, 0), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1,  0, 0), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.32901, 0, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1,  0, 0), KDL::Vector(-0.32901, 0, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.53101, 0, 0)));
+
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI), KDL::Vector(-0.718506, 0, 0));
+
+        return PoeExpression(exps, H_S_T);
     }
 };
 
@@ -82,7 +99,7 @@ TEST_F(ScrewTheoryTest, MatrixExponentialTranslation)
 
 TEST_F(ScrewTheoryTest, ProductOfExponentialsFromChain)
 {
-    KDL::Chain chain = makeTeoRightArmKinematics();
+    KDL::Chain chain = makeTeoRightArmKinematicsFromDH();
     PoeExpression poe = PoeExpression::fromChain(chain);
     ASSERT_EQ(poe.size(), chain.getNrOfJoints());
 
@@ -107,37 +124,17 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsFromChain)
 
 TEST_F(ScrewTheoryTest, ProductOfExponentialsToChain)
 {
-    std::vector<MatrixExponential> exps;
+    PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
 
-    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
-    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
-    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1, 0, 0), KDL::Vector::Zero()));
-    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
-    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
-    exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.53101, 0, 0)));
-
-    KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI), KDL::Vector(-0.718506, 0, 0));
-
-    PoeExpression poe(exps, H_S_T);
-
-    ASSERT_EQ(poe.size(), exps.size());
-    ASSERT_EQ(poe.getTransform(), H_S_T);
-
-    MatrixExponential exp3 = poe.exponentialAtJoint(3);
-    ASSERT_EQ(exp3.getMotionType(), exps[3].getMotionType());
-    ASSERT_EQ(exp3.getAxis(), exps[3].getAxis());
-    ASSERT_EQ(exp3.getOrigin(), exps[3].getOrigin());
-    ASSERT_EQ(exp3.asFrame(KDL::PI / 2), exps[3].asFrame(KDL::PI / 2));
-
-    KDL::Chain chainDH = makeTeoRightArmKinematics();
+    KDL::Chain chainDH = makeTeoRightArmKinematicsFromDH();
     KDL::Chain chainST = poe.toChain();
 
     KDL::ChainFkSolverPos_recursive fkSolverDH(chainDH);
     KDL::ChainFkSolverPos_recursive fkSolverST(chainST);
 
-    KDL::JntArray q(exps.size());
+    KDL::JntArray q(poe.size());
 
-    for (int i = 0; i < exps.size(); i++)
+    for (int i = 0; i < poe.size(); i++)
     {
         q(i) = KDL::PI / 2;
     }
@@ -145,6 +142,28 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsToChain)
     KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
     ASSERT_EQ(fkSolverDH.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
     ASSERT_EQ(fkSolverST.JntToCart(q, H_S_T_q_ST), KDL::SolverI::E_NOERROR);
+    ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
+}
+
+TEST_F(ScrewTheoryTest, ProductOfExponentialsIntegrity)
+{
+    PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
+
+    KDL::Chain chain = poe.toChain();
+    KDL::ChainFkSolverPos_recursive fkSolver(chain);
+
+    KDL::JntArray q(poe.size());
+
+    for (int i = 0; i < poe.size(); i++)
+    {
+        q(i) = KDL::PI / 2;
+    }
+
+    KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
+    ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
+
+    PoeExpression poeFromChain = PoeExpression::fromChain(chain);
+    ASSERT_TRUE(poeFromChain.evaluate(q, H_S_T_q_ST));
     ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
 }
 

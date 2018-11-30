@@ -97,6 +97,7 @@ KDL::Chain PoeExpression::toChain() const
         KDL::Joint::JointType jointType = motionToJointType(exp.getMotionType());
         KDL::Joint joint(H_S_prev.Inverse() * exp.getOrigin(), exp.getAxis(), jointType);
 
+        // http://www.orocos.org/wiki/main-page/kdl-wiki/user-manual/kinematic-trees
         KDL::Segment segment(joint, KDL::Frame(joint.JointOrigin()));
         chain.addSegment(segment);
 
@@ -127,7 +128,7 @@ PoeExpression PoeExpression::fromChain(const KDL::Chain & chain)
         if (motionTypeId != UNKNOWN_OR_STATIC_JOINT)
         {
             MatrixExponential::motion motionType = static_cast<MatrixExponential::motion>(motionTypeId);
-            MatrixExponential exp(motionType, H_S_prev.M * joint.JointAxis(), H_S_prev.p);
+            MatrixExponential exp(motionType, H_S_prev.M * joint.JointAxis(), H_S_prev * joint.JointOrigin());
             poe.exps.push_back(exp);
         }
 
