@@ -36,7 +36,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanOne::solve(const KDL::Frame &
 
     double theta = std::atan2(KDL::dot(exp.getAxis(), u_p * v_p), KDL::dot(u_p, v_p));
 
-    jointIdsToSolutions[0] = std::make_pair(id, theta);
+    jointIdsToSolutions[0] = std::make_pair(id, normalizeAngle(theta));
     solutions[0] = jointIdsToSolutions;
 
     return solutions;
@@ -76,7 +76,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanTwo::solve(const KDL::Frame &
     double beta = (axesDot * axis1dot - axis2dot) / den;
 
     double gamma = std::sqrt(
-            (std::pow(u.Norm(), 2) - std::pow(alpha, 2) - std::pow(beta, 2), - 2 * alpha * beta * axesDot) /
+            (std::pow(u.Norm(), 2) - std::pow(alpha, 2) - std::pow(beta, 2) - 2 * alpha * beta * axesDot) /
             std::pow(axesCross.Norm(), 2));
 
     KDL::Vector term1 = exp1.getOrigin() + alpha * exp1.getAxis() + beta * exp2.getAxis();
@@ -106,13 +106,13 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanTwo::solve(const KDL::Frame &
     double theta1_2 = std::atan2(KDL::dot(exp1.getAxis(), n1_p * v_p), KDL::dot(n1_p, v_p));
     double theta2_2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * n2_p), KDL::dot(u_p, n2_p));
 
-    jointIdsToSolution1[0] = std::make_pair(id1, theta1_1);
-    jointIdsToSolution1[1] = std::make_pair(id2, theta1_1);
+    jointIdsToSolution1[0] = std::make_pair(id1, normalizeAngle(theta1_1));
+    jointIdsToSolution1[1] = std::make_pair(id2, normalizeAngle(theta2_1));
 
     solutions[0] = jointIdsToSolution1;
 
-    jointIdsToSolution2[0] = std::make_pair(id1, theta1_2);
-    jointIdsToSolution2[1] = std::make_pair(id2, theta1_2);
+    jointIdsToSolution2[0] = std::make_pair(id1, normalizeAngle(theta1_2));
+    jointIdsToSolution2[1] = std::make_pair(id2, normalizeAngle(theta2_2));
 
     solutions[1] = jointIdsToSolution2;
 
@@ -153,13 +153,13 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanThree::solve(const KDL::Frame
     double u_p_norm = u_p.Norm();
     double v_p_norm = v_p.Norm();
 
-    double beta = std::acos((std::pow(u_p_norm, 2) + std::pow(v_p_norm, 2) - delta_p_2) / 2 * u_p_norm * v_p_norm);
+    double beta = std::acos((std::pow(u_p_norm, 2) + std::pow(v_p_norm, 2) - delta_p_2) / (2 * u_p_norm * v_p_norm));
 
     double theta1 = alpha + beta;
     double theta2 = alpha - beta;
 
-    jointIdsToSolution1[0] = std::make_pair(id, theta1);
-    jointIdsToSolution2[0] = std::make_pair(id, theta2);
+    jointIdsToSolution1[0] = std::make_pair(id, normalizeAngle(theta1));
+    jointIdsToSolution2[0] = std::make_pair(id, normalizeAngle(theta2));
 
     solutions[0] = jointIdsToSolution1;
     solutions[1] = jointIdsToSolution2;

@@ -26,7 +26,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosOne::solve(const KDL::Frame & rhs
 
     double theta = KDL::dot(exp.getAxis(), k - f);
 
-    jointIdsToSolutions[0] = std::make_pair(id, theta);
+    jointIdsToSolutions[0] = std::make_pair(id, normalizeAngle(theta));
     solutions[0] = jointIdsToSolutions;
 
     return solutions;
@@ -55,25 +55,25 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs
     KDL::Vector crossPr1 = exp2.getAxis() * (f - k);
     KDL::Vector crossPr2 = exp2.getAxis() * exp1.getAxis();
 
-    double num = crossPr1.Norm();
-    double den = crossPr2.Norm();
+    double crossPr1Norm = crossPr1.Norm();
+    double crossPr2Norm = crossPr2.Norm();
 
     KDL::Vector c;
 
-    if (num * den >= 0)
+    if (KDL::dot(crossPr1, crossPr2) >= crossPr1Norm * crossPr2Norm)
     {
-        c = k + (num / den) * exp1.getAxis();
+        c = k + (crossPr1Norm / crossPr2Norm) * exp1.getAxis();
     }
     else
     {
-        c = k - (num / den) * exp1.getAxis();
+        c = k - (crossPr1Norm / crossPr2Norm) * exp1.getAxis();
     }
 
     double theta1 = KDL::dot(exp1.getAxis(), k - c);
     double theta2 = KDL::dot(exp2.getAxis(), c - f);
 
-    jointIdsToSolutions[0] = std::make_pair(id1, theta1);
-    jointIdsToSolutions[1] = std::make_pair(id2, theta2);
+    jointIdsToSolutions[0] = std::make_pair(id1, normalizeAngle(theta1));
+    jointIdsToSolutions[1] = std::make_pair(id2, normalizeAngle(theta2));
 
     solutions[0] = jointIdsToSolutions;
 
@@ -108,8 +108,8 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosThree::solve(const KDL::Frame & r
     double theta1 = dotPr + sq;
     double theta2 = dotPr - sq;
 
-    jointIdsToSolution1[0] = std::make_pair(id, theta1);
-    jointIdsToSolution2[0] = std::make_pair(id, theta2);
+    jointIdsToSolution1[0] = std::make_pair(id, normalizeAngle(theta1));
+    jointIdsToSolution2[0] = std::make_pair(id, normalizeAngle(theta2));
 
     solutions[0] = jointIdsToSolution1;
     solutions[1] = jointIdsToSolution2;
@@ -137,8 +137,8 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rh
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * f;
 
-    KDL::Vector u = f - exp2.getAxis();
-    KDL::Vector v = k - exp1.getAxis();
+    KDL::Vector u = f - exp2.getOrigin();
+    KDL::Vector v = k - exp1.getOrigin();
 
     KDL::Rotation axisPow1 = vectorPow2(exp1.getAxis());
     KDL::Rotation axisPow2 = vectorPow2(exp2.getAxis());
@@ -182,13 +182,13 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rh
     double theta1_2 = std::atan2(KDL::dot(exp1.getAxis(), n1_p * v_p), KDL::dot(n1_p, v_p));
     double theta2_2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * n2_p), KDL::dot(u_p, n2_p));
 
-    jointIdsToSolution1[0] = std::make_pair(id1, theta1_1);
-    jointIdsToSolution1[1] = std::make_pair(id2, theta1_1);
+    jointIdsToSolution1[0] = std::make_pair(id1, normalizeAngle(theta1_1));
+    jointIdsToSolution1[1] = std::make_pair(id2, normalizeAngle(theta2_1));
 
     solutions[0] = jointIdsToSolution1;
 
-    jointIdsToSolution2[0] = std::make_pair(id1, theta1_2);
-    jointIdsToSolution2[1] = std::make_pair(id2, theta1_2);
+    jointIdsToSolution2[0] = std::make_pair(id1, normalizeAngle(theta1_2));
+    jointIdsToSolution2[1] = std::make_pair(id2, normalizeAngle(theta2_2));
 
     solutions[1] = jointIdsToSolution2;
 
