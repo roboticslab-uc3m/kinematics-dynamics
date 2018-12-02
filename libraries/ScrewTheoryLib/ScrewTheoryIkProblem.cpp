@@ -7,6 +7,8 @@
 #include <iterator>
 #include <set>
 
+#include <ColorDebug.h>
+
 #include "ScrewTheoryIkSubproblems.hpp"
 
 using namespace roboticslab;
@@ -55,17 +57,27 @@ namespace
     {
         bool operator()(const KDL::Vector & lhs, const KDL::Vector & rhs)
         {
-            if (KDL::Equal(lhs.x(), rhs.x()) || lhs.x() < rhs.x())
+            if (KDL::Equal(lhs.x(), rhs.x()))
             {
-                return true;
+                if (KDL::Equal(lhs.y(), rhs.y()))
+                {
+                    if (KDL::Equal(lhs.z(), rhs.z()))
+                    {
+                        // treat as equal per !comp(a, b) && !comp(b, a) == true
+                        // https://en.cppreference.com/w/cpp/container/set
+                        return false;
+                    }
+                    else if (lhs.z() < rhs.z())
+                    {
+                        return true;
+                    }
+                }
+                else if (lhs.y() < rhs.y())
+                {
+                    return true;
+                }
             }
-
-            if (KDL::Equal(lhs.y(), rhs.y()) || lhs.y() < rhs.y())
-            {
-                return true;
-            }
-
-            if (KDL::Equal(lhs.z(), rhs.z()) || lhs.z() < rhs.z())
+            else if (lhs.x() < rhs.x())
             {
                 return true;
             }
@@ -144,6 +156,11 @@ void ScrewTheoryIkProblemBuilder::searchPoints()
 
     points.resize(set.size());
     std::copy(set.begin(), set.end(), points.begin());
+
+    for (int i = 0; i < points.size(); i++)
+    {
+        CD_DEBUG("points[%d]: [%f %f %f]\n", i, points[i].x(), points[i].y(), points[i].z());
+    }
 }
 
 // -----------------------------------------------------------------------------
