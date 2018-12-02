@@ -55,7 +55,7 @@ private:
     };
 
     // disable instantiation, force users to call builder class
-    ScrewTheoryIkProblem();
+    ScrewTheoryIkProblem(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps);
 
     // disable these too, avoid issues related to dynamic alloc
     ScrewTheoryIkProblem(const ScrewTheoryIkProblem &);
@@ -82,24 +82,21 @@ class ScrewTheoryIkProblemBuilder
 {
 public:
 
+    struct PoeTerm
+    {
+        PoeTerm() : known(false), simplified(false) {}
+        bool known, simplified;
+    };
+
     ScrewTheoryIkProblemBuilder(const PoeExpression & poe);
 
     ScrewTheoryIkProblem * build();
 
 private:
 
-    enum poe_term
-    {
-        EXP_KNOWN,
-        EXP_SIMPLIFIED,
-        EXP_UNKNOWN
-    };
-
     void searchPoints();
 
-    ScrewTheoryIkSubproblem * trySolve();
-
-    void resetSimplificationState();
+    ScrewTheoryIkSubproblem * trySolve(int depth);
 
     void simplify(int depth);
 
@@ -107,7 +104,8 @@ private:
 
     std::vector<KDL::Vector> points;
     std::vector<KDL::Vector> testPoints;
-    std::vector<poe_term> poeTerms;
+
+    std::vector<PoeTerm> poeTerms;
 
     static const int MAX_SIMPLIFICATION_DEPTH = 2;
 

@@ -53,9 +53,9 @@ namespace
         return KDL::Equal(L1, L2);
     }
 
-    struct compare_vectors : public std::binary_function<KDL::Vector, KDL::Vector, bool>
+    struct compare_vectors : public std::binary_function<const KDL::Vector &, const KDL::Vector &, bool>
     {
-        bool operator()(const KDL::Vector & lhs, const KDL::Vector & rhs)
+        result_type operator()(first_argument_type lhs, second_argument_type rhs)
         {
             if (KDL::Equal(lhs.x(), rhs.x()))
             {
@@ -85,7 +85,39 @@ namespace
             return false;
         }
     };
+
+    class poe_term_candidate : public std::unary_function<const ScrewTheoryIkProblemBuilder::PoeTerm &, bool>
+    {
+    public:
+        poe_term_candidate(result_type _expectedKnown)
+            : expectedKnown(_expectedKnown),
+              expectedSimplified(false),
+              ignoreSimplifiedState(true)
+        {}
+
+        poe_term_candidate(result_type _expectedKnown, result_type _expectedSimplified)
+            : expectedKnown(_expectedKnown),
+              expectedSimplified(_expectedSimplified),
+              ignoreSimplifiedState(false)
+        {}
+
+        result_type operator()(argument_type poeTerm)
+        {
+            return poeTerm.known == expectedKnown && (ignoreSimplifiedState || poeTerm.simplified == expectedSimplified);
+        }
+
+    private:
+        result_type expectedKnown, expectedSimplified, ignoreSimplifiedState;
+    }
+    knownTerm(true), unknownTerm(false), unknownNotSimplifiedTerm(false, false);
 }
+
+// -----------------------------------------------------------------------------
+
+ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const std::vector<ScrewTheoryIkSubproblem *> & _steps)
+    : poe(poe),
+      steps(_steps)
+{}
 
 // -----------------------------------------------------------------------------
 
@@ -102,7 +134,7 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 
 ScrewTheoryIkProblemBuilder::ScrewTheoryIkProblemBuilder(const PoeExpression & _poe)
     : poe(_poe),
-      poeTerms(poe.size(), EXP_UNKNOWN)
+      poeTerms(poe.size())
 {}
 
 // -----------------------------------------------------------------------------
@@ -322,9 +354,8 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
 
 ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps)
 {
-    ScrewTheoryIkProblem * stProblem;
-    // TODO: instantiate, validate
-    return stProblem;
+    // TODO: validate
+    return new ScrewTheoryIkProblem(poe, steps);
 }
 
 // -----------------------------------------------------------------------------
@@ -335,44 +366,59 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 
     searchPoints();
 
-    testPoints.resize(MAX_SIMPLIFICATION_DEPTH);
-    poeTerms.assign(poe.size(), EXP_UNKNOWN);
+    testPoints.assign(MAX_SIMPLIFICATION_DEPTH, points[0]);
 
     std::vector<ScrewTheoryIkSubproblem *> steps;
 
-    std::vector<KDL::Vector>::const_iterator pointIt = points.begin();
+    std::vector< std::vector<KDL::Vector>::const_iterator > iterators(MAX_SIMPLIFICATION_DEPTH, points.begin());
 
     int depth = 0;
 
     do
     {
-        testPoints[depth] = *pointIt;
-
-        resetSimplificationState();
+        for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+        {
+            it->simplified = false;
+        }
 
         simplify(depth);
 
-        ScrewTheoryIkSubproblem * subproblem = trySolve();
+        ScrewTheoryIkSubproblem * subproblem = trySolve(depth);
 
         if (subproblem != NULL)
         {
             steps.push_back(subproblem);
-            pointIt = points.begin();
+            iterators.assign(iterators.size(), points.begin());
+            testPoints[0] = points[0];
             depth = 0;
             continue;
         }
 
-        ++pointIt;
-
-        if (pointIt == points.end())
+        for (int stage = 0; stage < iterators.size(); stage++)
         {
-            pointIt = points.begin();
-            depth++;
+            ++iterators[stage];
+
+            if (iterators[stage] == points.end())
+            {
+                iterators[stage] = points.begin();
+                testPoints[stage] = *iterators[stage];
+
+                if (stage == depth)
+                {
+                    depth++;
+                    break;
+                }
+            }
+            else
+            {
+                testPoints[stage] = *iterators[stage];
+                break;
+            }
         }
     }
-    while (depth < MAX_SIMPLIFICATION_DEPTH && std::count(poeTerms.begin(), poeTerms.end(), EXP_KNOWN) != poe.size());
+    while (depth < MAX_SIMPLIFICATION_DEPTH && std::count_if(poeTerms.begin(), poeTerms.end(), unknownTerm) != 0);
 
-    if (std::count(poeTerms.begin(), poeTerms.end(), EXP_KNOWN) == poe.size())
+    if (std::count_if(poeTerms.begin(), poeTerms.end(), knownTerm) == poe.size())
     {
         return ScrewTheoryIkProblem::create(poe, steps);
     }
@@ -390,61 +436,68 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
+ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 {
-    int unknownsCount = std::count(poeTerms.begin(), poeTerms.end(), EXP_UNKNOWN);
+    int unknownsCount = std::count_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
 
     if (unknownsCount > MAX_SIMPLIFICATION_DEPTH)
     {
         return NULL;
     }
 
-    std::vector<poe_term>::reverse_iterator lastUnknown = std::find(poeTerms.rbegin(), poeTerms.rend(), EXP_UNKNOWN);
+    std::vector<PoeTerm>::reverse_iterator lastUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
     int lastExpId = std::distance(poeTerms.begin(), lastUnknown.base()) - 1;
     const MatrixExponential & lastExp = poe.exponentialAtJoint(lastExpId);
 
     if (unknownsCount == 1)
     {
-        if (testPoints.size() == 1)
+        if (depth == 0)
         {
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
                     && !liesOnAxis(lastExp, testPoints[0]))
             {
-                poeTerms[lastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = true;
                 return new PadenKahanOne(lastExpId, lastExp, testPoints[0]);
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
-                poeTerms[lastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = true;
                 return new PardosOne(lastExpId, lastExp, testPoints[0]);
             }
         }
 
-        if (testPoints.size() == 2)
+        if (depth == 1)
         {
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
                     && !liesOnAxis(lastExp, testPoints[0])
                     && !liesOnAxis(lastExp, testPoints[1]))
             {
-                poeTerms[lastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = true;
                 return new PadenKahanThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
-                poeTerms[lastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = true;
                 return new PardosThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
             }
         }
     }
-    else if (unknownsCount == 2)
+    else if (unknownsCount == 2 && lastUnknown != poeTerms.rend())
     {
-        std::vector<poe_term>::reverse_iterator nextToLastUnknown = std::find(lastUnknown, poeTerms.rend(), EXP_UNKNOWN);
-        int nextToLastExpId = std::distance(poeTerms.begin(), nextToLastUnknown.base()) - 1;
+        std::vector<PoeTerm>::reverse_iterator nextToLastUnknown = lastUnknown;
+        std::advance(nextToLastUnknown, 1);
+
+        if (!unknownNotSimplifiedTerm(*nextToLastUnknown))
+        {
+            return NULL;
+        }
+
+        int nextToLastExpId = lastExpId - 1;
         const MatrixExponential & nextToLastExp = poe.exponentialAtJoint(nextToLastExpId);
 
-        if (testPoints.size() == 1)
+        if (depth == 0)
         {
             KDL::Vector _;
 
@@ -453,7 +506,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && !parallelAxes(lastExp, nextToLastExp)
                     && intersectingAxes(lastExp, nextToLastExp, _))
             {
-                poeTerms[lastExpId] = poeTerms[nextToLastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
                 return new PadenKahanTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
 
@@ -462,7 +515,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && !parallelAxes(lastExp, nextToLastExp)
                     && intersectingAxes(lastExp, nextToLastExp, _))
             {
-                poeTerms[lastExpId] = poeTerms[nextToLastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
                 return new PardosTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
 
@@ -471,7 +524,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
                     && parallelAxes(lastExp, nextToLastExp)
                     && !colinearAxes(lastExp, nextToLastExp))
             {
-                poeTerms[lastExpId] = poeTerms[nextToLastExpId] = EXP_KNOWN;
+                poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
                 return new PardosFour(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
         }
@@ -482,31 +535,18 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve()
 
 // -----------------------------------------------------------------------------
 
-void ScrewTheoryIkProblemBuilder::resetSimplificationState()
-{
-    for (std::vector<poe_term>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
-    {
-        if (*it == EXP_SIMPLIFIED)
-        {
-            *it = EXP_UNKNOWN;
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------
-
 void ScrewTheoryIkProblemBuilder::simplify(int depth)
 {
     KDL::Vector p = testPoints[0];
 
-    for (std::vector<poe_term>::reverse_iterator it = poeTerms.rbegin(); it != poeTerms.rend(); ++it)
+    for (std::vector<PoeTerm>::reverse_iterator it = poeTerms.rbegin(); it != poeTerms.rend(); ++it)
     {
         int i = std::distance(poeTerms.begin(), it.base()) - 1;
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
 
         if (exp.getMotionType() == MatrixExponential::ROTATION && liesOnAxis(exp, p))
         {
-            *it = EXP_SIMPLIFIED;
+            it->simplified = true;
         }
         else
         {
@@ -521,14 +561,14 @@ void ScrewTheoryIkProblemBuilder::simplify(int depth)
 
     KDL::Vector k = testPoints[1];
 
-    for (std::vector<poe_term>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
         int i = std::distance(poeTerms.begin(), it);
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
 
         if (exp.getMotionType() == MatrixExponential::ROTATION && liesOnAxis(exp, k))
         {
-            *it = EXP_SIMPLIFIED;
+            it->simplified = true;
         }
         else
         {
