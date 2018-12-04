@@ -7,6 +7,8 @@
 
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/joint.hpp>
@@ -25,6 +27,7 @@ namespace roboticslab
 class ScrewTheoryTest : public testing::Test
 {
 public:
+
     virtual void SetUp()
     {
     }
@@ -38,12 +41,12 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,     0.0,          0.0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,     0.0, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2, 0.32901, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0, -KDL::PI / 2,     0.0,          0.0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     0.0,  KDL::PI / 2,   0.202,          0.0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.187496, -KDL::PI / 2,     0.0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,       0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,       0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2, 0.32901, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0, -KDL::PI / 2,       0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,   0.202,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.187496, -KDL::PI / 2,       0,  KDL::PI / 2)));
 
         return chain;
     }
@@ -61,6 +64,42 @@ public:
         exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.53101, 0, 0)));
 
         KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI), KDL::Vector(-0.718506, 0, 0));
+
+        return PoeExpression(exps, H_S_T);
+    }
+
+    static KDL::Chain makeAbbIrb120KinematicsFromDH()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,  KDL::PI / 2,  0.29,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.27,            0,     0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.07,  KDL::PI / 2,     0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0, -KDL::PI / 2, 0.302,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,  KDL::PI / 2,     0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,            0,  0.16,            0)));
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2))));
+
+        return chain;
+    }
+
+    static PoeExpression makeAbbIrb120KinematicsFromPoE()
+    {
+        std::vector<MatrixExponential> exps;
+        exps.reserve(6);
+
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  1, 0), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(    0, 0.29, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(    0, 0.56, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.302, 0.63, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(0.302, 0.63, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.302, 0.63, 0)));
+
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI / 2), KDL::Vector(0.302, 0.47, 0));
 
         return PoeExpression(exps, H_S_T);
     }
@@ -98,9 +137,11 @@ public:
     }
 
 private:
-    static struct compare_solutions : public std::binary_function<std::pair<int, double>, std::pair<int, double>, bool>
+
+    static struct compare_solutions
+        : public std::binary_function<const std::pair<int, double> &, const std::pair<int, double> &, bool>
     {
-        bool operator()(const std::pair<int, double> & lhs, const std::pair<int, double> & rhs)
+        result_type operator()(first_argument_type lhs, second_argument_type rhs)
         {
             return !(lhs.first > rhs.first) && (lhs.first < rhs.first || lhs.second < rhs.second);
         }
@@ -240,10 +281,11 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
 {
     KDL::Vector p(0, 1, 0);
     KDL::Vector k(1, -1, 1);
+    KDL::Vector r(1, 0, 0);
 
-    MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(1, 0, 0));
-    MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
-    PadenKahanTwo pk2(0, 1, exp1, exp2, p);
+    MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), r);
+    MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), r);
+    PadenKahanTwo pk2(0, 1, exp1, exp2, p, r);
 
     KDL::Frame rhs(k - p);
     ScrewTheoryIkSubproblem::SolutionsVector actual = pk2.solve(rhs, KDL::Frame::Identity());
@@ -401,6 +443,53 @@ TEST_F(ScrewTheoryTest, PardosFour)
     expected[1] = sols2;
 
     checkSolutions(actual, expected);
+}
+
+TEST_F(ScrewTheoryTest, AbbIrb120Kinematics)
+{
+    KDL::Chain chain = makeAbbIrb120KinematicsFromDH();
+    PoeExpression poe = makeAbbIrb120KinematicsFromPoE();
+
+    ASSERT_EQ(poe.size(), chain.getNrOfJoints());
+
+    KDL::ChainFkSolverPos_recursive fkSolver(chain);
+    KDL::Frame H_S_T_0_DH, H_S_T_0_ST;
+
+    ASSERT_EQ(fkSolver.JntToCart(KDL::JntArray(chain.getNrOfJoints()), H_S_T_0_DH), KDL::SolverI::E_NOERROR);
+    ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0_ST));
+    ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
+
+    KDL::JntArray q(chain.getNrOfJoints());
+
+    for (int i = 0; i < chain.getNrOfJoints(); i++)
+    {
+        q(i) = KDL::PI / 2;
+    }
+
+    KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
+    ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
+    ASSERT_TRUE(poe.evaluate(q, H_S_T_q_ST));
+    ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
+
+    KDL::ChainIkSolverVel_pinv ikSolverVel(chain);
+    KDL::ChainIkSolverPos_NR_JL ikSolverPos(chain, fkSolver, ikSolverVel);
+    KDL::JntArray qOut(chain.getNrOfJoints());
+
+    ScrewTheoryIkProblemBuilder builder(poe);
+    ScrewTheoryIkProblem * ikProblem = builder.build();
+
+    ASSERT_TRUE(ikProblem);
+
+    std::vector<KDL::JntArray> solutions;
+    ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, solutions));
+    delete ikProblem;
+
+    for (int i = 0; i < solutions.size(); i++)
+    {
+        KDL::Frame H_S_T_q_ST_validate;
+        ASSERT_TRUE(poe.evaluate(solutions[i], H_S_T_q_ST_validate));
+        ASSERT_EQ(H_S_T_q_ST_validate, H_S_T_q_ST);
+    }
 }
 
 }  // namespace roboticslab

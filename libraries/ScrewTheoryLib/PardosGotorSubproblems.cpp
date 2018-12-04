@@ -22,7 +22,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosOne::solve(const KDL::Frame & rhs
     JointIdsToSolutionsVector jointIdsToSolutions(1);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector k = rhs * f;
+    KDL::Vector k = rhs * p;
 
     double theta = KDL::dot(exp.getAxis(), k - f);
 
@@ -50,7 +50,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs
     JointIdsToSolutionsVector jointIdsToSolutions(2);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector k = rhs * f;
+    KDL::Vector k = rhs * p;
 
     KDL::Vector crossPr1 = exp2.getAxis() * (f - k);
     KDL::Vector crossPr2 = exp2.getAxis() * exp1.getAxis();
@@ -97,13 +97,13 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosThree::solve(const KDL::Frame & r
     JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector rhsAsVector = rhs * f - k;
+    KDL::Vector rhsAsVector = rhs * p - k;
     double delta = rhsAsVector.Norm();
 
     KDL::Vector diff = k - f;
 
     double dotPr = KDL::dot(exp.getAxis(), diff);
-    double sq = std::sqrt(std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(delta, 2));
+    double sq = std::sqrt(std::abs(std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(delta, 2)));
 
     double theta1 = dotPr + sq;
     double theta2 = dotPr - sq;
@@ -135,7 +135,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rh
     JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector k = rhs * f;
+    KDL::Vector k = rhs * p;
 
     KDL::Vector u = f - exp2.getOrigin();
     KDL::Vector v = k - exp1.getOrigin();
@@ -156,7 +156,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rh
     KDL::Vector omega_h = exp1.getAxis() * omega_a;
 
     double a = (std::pow(c_norm, 2) - std::pow(u_p.Norm(), 2) + std::pow(v_p.Norm(), 2)) / 2 * c_norm;
-    double h = std::sqrt(std::pow(v_p.Norm(), 2) - std::pow(a, 2));
+    double h = std::sqrt(std::abs(std::pow(v_p.Norm(), 2) - std::pow(a, 2)));
 
     KDL::Vector term1 = c1 + a * omega_a;
     KDL::Vector term2 = h * omega_h;

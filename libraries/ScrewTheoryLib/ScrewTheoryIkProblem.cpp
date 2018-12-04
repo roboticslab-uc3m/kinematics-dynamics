@@ -115,7 +115,7 @@ namespace
 // -----------------------------------------------------------------------------
 
 ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const std::vector<ScrewTheoryIkSubproblem *> & _steps)
-    : poe(poe),
+    : poe(_poe),
       steps(_steps)
 {}
 
@@ -229,7 +229,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
                 for (int k = 1; k < partialSolutions.size(); k++)
                 {
-                    solutions[j + previousSize * k] = KDL::JntArray(solutions[j]);
+                    solutions[j + previousSize * k] = solutions[j];
                     rhsFrames[j + previousSize * k] = rhsFrames[j];
                 }
             }
@@ -257,69 +257,71 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
 void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & solutions)
 {
-    if (poeTerms[0] == EXP_KNOWN)
+    std::vector<KDL::Frame> pre(solutions.size(), KDL::Frame::Identity());
+    bool hasPremultipliedTerms = false;
+
+    for (int i = 0; i < poeTerms.size(); i++)
     {
-        std::vector<KDL::Frame> pre(solutions.size(), KDL::Frame::Identity());
-        bool hasPremultipliedTerms = false;
-
-        for (int i = 0; i < poeTerms.size(); i++)
+        if (poeTerms[i] == EXP_KNOWN)
         {
-            if (poeTerms[i] == EXP_KNOWN)
+            for (int j = 0; j < solutions.size(); j++)
             {
-                for (int j = 0; j < solutions.size(); j++)
-                {
-                    const MatrixExponential & exp = poe.exponentialAtJoint(i);
-                    pre[j] = pre[j] * exp.asFrame(solutions[j](i));
-                }
+                const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                pre[j] = pre[j] * exp.asFrame(solutions[j](i));
+            }
 
-                poeTerms[i] = EXP_COMPUTED;
-                hasPremultipliedTerms = true;
-            }
-            else
-            {
-                break;
-            }
+            poeTerms[i] = EXP_COMPUTED;
+            hasPremultipliedTerms = true;
         }
-
-        if (hasPremultipliedTerms)
+        else if (poeTerms[i] == EXP_COMPUTED)
         {
-            for (int i = 0; i < rhsFrames.size(); i++)
-            {
-                rhsFrames[i] = pre[i].Inverse() * rhsFrames[i];
-            }
+            continue;
+        }
+        else
+        {
+            break;
         }
     }
 
-    if (poeTerms[poeTerms.size() - 1] == EXP_KNOWN)
+    if (hasPremultipliedTerms)
     {
-        std::vector<KDL::Frame> post(solutions.size(), KDL::Frame::Identity());
-        bool hasPostmultipliedTerms = false;
-
-        for (int i = poeTerms.size() - 1; i >= 0; i++)
+        for (int i = 0; i < rhsFrames.size(); i++)
         {
-            if (poeTerms[i] == EXP_KNOWN)
-            {
-                for (int j = 0; j < solutions.size(); j++)
-                {
-                    const MatrixExponential & exp = poe.exponentialAtJoint(i);
-                    post[j] = post[j] * exp.asFrame(solutions[j](i));
-                }
-
-                poeTerms[i] = EXP_COMPUTED;
-                hasPostmultipliedTerms = true;
-            }
-            else
-            {
-                break;
-            }
+            rhsFrames[i] = pre[i].Inverse() * rhsFrames[i];
         }
+    }
 
-        if (hasPostmultipliedTerms)
+    std::vector<KDL::Frame> post(solutions.size(), KDL::Frame::Identity());
+    bool hasPostmultipliedTerms = false;
+
+    for (int i = poeTerms.size() - 1; i >= 0; i++)
+    {
+        if (poeTerms[i] == EXP_KNOWN)
         {
-            for (int i = 0; i < rhsFrames.size(); i++)
+            for (int j = 0; j < solutions.size(); j++)
             {
-                rhsFrames[i] = rhsFrames[i] * post[i].Inverse();
+                const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                post[j] = post[j] * exp.asFrame(solutions[j](i));
             }
+
+            poeTerms[i] = EXP_COMPUTED;
+            hasPostmultipliedTerms = true;
+        }
+        else if (poeTerms[i] == EXP_COMPUTED)
+        {
+            continue;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (hasPostmultipliedTerms)
+    {
+        for (int i = 0; i < rhsFrames.size(); i++)
+        {
+            rhsFrames[i] = rhsFrames[i] * post[i].Inverse();
         }
     }
 }
@@ -329,6 +331,7 @@ void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & 
 KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValues)
 {
     KDL::Frame H = KDL::Frame::Identity();
+    bool foundKnown = false;
 
     for (int i = poeTerms.size() - 1; i >= 0; i--)
     {
@@ -336,8 +339,9 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
         {
             const MatrixExponential & exp = poe.exponentialAtJoint(i);
             H = exp.asFrame(jointValues(i)) * H;
+            foundKnown = true;
         }
-        else if (poeTerms[i] == EXP_UNKNOWN)
+        else if (foundKnown && poeTerms[i] == EXP_UNKNOWN)
         {
             break;
         }
@@ -499,21 +503,21 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
         if (depth == 0)
         {
-            KDL::Vector _;
+            KDL::Vector r;
 
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
                     && nextToLastExp.getMotionType() == MatrixExponential::ROTATION
                     && !parallelAxes(lastExp, nextToLastExp)
-                    && intersectingAxes(lastExp, nextToLastExp, _))
+                    && intersectingAxes(lastExp, nextToLastExp, r))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return new PadenKahanTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+                return new PadenKahanTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0], r);
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION
                     && nextToLastExp.getMotionType() == MatrixExponential::TRANSLATION
                     && !parallelAxes(lastExp, nextToLastExp)
-                    && intersectingAxes(lastExp, nextToLastExp, _))
+                    && intersectingAxes(lastExp, nextToLastExp, r))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
                 return new PardosTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);

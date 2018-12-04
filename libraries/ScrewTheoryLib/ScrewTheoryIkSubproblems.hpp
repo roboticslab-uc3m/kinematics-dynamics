@@ -38,7 +38,7 @@ class PadenKahanTwo : public ScrewTheoryIkSubproblem
 {
 public:
 
-    PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p, const KDL::Vector & r);
 
     virtual SolutionsVector solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform);
 
@@ -46,7 +46,7 @@ private:
 
     int id1, id2;
     MatrixExponential exp1, exp2;
-    KDL::Vector p;
+    KDL::Vector p, r;
 };
 
 /**

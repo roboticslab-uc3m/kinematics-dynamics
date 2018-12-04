@@ -24,7 +24,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanOne::solve(const KDL::Frame &
     JointIdsToSolutionsVector jointIdsToSolutions(1);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector k = rhs * f;
+    KDL::Vector k = rhs * p;
 
     KDL::Vector u = f - exp.getOrigin();
     KDL::Vector v = k - exp.getOrigin();
@@ -44,12 +44,13 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanOne::solve(const KDL::Frame &
 
 // -----------------------------------------------------------------------------
 
-PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p)
+PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p, const KDL::Vector & _r)
   : id1(_id1),
     id2(_id2),
     exp1(_exp1),
     exp2(_exp2),
-    p(_p)
+    p(_p),
+    r(_r)
 {}
 
 // -----------------------------------------------------------------------------
@@ -60,10 +61,10 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanTwo::solve(const KDL::Frame &
     JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector k = rhs * f;
+    KDL::Vector k = rhs * p;
 
-    KDL::Vector u = f - exp1.getOrigin();
-    KDL::Vector v = k - exp1.getOrigin();
+    KDL::Vector u = f - r;
+    KDL::Vector v = k - r;
 
     double axesDot = KDL::dot(exp1.getAxis(), exp2.getAxis());
     double axis1dot = KDL::dot(exp1.getAxis(), v);
@@ -75,18 +76,18 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanTwo::solve(const KDL::Frame &
     double alpha = (axesDot * axis2dot - axis1dot) / den;
     double beta = (axesDot * axis1dot - axis2dot) / den;
 
-    double gamma = std::sqrt(
+    double gamma = std::sqrt(std::abs(
             (std::pow(u.Norm(), 2) - std::pow(alpha, 2) - std::pow(beta, 2) - 2 * alpha * beta * axesDot) /
-            std::pow(axesCross.Norm(), 2));
+            std::pow(axesCross.Norm(), 2)));
 
-    KDL::Vector term1 = exp1.getOrigin() + alpha * exp1.getAxis() + beta * exp2.getAxis();
+    KDL::Vector term1 = r + alpha * exp1.getAxis() + beta * exp2.getAxis();
     KDL::Vector term2 = gamma * axesCross;
 
     KDL::Vector d = term1 + term2;
     KDL::Vector c = term1 - term2;
 
-    KDL::Vector m = c - exp1.getOrigin();
-    KDL::Vector n = d - exp1.getOrigin();
+    KDL::Vector m = c - r;
+    KDL::Vector n = d - r;
 
     KDL::Rotation axisPow1 = vectorPow2(exp1.getAxis());
     KDL::Rotation axisPow2 = vectorPow2(exp2.getAxis());
@@ -136,7 +137,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PadenKahanThree::solve(const KDL::Frame
     JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector f = pointTransform * p;
-    KDL::Vector rhsAsVector = rhs * f - k;
+    KDL::Vector rhsAsVector = rhs * p - k;
     double delta = rhsAsVector.Norm();
 
     KDL::Vector u = f - exp.getOrigin();
