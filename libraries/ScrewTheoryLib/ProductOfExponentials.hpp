@@ -33,7 +33,7 @@ class PoeExpression
         const MatrixExponential & exponentialAtJoint(int i) const
         { return exps.at(i); }
 
-        bool evaluate(const KDL::JntArray & q, KDL::Frame & H);
+        bool evaluate(const KDL::JntArray & q, KDL::Frame & H) const;
 
         KDL::Chain toChain() const;
 

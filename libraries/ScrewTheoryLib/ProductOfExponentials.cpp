@@ -63,7 +63,7 @@ PoeExpression::PoeExpression()
 
 // -----------------------------------------------------------------------------
 
-bool PoeExpression::evaluate(const KDL::JntArray & q, KDL::Frame & H)
+bool PoeExpression::evaluate(const KDL::JntArray & q, KDL::Frame & H) const
 {
     if (exps.size() != q.rows())
     {

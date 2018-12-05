@@ -331,7 +331,9 @@ void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & 
 KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValues)
 {
     KDL::Frame H = KDL::Frame::Identity();
+
     bool foundKnown = false;
+    bool foundUnknown = false;
 
     for (int i = poeTerms.size() - 1; i >= 0; i--)
     {
@@ -341,13 +343,21 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
             H = exp.asFrame(jointValues(i)) * H;
             foundKnown = true;
         }
-        else if (foundKnown && poeTerms[i] == EXP_UNKNOWN)
+        else if (poeTerms[i] == EXP_UNKNOWN)
         {
-            break;
+            foundUnknown = true;
+
+            if (foundKnown)
+            {
+                break;
+            }
         }
-        else
+        else if (poeTerms[i] == EXP_COMPUTED)
         {
-            continue;
+            if (foundKnown || foundUnknown)
+            {
+                break;
+            }
         }
     }
 
@@ -444,7 +454,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 {
     int unknownsCount = std::count_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
 
-    if (unknownsCount > MAX_SIMPLIFICATION_DEPTH)
+    if (unknownsCount == 0 || unknownsCount > MAX_SIMPLIFICATION_DEPTH)
     {
         return NULL;
     }

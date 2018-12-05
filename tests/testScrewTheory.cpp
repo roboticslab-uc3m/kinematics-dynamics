@@ -7,8 +7,6 @@
 
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainiksolverpos_nr_jl.hpp>
-#include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/joint.hpp>
@@ -104,6 +102,80 @@ public:
         return PoeExpression(exps, H_S_T);
     }
 
+    static KDL::Chain makePumaKinematicsFromDH()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 2,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(1,            0, 0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 2,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,            0, 1,            0)));
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI / 2))));
+
+        return chain;
+    }
+
+    static PoeExpression makePumaKinematicsFromPoE()
+    {
+        std::vector<MatrixExponential> exps;
+        exps.reserve(6);
+
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 2, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 3, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(0, 3, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 5, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(0, 5, 0)));
+
+        KDL::Frame H_S_T(KDL::Vector(0, 5, 1));
+
+        return PoeExpression(exps, H_S_T);
+    }
+
+    static KDL::Chain makeStanfordKinematicsFromDH()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        const KDL::Joint translZ(KDL::Joint::TransZ);
+
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 2,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0,            0)));
+        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH(0,            0, 0,            0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 3,            0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,            0, 1,            0)));
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI / 2))));
+
+        return chain;
+    }
+
+    static PoeExpression makeStanfordKinematicsFromPoE()
+    {
+        std::vector<MatrixExponential> exps;
+        exps.reserve(6);
+
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 2, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(0, 2, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 5, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(0, 5, 0)));
+
+        KDL::Frame H_S_T(KDL::Vector(0, 5, 1));
+
+        return PoeExpression(exps, H_S_T);
+    }
+
     static void checkSolutions(const ScrewTheoryIkSubproblem::SolutionsVector & actual, const ScrewTheoryIkSubproblem::SolutionsVector & expected)
     {
         ScrewTheoryIkSubproblem::JointIdsToSolutionsVector actualSorted, expectedSorted;
@@ -133,6 +205,46 @@ public:
         {
             ASSERT_EQ(actualSorted[i].first, expectedSorted[i].first);
             ASSERT_NEAR(actualSorted[i].second, expectedSorted[i].second, KDL::epsilon);
+        }
+    }
+
+    static void checkRobotKinematics(const KDL::Chain & chain, const PoeExpression & poe)
+    {
+        ASSERT_EQ(poe.size(), chain.getNrOfJoints());
+
+        KDL::ChainFkSolverPos_recursive fkSolver(chain);
+        KDL::Frame H_S_T_0_DH, H_S_T_0_ST;
+
+        ASSERT_EQ(fkSolver.JntToCart(KDL::JntArray(chain.getNrOfJoints()), H_S_T_0_DH), KDL::SolverI::E_NOERROR);
+        ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0_ST));
+        ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
+
+        KDL::JntArray q(chain.getNrOfJoints());
+
+        for (int i = 0; i < chain.getNrOfJoints(); i++)
+        {
+            q(i) = KDL::PI / 2;
+        }
+
+        KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
+        ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
+        ASSERT_TRUE(poe.evaluate(q, H_S_T_q_ST));
+        ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
+
+        ScrewTheoryIkProblemBuilder builder(poe);
+        ScrewTheoryIkProblem * ikProblem = builder.build();
+
+        ASSERT_TRUE(ikProblem);
+
+        std::vector<KDL::JntArray> solutions;
+        ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, solutions));
+        delete ikProblem;
+
+        for (int i = 0; i < solutions.size(); i++)
+        {
+            KDL::Frame H_S_T_q_ST_validate;
+            ASSERT_TRUE(poe.evaluate(solutions[i], H_S_T_q_ST_validate));
+            ASSERT_EQ(H_S_T_q_ST_validate, H_S_T_q_ST);
         }
     }
 
@@ -450,46 +562,23 @@ TEST_F(ScrewTheoryTest, AbbIrb120Kinematics)
     KDL::Chain chain = makeAbbIrb120KinematicsFromDH();
     PoeExpression poe = makeAbbIrb120KinematicsFromPoE();
 
-    ASSERT_EQ(poe.size(), chain.getNrOfJoints());
+    checkRobotKinematics(chain, poe);
+}
 
-    KDL::ChainFkSolverPos_recursive fkSolver(chain);
-    KDL::Frame H_S_T_0_DH, H_S_T_0_ST;
+TEST_F(ScrewTheoryTest, PumaKinematics)
+{
+    KDL::Chain chain = makePumaKinematicsFromDH();
+    PoeExpression poe = makePumaKinematicsFromPoE();
 
-    ASSERT_EQ(fkSolver.JntToCart(KDL::JntArray(chain.getNrOfJoints()), H_S_T_0_DH), KDL::SolverI::E_NOERROR);
-    ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0_ST));
-    ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
+    checkRobotKinematics(chain, poe);
+}
 
-    KDL::JntArray q(chain.getNrOfJoints());
+TEST_F(ScrewTheoryTest, StanfordKinematics)
+{
+    KDL::Chain chain = makeStanfordKinematicsFromDH();
+    PoeExpression poe = makeStanfordKinematicsFromPoE();
 
-    for (int i = 0; i < chain.getNrOfJoints(); i++)
-    {
-        q(i) = KDL::PI / 2;
-    }
-
-    KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
-    ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
-    ASSERT_TRUE(poe.evaluate(q, H_S_T_q_ST));
-    ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
-
-    KDL::ChainIkSolverVel_pinv ikSolverVel(chain);
-    KDL::ChainIkSolverPos_NR_JL ikSolverPos(chain, fkSolver, ikSolverVel);
-    KDL::JntArray qOut(chain.getNrOfJoints());
-
-    ScrewTheoryIkProblemBuilder builder(poe);
-    ScrewTheoryIkProblem * ikProblem = builder.build();
-
-    ASSERT_TRUE(ikProblem);
-
-    std::vector<KDL::JntArray> solutions;
-    ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, solutions));
-    delete ikProblem;
-
-    for (int i = 0; i < solutions.size(); i++)
-    {
-        KDL::Frame H_S_T_q_ST_validate;
-        ASSERT_TRUE(poe.evaluate(solutions[i], H_S_T_q_ST_validate));
-        ASSERT_EQ(H_S_T_q_ST_validate, H_S_T_q_ST);
-    }
+    checkRobotKinematics(chain, poe);
 }
 
 }  // namespace roboticslab
