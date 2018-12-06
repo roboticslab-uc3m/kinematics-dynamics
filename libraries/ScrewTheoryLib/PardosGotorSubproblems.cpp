@@ -155,7 +155,7 @@ ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rh
     KDL::Vector omega_a = c_diff / c_norm;
     KDL::Vector omega_h = exp1.getAxis() * omega_a;
 
-    double a = (std::pow(c_norm, 2) - std::pow(u_p.Norm(), 2) + std::pow(v_p.Norm(), 2)) / 2 * c_norm;
+    double a = (std::pow(c_norm, 2) - std::pow(u_p.Norm(), 2) + std::pow(v_p.Norm(), 2)) / (2 * c_norm);
     double h = std::sqrt(std::abs(std::pow(v_p.Norm(), 2) - std::pow(a, 2)));
 
     KDL::Vector term1 = c1 + a * omega_a;

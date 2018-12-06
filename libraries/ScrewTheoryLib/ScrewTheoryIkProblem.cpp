@@ -27,6 +27,11 @@ namespace
         return KDL::Equal(exp1.getAxis() * exp2.getAxis(), KDL::Vector::Zero());
     }
 
+    inline bool perpendicularAxes(const MatrixExponential & exp1, const MatrixExponential & exp2)
+    {
+        return KDL::Equal(KDL::dot(exp1.getAxis(), exp2.getAxis()), 0);
+    }
+
     inline bool colinearAxes(const MatrixExponential & exp1, const MatrixExponential & exp2)
     {
         return parallelAxes(exp1, exp2) && liesOnAxis(exp1, exp2.getOrigin());
@@ -51,6 +56,18 @@ namespace
         p = L1;
 
         return KDL::Equal(L1, L2);
+    }
+
+    inline bool planarMovement(const MatrixExponential & exp1, const MatrixExponential & exp2)
+    {
+        bool sameMotionType = exp1.getMotionType() == exp2.getMotionType();
+        return sameMotionType ? parallelAxes(exp1, exp2) : perpendicularAxes(exp1, exp2);
+    }
+
+    inline bool normalPlaneMovement(const MatrixExponential & exp1, const MatrixExponential & exp2)
+    {
+        bool sameMotionType = exp1.getMotionType() == exp2.getMotionType();
+        return sameMotionType ? perpendicularAxes(exp1, exp2) : parallelAxes(exp1, exp2);
     }
 
     struct compare_vectors : public std::binary_function<const KDL::Vector &, const KDL::Vector &, bool>
@@ -551,36 +568,57 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
 void ScrewTheoryIkProblemBuilder::simplify(int depth)
 {
-    KDL::Vector p = testPoints[0];
+    simplifyWithPadenKahanOne(testPoints[0]);
 
-    for (std::vector<PoeTerm>::reverse_iterator it = poeTerms.rbegin(); it != poeTerms.rend(); ++it)
+    if (depth == 1)
     {
-        int i = std::distance(poeTerms.begin(), it.base()) - 1;
+        simplifyWithPadenKahanThree(testPoints[1]);
+    }
+
+    for (int i = 0; i < poe.size(); i++)
+    {
+        if (poe.exponentialAtJoint(i).getMotionType() == MatrixExponential::TRANSLATION)
+        {
+            simplifyWithPardosOne();
+            break;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanOne(const KDL::Vector & point)
+{
+    std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownTerm);
+
+    for (std::vector<PoeTerm>::reverse_iterator rit = ritUnknown; rit != poeTerms.rend(); ++rit)
+    {
+        int i = std::distance(rit, poeTerms.rend()) - 1;
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
 
-        if (exp.getMotionType() == MatrixExponential::ROTATION && liesOnAxis(exp, p))
+        if (exp.getMotionType() == MatrixExponential::ROTATION && liesOnAxis(exp, point))
         {
-            it->simplified = true;
+            rit->simplified = true;
         }
         else
         {
             break;
         }
     }
+}
 
-    if (depth < 1)
-    {
-        return;
-    }
+// -----------------------------------------------------------------------------
 
-    KDL::Vector k = testPoints[1];
+void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanThree(const KDL::Vector & point)
+{
+    std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownTerm);
 
-    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (std::vector<PoeTerm>::iterator it = itUnknown; it != poeTerms.end(); ++it)
     {
         int i = std::distance(poeTerms.begin(), it);
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
 
-        if (exp.getMotionType() == MatrixExponential::ROTATION && liesOnAxis(exp, k))
+        if (exp.getMotionType() == MatrixExponential::ROTATION && liesOnAxis(exp, point))
         {
             it->simplified = true;
         }
@@ -588,6 +626,76 @@ void ScrewTheoryIkProblemBuilder::simplify(int depth)
         {
             break;
         }
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
+{
+    std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownTerm);
+    std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownTerm);
+
+    int idStart = std::distance(poeTerms.begin(), itUnknown);
+    int idEnd = std::distance(ritUnknown, poeTerms.rend()) - 1;
+
+    if (idStart == idEnd)
+    {
+        return;
+    }
+
+    for (int i = idStart + 1; i < idEnd; i++)
+    {
+        const MatrixExponential & prevExp = poe.exponentialAtJoint(i - 1);
+        const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
+
+        if (planarMovement(prevExp, currentExp))
+        {
+            continue;
+        }
+
+        if (currentExp.getMotionType() == MatrixExponential::TRANSLATION
+                && !poeTerms[i].known
+                && normalPlaneMovement(prevExp, currentExp))
+        {
+            for (int j = idStart; j < i; j++)
+            {
+                poeTerms[j].simplified = true;
+            }
+        }
+
+        break;
+    }
+
+    for (int i = idEnd - 1; i >= idStart; i--)
+    {
+        const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
+        const MatrixExponential & nextExp = poe.exponentialAtJoint(i + 1);
+
+        if (planarMovement(currentExp, nextExp))
+        {
+            continue;
+        }
+
+        if (currentExp.getMotionType() == MatrixExponential::TRANSLATION
+                && !poeTerms[i].known
+                && normalPlaneMovement(currentExp, nextExp))
+        {
+            std::vector<PoeTerm>::iterator itCurrent = poeTerms.begin();
+            std::advance(itCurrent, i + 1);
+
+            if (std::find_if(itCurrent, poeTerms.end(), unknownNotSimplifiedTerm) != poeTerms.end())
+            {
+                break;
+            }
+
+            for (int j = i + 1; j <= idEnd; j++)
+            {
+                poeTerms[j].simplified = true;
+            }
+        }
+
+        break;
     }
 }
 

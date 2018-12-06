@@ -99,6 +99,9 @@ private:
     ScrewTheoryIkSubproblem * trySolve(int depth);
 
     void simplify(int depth);
+    void simplifyWithPadenKahanOne(const KDL::Vector & point);
+    void simplifyWithPadenKahanThree(const KDL::Vector & point);
+    void simplifyWithPardosOne();
 
     PoeExpression poe;
 

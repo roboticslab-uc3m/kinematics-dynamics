@@ -176,6 +176,38 @@ public:
         return PoeExpression(exps, H_S_T);
     }
 
+    static KDL::Chain makeAbbIrb910scKinematicsFromDH()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        const KDL::Joint translZ(KDL::Joint::TransZ);
+
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH( 0.4,       0,      0, 0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0.25, KDL::PI,      0, 0)));
+        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH(   0,       0,      0, 0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(   0,       0, -0.125, 0)));
+
+        return chain;
+    }
+
+    static PoeExpression makeAbbIrb910scKinematicsFromPoE()
+    {
+        std::vector<MatrixExponential> exps;
+        exps.reserve(4);
+
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  1, 0), KDL::Vector::Zero()));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  1, 0), KDL::Vector(0.4, 0, 0)));
+        exps.push_back(MatrixExponential(MatrixExponential::TRANSLATION, KDL::Vector(0, -1, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.65, 0, 0)));
+
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.65, 0.125, 0));
+
+        return PoeExpression(exps, H_S_T);
+    }
+
     static void checkSolutions(const ScrewTheoryIkSubproblem::SolutionsVector & actual, const ScrewTheoryIkSubproblem::SolutionsVector & expected)
     {
         ScrewTheoryIkSubproblem::JointIdsToSolutionsVector actualSorted, expectedSorted;
@@ -577,6 +609,14 @@ TEST_F(ScrewTheoryTest, StanfordKinematics)
 {
     KDL::Chain chain = makeStanfordKinematicsFromDH();
     PoeExpression poe = makeStanfordKinematicsFromPoE();
+
+    checkRobotKinematics(chain, poe);
+}
+
+TEST_F(ScrewTheoryTest, AbbIrb910scKinematics)
+{
+    KDL::Chain chain = makeAbbIrb910scKinematicsFromDH();
+    PoeExpression poe = makeAbbIrb910scKinematicsFromPoE();
 
     checkRobotKinematics(chain, poe);
 }
