@@ -7,8 +7,6 @@
 #include <iterator>
 #include <set>
 
-#include <ColorDebug.h>
-
 #include "ScrewTheoryIkSubproblems.hpp"
 
 using namespace roboticslab;
@@ -131,9 +129,10 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const std::vector<ScrewTheoryIkSubproblem *> & _steps)
+ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const std::vector<ScrewTheoryIkSubproblem *> & _steps, bool _reversed)
     : poe(_poe),
-      steps(_steps)
+      steps(_steps),
+      reversed(_reversed)
 {}
 
 // -----------------------------------------------------------------------------
@@ -156,7 +155,7 @@ ScrewTheoryIkProblemBuilder::ScrewTheoryIkProblemBuilder(const PoeExpression & _
 
 // -----------------------------------------------------------------------------
 
-void ScrewTheoryIkProblemBuilder::searchPoints()
+std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpression & poe)
 {
     std::set<KDL::Vector, compare_vectors> set;
 
@@ -201,15 +200,32 @@ void ScrewTheoryIkProblemBuilder::searchPoints()
         }
     }
 
+    for (int i = 0; i < poe.size(); i++)
+    {
+        const MatrixExponential & exp = poe.exponentialAtJoint(i);
+
+        if (exp.getMotionType() != MatrixExponential::ROTATION)
+        {
+            continue;
+        }
+
+        double factor;
+        KDL::Vector randomPointOnAxis;
+
+        do
+        {
+            KDL::random(factor);
+            randomPointOnAxis = exp.getOrigin() + factor * exp.getAxis();
+        }
+        while (!set.insert(randomPointOnAxis).second);
+    }
+
     set.insert(poe.getTransform().p);
 
-    points.resize(set.size());
+    std::vector<KDL::Vector> points(set.size());
     std::copy(set.begin(), set.end(), points.begin());
 
-    for (int i = 0; i < points.size(); i++)
-    {
-        CD_DEBUG("points[%d]: [%f %f %f]\n", i, points[i].x(), points[i].y(), points[i].z());
-    }
+    return points;
 }
 
 // -----------------------------------------------------------------------------
@@ -221,7 +237,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
 
     poeTerms.assign(poe.size(), EXP_UNKNOWN);
 
-    rhsFrames.push_back(H_S_T * poe.getTransform().Inverse());
+    rhsFrames.push_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
 
     bool firstIteration = true;
 
@@ -258,8 +274,19 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, std::vector<KDL::JntA
                 for (int l = 0; l < jointIdsToSolutions.size(); l++)
                 {
                     const ScrewTheoryIkSubproblem::JointIdToSolution & jointIdToSolution = jointIdsToSolutions[l];
-                    poeTerms[jointIdToSolution.first] = EXP_KNOWN;
-                    solutions[j + previousSize * k](jointIdToSolution.first) = jointIdToSolution.second;
+
+                    int id = jointIdToSolution.first;
+                    double theta = jointIdToSolution.second;
+
+                    poeTerms[id] = EXP_KNOWN;
+
+                    if (reversed)
+                    {
+                        id = poe.size() - 1 - id;
+                        theta = -theta;
+                    }
+
+                    solutions[j + previousSize * k](id) = theta;
                 }
             }
         }
@@ -284,7 +311,18 @@ void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & 
             for (int j = 0; j < solutions.size(); j++)
             {
                 const MatrixExponential & exp = poe.exponentialAtJoint(i);
-                pre[j] = pre[j] * exp.asFrame(solutions[j](i));
+                double theta;
+
+                if (reversed)
+                {
+                    theta = -solutions[j](poe.size() - 1 - i);
+                }
+                else
+                {
+                    theta = solutions[j](i);
+                }
+
+                pre[j] = pre[j] * exp.asFrame(theta);
             }
 
             poeTerms[i] = EXP_COMPUTED;
@@ -318,7 +356,18 @@ void ScrewTheoryIkProblem::recalculateFrames(const std::vector<KDL::JntArray> & 
             for (int j = 0; j < solutions.size(); j++)
             {
                 const MatrixExponential & exp = poe.exponentialAtJoint(i);
-                post[j] = post[j] * exp.asFrame(solutions[j](i));
+                double theta;
+
+                if (reversed)
+                {
+                    theta = -solutions[j](poe.size() - 1 - i);
+                }
+                else
+                {
+                    theta = solutions[j](i);
+                }
+
+                post[j] = post[j] * exp.asFrame(theta);
             }
 
             poeTerms[i] = EXP_COMPUTED;
@@ -357,7 +406,18 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
         if (poeTerms[i] == EXP_KNOWN)
         {
             const MatrixExponential & exp = poe.exponentialAtJoint(i);
-            H = exp.asFrame(jointValues(i)) * H;
+            double theta;
+
+            if (reversed)
+            {
+                theta = -jointValues(poe.size() - 1 - i);
+            }
+            else
+            {
+                theta = jointValues(i);
+            }
+
+            H = exp.asFrame(theta) * H;
             foundKnown = true;
         }
         else if (poeTerms[i] == EXP_UNKNOWN)
@@ -383,10 +443,10 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps)
+ScrewTheoryIkProblem * ScrewTheoryIkProblem::create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps, bool reversed)
 {
     // TODO: validate
-    return new ScrewTheoryIkProblem(poe, steps);
+    return new ScrewTheoryIkProblem(poe, steps, reversed);
 }
 
 // -----------------------------------------------------------------------------
@@ -395,7 +455,41 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 {
     // TODO: deallocate memory, implement destructor
 
-    searchPoints();
+    std::vector<ScrewTheoryIkSubproblem *> steps = searchSolutions();
+
+    if (std::count_if(poeTerms.begin(), poeTerms.end(), knownTerm) == poe.size())
+    {
+        return ScrewTheoryIkProblem::create(poe, steps);
+    }
+
+    poe = poe.reverse();
+
+    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    {
+        it->known = false;
+    }
+
+    steps = searchSolutions();
+
+    if (std::count_if(poeTerms.begin(), poeTerms.end(), knownTerm) == poe.size())
+    {
+        return ScrewTheoryIkProblem::create(poe, steps, true);
+    }
+
+    for (std::vector<ScrewTheoryIkSubproblem *>::iterator it = steps.begin(); it != steps.end(); ++it)
+    {
+        delete (*it);
+        *it = NULL;
+    }
+
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------
+
+std::vector<ScrewTheoryIkSubproblem *> ScrewTheoryIkProblemBuilder::searchSolutions()
+{
+    points = searchPoints(poe);
 
     testPoints.assign(MAX_SIMPLIFICATION_DEPTH, points[0]);
 
@@ -449,20 +543,7 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
     }
     while (depth < MAX_SIMPLIFICATION_DEPTH && std::count_if(poeTerms.begin(), poeTerms.end(), unknownTerm) != 0);
 
-    if (std::count_if(poeTerms.begin(), poeTerms.end(), knownTerm) == poe.size())
-    {
-        return ScrewTheoryIkProblem::create(poe, steps);
-    }
-    else
-    {
-        for (std::vector<ScrewTheoryIkSubproblem *>::iterator it = steps.begin(); it != steps.end(); ++it)
-        {
-            delete (*it);
-            *it = NULL;
-        }
-
-        return NULL;
-    }
+    return steps;
 }
 
 // -----------------------------------------------------------------------------

@@ -43,7 +43,7 @@ public:
 
     bool solve(const KDL::Frame & H_S_T, std::vector<KDL::JntArray> & solutions);
 
-    static ScrewTheoryIkProblem * create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps);
+    static ScrewTheoryIkProblem * create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps, bool reversed = false);
 
 private:
 
@@ -55,7 +55,7 @@ private:
     };
 
     // disable instantiation, force users to call builder class
-    ScrewTheoryIkProblem(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps);
+    ScrewTheoryIkProblem(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps, bool reversed);
 
     // disable these too, avoid issues related to dynamic alloc
     ScrewTheoryIkProblem(const ScrewTheoryIkProblem &);
@@ -72,6 +72,8 @@ private:
 
     std::vector<KDL::Frame> rhsFrames;
     std::vector<poe_term> poeTerms;
+
+    bool reversed;
 };
 
 /**
@@ -94,14 +96,16 @@ public:
 
 private:
 
-    void searchPoints();
+    static std::vector<KDL::Vector> searchPoints(const PoeExpression & poe);
 
-    ScrewTheoryIkSubproblem * trySolve(int depth);
+    std::vector<ScrewTheoryIkSubproblem *> searchSolutions();
 
     void simplify(int depth);
     void simplifyWithPadenKahanOne(const KDL::Vector & point);
     void simplifyWithPadenKahanThree(const KDL::Vector & point);
     void simplifyWithPardosOne();
+
+    ScrewTheoryIkSubproblem * trySolve(int depth);
 
     PoeExpression poe;
 

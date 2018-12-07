@@ -35,6 +35,8 @@ class PoeExpression
 
         bool evaluate(const KDL::JntArray & q, KDL::Frame & H) const;
 
+        PoeExpression reverse() const;
+
         KDL::Chain toChain() const;
 
         static PoeExpression fromChain(const KDL::Chain & chain);

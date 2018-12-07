@@ -229,7 +229,7 @@ public:
         return chain;
     }
 
-    static PoeExpression makeAbbIrb6620lxFromST()
+    static PoeExpression makeAbbIrb6620lxFromPoE()
     {
         std::vector<MatrixExponential> exps;
         exps.reserve(6);
@@ -434,6 +434,41 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsIntegrity)
     PoeExpression poeFromChain = PoeExpression::fromChain(chain);
     ASSERT_TRUE(poeFromChain.evaluate(q, H_S_T_q_ST));
     ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
+}
+
+TEST_F(ScrewTheoryTest, ProductOfExponentialsReverse)
+{
+    PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
+    PoeExpression poeReversed = poe.reverse();
+
+    ASSERT_EQ(poeReversed.size(), poe.size());
+    ASSERT_EQ(poeReversed.getTransform(), poe.getTransform().Inverse());
+
+    KDL::Frame H_S_T_0, H_S_T_0_reversed;
+
+    ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0));
+    ASSERT_TRUE(poeReversed.evaluate(KDL::JntArray(poeReversed.size()), H_S_T_0_reversed));
+    ASSERT_EQ(H_S_T_0_reversed, H_S_T_0.Inverse());
+
+    KDL::JntArray q(poe.size());
+
+    for (int i = 0; i < poe.size(); i++)
+    {
+        q(i) = KDL::PI / 2;
+    }
+
+    KDL::Frame H_S_T_q;
+    ASSERT_TRUE(poe.evaluate(q, H_S_T_q));
+
+    for (int i = 0; i < poe.size(); i++)
+    {
+        q(i) = -KDL::PI / 2;
+    }
+
+    KDL::Frame H_S_T_q_reversed;
+    ASSERT_TRUE(poeReversed.evaluate(q, H_S_T_q_reversed));
+
+    ASSERT_EQ(H_S_T_q_reversed, H_S_T_q.Inverse());
 }
 
 TEST_F(ScrewTheoryTest, PadenKahanOne)
@@ -662,7 +697,15 @@ TEST_F(ScrewTheoryTest, AbbIrb910scKinematics)
 TEST_F(ScrewTheoryTest, AbbIrb6620lxKinematics)
 {
     KDL::Chain chain = makeAbbIrb6620lxFromDh();
-    PoeExpression poe = makeAbbIrb6620lxFromST();
+    PoeExpression poe = makeAbbIrb6620lxFromPoE();
+
+    checkRobotKinematics(chain, poe);
+}
+
+TEST_F(ScrewTheoryTest, TeoRightArmKinematics)
+{
+    KDL::Chain chain = makeTeoRightArmKinematicsFromDH();
+    PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
 
     checkRobotKinematics(chain, poe);
 }

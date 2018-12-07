@@ -85,6 +85,34 @@ bool PoeExpression::evaluate(const KDL::JntArray & q, KDL::Frame & H) const
 
 // -----------------------------------------------------------------------------
 
+PoeExpression PoeExpression::reverse() const
+{
+    PoeExpression poeReversed;
+
+    poeReversed.exps.reserve(exps.size());
+    poeReversed.H_S_T = H_S_T.Inverse();
+
+    for (int i = exps.size() - 1; i >= 0; i--)
+    {
+        const MatrixExponential & exp = exps[i];
+
+        KDL::Vector newAxis = poeReversed.H_S_T.M * exp.getAxis();
+        KDL::Vector newOrigin = KDL::Vector::Zero();
+
+        if (exp.getMotionType() == MatrixExponential::ROTATION)
+        {
+            newOrigin = poeReversed.H_S_T * exp.getOrigin();
+        }
+
+        MatrixExponential newExp(MatrixExponential(exp.getMotionType(), newAxis, newOrigin));
+        poeReversed.exps.push_back(newExp);
+    }
+
+    return poeReversed;
+}
+
+// -----------------------------------------------------------------------------
+
 KDL::Chain PoeExpression::toChain() const
 {
     KDL::Chain chain;
@@ -118,6 +146,8 @@ PoeExpression PoeExpression::fromChain(const KDL::Chain & chain)
 {
     PoeExpression poe;
     KDL::Frame H_S_prev = KDL::Frame::Identity();
+
+    poe.exps.reserve(chain.getNrOfJoints());
 
     for (int i = 0; i < chain.getNrOfSegments(); i++)
     {
