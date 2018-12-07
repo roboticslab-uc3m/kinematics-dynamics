@@ -14,6 +14,7 @@
 
 #include "MatrixExponential.hpp"
 #include "ProductOfExponentials.hpp"
+#include "ScrewTheoryIkProblem.hpp"
 #include "ScrewTheoryIkSubproblems.hpp"
 
 namespace roboticslab

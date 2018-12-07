@@ -14,12 +14,12 @@ if(ENABLE_ScrewTheoryLib)
                                       ProductOfExponentials.cpp
                                       ScrewTheoryIkProblem.hpp
                                       ScrewTheoryIkProblem.cpp
+                                      ScrewTheoryIkProblemBuilder.cpp
                                       ScrewTheoryIkSubproblems.hpp
                                       PadenKahanSubproblems.cpp
-                                      PardosGotorSubproblems.cpp)
+                                      PardosSubproblems.cpp)
 
-    set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER ScrewTheoryTools.hpp
-                                                              MatrixExponential.hpp
+    set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp
                                                               ScrewTheoryIkProblem.hpp)
 
