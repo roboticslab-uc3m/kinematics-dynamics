@@ -208,6 +208,44 @@ public:
         return PoeExpression(exps, H_S_T);
     }
 
+    static KDL::Chain makeAbbIrb6620lxFromDh()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        const KDL::Joint translZ(KDL::Joint::TransZ);
+
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Vector(1.088, 2.5, 0))));
+
+        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH( 0.38,            0,     0,           0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0.975,            0,     0,           0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(  0.2,  KDL::PI / 2,     0,           0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0, -KDL::PI / 2, 0.887,           0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0,  KDL::PI / 2,     0, KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0,            0, 0.357,           0)));
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI / 2))));
+
+        return chain;
+    }
+
+    static PoeExpression makeAbbIrb6620lxFromST()
+    {
+        std::vector<MatrixExponential> exps;
+        exps.reserve(6);
+
+        exps.push_back(MatrixExponential(MatrixExponential::TRANSLATION, KDL::Vector(0,  0, 1)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(1.468,   2.5, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(2.443,   2.5, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(2.643, 1.613, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(2.643, 1.613, 0)));
+        exps.push_back(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(2.643, 1.613, 0)));
+
+        KDL::Frame H_S_T(KDL::Rotation::RotY(KDL::PI / 2), KDL::Vector(3, 1.613, 0));
+
+        return PoeExpression(exps, H_S_T);
+    }
+
     static void checkSolutions(const ScrewTheoryIkSubproblem::SolutionsVector & actual, const ScrewTheoryIkSubproblem::SolutionsVector & expected)
     {
         ScrewTheoryIkSubproblem::JointIdsToSolutionsVector actualSorted, expectedSorted;
@@ -617,6 +655,14 @@ TEST_F(ScrewTheoryTest, AbbIrb910scKinematics)
 {
     KDL::Chain chain = makeAbbIrb910scKinematicsFromDH();
     PoeExpression poe = makeAbbIrb910scKinematicsFromPoE();
+
+    checkRobotKinematics(chain, poe);
+}
+
+TEST_F(ScrewTheoryTest, AbbIrb6620lxKinematics)
+{
+    KDL::Chain chain = makeAbbIrb6620lxFromDh();
+    PoeExpression poe = makeAbbIrb6620lxFromST();
 
     checkRobotKinematics(chain, poe);
 }

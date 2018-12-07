@@ -574,13 +574,15 @@ void ScrewTheoryIkProblemBuilder::simplify(int depth)
     {
         simplifyWithPadenKahanThree(testPoints[1]);
     }
-
-    for (int i = 0; i < poe.size(); i++)
+    else
     {
-        if (poe.exponentialAtJoint(i).getMotionType() == MatrixExponential::TRANSLATION)
+        for (int i = 0; i < poe.size(); i++)
         {
-            simplifyWithPardosOne();
-            break;
+            if (poe.exponentialAtJoint(i).getMotionType() == MatrixExponential::TRANSLATION)
+            {
+                simplifyWithPardosOne();
+                break;
+            }
         }
     }
 }
@@ -633,69 +635,71 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanThree(const KDL::Vector 
 
 void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
 {
-    std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownTerm);
-    std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownTerm);
+    std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
+    std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
 
     int idStart = std::distance(poeTerms.begin(), itUnknown);
     int idEnd = std::distance(ritUnknown, poeTerms.rend()) - 1;
 
-    if (idStart == idEnd)
+    if (idStart >= idEnd)
     {
         return;
     }
 
-    for (int i = idStart + 1; i < idEnd; i++)
+    const MatrixExponential & firstExp = poe.exponentialAtJoint(idStart);
+    const MatrixExponential & lastExp = poe.exponentialAtJoint(idEnd);
+
+    if (firstExp.getMotionType() == MatrixExponential::TRANSLATION)
     {
-        const MatrixExponential & prevExp = poe.exponentialAtJoint(i - 1);
-        const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
-
-        if (planarMovement(prevExp, currentExp))
+        for (int i = idEnd - 1; i >= idStart; i--)
         {
-            continue;
-        }
+            const MatrixExponential & nextExp = poe.exponentialAtJoint(i + 1);
 
-        if (currentExp.getMotionType() == MatrixExponential::TRANSLATION
-                && !poeTerms[i].known
-                && normalPlaneMovement(prevExp, currentExp))
-        {
-            for (int j = idStart; j < i; j++)
+            if (i != idStart)
             {
-                poeTerms[j].simplified = true;
-            }
-        }
+                const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
 
-        break;
+                if (planarMovement(currentExp, nextExp))
+                {
+                    continue;
+                }
+            }
+            else if (normalPlaneMovement(firstExp, nextExp))
+            {
+                for (int j = idStart + 1; j <= idEnd; j++)
+                {
+                    poeTerms[j].simplified = true;
+                }
+            }
+
+            break;
+        }
     }
-
-    for (int i = idEnd - 1; i >= idStart; i--)
+    else if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
     {
-        const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
-        const MatrixExponential & nextExp = poe.exponentialAtJoint(i + 1);
-
-        if (planarMovement(currentExp, nextExp))
+        for (int i = idStart + 1; i <= idEnd; i++)
         {
-            continue;
-        }
+            const MatrixExponential & prevExp = poe.exponentialAtJoint(i - 1);
 
-        if (currentExp.getMotionType() == MatrixExponential::TRANSLATION
-                && !poeTerms[i].known
-                && normalPlaneMovement(currentExp, nextExp))
-        {
-            std::vector<PoeTerm>::iterator itCurrent = poeTerms.begin();
-            std::advance(itCurrent, i + 1);
-
-            if (std::find_if(itCurrent, poeTerms.end(), unknownNotSimplifiedTerm) != poeTerms.end())
+            if (i != idEnd)
             {
-                break;
+                const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
+
+                if (planarMovement(prevExp, currentExp))
+                {
+                    continue;
+                }
+            }
+            else if (normalPlaneMovement(prevExp, lastExp))
+            {
+                for (int j = idEnd - 1; j >= idStart; j--)
+                {
+                    poeTerms[j].simplified = true;
+                }
             }
 
-            for (int j = i + 1; j <= idEnd; j++)
-            {
-                poeTerms[j].simplified = true;
-            }
+            break;
         }
-
-        break;
     }
 }
 
