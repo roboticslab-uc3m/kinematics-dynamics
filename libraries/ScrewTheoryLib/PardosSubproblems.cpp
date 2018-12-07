@@ -16,10 +16,10 @@ PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector 
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(1);
-    JointIdsToSolutionsVector jointIdsToSolutions(1);
+    Solutions solutions(1);
+    JointIdsToSolutions jointIdsToSolutions(1);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
@@ -44,10 +44,10 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(1);
-    JointIdsToSolutionsVector jointIdsToSolutions(2);
+    Solutions solutions(1);
+    JointIdsToSolutions jointIdsToSolutions(2);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
@@ -91,10 +91,10 @@ PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vec
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(2);
-    JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
+    Solutions solutions(2);
+    JointIdsToSolutions jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector rhsAsVector = rhs * p - k;
@@ -129,10 +129,10 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PardosFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PardosFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(2);
-    JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
+    Solutions solutions(2);
+    JointIdsToSolutions jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;

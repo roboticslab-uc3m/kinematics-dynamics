@@ -23,12 +23,12 @@ class ScrewTheoryIkSubproblem
 public:
 
     typedef std::pair<int, double> JointIdToSolution;
-    typedef std::vector<JointIdToSolution> JointIdsToSolutionsVector;
-    typedef std::vector<JointIdsToSolutionsVector> SolutionsVector;
+    typedef std::vector<JointIdToSolution> JointIdsToSolutions;
+    typedef std::vector<JointIdsToSolutions> Solutions;
 
     virtual ~ScrewTheoryIkSubproblem() {}
 
-    virtual SolutionsVector solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform = KDL::Frame::Identity()) = 0;
+    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform = KDL::Frame::Identity()) const = 0;
 };
 
 /**
@@ -39,11 +39,14 @@ class ScrewTheoryIkProblem
 {
 public:
 
+    typedef std::vector<const ScrewTheoryIkSubproblem *> Steps;
+    typedef std::vector<KDL::JntArray> Solutions;
+
     ~ScrewTheoryIkProblem();
 
-    bool solve(const KDL::Frame & H_S_T, std::vector<KDL::JntArray> & solutions);
+    bool solve(const KDL::Frame & H_S_T, Solutions & solutions);
 
-    static ScrewTheoryIkProblem * create(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps, bool reversed = false);
+    static ScrewTheoryIkProblem * create(const PoeExpression & poe, const Steps & steps, bool reversed = false);
 
 private:
 
@@ -54,26 +57,27 @@ private:
         EXP_UNKNOWN
     };
 
+    typedef std::vector<KDL::Frame> Frames;
+    typedef std::vector<poe_term> PoeTerms;
+
     // disable instantiation, force users to call builder class
-    ScrewTheoryIkProblem(const PoeExpression & poe, const std::vector<ScrewTheoryIkSubproblem *> & steps, bool reversed);
+    ScrewTheoryIkProblem(const PoeExpression & poe, const Steps & steps, bool reversed);
 
     // disable these too, avoid issues related to dynamic alloc
     ScrewTheoryIkProblem(const ScrewTheoryIkProblem &);
     ScrewTheoryIkProblem & operator=(const ScrewTheoryIkProblem &);
 
-    void recalculateFrames(const std::vector<KDL::JntArray> & solutions);
+    void recalculateFrames(const Solutions & solutions, Frames & frames, PoeTerms & poeTerms);
+    bool recalculateFrames(const Solutions & solutions, Frames & frames, PoeTerms & poeTerms, bool backwards);
 
-    KDL::Frame transformPoint(const KDL::JntArray & jointValues);
+    KDL::Frame transformPoint(const KDL::JntArray & jointValues, const PoeTerms & poeTerms);
 
-    PoeExpression poe;
+    const PoeExpression poe;
 
     // we own these, resources freed in destructor
-    std::vector<ScrewTheoryIkSubproblem *> steps;
+    const Steps steps;
 
-    std::vector<KDL::Frame> rhsFrames;
-    std::vector<poe_term> poeTerms;
-
-    bool reversed;
+    const bool reversed;
 };
 
 /**
@@ -98,7 +102,7 @@ private:
 
     static std::vector<KDL::Vector> searchPoints(const PoeExpression & poe);
 
-    std::vector<ScrewTheoryIkSubproblem *> searchSolutions();
+    ScrewTheoryIkProblem::Steps searchSolutions();
 
     void simplify(int depth);
     void simplifyWithPadenKahanOne(const KDL::Vector & point);
@@ -115,8 +119,6 @@ private:
     std::vector<PoeTerm> poeTerms;
 
     static const int MAX_SIMPLIFICATION_DEPTH = 2;
-
-    // TODO: addStep()
 };
 
 }  // namespace roboticslab

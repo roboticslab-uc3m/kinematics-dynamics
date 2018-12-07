@@ -35,6 +35,10 @@ public:
     const KDL::Vector & getOrigin() const
     { return origin; }
 
+    void changeBase(const KDL::Frame & H_new_old);
+
+    MatrixExponential cloneWithBase(const KDL::Frame & H_new_old) const;
+
 private:
 
     motion motionType;

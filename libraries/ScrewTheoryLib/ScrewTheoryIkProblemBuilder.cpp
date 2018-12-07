@@ -125,6 +125,16 @@ namespace
         result_type expectedKnown, expectedSimplified, ignoreSimplifiedState;
     }
     knownTerm(true), unknownTerm(false), unknownNotSimplifiedTerm(false, false);
+
+    void clearSteps(ScrewTheoryIkProblem::Steps & steps)
+    {
+        for (ScrewTheoryIkProblem::Steps::iterator it = steps.begin(); it != steps.end(); ++it)
+        {
+            delete (*it);
+        }
+
+        steps.clear();
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -213,16 +223,23 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
 
 ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 {
-    // TODO: deallocate memory, implement destructor
+    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    {
+        it->known = false;
+    }
 
-    std::vector<ScrewTheoryIkSubproblem *> steps = searchSolutions();
+    ScrewTheoryIkProblem::Steps steps = searchSolutions();
 
     if (std::count_if(poeTerms.begin(), poeTerms.end(), knownTerm) == poe.size())
     {
         return ScrewTheoryIkProblem::create(poe, steps);
     }
+    else
+    {
+        clearSteps(steps);
+    }
 
-    poe = poe.reverse();
+    poe.reverseSelf();
 
     for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
@@ -235,11 +252,9 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
     {
         return ScrewTheoryIkProblem::create(poe, steps, true);
     }
-
-    for (std::vector<ScrewTheoryIkSubproblem *>::iterator it = steps.begin(); it != steps.end(); ++it)
+    else
     {
-        delete (*it);
-        *it = NULL;
+        clearSteps(steps);
     }
 
     return NULL;
@@ -247,13 +262,13 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 
 // -----------------------------------------------------------------------------
 
-std::vector<ScrewTheoryIkSubproblem *> ScrewTheoryIkProblemBuilder::searchSolutions()
+ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 {
     points = searchPoints(poe);
 
     testPoints.assign(MAX_SIMPLIFICATION_DEPTH, points[0]);
 
-    std::vector<ScrewTheoryIkSubproblem *> steps;
+    ScrewTheoryIkProblem::Steps steps;
 
     std::vector< std::vector<KDL::Vector>::const_iterator > iterators(MAX_SIMPLIFICATION_DEPTH, points.begin());
 
@@ -312,7 +327,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 {
     int unknownsCount = std::count_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
 
-    if (unknownsCount == 0 || unknownsCount > MAX_SIMPLIFICATION_DEPTH)
+    if (unknownsCount == 0 || unknownsCount > 2) // TODO: hardcoded
     {
         return NULL;
     }

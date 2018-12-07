@@ -34,24 +34,43 @@ MatrixExponential::MatrixExponential(motion _motionType, const KDL::Vector & _ax
 
 KDL::Frame MatrixExponential::asFrame(double theta) const
 {
-    KDL::Frame H = KDL::Frame::Identity();
+    KDL::Frame H;
 
-    if (motionType == ROTATION)
+    switch (motionType)
     {
-        KDL::Vector v = - axis * origin;
+    case ROTATION:
         H.M = KDL::Rotation::Rot2(axis, theta);
-        H.p = (KDL::Rotation::Identity() - H.M) * (axis * v);
-    }
-    else if (motionType == TRANSLATION)
-    {
+        H.p = (KDL::Rotation::Identity() - H.M) * (axis * origin * axis);
+        break;
+    case TRANSLATION:
         H.p = axis * theta;
-    }
-    else
-    {
+        break;
+    default:
         CD_WARNING("Unrecognized motion type: %d.\n", motionType);
     }
 
     return H;
+}
+
+// -----------------------------------------------------------------------------
+
+void MatrixExponential::changeBase(const KDL::Frame & H_new_old)
+{
+    axis = H_new_old.M * axis;
+
+    if (motionType == ROTATION)
+    {
+        origin = H_new_old * origin;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+MatrixExponential MatrixExponential::cloneWithBase(const KDL::Frame & H_new_old) const
+{
+    MatrixExponential exp(*this);
+    exp.changeBase(H_new_old);
+    return exp;
 }
 
 // -----------------------------------------------------------------------------

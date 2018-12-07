@@ -18,10 +18,10 @@ PadenKahanOne::PadenKahanOne(int _id, const MatrixExponential & _exp, const KDL:
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PadenKahanOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PadenKahanOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(1);
-    JointIdsToSolutionsVector jointIdsToSolutions(1);
+    Solutions solutions(1);
+    JointIdsToSolutions jointIdsToSolutions(1);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
@@ -55,10 +55,10 @@ PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PadenKahanTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PadenKahanTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(2);
-    JointIdsToSolutionsVector jointIdsToSolution1(2), jointIdsToSolution2(2);
+    Solutions solutions(2);
+    JointIdsToSolutions jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
@@ -131,10 +131,10 @@ PadenKahanThree::PadenKahanThree(int _id, const MatrixExponential & _exp, const 
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::SolutionsVector PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform)
+ScrewTheoryIkSubproblem::Solutions PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
 {
-    SolutionsVector solutions(2);
-    JointIdsToSolutionsVector jointIdsToSolution1(1), jointIdsToSolution2(1);
+    Solutions solutions(2);
+    JointIdsToSolutions jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector rhsAsVector = rhs * p - k;
