@@ -3,6 +3,8 @@
 #include "ScrewTheoryIkProblem.hpp"
 
 #include <algorithm>
+#include <functional>
+#include <numeric>
 
 using namespace roboticslab;
 
@@ -14,6 +16,27 @@ namespace
     {
         return reversed ? -q(q.rows() - 1 - i) : q(i);
     }
+
+    struct solution_accumulator : std::binary_function<int, const ScrewTheoryIkSubproblem *, int>
+    {
+        result_type operator()(first_argument_type count, const second_argument_type & subproblem)
+        {
+            return count * subproblem->solutions();
+        }
+    }
+    solutionAccumulator;
+
+    inline int computeSolutions(const ScrewTheoryIkProblem::Steps & steps)
+    {
+        if (!steps.empty())
+        {
+            return std::accumulate(steps.begin(), steps.end(), 1, solutionAccumulator);
+        }
+        else
+        {
+            return 0;
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -21,7 +44,8 @@ namespace
 ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const Steps & _steps, bool _reversed)
     : poe(_poe),
       steps(_steps),
-      reversed(_reversed)
+      reversed(_reversed),
+      soln(computeSolutions(steps))
 {}
 
 // -----------------------------------------------------------------------------
@@ -38,12 +62,19 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 
 bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions)
 {
-    solutions.clear();
+    if (!solutions.empty())
+    {
+        solutions.clear();
+    }
+
+    solutions.reserve(soln);
     solutions.push_back(KDL::JntArray(poe.size()));
 
     PoeTerms poeTerms(poe.size(), EXP_UNKNOWN);
 
     Frames rhsFrames;
+
+    rhsFrames.reserve(soln);
     rhsFrames.push_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
 
     bool firstIteration = true;
@@ -65,7 +96,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
             if (partialSolutions.size() > 1)
             {
                 solutions.resize(previousSize * partialSolutions.size());
-                rhsFrames.resize(solutions.size());
+                rhsFrames.resize(previousSize * partialSolutions.size());
 
                 for (int k = 1; k < partialSolutions.size(); k++)
                 {
@@ -112,7 +143,7 @@ void ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
 
     if (recalculateFrames(solutions, pre, poeTerms, false))
     {
-        for (int i = 0; i < frames.size(); i++)
+        for (int i = 0; i < solutions.size(); i++)
         {
             frames[i] = pre[i].Inverse() * frames[i];
         }
@@ -120,7 +151,7 @@ void ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
 
     if (recalculateFrames(solutions, post, poeTerms, true))
     {
-        for (int i = 0; i < frames.size(); i++)
+        for (int i = 0; i < solutions.size(); i++)
         {
             frames[i] = frames[i] * post[i].Inverse();
         }

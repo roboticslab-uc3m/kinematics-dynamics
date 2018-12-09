@@ -279,7 +279,7 @@ public:
         }
     }
 
-    static void checkRobotKinematics(const KDL::Chain & chain, const PoeExpression & poe)
+    static void checkRobotKinematics(const KDL::Chain & chain, const PoeExpression & poe, int soln)
     {
         ASSERT_EQ(poe.size(), chain.getNrOfJoints());
 
@@ -301,6 +301,7 @@ public:
         ScrewTheoryIkProblem * ikProblem = builder.build();
 
         ASSERT_TRUE(ikProblem);
+        ASSERT_EQ(ikProblem->solutions(), soln);
 
         ScrewTheoryIkProblem::Solutions solutions;
         ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, solutions));
@@ -511,6 +512,8 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
     PadenKahanOne pk1(0, exp, p);
 
+    ASSERT_EQ(pk1.solutions(), 1);
+
     KDL::Frame rhs(k - p);
     ScrewTheoryIkSubproblem::Solutions actual = pk1.solve(rhs, KDL::Frame::Identity());
 
@@ -535,6 +538,8 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), r);
     MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), r);
     PadenKahanTwo pk2(0, 1, exp1, exp2, p, r);
+
+    ASSERT_EQ(pk2.solutions(), 2);
 
     KDL::Frame rhs(k - p);
     ScrewTheoryIkSubproblem::Solutions actual = pk2.solve(rhs, KDL::Frame::Identity());
@@ -567,6 +572,8 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
     PadenKahanThree pk3(0, exp, p, k);
 
+    ASSERT_EQ(pk3.solutions(), 2);
+
     KDL::Frame rhs(delta - (p - k));
     ScrewTheoryIkSubproblem::Solutions actual = pk3.solve(rhs, KDL::Frame::Identity());
 
@@ -594,6 +601,8 @@ TEST_F(ScrewTheoryTest, PardosOne)
     MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
     PardosOne pg1(0, exp, p);
 
+    ASSERT_EQ(pg1.solutions(), 1);
+
     KDL::Frame rhs(k - p);
     ScrewTheoryIkSubproblem::Solutions actual = pg1.solve(rhs, KDL::Frame::Identity());
 
@@ -617,6 +626,8 @@ TEST_F(ScrewTheoryTest, PardosTwo)
     MatrixExponential exp1(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
     MatrixExponential exp2(MatrixExponential::TRANSLATION, KDL::Vector(1, 0, 0));
     PardosTwo pg2(0, 1, exp1, exp2, p);
+
+    ASSERT_EQ(pg2.solutions(), 1);
 
     KDL::Frame rhs(k - p);
     ScrewTheoryIkSubproblem::Solutions actual = pg2.solve(rhs, KDL::Frame::Identity());
@@ -643,6 +654,8 @@ TEST_F(ScrewTheoryTest, PardosThree)
 
     MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
     PardosThree pg3(0, exp, p, k);
+
+    ASSERT_EQ(pg3.solutions(), 2);
 
     KDL::Frame rhs(delta - (p - k));
     ScrewTheoryIkSubproblem::Solutions actual = pg3.solve(rhs, KDL::Frame::Identity());
@@ -672,6 +685,8 @@ TEST_F(ScrewTheoryTest, PardosFour)
     MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
     PardosFour pg4(0, 1, exp1, exp2, p);
 
+    ASSERT_EQ(pg4.solutions(), 2);
+
     KDL::Frame rhs(k - p);
     ScrewTheoryIkSubproblem::Solutions actual = pg4.solve(rhs, KDL::Frame::Identity());
 
@@ -699,7 +714,7 @@ TEST_F(ScrewTheoryTest, AbbIrb120Kinematics)
     KDL::Chain chain = makeAbbIrb120KinematicsFromDH();
     PoeExpression poe = makeAbbIrb120KinematicsFromPoE();
 
-    checkRobotKinematics(chain, poe);
+    checkRobotKinematics(chain, poe, 8);
 }
 
 TEST_F(ScrewTheoryTest, PumaKinematics)
@@ -707,7 +722,7 @@ TEST_F(ScrewTheoryTest, PumaKinematics)
     KDL::Chain chain = makePumaKinematicsFromDH();
     PoeExpression poe = makePumaKinematicsFromPoE();
 
-    checkRobotKinematics(chain, poe);
+    checkRobotKinematics(chain, poe, 8);
 }
 
 TEST_F(ScrewTheoryTest, StanfordKinematics)
@@ -715,7 +730,7 @@ TEST_F(ScrewTheoryTest, StanfordKinematics)
     KDL::Chain chain = makeStanfordKinematicsFromDH();
     PoeExpression poe = makeStanfordKinematicsFromPoE();
 
-    checkRobotKinematics(chain, poe);
+    checkRobotKinematics(chain, poe, 8);
 }
 
 TEST_F(ScrewTheoryTest, AbbIrb910scKinematics)
@@ -723,7 +738,7 @@ TEST_F(ScrewTheoryTest, AbbIrb910scKinematics)
     KDL::Chain chain = makeAbbIrb910scKinematicsFromDH();
     PoeExpression poe = makeAbbIrb910scKinematicsFromPoE();
 
-    checkRobotKinematics(chain, poe);
+    checkRobotKinematics(chain, poe, 2);
 }
 
 TEST_F(ScrewTheoryTest, AbbIrb6620lxKinematics)
@@ -731,7 +746,7 @@ TEST_F(ScrewTheoryTest, AbbIrb6620lxKinematics)
     KDL::Chain chain = makeAbbIrb6620lxFromDh();
     PoeExpression poe = makeAbbIrb6620lxFromPoE();
 
-    checkRobotKinematics(chain, poe);
+    checkRobotKinematics(chain, poe, 4);
 }
 
 TEST_F(ScrewTheoryTest, TeoRightArmKinematics)
@@ -739,7 +754,7 @@ TEST_F(ScrewTheoryTest, TeoRightArmKinematics)
     KDL::Chain chain = makeTeoRightArmKinematicsFromDH();
     PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
 
-    checkRobotKinematics(chain, poe);
+    checkRobotKinematics(chain, poe, 8);
 }
 
 }  // namespace roboticslab

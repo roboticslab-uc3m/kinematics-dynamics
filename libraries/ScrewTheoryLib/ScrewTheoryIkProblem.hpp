@@ -29,6 +29,8 @@ public:
     virtual ~ScrewTheoryIkSubproblem() {}
 
     virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform = KDL::Frame::Identity()) const = 0;
+
+    virtual int solutions() const = 0;
 };
 
 /**
@@ -45,6 +47,9 @@ public:
     ~ScrewTheoryIkProblem();
 
     bool solve(const KDL::Frame & H_S_T, Solutions & solutions);
+
+    int solutions() const
+    { return soln; }
 
     static ScrewTheoryIkProblem * create(const PoeExpression & poe, const Steps & steps, bool reversed = false);
 
@@ -78,6 +83,8 @@ private:
     const Steps steps;
 
     const bool reversed;
+
+    const int soln;
 };
 
 /**
