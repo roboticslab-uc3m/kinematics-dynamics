@@ -399,8 +399,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION
                     && nextToLastExp.getMotionType() == MatrixExponential::TRANSLATION
-                    && !parallelAxes(lastExp, nextToLastExp)
-                    && intersectingAxes(lastExp, nextToLastExp, r))
+                    && !parallelAxes(lastExp, nextToLastExp))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
                 return new PardosTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
