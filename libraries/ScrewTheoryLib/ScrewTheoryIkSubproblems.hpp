@@ -21,7 +21,7 @@ public:
 
     PadenKahanOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 1; }
@@ -31,6 +31,7 @@ private:
     int id;
     MatrixExponential exp;
     KDL::Vector p;
+    KDL::Rotation axisPow;
 };
 
 /**
@@ -43,7 +44,7 @@ public:
 
     PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p, const KDL::Vector & r);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 2; }
@@ -52,7 +53,9 @@ private:
 
     int id1, id2;
     MatrixExponential exp1, exp2;
-    KDL::Vector p, r;
+    KDL::Vector p, r, axesCross;
+    KDL::Rotation axisPow1, axisPow2;
+    double axesDot;
 };
 
 /**
@@ -65,7 +68,7 @@ public:
 
     PadenKahanThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 2; }
@@ -75,6 +78,7 @@ private:
     int id;
     MatrixExponential exp;
     KDL::Vector p, k;
+    KDL::Rotation axisPow;
 };
 
 /**
@@ -88,7 +92,7 @@ public:
 
     PardosOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 1; }
@@ -111,7 +115,7 @@ public:
 
     PardosTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 1; }
@@ -120,7 +124,8 @@ private:
 
     int id1, id2;
     MatrixExponential exp1, exp2;
-    KDL::Vector p;
+    KDL::Vector p, crossPr2;
+    double crossPr2Norm;
 };
 
 /**
@@ -134,7 +139,7 @@ public:
 
     PardosThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 2; }
@@ -157,7 +162,7 @@ public:
 
     PardosFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
     virtual int solutions() const
     { return 2; }
@@ -166,7 +171,8 @@ private:
 
     int id1, id2;
     MatrixExponential exp1, exp2;
-    KDL::Vector p;
+    KDL::Vector p, n;
+    KDL::Rotation axisPow;
 };
 
 }  // namespace roboticslab

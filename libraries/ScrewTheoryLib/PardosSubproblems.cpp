@@ -16,20 +16,21 @@ PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector 
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::Solutions PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
+bool PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    Solutions solutions(1);
+    solutions.resize(PardosOne::solutions());
     JointIdsToSolutions jointIdsToSolutions(1);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
 
-    double theta = KDL::dot(exp.getAxis(), k - f);
+    KDL::Vector diff = k - f;
+    double theta = KDL::dot(exp.getAxis(), diff);
 
     jointIdsToSolutions[0] = std::make_pair(id, theta);
     solutions[0] = jointIdsToSolutions;
 
-    return solutions;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -40,23 +41,23 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
       exp1(_exp1),
       exp2(_exp2),
       p(_p)
-{}
+{
+    crossPr2 = exp2.getAxis() * exp1.getAxis();
+    crossPr2Norm = crossPr2.Norm();
+}
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::Solutions PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
+bool PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    Solutions solutions(1);
+    solutions.resize(PardosTwo::solutions());
     JointIdsToSolutions jointIdsToSolutions(2);
 
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
 
     KDL::Vector crossPr1 = exp2.getAxis() * (f - k);
-    KDL::Vector crossPr2 = exp2.getAxis() * exp1.getAxis();
-
     double crossPr1Norm = crossPr1.Norm();
-    double crossPr2Norm = crossPr2.Norm();
 
     KDL::Vector c;
 
@@ -77,7 +78,7 @@ ScrewTheoryIkSubproblem::Solutions PardosTwo::solve(const KDL::Frame & rhs, cons
 
     solutions[0] = jointIdsToSolutions;
 
-    return solutions;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -91,9 +92,9 @@ PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vec
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::Solutions PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
+bool PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    Solutions solutions(2);
+    solutions.resize(PardosThree::solutions());
     JointIdsToSolutions jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector f = pointTransform * p;
@@ -103,18 +104,31 @@ ScrewTheoryIkSubproblem::Solutions PardosThree::solve(const KDL::Frame & rhs, co
     KDL::Vector diff = k - f;
 
     double dotPr = KDL::dot(exp.getAxis(), diff);
-    double sq = std::sqrt(std::abs(std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(delta, 2)));
+    double sq2 = std::pow(dotPr, 2) - std::pow(diff.Norm(), 2) + std::pow(delta, 2);
+    bool sq2_zero = KDL::Equal(sq2, 0.0);
 
-    double theta1 = dotPr + sq;
-    double theta2 = dotPr - sq;
+    jointIdsToSolution1[0].first = jointIdsToSolution2[0].first = id;
 
-    jointIdsToSolution1[0] = std::make_pair(id, theta1);
-    jointIdsToSolution2[0] = std::make_pair(id, theta2);
+    bool ret;
+
+    if (!sq2_zero && sq2 > 0)
+    {
+        double sq = std::sqrt(std::abs(sq2));
+        jointIdsToSolution1[0].second = dotPr + sq;
+        jointIdsToSolution2[0].second = dotPr - sq;
+        ret = true;
+    }
+    else
+    {
+        KDL::Vector proy = vectorPow2(exp.getAxis()) * diff;
+        jointIdsToSolution1[0].second = jointIdsToSolution2[0].second = proy.Norm();
+        ret = sq2_zero;
+    }
 
     solutions[0] = jointIdsToSolution1;
     solutions[1] = jointIdsToSolution2;
 
-    return solutions;
+    return ret;
 }
 
 // -----------------------------------------------------------------------------
@@ -125,13 +139,20 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
       exp1(_exp1),
       exp2(_exp2),
       p(_p)
-{}
+{
+    KDL::Vector diff = exp2.getOrigin() - exp1.getOrigin();
+    KDL::Vector normal = (exp1.getAxis() * diff) * exp1.getAxis();
+    normal.Normalize();
+    n = vectorPow2(normal) * diff;
+
+    axisPow = vectorPow2(exp1.getAxis()); // same as exp2.getAxis()
+}
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem::Solutions PardosFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform) const
+bool PardosFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    Solutions solutions(2);
+    solutions.resize(PardosFour::solutions());
     JointIdsToSolutions jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector f = pointTransform * p;
@@ -140,59 +161,88 @@ ScrewTheoryIkSubproblem::Solutions PardosFour::solve(const KDL::Frame & rhs, con
     KDL::Vector u = f - exp2.getOrigin();
     KDL::Vector v = k - exp1.getOrigin();
 
-    KDL::Rotation axisPow1 = vectorPow2(exp1.getAxis());
-    KDL::Rotation axisPow2 = vectorPow2(exp2.getAxis());
-
-    KDL::Vector u_p = u - axisPow2 * u;
-    KDL::Vector v_p = v - axisPow1 * v;
+    KDL::Vector u_p = u - axisPow * u;
+    KDL::Vector v_p = v - axisPow * v;
 
     KDL::Vector c1 = exp1.getOrigin() + v - v_p;
     KDL::Vector c2 = exp2.getOrigin() + u - u_p;
 
     KDL::Vector c_diff = c2 - c1;
+    bool samePlane = KDL::Equal(c_diff, n);
+
+    if (!samePlane)
+    {
+        c_diff = n; // proyection of c_diff onto the perpendicular plane
+        c1 = c2 - c_diff; // c1 on the intersecion of axis 1 and the normal plane to both axes
+    }
+
     double c_norm = c_diff.Norm();
+    double u_p_norm = u_p.Norm();
+    double v_p_norm = v_p.Norm();
 
-    KDL::Vector omega_a = c_diff / c_norm;
-    KDL::Vector omega_h = exp1.getAxis() * omega_a;
+    double c_test = u_p_norm + v_p_norm - c_norm;
+    bool c_zero = KDL::Equal(c_test, 0.0);
 
-    double a = (std::pow(c_norm, 2) - std::pow(u_p.Norm(), 2) + std::pow(v_p.Norm(), 2)) / (2 * c_norm);
-    double h = std::sqrt(std::abs(std::pow(v_p.Norm(), 2) - std::pow(a, 2)));
+    jointIdsToSolution1[0].first = jointIdsToSolution2[0].first = id1;
+    jointIdsToSolution1[1].first = jointIdsToSolution2[1].first = id2;
 
-    KDL::Vector term1 = c1 + a * omega_a;
-    KDL::Vector term2 = h * omega_h;
+    bool ret;
 
-    KDL::Vector c = term1 + term2;
-    KDL::Vector d = term1 - term2;
+    if (!c_zero && c_test > 0.0)
+    {
+        KDL::Vector omega_a = c_diff / c_norm;
+        KDL::Vector omega_h = exp1.getAxis() * omega_a;
 
-    KDL::Vector m1 = c - exp1.getOrigin();
-    KDL::Vector m2 = c - exp2.getOrigin();
+        double a = (std::pow(c_norm, 2) - std::pow(u_p_norm, 2) + std::pow(v_p_norm, 2)) / (2 * c_norm);
+        double h = std::sqrt(std::abs(std::pow(v_p.Norm(), 2) - std::pow(a, 2)));
 
-    KDL::Vector n1 = d - exp1.getOrigin();
-    KDL::Vector n2 = d - exp2.getOrigin();
+        KDL::Vector term1 = c1 + a * omega_a;
+        KDL::Vector term2 = h * omega_h;
 
-    KDL::Vector m1_p = m1 - axisPow1 * m1;
-    KDL::Vector m2_p = m2 - axisPow2 * m2;
+        KDL::Vector c = term1 + term2;
+        KDL::Vector d = term1 - term2;
 
-    KDL::Vector n1_p = n1 - axisPow1 * n1;
-    KDL::Vector n2_p = n2 - axisPow2 * n2;
+        KDL::Vector m1 = c - exp1.getOrigin();
+        KDL::Vector m2 = c - exp2.getOrigin();
 
-    double theta1_1 = std::atan2(KDL::dot(exp1.getAxis(), m1_p * v_p), KDL::dot(m1_p, v_p));
-    double theta2_1 = std::atan2(KDL::dot(exp2.getAxis(), u_p * m2_p), KDL::dot(u_p, m2_p));
+        KDL::Vector n1 = d - exp1.getOrigin();
+        KDL::Vector n2 = d - exp2.getOrigin();
 
-    double theta1_2 = std::atan2(KDL::dot(exp1.getAxis(), n1_p * v_p), KDL::dot(n1_p, v_p));
-    double theta2_2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * n2_p), KDL::dot(u_p, n2_p));
+        KDL::Vector m1_p = m1 - axisPow * m1;
+        KDL::Vector m2_p = m2 - axisPow * m2;
 
-    jointIdsToSolution1[0] = std::make_pair(id1, normalizeAngle(theta1_1));
-    jointIdsToSolution1[1] = std::make_pair(id2, normalizeAngle(theta2_1));
+        KDL::Vector n1_p = n1 - axisPow * n1;
+        KDL::Vector n2_p = n2 - axisPow * n2;
+
+        double theta1_1 = std::atan2(KDL::dot(exp1.getAxis(), m1_p * v_p), KDL::dot(m1_p, v_p));
+        double theta2_1 = std::atan2(KDL::dot(exp2.getAxis(), u_p * m2_p), KDL::dot(u_p, m2_p));
+
+        double theta1_2 = std::atan2(KDL::dot(exp1.getAxis(), n1_p * v_p), KDL::dot(n1_p, v_p));
+        double theta2_2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * n2_p), KDL::dot(u_p, n2_p));
+
+        jointIdsToSolution1[0].second = normalizeAngle(theta1_1);
+        jointIdsToSolution1[1].second = normalizeAngle(theta2_1);
+
+        jointIdsToSolution2[0].second = normalizeAngle(theta1_2);
+        jointIdsToSolution2[1].second = normalizeAngle(theta2_2);
+
+        ret = samePlane && KDL::Equal(m1_p.Norm(), v_p_norm);
+    }
+    else
+    {
+        double theta1 = std::atan2(KDL::dot(exp1.getAxis(), c_diff * v_p), KDL::dot(c_diff, v_p));
+        double theta2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * c_diff), KDL::dot(-c_diff, u_p));
+
+        jointIdsToSolution1[0].second = jointIdsToSolution2[0].second = normalizeAngle(theta1);
+        jointIdsToSolution1[1].second = jointIdsToSolution2[1].second = normalizeAngle(theta2);
+
+        ret = c_zero;
+    }
 
     solutions[0] = jointIdsToSolution1;
-
-    jointIdsToSolution2[0] = std::make_pair(id1, normalizeAngle(theta1_2));
-    jointIdsToSolution2[1] = std::make_pair(id2, normalizeAngle(theta2_2));
-
     solutions[1] = jointIdsToSolution2;
 
-    return solutions;
+    return ret;
 }
 
 // -----------------------------------------------------------------------------

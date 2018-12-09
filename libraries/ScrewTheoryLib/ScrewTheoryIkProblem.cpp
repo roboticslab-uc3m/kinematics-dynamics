@@ -78,6 +78,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
     rhsFrames.push_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
 
     bool firstIteration = true;
+    bool reachable = true;
 
     for (int i = 0; i < steps.size(); i++)
     {
@@ -91,7 +92,9 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
         for (int j = 0; j < previousSize; j++)
         {
             const KDL::Frame & H = transformPoint(solutions[j], poeTerms);
-            const ScrewTheoryIkSubproblem::Solutions & partialSolutions = steps[i]->solve(rhsFrames[j], H);
+            ScrewTheoryIkSubproblem::Solutions partialSolutions;
+
+            reachable = reachable & steps[i]->solve(rhsFrames[j], H, partialSolutions);
 
             if (partialSolutions.size() > 1)
             {
@@ -132,7 +135,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
         firstIteration = false;
     }
 
-    return std::count(poeTerms.begin(), poeTerms.end(), EXP_UNKNOWN) == 0;
+    return reachable;
 }
 
 // -----------------------------------------------------------------------------

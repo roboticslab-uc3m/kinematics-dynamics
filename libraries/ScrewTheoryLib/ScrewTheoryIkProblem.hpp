@@ -28,7 +28,7 @@ public:
 
     virtual ~ScrewTheoryIkSubproblem() {}
 
-    virtual Solutions solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform = KDL::Frame::Identity()) const = 0;
+    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const = 0;
 
     virtual int solutions() const = 0;
 };

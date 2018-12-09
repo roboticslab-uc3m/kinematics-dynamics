@@ -3,6 +3,8 @@
 #ifndef __SCREW_THEORY_TOOLS_HPP__
 #define __SCREW_THEORY_TOOLS_HPP__
 
+#include <cmath>
+
 #include <kdl/frames.hpp>
 #include <kdl/utilities/utility.h>
 
@@ -25,11 +27,15 @@ inline KDL::Rotation vectorPow2(const KDL::Vector & v)
 
 inline double normalizeAngle(double angle)
 {
-    if (angle > KDL::PI)
+    if (KDL::Equal(std::abs(angle), KDL::PI))
+    {
+        return KDL::PI;
+    }
+    else if (angle > KDL::PI)
     {
         return angle - 2 * KDL::PI;
     }
-    else if (angle <= -KDL::PI)
+    else if (angle < -KDL::PI)
     {
         return angle + 2 * KDL::PI;
     }

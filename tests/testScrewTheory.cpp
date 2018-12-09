@@ -515,7 +515,8 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     ASSERT_EQ(pk1.solutions(), 1);
 
     KDL::Frame rhs(k - p);
-    ScrewTheoryIkSubproblem::Solutions actual = pk1.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pk1.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 1);
@@ -542,7 +543,8 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     ASSERT_EQ(pk2.solutions(), 2);
 
     KDL::Frame rhs(k - p);
-    ScrewTheoryIkSubproblem::Solutions actual = pk2.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pk2.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 2);
     ASSERT_EQ(actual[0].size(), 2);
@@ -561,6 +563,25 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     expected[1] = sols2;
 
     checkSolutions(actual, expected);
+
+    KDL::Vector k2 = k + KDL::Vector(1, 0, 0);
+    KDL::Frame rhs2(k2 - p);
+    ASSERT_FALSE(pk2.solve(rhs2, KDL::Frame::Identity(), actual));
+
+    sols1[0].second = sols2[0].second = 3 * KDL::PI / 4;
+    sols1[1].second = sols2[1].second = KDL::PI;
+
+    expected[0] = sols1;
+    expected[1] = sols2;
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p3 = p + KDL::Vector(0.5, 0, 0);
+    PadenKahanTwo pk2c(0, 1, exp1, exp2, p3, r);
+    KDL::Frame rhs3(k2 - p3);
+    ASSERT_FALSE(pk2c.solve(rhs3, KDL::Frame::Identity(), actual));
+
+    checkSolutions(actual, expected);
 }
 
 TEST_F(ScrewTheoryTest, PadenKahanThree)
@@ -575,7 +596,8 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     ASSERT_EQ(pk3.solutions(), 2);
 
     KDL::Frame rhs(delta - (p - k));
-    ScrewTheoryIkSubproblem::Solutions actual = pk3.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pk3.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 2);
     ASSERT_EQ(actual[0].size(), 1);
@@ -586,6 +608,19 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
 
     sol1[0] = std::make_pair(0, KDL::PI / 2);
     sol2[0] = std::make_pair(0, KDL::PI);
+
+    expected[0] = sol1;
+    expected[1] = sol2;
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k2 = k + KDL::Vector(1, 0, 1);
+    PadenKahanThree pk3b(0, exp, p, k2);
+    KDL::Frame rhs2(delta - (p - k2));
+
+    ASSERT_FALSE(pk3b.solve(rhs2, KDL::Frame::Identity(), actual));
+
+    sol1[0] = sol2[0] = std::make_pair(0, 3 * KDL::PI / 4);
 
     expected[0] = sol1;
     expected[1] = sol2;
@@ -604,7 +639,8 @@ TEST_F(ScrewTheoryTest, PardosOne)
     ASSERT_EQ(pg1.solutions(), 1);
 
     KDL::Frame rhs(k - p);
-    ScrewTheoryIkSubproblem::Solutions actual = pg1.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pg1.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 1);
@@ -630,7 +666,8 @@ TEST_F(ScrewTheoryTest, PardosTwo)
     ASSERT_EQ(pg2.solutions(), 1);
 
     KDL::Frame rhs(k - p);
-    ScrewTheoryIkSubproblem::Solutions actual = pg2.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pg2.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 2);
@@ -658,7 +695,8 @@ TEST_F(ScrewTheoryTest, PardosThree)
     ASSERT_EQ(pg3.solutions(), 2);
 
     KDL::Frame rhs(delta - (p - k));
-    ScrewTheoryIkSubproblem::Solutions actual = pg3.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pg3.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 2);
     ASSERT_EQ(actual[0].size(), 1);
@@ -669,6 +707,19 @@ TEST_F(ScrewTheoryTest, PardosThree)
 
     sol1[0] = std::make_pair(0, k.y() - p.y() - delta.y());
     sol2[0] = std::make_pair(0, k.y() - p.y() + delta.y());
+
+    expected[0] = sol1;
+    expected[1] = sol2;
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k2 = k + KDL::Vector(2, 0, 0);
+    PardosThree pg3b(0, exp, p, k2);
+    KDL::Frame rhs2(delta - (p - k2));
+
+    ASSERT_FALSE(pg3b.solve(rhs2, KDL::Frame::Identity(), actual));
+
+    sol1[0] = sol2[0] = std::make_pair(0, 2);
 
     expected[0] = sol1;
     expected[1] = sol2;
@@ -688,7 +739,8 @@ TEST_F(ScrewTheoryTest, PardosFour)
     ASSERT_EQ(pg4.solutions(), 2);
 
     KDL::Frame rhs(k - p);
-    ScrewTheoryIkSubproblem::Solutions actual = pg4.solve(rhs, KDL::Frame::Identity());
+    ScrewTheoryIkSubproblem::Solutions actual;
+    ASSERT_TRUE(pg4.solve(rhs, KDL::Frame::Identity(), actual));
 
     ASSERT_EQ(actual.size(), 2);
     ASSERT_EQ(actual[0].size(), 2);
@@ -702,6 +754,26 @@ TEST_F(ScrewTheoryTest, PardosFour)
 
     sols2[0] = std::make_pair(0, KDL::PI);
     sols2[1] = std::make_pair(1, -KDL::PI / 2);
+
+    expected[0] = sols1;
+    expected[1] = sols2;
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k2 = k + KDL::Vector(0, 1, 0);
+    KDL::Frame rhs2(k2 - p);
+    ASSERT_FALSE(pg4.solve(rhs2, KDL::Frame::Identity(), actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p3 = p + KDL::Vector(0.75, 0, 0);
+    KDL::Vector k3 = k + KDL::Vector(-0.75, 0, -0.75);
+    PardosFour pg4c(0, 1, exp1, exp2, p3);
+    KDL::Frame rhs3(k3 - p3);
+    ASSERT_FALSE(pg4c.solve(rhs3, KDL::Frame::Identity(), actual));
+
+    sols1[0].second = sols2[0].second = 3 * KDL::PI / 4;
+    sols1[1].second = sols2[1].second = KDL::PI;
 
     expected[0] = sols1;
     expected[1] = sols2;
