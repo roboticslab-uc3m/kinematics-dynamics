@@ -28,10 +28,10 @@ public:
 
 private:
 
-    int id;
-    MatrixExponential exp;
-    KDL::Vector p;
-    KDL::Rotation axisPow;
+    const int id;
+    const MatrixExponential exp;
+    const KDL::Vector p;
+    const KDL::Rotation axisPow;
 };
 
 /**
@@ -51,11 +51,11 @@ public:
 
 private:
 
-    int id1, id2;
-    MatrixExponential exp1, exp2;
-    KDL::Vector p, r, axesCross;
-    KDL::Rotation axisPow1, axisPow2;
-    double axesDot;
+    const int id1, id2;
+    const MatrixExponential exp1, exp2;
+    const KDL::Vector p, r, axesCross;
+    const KDL::Rotation axisPow1, axisPow2;
+    const double axesDot;
 };
 
 /**
@@ -75,10 +75,10 @@ public:
 
 private:
 
-    int id;
-    MatrixExponential exp;
-    KDL::Vector p, k;
-    KDL::Rotation axisPow;
+    const int id;
+    const MatrixExponential exp;
+    const KDL::Vector p, k;
+    const KDL::Rotation axisPow;
 };
 
 /**
@@ -99,9 +99,9 @@ public:
 
 private:
 
-    int id;
-    MatrixExponential exp;
-    KDL::Vector p;
+    const int id;
+    const MatrixExponential exp;
+    const KDL::Vector p;
 };
 
 /**
@@ -122,10 +122,10 @@ public:
 
 private:
 
-    int id1, id2;
-    MatrixExponential exp1, exp2;
-    KDL::Vector p, crossPr2;
-    double crossPr2Norm;
+    const int id1, id2;
+    const MatrixExponential exp1, exp2;
+    const KDL::Vector p, crossPr2;
+    const double crossPr2Norm;
 };
 
 /**
@@ -146,9 +146,9 @@ public:
 
 private:
 
-    int id;
-    MatrixExponential exp;
-    KDL::Vector p, k;
+    const int id;
+    const MatrixExponential exp;
+    const KDL::Vector p, k;
 };
 
 /**
@@ -169,10 +169,10 @@ public:
 
 private:
 
-    int id1, id2;
-    MatrixExponential exp1, exp2;
-    KDL::Vector p, n;
-    KDL::Rotation axisPow;
+    const int id1, id2;
+    const MatrixExponential exp1, exp2;
+    const KDL::Vector p, n;
+    const KDL::Rotation axisPow;
 };
 
 }  // namespace roboticslab

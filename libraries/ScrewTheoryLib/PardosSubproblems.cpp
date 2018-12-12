@@ -8,6 +8,19 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
+namespace
+{
+    KDL::Vector computeNormal(const MatrixExponential & exp1, const MatrixExponential & exp2)
+    {
+        KDL::Vector diff = exp2.getOrigin() - exp1.getOrigin();
+        KDL::Vector normal = (exp1.getAxis() * diff) * exp1.getAxis();
+        normal.Normalize();
+        return vectorPow2(normal) * diff;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector & _p)
     : id(_id),
       exp(_exp),
@@ -40,11 +53,10 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
       id2(_id2),
       exp1(_exp1),
       exp2(_exp2),
-      p(_p)
-{
-    crossPr2 = exp2.getAxis() * exp1.getAxis();
-    crossPr2Norm = crossPr2.Norm();
-}
+      p(_p),
+      crossPr2(exp2.getAxis() * exp1.getAxis()),
+      crossPr2Norm(crossPr2.Norm())
+{}
 
 // -----------------------------------------------------------------------------
 
@@ -138,15 +150,10 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
       id2(_id2),
       exp1(_exp1),
       exp2(_exp2),
-      p(_p)
-{
-    KDL::Vector diff = exp2.getOrigin() - exp1.getOrigin();
-    KDL::Vector normal = (exp1.getAxis() * diff) * exp1.getAxis();
-    normal.Normalize();
-    n = vectorPow2(normal) * diff;
-
-    axisPow = vectorPow2(exp1.getAxis()); // same as exp2.getAxis()
-}
+      p(_p),
+      n(computeNormal(exp1, exp2)),
+      axisPow(vectorPow2(exp1.getAxis())) // same as exp2.getAxis()
+{}
 
 // -----------------------------------------------------------------------------
 

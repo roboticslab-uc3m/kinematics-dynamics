@@ -13,10 +13,9 @@ using namespace roboticslab;
 PadenKahanOne::PadenKahanOne(int _id, const MatrixExponential & _exp, const KDL::Vector & _p)
     : id(_id),
       exp(_exp),
-      p(_p)
-{
-    axisPow = vectorPow2(exp.getAxis());
-}
+      p(_p),
+      axisPow(vectorPow2(exp.getAxis()))
+{}
 
 // -----------------------------------------------------------------------------
 
@@ -53,14 +52,12 @@ PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1
     exp1(_exp1),
     exp2(_exp2),
     p(_p),
-    r(_r)
-{
-    axesCross = exp1.getAxis() * exp2.getAxis();
-    axesDot = KDL::dot(exp1.getAxis(), exp2.getAxis());
-
-    axisPow1 = vectorPow2(exp1.getAxis());
-    axisPow2 = vectorPow2(exp2.getAxis());
-}
+    r(_r),
+    axesCross(exp1.getAxis() * exp2.getAxis()),
+    axisPow1(vectorPow2(exp1.getAxis())),
+    axisPow2(vectorPow2(exp2.getAxis())),
+    axesDot(KDL::dot(exp1.getAxis(), exp2.getAxis()))
+{}
 
 // -----------------------------------------------------------------------------
 
@@ -155,10 +152,9 @@ PadenKahanThree::PadenKahanThree(int _id, const MatrixExponential & _exp, const 
     : id(_id),
       exp(_exp),
       p(_p),
-      k(_k)
-{
-    axisPow = vectorPow2(exp.getAxis());
-}
+      k(_k),
+      axisPow(vectorPow2(exp.getAxis()))
+{}
 
 // -----------------------------------------------------------------------------
 
