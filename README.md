@@ -37,3 +37,4 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ## Similar and Related Projects
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
+- [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
