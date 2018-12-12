@@ -123,8 +123,10 @@ namespace
 
     private:
         result_type expectedKnown, expectedSimplified, ignoreSimplifiedState;
-    }
-    knownTerm(true), unknownTerm(false), unknownNotSimplifiedTerm(false, false);
+    };
+
+    // Can't inline into previous definition, Doxygen output is messed up by the first variable.
+    poe_term_candidate knownTerm(true), unknownTerm(false), unknownNotSimplifiedTerm(false, false);
 
     void clearSteps(ScrewTheoryIkProblem::Steps & steps)
     {
@@ -150,6 +152,7 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
 {
     std::set<KDL::Vector, compare_vectors> set;
 
+    // Add origin.
     set.insert(KDL::Vector::Zero());
 
     for (int i = 0; i < poe.size(); i++)
@@ -161,8 +164,10 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
             continue;
         }
 
+        // Add some point of this axis.
         set.insert(exp.getOrigin());
 
+        // Find intersection between axes.
         for (int j = 1; j < poe.size(); j++)
         {
             const MatrixExponential & exp2 = poe.exponentialAtJoint(j);
@@ -191,6 +196,7 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
         }
     }
 
+    // Find one additional random point on each axis.
     for (int i = 0; i < poe.size(); i++)
     {
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
@@ -211,6 +217,7 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
         while (!set.insert(randomPointOnAxis).second);
     }
 
+    // Add TCP.
     set.insert(poe.getTransform().p);
 
     std::vector<KDL::Vector> points(set.size());
@@ -223,22 +230,27 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
 
 ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 {
+    // Reset state, mark all PoE terms as unknown.
     for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
         it->known = false;
     }
 
+    // Find solutions, if available.
     ScrewTheoryIkProblem::Steps steps = searchSolutions();
 
     if (std::count_if(poeTerms.begin(), poeTerms.end(), knownTerm) == poe.size())
     {
+        // Instantiate solver class.
         return ScrewTheoryIkProblem::create(poe, steps);
     }
     else
     {
+        // Free memory allocations.
         clearSteps(steps);
     }
 
+    // No solution found, try with reversed PoE.
     poe.reverseSelf();
 
     for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
@@ -266,27 +278,36 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 {
     points = searchPoints(poe);
 
+    // Shared collection of characteristic points to work with.
     testPoints.assign(MAX_SIMPLIFICATION_DEPTH, points[0]);
 
     ScrewTheoryIkProblem::Steps steps;
 
+    // Vector of iterators (for iterating more than once over the same collection).
+    // Size is number of characteristic points being considered at once.
     std::vector< std::vector<KDL::Vector>::const_iterator > iterators(MAX_SIMPLIFICATION_DEPTH, points.begin());
 
+    // 0: try one point, 1: try two points simultaneously, and so on...
     int depth = 0;
 
     do
     {
+        // Reset simplification state.
         for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
         {
             it->simplified = false;
         }
 
+        // For the current set of characteristic points, try to simplify the PoE.
         simplify(depth);
 
+        // Find a solution if available.
         ScrewTheoryIkSubproblem * subproblem = trySolve(depth);
 
         if (subproblem != NULL)
         {
+            // Solution found, reset and start again. We'll iterate over the same points, taking
+            // into account that some terms are already known.
             steps.push_back(subproblem);
             iterators.assign(iterators.size(), points.begin());
             testPoints[0] = points[0];
@@ -294,28 +315,33 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
             continue;
         }
 
+        // Advance iterators at each stage (first point, second point (if used), ...).
         for (int stage = 0; stage < iterators.size(); stage++)
         {
             ++iterators[stage];
 
             if (iterators[stage] == points.end())
             {
+                // We've tried all points for this stage, reset and pick first point again.
                 iterators[stage] = points.begin();
                 testPoints[stage] = *iterators[stage];
 
                 if (stage == depth)
                 {
+                    // We are ready to try another point simultaneously, increase "depth" level.
                     depth++;
                     break;
                 }
             }
             else
             {
+                // Still more points available, quit from here and proceed once more with the outer loop.
                 testPoints[stage] = *iterators[stage];
                 break;
             }
         }
     }
+    // Stop if we can't test more points or all terms are known (solution found).
     while (depth < MAX_SIMPLIFICATION_DEPTH && std::count_if(poeTerms.begin(), poeTerms.end(), unknownTerm) != 0);
 
     return steps;
@@ -329,13 +355,16 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
     if (unknownsCount == 0 || unknownsCount > 2) // TODO: hardcoded
     {
+        // Can't solve yet, too many unknowns or oversimplified.
         return NULL;
     }
 
+    // Find rightmost unknown and not simplified PoE term.
     std::vector<PoeTerm>::reverse_iterator lastUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
     int lastExpId = std::distance(poeTerms.begin(), lastUnknown.base()) - 1;
     const MatrixExponential & lastExp = poe.exponentialAtJoint(lastExpId);
 
+    // Select the most adequate subproblem, if available.
     if (unknownsCount == 1)
     {
         if (depth == 0)
@@ -373,6 +402,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
     }
     else if (unknownsCount == 2 && lastUnknown != poeTerms.rend())
     {
+        // Pick the previous PoE term.
         std::vector<PoeTerm>::reverse_iterator nextToLastUnknown = lastUnknown;
         std::advance(nextToLastUnknown, 1);
 
@@ -446,6 +476,7 @@ void ScrewTheoryIkProblemBuilder::simplify(int depth)
 
 void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanOne(const KDL::Vector & point)
 {
+    // Pick first rightmost unknown PoE term.
     std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownTerm);
 
     for (std::vector<PoeTerm>::reverse_iterator rit = ritUnknown; rit != poeTerms.rend(); ++rit)
@@ -468,6 +499,7 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanOne(const KDL::Vector & 
 
 void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanThree(const KDL::Vector & point)
 {
+    // Pick first leftmost unknown PoE term.
     std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownTerm);
 
     for (std::vector<PoeTerm>::iterator it = itUnknown; it != poeTerms.end(); ++it)
@@ -490,6 +522,7 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanThree(const KDL::Vector 
 
 void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
 {
+    // Pick first leftmost and rightmost unknown PoE terms.
     std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
     std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
 
@@ -498,6 +531,7 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
 
     if (idStart >= idEnd)
     {
+        // Same term or something went wrong (all terms have been already simplified).
         return;
     }
 
@@ -506,21 +540,25 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
 
     if (firstExp.getMotionType() == MatrixExponential::TRANSLATION)
     {
+        // Advance from the leftmost PoE term.
         for (int i = idEnd - 1; i >= idStart; i--)
         {
             const MatrixExponential & nextExp = poe.exponentialAtJoint(i + 1);
 
+            // Compare two consecutive PoE terms.
             if (i != idStart)
             {
                 const MatrixExponential & currentExp = poe.exponentialAtJoint(i);
 
                 if (planarMovement(currentExp, nextExp))
                 {
+                    // Might be ultimately simplified, let's find out in the next iterations.
                     continue;
                 }
             }
             else if (normalPlaneMovement(firstExp, nextExp))
             {
+                // Can simplify everything to the *right* of this PoE term.
                 for (int j = idStart + 1; j <= idEnd; j++)
                 {
                     poeTerms[j].simplified = true;
@@ -532,6 +570,7 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
     }
     else if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
     {
+        // Advance from the rightmost PoE term.
         for (int i = idStart + 1; i <= idEnd; i++)
         {
             const MatrixExponential & prevExp = poe.exponentialAtJoint(i - 1);
@@ -547,6 +586,7 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
             }
             else if (normalPlaneMovement(prevExp, lastExp))
             {
+                // Can simplify everything to the *left* of this PoE term.
                 for (int j = idEnd - 1; j >= idStart; j--)
                 {
                     poeTerms[j].simplified = true;

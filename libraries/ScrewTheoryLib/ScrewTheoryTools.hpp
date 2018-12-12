@@ -18,6 +18,17 @@ namespace roboticslab
  * @brief Contains classes related to Screw Theory solvers and tools.
  */
 
+/**
+ * @ingroup ScrewTheoryLib
+ *
+ * @brief Multiply a vector by itself to obtain a square matrix
+ *
+ * Given a column-vector v, computes v*v'.
+ *
+ * @param v Input vector.
+ *
+ * @return Resulting square matrix.
+ */
 inline KDL::Rotation vectorPow2(const KDL::Vector & v)
 {
     return KDL::Rotation(v.x() * v.x(), v.x() * v.y(), v.x() * v.z(),
@@ -25,6 +36,18 @@ inline KDL::Rotation vectorPow2(const KDL::Vector & v)
                          v.x() * v.z(), v.y() * v.z(), v.z() * v.z());
 }
 
+/**
+ * @ingroup ScrewTheoryLib
+ *
+ * @brief Clip an angle value between certain bounds.
+ *
+ * Values that exceed [-pi pi] are normalized to fit this range. Values
+ * close to -pi are approximated as pi.
+ *
+ * @param angle Magnitude of the requested angle.
+ *
+ * @return Normalized angle.
+ */
 inline double normalizeAngle(double angle)
 {
     if (KDL::Equal(std::abs(angle), KDL::PI))

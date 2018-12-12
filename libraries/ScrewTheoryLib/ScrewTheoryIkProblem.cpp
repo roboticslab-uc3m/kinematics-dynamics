@@ -67,6 +67,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
         solutions.clear();
     }
 
+    // Reserve space in memory to avoid additional allocations on runtime.
     solutions.reserve(soln);
     solutions.push_back(KDL::JntArray(poe.size()));
 
@@ -84,34 +85,48 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
     {
         if (!firstIteration)
         {
+            // Re-compute right-hand side of PoE equation, i.e. prod(e_i) = H_S_T_q * H_S_T_0^(-1)
             recalculateFrames(solutions, rhsFrames, poeTerms);
         }
 
+        // Save this, the vector of solutions might be resized in the following loop, increase size
+        // on demand for improved efficiency (instead of allocating everything from the start).
         int previousSize = solutions.size();
 
         for (int j = 0; j < previousSize; j++)
         {
+            // Apply known frames to the first characteristic point for each subproblem.
             const KDL::Frame & H = transformPoint(solutions[j], poeTerms);
+
             ScrewTheoryIkSubproblem::Solutions partialSolutions;
 
+            // Actually solve each subproblem, use current right-hand side of PoE to obtain
+            // the right-hand side of said subproblem.
             reachable = reachable & steps[i]->solve(rhsFrames[j], H, partialSolutions);
 
+            // The global number of solutions is increased by this step.
             if (partialSolutions.size() > 1)
             {
+                // Noop if current size is not less than requested.
                 solutions.resize(previousSize * partialSolutions.size());
                 rhsFrames.resize(previousSize * partialSolutions.size());
 
                 for (int k = 1; k < partialSolutions.size(); k++)
                 {
+                    // Replicate known solutions, these won't change further on.
                     solutions[j + previousSize * k] = solutions[j];
+
+                    // Replicate right-hand side frames for the next iteration, these might change.
                     rhsFrames[j + previousSize * k] = rhsFrames[j];
                 }
             }
 
+            // For each local solution of this subproblem...
             for (int k = 0; k < partialSolutions.size(); k++)
             {
                 const ScrewTheoryIkSubproblem::JointIdsToSolutions & jointIdsToSolutions = partialSolutions[k];
 
+                // For each joint-id-to-value pair of this local solution...
                 for (int l = 0; l < jointIdsToSolutions.size(); l++)
                 {
                     const ScrewTheoryIkSubproblem::JointIdToSolution & jointIdToSolution = jointIdsToSolutions[l];
@@ -119,6 +134,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
                     int id = jointIdToSolution.first;
                     double theta = jointIdToSolution.second;
 
+                    // Preserve mapping of ids (associated to `poe`).
                     poeTerms[id] = EXP_KNOWN;
 
                     if (reversed)
@@ -127,6 +143,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
                         theta = -theta;
                     }
 
+                    // Store the final value in the desired index, don't shuffle it after this point.
                     solutions[j + previousSize * k](id) = theta;
                 }
             }
@@ -144,6 +161,7 @@ void ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
 {
     std::vector<KDL::Frame> pre, post;
 
+    // Leftmost known terms of the PoE.
     if (recalculateFrames(solutions, pre, poeTerms, false))
     {
         for (int i = 0; i < solutions.size(); i++)
@@ -152,6 +170,7 @@ void ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
         }
     }
 
+    // Rightmost known terms of the PoE.
     if (recalculateFrames(solutions, post, poeTerms, true))
     {
         for (int i = 0; i < solutions.size(); i++)
@@ -184,6 +203,8 @@ bool ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
                 frames[j] = frames[j] * exp.asFrame(getTheta(solutions[j], i, reversed));
             }
 
+            // Mark as 'computed' and include in right-hand side of PoE so that this
+            // term will be ignored in future iterations.
             poeTerms[i] = EXP_COMPUTED;
             hasMultipliedTerms = true;
         }
@@ -193,6 +214,7 @@ bool ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
         }
         else
         {
+            // We hit an unknown term, quit this loop.
             break;
         }
     }
@@ -223,6 +245,7 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
 
             if (foundKnown)
             {
+                // Already applied at least one transformation, can't proceed further.
                 break;
             }
         }
@@ -230,6 +253,8 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
         {
             if (foundKnown || foundUnknown)
             {
+                // Only skip this if we have a sequence of aldeady-computed terms in the
+                // rightmost end of the PoE.
                 break;
             }
         }
