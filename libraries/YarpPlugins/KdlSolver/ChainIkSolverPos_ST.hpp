@@ -30,6 +30,8 @@ public:
 
     static const int E_SOLUTION_NOT_FOUND = -100;
 
+    static const int E_NOT_REACHABLE = -101;
+
 private:
 
     ChainIkSolverPos_ST(const KDL::Chain & chain, ScrewTheoryIkProblem * problem);

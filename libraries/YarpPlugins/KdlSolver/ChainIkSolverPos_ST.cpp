@@ -25,14 +25,23 @@ int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Fram
 {
     std::vector<KDL::JntArray> solutions;
 
-    if (error || !problem->solve(p_in, solutions))
+    if (error == E_SOLUTION_NOT_FOUND)
     {
-        return (error = E_SOLUTION_NOT_FOUND);
+        return error;
     }
+
+    int ret = problem->solve(p_in, solutions);
 
     q_out = solutions.at(0); // TODO
 
-    return (error = E_NOERROR);
+    if (ret == E_NOT_REACHABLE)
+    {
+        return (error = ret);
+    }
+    else
+    {
+        return (error = E_NOERROR);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -77,6 +86,8 @@ const char * ChainIkSolverPos_ST::strError(const int error) const
     {
     case E_SOLUTION_NOT_FOUND:
         return "IK solution not found";
+    case E_NOT_REACHABLE:
+        return "IK solution not reachable";
     default:
         return KDL::SolverI::strError(error);
     }

@@ -528,6 +528,18 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     expected[0] = sol;
 
     checkSolutions(actual, expected);
+
+    KDL::Vector k2 = k + KDL::Vector(0, 0, 1);
+    KDL::Frame rhs2(k2 - p);
+    ASSERT_FALSE(pk1.solve(rhs2, KDL::Frame::Identity(), actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k3 = k + KDL::Vector(0, 1, 0);
+    KDL::Frame rhs3(k3 - p);
+    ASSERT_FALSE(pk1.solve(rhs3, KDL::Frame::Identity(), actual));
+
+    checkSolutions(actual, expected);
 }
 
 TEST_F(ScrewTheoryTest, PadenKahanTwo)
