@@ -36,4 +36,4 @@ Installation instructions for installing from source can be found [here](doc/kin
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/kinematics-dynamics.svg?label=Issues)](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 
 ## Similar and Related Projects
-- https://github.com/ros-industrial-consortium/trajopt_ros
+- [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
