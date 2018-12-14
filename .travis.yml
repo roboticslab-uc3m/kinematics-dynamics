@@ -1,6 +1,5 @@
 language: cpp
 dist: trusty
-sudo: false
 os: linux
 
 compiler:
@@ -12,7 +11,7 @@ env:
     - CACHE_DIR=~/cached-deps
   matrix:
     - YARP_CHECKOUT=master
-    #- YARP_CHECKOUT=v3.0.1 # broken, do not use (QA#70)
+    - YARP_CHECKOUT=30dce54 # hotfix for v3.0.1
     - YARP_CHECKOUT=v2.3.72.1
     - YARP_CHECKOUT=v2.3.70.2
 
@@ -79,7 +78,7 @@ install:
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name COLOR_DEBUG
     --repo-url https://github.com/roboticslab-uc3m/color-debug
-    --repo-checkout master
+    --repo-checkout develop
 
   #-- Install AMOR API (for AmorCartesianControl)
   - >

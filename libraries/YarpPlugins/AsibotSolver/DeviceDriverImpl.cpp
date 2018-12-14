@@ -59,11 +59,11 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
         if (qMin[i] == qMax[i])
         {
-            CD_WARNING("qMin == qMax (%f) at joint %d\n", qMin[i], i);
+            CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", i, qMin[i]);
         }
         if (qMin[i] > qMax[i])
         {
-            CD_ERROR("qMin > qMax (%f > %f) at joint %d\n", qMin[i], qMax[i], i);
+            CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", i, qMin[i], qMax[i]);
             return false;
         }
     }

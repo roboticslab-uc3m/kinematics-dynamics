@@ -2,9 +2,10 @@
 
 #include "KdlTrajectory.hpp"
 
-#include <kdl/frames.hpp>
-#include <kdl/velocityprofile_trap.hpp>
+#include <kdl/trajectory_segment.hpp>
 #include <kdl/path_line.hpp>
+#include <kdl/rotational_interpolation_sa.hpp>
+#include <kdl/velocityprofile_trap.hpp>
 
 #include <ColorDebug.h>
 
@@ -14,7 +15,9 @@
 
 roboticslab::KdlTrajectory::KdlTrajectory()
     : currentTrajectory(0),
+      path(0),
       orient(0),
+      velocityProfile(0),
       duration(DURATION_NOT_SET),
       configuredPath(false),
       configuredVelocityProfile(false)
@@ -153,9 +156,16 @@ bool roboticslab::KdlTrajectory::create()
 
 bool roboticslab::KdlTrajectory::destroy()
 {
-    delete currentTrajectory;  // deletes _orient, too
+    delete currentTrajectory; // deletes aggregated path and profile instances, too
     currentTrajectory = 0;
+    path = 0;
     orient = 0;
+    velocityProfile = 0;
+
+    duration = DURATION_NOT_SET;
+    configuredPath = configuredVelocityProfile = false;
+
+    frames.clear();
 
     return true;
 }

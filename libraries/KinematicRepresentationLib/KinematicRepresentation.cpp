@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include <kdl/frames.hpp>
+#include <kdl/utilities/utility.h>
 
 #include <ColorDebug.h>
 
@@ -406,6 +407,20 @@ bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, cons
 {
     CD_ERROR("Not implemented.\n");
     return false;
+}
+
+// -----------------------------------------------------------------------------
+
+double KinRepresentation::degToRad(double deg)
+{
+    return deg * KDL::deg2rad;
+}
+
+// -----------------------------------------------------------------------------
+
+double KinRepresentation::radToDeg(double rad)
+{
+    return rad * KDL::rad2deg;
 }
 
 // -----------------------------------------------------------------------------

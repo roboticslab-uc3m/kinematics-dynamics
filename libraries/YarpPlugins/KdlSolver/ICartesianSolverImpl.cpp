@@ -2,13 +2,10 @@
 
 #include "KdlSolver.hpp"
 
+#include <kdl/frames.hpp>
+#include <kdl/jntarray.hpp>
+#include <kdl/joint.hpp>
 #include <kdl/segment.hpp>
-#include <kdl/chainiksolverpos_lma.hpp> // --ik lma
-#include <kdl/chainiksolverpos_nr_jl.hpp>  // --ik nrjl
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainiksolvervel_pinv.hpp>
-#include <kdl/chainidsolver.hpp>
-#include <kdl/chainidsolver_recursive_newton_euler.hpp>
 
 #include <ColorDebug.h>
 
@@ -19,7 +16,7 @@
 
 bool roboticslab::KdlSolver::getNumJoints(int* numJoints)
 {
-    *numJoints = getChain().getNrOfJoints();
+    *numJoints = chain.getNrOfJoints();
     return true;
 }
 
@@ -29,9 +26,16 @@ bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x)
 {
     KDL::Frame frameX = KdlVectorConverter::vectorToFrame(x);
 
-    KDL::Chain chain = getChain();
+    mutex.wait();
+
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), frameX));
-    setChain(chain);
+
+    fkSolverPos->updateInternalDataStructures();
+    ikSolverPos->updateInternalDataStructures();
+    ikSolverVel->updateInternalDataStructures();
+    idSolver->updateInternalDataStructures();
+
+    mutex.post();
 
     return true;
 }
@@ -40,7 +44,17 @@ bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x)
 
 bool roboticslab::KdlSolver::restoreOriginalChain()
 {
-    setChain(originalChain);
+    mutex.wait();
+
+    chain = originalChain;
+
+    fkSolverPos->updateInternalDataStructures();
+    ikSolverPos->updateInternalDataStructures();
+    ikSolverVel->updateInternalDataStructures();
+    idSolver->updateInternalDataStructures();
+
+    mutex.post();
+
     return true;
 }
 
@@ -62,7 +76,6 @@ bool roboticslab::KdlSolver::changeOrigin(const std::vector<double> &x_old_obj, 
 
 bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 {
-    const KDL::Chain & chain = getChain();
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
@@ -70,10 +83,12 @@ bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<do
         qInRad(motor) = KinRepresentation::degToRad(q[motor]);
     }
 
-    //-- Main fwdKin (pos) solver lines
-    KDL::ChainFkSolverPos_recursive fksolver(chain);
+    mutex.wait();
+
     KDL::Frame fOutCart;
-    fksolver.JntToCart(qInRad, fOutCart);
+    fkSolverPos->JntToCart(qInRad, fOutCart);
+
+    mutex.post();
 
     x = KdlVectorConverter::frameToVector(fOutCart);
 
@@ -99,8 +114,6 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
         const reference_frame frame)
 {
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
-
-    const KDL::Chain & chain = getChain();
     KDL::JntArray qGuessInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
@@ -109,54 +122,34 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     }
 
     KDL::JntArray kdlq(chain.getNrOfJoints());
-    KDL::ChainIkSolverPos * iksolver_pos;
 
-    switch (ikSolver)
-    {
-    case LMA:
-        iksolver_pos = new KDL::ChainIkSolverPos_LMA(chain, L);
-        break;
-    case NRJL:
-        {
-            //-- Forward solvers, needed by the geometric solver
-            KDL::ChainFkSolverPos_recursive fksolver(chain);
-            KDL::ChainIkSolverVel_pinv iksolver(chain);  // _givens
-
-            //-- Geometric solver definition (with joint limits)
-            iksolver_pos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, fksolver, iksolver, maxIter, eps);
-        }
-        break;
-    default:
-        CD_ERROR("Unsupported IK algorithm.\n");
-        return false;
-        break;
-    }
+    mutex.wait();
 
     if (frame == TCP_FRAME)
     {
-        KDL::ChainFkSolverPos_recursive fksolver(chain);
         KDL::Frame fOutCart;
-        fksolver.JntToCart(qGuessInRad, fOutCart);
+        fkSolverPos->JntToCart(qGuessInRad, fOutCart);
         frameXd = fOutCart * frameXd;
     }
     else if (frame != BASE_FRAME)
     {
         CD_WARNING("Unsupported frame.\n");
-        delete iksolver_pos;
+        mutex.post();
         return false;
     }
 
-    int ret = iksolver_pos->CartToJnt(qGuessInRad, frameXd, kdlq);
+    int ret = ikSolverPos->CartToJnt(qGuessInRad, frameXd, kdlq);
+
+    mutex.post();
 
     if (ret < 0)
     {
-        CD_ERROR("%d: %s\n", ret, iksolver_pos->strError(ret));
-        delete iksolver_pos;
+        CD_ERROR("%d: %s\n", ret, ikSolverPos->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        CD_WARNING("%d: %s\n", ret, iksolver_pos->strError(ret));
+        CD_WARNING("%d: %s\n", ret, ikSolverPos->strError(ret));
     }
 
     q.resize(chain.getNrOfJoints());
@@ -166,7 +159,6 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
         q[motor] = KinRepresentation::radToDeg(kdlq(motor));
     }
 
-    delete iksolver_pos;
     return true;
 }
 
@@ -175,7 +167,6 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
 bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
         const reference_frame frame)
 {
-    const KDL::Chain & chain = getChain();
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
@@ -185,11 +176,12 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
 
     KDL::Twist kdlxdot = KdlVectorConverter::vectorToTwist(xdot);
 
+    mutex.wait();
+
     if (frame == TCP_FRAME)
     {
-        KDL::ChainFkSolverPos_recursive fksolver(chain);
         KDL::Frame fOutCart;
-        fksolver.JntToCart(qInRad, fOutCart);
+        fkSolverPos->JntToCart(qInRad, fOutCart);
 
         //-- Transform the basis to which the twist is expressed, but leave the reference point intact
         //-- "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
@@ -198,22 +190,24 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
     else if (frame != BASE_FRAME)
     {
         CD_WARNING("Unsupported frame.\n");
+        mutex.post();
         return false;
     }
 
-    KDL::ChainIkSolverVel_pinv iksolverv(chain);
     KDL::JntArray qDotOutRadS(chain.getNrOfJoints());
 
-    int ret = iksolverv.CartToJnt(qInRad, kdlxdot, qDotOutRadS);
+    int ret = ikSolverVel->CartToJnt(qInRad, kdlxdot, qDotOutRadS);
+
+    mutex.post();
 
     if (ret < 0)
     {
-        CD_ERROR("%d: %s\n", ret, iksolverv.strError(ret));
+        CD_ERROR("%d: %s\n", ret, ikSolverVel->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        CD_WARNING("%d: %s\n", ret, iksolverv.strError(ret));
+        CD_WARNING("%d: %s\n", ret, ikSolverVel->strError(ret));
     }
 
     qdot.resize(chain.getNrOfJoints());
@@ -230,7 +224,6 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
 
 bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 {
-    const KDL::Chain & chain = getChain();
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
@@ -241,21 +234,23 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,std::vector<dou
     KDL::JntArray qdotInRad(chain.getNrOfJoints());
     KDL::JntArray qdotdotInRad(chain.getNrOfJoints());
 
+    mutex.wait();
+
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
     KDL::JntArray kdlt(chain.getNrOfJoints());
 
-    //-- Main invDyn solver lines
-    KDL::ChainIdSolver_RNE idsolver(chain, gravity);
-    int ret = idsolver.CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+    int ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+
+    mutex.post();
 
     if (ret < 0)
     {
-        CD_ERROR("%d: %s\n", ret, idsolver.strError(ret));
+        CD_ERROR("%d: %s\n", ret, idSolver->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        CD_WARNING("%d: %s\n", ret, idsolver.strError(ret));
+        CD_WARNING("%d: %s\n", ret, idSolver->strError(ret));
     }
 
     t.resize(chain.getNrOfJoints());
@@ -272,7 +267,6 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,std::vector<dou
 
 bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
 {
-    const KDL::Chain & chain = getChain();
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
@@ -294,6 +288,8 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vect
         qdotdotInRad(motor) = KinRepresentation::degToRad(qdotdot[motor]);
     }
 
+    mutex.wait();
+
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
 
     for (int i = 0; i < fexts.size(); i++)
@@ -306,18 +302,18 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vect
 
     KDL::JntArray kdlt(chain.getNrOfJoints());
 
-    //-- Main invDyn solver lines
-    KDL::ChainIdSolver_RNE idsolver(chain, gravity);
-    int ret = idsolver.CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+    int ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+
+    mutex.post();
 
     if (ret < 0)
     {
-        CD_ERROR("%d: %s\n", ret, idsolver.strError(ret));
+        CD_ERROR("%d: %s\n", ret, idSolver->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        CD_WARNING("%d: %s\n", ret, idsolver.strError(ret));
+        CD_WARNING("%d: %s\n", ret, idSolver->strError(ret));
     }
 
     t.resize(chain.getNrOfJoints());

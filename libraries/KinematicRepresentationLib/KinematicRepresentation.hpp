@@ -3,7 +3,6 @@
 #ifndef __KINEMATIC_REPRESENTATION_HPP__
 #define __KINEMATIC_REPRESENTATION_HPP__
 
-#include <cmath>
 #include <string>
 #include <vector>
 
@@ -162,10 +161,7 @@ public:
      *
      * @return Same value expressed in radians.
      */
-    static double degToRad(double deg)
-    {
-        return deg * M_PI / 180.0;
-    }
+    static double degToRad(double deg);
 
     /**
      * @brief Converts radians to degrees.
@@ -174,10 +170,7 @@ public:
      *
      * @return Same value expressed in degrees.
      */
-    static double radToDeg(double rad)
-    {
-        return rad * 180.0 / M_PI;
-    }
+    static double radToDeg(double rad);
 
     /**
      * @brief Parses input string, returns matching enumerator value
