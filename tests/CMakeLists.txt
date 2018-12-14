@@ -22,6 +22,15 @@ if(ENABLE_tests)
 
     gtest_add_tests(testKinRepresentation "" AUTO)
 
+    # testScrewTheory
+
+    add_executable(testScrewTheory testScrewTheory.cpp)
+
+    target_link_libraries(testScrewTheory ScrewTheoryLib
+                                          gtest_main)
+
+    gtest_add_tests(testScrewTheory "" AUTO)
+
     # testKdlSolver
 
     add_executable(testKdlSolver testKdlSolver.cpp)

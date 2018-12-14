@@ -3,6 +3,7 @@
 
 add_subdirectory(KdlVectorConverterLib)
 add_subdirectory(KinematicRepresentationLib)
-add_subdirectory(YarpTinyMathLib)
+add_subdirectory(ScrewTheoryLib)
 add_subdirectory(TrajectoryLib)
 add_subdirectory(YarpPlugins)
+add_subdirectory(YarpTinyMathLib)

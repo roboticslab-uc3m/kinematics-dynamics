@@ -30,6 +30,8 @@
 
 #include "KinematicRepresentation.hpp"
 
+#include "ChainIkSolverPos_ST.hpp"
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 namespace
@@ -239,7 +241,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
     //-- IK solver algorithm.
-    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl)").asString();
+    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st)").asString();
 
     if (ik == "lma")
     {
@@ -303,6 +305,16 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         double maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt();
 
         ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, maxIter, eps);
+    }
+    else if (ik == "st")
+    {
+        ikSolverPos = ChainIkSolverPos_ST::create(chain);
+
+        if (ikSolverPos == NULL)
+        {
+            CD_ERROR("Unable to solve IK.\n");
+            return false;
+        }
     }
     else
     {
