@@ -78,7 +78,7 @@ install:
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name COLOR_DEBUG
     --repo-url https://github.com/roboticslab-uc3m/color-debug
-    --repo-checkout master
+    --repo-checkout develop
 
   #-- Install AMOR API (for AmorCartesianControl)
   - >
