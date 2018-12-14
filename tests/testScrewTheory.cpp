@@ -646,7 +646,7 @@ TEST_F(ScrewTheoryTest, PardosOne)
     KDL::Vector k(1, 1, 0);
 
     MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
-    PardosOne pg1(0, exp, p);
+    PardosGotorOne pg1(0, exp, p);
 
     ASSERT_EQ(pg1.solutions(), 1);
 
@@ -673,7 +673,7 @@ TEST_F(ScrewTheoryTest, PardosTwo)
 
     MatrixExponential exp1(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
     MatrixExponential exp2(MatrixExponential::TRANSLATION, KDL::Vector(1, 0, 0));
-    PardosTwo pg2(0, 1, exp1, exp2, p);
+    PardosGotorTwo pg2(0, 1, exp1, exp2, p);
 
     ASSERT_EQ(pg2.solutions(), 1);
 
@@ -702,7 +702,7 @@ TEST_F(ScrewTheoryTest, PardosThree)
     KDL::Vector delta(0, 1, 0);
 
     MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
-    PardosThree pg3(0, exp, p, k);
+    PardosGotorThree pg3(0, exp, p, k);
 
     ASSERT_EQ(pg3.solutions(), 2);
 
@@ -726,7 +726,7 @@ TEST_F(ScrewTheoryTest, PardosThree)
     checkSolutions(actual, expected);
 
     KDL::Vector k2 = k + KDL::Vector(2, 0, 0);
-    PardosThree pg3b(0, exp, p, k2);
+    PardosGotorThree pg3b(0, exp, p, k2);
     KDL::Frame rhs2(delta - (p - k2));
 
     ASSERT_FALSE(pg3b.solve(rhs2, KDL::Frame::Identity(), actual));
@@ -746,7 +746,7 @@ TEST_F(ScrewTheoryTest, PardosFour)
 
     MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(2, 0, 0));
     MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
-    PardosFour pg4(0, 1, exp1, exp2, p);
+    PardosGotorFour pg4(0, 1, exp1, exp2, p);
 
     ASSERT_EQ(pg4.solutions(), 2);
 
@@ -780,7 +780,7 @@ TEST_F(ScrewTheoryTest, PardosFour)
 
     KDL::Vector p3 = p + KDL::Vector(0.75, 0, 0);
     KDL::Vector k3 = k + KDL::Vector(-0.75, 0, -0.75);
-    PardosFour pg4c(0, 1, exp1, exp2, p3);
+    PardosGotorFour pg4c(0, 1, exp1, exp2, p3);
     KDL::Frame rhs3(k3 - p3);
     ASSERT_FALSE(pg4c.solve(rhs3, KDL::Frame::Identity(), actual));
 

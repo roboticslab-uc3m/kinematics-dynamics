@@ -379,7 +379,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
                 poeTerms[lastExpId].known = true;
-                return new PardosOne(lastExpId, lastExp, testPoints[0]);
+                return new PardosGotorOne(lastExpId, lastExp, testPoints[0]);
             }
         }
 
@@ -396,7 +396,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
                 poeTerms[lastExpId].known = true;
-                return new PardosThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
+                return new PardosGotorThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
             }
         }
     }
@@ -432,7 +432,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && !parallelAxes(lastExp, nextToLastExp))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return new PardosTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+                return new PardosGotorTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
 
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
@@ -441,7 +441,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && !colinearAxes(lastExp, nextToLastExp))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return new PardosFour(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+                return new PardosGotorFour(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
             }
         }
     }

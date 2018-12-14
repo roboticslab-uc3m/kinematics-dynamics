@@ -21,7 +21,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector & _p)
+PardosGotorOne::PardosGotorOne(int _id, const MatrixExponential & _exp, const KDL::Vector & _p)
     : id(_id),
       exp(_exp),
       p(_p)
@@ -29,9 +29,9 @@ PardosOne::PardosOne(int _id, const MatrixExponential & _exp, const KDL::Vector 
 
 // -----------------------------------------------------------------------------
 
-bool PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
+bool PardosGotorOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PardosOne::solutions());
+    solutions.resize(PardosGotorOne::solutions());
     JointIdsToSolutions jointIdsToSolutions(1);
 
     KDL::Vector f = pointTransform * p;
@@ -48,7 +48,7 @@ bool PardosOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform,
 
 // -----------------------------------------------------------------------------
 
-PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p)
+PardosGotorTwo::PardosGotorTwo(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p)
     : id1(_id1),
       id2(_id2),
       exp1(_exp1),
@@ -60,9 +60,9 @@ PardosTwo::PardosTwo(int _id1, int _id2, const MatrixExponential & _exp1, const 
 
 // -----------------------------------------------------------------------------
 
-bool PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
+bool PardosGotorTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PardosTwo::solutions());
+    solutions.resize(PardosGotorTwo::solutions());
     JointIdsToSolutions jointIdsToSolutions(2);
 
     KDL::Vector f = pointTransform * p;
@@ -95,7 +95,7 @@ bool PardosTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform,
 
 // -----------------------------------------------------------------------------
 
-PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vector & _p, const KDL::Vector & _k)
+PardosGotorThree::PardosGotorThree(int _id, const MatrixExponential & _exp, const KDL::Vector & _p, const KDL::Vector & _k)
     : id(_id),
       exp(_exp),
       p(_p),
@@ -104,9 +104,9 @@ PardosThree::PardosThree(int _id, const MatrixExponential & _exp, const KDL::Vec
 
 // -----------------------------------------------------------------------------
 
-bool PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
+bool PardosGotorThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PardosThree::solutions());
+    solutions.resize(PardosGotorThree::solutions());
     JointIdsToSolutions jointIdsToSolution1(1), jointIdsToSolution2(1);
 
     KDL::Vector f = pointTransform * p;
@@ -145,7 +145,7 @@ bool PardosThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransfor
 
 // -----------------------------------------------------------------------------
 
-PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p)
+PardosGotorFour::PardosGotorFour(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p)
     : id1(_id1),
       id2(_id2),
       exp1(_exp1),
@@ -157,9 +157,9 @@ PardosFour::PardosFour(int _id1, int _id2, const MatrixExponential & _exp1, cons
 
 // -----------------------------------------------------------------------------
 
-bool PardosFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
+bool PardosGotorFour::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PardosFour::solutions());
+    solutions.resize(PardosGotorFour::solutions());
     JointIdsToSolutions jointIdsToSolution1(2), jointIdsToSolution2(2);
 
     KDL::Vector f = pointTransform * p;

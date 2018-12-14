@@ -17,7 +17,7 @@ if(ENABLE_ScrewTheoryLib)
                                       ScrewTheoryIkProblemBuilder.cpp
                                       ScrewTheoryIkSubproblems.hpp
                                       PadenKahanSubproblems.cpp
-                                      PardosSubproblems.cpp)
+                                      PardosGotorSubproblems.cpp)
 
     set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp

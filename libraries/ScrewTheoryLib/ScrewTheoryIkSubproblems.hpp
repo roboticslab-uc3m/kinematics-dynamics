@@ -124,13 +124,13 @@ private:
 /**
  * @ingroup ScrewTheoryLib
  *
- * @brief First Pardos subproblem
+ * @brief First Pardos-Gotor subproblem
  *
  * Single solution, single prismatic joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi}\,{\theta}} \cdot p = k @f$
  * (translation screw applied to a point, see @cite pardosgotor2018str_handbook).
  */
-class PardosOne : public ScrewTheoryIkSubproblem
+class PardosGotorOne : public ScrewTheoryIkSubproblem
 {
 public:
 
@@ -141,7 +141,7 @@ public:
      * @param exp POE term.
      * @param p Characteristic point.
      */
-    PardosOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
+    PardosGotorOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
     virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
@@ -158,13 +158,13 @@ private:
 /**
  * @ingroup ScrewTheoryLib
  *
- * @brief Second Pardos subproblem
+ * @brief Second Pardos-Gotor subproblem
  *
  * Single solution, double prismatic joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
  * (consecutive translation screws to a point, see @cite pardosgotor2018str_handbook).
  */
-class PardosTwo : public ScrewTheoryIkSubproblem
+class PardosGotorTwo : public ScrewTheoryIkSubproblem
 {
 public:
 
@@ -177,7 +177,7 @@ public:
      * @param exp2 Second POE term.
      * @param p Characteristic point.
      */
-    PardosTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosGotorTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
     virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
@@ -195,14 +195,14 @@ private:
 /**
  * @ingroup ScrewTheoryLib
  *
- * @brief Third Pardos subproblem
+ * @brief Third Pardos-Gotor subproblem
  *
  * Dual solution, single prismatic joint geometric IK subproblem given by
  * @f$ \left \| e\,^{\hat{\xi}\,{\theta}} \cdot p - k \right \| = \delta @f$
  * (translation screw for moving @f$ p @f$ to a distance @f$ \delta @f$ from @f$ k @f$,
  * see @cite pardosgotor2018str_handbook).
  */
-class PardosThree : public ScrewTheoryIkSubproblem
+class PardosGotorThree : public ScrewTheoryIkSubproblem
 {
 public:
 
@@ -214,7 +214,7 @@ public:
      * @param p First characteristic point.
      * @param k Second characteristic point.
      */
-    PardosThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+    PardosGotorThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
     virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
@@ -231,14 +231,14 @@ private:
 /**
  * @ingroup ScrewTheoryLib
  *
- * @brief Fourth Pardos subproblem
+ * @brief Fourth Pardos-Gotor subproblem
  *
  * Dual solution, double revolute joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
  * (two consecutive parallel rotation screws applied to a point,
  * see @cite pardosgotor2018str_handbook).
  */
-class PardosFour : public ScrewTheoryIkSubproblem
+class PardosGotorFour : public ScrewTheoryIkSubproblem
 {
 public:
 
@@ -251,7 +251,7 @@ public:
      * @param exp2 Second POE term.
      * @param p Characteristic point.
      */
-    PardosFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosGotorFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
     virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
 
