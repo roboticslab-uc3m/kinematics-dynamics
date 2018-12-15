@@ -126,7 +126,7 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
     {
     case ICartesianTrajectory::LINE:
     {
-        if ( frames.empty() || frames.size() > 2 )
+        if ( frames.empty() || frames.size() > 2 || ( frames.size() == 1 && twists.empty() ) )
         {
             CD_ERROR("Need 2 waypoints (or 1 with initial twist) for Cartesian line (have %d)!\n", frames.size());
             return false;
