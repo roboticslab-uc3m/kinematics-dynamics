@@ -254,35 +254,41 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
         return false;
     }
 
-    if ( iCartesianTrajectory == NULL || getCurrentState() != VOCAB_CC_MOVV_CONTROLLING )
+    ICartesianTrajectory * iCartTraj = new KdlTrajectory;
+
+    if( ! iCartTraj->addWaypoint(x_base_tcp, xdotd) )
     {
-        //-- Create line trajectory if not already controlling
-        iCartesianTrajectory = new KdlTrajectory;
+        CD_ERROR("\n");
+        return false;
     }
-    else
+    if( ! iCartTraj->configurePath( ICartesianTrajectory::LINE ) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartTraj->configureVelocityProfile( ICartesianTrajectory::RECTANGULAR ) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartTraj->create() )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+
+    trajectoryMutex.wait();
+
+    if( iCartesianTrajectory != NULL )
     {
         iCartesianTrajectory->destroy();
+        delete iCartesianTrajectory;
     }
-    if( ! iCartesianTrajectory->addWaypoint(x_base_tcp, xdotd) )
-    {
-        CD_ERROR("\n");
-        return false;
-    }
-    if( ! iCartesianTrajectory->configurePath( ICartesianTrajectory::LINE ) )
-    {
-        CD_ERROR("\n");
-        return false;
-    }
-    if( ! iCartesianTrajectory->configureVelocityProfile( ICartesianTrajectory::RECTANGULAR ) )
-    {
-        CD_ERROR("\n");
-        return false;
-    }
-    if( ! iCartesianTrajectory->create() )
-    {
-        CD_ERROR("\n");
-        return false;
-    }
+
+    //-- Transfer ownership.
+    iCartesianTrajectory = iCartTraj;
+
+    trajectoryMutex.post();
 
     //-- Set velocity mode and set state which makes rate thread implement control.
     std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);

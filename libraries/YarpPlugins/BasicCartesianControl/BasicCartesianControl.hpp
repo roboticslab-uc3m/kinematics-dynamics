@@ -237,6 +237,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         int getCurrentState() const;
         void setCurrentState(int value);
         mutable yarp::os::Semaphore currentStateReady;
+        mutable yarp::os::Semaphore trajectoryMutex;
 
         /** MOVJ store previous reference speeds */
         std::vector<double> vmoStored;
