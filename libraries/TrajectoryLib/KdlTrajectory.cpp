@@ -42,9 +42,17 @@ bool roboticslab::KdlTrajectory::getDuration(double* duration) const
 
 bool roboticslab::KdlTrajectory::getPosition(const double movementTime, std::vector<double>& position)
 {
-    KDL::Frame xFrame = currentTrajectory->Pos(movementTime);
-    position = KdlVectorConverter::frameToVector(xFrame);
-    return true;
+    try
+    {
+        const KDL::Frame & xFrame = currentTrajectory->Pos(movementTime);
+        position = KdlVectorConverter::frameToVector(xFrame);
+        return true;
+    }
+    catch (const KDL::Error_MotionPlanning &e)
+    {
+        CD_ERROR("Unable to retrieve position at %f.\n", movementTime);
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -53,7 +61,7 @@ bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vec
 {
     try
     {
-        KDL::Twist xdotFrame = currentTrajectory->Vel(movementTime);
+        const KDL::Twist & xdotFrame = currentTrajectory->Vel(movementTime);
         velocity = KdlVectorConverter::twistToVector(xdotFrame);
         return true;
     }
@@ -70,7 +78,7 @@ bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std:
 {
     try
     {
-        KDL::Twist xdotdotFrame = currentTrajectory->Acc(movementTime);
+        const KDL::Twist & xdotdotFrame = currentTrajectory->Acc(movementTime);
         acceleration = KdlVectorConverter::twistToVector(xdotdotFrame);
         return true;
     }

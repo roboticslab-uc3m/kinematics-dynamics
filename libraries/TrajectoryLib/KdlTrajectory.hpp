@@ -143,7 +143,7 @@ public:
 private:
 
     double duration;
-    double maxVelocity, maxAcceleration;
+    const double maxVelocity, maxAcceleration;
 
     bool configuredPath, configuredVelocityProfile;
     bool velocityDrivenPath;
