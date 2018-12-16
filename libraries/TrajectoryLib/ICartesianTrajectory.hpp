@@ -25,7 +25,8 @@ public:
     //! Lists available Cartesian velocity profiles.
     enum cartesian_velocity_profile
     {
-        TRAPEZOIDAL        ///< A trapezoidal velocity profile
+        TRAPEZOIDAL,        ///< A trapezoidal velocity profile
+        RECTANGULAR         ///< A rectangular velocity profile
     };
 
     /**

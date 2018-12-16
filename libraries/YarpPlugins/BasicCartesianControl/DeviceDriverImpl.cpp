@@ -126,6 +126,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
 bool roboticslab::BasicCartesianControl::close()
 {
+    stopControl();
     yarp::os::RateThread::stop();
     robotDevice.close();
     solverDevice.close();
