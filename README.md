@@ -43,3 +43,4 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
+- [team-vigir/vigir_footstep_planning_visual_tools](https://github.com/team-vigir/vigir_footstep_planning_visual_tools)
