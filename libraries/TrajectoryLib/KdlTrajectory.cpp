@@ -2,8 +2,6 @@
 
 #include "KdlTrajectory.hpp"
 
-#include <limits>
-
 #include <kdl/trajectory_segment.hpp>
 #include <kdl/path_line.hpp>
 #include <kdl/rotational_interpolation_sa.hpp>
