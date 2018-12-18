@@ -8,7 +8,6 @@
 #include <kdl/frames.hpp>
 #include <kdl/trajectory.hpp>
 #include <kdl/path.hpp>
-#include <kdl/rotational_interpolation.hpp>
 #include <kdl/velocityprofile.hpp>
 
 #include "ICartesianTrajectory.hpp"
@@ -33,6 +32,11 @@ public:
      * @brief Constructor
      */
     KdlTrajectory();
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~KdlTrajectory();
 
     /**
      * @brief Get trajectory total duration in seconds
@@ -157,15 +161,19 @@ public:
 
 private:
 
+    // disable these per the rule of 3
+    KdlTrajectory(const KdlTrajectory &);
+    KdlTrajectory operator=(const KdlTrajectory &);
+
     double duration;
     double maxVelocity, maxAcceleration;
 
     bool configuredPath, configuredVelocityProfile;
     bool velocityDrivenPath;
+    bool created;
 
     KDL::Trajectory* currentTrajectory;
     KDL::Path* path;
-    KDL::RotationalInterpolation* orient;
     KDL::VelocityProfile * velocityProfile;
 
     std::vector<KDL::Frame> frames;
