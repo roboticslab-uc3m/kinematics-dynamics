@@ -31,11 +31,8 @@ public:
 
     /**
      * @brief Constructor
-     *
-     * @param maxVelocity Maximum allowed path velocity (meters/second)
-     * @param maxAcceleration Maximum allowed path acceleration (meters/second^2)
      */
-    KdlTrajectory(double maxVelocity = DEFAULT_CARTESIAN_MAX_VEL, double maxAcceleration = DEFAULT_CARTESIAN_MAX_ACC);
+    KdlTrajectory();
 
     /**
      * @brief Get trajectory total duration in seconds
@@ -92,6 +89,24 @@ public:
     virtual bool setDuration(const double duration);
 
     /**
+     * @brief Set maximum velocity of the trajectory
+     *
+     * @param maxVelocity The maximum velocity permitted (meters/second).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxVelocity(const double maxVelocity);
+
+    /**
+     * @brief Set maximum acceleration of the trajectory
+     *
+     * @param maxAcceleration The maximum acceleration permitted (meters/second^2).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxAcceleration(const double maxAcceleration);
+
+    /**
      * @brief Add a waypoint to the trajectory
      *
      * @param waypoint Position information of a Cartesian waypoint, 6-element vector describing a
@@ -143,7 +158,7 @@ public:
 private:
 
     double duration;
-    const double maxVelocity, maxAcceleration;
+    double maxVelocity, maxAcceleration;
 
     bool configuredPath, configuredVelocityProfile;
     bool velocityDrivenPath;

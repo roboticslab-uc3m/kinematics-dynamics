@@ -72,6 +72,24 @@ public:
     virtual bool setDuration(const double duration) = 0;
 
     /**
+     * @brief Set maximum velocity of the trajectory
+     *
+     * @param maxVelocity The maximum velocity permitted, see subclasses for units.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxVelocity(const double maxVelocity) = 0;
+
+    /**
+     * @brief Set maximum acceleration of the trajectory
+     *
+     * @param maxAcceleration The maximum acceleration permitted, see subclasses for units.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxAcceleration(const double maxAcceleration) = 0;
+
+    /**
      * @brief Add a waypoint to the trajectory
      *
      * @param waypoint Position information of a generic waypoint, see subclasses for units.

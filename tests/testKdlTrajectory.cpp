@@ -16,7 +16,7 @@ class KdlTrajectoryTest : public testing::Test
 public:
     virtual void SetUp()
     {
-        iCartesianTrajectory = new KdlTrajectory(MAX_VEL, MAX_ACC);
+        iCartesianTrajectory = new KdlTrajectory();
 
         x1.resize(6);
         x2.resize(6);
@@ -40,12 +40,14 @@ protected:
 
     std::vector<double> x1, x2, v1, v1_alt;
 
+    static const double DURATION;
     static const double MAX_VEL;
     static const double MAX_ACC;
 
     static const double EPS;
 };
 
+const double KdlTrajectoryTest::DURATION = 10.0;
 const double KdlTrajectoryTest::MAX_VEL = 0.2;
 const double KdlTrajectoryTest::MAX_ACC = 0.05;
 
@@ -63,7 +65,9 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryCreate)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrap)
 {
     //-- Create line trajectory
-    ASSERT_TRUE(iCartesianTrajectory->setDuration(10.0)); // Must be higher than 9.0 due to defaults
+    ASSERT_TRUE(iCartesianTrajectory->setDuration(DURATION)); // Must be higher than 9.0 due to defaults
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x2));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
@@ -73,7 +77,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrap)
     //-- Query duration, should be the same as set before
     double duration;
     ASSERT_TRUE(iCartesianTrajectory->getDuration(&duration));
-    ASSERT_EQ(duration, 10.0);
+    ASSERT_EQ(duration, DURATION);
 
     //-- Destroy line
     ASSERT_TRUE(iCartesianTrajectory->destroy());
@@ -82,6 +86,8 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrap)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrapNoDuration)
 {
     //-- Create line trajectory
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x2));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
@@ -131,7 +137,9 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineTrapNoDuration)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRect)
 {
     //-- Create line trajectory
-    ASSERT_TRUE(iCartesianTrajectory->setDuration(10.0)); // Short duration means higher vel, beware of default limit
+    ASSERT_TRUE(iCartesianTrajectory->setDuration(DURATION)); // Short duration means higher vel, beware of default limit
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x2));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
@@ -141,7 +149,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRect)
     //-- Query duration, should be the same as set before
     double duration;
     ASSERT_TRUE(iCartesianTrajectory->getDuration(&duration));
-    ASSERT_NEAR(duration, 10.0, EPS);
+    ASSERT_NEAR(duration, DURATION, EPS);
 
     //-- Use line
     double movementTime = 5.0;
@@ -160,6 +168,8 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRect)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectNoDuration)
 {
     //-- Create line trajectory
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x2));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
@@ -188,7 +198,9 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectNoDuration)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwist)
 {
     //-- Create line trajectory
-    ASSERT_TRUE(iCartesianTrajectory->setDuration(10.0)); // Short duration means higher vel, beware of default limit
+    ASSERT_TRUE(iCartesianTrajectory->setDuration(DURATION)); // Short duration means higher vel, beware of default limit
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1, v1));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
     ASSERT_TRUE(iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR));
@@ -197,7 +209,7 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwist)
     //-- Query duration, should be the same as set before
     double duration;
     ASSERT_TRUE(iCartesianTrajectory->getDuration(&duration));
-    ASSERT_NEAR(duration, 10.0, EPS);
+    ASSERT_NEAR(duration, DURATION, EPS);
 
     //-- Use line
     double movementTime = 5.0;
@@ -216,6 +228,8 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwist)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDuration)
 {
     //-- Create line trajectory
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1, v1));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
     ASSERT_TRUE(iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR));
@@ -238,6 +252,8 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDuration)
 TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDurationCapped)
 {
     //-- Create line trajectory
+    ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
+    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1, v1_alt));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
     ASSERT_TRUE(iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR));

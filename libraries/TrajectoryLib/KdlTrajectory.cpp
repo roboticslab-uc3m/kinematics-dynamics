@@ -15,10 +15,10 @@
 
 // -----------------------------------------------------------------------------
 
-roboticslab::KdlTrajectory::KdlTrajectory(double maxVelocity, double maxAcceleration)
+roboticslab::KdlTrajectory::KdlTrajectory()
     : duration(DURATION_NOT_SET),
-      maxVelocity(maxVelocity),
-      maxAcceleration(maxAcceleration),
+      maxVelocity(DEFAULT_CARTESIAN_MAX_VEL),
+      maxAcceleration(DEFAULT_CARTESIAN_MAX_ACC),
       configuredPath(false),
       configuredVelocityProfile(false),
       velocityDrivenPath(false),
@@ -92,6 +92,22 @@ bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std:
 bool roboticslab::KdlTrajectory::setDuration(const double duration)
 {
     this->duration = duration;
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlTrajectory::setMaxVelocity(const double maxVelocity)
+{
+    this->maxVelocity = maxVelocity;
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::KdlTrajectory::setMaxAcceleration(const double maxAcceleration)
+{
+    this->maxAcceleration = maxAcceleration;
     return true;
 }
 
