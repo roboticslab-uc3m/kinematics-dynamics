@@ -38,7 +38,7 @@ bool roboticslab::KdlTrajectory::getDuration(double* duration) const
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::getPosition(const double movementTime, std::vector<double>& position)
+bool roboticslab::KdlTrajectory::getPosition(double movementTime, std::vector<double>& position)
 {
     try
     {
@@ -55,7 +55,7 @@ bool roboticslab::KdlTrajectory::getPosition(const double movementTime, std::vec
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vector<double>& velocity)
+bool roboticslab::KdlTrajectory::getVelocity(double movementTime, std::vector<double>& velocity)
 {
     try
     {
@@ -72,7 +72,7 @@ bool roboticslab::KdlTrajectory::getVelocity(const double movementTime, std::vec
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std::vector<double>& acceleration)
+bool roboticslab::KdlTrajectory::getAcceleration(double movementTime, std::vector<double>& acceleration)
 {
     try
     {
@@ -89,7 +89,7 @@ bool roboticslab::KdlTrajectory::getAcceleration(const double movementTime, std:
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::setDuration(const double duration)
+bool roboticslab::KdlTrajectory::setDuration(double duration)
 {
     this->duration = duration;
     return true;
@@ -97,7 +97,7 @@ bool roboticslab::KdlTrajectory::setDuration(const double duration)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::setMaxVelocity(const double maxVelocity)
+bool roboticslab::KdlTrajectory::setMaxVelocity(double maxVelocity)
 {
     this->maxVelocity = maxVelocity;
     return true;
@@ -105,7 +105,7 @@ bool roboticslab::KdlTrajectory::setMaxVelocity(const double maxVelocity)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::setMaxAcceleration(const double maxAcceleration)
+bool roboticslab::KdlTrajectory::setMaxAcceleration(double maxAcceleration)
 {
     this->maxAcceleration = maxAcceleration;
     return true;
@@ -134,7 +134,7 @@ bool roboticslab::KdlTrajectory::addWaypoint(const std::vector<double>& waypoint
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::configurePath(const int pathType)
+bool roboticslab::KdlTrajectory::configurePath(int pathType)
 {
     switch( pathType )
     {
@@ -174,7 +174,7 @@ bool roboticslab::KdlTrajectory::configurePath(const int pathType)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlTrajectory::configureVelocityProfile(const int velocityProfileType)
+bool roboticslab::KdlTrajectory::configureVelocityProfile(int velocityProfileType)
 {
     switch( velocityProfileType )
     {
