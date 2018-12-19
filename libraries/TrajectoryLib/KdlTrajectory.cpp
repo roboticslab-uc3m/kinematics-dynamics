@@ -288,17 +288,33 @@ bool roboticslab::KdlTrajectory::create()
 
 bool roboticslab::KdlTrajectory::destroy()
 {
-    // delete everything, we don't know whether create() was called or not
-    delete currentTrajectory;
-    currentTrajectory = 0;
+    if ( currentTrajectory )
+    {
+        // deletes aggregated path and profile instances, too
+        delete currentTrajectory;
+        currentTrajectory = 0;
+        path = 0;
+        velocityProfile = 0;
+    }
+    else
+    {
+        if ( path )
+        {
+            delete path;
+            path = 0;
+        }
 
-    delete path;
-    path = 0;
-
-    delete velocityProfile;
-    velocityProfile = 0;
+        if ( velocityProfile )
+        {
+            delete velocityProfile;
+            velocityProfile = 0;
+        }
+    }
 
     duration = DURATION_NOT_SET;
+    maxVelocity = DEFAULT_CARTESIAN_MAX_VEL;
+    maxAcceleration = DEFAULT_CARTESIAN_MAX_ACC;
+
     configuredPath = configuredVelocityProfile = false;
     velocityDrivenPath = false;
     created = false;
