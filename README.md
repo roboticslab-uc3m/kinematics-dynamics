@@ -36,6 +36,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/kinematics-dynamics.svg?label=Issues)](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 
 ## Similar and Related Projects
+- https://github.com/roboticslab-uc3m/footsteps
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library for computing kinematics and dynamics of serial-links chains of revolute joints and iCub limbs
 - [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)
 - [NUKE](https://vanadiumlabs.github.io/pypose/nuke-intro.html#NUKE): The Nearly Universal Kinematic Engine
@@ -43,6 +44,5 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
-- [team-vigir/vigir_footstep_planning_visual_tools](https://github.com/team-vigir/vigir_footstep_planning_visual_tools)
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/): [github](https://github.com/stack-of-tasks)
