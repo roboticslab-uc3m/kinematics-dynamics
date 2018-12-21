@@ -46,6 +46,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [AversivePlusPlus/ik](https://github.com/AversivePlusPlus/ik)
 - [ros-industrial-consortium/descartes](https://github.com/ros-industrial-consortium/descartes)
 ### Path-Planning, Trajectory generation and optimization
+- All the parts of [OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md) we do not use
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
 - https://rosindustrial.org/news/2018/7/5/optimization-motion-planning-with-tesseract-and-trajopt-for-industrial-applications
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
