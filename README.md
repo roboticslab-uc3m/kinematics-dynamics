@@ -53,6 +53,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 ### Humanoid-oriented
 - https://github.com/roboticslab-uc3m/footsteps
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library for computing kinematics and dynamics of serial-links chains of revolute joints and iCub limbs
+- [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/): [github](https://github.com/stack-of-tasks)
