@@ -43,7 +43,7 @@ namespace
 bool TrajectoryThread::threadInit()
 {
     startTime = yarp::os::Time::now();
-    return true;
+    return iEncoders->getAxes(&axes);
 }
 
 void TrajectoryThread::run()
@@ -63,7 +63,35 @@ void TrajectoryThread::run()
         CD_WARNING("IK exact solution not found.\n");
     }
 
-    KDL::JntArray solution = solutions[1]; // [6] for right arm
+    if (!ikConfig->configure(solutions))
+    {
+        CD_ERROR("IK solutions out of joint limits.\n");
+        return;
+    }
+
+    KDL::JntArray q(axes);
+
+    if (!iEncoders->getEncoders(q.data.data()))
+    {
+        CD_ERROR("getEncoders() failed.\n");
+        return;
+    }
+
+    for (int i = 0; i < q.rows(); i++)
+    {
+        q(i) = roboticslab::KinRepresentation::degToRad(q(i));
+    }
+
+    if (!ikConfig->findOptimalConfiguration(q))
+    {
+        CD_ERROR("Optimal configuration not found.\n");
+        return;
+    }
+
+    KDL::JntArray solution;
+
+    ikConfig->retrieveAngles(solution);
+
     std::vector<double> refs(solution.data.data(), solution.data.data() + solution.data.size());
     std::transform(refs.begin(), refs.end(), refs.begin(), roboticslab::KinRepresentation::radToDeg);
     printJointCoordinates(refs);
