@@ -15,7 +15,9 @@ namespace roboticslab
  * @brief IK solver using Screw Theory.
  *
  * Implementation of an inverse position kinematics algorithm. This is a thin wrapper
- * around \ref ScrewTheoryIkProblem.
+ * around \ref ScrewTheoryIkProblem. Non-exhaustive tests on TEO's (UC3M) right arm
+ * kinematic chain reveal that this is 5-10 faster than a numeric Newton-Raphson
+ * solver as provided by KDL (e.g. KDL::ChainIkSolverPos_NR_JL).
  */
 class ChainIkSolverPos_ST : public KDL::ChainIkSolverPos
 {

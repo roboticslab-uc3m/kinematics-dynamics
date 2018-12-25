@@ -16,6 +16,17 @@ namespace roboticslab
  * \defgroup ScrewTheoryLib
  *
  * @brief Contains classes related to Screw Theory solvers and tools.
+ *
+ * Proof of concept for a kinematics library based on
+ * <a href="https://en.wikipedia.org/wiki/Screw_theory">screw theory</a>
+ * concepts applied to robotics. This implementation is mainly focused
+ * on solving inverse kinematics problems in an efficient and effective
+ * manner via closed-form geometric solutions. Comparing this approach
+ * with a tradicional numeric-based approach yields
+ * (@cite pardosgotor2018str_handbook):
+ *   - faster solutions, since there are no iterations involved;
+ *   - exact solutions, since the direct formulation guarantees convergence;
+ *   - multiple solutions and the possibility to choose the better ones.
  */
 
 /**
