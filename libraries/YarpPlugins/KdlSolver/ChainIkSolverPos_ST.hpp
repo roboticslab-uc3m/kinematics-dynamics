@@ -60,6 +60,8 @@ public:
      * @brief Create an instance of \ref ChainIkSolverPos_ST.
      *
      * @param chain Input kinematic chain.
+     * @param configFactory Instance of an abstract factory class that
+     * instantiates a ConfigurationSelector.
      *
      * @return Solver instance or NULL if no solution was found.
      */
