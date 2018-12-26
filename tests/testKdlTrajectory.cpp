@@ -139,7 +139,6 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRect)
     //-- Create line trajectory
     ASSERT_TRUE(iCartesianTrajectory->setDuration(DURATION)); // Short duration means higher vel, beware of default limit
     ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
-    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x2));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
@@ -169,7 +168,6 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectNoDuration)
 {
     //-- Create line trajectory
     ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
-    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x2));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
@@ -200,7 +198,6 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwist)
     //-- Create line trajectory
     ASSERT_TRUE(iCartesianTrajectory->setDuration(DURATION)); // Short duration means higher vel, beware of default limit
     ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
-    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1, v1));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
     ASSERT_TRUE(iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR));
@@ -229,7 +226,6 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDuration)
 {
     //-- Create line trajectory
     ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
-    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1, v1));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
     ASSERT_TRUE(iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR));
@@ -253,7 +249,6 @@ TEST_F(KdlTrajectoryTest, KdlTrajectoryLineRectInitialTwistNoDurationCapped)
 {
     //-- Create line trajectory
     ASSERT_TRUE(iCartesianTrajectory->setMaxVelocity(MAX_VEL));
-    ASSERT_TRUE(iCartesianTrajectory->setMaxAcceleration(MAX_ACC));
     ASSERT_TRUE(iCartesianTrajectory->addWaypoint(x1, v1_alt));
     ASSERT_TRUE(iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE));
     ASSERT_TRUE(iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR));
