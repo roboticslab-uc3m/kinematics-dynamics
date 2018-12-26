@@ -17,11 +17,15 @@ if(ENABLE_ScrewTheoryLib)
                                       ScrewTheoryIkProblemBuilder.cpp
                                       ScrewTheoryIkSubproblems.hpp
                                       PadenKahanSubproblems.cpp
-                                      PardosGotorSubproblems.cpp)
+                                      PardosGotorSubproblems.cpp
+                                      ConfigurationSelector.hpp
+                                      ConfigurationSelector.cpp
+                                      ConfigurationSelectorLeastOverallAngularDisplacement.cpp)
 
     set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp
-                                                              ScrewTheoryIkProblem.hpp)
+                                                              ScrewTheoryIkProblem.hpp
+                                                              ConfigurationSelector.hpp)
 
     target_link_libraries(ScrewTheoryLib PUBLIC ${orocos_kdl_LIBRARIES}
                                          PRIVATE ROBOTICSLAB::ColorDebug)

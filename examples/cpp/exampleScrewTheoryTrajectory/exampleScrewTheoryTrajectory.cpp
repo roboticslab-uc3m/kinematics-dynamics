@@ -37,6 +37,7 @@ make -j$(nproc)
 #include <yarp/os/Time.h>
 
 #include <yarp/dev/DeviceDriver.h>
+#include <yarp/dev/IControlLimits2.h>
 #include <yarp/dev/IControlMode2.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionDirect.h>
@@ -46,6 +47,7 @@ make -j$(nproc)
 
 #include <ColorDebug.h>
 
+#include <ConfigurationSelector.hpp>
 #include <KdlTrajectory.hpp>
 #include <KdlVectorConverter.hpp>
 #include <KinematicRepresentation.hpp>
@@ -107,10 +109,12 @@ int main(int argc, char *argv[])
     }
 
     yarp::dev::IEncoders * iEncoders;
+    yarp::dev::IControlLimits2 * iControlLimits;
     yarp::dev::IControlMode2 * iControlMode;
     yarp::dev::IPositionDirect * iPositionDirect;
 
-    if (!jointDevice.view(iEncoders) || !jointDevice.view(iControlMode) || !jointDevice.view(iPositionDirect))
+    if (!jointDevice.view(iEncoders) || !jointDevice.view(iControlLimits)
+            || !jointDevice.view(iControlMode) || !jointDevice.view(iPositionDirect))
     {
         CD_ERROR("Problems acquiring joint interfaces.\n");
         return 1;
@@ -157,6 +161,21 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    KDL::JntArray qMin(axes);
+    KDL::JntArray qMax(axes);
+
+    for (int i = 0; i < axes; i++)
+    {
+        if (!iControlLimits->getLimits(i, &qMin(i), &qMax(i)))
+        {
+            CD_ERROR("Unable to retrieve limits for joint %d.\n", i);
+            return 1;
+        }
+    }
+
+    rl::ConfigurationSelectorLeastOverallAngularDisplacementFactory confFactory(qMin, qMax);
+    std::auto_ptr<rl::ConfigurationSelector> ikConfig(confFactory.create());
+
     std::vector<double> x = rl::KdlVectorConverter::frameToVector(H);
 
     std::vector<double> xd(x);
@@ -187,7 +206,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    TrajectoryThread trajThread(iPositionDirect, ikProblem.get(), &trajectory, PT_MODE_MS);
+    TrajectoryThread trajThread(iEncoders, iPositionDirect, ikProblem.get(), ikConfig.get(), &trajectory, PT_MODE_MS);
 
     if (trajThread.start())
     {

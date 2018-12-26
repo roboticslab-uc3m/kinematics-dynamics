@@ -6,9 +6,11 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-ChainIkSolverPos_ST::ChainIkSolverPos_ST(const KDL::Chain & _chain, ScrewTheoryIkProblem * _problem)
+ChainIkSolverPos_ST::ChainIkSolverPos_ST(const KDL::Chain & _chain, ScrewTheoryIkProblem * _problem,
+        ConfigurationSelector * _config)
     : chain(_chain),
-      problem(_problem)
+      problem(_problem),
+      config(_config)
 {}
 
 // -----------------------------------------------------------------------------
@@ -17,31 +19,37 @@ ChainIkSolverPos_ST::~ChainIkSolverPos_ST()
 {
     delete problem;
     problem = NULL;
+
+    delete config;
+    config = NULL;
 }
 
 // -----------------------------------------------------------------------------
 
 int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Frame & p_in, KDL::JntArray & q_out)
 {
-    std::vector<KDL::JntArray> solutions;
-
     if (error == E_SOLUTION_NOT_FOUND)
     {
         return error;
     }
 
-    int ret = problem->solve(p_in, solutions);
+    std::vector<KDL::JntArray> solutions;
 
-    q_out = solutions.at(0); // TODO
+    bool ret = problem->solve(p_in, solutions);
 
-    if (ret == E_NOT_REACHABLE)
+    if (!config->configure(solutions))
     {
-        return (error = ret);
+        return (error = E_OUT_OF_LIMITS);
     }
-    else
+
+    if (!config->findOptimalConfiguration(q_init))
     {
-        return (error = E_NOERROR);
+        return (error = E_OUT_OF_LIMITS);
     }
+
+    config->retrievePose(q_out);
+
+    return (error = ret ? E_NOERROR : E_NOT_REACHABLE);
 }
 
 // -----------------------------------------------------------------------------
@@ -64,7 +72,7 @@ void ChainIkSolverPos_ST::updateInternalDataStructures()
 
 // -----------------------------------------------------------------------------
 
-KDL::ChainIkSolverPos * ChainIkSolverPos_ST::create(const KDL::Chain & chain)
+KDL::ChainIkSolverPos * ChainIkSolverPos_ST::create(const KDL::Chain & chain, const ConfigurationSelectorFactory & configFactory)
 {
     PoeExpression poe = PoeExpression::fromChain(chain);
     ScrewTheoryIkProblemBuilder builder(poe);
@@ -75,7 +83,9 @@ KDL::ChainIkSolverPos * ChainIkSolverPos_ST::create(const KDL::Chain & chain)
         return NULL;
     }
 
-    return new ChainIkSolverPos_ST(chain, problem);
+    ConfigurationSelector * config = configFactory.create();
+
+    return new ChainIkSolverPos_ST(chain, problem, config);
 }
 
 // -----------------------------------------------------------------------------
@@ -86,6 +96,8 @@ const char * ChainIkSolverPos_ST::strError(const int error) const
     {
     case E_SOLUTION_NOT_FOUND:
         return "IK solution not found";
+    case E_OUT_OF_LIMITS:
+        return "Target pose out of robot limits";
     case E_NOT_REACHABLE:
         return "IK solution not reachable";
     default:

@@ -6,6 +6,7 @@
 #include <kdl/chainiksolver.hpp>
 
 #include "ScrewTheoryIkProblem.hpp"
+#include "ConfigurationSelector.hpp"
 
 namespace roboticslab
 {
@@ -61,24 +62,31 @@ public:
      * @brief Create an instance of \ref ChainIkSolverPos_ST.
      *
      * @param chain Input kinematic chain.
+     * @param configFactory Instance of an abstract factory class that
+     * instantiates a ConfigurationSelector.
      *
      * @return Solver instance or NULL if no solution was found.
      */
-    static KDL::ChainIkSolverPos * create(const KDL::Chain & chain);
+    static KDL::ChainIkSolverPos * create(const KDL::Chain & chain, const ConfigurationSelectorFactory & configFactory);
 
     /** @brief Return code, IK solution not found. */
     static const int E_SOLUTION_NOT_FOUND = -100;
+
+    /** @brief Return code, target pose out of robot limits. */
+    static const int E_OUT_OF_LIMITS = -101;
 
     /** @brief Return code, solution out of reach. */
     static const int E_NOT_REACHABLE = 100;
 
 private:
 
-    ChainIkSolverPos_ST(const KDL::Chain & chain, ScrewTheoryIkProblem * problem);
+    ChainIkSolverPos_ST(const KDL::Chain & chain, ScrewTheoryIkProblem * problem, ConfigurationSelector * config);
 
     const KDL::Chain & chain;
 
     ScrewTheoryIkProblem * problem;
+
+    ConfigurationSelector * config;
 };
 
 }  // namespace roboticslab

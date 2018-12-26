@@ -27,6 +27,7 @@
 #define DEFAULT_MAXITER 1000
 #define DEFAULT_IK_SOLVER "lma"
 #define DEFAULT_LMA_WEIGHTS "1 1 1 0.1 0.1 0.1"
+#define DEFAULT_STRATEGY "leastOverallAngularDisplacement"
 
 namespace roboticslab
 {
