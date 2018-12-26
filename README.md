@@ -35,7 +35,26 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/kinematics-dynamics.svg?label=Issues)](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 
-## Links of interest:
-
-* [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices)
-* [vision](https://github.com/roboticslab-uc3m/vision)
+## Similar and Related Projects
+### Fast Solver projects
+- [ocra-recipes/eigen_lgsm](https://github.com/ocra-recipes/eigen_lgsm): used by [robotology/codyco-superbuild](https://github.com/robotology/codyco-superbuild)
+- [cuSolver](https://docs.nvidia.com/cuda/cusolver/index.html)
+### Fast IK-Solver projects
+- [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)
+- [NUKE](https://vanadiumlabs.github.io/pypose/nuke-intro.html#NUKE): The Nearly Universal Kinematic Engine
+- [ESROCOS/kin-gen](https://github.com/ESROCOS/kin-gen): Kinematics code generator by KUL
+- [AversivePlusPlus/ik](https://github.com/AversivePlusPlus/ik)
+- [ros-industrial-consortium/descartes](https://github.com/ros-industrial-consortium/descartes)
+### Path-Planning, Trajectory generation and optimization
+- All the parts of [OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md) we do not use
+- [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
+- https://rosindustrial.org/news/2018/7/5/optimization-motion-planning-with-tesseract-and-trajopt-for-industrial-applications
+- [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
+### Humanoid-oriented
+- https://github.com/roboticslab-uc3m/gait
+- https://github.com/roboticslab-uc3m/footsteps
+- [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library for computing kinematics and dynamics of serial-links chains of revolute joints and iCub limbs
+- [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
+- [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
+- [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
+- [Stack of Tasks](https://stack-of-tasks.github.io/): [github](https://github.com/stack-of-tasks)

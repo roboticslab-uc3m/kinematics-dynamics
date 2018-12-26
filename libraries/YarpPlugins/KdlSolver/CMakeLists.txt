@@ -13,7 +13,7 @@ yarp_prepare_plugin(KdlSolver
                     TYPE roboticslab::KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
+                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
 
 if(NOT SKIP_KdlSolver)
 
@@ -23,13 +23,18 @@ if(NOT SKIP_KdlSolver)
 
     yarp_add_plugin(KdlSolver KdlSolver.hpp
                               DeviceDriverImpl.cpp
-                              ICartesianSolverImpl.cpp)
+                              ICartesianSolverImpl.cpp
+                              ChainFkSolverPos_ST.hpp
+                              ChainFkSolverPos_ST.cpp
+                              ChainIkSolverPos_ST.hpp
+                              ChainIkSolverPos_ST.cpp)
 
     target_link_libraries(KdlSolver YARP::YARP_OS
                                     YARP::YARP_dev
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
                                     ROBOTICSLAB::ColorDebug
+                                    ScrewTheoryLib
                                     KdlVectorConverterLib
                                     KinematicRepresentationLib
                                     KinematicsDynamicsInterfaces)

@@ -3,18 +3,17 @@
 #ifndef __KDL_TRAJECTORY_HPP__
 #define __KDL_TRAJECTORY_HPP__
 
-#include <string>
 #include <vector>
 
 #include <kdl/frames.hpp>
 #include <kdl/trajectory.hpp>
 #include <kdl/path.hpp>
-#include <kdl/rotational_interpolation.hpp>
 #include <kdl/velocityprofile.hpp>
 
 #include "ICartesianTrajectory.hpp"
 
 #define DURATION_NOT_SET -1
+
 #define DEFAULT_CARTESIAN_MAX_VEL 7.5      // unit/s, enforces a min duration of KDL::Trajectory_Segment
 #define DEFAULT_CARTESIAN_MAX_ACC 0.2      // unit/s^2
 
@@ -29,7 +28,15 @@ class KdlTrajectory : public ICartesianTrajectory
 {
 public:
 
+    /**
+     * @brief Constructor
+     */
     KdlTrajectory();
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~KdlTrajectory();
 
     /**
      * @brief Get trajectory total duration in seconds
@@ -50,7 +57,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getPosition(const double movementTime, std::vector<double>& position);
+    virtual bool getPosition(double movementTime, std::vector<double>& position);
 
     /**
      * @brief Cartesian velocity of the trajectory at a specific instant in time
@@ -62,7 +69,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getVelocity(const double movementTime, std::vector<double>& velocity);
+    virtual bool getVelocity(double movementTime, std::vector<double>& velocity);
 
     /**
      * @brief Cartesian acceleration of the trajectory at a specific instant in time
@@ -74,7 +81,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getAcceleration(const double movementTime, std::vector<double>& acceleration);
+    virtual bool getAcceleration(double movementTime, std::vector<double>& acceleration);
 
     /**
      * @brief Set trajectory total duration in seconds
@@ -83,7 +90,25 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool setDuration(const double duration);
+    virtual bool setDuration(double duration);
+
+    /**
+     * @brief Set maximum velocity of the trajectory
+     *
+     * @param maxVelocity The maximum velocity permitted (meters/second).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxVelocity(double maxVelocity);
+
+    /**
+     * @brief Set maximum acceleration of the trajectory
+     *
+     * @param maxAcceleration The maximum acceleration permitted (meters/second^2).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxAcceleration(double maxAcceleration);
 
     /**
      * @brief Add a waypoint to the trajectory
@@ -111,7 +136,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool configurePath(const int pathType);
+    virtual bool configurePath(int pathType);
 
     /**
      * @brief Configure the type of Cartesian velocity profile upon creation
@@ -120,7 +145,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool configureVelocityProfile(const int velocityProfileType);
+    virtual bool configureVelocityProfile(int velocityProfileType);
 
     /** @brief Create the trajectory
      *
@@ -136,14 +161,23 @@ public:
 
 private:
 
+    // disable these per the rule of 3
+    KdlTrajectory(const KdlTrajectory &);
+    KdlTrajectory operator=(const KdlTrajectory &);
+
     double duration;
+    double maxVelocity, maxAcceleration;
+
     bool configuredPath, configuredVelocityProfile;
+    bool velocityDrivenPath;
+    bool created;
+
     KDL::Trajectory* currentTrajectory;
     KDL::Path* path;
-    KDL::RotationalInterpolation* orient;
     KDL::VelocityProfile * velocityProfile;
-    std::vector<KDL::Frame> frames;
 
+    std::vector<KDL::Frame> frames;
+    std::vector<KDL::Twist> twists;
 };
 
 }  // namespace roboticslab

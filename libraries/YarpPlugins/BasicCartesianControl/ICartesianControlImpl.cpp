@@ -240,15 +240,71 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return false;
+    }
+
+    std::vector<double> x_base_tcp;
+    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+    {
+        CD_ERROR("fwdKin failed.\n");
+        return false;
+    }
+
+    ICartesianTrajectory * iCartTraj = new KdlTrajectory;
+
+    if( ! iCartTraj->addWaypoint(x_base_tcp, xdotd) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartTraj->configurePath( ICartesianTrajectory::LINE ) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartTraj->configureVelocityProfile( ICartesianTrajectory::RECTANGULAR ) )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+    if( ! iCartTraj->create() )
+    {
+        CD_ERROR("\n");
+        return false;
+    }
+
+    trajectoryMutex.wait();
+
+    if( iCartesianTrajectory != NULL )
+    {
+        iCartesianTrajectory->destroy();
+        delete iCartesianTrajectory;
+    }
+
+    //-- Transfer ownership.
+    iCartesianTrajectory = iCartTraj;
+
+    trajectoryMutex.post();
+
     //-- Set velocity mode and set state which makes rate thread implement control.
-    this->xdotd = xdotd;
     std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
     if (!iControlMode->setControlModes(velModes.data()))
     {
         CD_ERROR("setControlModes failed.\n");
         return false;
     }
+
+    //-- Set state, enable CMC thread and wait for movement to be done
+    movementStartTime = yarp::os::Time::now();
+    cmcSuccess = true;
+    CD_SUCCESS("Waiting\n");
+
     setCurrentState( VOCAB_CC_MOVV_CONTROLLING );
+
     return true;
 }
 
@@ -479,6 +535,38 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     if ( ! iVelocityControl->velocityMove( qdot.data() ) )
     {
         CD_ERROR("velocityMove failed.\n");
+        return;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
+{
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return;
+    }
+
+    std::vector<double> q;
+    if ( ! iCartesianSolver->invKin(x,currentQ,q,referenceFrame) )
+    {
+        CD_ERROR("invKin failed.\n");
+        return;
+    }
+
+    std::vector<int> posdModes(numRobotJoints, VOCAB_CM_POSITION_DIRECT);
+    if ( ! iControlMode->setControlModes(posdModes.data()) )
+    {
+        CD_ERROR("setControlModes failed.\n");
+        return;
+    }
+
+    if ( ! iPositionDirect->setPositions( q.data() ) )
+    {
+        CD_ERROR("setPositions failed.\n");
         return;
     }
 }

@@ -53,6 +53,10 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         CD_ERROR("Could not view iPositionControl in: %s.\n",robotStr.c_str());
         return false;
     }
+    if( ! robotDevice.view(iPositionDirect) ) {
+        CD_ERROR("Could not view iPositionDirect in: %s.\n",robotStr.c_str());
+        return false;
+    }
     if( ! robotDevice.view(iVelocityControl) ) {
         CD_ERROR("Could not view iVelocityControl in: %s.\n",robotStr.c_str());
         return false;
@@ -126,6 +130,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
 bool roboticslab::BasicCartesianControl::close()
 {
+    stopControl();
     yarp::os::RateThread::stop();
     robotDevice.close();
     solverDevice.close();

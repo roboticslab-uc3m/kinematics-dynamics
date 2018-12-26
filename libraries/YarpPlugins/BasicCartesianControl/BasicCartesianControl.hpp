@@ -166,6 +166,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual void pose(const std::vector<double> &x, double interval);
 
+        virtual void movi(const std::vector<double> &x);
+
         virtual bool setParameter(int vocab, double value);
 
         virtual bool getParameter(int vocab, double * value);
@@ -218,6 +220,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::PolyDriver robotDevice;
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IPositionDirect * iPositionDirect;
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IControlLimits *iControlLimits;
         yarp::dev::ITorqueControl *iTorqueControl;
@@ -239,6 +242,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         int getCurrentState() const;
         void setCurrentState(int value);
         mutable yarp::os::Semaphore currentStateReady;
+        mutable yarp::os::Semaphore trajectoryMutex;
 
         /** MOVJ store previous reference speeds */
         std::vector<double> vmoStored;
@@ -248,9 +252,6 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         /** MOVL store Cartesian trajectory */
         ICartesianTrajectory* iCartesianTrajectory;
-
-        /** MOVV desired Cartesian velocity */
-        std::vector<double> xdotd;
 
         /** FORC desired Cartesian force */
         std::vector<double> td;

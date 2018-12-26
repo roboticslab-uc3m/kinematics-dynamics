@@ -198,6 +198,8 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
 void roboticslab::BasicCartesianControl::handleMovv()
 {
+    double movementTime = yarp::os::Time::now() - movementStartTime;
+
     //-- Obtain current joint position
     std::vector<double> currentQ(numRobotJoints);
 
@@ -207,20 +209,46 @@ void roboticslab::BasicCartesianControl::handleMovv()
         return;
     }
 
+    std::vector<double> currentX;
+
+    if (!iCartesianSolver->fwdKin(currentQ, currentX))
+    {
+        CD_WARNING("fwdKin failed, not updating control this iteration.\n");
+        return;
+    }
+
+    //-- Obtain desired Cartesian position and velocity.
+    std::vector<double> desiredX, desiredXdot;
+
+    trajectoryMutex.wait();
+    iCartesianTrajectory->getPosition(movementTime, desiredX);
+    iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
+    trajectoryMutex.post();
+
+    //-- Apply control law to compute robot Cartesian velocity commands.
+    std::vector<double> commandXdot;
+    iCartesianSolver->poseDiff(desiredX, currentX, commandXdot);
+
+    for (int i = 0; i < 6; i++)
+    {
+        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
+        commandXdot[i] += desiredXdot[i];
+    }
+
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(currentQ, xdotd, commandQdot, referenceFrame))
+    if (!iCartesianSolver->diffInvKin(currentQ, commandXdot, commandQdot, referenceFrame))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
     }
 
-    CD_DEBUG_NO_HEADER("[MOVV] ");
+    CD_DEBUG_NO_HEADER("[MOVV] [%f] ", movementTime);
 
     for (int i = 0; i < 6; i++)
     {
-        CD_DEBUG_NO_HEADER("%f ", xdotd[i]);
+        CD_DEBUG_NO_HEADER("%f ", commandXdot[i]);
     }
 
     CD_DEBUG_NO_HEADER("-> ");
@@ -237,6 +265,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
         if (std::abs(commandQdot[i]) > maxJointVelocity)
         {
             CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+            cmcSuccess = false;
             stopControl();
             return;
         }
