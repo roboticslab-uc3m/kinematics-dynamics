@@ -115,7 +115,8 @@ protected:
  * Selects the configuration that entails the lowest sum of displacements
  * across all joints. Works best for all revolute/all prismatic chain types.
  * If attainable, it retains the previous configuration after the first
- * successful choice.
+ * successful choice and discards all other configs for the rest of the
+ * instance's lifetime.
  */
 class ConfigurationSelectorLeastOverallAngularDisplacement : public ConfigurationSelector
 {
@@ -129,17 +130,19 @@ public:
      */
     ConfigurationSelectorLeastOverallAngularDisplacement(const KDL::JntArray & qMin, const KDL::JntArray & qMax)
         : ConfigurationSelector(qMin, qMax),
-          lastValid(-1)
+          lastValid(INVALID_CONFIG)
     {}
 
     virtual bool findOptimalConfiguration(const KDL::JntArray & qGuess);
 
 private:
 
-    //! @brief Obtains vector of differences between current and desired joint angles.
+    //! @brief Obtains vector of differences between current and desired joint values.
     std::vector<double> getDiffs(const KDL::JntArray & qGuess, const Configuration & config);
 
     int lastValid;
+
+    static const int INVALID_CONFIG = -1;
 };
 
 /**

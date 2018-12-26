@@ -11,10 +11,19 @@ using namespace roboticslab;
 
 bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfiguration(const KDL::JntArray & qGuess)
 {
-    if (lastValid >= 0 && configs[lastValid].isValid())
+    if (lastValid != INVALID_CONFIG)
     {
-        optimalConfig = configs[lastValid];
-        return true;
+        if (configs[lastValid].isValid())
+        {
+            // keep last valid configuration
+            optimalConfig = configs[lastValid];
+            return true;
+        }
+        else
+        {
+            // out of reach, skip looking for another valid configuration
+            return false;
+        }
     }
 
     typedef std::pair<double, int> SumToId;
