@@ -91,6 +91,8 @@ public:
 
     virtual void pose(const std::vector<double> &x, double interval);
 
+    virtual void movi(const std::vector<double> &x);
+
     virtual bool setParameter(int vocab, double value);
 
     virtual bool getParameter(int vocab, double * value);

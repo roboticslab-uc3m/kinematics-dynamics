@@ -446,6 +446,11 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
 // -----------------------------------------------------------------------------
 
+void roboticslab::AmorCartesianControl::movi(const std::vector<double> &x)
+{}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 {
     switch (vocab)

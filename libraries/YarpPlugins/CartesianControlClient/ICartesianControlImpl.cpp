@@ -265,6 +265,13 @@ void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, dou
 
 // -----------------------------------------------------------------------------
 
+void roboticslab::CartesianControlClient::movi(const std::vector<double> &x)
+{
+    handleStreamingConsumerCmd(VOCAB_CC_MOVI, x);
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;

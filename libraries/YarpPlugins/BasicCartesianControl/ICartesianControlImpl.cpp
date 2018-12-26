@@ -535,6 +535,11 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 // -----------------------------------------------------------------------------
 
+void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
+{}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
