@@ -90,7 +90,7 @@ void TrajectoryThread::run()
 
     KDL::JntArray solution;
 
-    ikConfig->retrieveAngles(solution);
+    ikConfig->retrievePose(solution);
 
     std::vector<double> refs(solution.data.data(), solution.data.data() + solution.data.size());
     std::transform(refs.begin(), refs.end(), refs.begin(), roboticslab::KinRepresentation::radToDeg);

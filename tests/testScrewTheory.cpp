@@ -896,7 +896,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     ASSERT_TRUE(config->findOptimalConfiguration(q));
 
     KDL::JntArray qSolved;
-    config->retrieveAngles(qSolved);
+    config->retrievePose(qSolved);
     int n1 = findTargetConfiguration(solutions, q);
 
     ASSERT_NE(n1, -1);
@@ -909,7 +909,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     ASSERT_TRUE(config->configure(solutions));
     ASSERT_TRUE(config->findOptimalConfiguration(q));
 
-    config->retrieveAngles(qSolved);
+    config->retrievePose(qSolved);
     int n2 = findTargetConfiguration(solutions, qSolved);
 
     ASSERT_EQ(n2, n1);

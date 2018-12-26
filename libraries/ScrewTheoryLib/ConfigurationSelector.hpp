@@ -58,9 +58,9 @@ public:
      *
      * @param q Output joint array.
      */
-    virtual void retrieveAngles(KDL::JntArray & q) const
+    virtual void retrievePose(KDL::JntArray & q) const
     {
-        q = *optimalConfig.retrieve();
+        q = *optimalConfig.retrievePose();
     }
 
 protected:
@@ -86,7 +86,7 @@ protected:
         void validate(const KDL::JntArray & qMin, const KDL::JntArray & qMax);
 
         //! @brief Retrieves stored joint values.
-        const KDL::JntArray * retrieve() const
+        const KDL::JntArray * retrievePose() const
         { return q; }
 
         //! @brief Whether this configuration is attainable or not.

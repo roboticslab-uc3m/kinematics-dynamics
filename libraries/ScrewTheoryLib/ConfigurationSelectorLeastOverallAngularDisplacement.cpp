@@ -63,7 +63,7 @@ std::vector<double> ConfigurationSelectorLeastOverallAngularDisplacement::getDif
 
     for (int i = 0; i < qGuess.rows(); i++)
     {
-        const KDL::JntArray & q = *config.retrieve();
+        const KDL::JntArray & q = *config.retrievePose();
         double diff = std::abs(qGuess(i) - q(i));
         diffs.push_back(diff);
     }

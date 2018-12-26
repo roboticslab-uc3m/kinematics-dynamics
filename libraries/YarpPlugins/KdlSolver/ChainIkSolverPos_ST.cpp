@@ -47,7 +47,7 @@ int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Fram
         return (error = E_OUT_OF_LIMITS);
     }
 
-    config->retrieveAngles(q_out);
+    config->retrievePose(q_out);
 
     return (error = ret ? E_NOERROR : E_NOT_REACHABLE);
 }
