@@ -73,7 +73,8 @@
 
 // Streaming commands
 #define VOCAB_CC_TWIST ROBOTICSLAB_VOCAB('t','w','s','t') ///< Instantaneous velocity steps
-#define VOCAB_CC_POSE ROBOTICSLAB_VOCAB('p','o','s','e')  ///< Achieve pose in inertial frame
+#define VOCAB_CC_POSE ROBOTICSLAB_VOCAB('p','o','s','e')  ///< Achieve pose (velocity control)
+#define VOCAB_CC_MOVI ROBOTICSLAB_VOCAB('m','o','v','i')  ///< Achieve pose (position control)
 
 /** @} */
 
@@ -306,7 +307,7 @@ class ICartesianControl
         virtual void twist(const std::vector<double> &xdot) = 0;
 
         /**
-         * @brief Achieve pose
+         * @brief Achieve pose (velocity control)
          *
          * Move to desired position, computing the error with respect to the current pose. Then,
          * perform numerical differentiation and obtain the final velocity increment (as in @ref twist).
@@ -317,6 +318,17 @@ class ICartesianControl
          * and used for numerical differentiation with desired/current poses.
          */
         virtual void pose(const std::vector<double> &x, double interval) = 0;
+
+        /**
+         * @brief Achieve pose (position control)
+         *
+         * Move to desired position instantaneously, no further intermediate calculations are
+         * expected other than computing the inverse kinematics.
+         *
+         * @param x 6-element vector describing desired instantaneous pose in cartesian space;
+         * first three elements denote translation (meters), last three denote rotation (radians).
+         */
+        virtual void movi(const std::vector<double> &x) = 0;
 
         /** @} */
 

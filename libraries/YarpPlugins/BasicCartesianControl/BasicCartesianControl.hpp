@@ -164,6 +164,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
         virtual void pose(const std::vector<double> &x, double interval);
 
+        virtual void movi(const std::vector<double> &x);
+
         virtual bool setParameter(int vocab, double value);
 
         virtual bool getParameter(int vocab, double * value);
@@ -216,6 +218,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::PolyDriver robotDevice;
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IPositionDirect * iPositionDirect;
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IControlLimits *iControlLimits;
         yarp::dev::ITorqueControl *iTorqueControl;
