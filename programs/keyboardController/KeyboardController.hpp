@@ -1,3 +1,5 @@
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+
 #ifndef __KEYBOARD_CONTROLLER_HPP__
 #define __KEYBOARD_CONTROLLER_HPP__
 
@@ -14,6 +16,7 @@
 #include <yarp/dev/IControlLimits2.h>
 #include <yarp/dev/IVelocityControl.h>
 
+#include "LinearTrajectoryThread.hpp"
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
@@ -25,6 +28,8 @@
 
 #define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
                                        // fallback in ::open()
+
+#define DEFAULT_THREAD_MS 50
 
 namespace roboticslab
 {
@@ -78,6 +83,9 @@ private:
     std::string angleRepr;
     KinRepresentation::orientation_system orient;
     control_modes controlMode;
+
+    bool usingThread;
+    LinearTrajectoryThread * linTrajThread;
 
     yarp::dev::PolyDriver controlboardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;

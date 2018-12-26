@@ -1,3 +1,5 @@
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+
 #include "KeyboardController.hpp"
 
 #include <unistd.h>
@@ -13,8 +15,9 @@
 #include <iterator>
 #include <algorithm>
 
-#include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Time.h>
+#include <yarp/os/Value.h>
 
 #include <ColorDebug.h>
 
@@ -204,12 +207,14 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
         {
             CD_ERROR("Could not retrieve current frame.\n");
+            close();
             return false;
         }
 
         if (frameDouble != ICartesianSolver::BASE_FRAME && frameDouble != ICartesianSolver::TCP_FRAME)
         {
             CD_ERROR("Unrecognized or unsupported frame.\n");
+            close();
             return false;
         }
 
@@ -224,6 +229,23 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         }
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
+
+        usingThread = rf.check("movi", "use MOVI command");
+
+        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt();
+
+        if (usingThread)
+        {
+            linTrajThread = new LinearTrajectoryThread(threadMs, iCartesianControl);
+            linTrajThread->suspend(); // start in suspended state
+
+            if (!linTrajThread->start())
+            {
+                CD_ERROR("Unable to start MOVI thread.\n");
+                close();
+                return false;
+            }
+        }
     }
 
     issueStop(); // just in case
@@ -386,6 +408,13 @@ double roboticslab::KeyboardController::getPeriod()
 
 bool roboticslab::KeyboardController::close()
 {
+    if (cartesianControlDevice.isValid() && usingThread)
+    {
+        linTrajThread->stop();
+        delete linTrajThread;
+        linTrajThread = 0;
+    }
+
     controlboardDevice.close();
     cartesianControlDevice.close();
 
@@ -471,7 +500,16 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
         currentCartVels = ZERO_CARTESIAN_VELOCITY; // send vector of zeroes
     }
 
-    iCartesianControl->movv(currentCartVels);
+    if (usingThread)
+    {
+        linTrajThread->configure(currentCartVels);
+        linTrajThread->resume();
+    }
+    else
+    {
+        iCartesianControl->movv(currentCartVels);
+    }
+
     controlMode = CARTESIAN_MODE;
 }
 
@@ -557,6 +595,11 @@ void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
+        if (usingThread)
+        {
+            linTrajThread->suspend();
+        }
+
         iCartesianControl->stopControl();
     }
     else if (controlboardDevice.isValid())
