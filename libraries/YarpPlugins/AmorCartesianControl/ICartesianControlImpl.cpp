@@ -447,7 +447,10 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 // -----------------------------------------------------------------------------
 
 void roboticslab::AmorCartesianControl::movi(const std::vector<double> &x)
-{}
+{
+    CD_WARNING("movi not supported, falling back to movj.\n");
+    movj(x);
+}
 
 // -----------------------------------------------------------------------------
 

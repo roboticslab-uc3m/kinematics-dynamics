@@ -218,6 +218,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         yarp::dev::PolyDriver robotDevice;
         yarp::dev::IEncoders *iEncoders;
         yarp::dev::IPositionControl *iPositionControl;
+        yarp::dev::IPositionDirect * iPositionDirect;
         yarp::dev::IVelocityControl *iVelocityControl;
         yarp::dev::IControlLimits *iControlLimits;
         yarp::dev::ITorqueControl *iTorqueControl;

@@ -536,7 +536,34 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 // -----------------------------------------------------------------------------
 
 void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
-{}
+{
+    std::vector<double> currentQ(numRobotJoints);
+    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+    {
+        CD_ERROR("getEncoders failed.\n");
+        return;
+    }
+
+    std::vector<double> q;
+    if ( ! iCartesianSolver->invKin(x,currentQ,q,referenceFrame) )
+    {
+        CD_ERROR("invKin failed.\n");
+        return;
+    }
+
+    std::vector<int> posdModes(numRobotJoints, VOCAB_CM_POSITION_DIRECT);
+    if ( ! iControlMode->setControlModes(posdModes.data()) )
+    {
+        CD_ERROR("setControlModes failed.\n");
+        return;
+    }
+
+    if ( ! iPositionDirect->setPositions( q.data() ) )
+    {
+        CD_ERROR("setPositions failed.\n");
+        return;
+    }
+}
 
 // -----------------------------------------------------------------------------
 
