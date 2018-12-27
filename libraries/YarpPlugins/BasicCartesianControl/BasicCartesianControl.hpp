@@ -118,6 +118,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
                                   iCartesianSolver(NULL),
                                   iEncoders(NULL),
                                   iPositionControl(NULL),
+                                  iPositionDirect(NULL),
                                   iVelocityControl(NULL),
                                   iControlLimits(NULL),
                                   iTorqueControl(NULL),
