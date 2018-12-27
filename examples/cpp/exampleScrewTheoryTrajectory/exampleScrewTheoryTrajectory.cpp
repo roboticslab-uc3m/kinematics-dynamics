@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
     yarp::os::Property jointDeviceOptions;
     jointDeviceOptions.put("device", "remote_controlboard");
-    jointDeviceOptions.put("remote", "/teoSim/leftArm");
+    jointDeviceOptions.put("remote", "/teoSim/leftArm"); // use /teo for real robot
     jointDeviceOptions.put("local", "/screwTheoryTrajectoryExample");
 
     yarp::dev::PolyDriver jointDevice(jointDeviceOptions);
@@ -136,6 +136,8 @@ int main(int argc, char *argv[])
     }
 
     rl::PoeExpression poe = makeTeoLeftArmKinematics();
+
+    axes = poe.size(); // just for real TEO (7 joints, 6 motor axes)
 
     KDL::JntArray jntArray(axes);
 
