@@ -456,6 +456,12 @@ void roboticslab::AmorCartesianControl::movi(const std::vector<double> &x)
 
 bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 {
+    if (currentState != VOCAB_CC_NOT_CONTROLLING)
+    {
+        CD_ERROR("Unable to set config parameter while controlling.\n");
+        return false;
+    }
+
     switch (vocab)
     {
     case VOCAB_CC_CONFIG_GAIN:
@@ -528,6 +534,12 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
 
 bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double> & params)
 {
+    if (currentState != VOCAB_CC_NOT_CONTROLLING)
+    {
+        CD_ERROR("Unable to set config parameters while controlling.\n");
+        return false;
+    }
+
     bool ok = true;
 
     for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
