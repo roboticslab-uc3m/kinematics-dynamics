@@ -32,7 +32,7 @@ protected:
 private:
     ICartesianControl * iCartesianControl;
     ICartesianTrajectory * iCartesianTrajectory;
-    int startTime;
+    double startTime;
     mutable yarp::os::Mutex mutex;
 };
 

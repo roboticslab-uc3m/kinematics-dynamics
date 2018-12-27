@@ -14,7 +14,7 @@ LinearTrajectoryThread::LinearTrajectoryThread(int period, ICartesianControl * _
     : yarp::os::RateThread(period),
       iCartesianControl(_iCartesianControl),
       iCartesianTrajectory(new KdlTrajectory),
-      startTime(0)
+      startTime(0.0)
 {}
 
 LinearTrajectoryThread::~LinearTrajectoryThread()
