@@ -209,16 +209,16 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         int getCurrentState() const;
         void setCurrentState(int value);
 
-        bool checkJointLimits();
+        bool checkJointLimits(const std::vector<double> &q);
         bool checkJointVelocities(const std::vector<double> &qdot);
 
         bool setControlModes(int mode);
 
-        void handleMovj();
-        void handleMovl();
-        void handleMovv();
-        void handleGcmp();
-        void handleForc();
+        void handleMovj(const std::vector<double> &q);
+        void handleMovl(const std::vector<double> &q);
+        void handleMovv(const std::vector<double> &q);
+        void handleGcmp(const std::vector<double> &q);
+        void handleForc(const std::vector<double> &q);
 
         yarp::dev::PolyDriver solverDevice;
         roboticslab::ICartesianSolver *iCartesianSolver;

@@ -36,19 +36,11 @@ void roboticslab::BasicCartesianControl::setCurrentState(int value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::checkJointLimits()
+bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 {
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, unable to check joint limits.\n");
-        return false;
-    }
-
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {
-        double value = currentQ[joint];
+        double value = q[joint];
 
         // Report limit before reaching the actual value.
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287

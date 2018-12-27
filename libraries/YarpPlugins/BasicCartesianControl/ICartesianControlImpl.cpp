@@ -423,6 +423,12 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
+    if ( !checkJointLimits(currentQ) )
+    {
+        CD_ERROR("checkJointLimits failed.\n");
+        return;
+    }
+
     if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame) )
     {
         CD_ERROR("diffInvKin failed.\n");
@@ -459,6 +465,12 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
+        return;
+    }
+
+    if ( !checkJointLimits(currentQ) )
+    {
+        CD_ERROR("checkJointLimits failed.\n");
         return;
     }
 
@@ -531,6 +543,12 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
         CD_ERROR("getEncoders failed.\n");
+        return;
+    }
+
+    if ( !checkJointLimits(currentQ) )
+    {
+        CD_ERROR("checkJointLimits failed.\n");
         return;
     }
 
