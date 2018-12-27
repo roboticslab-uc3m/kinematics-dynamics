@@ -118,6 +118,8 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n",numRobotJoints,numSolverJoints);
     }
 
+    stopControl(); // just in case, initializes current control mode
+
     if( cmcRateMs != DEFAULT_CMC_RATE_MS )
     {
         yarp::os::RateThread::setRate(cmcRateMs);
@@ -135,27 +137,6 @@ bool roboticslab::BasicCartesianControl::close()
     robotDevice.close();
     solverDevice.close();
     return true;
-}
-
-// -----------------------------------------------------------------------------
-
-int roboticslab::BasicCartesianControl::getCurrentState() const
-{
-    int tmp;
-    currentStateReady.wait();
-    tmp = currentState;
-    currentStateReady.post();
-
-    return tmp;
-}
-
-// -----------------------------------------------------------------------------
-
-void roboticslab::BasicCartesianControl::setCurrentState(int value)
-{
-    currentStateReady.wait();
-    currentState = value;
-    currentStateReady.post();
 }
 
 // -----------------------------------------------------------------------------

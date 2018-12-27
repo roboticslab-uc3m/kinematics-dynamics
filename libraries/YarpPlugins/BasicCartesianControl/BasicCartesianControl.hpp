@@ -132,6 +132,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
                                   numRobotJoints(0),
                                   numSolverJoints(0),
                                   currentState(DEFAULT_INIT_STATE),
+                                  currentControlMode(VOCAB_CM_UNKNOWN),
                                   movementStartTime(0),
                                   iCartesianTrajectory(NULL),
                                   cmcSuccess(true)
@@ -205,7 +206,13 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
 
     protected:
 
+        int getCurrentState() const;
+        void setCurrentState(int value);
+
         bool checkJointLimits();
+        bool checkJointVelocities(const std::vector<double> &qdot);
+
+        bool setControlModes(int mode);
 
         void handleMovj();
         void handleMovl();
@@ -238,8 +245,8 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianC
         /** State encoded as a VOCAB which can be stored as an int */
         int currentState;
 
-        int getCurrentState() const;
-        void setCurrentState(int value);
+        int currentControlMode;
+
         mutable yarp::os::Semaphore currentStateReady;
         mutable yarp::os::Semaphore trajectoryMutex;
 

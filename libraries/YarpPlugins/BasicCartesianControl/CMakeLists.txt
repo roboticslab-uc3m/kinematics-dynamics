@@ -16,6 +16,7 @@ if(NOT SKIP_BasicCartesianControl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
 yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
+                                      BasicCartesianControl.cpp
                                       DeviceDriverImpl.cpp
                                       ICartesianControlImpl.cpp
                                       RateThreadImpl.cpp)

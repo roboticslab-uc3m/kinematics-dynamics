@@ -107,10 +107,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     }
 
     //-- Enter position mode and perform movement
-    std::vector<int> posModes(numRobotJoints, VOCAB_CM_POSITION);
-    if (!iControlMode->setControlModes(posModes.data()))
+    if (!setControlModes(VOCAB_CM_POSITION))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set position mode.\n");
         return false;
     }
     if ( ! iPositionControl->positionMove( qd.data() ) )
@@ -219,10 +218,9 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     }
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
-    if (!iControlMode->setControlModes(velModes.data()))
+    if (!setControlModes(VOCAB_CM_VELOCITY))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set velocity mode.\n");
         return false;
     }
 
@@ -291,10 +289,9 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
     trajectoryMutex.post();
 
     //-- Set velocity mode and set state which makes rate thread implement control.
-    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
-    if (!iControlMode->setControlModes(velModes.data()))
+    if (!setControlModes(VOCAB_CM_VELOCITY))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set velocity mode.\n");
         return false;
     }
 
@@ -313,10 +310,9 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 bool roboticslab::BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes rate thread implement control.
-    std::vector<int> torqModes(numRobotJoints, VOCAB_CM_TORQUE);
-    if (!iControlMode->setControlModes(torqModes.data()))
+    if (!setControlModes(VOCAB_CM_TORQUE))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set torque mode.\n");
         return false;
     }
     setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
@@ -337,10 +333,9 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
-    std::vector<int> torqModes(numRobotJoints, VOCAB_CM_TORQUE);
-    if (!iControlMode->setControlModes(torqModes.data()))
+    if (!setControlModes(VOCAB_CM_TORQUE))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set torque mode.\n");
         return false;
     }
     setCurrentState( VOCAB_CC_FORC_CONTROLLING );
@@ -351,10 +346,9 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
-    std::vector<int> posModes(numRobotJoints, VOCAB_CM_POSITION);
-    if (!iControlMode->setControlModes(posModes.data()))
+    if (!setControlModes(VOCAB_CM_POSITION))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set position mode.\n");
         return false;
     }
     iPositionControl->stop();
@@ -422,13 +416,6 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     setCurrentState( VOCAB_CC_NOT_CONTROLLING );
 
-    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
-    if (!iControlMode->setControlModes(velModes.data()))
-    {
-        CD_ERROR("setControlModes failed.\n");
-        return;
-    }
-
     std::vector<double> currentQ(numRobotJoints), qdot;
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
@@ -442,15 +429,17 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    for (unsigned int i = 0; i < qdot.size(); i++)
+    if (!setControlModes(VOCAB_CM_VELOCITY))
     {
-        if ( std::abs(qdot[i]) > maxJointVelocity )
-        {
-            CD_ERROR("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
-            std::fill(qdot.begin(), qdot.end(), 0.0);
-            iVelocityControl->velocityMove(qdot.data());
-            return;
-        }
+        CD_ERROR("Unable to set velocity mode.\n");
+        return;
+    }
+
+    if (!checkJointVelocities(qdot))
+    {
+        std::fill(qdot.begin(), qdot.end(), 0.0);
+        iVelocityControl->velocityMove(qdot.data());
+        return;
     }
 
     if ( ! iVelocityControl->velocityMove( qdot.data() ) )
@@ -505,13 +494,6 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     const double factor = gain / interval;
     std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
 
-    std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
-    if (!iControlMode->setControlModes(velModes.data()))
-    {
-        CD_ERROR("setControlModes failed.\n");
-        return;
-    }
-
     std::vector<double> qdot;
     if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame) )
     {
@@ -519,15 +501,17 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
-    for (unsigned int i = 0; i < qdot.size(); i++)
+    if (!setControlModes(VOCAB_CM_VELOCITY))
     {
-        if ( std::abs(qdot[i]) > maxJointVelocity )
-        {
-            CD_ERROR("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
-            std::fill(qdot.begin(), qdot.end(), 0.0);
-            iVelocityControl->velocityMove(qdot.data());
-            return;
-        }
+        CD_ERROR("Unable to set velocity mode.\n");
+        return;
+    }
+
+    if (!checkJointVelocities(qdot))
+    {
+        std::fill(qdot.begin(), qdot.end(), 0.0);
+        iVelocityControl->velocityMove(qdot.data());
+        return;
     }
 
     if ( ! iVelocityControl->velocityMove( qdot.data() ) )
@@ -557,10 +541,9 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<int> posdModes(numRobotJoints, VOCAB_CM_POSITION_DIRECT);
-    if ( ! iControlMode->setControlModes(posdModes.data()) )
+    if (!setControlModes(VOCAB_CM_POSITION_DIRECT))
     {
-        CD_ERROR("setControlModes failed.\n");
+        CD_ERROR("Unable to set position direct mode.\n");
         return;
     }
 

@@ -2,44 +2,11 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <cmath>  //-- abs
 #include <yarp/os/Time.h>
+
 #include <ColorDebug.h>
 
-namespace
-{
-    double epsilon = 1e-5;
-}
-
 // ------------------- RateThread Related ------------------------------------
-
-bool roboticslab::BasicCartesianControl::checkJointLimits()
-{
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, unable to check joint limits.\n");
-        return false;
-    }
-
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
-    {
-        double value = currentQ[joint];
-
-        // Report limit before reaching the actual value.
-        // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
-        if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
-        {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
-            return false;
-        }
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
 
 void roboticslab::BasicCartesianControl::run()
 {
@@ -177,15 +144,12 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     CD_DEBUG_NO_HEADER("[deg/s]\n");
 
-    for (int i = 0; i < commandQdot.size(); i++)
+    if (!checkJointVelocities(commandQdot))
     {
-        if (std::abs(commandQdot[i]) > maxJointVelocity)
-        {
-            CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
-            cmcSuccess = false;
-            stopControl();
-            return;
-        }
+        CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
     }
 
     if (!iVelocityControl->velocityMove(commandQdot.data()))
@@ -260,15 +224,12 @@ void roboticslab::BasicCartesianControl::handleMovv()
 
     CD_DEBUG_NO_HEADER("[deg/s]\n");
 
-    for (int i = 0; i < commandQdot.size(); i++)
+    if (!checkJointVelocities(commandQdot))
     {
-        if (std::abs(commandQdot[i]) > maxJointVelocity)
-        {
-            CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
-            cmcSuccess = false;
-            stopControl();
-            return;
-        }
+        CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
     }
 
     if (!iVelocityControl->velocityMove(commandQdot.data()))
