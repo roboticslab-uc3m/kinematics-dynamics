@@ -121,35 +121,30 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (!controlboardDevice.isValid())
         {
             CD_ERROR("controlboard client device not valid.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iEncoders))
         {
             CD_ERROR("Could not view iEncoders.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iControlMode))
         {
             CD_ERROR("Could not view iControlMode.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iControlLimits))
         {
             CD_ERROR("Could not view iControlLimits.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iVelocityControl))
         {
             CD_ERROR("Could not view iVelocityControl.\n");
-            close();
             return false;
         }
 
@@ -158,7 +153,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (axes > MAX_JOINTS)
         {
             CD_ERROR("Number of joints (%d) exceeds supported limit (%d).\n", axes, MAX_JOINTS);
-            close();
             return false;
         }
 
@@ -191,14 +185,12 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (!cartesianControlDevice.isValid())
         {
             CD_ERROR("cartesian control client device not valid.\n");
-            close();
             return false;
         }
 
         if (!cartesianControlDevice.view(iCartesianControl))
         {
             CD_ERROR("Could not view iCartesianControl.\n");
-            close();
             return false;
         }
 
@@ -207,14 +199,12 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
         {
             CD_ERROR("Could not retrieve current frame.\n");
-            close();
             return false;
         }
 
         if (frameDouble != ICartesianSolver::BASE_FRAME && frameDouble != ICartesianSolver::TCP_FRAME)
         {
             CD_ERROR("Unrecognized or unsupported frame.\n");
-            close();
             return false;
         }
 
@@ -242,7 +232,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
             if (!linTrajThread->start())
             {
                 CD_ERROR("Unable to start MOVI thread.\n");
-                close();
                 return false;
             }
         }

@@ -17,7 +17,7 @@ namespace roboticslab
 /**
  * @ingroup keyboardController
  *
- * @brief ..
+ * @brief Periodic thread that encapsulates a linear trajectory
  */
 class LinearTrajectoryThread : public yarp::os::RateThread
 {
