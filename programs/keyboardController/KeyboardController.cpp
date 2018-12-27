@@ -487,16 +487,27 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
     {
         currentCartVels = ZERO_CARTESIAN_VELOCITY; // send vector of zeroes
-    }
 
-    if (usingThread)
-    {
-        linTrajThread->configure(currentCartVels);
-        linTrajThread->resume();
+        if (usingThread)
+        {
+            linTrajThread->suspend();
+        }
+        else
+        {
+            iCartesianControl->twist(currentCartVels); // disable CMC
+        }
     }
     else
     {
-        iCartesianControl->movv(currentCartVels);
+        if (usingThread)
+        {
+            linTrajThread->configure(currentCartVels);
+            linTrajThread->resume();
+        }
+        else
+        {
+            iCartesianControl->movv(currentCartVels);
+        }
     }
 
     controlMode = CARTESIAN_MODE;

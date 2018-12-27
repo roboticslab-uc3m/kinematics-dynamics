@@ -420,6 +420,8 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
+    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+
     std::vector<int> velModes(numRobotJoints, VOCAB_CM_VELOCITY);
     if (!iControlMode->setControlModes(velModes.data()))
     {
@@ -462,6 +464,8 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
+    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
@@ -537,6 +541,8 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 {
+    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+
     std::vector<double> currentQ(numRobotJoints);
     if ( ! iEncoders->getEncoders( currentQ.data() ) )
     {
