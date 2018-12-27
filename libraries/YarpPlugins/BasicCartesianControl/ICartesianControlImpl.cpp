@@ -18,16 +18,19 @@
 bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x)
 {
     std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->fwdKin(currentQ,x) )
+
+    if (!iCartesianSolver->fwdKin(currentQ, x))
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
+
     state = getCurrentState();
     return true;
 }
@@ -37,16 +40,19 @@ bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x
 bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,currentQ,q,referenceFrame) )
+
+    if (!iCartesianSolver->invKin(xd, currentQ, q, referenceFrame))
     {
         CD_ERROR("invKin failed.\n");
         return false;
     }
+
     return true;
 }
 
@@ -55,12 +61,14 @@ bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std:
 bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numRobotJoints), qd;
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
-    if ( ! iCartesianSolver->invKin(xd,currentQ,qd,referenceFrame) )
+
+    if (!iCartesianSolver->invKin(xd, currentQ, qd, referenceFrame))
     {
         CD_ERROR("invKin failed.\n");
         return false;
@@ -68,39 +76,46 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
     //-- Find out the maximum time to move
     double max_time = 0;
-    for(unsigned int joint=0;joint<numSolverJoints;joint++)
+
+    for (int joint = 0; joint < numSolverJoints; joint++)
     {
-        CD_INFO("dist[%d]: %f\n",joint,std::abs(qd[joint]-currentQ[joint]));
-        if (std::abs((qd[joint]-currentQ[joint]) / maxJointVelocity) > max_time)
+        CD_INFO("dist[%d]: %f\n", joint, std::abs(qd[joint] - currentQ[joint]));
+
+        if (std::abs((qd[joint] - currentQ[joint]) / maxJointVelocity) > max_time)
         {
-            max_time = std::abs( (qd[joint]-currentQ[joint]) / maxJointVelocity);
-            CD_INFO(" -->candidate: %f\n",max_time);
+            max_time = std::abs((qd[joint] - currentQ[joint]) / maxJointVelocity);
+            CD_INFO(" -->candidate: %f\n", max_time);
         }
     }
-    CD_INFO("max_time[final]: %f\n",max_time);
+
+    CD_INFO("max_time[final]: %f\n", max_time);
 
     //-- Compute, store old and set joint velocities given this time
     std::vector<double> vmo;
-    for(unsigned int joint=0;joint<numRobotJoints;joint++)
+
+    for (int joint = 0; joint < numRobotJoints; joint++)
     {
-        if( joint >= numSolverJoints )
+        if (joint >= numSolverJoints)
         {
-            vmo.push_back( 0.0 );
-            CD_INFO("vmo[%d]: 0.0 (forced)\n",joint);
+            vmo.push_back(0.0);
+            CD_INFO("vmo[%d]: 0.0 (forced)\n", joint);
         }
         else
         {
-            vmo.push_back( std::abs(qd[joint] - currentQ[joint])/max_time );
-            CD_INFO("vmo[%d]: %f\n",joint,vmo[joint]);
+            vmo.push_back(std::abs(qd[joint] - currentQ[joint]) / max_time);
+            CD_INFO("vmo[%d]: %f\n", joint, vmo[joint]);
         }
     }
+
     vmoStored.resize(numRobotJoints);
-    if ( ! iPositionControl->getRefSpeeds( vmoStored.data() ) )
+
+    if (!iPositionControl->getRefSpeeds(vmoStored.data()))
     {
          CD_ERROR("getRefSpeeds (for storing) failed.\n");
          return false;
     }
-    if ( ! iPositionControl->setRefSpeeds( vmo.data() ) )
+
+    if (!iPositionControl->setRefSpeeds(vmo.data()))
     {
          CD_ERROR("setRefSpeeds failed.\n");
          return false;
@@ -112,7 +127,8 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
         CD_ERROR("Unable to set position mode.\n");
         return false;
     }
-    if ( ! iPositionControl->positionMove( qd.data() ) )
+
+    if (!iPositionControl->positionMove(qd.data()))
     {
         CD_ERROR("positionMove failed.\n");
         return false;
@@ -122,7 +138,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     cmcSuccess = true;
     CD_SUCCESS("Waiting\n");
 
-    setCurrentState( VOCAB_CC_MOVJ_CONTROLLING );
+    setCurrentState(VOCAB_CC_MOVJ_CONTROLLING);
 
     return true;
 }
@@ -131,22 +147,25 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 {
-    if ( referenceFrame == ICartesianSolver::TCP_FRAME )
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
         return movj(xd);
     }
 
     int state;
     std::vector<double> x;
-    if ( ! stat(state, x) )
+
+    if (!stat(state, x))
     {
         CD_ERROR("stat failed.\n");
         return false;
     }
+
     for (unsigned int i = 0; i < xd.size(); i++)
     {
         x[i] += xd[i];
     }
+
     return movj(x);
 }
 
@@ -157,23 +176,26 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     CD_WARNING("MOVL mode still experimental.\n");
 
     std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
 
     std::vector<double> x_base_tcp;
-    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+
+    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
 
     std::vector<double> xd_obj;
-    if( referenceFrame == ICartesianSolver::TCP_FRAME )
+
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        if( ! iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj) )
+        if (!iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj))
         {
             CD_ERROR("changeOrigin failed.\n");
             return false;
@@ -186,32 +208,38 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 
     //-- Create line trajectory
     iCartesianTrajectory = new KdlTrajectory;
-    if( ! iCartesianTrajectory->setDuration(duration) )
+
+    if (!iCartesianTrajectory->setDuration(duration))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(x_base_tcp) )
+
+    if (!iCartesianTrajectory->addWaypoint(x_base_tcp))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->addWaypoint(xd_obj) )
+
+    if (!iCartesianTrajectory->addWaypoint(xd_obj))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->configurePath( ICartesianTrajectory::LINE ) )
+
+    if (!iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->configureVelocityProfile( ICartesianTrajectory::TRAPEZOIDAL ) )
+
+    if (!iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::TRAPEZOIDAL))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartesianTrajectory->create() )
+
+    if (!iCartesianTrajectory->create())
     {
         CD_ERROR("\n");
         return false;
@@ -229,7 +257,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
     cmcSuccess = true;
     CD_SUCCESS("Waiting\n");
 
-    setCurrentState( VOCAB_CC_MOVL_CONTROLLING );
+    setCurrentState(VOCAB_CC_MOVL_CONTROLLING);
 
     return true;
 }
@@ -239,14 +267,16 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
     }
 
     std::vector<double> x_base_tcp;
-    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+
+    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
@@ -254,22 +284,25 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     ICartesianTrajectory * iCartTraj = new KdlTrajectory;
 
-    if( ! iCartTraj->addWaypoint(x_base_tcp, xdotd) )
+    if (!iCartTraj->addWaypoint(x_base_tcp, xdotd))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartTraj->configurePath( ICartesianTrajectory::LINE ) )
+
+    if (!iCartTraj->configurePath(ICartesianTrajectory::LINE))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartTraj->configureVelocityProfile( ICartesianTrajectory::RECTANGULAR ) )
+
+    if (!iCartTraj->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR))
     {
         CD_ERROR("\n");
         return false;
     }
-    if( ! iCartTraj->create() )
+
+    if (!iCartTraj->create())
     {
         CD_ERROR("\n");
         return false;
@@ -277,7 +310,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     trajectoryMutex.wait();
 
-    if( iCartesianTrajectory != NULL )
+    if (iCartesianTrajectory != NULL)
     {
         iCartesianTrajectory->destroy();
         delete iCartesianTrajectory;
@@ -300,7 +333,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
     cmcSuccess = true;
     CD_SUCCESS("Waiting\n");
 
-    setCurrentState( VOCAB_CC_MOVV_CONTROLLING );
+    setCurrentState(VOCAB_CC_MOVV_CONTROLLING);
 
     return true;
 }
@@ -315,7 +348,8 @@ bool roboticslab::BasicCartesianControl::gcmp()
         CD_ERROR("Unable to set torque mode.\n");
         return false;
     }
-    setCurrentState( VOCAB_CC_GCMP_CONTROLLING );
+
+    setCurrentState(VOCAB_CC_GCMP_CONTROLLING);
     return true;
 }
 
@@ -333,12 +367,14 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
     //-- Set torque mode and set state which makes rate thread implement control.
     this->td = td;
+
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
         CD_ERROR("Unable to set torque mode.\n");
         return false;
     }
-    setCurrentState( VOCAB_CC_FORC_CONTROLLING );
+
+    setCurrentState(VOCAB_CC_FORC_CONTROLLING);
     return true;
 }
 
@@ -351,14 +387,17 @@ bool roboticslab::BasicCartesianControl::stopControl()
         CD_ERROR("Unable to set position mode.\n");
         return false;
     }
+
     iPositionControl->stop();
-    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+
     if (iCartesianTrajectory != 0)
     {
         iCartesianTrajectory->destroy();
         delete iCartesianTrajectory;
         iCartesianTrajectory = 0;
     }
+
     return true;
 }
 
@@ -395,13 +434,13 @@ bool roboticslab::BasicCartesianControl::wait(double timeout)
 
 bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 {
-    if ( ! iCartesianSolver->restoreOriginalChain() )
+    if (!iCartesianSolver->restoreOriginalChain())
     {
         CD_ERROR("restoreOriginalChain failed\n");
         return false;
     }
 
-    if ( ! iCartesianSolver->appendLink(x) )
+    if (!iCartesianSolver->appendLink(x))
     {
         CD_ERROR("appendLink failed\n");
         return false;
@@ -414,22 +453,23 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     std::vector<double> currentQ(numRobotJoints), qdot;
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return;
     }
 
-    if ( !checkJointLimits(currentQ) )
+    if (!checkJointLimits(currentQ))
     {
         CD_ERROR("checkJointLimits failed.\n");
         return;
     }
 
-    if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame) )
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         CD_ERROR("diffInvKin failed.\n");
         return;
@@ -448,7 +488,7 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    if ( ! iVelocityControl->velocityMove( qdot.data() ) )
+    if (!iVelocityControl->velocityMove(qdot.data()))
     {
         CD_ERROR("velocityMove failed.\n");
         return;
@@ -459,32 +499,35 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
-    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return;
     }
 
-    if ( !checkJointLimits(currentQ) )
+    if (!checkJointLimits(currentQ))
     {
         CD_ERROR("checkJointLimits failed.\n");
         return;
     }
 
     std::vector<double> x_base_tcp;
-    if ( ! iCartesianSolver->fwdKin(currentQ,x_base_tcp) )
+
+    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
         CD_ERROR("fwdKin failed.\n");
         return;
     }
 
     std::vector<double> xd_obj;
-    if( referenceFrame == ICartesianSolver::TCP_FRAME )
+
+    if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        if( ! iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj) )
+        if (!iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj))
         {
             CD_ERROR("changeOrigin failed.\n");
             return;
@@ -496,7 +539,8 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     }
 
     std::vector<double> xd;
-    if ( ! iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd) )
+
+    if (!iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd))
     {
         CD_ERROR("fwdKinError failed.\n");
         return;
@@ -507,7 +551,8 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
 
     std::vector<double> qdot;
-    if ( ! iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame) )
+
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         CD_ERROR("diffInvKin failed.\n");
         return;
@@ -526,7 +571,7 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
-    if ( ! iVelocityControl->velocityMove( qdot.data() ) )
+    if (!iVelocityControl->velocityMove(qdot.data()))
     {
         CD_ERROR("velocityMove failed.\n");
         return;
@@ -537,23 +582,25 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 {
-    setCurrentState( VOCAB_CC_NOT_CONTROLLING );
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     std::vector<double> currentQ(numRobotJoints);
-    if ( ! iEncoders->getEncoders( currentQ.data() ) )
+
+    if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
         return;
     }
 
-    if ( !checkJointLimits(currentQ) )
+    if (!checkJointLimits(currentQ))
     {
         CD_ERROR("checkJointLimits failed.\n");
         return;
     }
 
     std::vector<double> q;
-    if ( ! iCartesianSolver->invKin(x,currentQ,q,referenceFrame) )
+
+    if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
     {
         CD_ERROR("invKin failed.\n");
         return;
@@ -565,7 +612,7 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    if ( ! iPositionDirect->setPositions( q.data() ) )
+    if (!iPositionDirect->setPositions(q.data()))
     {
         CD_ERROR("setPositions failed.\n");
         return;
