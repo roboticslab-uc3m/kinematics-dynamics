@@ -17,6 +17,17 @@ bool roboticslab::SpnavSensorDevice::acquireInterfaces()
     return ok;
 }
 
+bool roboticslab::SpnavSensorDevice::initialize()
+{
+    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
+    {
+        CD_WARNING("Unable to set inertial reference frame.\n");
+        return false;
+    }
+
+    return true;
+}
+
 bool roboticslab::SpnavSensorDevice::acquireData()
 {
     yarp::sig::Vector data;

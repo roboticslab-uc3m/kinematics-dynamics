@@ -26,6 +26,8 @@ public:
 
     virtual bool acquireInterfaces();
 
+    virtual bool initialize();
+
     virtual bool acquireData();
 
     virtual void sendMovementCommand();

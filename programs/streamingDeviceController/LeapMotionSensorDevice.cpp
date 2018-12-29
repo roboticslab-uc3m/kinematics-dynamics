@@ -51,6 +51,12 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
 
 bool roboticslab::LeapMotionSensorDevice::initialize()
 {
+    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
+    {
+        CD_WARNING("Unable to set inertial reference frame.\n");
+        return false;
+    }
+
     int state;
     std::vector<double> x;
 
