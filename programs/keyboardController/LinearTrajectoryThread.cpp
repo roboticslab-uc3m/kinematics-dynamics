@@ -2,6 +2,9 @@
 
 #include "LinearTrajectoryThread.hpp"
 
+#include <algorithm>
+#include <functional>
+
 #include <yarp/os/Time.h>
 
 #include "KdlTrajectory.hpp"
@@ -10,11 +13,13 @@
 
 using namespace roboticslab;
 
-LinearTrajectoryThread::LinearTrajectoryThread(int period, ICartesianControl * _iCartesianControl)
-    : yarp::os::RateThread(period),
+LinearTrajectoryThread::LinearTrajectoryThread(int _period, ICartesianControl * _iCartesianControl)
+    : yarp::os::RateThread(_period),
+      period(_period),
       iCartesianControl(_iCartesianControl),
       iCartesianTrajectory(new KdlTrajectory),
-      startTime(0.0)
+      startTime(0.0),
+      usingTcpFrame(false)
 {}
 
 LinearTrajectoryThread::~LinearTrajectoryThread()
@@ -25,6 +30,18 @@ LinearTrajectoryThread::~LinearTrajectoryThread()
 
 bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
+    if (usingTcpFrame)
+    {
+        std::vector<double> deltaX(vels.size());
+        std::transform(vels.begin(), vels.end(), deltaX.begin(), std::bind1st(std::multiplies<double>(), period / 1000.0));
+
+        mutex.lock();
+        this->deltaX = deltaX;
+        mutex.unlock();
+
+        return true;
+    }
+
     int state;
     std::vector<double> x;
 
@@ -60,14 +77,27 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 
 void LinearTrajectoryThread::run()
 {
-    std::vector<double> position;
-
-    mutex.lock();
-    bool ok = iCartesianTrajectory->getPosition(yarp::os::Time::now() - startTime, position);
-    mutex.unlock();
-
-    if (ok)
+    if (usingTcpFrame)
     {
-        iCartesianControl->movi(position);
+        std::vector<double> deltaX;
+
+        mutex.lock();
+        deltaX = this->deltaX;
+        mutex.unlock();
+
+        iCartesianControl->movi(deltaX);
+    }
+    else
+    {
+        std::vector<double> position;
+
+        mutex.lock();
+        bool ok = iCartesianTrajectory->getPosition(yarp::os::Time::now() - startTime, position);
+        mutex.unlock();
+
+        if (ok)
+        {
+            iCartesianControl->movi(position);
+        }
     }
 }

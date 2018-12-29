@@ -227,6 +227,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (usingThread)
         {
             linTrajThread = new LinearTrajectoryThread(threadMs, iCartesianControl);
+            linTrajThread->useTcpFrame(cartFrame == ICartesianSolver::TCP_FRAME);
             linTrajThread->suspend(); // start in suspended state
 
             if (!linTrajThread->start())
@@ -551,6 +552,11 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
         }
 
         cartFrame = newFrame;
+    }
+
+    if (usingThread)
+    {
+        linTrajThread->useTcpFrame(newFrame == ICartesianSolver::TCP_FRAME);
     }
 
     std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;

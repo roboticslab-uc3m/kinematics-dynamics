@@ -25,14 +25,18 @@ public:
     LinearTrajectoryThread(int period, ICartesianControl * iCartesianControl);
     ~LinearTrajectoryThread();
     bool configure(const std::vector<double> & vels);
+    void useTcpFrame(bool enableTcpFrame) { usingTcpFrame = enableTcpFrame; }
 
 protected:
     virtual void run();
 
 private:
+    double period;
     ICartesianControl * iCartesianControl;
     ICartesianTrajectory * iCartesianTrajectory;
     double startTime;
+    bool usingTcpFrame;
+    std::vector<double> deltaX;
     mutable yarp::os::Mutex mutex;
 };
 
