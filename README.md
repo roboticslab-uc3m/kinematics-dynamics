@@ -52,6 +52,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
 ### Humanoid-oriented
 - https://github.com/roboticslab-uc3m/gait
+- https://github.com/roboticslab-uc3m/gaitcontrol
 - https://github.com/roboticslab-uc3m/footsteps
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library for computing kinematics and dynamics of serial-links chains of revolute joints and iCub limbs
 - [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
