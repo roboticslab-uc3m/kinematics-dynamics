@@ -286,7 +286,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
     //-- IK solver algorithm.
-    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st, id)").asString();
+    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nr, st, id)").asString();
 
     if (ik == "lma")
     {
@@ -302,7 +302,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
         ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L);
     }
-    else if (ik == "nrjl")
+    else if (ik == "nr")
     {
         KDL::JntArray qMax(chain.getNrOfJoints());
         KDL::JntArray qMin(chain.getNrOfJoints());
