@@ -150,8 +150,6 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n", numRobotJoints, numSolverJoints);
     }
 
-    stopControl(); // just in case, initializes current control mode
-
     if (cmcRateMs != DEFAULT_CMC_RATE_MS)
     {
         yarp::os::RateThread::setRate(cmcRateMs);

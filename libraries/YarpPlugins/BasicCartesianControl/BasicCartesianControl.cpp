@@ -74,17 +74,33 @@ bool roboticslab::BasicCartesianControl::checkJointVelocities(const std::vector<
 
 bool roboticslab::BasicCartesianControl::setControlModes(int mode)
 {
-    if (currentControlMode != mode)
-    {
-        std::vector<int> modes(numRobotJoints, mode);
+    std::vector<int> modes(numRobotJoints);
 
-        if (!iControlMode->setControlModes(modes.data()))
+    if (!iControlMode->getControlModes(modes.data()))
+    {
+        CD_WARNING("getControlModes failed.\n");
+        return false;
+    }
+
+    std::vector<int> jointIds;
+
+    for (unsigned int i = 0; i < modes.size(); i++)
+    {
+        if (modes[i] != mode)
+        {
+            jointIds.push_back(i);
+        }
+    }
+
+    if (!jointIds.empty())
+    {
+        modes.assign(jointIds.size(), mode);
+
+        if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
         {
             CD_WARNING("setControlModes failed.\n");
             return false;
         }
-
-        currentControlMode = mode;
     }
 
     return true;

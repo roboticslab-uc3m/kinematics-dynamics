@@ -130,7 +130,6 @@ public:
                               numRobotJoints(0),
                               numSolverJoints(0),
                               currentState(DEFAULT_INIT_STATE),
-                              currentControlMode(VOCAB_CM_UNKNOWN),
                               movementStartTime(0),
                               iCartesianTrajectory(NULL),
                               cmcSuccess(true)
@@ -242,8 +241,6 @@ protected:
 
     /** State encoded as a VOCAB which can be stored as an int */
     int currentState;
-
-    int currentControlMode;
 
     mutable yarp::os::Semaphore currentStateReady;
     mutable yarp::os::Semaphore trajectoryMutex;
