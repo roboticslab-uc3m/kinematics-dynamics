@@ -364,7 +364,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
             return false;
         }
 
-        ikSolverPos = new ChainIkSolverPos_ID(chain, qMin, qMax, *fkSolverPos, *ikSolverVel);
+        ikSolverPos = new ChainIkSolverPos_ID(chain, qMin, qMax, *fkSolverPos);
     }
     else
     {

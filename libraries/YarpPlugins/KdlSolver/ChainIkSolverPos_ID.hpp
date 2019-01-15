@@ -6,6 +6,8 @@
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainiksolver.hpp>
+#include <kdl/chainjnttojacsolver.hpp>
+#include <kdl/jacobian.hpp>
 #include <kdl/jntarray.hpp>
 
 namespace roboticslab
@@ -32,7 +34,7 @@ public:
      * @param fksolver A forward position kinematics solver.
      * @param iksolver An inverse velocity kinematics solver.
      */
-    ChainIkSolverPos_ID(const KDL::Chain & chain, const KDL::JntArray & q_min, const KDL::JntArray & q_max, KDL::ChainFkSolverPos & fksolver, KDL::ChainIkSolverVel & iksolver);
+    ChainIkSolverPos_ID(const KDL::Chain & chain, const KDL::JntArray & q_min, const KDL::JntArray & q_max, KDL::ChainFkSolverPos & fksolver);
 
     /**
      * @brief Calculate inverse position kinematics.
@@ -68,10 +70,12 @@ public:
     /** @brief Return code, internal FK position solver failed. */
     static const int E_FKSOLVERPOS_FAILED = -100;
 
-    /** @brief Return code, itnernal IK velocity solver failed. */
-    static const int E_IKSOLVERVEL_FAILED = -101;
+    /** @brief Return code, internal Jacobian solver failed. */
+    static const int E_JACSOLVER_FAILED = -101;
 
 private:
+
+    KDL::JntArray computeDiffInvKin(const KDL::Twist & delta_twist);
 
     const KDL::Chain & chain;
     unsigned int nj;
@@ -80,7 +84,9 @@ private:
     KDL::JntArray qMax;
 
     KDL::ChainFkSolverPos & fkSolverPos;
-    KDL::ChainIkSolverVel & ikSolverVel;
+    KDL::ChainJntToJacSolver jacSolver;
+
+    KDL::Jacobian jacobian;
 };
 
 }  // namespace roboticslab
