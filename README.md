@@ -59,3 +59,4 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/): [github](https://github.com/stack-of-tasks)
+- https://github.com/nav74neet/ddpg_biped
