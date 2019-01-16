@@ -19,7 +19,7 @@ namespace
 
     inline void addValue(yarp::os::Bottle& b, int vocab, double value)
     {
-        if (vocab == VOCAB_CC_CONFIG_FRAME)
+        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING)
         {
             b.addVocab(value);
         }
@@ -31,7 +31,7 @@ namespace
 
     inline double asValue(int vocab, const yarp::os::Value& v)
     {
-        if (vocab == VOCAB_CC_CONFIG_FRAME)
+        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING)
         {
             return v.asVocab();
         }

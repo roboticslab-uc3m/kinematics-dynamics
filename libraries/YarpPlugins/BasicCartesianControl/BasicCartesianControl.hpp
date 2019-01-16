@@ -25,6 +25,7 @@
 #define DEFAULT_CMC_RATE_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
+#define DEFAULT_STREAMING_PRESET 0
 
 namespace roboticslab
 {
@@ -130,6 +131,7 @@ public:
                               numRobotJoints(0),
                               numSolverJoints(0),
                               currentState(DEFAULT_INIT_STATE),
+                              streamingCommand(DEFAULT_STREAMING_PRESET),
                               movementStartTime(0),
                               iCartesianTrajectory(NULL),
                               cmcSuccess(true)
@@ -210,6 +212,7 @@ protected:
     bool checkJointVelocities(const std::vector<double> &qdot);
 
     bool setControlModes(int mode);
+    bool presetStreamingCommand(int command);
 
     void handleMovj(const std::vector<double> &q);
     void handleMovl(const std::vector<double> &q);
@@ -241,6 +244,8 @@ protected:
 
     /** State encoded as a VOCAB which can be stored as an int */
     int currentState;
+
+    int streamingCommand;
 
     mutable yarp::os::Semaphore currentStateReady;
     mutable yarp::os::Semaphore trajectoryMutex;

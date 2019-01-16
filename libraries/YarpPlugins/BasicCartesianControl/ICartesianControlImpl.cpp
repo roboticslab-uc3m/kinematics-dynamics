@@ -453,7 +453,11 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST)
+    {
+        CD_ERROR("Streaming command not preset.\n");
+        return;
+    }
 
     std::vector<double> currentQ(numRobotJoints), qdot;
 
@@ -475,12 +479,6 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    if (!setControlModes(VOCAB_CM_VELOCITY))
-    {
-        CD_ERROR("Unable to set velocity mode.\n");
-        return;
-    }
-
     if (!checkJointVelocities(qdot))
     {
         std::fill(qdot.begin(), qdot.end(), 0.0);
@@ -499,7 +497,11 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE)
+    {
+        CD_ERROR("Streaming command not preset.\n");
+        return;
+    }
 
     std::vector<double> currentQ(numRobotJoints);
 
@@ -558,12 +560,6 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
-    if (!setControlModes(VOCAB_CM_VELOCITY))
-    {
-        CD_ERROR("Unable to set velocity mode.\n");
-        return;
-    }
-
     if (!checkJointVelocities(qdot))
     {
         std::fill(qdot.begin(), qdot.end(), 0.0);
@@ -582,7 +578,11 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 {
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI)
+    {
+        CD_ERROR("Streaming command not preset.\n");
+        return;
+    }
 
     std::vector<double> currentQ(numRobotJoints);
 
@@ -603,12 +603,6 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
     if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
     {
         CD_ERROR("invKin failed.\n");
-        return;
-    }
-
-    if (!setControlModes(VOCAB_CM_POSITION_DIRECT))
-    {
-        CD_ERROR("Unable to set position direct mode.\n");
         return;
     }
 
@@ -674,10 +668,18 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_FRAME:
         if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
-            CD_ERROR("Unrecognized of unsupported reference frame vocab.\n");
+            CD_ERROR("Unrecognized or unsupported reference frame vocab.\n");
             return false;
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
+        break;
+    case VOCAB_CC_CONFIG_STREAMING:
+        if (!presetStreamingCommand(value))
+        {
+            CD_ERROR("Unable to preset streaming command.\n");
+            return false;
+        }
+        streamingCommand = value;
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
@@ -711,6 +713,9 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
+    case VOCAB_CC_CONFIG_STREAMING:
+        *value = streamingCommand;
+        break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
         return false;
@@ -743,12 +748,13 @@ bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, doubl
 
 bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING, streamingCommand));
     return true;
 }
 

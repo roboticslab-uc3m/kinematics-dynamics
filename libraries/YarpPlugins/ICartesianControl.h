@@ -112,6 +112,7 @@
 #define VOCAB_CC_CONFIG_CMC_RATE ROBOTICSLAB_VOCAB('c','p','c','r')      ///< CMC rate [ms]
 #define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
 #define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)           ///< Reference frame
+#define VOCAB_CC_CONFIG_STREAMING ROBOTICSLAB_VOCAB('c','p','s','c')     ///< Preset streaming command
 
 /** @} */
 

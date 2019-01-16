@@ -31,6 +31,7 @@ void roboticslab::BasicCartesianControl::setCurrentState(int value)
 {
     currentStateReady.wait();
     currentState = value;
+    streamingCommand = DEFAULT_STREAMING_PRESET;
     currentStateReady.post();
 }
 
@@ -101,6 +102,33 @@ bool roboticslab::BasicCartesianControl::setControlModes(int mode)
             CD_WARNING("setControlModes failed.\n");
             return false;
         }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::BasicCartesianControl::presetStreamingCommand(int command)
+{
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+
+    bool ret;
+
+    switch (command)
+    {
+    case VOCAB_CC_TWIST:
+        ret = setControlModes(VOCAB_CM_VELOCITY);
+        break;
+    case VOCAB_CC_POSE:
+        ret = setControlModes(VOCAB_CM_VELOCITY);
+        break;
+    case VOCAB_CC_MOVI:
+        ret = setControlModes(VOCAB_CM_POSITION_DIRECT);
+        break;
+    default:
+        CD_ERROR("Unrecognized or unsupported streaming command vocab.\n");
+        return false;
     }
 
     return true;
