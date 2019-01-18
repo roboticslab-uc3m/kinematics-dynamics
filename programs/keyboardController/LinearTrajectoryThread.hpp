@@ -24,6 +24,7 @@ class LinearTrajectoryThread : public yarp::os::RateThread
 public:
     LinearTrajectoryThread(int period, ICartesianControl * iCartesianControl);
     ~LinearTrajectoryThread();
+    bool checkStreamingConfig();
     bool configure(const std::vector<double> & vels);
     void useTcpFrame(bool enableTcpFrame) { usingTcpFrame = enableTcpFrame; }
 
@@ -35,6 +36,7 @@ private:
     ICartesianControl * iCartesianControl;
     ICartesianTrajectory * iCartesianTrajectory;
     double startTime;
+    bool usingStreamingCommandConfig;
     bool usingTcpFrame;
     std::vector<double> deltaX;
     mutable yarp::os::Mutex mutex;

@@ -37,7 +37,7 @@ public:
 
     virtual bool acquireInterfaces();
 
-    virtual bool initialize();
+    virtual bool initialize(bool usingStreamingPreset);
 
     virtual bool acquireData();
 

@@ -491,7 +491,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_FRAME:
         if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
-            CD_ERROR("Unrecognized of unsupported reference frame vocab.\n");
+            CD_ERROR("Unrecognized or unsupported reference frame vocab.\n");
             return false;
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
@@ -554,10 +554,10 @@ bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double
 
 bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & params)
 {
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
-    params.insert(std::pair<int, double>(VOCAB_CC_CONFIG_FRAME, referenceFrame));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }
 

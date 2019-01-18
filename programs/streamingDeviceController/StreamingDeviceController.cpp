@@ -37,14 +37,12 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!streamingDevice->isValid())
     {
         CD_ERROR("Streaming device not valid.\n");
-        close();
         return false;
     }
 
     if (!streamingDevice->acquireInterfaces())
     {
         CD_ERROR("Unable to acquire plugin interfaces from streaming device.\n");
-        close();
         return false;
     }
 
@@ -58,23 +56,30 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!cartesianControlClientDevice.isValid())
     {
         CD_ERROR("Cartesian control client device not valid.\n");
-        close();
         return false;
     }
 
     if (!cartesianControlClientDevice.view(iCartesianControl))
     {
         CD_ERROR("Could not view iCartesianControl.\n");
-        close();
         return false;
     }
 
+    std::map<int, double> params;
+
+    if (!iCartesianControl->getParameters(params))
+    {
+        CD_ERROR("Unable to retrieve configuration parameters.\n");
+        return false;
+    }
+
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 
-    if (!streamingDevice->initialize())
+    if (!streamingDevice->initialize(usingStreamingPreset))
     {
         CD_ERROR("Device initialization failed.\n");
-        close();
         return false;
     }
 
@@ -91,14 +96,12 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         if (!sensorsClientDevice.isValid())
         {
             CD_ERROR("sensors device not valid.\n");
-            close();
             return false;
         }
 
         if (!sensorsClientDevice.view(iProximitySensors))
         {
             CD_ERROR("Could not view iSensors.\n");
-            close();
             return false;
         }
 
