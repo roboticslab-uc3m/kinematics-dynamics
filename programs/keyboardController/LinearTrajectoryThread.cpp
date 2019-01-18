@@ -19,6 +19,7 @@ LinearTrajectoryThread::LinearTrajectoryThread(int _period, ICartesianControl * 
       iCartesianControl(_iCartesianControl),
       iCartesianTrajectory(new KdlTrajectory),
       startTime(0.0),
+      usingStreamingCommandConfig(false),
       usingTcpFrame(false)
 {}
 
@@ -28,8 +29,29 @@ LinearTrajectoryThread::~LinearTrajectoryThread()
     iCartesianTrajectory = 0;
 }
 
+bool LinearTrajectoryThread::checkStreamingConfig()
+{
+    std::map<int, double> params;
+
+    if (!iCartesianControl->getParameters(params))
+    {
+        CD_WARNING("getParameters failed.\n");
+        return false;
+    }
+
+    usingStreamingCommandConfig = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+
+    return true;
+}
+
 bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
+    if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_MOVI))
+    {
+        CD_WARNING("Unable to preset streaming command.\n");
+        return false;
+    }
+
     if (usingTcpFrame)
     {
         std::vector<double> deltaX(vels.size());

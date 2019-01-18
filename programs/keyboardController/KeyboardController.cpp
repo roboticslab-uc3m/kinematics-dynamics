@@ -227,6 +227,13 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (usingThread)
         {
             linTrajThread = new LinearTrajectoryThread(threadMs, iCartesianControl);
+
+            if (!linTrajThread->checkStreamingConfig())
+            {
+                CD_ERROR("Unable to check streaming configuration.\n");
+                return false;
+            }
+
             linTrajThread->useTcpFrame(cartFrame == ICartesianSolver::TCP_FRAME);
             linTrajThread->suspend(); // start in suspended state
 
@@ -502,7 +509,12 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     {
         if (usingThread)
         {
-            linTrajThread->configure(currentCartVels);
+            if (!linTrajThread->configure(currentCartVels))
+            {
+                CD_ERROR("Unable to configure cartesian command.\n");
+                return;
+            }
+
             linTrajThread->resume();
         }
         else
