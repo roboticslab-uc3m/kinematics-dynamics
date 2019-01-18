@@ -17,8 +17,14 @@ bool roboticslab::SpnavSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool roboticslab::SpnavSensorDevice::initialize()
+bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
 {
+    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_TWIST))
+    {
+        CD_WARNING("Unable to preset streaming command.\n");
+        return false;
+    }
+
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
     {
         CD_WARNING("Unable to set inertial reference frame.\n");

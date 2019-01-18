@@ -69,9 +69,20 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+    std::map<int, double> params;
+
+    if (!iCartesianControl->getParameters(params))
+    {
+        CD_ERROR("Unable to retrieve configuration parameters.\n");
+        close();
+        return false;
+    }
+
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 
-    if (!streamingDevice->initialize())
+    if (!streamingDevice->initialize(usingStreamingPreset))
     {
         CD_ERROR("Device initialization failed.\n");
         close();
