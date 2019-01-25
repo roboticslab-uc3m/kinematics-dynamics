@@ -77,6 +77,111 @@ namespace
             }
         }
     }
+
+    void computeBaseFrameDiffInvKin(double A1, double A2, double A3, const std::vector<double> & q, yarp::sig::Matrix & Ja)
+    {
+        double s1 = std::sin(q[0]);
+        double c1 = std::cos(q[0]);
+        double s2 = std::sin(q[1]);
+        double c2 = std::cos(q[1]);
+
+        double s23 = std::sin(q[1] + q[2]);
+        double c23 = std::cos(q[1] + q[2]);
+
+        double s234 = std::sin(q[1] + q[2] + q[3]);
+        double c234 = std::cos(q[1] + q[2] + q[3]);
+
+        Ja(0, 0) = -s1 * (A3 * s234 + A2 * s23 + A1 * s2);
+        Ja(0, 1) =  c1 * (A3 * c234 + A2 * c23 + A1 * c2);
+        Ja(0, 2) =  c1 * (A3 * c234 + A2 * c23);
+        Ja(0, 3) =  c1 * A3 * c234;
+        Ja(0, 4) =  0;
+
+        Ja(1, 0) = c1 * (A3 * s234 + A2 * s23 + A1 * s2);
+        Ja(1, 1) = s1 * (A3 * c234 + A2 * c23 + A1 * c2);
+        Ja(1, 2) = s1 * (A3 * c234 + A2 * c23);
+        Ja(1, 3) = s1 * A3 * c234;
+        Ja(1, 4) = 0;
+
+        Ja(2, 0) = 0;
+        Ja(2, 1) = -A3 * s234 - A2 * s23 - A1 * s2;
+        Ja(2, 2) = -A3 * s234 - A2 * s23;
+        Ja(2, 3) = -A3 * s234;
+        Ja(2, 4) = 0;
+
+        Ja(3, 0) = 0;
+        Ja(3, 1) = -s1;
+        Ja(3, 2) = -s1;
+        Ja(3, 3) = -s1;
+        Ja(3, 4) = c1 * s234;
+
+        Ja(4, 0) = 0;
+        Ja(4, 1) = c1;
+        Ja(4, 2) = c1;
+        Ja(4, 3) = c1;
+        Ja(4, 4) = s1 * s234;
+
+        Ja(5, 0) = 1;
+        Ja(5, 1) = 0;
+        Ja(5, 2) = 0;
+        Ja(5, 3) = 0;
+        Ja(5, 4) = c234;
+    }
+
+    void computeTcpFrameDiffInvKin(double A1, double A2, double A3, const std::vector<double> & q, yarp::sig::Matrix & Ja)
+    {
+        double s2 = std::sin(q[1]);
+        double c2 = std::cos(q[1]);
+        double s4 = std::sin(q[3]);
+        double c4 = std::cos(q[3]);
+        double s5 = std::sin(q[4]);
+        double c5 = std::cos(q[4]);
+
+        double s23 = std::sin(q[1] + q[2]);
+        double c23 = std::cos(q[1] + q[2]);
+
+        double s34 = std::sin(q[2] + q[3]);
+        double c34 = std::cos(q[2] + q[3]);
+
+        double s234 = std::sin(q[1] + q[2] + q[3]);
+        double c234 = std::cos(q[1] + q[2] + q[3]);
+
+        Ja(0, 0) = s5 * (A3 * s234 + A2 * s23 + A1 * s2);
+        Ja(0, 1) = c5 * (A3 + A2 * c4 + A1 * c34);
+        Ja(0, 2) = c5 * (A3 + A2 * c4);
+        Ja(0, 3) = c5 * A3;
+        Ja(0, 4) = 0;
+
+        Ja(1, 0) = c5 * (A3 * s234 + A2 * s23 + A1 * s2);
+        Ja(1, 1) = -s5 * (A3 + A2 * c4 + A1 * c34);
+        Ja(1, 2) = -s5 * (A3 + A2 * c4);
+        Ja(1, 3) = -s5 * A3;
+        Ja(1, 4) = 0;
+
+        Ja(2, 0) = 0;
+        Ja(2, 1) = A2 * s4 + A1 * s34;
+        Ja(2, 2) = A2 * s4;
+        Ja(2, 3) = 0;
+        Ja(2, 4) = 0;
+
+        Ja(3, 0) = -s234 * c5;
+        Ja(3, 1) = s5;
+        Ja(3, 2) = s5;
+        Ja(3, 3) = s5;
+        Ja(3, 4) = 0;
+
+        Ja(4, 0) = s234 * s5;
+        Ja(4, 1) = c5;
+        Ja(4, 2) = c5;
+        Ja(4, 3) = c5;
+        Ja(4, 4) = 0;
+
+        Ja(5, 0) = c234;
+        Ja(5, 1) = 0;
+        Ja(5, 2) = 0;
+        Ja(5, 3) = 0;
+        Ja(5, 4) = 1;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -334,106 +439,11 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
     if (frame == BASE_FRAME)
     {
-        double s1 = std::sin(qInRad[0]);
-        double c1 = std::cos(qInRad[0]);
-        double s2 = std::sin(qInRad[1]);
-        double c2 = std::cos(qInRad[1]);
-
-        double s23 = std::sin(qInRad[1] + qInRad[2]);
-        double c23 = std::cos(qInRad[1] + qInRad[2]);
-
-        double s234 = std::sin(qInRad[1] + qInRad[2] + qInRad[3]);
-        double c234 = std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
-
-        Ja(0, 0) = -s1 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(0, 1) =  c1 * (A3 * c234 + A2 * c23 + A1 * c2);
-        Ja(0, 2) =  c1 * (A3 * c234 + A2 * c23);
-        Ja(0, 3) =  c1 * A3 * c234;
-        Ja(0, 4) =  0;
-
-        Ja(1, 0) = c1 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(1, 1) = s1 * (A3 * c234 + A2 * c23 + A1 * c2);
-        Ja(1, 2) = s1 * (A3 * c234 + A2 * c23);
-        Ja(1, 3) = s1 * A3 * c234;
-        Ja(1, 4) = 0;
-
-        Ja(2, 0) = 0;
-        Ja(2, 1) = -A3 * s234 - A2 * s23 - A1 * s2;
-        Ja(2, 2) = -A3 * s234 - A2 * s23;
-        Ja(2, 3) = -A3 * s234;
-        Ja(2, 4) = 0;
-
-        Ja(3, 0) = 0;
-        Ja(3, 1) = -s1;
-        Ja(3, 2) = -s1;
-        Ja(3, 3) = -s1;
-        Ja(3, 4) = c1 * s234;
-
-        Ja(4, 0) = 0;
-        Ja(4, 1) = c1;
-        Ja(4, 2) = c1;
-        Ja(4, 3) = c1;
-        Ja(4, 4) = s1 * s234;
-
-        Ja(5, 0) = 1;
-        Ja(5, 1) = 0;
-        Ja(5, 2) = 0;
-        Ja(5, 3) = 0;
-        Ja(5, 4) = c234;
+        computeBaseFrameDiffInvKin(A1, A2, A3, qInRad, Ja);
     }
     else if (frame == TCP_FRAME)
     {
-        double s2 = std::sin(qInRad[1]);
-        double c2 = std::cos(qInRad[1]);
-        double s4 = std::sin(qInRad[3]);
-        double c4 = std::cos(qInRad[3]);
-        double s5 = std::sin(qInRad[4]);
-        double c5 = std::cos(qInRad[4]);
-
-        double s23 = std::sin(qInRad[1] + qInRad[2]);
-        double c23 = std::cos(qInRad[1] + qInRad[2]);
-
-        double s34 = std::sin(qInRad[2] + qInRad[3]);
-        double c34 = std::cos(qInRad[2] + qInRad[3]);
-
-        double s234 = std::sin(qInRad[1] + qInRad[2] + qInRad[3]);
-        double c234 = std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
-
-        Ja(0, 0) = s5 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(0, 1) = c5 * (A3 + A2 * c4 + A1 * c34);
-        Ja(0, 2) = c5 * (A3 + A2 * c4);
-        Ja(0, 3) = c5 * A3;
-        Ja(0, 4) = 0;
-
-        Ja(1, 0) = c5 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(1, 1) = -s5 * (A3 + A2 * c4 + A1 * c34);
-        Ja(1, 2) = -s5 * (A3 + A2 * c4);
-        Ja(1, 3) = -s5 * A3;
-        Ja(1, 4) = 0;
-
-        Ja(2, 0) = 0;
-        Ja(2, 1) = A2 * s4 + A1 * s34;
-        Ja(2, 2) = A2 * s4;
-        Ja(2, 3) = 0;
-        Ja(2, 4) = 0;
-
-        Ja(3, 0) = -s234 * c5;
-        Ja(3, 1) = s5;
-        Ja(3, 2) = s5;
-        Ja(3, 3) = s5;
-        Ja(3, 4) = 0;
-
-        Ja(4, 0) = s234 * s5;
-        Ja(4, 1) = c5;
-        Ja(4, 2) = c5;
-        Ja(4, 3) = c5;
-        Ja(4, 4) = 0;
-
-        Ja(5, 0) = c234;
-        Ja(5, 1) = 0;
-        Ja(5, 2) = 0;
-        Ja(5, 3) = 0;
-        Ja(5, 4) = 1;
+        computeTcpFrameDiffInvKin(A1, A2, A3, qInRad, Ja);
     }
     else
     {
