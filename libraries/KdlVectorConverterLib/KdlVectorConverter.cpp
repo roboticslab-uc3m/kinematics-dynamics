@@ -10,6 +10,8 @@ KDL::Frame roboticslab::KdlVectorConverter::vectorToFrame(const std::vector<doub
 {
     KDL::Frame f;
 
+    x.resize(6);
+
     f.p.x(x[0]);
     f.p.y(x[1]);
     f.p.z(x[2]);
@@ -45,6 +47,8 @@ std::vector<double> roboticslab::KdlVectorConverter::frameToVector(const KDL::Fr
 KDL::Twist roboticslab::KdlVectorConverter::vectorToTwist(const std::vector<double> &xdot)
 {
     KDL::Twist t;
+
+    xdot.resize(6);
 
     t.vel.x(xdot[0]);
     t.vel.y(xdot[1]);
