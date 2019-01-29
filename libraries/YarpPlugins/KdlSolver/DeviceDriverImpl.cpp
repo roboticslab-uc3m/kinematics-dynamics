@@ -109,8 +109,8 @@ namespace
 
         for (int motor = 0; motor < nrOfJoints; motor++)
         {
-            qMax(motor) = roboticslab::KinRepresentation::degToRad(maxs->get(motor).asDouble());
-            qMin(motor) = roboticslab::KinRepresentation::degToRad(mins->get(motor).asDouble());
+            qMax(motor) = maxs->get(motor).asDouble();
+            qMin(motor) = mins->get(motor).asDouble();
 
             if (qMin(motor) == qMax(motor))
             {
