@@ -8,9 +8,13 @@
 
 KDL::Frame roboticslab::KdlVectorConverter::vectorToFrame(const std::vector<double> &x)
 {
-    KDL::Frame f;
+    if (x.size() != 6)
+    {
+        CD_WARNING("Size mismatch; expected: 6, was: %d\n", x.size());
+        return KDL::Frame::Identity();
+    }
 
-    x.resize(6);
+    KDL::Frame f;
 
     f.p.x(x[0]);
     f.p.y(x[1]);
@@ -46,9 +50,13 @@ std::vector<double> roboticslab::KdlVectorConverter::frameToVector(const KDL::Fr
 
 KDL::Twist roboticslab::KdlVectorConverter::vectorToTwist(const std::vector<double> &xdot)
 {
-    KDL::Twist t;
+    if (xdot.size() != 6)
+    {
+        CD_WARNING("Size mismatch; expected: 6, was: %d\n", xdot.size());
+        return KDL::Twist::Zero();
+    }
 
-    xdot.resize(6);
+    KDL::Twist t;
 
     t.vel.x(xdot[0]);
     t.vel.y(xdot[1]);
