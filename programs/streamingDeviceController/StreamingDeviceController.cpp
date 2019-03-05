@@ -26,8 +26,6 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote cartesian port").asString();
-    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
-            "remote sensors port").asString();
 
     period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
@@ -84,8 +82,11 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     }
 
 #ifdef SDC_WITH_SENSORS
-    if (rf.check("useSensors"))
+    if (rf.check("useSensors", "enable proximity sensors"))
     {
+        std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
+                "remote sensors port").asString();
+
         yarp::os::Property sensorsClientOptions;
         sensorsClientOptions.fromString(rf.toString());
         sensorsClientOptions.put("device", "ProximitySensorsClient");
