@@ -4,6 +4,13 @@
 
 #include <ColorDebug.h>
 
+roboticslab::SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain)
+    : StreamingDevice(config),
+      iAnalogSensor(NULL),
+      usingMovi(usingMovi),
+      gain(gain)
+{}
+
 bool roboticslab::SpnavSensorDevice::acquireInterfaces()
 {
     bool ok = true;
@@ -19,10 +26,21 @@ bool roboticslab::SpnavSensorDevice::acquireInterfaces()
 
 bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_TWIST))
+    if (usingMovi && gain <= 0.0)
     {
-        CD_WARNING("Unable to preset streaming command.\n");
+        CD_WARNING("Invalid gain for movi command: %f.\n", gain);
         return false;
+    }
+
+    if (usingStreamingPreset)
+    {
+        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
+
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, cmd))
+        {
+            CD_WARNING("Unable to preset streaming command.\n");
+            return false;
+        }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
@@ -52,12 +70,42 @@ bool roboticslab::SpnavSensorDevice::acquireData()
         this->data[i] = data[i];
     }
 
+    if (!iCartesianControl->stat(currentX))
+    {
+        CD_WARNING("stat failed.\n");
+        return false;
+    }
+
     return true;
+}
+
+bool roboticslab::SpnavSensorDevice::transformData(double scaling)
+{
+    double localScaling = scaling;
+
+    if (usingMovi)
+    {
+        for (int i = 0; i < data.size(); i++)
+        {
+            data[i] = currentX[i] + (gain / scaling) * data[i];
+        }
+
+        localScaling = 1.0; // override default scaling algorithm
+    }
+
+    return StreamingDevice::transformData(localScaling);
 }
 
 void roboticslab::SpnavSensorDevice::sendMovementCommand()
 {
-    iCartesianControl->twist(data);
+    if (usingMovi)
+    {
+        iCartesianControl->movi(data);
+    }
+    else
+    {
+        iCartesianControl->twist(data);
+    }
 }
 
 void roboticslab::SpnavSensorDevice::stopMotion()

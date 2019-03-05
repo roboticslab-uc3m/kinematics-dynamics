@@ -21,7 +21,8 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 
     if (deviceName == "SpaceNavigator")
     {
-        return new SpnavSensorDevice(deviceConfig);
+        double gain = config.check("gain", yarp::os::Value(0.0)).asDouble();
+        return new SpnavSensorDevice(deviceConfig, usingMovi, gain);
     }
     else if (deviceName == "LeapMotionSensor")
     {
