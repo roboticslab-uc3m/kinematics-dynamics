@@ -15,6 +15,7 @@ using namespace roboticslab;
 StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
     yarp::os::Searchable & deviceConfig = config.findGroup(deviceName.c_str());
+    bool usingMovi = config.check("movi", "enable movi command");
 
     CD_DEBUG("Device configuration: %s\n", deviceConfig.toString().c_str());
 
@@ -24,14 +25,8 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     }
     else if (deviceName == "LeapMotionSensor")
     {
-        if (!config.check("period"))
-        {
-            CD_WARNING("Missing \"period\" parameter.\n");
-            return new InvalidDevice();
-        }
-
-        double period = config.check("period", yarp::os::Value(1.0)).asDouble();
-        return new LeapMotionSensorDevice(deviceConfig, period);
+        double period = config.check("period", yarp::os::Value(0.0)).asDouble();
+        return new LeapMotionSensorDevice(deviceConfig, usingMovi, period);
     }
     else if (deviceName == "WiimoteSensor")
     {
