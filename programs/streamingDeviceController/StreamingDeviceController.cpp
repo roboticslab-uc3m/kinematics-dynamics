@@ -71,7 +71,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 

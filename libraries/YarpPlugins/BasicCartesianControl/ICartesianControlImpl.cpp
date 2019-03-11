@@ -647,7 +647,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
-    case VOCAB_CC_CONFIG_STREAMING:
+    case VOCAB_CC_CONFIG_STREAMING_CMD:
         if (!presetStreamingCommand(value))
         {
             CD_ERROR("Unable to preset streaming command.\n");
@@ -684,7 +684,7 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
-    case VOCAB_CC_CONFIG_STREAMING:
+    case VOCAB_CC_CONFIG_STREAMING_CMD:
         *value = streamingCommand;
         break;
     default:
@@ -724,7 +724,7 @@ bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & p
     params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING, streamingCommand));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand));
     return true;
 }
 

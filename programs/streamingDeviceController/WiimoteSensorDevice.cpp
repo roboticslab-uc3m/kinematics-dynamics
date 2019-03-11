@@ -44,7 +44,7 @@ bool roboticslab::WiimoteSensorDevice::initialize(bool usingStreamingPreset)
     {
         int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
 
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, cmd))
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
             CD_WARNING("Unable to preset streaming command.\n");
             return false;
