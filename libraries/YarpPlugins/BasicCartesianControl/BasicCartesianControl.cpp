@@ -15,7 +15,7 @@ namespace
     // return -1 for negative numbers, +1 for positive numbers, 0 for zero
     // https://stackoverflow.com/a/4609795
     template <typename T>
-    int sgn(T val) {
+    inline int sgn(T val) {
         return (T(0) < val) - (val < T(0));
     }
 }
