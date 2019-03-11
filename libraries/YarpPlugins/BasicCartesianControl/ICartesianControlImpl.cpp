@@ -588,19 +588,11 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> qRef(numRobotJoints);
-
-    if (!iPositionDirect->getRefPositions(qRef.data()))
-    {
-        CD_ERROR("getRefPositions failed.\n");
-        return;
-    }
-
     std::vector<double> qd(numRobotJoints);
 
     for (int i = 0; i < numRobotJoints; i++)
     {
-        qd[i] = q[i] - qRef[i];
+        qd[i] = q[i] - currentQ[i];
     }
 
     if (!checkJointLimits(currentQ, qd))
