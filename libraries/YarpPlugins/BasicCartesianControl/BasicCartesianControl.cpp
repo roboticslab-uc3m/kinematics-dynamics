@@ -11,6 +11,13 @@
 namespace
 {
     double epsilon = 1e-5;
+
+    // return -1 for negative numbers, +1 for positive numbers, 0 for zero
+    // https://stackoverflow.com/a/4609795
+    template <typename T>
+    int sgn(T val) {
+        return (T(0) < val) - (val < T(0));
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -57,13 +64,37 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qd)
+{
+    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    {
+        double value = q[joint];
+
+        if (value < qMin[joint] || value > qMax[joint])
+        {
+            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
+            double midRange = (qMax[joint] + qMin[joint]) / 2;
+
+            // Let the joint get away from its nearest limit.
+            if (qd.empty() || sgn(value - midRange) == sgn(qd[joint]))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
 {
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
         if (std::abs(qdot[i]) > maxJointVelocity)
         {
-            CD_WARNING("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
+            CD_WARNING("Maximum angular velocity hit: qdot[%d] = |%f| > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
             return false;
         }
     }

@@ -467,20 +467,15 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    if (!checkJointLimits(currentQ))
-    {
-        CD_ERROR("checkJointLimits failed.\n");
-        return;
-    }
-
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         CD_ERROR("diffInvKin failed.\n");
         return;
     }
 
-    if (!checkJointVelocities(qdot))
+    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
+        CD_ERROR("Joint position or velocity limits exceeded, stopping.\n");
         std::fill(qdot.begin(), qdot.end(), 0.0);
         iVelocityControl->velocityMove(qdot.data());
         return;
@@ -508,12 +503,6 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         CD_ERROR("getEncoders failed.\n");
-        return;
-    }
-
-    if (!checkJointLimits(currentQ))
-    {
-        CD_ERROR("checkJointLimits failed.\n");
         return;
     }
 
@@ -560,8 +549,9 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
         return;
     }
 
-    if (!checkJointVelocities(qdot))
+    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
+        CD_ERROR("Joint position or velocity limits exceeded, stopping.\n");
         std::fill(qdot.begin(), qdot.end(), 0.0);
         iVelocityControl->velocityMove(qdot.data());
         return;
@@ -584,7 +574,7 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> currentQ(numRobotJoints);
+    std::vector<double> currentQ(numRobotJoints), q;
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -592,17 +582,30 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    if (!checkJointLimits(currentQ))
-    {
-        CD_ERROR("checkJointLimits failed.\n");
-        return;
-    }
-
-    std::vector<double> q;
-
     if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
     {
         CD_ERROR("invKin failed.\n");
+        return;
+    }
+
+    std::vector<double> qRef(numRobotJoints);
+
+    if (!iPositionDirect->getRefPositions(qRef.data()))
+    {
+        CD_ERROR("getRefPositions failed.\n");
+        return;
+    }
+
+    std::vector<double> qd(numRobotJoints);
+
+    for (int i = 0; i < numRobotJoints; i++)
+    {
+        qd[i] = q[i] - qRef[i];
+    }
+
+    if (!checkJointLimits(currentQ, qd))
+    {
+        CD_ERROR("checkJointLimits failed, stopping.\n");
         return;
     }
 

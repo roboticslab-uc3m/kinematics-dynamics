@@ -209,6 +209,7 @@ protected:
     void setCurrentState(int value);
 
     bool checkJointLimits(const std::vector<double> &q);
+    bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qd);
     bool checkJointVelocities(const std::vector<double> &qdot);
 
     bool setControlModes(int mode);
