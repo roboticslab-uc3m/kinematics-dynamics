@@ -69,20 +69,20 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qd)
+bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot)
 {
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {
         double value = q[joint];
 
-        if (value < qMin[joint] || value > qMax[joint])
+        if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
             CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg).\n",
                     joint, value, qMin[joint], qMax[joint]);
             double midRange = (qMax[joint] + qMin[joint]) / 2;
 
             // Let the joint get away from its nearest limit.
-            if (qd.empty() || sgn(value - midRange) == sgn(qd[joint]))
+            if (sgn(value - midRange) == sgn(qdot[joint]))
             {
                 return false;
             }
