@@ -183,6 +183,10 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), ss_cmd.str().c_str());
 
     ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING_PERIOD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) streaming command send period [ms]");
+    ss.str("");
 }
 
 // -----------------------------------------------------------------------------

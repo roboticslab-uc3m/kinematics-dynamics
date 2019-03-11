@@ -107,13 +107,14 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')         ///< Parameter group
-#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')           ///< Controller gain
-#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d')  ///< Trajectory duration
-#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')     ///< CMC period [ms]
-#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')    ///< Check period of 'wait' command [ms]
-#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)            ///< Reference frame
-#define VOCAB_CC_CONFIG_STREAMING_CMD ROBOTICSLAB_VOCAB('c','p','s','c')  ///< Preset streaming command
+#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')           ///< Parameter group
+#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')             ///< Controller gain
+#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d')    ///< Trajectory duration
+#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')       ///< CMC period [ms]
+#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')      ///< Check period of 'wait' command [ms]
+#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)              ///< Reference frame
+#define VOCAB_CC_CONFIG_STREAMING_CMD ROBOTICSLAB_VOCAB('c','p','s','c')    ///< Preset streaming command
+#define VOCAB_CC_CONFIG_STREAMING_PERIOD ROBOTICSLAB_VOCAB('c','p','s','p') ///< Streaming command send period [ms]
 
 /** @} */
 

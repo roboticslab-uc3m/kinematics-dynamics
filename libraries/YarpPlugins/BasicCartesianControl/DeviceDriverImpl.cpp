@@ -22,6 +22,9 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt32();
 
+    streamingPeriodMs = config.check("streamingPeriodMs", yarp::os::Value(DEFAULT_STREAMING_PERIOD_MS),
+            "streaming command send period (milliseconds)").asInt32();
+
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
              "reference frame (base|tcp)").asString();
 

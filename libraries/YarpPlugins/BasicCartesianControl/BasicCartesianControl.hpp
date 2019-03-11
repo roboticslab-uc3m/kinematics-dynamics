@@ -24,6 +24,7 @@
 #define DEFAULT_DURATION 10.0
 #define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
+#define DEFAULT_STREAMING_PERIOD_MS 50
 #define DEFAULT_REFERENCE_FRAME "base"
 #define DEFAULT_STREAMING_PRESET 0
 
@@ -130,6 +131,7 @@ public:
                               duration(DEFAULT_DURATION),
                               cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
+                              streamingPeriodMs(DEFAULT_STREAMING_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
                               currentState(DEFAULT_INIT_STATE),
@@ -244,6 +246,7 @@ protected:
 
     int cmcPeriodMs;
     int waitPeriodMs;
+    int streamingPeriodMs;
     int numRobotJoints, numSolverJoints;
 
     /** State encoded as a VOCAB which can be stored as an int */
