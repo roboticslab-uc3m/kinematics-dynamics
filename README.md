@@ -51,6 +51,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - https://rosindustrial.org/news/2018/7/5/optimization-motion-planning-with-tesseract-and-trajopt-for-industrial-applications
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
 - [jrl-umi3218/Tasks](https://github.com/jrl-umi3218/Tasks): It has been used extensively to control humanoid robots such as HOAP-3, HRP-2, HRP-4 and Atlas.
+- [Google Cartographer](https://github.com/googlecartographer): Cartographer is a system that provides real-time simultaneous localization and mapping (SLAM) in 2D and 3D across multiple platforms and sensor configuration
 ### Humanoid-oriented
 - https://github.com/roboticslab-uc3m/gait
 - https://github.com/roboticslab-uc3m/gaitcontrol
