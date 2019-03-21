@@ -31,7 +31,7 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     }
     else if (deviceName == "WiimoteSensor")
     {
-        return new WiimoteSensorDevice(deviceConfig);
+        return new WiimoteSensorDevice(deviceConfig, usingMovi);
     }
     else
     {

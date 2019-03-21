@@ -7,6 +7,18 @@
 
 #include <ColorDebug.h>
 
+roboticslab::WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi)
+    : StreamingDevice(config),
+      iAnalogSensor(NULL),
+      mode(NONE),
+      usingMovi(usingMovi),
+      step(0.0)
+{
+    data.resize(3);  // already called by base constructor
+    buffer.resize(5);
+    step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asDouble();
+}
+
 bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
 {
     bool ok = true;
@@ -22,10 +34,21 @@ bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
 
 bool roboticslab::WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_TWIST))
+    if (usingMovi && step <= 0.0)
     {
-        CD_WARNING("Unable to preset streaming command.\n");
+        CD_WARNING("Invalid step: %f.\n", step);
         return false;
+    }
+
+    if (usingStreamingPreset)
+    {
+        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
+
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, cmd))
+        {
+            CD_WARNING("Unable to preset streaming command.\n");
+            return false;
+        }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
@@ -123,7 +146,14 @@ void roboticslab::WiimoteSensorDevice::sendMovementCommand()
         return;
     }
 
-    iCartesianControl->twist(xdot);
+    if (usingMovi)
+    {
+        iCartesianControl->movi(xdot);
+    }
+    else
+    {
+        iCartesianControl->twist(xdot);
+    }
 }
 
 void roboticslab::WiimoteSensorDevice::stopMotion()
