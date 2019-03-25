@@ -89,7 +89,7 @@ public:
 
     /**
      * @brief Checks whether the device may forward acquired and
-     * processed data to the controller
+     * processed data to the controller.
      * @return true if valid, false otherwise
      */
     virtual bool hasValidMovementData() const;
@@ -98,6 +98,11 @@ public:
      * @brief Sends movement command to the cartesian controller.
      */
     virtual void sendMovementCommand() = 0;
+
+    /**
+     * @brief Sends a movement command that would stop motion.
+     */
+    virtual void stopMotion() = 0;
 
     /**
      * @brief Stores handle to an ICartesianControl instance
@@ -150,6 +155,9 @@ public:
     }
 
     virtual void sendMovementCommand()
+    {}
+
+    virtual void stopMotion()
     {}
 };
 

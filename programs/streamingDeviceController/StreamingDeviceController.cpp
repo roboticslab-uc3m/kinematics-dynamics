@@ -143,7 +143,8 @@ bool StreamingDeviceController::updateModule()
 
             if (!isStopped)
             {
-                isStopped = iCartesianControl->stopControl();
+                streamingDevice->stopMotion();
+                isStopped = true;
             }
 
             return true;
@@ -157,21 +158,20 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
-    if (!streamingDevice->hasValidMovementData())
+    if (streamingDevice->hasValidMovementData())
     {
-        if (!isStopped)
-        {
-            isStopped = iCartesianControl->stopControl();
-        }
-
-        return true;
+        streamingDevice->sendMovementCommand();
+        isStopped = false;
     }
     else
     {
-        isStopped = false;
-    }
+        if (!isStopped)
+        {
+            streamingDevice->stopMotion();
+        }
 
-    streamingDevice->sendMovementCommand();
+        isStopped = true;
+    }
 
     return true;
 }

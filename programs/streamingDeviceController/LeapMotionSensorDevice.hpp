@@ -35,6 +35,9 @@ public:
 
     virtual void sendMovementCommand();
 
+    virtual void stopMotion()
+    {}
+
 private:
 
     yarp::dev::IAnalogSensor * iAnalogSensor;

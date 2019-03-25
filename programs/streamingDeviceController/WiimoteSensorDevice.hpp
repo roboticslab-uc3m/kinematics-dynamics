@@ -47,6 +47,8 @@ public:
 
     virtual void sendMovementCommand();
 
+    virtual void stopMotion();
+
 private:
 
     enum cmd_mode { NONE, FWD, BKWD, ROT };

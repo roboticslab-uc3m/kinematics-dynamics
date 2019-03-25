@@ -59,3 +59,9 @@ void roboticslab::SpnavSensorDevice::sendMovementCommand()
 {
     iCartesianControl->twist(data);
 }
+
+void roboticslab::SpnavSensorDevice::stopMotion()
+{
+    std::vector<double> zeros(6, 0.0);
+    iCartesianControl->twist(zeros);
+}
