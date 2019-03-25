@@ -20,8 +20,14 @@ bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool roboticslab::WiimoteSensorDevice::initialize()
+bool roboticslab::WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 {
+    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_TWIST))
+    {
+        CD_WARNING("Unable to preset streaming command.\n");
+        return false;
+    }
+
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
     {
         CD_WARNING("Unable to set TCP reference frame.\n");
@@ -118,4 +124,10 @@ void roboticslab::WiimoteSensorDevice::sendMovementCommand()
     }
 
     iCartesianControl->twist(xdot);
+}
+
+void roboticslab::WiimoteSensorDevice::stopMotion()
+{
+    std::vector<double> zeros(6, 0.0);
+    iCartesianControl->twist(zeros);
 }

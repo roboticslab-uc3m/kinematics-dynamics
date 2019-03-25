@@ -2,44 +2,11 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <cmath>  //-- abs
 #include <yarp/os/Time.h>
+
 #include <ColorDebug.h>
 
-namespace
-{
-    double epsilon = 1e-5;
-}
-
 // ------------------- RateThread Related ------------------------------------
-
-bool roboticslab::BasicCartesianControl::checkJointLimits()
-{
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, unable to check joint limits.\n");
-        return false;
-    }
-
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
-    {
-        double value = currentQ[joint];
-
-        // Report limit before reaching the actual value.
-        // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
-        if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
-        {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
-            return false;
-        }
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
 
 void roboticslab::BasicCartesianControl::run()
 {
@@ -50,7 +17,15 @@ void roboticslab::BasicCartesianControl::run()
         return;
     }
 
-    if (!checkJointLimits())
+    std::vector<double> q(numRobotJoints);
+
+    if (!iEncoders->getEncoders(q.data()))
+    {
+        CD_ERROR("getEncoders failed, unable to check joint limits.\n");
+        return;
+    }
+
+    if (!checkJointLimits(q))
     {
         CD_ERROR("checkJointLimits failed, stopping control.\n");
         cmcSuccess = false;
@@ -61,19 +36,19 @@ void roboticslab::BasicCartesianControl::run()
     switch (currentState)
     {
     case VOCAB_CC_MOVJ_CONTROLLING:
-        handleMovj();
+        handleMovj(q);
         break;
     case VOCAB_CC_MOVL_CONTROLLING:
-        handleMovl();
+        handleMovl(q);
         break;
     case VOCAB_CC_MOVV_CONTROLLING:
-        handleMovv();
+        handleMovv(q);
         break;
     case VOCAB_CC_GCMP_CONTROLLING:
-        handleGcmp();
+        handleGcmp(q);
         break;
     case VOCAB_CC_FORC_CONTROLLING:
-        handleForc();
+        handleForc(q);
         break;
     default:
         break;
@@ -82,7 +57,7 @@ void roboticslab::BasicCartesianControl::run()
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleMovj()
+void roboticslab::BasicCartesianControl::handleMovj(const std::vector<double> &q)
 {
     bool done;
 
@@ -107,7 +82,7 @@ void roboticslab::BasicCartesianControl::handleMovj()
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleMovl()
+void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q)
 {
     double currentTrajectoryDuration;
     iCartesianTrajectory->getDuration(&currentTrajectoryDuration);
@@ -120,18 +95,9 @@ void roboticslab::BasicCartesianControl::handleMovl()
         return;
     }
 
-    //-- Obtain current joint position
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;
-    }
-
     std::vector<double> currentX;
 
-    if (!iCartesianSolver->fwdKin(currentQ, currentX))
+    if (!iCartesianSolver->fwdKin(q, currentX))
     {
         CD_WARNING("fwdKin failed, not updating control this iteration.\n");
         return;
@@ -155,7 +121,7 @@ void roboticslab::BasicCartesianControl::handleMovl()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(currentQ, commandXdot, commandQdot))
+    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
@@ -177,15 +143,12 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
     CD_DEBUG_NO_HEADER("[deg/s]\n");
 
-    for (int i = 0; i < commandQdot.size(); i++)
+    if (!checkJointVelocities(commandQdot))
     {
-        if (std::abs(commandQdot[i]) > maxJointVelocity)
-        {
-            CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
-            cmcSuccess = false;
-            stopControl();
-            return;
-        }
+        CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
     }
 
     if (!iVelocityControl->velocityMove(commandQdot.data()))
@@ -196,22 +159,13 @@ void roboticslab::BasicCartesianControl::handleMovl()
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleMovv()
+void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q)
 {
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
-    //-- Obtain current joint position
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;
-    }
-
     std::vector<double> currentX;
 
-    if (!iCartesianSolver->fwdKin(currentQ, currentX))
+    if (!iCartesianSolver->fwdKin(q, currentX))
     {
         CD_WARNING("fwdKin failed, not updating control this iteration.\n");
         return;
@@ -238,7 +192,7 @@ void roboticslab::BasicCartesianControl::handleMovv()
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(currentQ, commandXdot, commandQdot, referenceFrame))
+    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, referenceFrame))
     {
         CD_WARNING("diffInvKin failed, not updating control this iteration.\n");
         return;
@@ -260,15 +214,12 @@ void roboticslab::BasicCartesianControl::handleMovv()
 
     CD_DEBUG_NO_HEADER("[deg/s]\n");
 
-    for (int i = 0; i < commandQdot.size(); i++)
+    if (!checkJointVelocities(commandQdot))
     {
-        if (std::abs(commandQdot[i]) > maxJointVelocity)
-        {
-            CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
-            cmcSuccess = false;
-            stopControl();
-            return;
-        }
+        CD_ERROR("diffInvKin too dangerous, STOP!!!\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
     }
 
     if (!iVelocityControl->velocityMove(commandQdot.data()))
@@ -279,20 +230,11 @@ void roboticslab::BasicCartesianControl::handleMovv()
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleGcmp()
+void roboticslab::BasicCartesianControl::handleGcmp(const std::vector<double> &q)
 {
-    //-- Obtain current joint position
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;
-    }
-
     std::vector<double> t(numRobotJoints);
 
-    if (!iCartesianSolver->invDyn(currentQ, t))
+    if (!iCartesianSolver->invDyn(q, t))
     {
         CD_WARNING("invDyn failed, not updating control this iteration.\n");
         return;
@@ -306,17 +248,8 @@ void roboticslab::BasicCartesianControl::handleGcmp()
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleForc()
+void roboticslab::BasicCartesianControl::handleForc(const std::vector<double> &q)
 {
-    //-- Obtain current joint position
-    std::vector<double> currentQ(numRobotJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        CD_WARNING("getEncoders failed, not updating control this iteration.\n");
-        return;
-    }
-
     std::vector<double> qdot(numRobotJoints, 0), qdotdot(numRobotJoints, 0);
     std::vector< std::vector<double> > fexts;
 
@@ -330,7 +263,7 @@ void roboticslab::BasicCartesianControl::handleForc()
 
     std::vector<double> t(numRobotJoints);
 
-    if (!iCartesianSolver->invDyn(currentQ, qdot, qdotdot, fexts, t))
+    if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fexts, t))
     {
         CD_WARNING("invDyn failed, not updating control this iteration.\n");
         return;

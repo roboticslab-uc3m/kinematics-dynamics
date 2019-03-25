@@ -54,7 +54,7 @@ public:
      *
      * where @f$ j = \{1, 2, ..., N\}, k = \{1, 2, ..., N-1\}, 1 <= j+k <= N @f$ .
      *
-     * Given @f$ N @f$ terms in the POE formula, only @f$ j @f$ of which are known, any
+     * Given @f$ N @f$ terms in the POE formula, @f$ j @f$ of which are unknowns, any
      * characteristic point @f$ p @f$ postmultiplying this expression could be rewritten
      * as @f$ p' @f$ per:
      *

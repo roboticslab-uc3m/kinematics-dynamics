@@ -6,14 +6,17 @@ if(ENABLE_keyboardController)
 # Set up our main executable.
 add_executable(keyboardController main.cpp
                                   KeyboardController.hpp
-                                  KeyboardController.cpp)
+                                  KeyboardController.cpp
+                                  LinearTrajectoryThread.hpp
+                                  LinearTrajectoryThread.cpp)
 
 target_link_libraries(keyboardController YARP::YARP_OS
                                          YARP::YARP_init
                                          YARP::YARP_dev
                                          ROBOTICSLAB::ColorDebug
                                          KinematicRepresentationLib
-                                         KinematicsDynamicsInterfaces)
+                                         KinematicsDynamicsInterfaces
+                                         TrajectoryLib)
 
 install(TARGETS keyboardController
         DESTINATION ${CMAKE_INSTALL_BINDIR})
