@@ -7,6 +7,7 @@ if(_has_parent)
     endif()
 else()
     cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+    project(_ NONE) # dummy project, disable compiler check
     find_package(YCM 0.10 REQUIRED)
     find_package(Doxygen REQUIRED)
 endif()
