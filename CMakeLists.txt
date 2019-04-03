@@ -37,7 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YCM 0.8 REQUIRED)
+find_package(YCM 0.10 REQUIRED)
 
 # https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
 find_package(YARP 3.0 QUIET)
@@ -95,11 +95,9 @@ include(InstallBasicPackageFiles)
 install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
                             VERSION 0.1.0
                             COMPATIBILITY AnyNewerVersion
-                            FIRST_TARGET KinematicsDynamicsInterfaces
                             NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
-                            NAMESPACE ROBOTICSLAB::
-                            NO_COMPATIBILITY_VARS)
+                            NAMESPACE ROBOTICSLAB::)
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)
