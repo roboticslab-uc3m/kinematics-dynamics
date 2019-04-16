@@ -33,7 +33,10 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
 
     KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
 
-    *state = currentState;
+    if (state != 0)
+    {
+        *state = currentState;
+    }
 
     return true;
 }

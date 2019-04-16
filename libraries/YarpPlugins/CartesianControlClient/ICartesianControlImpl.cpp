@@ -161,7 +161,11 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
         return false;
     }
 
-    *state = response.get(0).asVocab();
+    if (state != 0)
+    {
+        *state = response.get(0).asVocab();
+    }
+
     x.resize(response.size() - 1);
 
     for (size_t i = 0; i < x.size(); i++)

@@ -31,7 +31,11 @@ bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * stat
         return false;
     }
 
-    *state = getCurrentState();
+    if (state != 0)
+    {
+        *state = getCurrentState();
+    }
+
     return true;
 }
 
