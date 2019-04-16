@@ -39,8 +39,12 @@ bool roboticslab::FkStreamResponder::getLastStatData(std::vector<double> &x, int
     mutex.wait();
 
     localArrivalTime = this->localArrivalTime;
-    *state = this->state;
     x = this->x;
+
+    if (state != 0)
+    {
+        *state = this->state;
+    }
 
     mutex.post();
 
