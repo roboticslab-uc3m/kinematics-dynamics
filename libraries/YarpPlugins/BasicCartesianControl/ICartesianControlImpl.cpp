@@ -15,7 +15,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x)
+bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * state)
 {
     std::vector<double> currentQ(numRobotJoints);
 
@@ -31,7 +31,7 @@ bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x
         return false;
     }
 
-    state = getCurrentState();
+    *state = getCurrentState();
     return true;
 }
 
@@ -152,10 +152,9 @@ bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
         return movj(xd);
     }
 
-    int state;
     std::vector<double> x;
 
-    if (!stat(state, x))
+    if (!stat(x))
     {
         CD_ERROR("stat failed.\n");
         return false;

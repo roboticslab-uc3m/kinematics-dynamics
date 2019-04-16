@@ -11,7 +11,7 @@ void roboticslab::CartesianControlServer::run()
     std::vector<double> x;
     int state;
 
-    if (!iCartesianControl->stat(state, x))
+    if (!iCartesianControl->stat(x, &state))
     {
         return;
     }

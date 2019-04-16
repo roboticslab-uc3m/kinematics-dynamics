@@ -52,7 +52,7 @@ public:
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
-    virtual bool stat(int &state, std::vector<double> &x);
+    virtual bool stat(std::vector<double> &x, int * state = 0);
 
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 

@@ -599,10 +599,8 @@ void roboticslab::KeyboardController::printCartesianPositions()
         return;
     }
 
-    int state;
     std::vector<double> x;
-
-    iCartesianControl->stat(state, x);
+    iCartesianControl->stat(x);
     KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;

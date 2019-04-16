@@ -195,7 +195,7 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
     std::vector<double> x;
     int state;
 
-    if (iCartesianControl->stat(state, x))
+    if (iCartesianControl->stat(x, &state))
     {
         if (!transformOutgoingData(x))
         {

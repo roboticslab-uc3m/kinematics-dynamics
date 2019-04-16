@@ -63,10 +63,9 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    int state;
     std::vector<double> x;
 
-    if (!iCartesianControl->stat(state, initialOffset))
+    if (!iCartesianControl->stat(initialOffset))
     {
         CD_WARNING("stat failed.\n");
         return false;

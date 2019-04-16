@@ -145,14 +145,14 @@ class ICartesianControl
          *
          * Inform on control state, get robot position and perform forward kinematics.
          *
-         * @param state Identifier for a cartesian control vocab.
          * @param x 6-element vector describing current position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
+         * @param state Identifier for a cartesian control vocab.
          *
          * @return true on success, false otherwise
          */
-        virtual bool stat(int &state, std::vector<double> &x) = 0;
+        virtual bool stat(std::vector<double> &x, int * state = 0) = 0;
 
         /**
          * @brief Inverse kinematics

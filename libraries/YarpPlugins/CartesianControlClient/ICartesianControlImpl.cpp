@@ -136,11 +136,11 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
+bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * state)
 {
     if (fkStreamEnabled)
     {
-        double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
+        double localArrivalTime = fkStreamResponder.getLastStatData(state, x);
 
         if (yarp::os::Time::now() - localArrivalTime <= fkStreamTimeoutSecs)
         {
@@ -161,7 +161,7 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
         return false;
     }
 
-    state = response.get(0).asVocab();
+    *state = response.get(0).asVocab();
     x.resize(response.size() - 1);
 
     for (size_t i = 0; i < x.size(); i++)

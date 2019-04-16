@@ -51,7 +51,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
     int state;
-    iCartesianControl->stat(state,x);
+    iCartesianControl->stat(x,&state);
     ASSERT_EQ(state,VOCAB_CC_NOT_CONTROLLING);
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
@@ -89,7 +89,6 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlInv2)
 TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
 {
     std::vector<double> x(6),xToolA,xToolB,xNoTool;
-    int state;
 
     // add tool ('A')
     x[0] = 0;  // x
@@ -99,7 +98,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
     x[4] = 0;  // o(y)
     x[5] = 0;  // o(z)
     ASSERT_TRUE(iCartesianControl->tool(x));
-    ASSERT_TRUE(iCartesianControl->stat(state, xToolA));
+    ASSERT_TRUE(iCartesianControl->stat(xToolA));
     ASSERT_NEAR(xToolA[0], 1, 1e-9);
     ASSERT_NEAR(xToolA[1], 0, 1e-9);
     ASSERT_NEAR(xToolA[2], 1, 1e-9);
@@ -112,7 +111,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
     x[0] = 1;
     x[4] = M_PI / 4;
     ASSERT_TRUE(iCartesianControl->tool(x));
-    ASSERT_TRUE(iCartesianControl->stat(state, xToolB));
+    ASSERT_TRUE(iCartesianControl->stat(xToolB));
     ASSERT_NEAR(xToolB[0], 2, 1e-9);
     ASSERT_NEAR(xToolB[1], 0, 1e-9);
     ASSERT_NEAR(xToolB[2], 0, 1e-9);
@@ -123,7 +122,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
     // remove tool
     std::fill(x.begin(), x.end(), 0);
     ASSERT_TRUE(iCartesianControl->tool(x));
-    ASSERT_TRUE(iCartesianControl->stat(state, xNoTool));
+    ASSERT_TRUE(iCartesianControl->stat(xNoTool));
     ASSERT_NEAR(xNoTool[0], 1, 1e-9);
     ASSERT_NEAR(xNoTool[1], 0, 1e-9);
     ASSERT_NEAR(xNoTool[2], 0, 1e-9);
