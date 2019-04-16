@@ -38,21 +38,16 @@ class FkStreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
 
-    FkStreamResponder() : now(0.0),
-                          state(0)
-    {}
-
+    FkStreamResponder();
     void onRead(yarp::os::Bottle& b);
-
-    double getLastStatData(int *state, std::vector<double> &x);
+    bool getLastStatData(std::vector<double> &x, int *state, double timeout);
 
 protected:
 
-    double now;
+    double localArrivalTime;
     int state;
     std::vector<double> x;
-
-    yarp::os::Semaphore mutex;
+    mutable yarp::os::Semaphore mutex;
 };
 
 /**

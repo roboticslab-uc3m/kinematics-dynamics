@@ -4,13 +4,20 @@
 
 #include <yarp/os/Time.h>
 
-// ------------------- DeviceDriver Related ------------------------------------
+// -----------------------------------------------------------------------------
+
+roboticslab::FkStreamResponder::FkStreamResponder()
+    : localArrivalTime(0.0),
+      state(0)
+{}
+
+// -----------------------------------------------------------------------------
 
 void roboticslab::FkStreamResponder::onRead(yarp::os::Bottle & b)
 {
     mutex.wait();
 
-    now = yarp::os::Time::now();
+    localArrivalTime = yarp::os::Time::now();
     state = b.get(0).asVocab();
     x.resize(b.size() - 1);
 
@@ -24,19 +31,20 @@ void roboticslab::FkStreamResponder::onRead(yarp::os::Bottle & b)
 
 // -----------------------------------------------------------------------------
 
-double roboticslab::FkStreamResponder::getLastStatData(int *state, std::vector<double> &x)
+bool roboticslab::FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, const double timeout)
 {
+    double now = yarp::os::Time::now();
     double localArrivalTime;
 
     mutex.wait();
 
+    localArrivalTime = this->localArrivalTime;
     *state = this->state;
     x = this->x;
-    localArrivalTime = now;
 
     mutex.post();
 
-    return localArrivalTime;
+    return now - localArrivalTime <= timeout;
 }
 
 // -----------------------------------------------------------------------------

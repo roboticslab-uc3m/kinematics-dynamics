@@ -140,14 +140,14 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
 {
     if (fkStreamEnabled)
     {
-        double localArrivalTime = fkStreamResponder.getLastStatData(state, x);
-
-        if (yarp::os::Time::now() - localArrivalTime <= fkStreamTimeoutSecs)
+        if (!fkStreamResponder.getLastStatData(x, state, fkStreamTimeoutSecs))
+        {
+            CD_WARNING("FK stream timeout, falling back to RPC request.\n");
+        }
+        else
         {
             return true;
         }
-
-        CD_WARNING("FK stream timeout, sending RPC request.\n");
     }
 
     yarp::os::Bottle cmd, response;
