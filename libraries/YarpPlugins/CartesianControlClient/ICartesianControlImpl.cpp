@@ -136,11 +136,11 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * state)
+bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * state, double * timestamp)
 {
     if (fkStreamEnabled)
     {
-        if (!fkStreamResponder.getLastStatData(x, state, fkStreamTimeoutSecs))
+        if (!fkStreamResponder.getLastStatData(x, state, timestamp, fkStreamTimeoutSecs))
         {
             CD_WARNING("FK stream timeout, falling back to RPC request.\n");
         }
@@ -166,11 +166,16 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
         *state = response.get(0).asVocab();
     }
 
-    x.resize(response.size() - 1);
+    x.resize(response.size() - 2);
 
     for (size_t i = 0; i < x.size(); i++)
     {
         x[i] = response.get(i + 1).asDouble();
+    }
+
+    if (timestamp != 0)
+    {
+        *timestamp = response.get(response.size() - 1).asDouble();
     }
 
     return true;

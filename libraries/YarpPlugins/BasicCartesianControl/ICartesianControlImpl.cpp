@@ -7,15 +7,26 @@
 #include <functional>
 #include <vector>
 
+#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
 
 #include "KdlTrajectory.hpp"
 
+// -----------------------------------------------------------------------------
+
+namespace
+{
+    inline double getTimestamp(yarp::dev::IPreciselyTimed * iPreciselyTimed)
+    {
+        return iPreciselyTimed != NULL ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
+    }
+}
+
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * state)
+bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * state, double * timestamp)
 {
     std::vector<double> currentQ(numRobotJoints);
 
@@ -23,6 +34,11 @@ bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * stat
     {
         CD_ERROR("getEncoders failed.\n");
         return false;
+    }
+
+    if (timestamp != NULL)
+    {
+        *timestamp = getTimestamp(iPreciselyTimed);
     }
 
     if (!iCartesianSolver->fwdKin(currentQ, x))

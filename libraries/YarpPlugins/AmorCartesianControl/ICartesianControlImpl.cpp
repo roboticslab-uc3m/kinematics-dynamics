@@ -11,7 +11,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state)
+bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state, double * timestamp)
 {
     AMOR_VECTOR7 positions;
 
@@ -36,6 +36,11 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
     if (state != 0)
     {
         *state = currentState;
+    }
+
+    if (timestamp != 0)
+    {
+        *timestamp = yarp::os::Time::now();
     }
 
     return true;

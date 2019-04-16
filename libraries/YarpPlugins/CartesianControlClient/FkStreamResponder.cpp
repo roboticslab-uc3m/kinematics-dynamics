@@ -4,34 +4,39 @@
 
 #include <yarp/os/Time.h>
 
+using namespace roboticslab;
+
 // -----------------------------------------------------------------------------
 
-roboticslab::FkStreamResponder::FkStreamResponder()
+FkStreamResponder::FkStreamResponder()
     : localArrivalTime(0.0),
-      state(0)
+      state(0),
+      timestamp(0.0)
 {}
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::FkStreamResponder::onRead(yarp::os::Bottle & b)
+void FkStreamResponder::onRead(yarp::os::Bottle & b)
 {
     mutex.wait();
 
     localArrivalTime = yarp::os::Time::now();
     state = b.get(0).asVocab();
-    x.resize(b.size() - 1);
+    x.resize(b.size() - 2);
 
     for (size_t i = 0; i < x.size(); i++)
     {
         x[i] = b.get(i + 1).asDouble();
     }
 
+    timestamp = b.get(b.size() - 1).asDouble();
+
     mutex.post();
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, const double timeout)
+bool FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, double *timestamp, const double timeout)
 {
     double now = yarp::os::Time::now();
     double localArrivalTime;
@@ -44,6 +49,11 @@ bool roboticslab::FkStreamResponder::getLastStatData(std::vector<double> &x, int
     if (state != 0)
     {
         *state = this->state;
+    }
+
+    if (timestamp != 0)
+    {
+        *timestamp = this->timestamp;
     }
 
     mutex.post();

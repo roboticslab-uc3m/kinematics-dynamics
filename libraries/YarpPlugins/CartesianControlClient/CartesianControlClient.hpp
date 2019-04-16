@@ -40,12 +40,13 @@ public:
 
     FkStreamResponder();
     void onRead(yarp::os::Bottle& b);
-    bool getLastStatData(std::vector<double> &x, int *state, double timeout);
+    bool getLastStatData(std::vector<double> &x, int *state, double * timestamp, double timeout);
 
 protected:
 
     double localArrivalTime;
     int state;
+    double timestamp;
     std::vector<double> x;
     mutable yarp::os::Semaphore mutex;
 };
@@ -60,7 +61,7 @@ public:
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
-    virtual bool stat(std::vector<double> &x, int * state = 0);
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
 
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 

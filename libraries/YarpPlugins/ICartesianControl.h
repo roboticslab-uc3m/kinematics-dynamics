@@ -149,10 +149,11 @@ class ICartesianControl
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
          * @param state Identifier for a cartesian control vocab.
+         * @param timestamp Remote encoder acquisition time.
          *
          * @return true on success, false otherwise
          */
-        virtual bool stat(std::vector<double> &x, int * state = 0) = 0;
+        virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
 
         /**
          * @brief Inverse kinematics
