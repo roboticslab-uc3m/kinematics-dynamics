@@ -8,6 +8,8 @@
 
 #include "ICartesianSolver.h"
 
+#include <ColorDebug.h> // FIXME: stat() deprecation
+
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 #define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
@@ -154,6 +156,15 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+        __attribute__((__deprecated__))
+        virtual bool stat(int & state, std::vector<double> & x)
+        {
+            CD_WARNING("Deprecated signature.\n");
+            return stat(x, &state);
+        }
+#endif
 
         /**
          * @brief Inverse kinematics
