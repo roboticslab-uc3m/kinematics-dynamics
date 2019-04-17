@@ -138,8 +138,6 @@ protected:
 
     FkStreamResponder fkStreamResponder;
     double fkStreamTimeoutSecs;
-
-    bool fkStreamEnabled;
 };
 
 }  // namespace roboticslab

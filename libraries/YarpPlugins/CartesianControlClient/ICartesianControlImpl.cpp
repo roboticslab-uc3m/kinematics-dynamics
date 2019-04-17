@@ -138,7 +138,7 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
 bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
 {
-    if (fkStreamEnabled)
+    if (!fkInPort.isClosed())
     {
         double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
 
