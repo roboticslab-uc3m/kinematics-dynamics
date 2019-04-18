@@ -31,7 +31,8 @@ set(_doxygen_input doc
                    examples
                    libraries
                    programs
-                   share)
+                   share
+                   tests)
 
 doxygen_add_docs(dox ${_doxygen_input}
                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..)

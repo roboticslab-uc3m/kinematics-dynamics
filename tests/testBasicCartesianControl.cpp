@@ -16,6 +16,7 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup kinematics-dynamics-tests
  * @brief Tests \ref BasicCartesianControl ikin and idyn on a simple mechanism.
  */
 class BasicCartesianControlTest : public testing::Test

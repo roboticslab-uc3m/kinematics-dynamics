@@ -22,6 +22,7 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup kinematics-dynamics-tests
  * @brief Tests classes related to Screw Theory.
  */
 class ScrewTheoryTest : public testing::Test
