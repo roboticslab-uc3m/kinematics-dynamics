@@ -52,6 +52,7 @@ find_package(orocos_kdl 1.4 QUIET)
 find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 find_package(AMOR_API QUIET)
 find_package(GTestSources 1.6.0 QUIET)
+find_package(Doxygen QUIET)
 
 # Always build YARP devices as MODULE libraries.
 set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
@@ -85,6 +86,7 @@ add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(tests)
 add_subdirectory(share)
+add_subdirectory(doc)
 
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
