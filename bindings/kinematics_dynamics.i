@@ -15,6 +15,10 @@
 %module "kinematics_dynamics"
 
 %include "std_vector.i"  /* Do not doubt about the importance of this line */
+%include "typemaps.i"
+
+%apply int *OUTPUT { int *state };
+%apply double *OUTPUT { double *timestamp };
 
 //%import "yarp.i"
 
@@ -29,17 +33,6 @@
 /* Parse the header file to generate wrappers */
 %include "ICartesianSolver.h"
 %include "ICartesianControl.h"
-
-%extend roboticslab::ICartesianControl
-{
-    int stat(std::vector<double> &x)
-    {
-        int buffer;
-        bool ok = self->stat(buffer, x);
-        if (!ok) return 0;
-        return buffer;
-    }
-}
 
 %{
 #include <yarp/dev/PolyDriver.h>

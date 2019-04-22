@@ -7,6 +7,7 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/PreciselyTimed.h>
 
 #include <iostream> // only windows
 #include <vector>
@@ -122,6 +123,7 @@ public:
                               iControlLimits(NULL),
                               iTorqueControl(NULL),
                               iControlMode(NULL),
+                              iPreciselyTimed(NULL),
                               referenceFrame(ICartesianSolver::BASE_FRAME),
                               gain(DEFAULT_GAIN),
                               maxJointVelocity(DEFAULT_QDOT_LIMIT),
@@ -139,7 +141,7 @@ public:
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
-    virtual bool stat(int &state, std::vector<double> &x);
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
 
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
@@ -232,6 +234,7 @@ protected:
     yarp::dev::IControlLimits *iControlLimits;
     yarp::dev::ITorqueControl *iTorqueControl;
     yarp::dev::IControlMode2 *iControlMode;
+    yarp::dev::IPreciselyTimed *iPreciselyTimed;
 
     ICartesianSolver::reference_frame referenceFrame;
 

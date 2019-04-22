@@ -4,39 +4,61 @@
 
 #include <yarp/os/Time.h>
 
-// ------------------- DeviceDriver Related ------------------------------------
+using namespace roboticslab;
 
-void roboticslab::FkStreamResponder::onRead(yarp::os::Bottle & b)
+// -----------------------------------------------------------------------------
+
+FkStreamResponder::FkStreamResponder()
+    : localArrivalTime(0.0),
+      state(0),
+      timestamp(0.0)
+{}
+
+// -----------------------------------------------------------------------------
+
+void FkStreamResponder::onRead(yarp::os::Bottle & b)
 {
     mutex.wait();
 
-    now = yarp::os::Time::now();
+    localArrivalTime = yarp::os::Time::now();
     state = b.get(0).asVocab();
-    x.resize(b.size() - 1);
+    x.resize(b.size() - 2);
 
     for (size_t i = 0; i < x.size(); i++)
     {
         x[i] = b.get(i + 1).asDouble();
     }
 
+    timestamp = b.get(b.size() - 1).asDouble();
+
     mutex.post();
 }
 
 // -----------------------------------------------------------------------------
 
-double roboticslab::FkStreamResponder::getLastStatData(int *state, std::vector<double> &x)
+bool FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, double *timestamp, const double timeout)
 {
+    double now = yarp::os::Time::now();
     double localArrivalTime;
 
     mutex.wait();
 
-    *state = this->state;
+    localArrivalTime = this->localArrivalTime;
     x = this->x;
-    localArrivalTime = now;
+
+    if (state != 0)
+    {
+        *state = this->state;
+    }
+
+    if (timestamp != 0)
+    {
+        *timestamp = this->timestamp;
+    }
 
     mutex.post();
 
-    return localArrivalTime;
+    return now - localArrivalTime <= timeout;
 }
 
 // -----------------------------------------------------------------------------

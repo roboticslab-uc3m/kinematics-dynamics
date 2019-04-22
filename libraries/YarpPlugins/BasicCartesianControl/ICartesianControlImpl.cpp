@@ -7,15 +7,26 @@
 #include <functional>
 #include <vector>
 
+#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
 
 #include "KdlTrajectory.hpp"
 
+// -----------------------------------------------------------------------------
+
+namespace
+{
+    inline double getTimestamp(yarp::dev::IPreciselyTimed * iPreciselyTimed)
+    {
+        return iPreciselyTimed != NULL ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
+    }
+}
+
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x)
+bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * state, double * timestamp)
 {
     std::vector<double> currentQ(numRobotJoints);
 
@@ -25,13 +36,22 @@ bool roboticslab::BasicCartesianControl::stat(int &state, std::vector<double> &x
         return false;
     }
 
+    if (timestamp != NULL)
+    {
+        *timestamp = getTimestamp(iPreciselyTimed);
+    }
+
     if (!iCartesianSolver->fwdKin(currentQ, x))
     {
         CD_ERROR("fwdKin failed.\n");
         return false;
     }
 
-    state = getCurrentState();
+    if (state != 0)
+    {
+        *state = getCurrentState();
+    }
+
     return true;
 }
 
@@ -152,10 +172,9 @@ bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
         return movj(xd);
     }
 
-    int state;
     std::vector<double> x;
 
-    if (!stat(state, x))
+    if (!stat(x))
     {
         CD_ERROR("stat failed.\n");
         return false;

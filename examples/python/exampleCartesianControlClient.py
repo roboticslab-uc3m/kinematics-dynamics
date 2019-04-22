@@ -24,8 +24,8 @@ cartesianControl = kinematics_dynamics.viewICartesianControl(dd)  # view the act
 
 print '> stat'
 x = yarp.DVector()
-stat = cartesianControl.stat(x)
-print '<',yarp.Vocab.decode(stat),'[%s]' % ', '.join(map(str, x))
+ret, state, ts = cartesianControl.stat(x)
+print '<', yarp.Vocab.decode(state), '[%s]' % ', '.join(map(str, x))
 
 xd = [0,0,0,0,0,0,0]
 

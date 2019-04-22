@@ -101,6 +101,11 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
+    if (!robotDevice.view(iPreciselyTimed))
+    {
+        CD_WARNING("Could not view iPreciselyTimed in: %s. Using local timestamps.\n", robotStr.c_str());
+    }
+
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n", numRobotJoints);
 
