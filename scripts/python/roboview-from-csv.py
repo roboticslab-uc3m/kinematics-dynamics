@@ -1,11 +1,4 @@
-# Install dependecies:
-# - Fork of https://github.com/arcoslab/roboview
-#    - git clone -b vtk6 https://github.com/jgvictores/roboview  
-# - Examples hard-coded from:
-#    - git clone https://github.com/roboticslab-uc3m/teo-developer-manual
-#
-# Run:
-# ./roboview roboview-from-csv.py
+# See README.md
 
 from PyKDL import *
 from math import pi
