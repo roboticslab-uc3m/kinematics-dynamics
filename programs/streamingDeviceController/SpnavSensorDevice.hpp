@@ -26,9 +26,13 @@ public:
 
     virtual bool acquireInterfaces();
 
+    virtual bool initialize(bool usingStreamingPreset);
+
     virtual bool acquireData();
 
     virtual void sendMovementCommand();
+
+    virtual void stopMotion();
 
 private:
 

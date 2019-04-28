@@ -40,7 +40,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getPosition(const double movementTime, std::vector<double>& position) = 0;
+    virtual bool getPosition(double movementTime, std::vector<double>& position) = 0;
 
     /**
      * @brief Velocity of the trajectory at a specific instant in time
@@ -50,7 +50,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getVelocity(const double movementTime, std::vector<double>& velocity) = 0;
+    virtual bool getVelocity(double movementTime, std::vector<double>& velocity) = 0;
 
     /**
      * @brief Acceleration of the trajectory at a specific instant in time
@@ -60,7 +60,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getAcceleration(const double movementTime, std::vector<double>& acceleration) = 0;
+    virtual bool getAcceleration(double movementTime, std::vector<double>& acceleration) = 0;
 
     /**
      * @brief Set trajectory total duration in seconds
@@ -69,7 +69,25 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool setDuration(const double duration) = 0;
+    virtual bool setDuration(double duration) = 0;
+
+    /**
+     * @brief Set maximum velocity of the trajectory
+     *
+     * @param maxVelocity The maximum velocity permitted, see subclasses for units.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxVelocity(double maxVelocity) = 0;
+
+    /**
+     * @brief Set maximum acceleration of the trajectory
+     *
+     * @param maxAcceleration The maximum acceleration permitted, see subclasses for units.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setMaxAcceleration(double maxAcceleration) = 0;
 
     /**
      * @brief Add a waypoint to the trajectory
@@ -91,7 +109,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool configurePath(const int pathType) = 0;
+    virtual bool configurePath(int pathType) = 0;
 
     /**
      * @brief Configure the type of velocity profile upon creation
@@ -100,7 +118,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool configureVelocityProfile(const int velocityProfileType) = 0;
+    virtual bool configureVelocityProfile(int velocityProfileType) = 0;
 
     /** @brief Create the trajectory
      *

@@ -7,6 +7,7 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/PreciselyTimed.h>
 
 #include <iostream> // only windows
 #include <vector>
@@ -25,6 +26,7 @@
 #define DEFAULT_CMC_RATE_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
+#define DEFAULT_STREAMING_PRESET 0
 
 namespace roboticslab
 {
@@ -108,154 +110,165 @@ are YARP devices (further reading on why this is good: <a href="http://asrob.uc3
  * @ingroup BasicCartesianControl
  * @brief The BasicCartesianControl class implements ICartesianControl.
  */
-
 class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread
 {
+public:
 
-    public:
+    BasicCartesianControl() : yarp::os::RateThread(DEFAULT_CMC_RATE_MS),
+                              iCartesianSolver(NULL),
+                              iEncoders(NULL),
+                              iPositionControl(NULL),
+                              iPositionDirect(NULL),
+                              iVelocityControl(NULL),
+                              iControlLimits(NULL),
+                              iTorqueControl(NULL),
+                              iControlMode(NULL),
+                              iPreciselyTimed(NULL),
+                              referenceFrame(ICartesianSolver::BASE_FRAME),
+                              gain(DEFAULT_GAIN),
+                              maxJointVelocity(DEFAULT_QDOT_LIMIT),
+                              duration(DEFAULT_DURATION),
+                              cmcRateMs(DEFAULT_CMC_RATE_MS),
+                              waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
+                              numRobotJoints(0),
+                              numSolverJoints(0),
+                              currentState(DEFAULT_INIT_STATE),
+                              streamingCommand(DEFAULT_STREAMING_PRESET),
+                              movementStartTime(0),
+                              iCartesianTrajectory(NULL),
+                              cmcSuccess(true)
+    {}
 
-        BasicCartesianControl() : yarp::os::RateThread(DEFAULT_CMC_RATE_MS),
-                                  iCartesianSolver(NULL),
-                                  iEncoders(NULL),
-                                  iPositionControl(NULL),
-                                  iVelocityControl(NULL),
-                                  iControlLimits(NULL),
-                                  iTorqueControl(NULL),
-                                  iControlMode(NULL),
-                                  referenceFrame(ICartesianSolver::BASE_FRAME),
-                                  gain(DEFAULT_GAIN),
-                                  maxJointVelocity(DEFAULT_QDOT_LIMIT),
-                                  duration(DEFAULT_DURATION),
-                                  cmcRateMs(DEFAULT_CMC_RATE_MS),
-                                  waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
-                                  numRobotJoints(0),
-                                  numSolverJoints(0),
-                                  currentState(DEFAULT_INIT_STATE),
-                                  movementStartTime(0),
-                                  iCartesianTrajectory(NULL),
-                                  cmcSuccess(true)
-        {}
+    // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
-        // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
 
-        virtual bool stat(int &state, std::vector<double> &x);
+    virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
-        virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
+    virtual bool movj(const std::vector<double> &xd);
 
-        virtual bool movj(const std::vector<double> &xd);
+    virtual bool relj(const std::vector<double> &xd);
 
-        virtual bool relj(const std::vector<double> &xd);
+    virtual bool movl(const std::vector<double> &xd);
 
-        virtual bool movl(const std::vector<double> &xd);
+    virtual bool movv(const std::vector<double> &xdotd);
 
-        virtual bool movv(const std::vector<double> &xdotd);
+    virtual bool gcmp();
 
-        virtual bool gcmp();
+    virtual bool forc(const std::vector<double> &td);
 
-        virtual bool forc(const std::vector<double> &td);
+    virtual bool stopControl();
 
-        virtual bool stopControl();
+    virtual bool wait(double timeout);
 
-        virtual bool wait(double timeout);
+    virtual bool tool(const std::vector<double> &x);
 
-        virtual bool tool(const std::vector<double> &x);
+    virtual void twist(const std::vector<double> &xdot);
 
-        virtual void twist(const std::vector<double> &xdot);
+    virtual void pose(const std::vector<double> &x, double interval);
 
-        virtual void pose(const std::vector<double> &x, double interval);
+    virtual void movi(const std::vector<double> &x);
 
-        virtual bool setParameter(int vocab, double value);
+    virtual bool setParameter(int vocab, double value);
 
-        virtual bool getParameter(int vocab, double * value);
+    virtual bool getParameter(int vocab, double * value);
 
-        virtual bool setParameters(const std::map<int, double> & params);
+    virtual bool setParameters(const std::map<int, double> & params);
 
-        virtual bool getParameters(std::map<int, double> & params);
+    virtual bool getParameters(std::map<int, double> & params);
 
-        // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
+    // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
 
-        /** Loop function. This is the thread itself. */
-        virtual void run();
+    /** Loop function. This is the thread itself. */
+    virtual void run();
 
-        // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
+    // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
-        /**
-        * Open the DeviceDriver.
-        * @param config is a list of parameters for the device.
-        * Which parameters are effective for your device can vary.
-        * See \ref dev_examples "device invocation examples".
-        * If there is no example for your device,
-        * you can run the "yarpdev" program with the verbose flag
-        * set to probe what parameters the device is checking.
-        * If that fails too,
-        * you'll need to read the source code (please nag one of the
-        * yarp developers to add documentation for your device).
-        * @return true/false upon success/failure
-        */
-        virtual bool open(yarp::os::Searchable& config);
+    /**
+    * Open the DeviceDriver.
+    * @param config is a list of parameters for the device.
+    * Which parameters are effective for your device can vary.
+    * See \ref dev_examples "device invocation examples".
+    * If there is no example for your device,
+    * you can run the "yarpdev" program with the verbose flag
+    * set to probe what parameters the device is checking.
+    * If that fails too,
+    * you'll need to read the source code (please nag one of the
+    * yarp developers to add documentation for your device).
+    * @return true/false upon success/failure
+    */
+    virtual bool open(yarp::os::Searchable& config);
 
-        /**
-        * Close the DeviceDriver.
-        * @return true/false on success/failure.
-        */
-        virtual bool close();
+    /**
+    * Close the DeviceDriver.
+    * @return true/false on success/failure.
+    */
+    virtual bool close();
 
-    protected:
+protected:
 
-        bool checkJointLimits();
+    int getCurrentState() const;
+    void setCurrentState(int value);
 
-        void handleMovj();
-        void handleMovl();
-        void handleMovv();
-        void handleGcmp();
-        void handleForc();
+    bool checkJointLimits(const std::vector<double> &q);
+    bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qd);
+    bool checkJointVelocities(const std::vector<double> &qdot);
 
-        yarp::dev::PolyDriver solverDevice;
-        roboticslab::ICartesianSolver *iCartesianSolver;
+    bool setControlModes(int mode);
+    bool presetStreamingCommand(int command);
 
-        yarp::dev::PolyDriver robotDevice;
-        yarp::dev::IEncoders *iEncoders;
-        yarp::dev::IPositionControl *iPositionControl;
-        yarp::dev::IVelocityControl *iVelocityControl;
-        yarp::dev::IControlLimits *iControlLimits;
-        yarp::dev::ITorqueControl *iTorqueControl;
-        yarp::dev::IControlMode2 *iControlMode;
+    void handleMovj(const std::vector<double> &q);
+    void handleMovl(const std::vector<double> &q);
+    void handleMovv(const std::vector<double> &q);
+    void handleGcmp(const std::vector<double> &q);
+    void handleForc(const std::vector<double> &q);
 
-        ICartesianSolver::reference_frame referenceFrame;
+    yarp::dev::PolyDriver solverDevice;
+    roboticslab::ICartesianSolver *iCartesianSolver;
 
-        double gain;
-        double maxJointVelocity;
-        double duration; // [s]
+    yarp::dev::PolyDriver robotDevice;
+    yarp::dev::IEncoders *iEncoders;
+    yarp::dev::IPositionControl *iPositionControl;
+    yarp::dev::IPositionDirect * iPositionDirect;
+    yarp::dev::IVelocityControl *iVelocityControl;
+    yarp::dev::IControlLimits *iControlLimits;
+    yarp::dev::ITorqueControl *iTorqueControl;
+    yarp::dev::IControlMode2 *iControlMode;
+    yarp::dev::IPreciselyTimed *iPreciselyTimed;
 
-        int cmcRateMs;
-        int waitPeriodMs;
-        int numRobotJoints, numSolverJoints;
+    ICartesianSolver::reference_frame referenceFrame;
 
-        /** State encoded as a VOCAB which can be stored as an int */
-        int currentState;
+    double gain;
+    double maxJointVelocity;
+    double duration; // [s]
 
-        int getCurrentState() const;
-        void setCurrentState(int value);
-        mutable yarp::os::Semaphore currentStateReady;
+    int cmcRateMs;
+    int waitPeriodMs;
+    int numRobotJoints, numSolverJoints;
 
-        /** MOVJ store previous reference speeds */
-        std::vector<double> vmoStored;
+    /** State encoded as a VOCAB which can be stored as an int */
+    int currentState;
 
-        /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
-        double movementStartTime;
+    int streamingCommand;
 
-        /** MOVL store Cartesian trajectory */
-        ICartesianTrajectory* iCartesianTrajectory;
+    mutable yarp::os::Semaphore currentStateReady;
+    mutable yarp::os::Semaphore trajectoryMutex;
 
-        /** MOVV desired Cartesian velocity */
-        std::vector<double> xdotd;
+    /** MOVJ store previous reference speeds */
+    std::vector<double> vmoStored;
 
-        /** FORC desired Cartesian force */
-        std::vector<double> td;
+    /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
+    double movementStartTime;
 
-        bool cmcSuccess;
+    /** MOVL store Cartesian trajectory */
+    ICartesianTrajectory* iCartesianTrajectory;
 
-        std::vector<double> qMin, qMax;
+    /** FORC desired Cartesian force */
+    std::vector<double> td;
+
+    bool cmcSuccess;
+
+    std::vector<double> qMin, qMax;
 };
 
 }  // namespace roboticslab

@@ -8,6 +8,8 @@
 
 #include "ICartesianSolver.h"
 
+#include <ColorDebug.h> // FIXME: stat() deprecation
+
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 #define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
@@ -73,7 +75,8 @@
 
 // Streaming commands
 #define VOCAB_CC_TWIST ROBOTICSLAB_VOCAB('t','w','s','t') ///< Instantaneous velocity steps
-#define VOCAB_CC_POSE ROBOTICSLAB_VOCAB('p','o','s','e')  ///< Achieve pose in inertial frame
+#define VOCAB_CC_POSE ROBOTICSLAB_VOCAB('p','o','s','e')  ///< Achieve pose (velocity control)
+#define VOCAB_CC_MOVI ROBOTICSLAB_VOCAB('m','o','v','i')  ///< Achieve pose (position control)
 
 /** @} */
 
@@ -111,6 +114,7 @@
 #define VOCAB_CC_CONFIG_CMC_RATE ROBOTICSLAB_VOCAB('c','p','c','r')      ///< CMC rate [ms]
 #define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
 #define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)           ///< Reference frame
+#define VOCAB_CC_CONFIG_STREAMING ROBOTICSLAB_VOCAB('c','p','s','c')     ///< Preset streaming command
 
 /** @} */
 
@@ -143,14 +147,24 @@ class ICartesianControl
          *
          * Inform on control state, get robot position and perform forward kinematics.
          *
-         * @param state Identifier for a cartesian control vocab.
          * @param x 6-element vector describing current position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
+         * @param state Identifier for a cartesian control vocab.
+         * @param timestamp Remote encoder acquisition time.
          *
          * @return true on success, false otherwise
          */
-        virtual bool stat(int &state, std::vector<double> &x) = 0;
+        virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+        __attribute__((__deprecated__))
+        virtual bool stat(int & state, std::vector<double> & x)
+        {
+            CD_WARNING("Deprecated signature.\n");
+            return stat(x, &state);
+        }
+#endif
 
         /**
          * @brief Inverse kinematics
@@ -306,7 +320,7 @@ class ICartesianControl
         virtual void twist(const std::vector<double> &xdot) = 0;
 
         /**
-         * @brief Achieve pose
+         * @brief Achieve pose (velocity control)
          *
          * Move to desired position, computing the error with respect to the current pose. Then,
          * perform numerical differentiation and obtain the final velocity increment (as in @ref twist).
@@ -317,6 +331,17 @@ class ICartesianControl
          * and used for numerical differentiation with desired/current poses.
          */
         virtual void pose(const std::vector<double> &x, double interval) = 0;
+
+        /**
+         * @brief Achieve pose (position control)
+         *
+         * Move to desired position instantaneously, no further intermediate calculations are
+         * expected other than computing the inverse kinematics.
+         *
+         * @param x 6-element vector describing desired instantaneous pose in cartesian space;
+         * first three elements denote translation (meters), last three denote rotation (radians).
+         */
+        virtual void movi(const std::vector<double> &x) = 0;
 
         /** @} */
 

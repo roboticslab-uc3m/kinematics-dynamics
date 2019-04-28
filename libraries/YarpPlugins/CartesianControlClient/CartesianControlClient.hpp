@@ -38,21 +38,17 @@ class FkStreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
 
-    FkStreamResponder() : now(0.0),
-                          state(0)
-    {}
-
+    FkStreamResponder();
     void onRead(yarp::os::Bottle& b);
-
-    double getLastStatData(int *state, std::vector<double> &x);
+    bool getLastStatData(std::vector<double> &x, int *state, double * timestamp, double timeout);
 
 protected:
 
-    double now;
+    double localArrivalTime;
     int state;
+    double timestamp;
     std::vector<double> x;
-
-    yarp::os::Semaphore mutex;
+    mutable yarp::os::Semaphore mutex;
 };
 
 /**
@@ -65,7 +61,7 @@ public:
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
-    virtual bool stat(int &state, std::vector<double> &x);
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
 
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
@@ -90,6 +86,8 @@ public:
     virtual void twist(const std::vector<double> &xdot);
 
     virtual void pose(const std::vector<double> &x, double interval);
+
+    virtual void movi(const std::vector<double> &x);
 
     virtual bool setParameter(int vocab, double value);
 
@@ -136,8 +134,6 @@ protected:
 
     FkStreamResponder fkStreamResponder;
     double fkStreamTimeoutSecs;
-
-    bool fkStreamEnabled;
 };
 
 }  // namespace roboticslab

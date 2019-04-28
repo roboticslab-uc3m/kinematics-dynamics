@@ -52,7 +52,7 @@ public:
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
-    virtual bool stat(int &state, std::vector<double> &x);
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
 
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
@@ -77,6 +77,8 @@ public:
     virtual void twist(const std::vector<double> &xdot);
 
     virtual void pose(const std::vector<double> &x, double interval);
+
+    virtual void movi(const std::vector<double> &x);
 
     virtual bool setParameter(int vocab, double value);
 

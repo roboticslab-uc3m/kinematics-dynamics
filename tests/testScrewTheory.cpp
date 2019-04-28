@@ -12,6 +12,7 @@
 #include <kdl/joint.hpp>
 #include <kdl/utilities/utility.h>
 
+#include "ConfigurationSelector.hpp"
 #include "MatrixExponential.hpp"
 #include "ProductOfExponentials.hpp"
 #include "ScrewTheoryIkProblem.hpp"
@@ -21,6 +22,7 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup kinematics-dynamics-tests
  * @brief Tests classes related to Screw Theory.
  */
 class ScrewTheoryTest : public testing::Test
@@ -313,6 +315,30 @@ public:
             ASSERT_TRUE(poe.evaluate(solutions[i], H_S_T_q_ST_validate));
             ASSERT_EQ(H_S_T_q_ST_validate, H_S_T_q_ST);
         }
+    }
+
+    static int findTargetConfiguration(const ScrewTheoryIkProblem::Solutions & solutions, const KDL::JntArray & target)
+    {
+        for (int i = 0; i < solutions.size(); i++)
+        {
+            bool equal = true;
+
+            for (int j = 0; j < solutions[i].rows(); j++)
+            {
+                if (!KDL::Equal(solutions[i](j), target(j)))
+                {
+                    equal = false;
+                    break;
+                }
+            }
+
+            if (equal)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 private:
@@ -839,6 +865,56 @@ TEST_F(ScrewTheoryTest, TeoRightArmKinematics)
     PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
 
     checkRobotKinematics(chain, poe, 8);
+}
+
+TEST_F(ScrewTheoryTest, ConfigurationSelector)
+{
+    PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
+
+    KDL::JntArray q(poe.size());
+    q(3) = KDL::PI / 2; // elbow
+
+    KDL::Frame H;
+    ASSERT_TRUE(poe.evaluate(q, H));
+
+    ScrewTheoryIkProblemBuilder builder(poe);
+    ScrewTheoryIkProblem * ikProblem = builder.build();
+
+    ASSERT_TRUE(ikProblem);
+    ASSERT_EQ(ikProblem->solutions(), 8);
+
+    ScrewTheoryIkProblem::Solutions solutions;
+    ASSERT_TRUE(ikProblem->solve(H, solutions));
+
+    KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
+    KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);
+
+    ConfigurationSelectorLeastOverallAngularDisplacementFactory confFactory(qMin, qMax);
+    ConfigurationSelector * config = confFactory.create();
+
+    ASSERT_TRUE(config);
+    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->findOptimalConfiguration(q));
+
+    KDL::JntArray qSolved;
+    config->retrievePose(qSolved);
+    int n1 = findTargetConfiguration(solutions, q);
+
+    ASSERT_NE(n1, -1);
+
+    H.p += KDL::Vector(0.01, 0, 0); // add a tiny displacement
+
+    ASSERT_TRUE(ikProblem->solve(H, solutions));
+    delete ikProblem;
+
+    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->findOptimalConfiguration(q));
+
+    config->retrievePose(qSolved);
+    int n2 = findTargetConfiguration(solutions, qSolved);
+
+    ASSERT_EQ(n2, n1);
+    delete config;
 }
 
 }  // namespace roboticslab

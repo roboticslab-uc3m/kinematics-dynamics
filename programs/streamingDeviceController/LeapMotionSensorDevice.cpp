@@ -49,12 +49,23 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool roboticslab::LeapMotionSensorDevice::initialize()
+bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
-    int state;
+    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_POSE))
+    {
+        CD_WARNING("Unable to preset streaming command.\n");
+        return false;
+    }
+
+    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
+    {
+        CD_WARNING("Unable to set inertial reference frame.\n");
+        return false;
+    }
+
     std::vector<double> x;
 
-    if (!iCartesianControl->stat(state, initialOffset))
+    if (!iCartesianControl->stat(initialOffset))
     {
         CD_WARNING("stat failed.\n");
         return false;

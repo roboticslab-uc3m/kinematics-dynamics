@@ -6,6 +6,7 @@
 #include <kdl/chainiksolver.hpp>
 
 #include "ScrewTheoryIkProblem.hpp"
+#include "ConfigurationSelector.hpp"
 
 namespace roboticslab
 {
@@ -15,7 +16,9 @@ namespace roboticslab
  * @brief IK solver using Screw Theory.
  *
  * Implementation of an inverse position kinematics algorithm. This is a thin wrapper
- * around \ref ScrewTheoryIkProblem.
+ * around \ref ScrewTheoryIkProblem. Non-exhaustive tests on TEO's (UC3M) right arm
+ * kinematic chain reveal that this is 5-10 faster than a numeric Newton-Raphson
+ * solver as provided by KDL (e.g. KDL::ChainIkSolverPos_NR_JL).
  */
 class ChainIkSolverPos_ST : public KDL::ChainIkSolverPos
 {
@@ -59,24 +62,31 @@ public:
      * @brief Create an instance of \ref ChainIkSolverPos_ST.
      *
      * @param chain Input kinematic chain.
+     * @param configFactory Instance of an abstract factory class that
+     * instantiates a ConfigurationSelector.
      *
      * @return Solver instance or NULL if no solution was found.
      */
-    static KDL::ChainIkSolverPos * create(const KDL::Chain & chain);
+    static KDL::ChainIkSolverPos * create(const KDL::Chain & chain, const ConfigurationSelectorFactory & configFactory);
 
     /** @brief Return code, IK solution not found. */
     static const int E_SOLUTION_NOT_FOUND = -100;
+
+    /** @brief Return code, target pose out of robot limits. */
+    static const int E_OUT_OF_LIMITS = -101;
 
     /** @brief Return code, solution out of reach. */
     static const int E_NOT_REACHABLE = 100;
 
 private:
 
-    ChainIkSolverPos_ST(const KDL::Chain & chain, ScrewTheoryIkProblem * problem);
+    ChainIkSolverPos_ST(const KDL::Chain & chain, ScrewTheoryIkProblem * problem, ConfigurationSelector * config);
 
     const KDL::Chain & chain;
 
     ScrewTheoryIkProblem * problem;
+
+    ConfigurationSelector * config;
 };
 
 }  // namespace roboticslab

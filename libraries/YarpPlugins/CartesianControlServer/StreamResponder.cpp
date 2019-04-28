@@ -20,6 +20,9 @@ void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
     case VOCAB_CC_POSE:
         handleBiConsumerCmdMsg(b, &ICartesianControl::pose);
         break;
+    case VOCAB_CC_MOVI:
+        handleConsumerCmdMsg(b, &ICartesianControl::movi);
+        break;
     default:
         CD_ERROR("command not recognized\n");
         break;

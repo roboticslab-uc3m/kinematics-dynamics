@@ -65,9 +65,11 @@ public:
      * @brief Perform any custom initialization needed.
      * This method is called after the successful creation of the device
      * and once all interface handles are acquired.
+     * @param usingStreamingPreset Whether the cartesian controller supports
+     * streaming command presets or not.
      * @return true on success, false otherwise
      */
-    virtual bool initialize()
+    virtual bool initialize(bool usingStreamingPreset)
     {
         return true;
     }
@@ -87,7 +89,7 @@ public:
 
     /**
      * @brief Checks whether the device may forward acquired and
-     * processed data to the controller
+     * processed data to the controller.
      * @return true if valid, false otherwise
      */
     virtual bool hasValidMovementData() const;
@@ -96,6 +98,11 @@ public:
      * @brief Sends movement command to the cartesian controller.
      */
     virtual void sendMovementCommand() = 0;
+
+    /**
+     * @brief Sends a movement command that would stop motion.
+     */
+    virtual void stopMotion() = 0;
 
     /**
      * @brief Stores handle to an ICartesianControl instance
@@ -148,6 +155,9 @@ public:
     }
 
     virtual void sendMovementCommand()
+    {}
+
+    virtual void stopMotion()
     {}
 };
 

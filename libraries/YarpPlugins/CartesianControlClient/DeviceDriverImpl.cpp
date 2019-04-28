@@ -18,13 +18,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     std::string remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote port").asString();
 
-    bool portsOk = true;
-
-    portsOk = portsOk && rpcClient.open(local + "/rpc:c");
-    portsOk = portsOk && commandPort.open(local + "/command:o");
-    portsOk = portsOk && fkInPort.open(local + "/state:i");
-
-    if (!portsOk)
+    if (!rpcClient.open(local + "/rpc:c") || !commandPort.open(local + "/command:o"))
     {
         CD_ERROR("Unable to open ports.\n");
         return false;
@@ -36,14 +30,12 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     if (!rpcClient.addOutput(remote + suffix))
     {
         CD_ERROR("Error on connect to remote RPC server.\n");
-        close();  // close ports
         return false;
     }
 
     if (!commandPort.addOutput(remote + "/command:i", "udp"))
     {
         CD_ERROR("Error on connect to remote command server.\n");
-        close();  // close ports
         return false;
     }
 
@@ -54,22 +46,32 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     {
         // Incoming FK stream data may not conform to standard representation, resort to RPC
         // if user requests --transform (see #143, #145).
-        fkStreamEnabled = false;
         CD_WARNING("FK streaming not supported in --transform mode, using RPC instead.\n");
     }
     else
     {
-        if (!yarp::os::Network::connect(remote + "/state:o", fkInPort.getName(), "udp"))
+        std::string statePort = remote + "/state:o";
+
+        if (yarp::os::Network::exists(statePort))
         {
-            CD_WARNING("FK stream disabled, using RPC instead.\n");
-            fkStreamEnabled = false;
-            fkInPort.close();
+            if (!fkInPort.open(local + "/state:i"))
+            {
+                CD_ERROR("Unable to open local stream port.\n");
+                return false;
+            }
+
+            if (!yarp::os::Network::connect(statePort, fkInPort.getName(), "udp"))
+            {
+                CD_ERROR("Unable to connect to remote stream port.\n");
+                return false;
+            }
+
+            fkInPort.useCallback(fkStreamResponder);
+            yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
         }
         else
         {
-            fkStreamEnabled = true;
-            fkInPort.useCallback(fkStreamResponder);
-            yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
+            CD_WARNING("Missing remote %s stream port, using RPC instead.\n", statePort.c_str());
         }
     }
 
@@ -85,7 +87,7 @@ bool roboticslab::CartesianControlClient::close()
     rpcClient.close();
     commandPort.close();
 
-    if (fkStreamEnabled)
+    if (!fkInPort.isClosed())
     {
         fkInPort.close();
     }

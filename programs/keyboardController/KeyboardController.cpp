@@ -1,3 +1,5 @@
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+
 #include "KeyboardController.hpp"
 
 #include <unistd.h>
@@ -13,8 +15,9 @@
 #include <iterator>
 #include <algorithm>
 
-#include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Time.h>
+#include <yarp/os/Value.h>
 
 #include <ColorDebug.h>
 
@@ -118,35 +121,30 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (!controlboardDevice.isValid())
         {
             CD_ERROR("controlboard client device not valid.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iEncoders))
         {
             CD_ERROR("Could not view iEncoders.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iControlMode))
         {
             CD_ERROR("Could not view iControlMode.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iControlLimits))
         {
             CD_ERROR("Could not view iControlLimits.\n");
-            close();
             return false;
         }
 
         if (!controlboardDevice.view(iVelocityControl))
         {
             CD_ERROR("Could not view iVelocityControl.\n");
-            close();
             return false;
         }
 
@@ -155,7 +153,6 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (axes > MAX_JOINTS)
         {
             CD_ERROR("Number of joints (%d) exceeds supported limit (%d).\n", axes, MAX_JOINTS);
-            close();
             return false;
         }
 
@@ -188,14 +185,12 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         if (!cartesianControlDevice.isValid())
         {
             CD_ERROR("cartesian control client device not valid.\n");
-            close();
             return false;
         }
 
         if (!cartesianControlDevice.view(iCartesianControl))
         {
             CD_ERROR("Could not view iCartesianControl.\n");
-            close();
             return false;
         }
 
@@ -224,6 +219,30 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         }
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
+
+        usingThread = rf.check("movi", "use MOVI command");
+
+        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt();
+
+        if (usingThread)
+        {
+            linTrajThread = new LinearTrajectoryThread(threadMs, iCartesianControl);
+
+            if (!linTrajThread->checkStreamingConfig())
+            {
+                CD_ERROR("Unable to check streaming configuration.\n");
+                return false;
+            }
+
+            linTrajThread->useTcpFrame(cartFrame == ICartesianSolver::TCP_FRAME);
+            linTrajThread->suspend(); // start in suspended state
+
+            if (!linTrajThread->start())
+            {
+                CD_ERROR("Unable to start MOVI thread.\n");
+                return false;
+            }
+        }
     }
 
     issueStop(); // just in case
@@ -386,6 +405,13 @@ double roboticslab::KeyboardController::getPeriod()
 
 bool roboticslab::KeyboardController::close()
 {
+    if (cartesianControlDevice.isValid() && usingThread)
+    {
+        linTrajThread->stop();
+        delete linTrajThread;
+        linTrajThread = 0;
+    }
+
     controlboardDevice.close();
     cartesianControlDevice.close();
 
@@ -469,9 +495,34 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     if (roundZeroes(currentCartVels) == ZERO_CARTESIAN_VELOCITY)
     {
         currentCartVels = ZERO_CARTESIAN_VELOCITY; // send vector of zeroes
+
+        if (usingThread)
+        {
+            linTrajThread->suspend();
+        }
+        else
+        {
+            iCartesianControl->twist(currentCartVels); // disable CMC
+        }
+    }
+    else
+    {
+        if (usingThread)
+        {
+            if (!linTrajThread->configure(currentCartVels))
+            {
+                CD_ERROR("Unable to configure cartesian command.\n");
+                return;
+            }
+
+            linTrajThread->resume();
+        }
+        else
+        {
+            iCartesianControl->movv(currentCartVels);
+        }
     }
 
-    iCartesianControl->movv(currentCartVels);
     controlMode = CARTESIAN_MODE;
 }
 
@@ -515,6 +566,11 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
         cartFrame = newFrame;
     }
 
+    if (usingThread)
+    {
+        linTrajThread->useTcpFrame(newFrame == ICartesianSolver::TCP_FRAME);
+    }
+
     std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;
 }
 
@@ -543,10 +599,8 @@ void roboticslab::KeyboardController::printCartesianPositions()
         return;
     }
 
-    int state;
     std::vector<double> x;
-
-    iCartesianControl->stat(state, x);
+    iCartesianControl->stat(x);
     KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
@@ -557,6 +611,11 @@ void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
+        if (usingThread)
+        {
+            linTrajThread->suspend();
+        }
+
         iCartesianControl->stopControl();
     }
     else if (controlboardDevice.isValid())

@@ -31,6 +31,7 @@
 #include "KinematicRepresentation.hpp"
 
 #include "ChainIkSolverPos_ST.hpp"
+#include "ChainIkSolverPos_ID.hpp"
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -76,6 +77,50 @@ namespace
         for (int i = 0; i < b.size(); i++)
         {
             L(i) = b.get(i).asDouble();
+        }
+
+        return true;
+    }
+
+    bool retrieveJointLimits(const yarp::os::Searchable & options, KDL::JntArray & qMin, KDL::JntArray & qMax)
+    {
+        int nrOfJoints = qMin.rows();
+
+        if (!options.check("mins") || !options.check("maxs"))
+        {
+            CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+            return false;
+        }
+
+        yarp::os::Bottle * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
+        yarp::os::Bottle * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+
+        if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
+        {
+            CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+            return false;
+        }
+
+        if (maxs->size() < nrOfJoints || mins->size() < nrOfJoints)
+        {
+            CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", nrOfJoints, maxs->size(), mins->size());
+            return false;
+        }
+
+        for (int motor = 0; motor < nrOfJoints; motor++)
+        {
+            qMax(motor) = maxs->get(motor).asDouble();
+            qMin(motor) = mins->get(motor).asDouble();
+
+            if (qMin(motor) == qMax(motor))
+            {
+                CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", motor, qMin(motor));
+            }
+            else if (qMin(motor) > qMax(motor))
+            {
+                CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", motor, qMin(motor), qMax(motor));
+                return false;
+            }
         }
 
         return true;
@@ -241,7 +286,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
     //-- IK solver algorithm.
-    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st)").asString();
+    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st, id)").asString();
 
     if (ik == "lma")
     {
@@ -263,41 +308,10 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         KDL::JntArray qMin(chain.getNrOfJoints());
 
         //-- Joint limits.
-        if (!fullConfig.check("mins") || !fullConfig.check("maxs"))
+        if (!retrieveJointLimits(fullConfig, qMin, qMax))
         {
-            CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+            CD_ERROR("Unable to retrieve joint limits.\n");
             return false;
-        }
-
-        yarp::os::Bottle *maxs = fullConfig.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
-        yarp::os::Bottle *mins = fullConfig.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
-
-        if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
-        {
-            CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
-            return false;
-        }
-
-        if (maxs->size() < chain.getNrOfJoints() || mins->size() < chain.getNrOfJoints())
-        {
-            CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", chain.getNrOfJoints(), maxs->size(), mins->size());
-            return false;
-        }
-
-        for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
-        {
-            qMax(motor) = maxs->get(motor).asDouble();
-            qMin(motor) = mins->get(motor).asDouble();
-
-            if (qMin(motor) == qMax(motor))
-            {
-                CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", motor, qMin(motor));
-            }
-            else if (qMin(motor) > qMax(motor))
-            {
-                CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", motor, qMin(motor), qMax(motor));
-                return false;
-            }
         }
 
         //-- Precision and max iterations.
@@ -308,13 +322,49 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     }
     else if (ik == "st")
     {
-        ikSolverPos = ChainIkSolverPos_ST::create(chain);
+        KDL::JntArray qMax(chain.getNrOfJoints());
+        KDL::JntArray qMin(chain.getNrOfJoints());
+
+        //-- Joint limits.
+        if (!retrieveJointLimits(fullConfig, qMin, qMax))
+        {
+            CD_ERROR("Unable to retrieve joint limits.\n");
+            return false;
+        }
+
+        //-- IK configuration selection strategy.
+        std::string strategy = fullConfig.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
+
+        if (strategy == "leastOverallAngularDisplacement")
+        {
+            ConfigurationSelectorLeastOverallAngularDisplacementFactory factory(qMin, qMax);
+            ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
+        }
+        else
+        {
+            CD_ERROR("Unsupported IK strategy: %s.\n", strategy.c_str());
+            return false;
+        }
 
         if (ikSolverPos == NULL)
         {
             CD_ERROR("Unable to solve IK.\n");
             return false;
         }
+    }
+    else if (ik == "id")
+    {
+        KDL::JntArray qMax(chain.getNrOfJoints());
+        KDL::JntArray qMin(chain.getNrOfJoints());
+
+        //-- Joint limits.
+        if (!retrieveJointLimits(fullConfig, qMin, qMax))
+        {
+            CD_ERROR("Unable to retrieve joint limits.\n");
+            return false;
+        }
+
+        ikSolverPos = new ChainIkSolverPos_ID(chain, qMin, qMax, *fkSolverPos);
     }
     else
     {

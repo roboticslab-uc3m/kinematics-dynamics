@@ -26,8 +26,6 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             "local cartesian port").asString();
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote cartesian port").asString();
-    std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
-            "remote sensors port").asString();
 
     period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
@@ -37,14 +35,12 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!streamingDevice->isValid())
     {
         CD_ERROR("Streaming device not valid.\n");
-        close();
         return false;
     }
 
     if (!streamingDevice->acquireInterfaces())
     {
         CD_ERROR("Unable to acquire plugin interfaces from streaming device.\n");
-        close();
         return false;
     }
 
@@ -58,29 +54,39 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     if (!cartesianControlClientDevice.isValid())
     {
         CD_ERROR("Cartesian control client device not valid.\n");
-        close();
         return false;
     }
 
     if (!cartesianControlClientDevice.view(iCartesianControl))
     {
         CD_ERROR("Could not view iCartesianControl.\n");
-        close();
         return false;
     }
 
+    std::map<int, double> params;
+
+    if (!iCartesianControl->getParameters(params))
+    {
+        CD_ERROR("Unable to retrieve configuration parameters.\n");
+        return false;
+    }
+
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 
-    if (!streamingDevice->initialize())
+    if (!streamingDevice->initialize(usingStreamingPreset))
     {
         CD_ERROR("Device initialization failed.\n");
-        close();
         return false;
     }
 
 #ifdef SDC_WITH_SENSORS
-    if (rf.check("useSensors"))
+    if (rf.check("useSensors", "enable proximity sensors"))
     {
+        std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
+                "remote sensors port").asString();
+
         yarp::os::Property sensorsClientOptions;
         sensorsClientOptions.fromString(rf.toString());
         sensorsClientOptions.put("device", "ProximitySensorsClient");
@@ -91,14 +97,12 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         if (!sensorsClientDevice.isValid())
         {
             CD_ERROR("sensors device not valid.\n");
-            close();
             return false;
         }
 
         if (!sensorsClientDevice.view(iProximitySensors))
         {
             CD_ERROR("Could not view iSensors.\n");
-            close();
             return false;
         }
 
@@ -139,7 +143,8 @@ bool StreamingDeviceController::updateModule()
 
             if (!isStopped)
             {
-                isStopped = iCartesianControl->stopControl();
+                streamingDevice->stopMotion();
+                isStopped = true;
             }
 
             return true;
@@ -153,21 +158,20 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
-    if (!streamingDevice->hasValidMovementData())
+    if (streamingDevice->hasValidMovementData())
     {
-        if (!isStopped)
-        {
-            isStopped = iCartesianControl->stopControl();
-        }
-
-        return true;
+        streamingDevice->sendMovementCommand();
+        isStopped = false;
     }
     else
     {
-        isStopped = false;
-    }
+        if (!isStopped)
+        {
+            streamingDevice->stopMotion();
+        }
 
-    streamingDevice->sendMovementCommand();
+        isStopped = true;
+    }
 
     return true;
 }
