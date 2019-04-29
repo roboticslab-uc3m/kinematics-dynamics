@@ -66,3 +66,9 @@ for row in reader:
                 Frame().DH(linkA,degToRad(linkAlpha),linkD,degToRad(linkOffset)))
     chain.addSegment(s)
 
+fksolverpos = ChainFkSolverPos_recursive(chain)
+q = JntArray(chain.getNrOfJoints())
+x = Frame()
+fksolverpos.JntToCart(q,x)
+
+print(x)
