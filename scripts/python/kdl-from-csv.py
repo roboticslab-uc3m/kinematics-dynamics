@@ -9,7 +9,7 @@ import csv
 lengthsFileName = '/home/yo/repos/teo-developer-manual/csv/lengths.csv'
 dhFileName = '/home/yo/repos/teo-developer-manual/csv/dh-root-rightArm.csv'
 
-segments = []
+chain = Chain()
 
 def degToRad(deg):
     return deg*pi/180.0
@@ -30,7 +30,7 @@ print('lengths: ',lengths)
 dhFile = open(dhFileName, 'r')
 reader = csv.reader(dhFile, delimiter=',')
 
-#-- populate segments
+#-- populate chain
 next(reader, None)  # skip the header
 for row in reader:
     print('row: ',row)
@@ -64,12 +64,5 @@ for row in reader:
     print('* linkAlpha ', linkAlpha)
     s = Segment(Joint(Joint.RotZ),
                 Frame().DH(linkA,degToRad(linkAlpha),linkD,degToRad(linkOffset)))
-    segments.append(s)
+    chain.addSegment(s)
 
-
-#-- populate limits (hard-coded for now)
-limits_min = [-180.0] * len(segments)
-limits_max = [180.0] * len(segments)
-
-limits_min = [degToRad(v) for v in limits_min]
-limits_max = [degToRad(v) for v in limits_max]
