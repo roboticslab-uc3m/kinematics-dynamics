@@ -8,10 +8,13 @@ from PyKDL import *
 from math import pi
 import csv
 
+import os
+home = os.environ['HOME']
+
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("--lengthsFileName", default="/home/yo/repos/teo-developer-manual/csv/lengths.csv")
-parser.add_argument("--dhFileName", default="/home/yo/repos/teo-developer-manual/csv/dh-root-rightArm.csv")
+parser.add_argument("--lengthsFileName", default=home+"/repos/teo-developer-manual/csv/lengths.csv")
+parser.add_argument("--dhFileName", default=home+"/repos/teo-developer-manual/csv/dh-root-rightArm.csv")
 args = parser.parse_args()
 
 chain = Chain()
