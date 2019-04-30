@@ -2,6 +2,8 @@
 
 # See README.md
 
+from __future__ import print_function
+
 from PyKDL import *
 from math import pi
 import csv
@@ -71,13 +73,12 @@ q = JntArray(chain.getNrOfJoints())
 x = Frame()
 fksolverpos.JntToCart(q,x)
 
-print(x)
+#print(x)
 
-print("({:.6f} {:.6f} {:.6f} {:.6f}\
-    {:.6f} {:.6f} {:.6f} {:.6f}\
-    {:.6f} {:.6f} {:.6f} {:.6f}\
-    0 0 0 1)"
-    .format(
-    x.M[0,0], x.M[0,1], x.M[0,2], x.p[0],
-    x.M[1,0], x.M[1,1], x.M[1,2], x.p[1],
-    x.M[2,0], x.M[2,1], x.M[2,2], x.p[2]))
+def s(inputValue):
+    return ('%.15f' % inputValue).rstrip('0').rstrip('.')
+
+print("(", s(x.M[0,0]), s(x.M[0,1]), s(x.M[0,2]), s(x.p[0]), "  ",
+           s(x.M[0,0]), s(x.M[0,1]), s(x.M[0,2]), s(x.p[1]), "  ",
+           s(x.M[0,0]), s(x.M[0,1]), s(x.M[0,2]), s(x.p[2]), "  ",
+           "0 0 0 1 )")
