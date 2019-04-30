@@ -72,3 +72,12 @@ x = Frame()
 fksolverpos.JntToCart(q,x)
 
 print(x)
+
+print("({:.6f} {:.6f} {:.6f} {:.6f}\
+    {:.6f} {:.6f} {:.6f} {:.6f}\
+    {:.6f} {:.6f} {:.6f} {:.6f}\
+    0 0 0 1)"
+    .format(
+    x.M[0,0], x.M[0,1], x.M[0,2], x.p[0],
+    x.M[1,0], x.M[1,1], x.M[1,2], x.p[1],
+    x.M[2,0], x.M[2,1], x.M[2,2], x.p[2]))
