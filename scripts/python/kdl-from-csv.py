@@ -76,9 +76,13 @@ fksolverpos.JntToCart(q,x)
 #print(x)
 
 def s(inputValue):
-    return ('%.15f' % inputValue).rstrip('0').rstrip('.')
+    tmp = ('%.15f' % inputValue).rstrip('0').rstrip('.')
+    if tmp == "-0":
+        return "0"
+    else:
+        return tmp
 
 print("(", s(x.M[0,0]), s(x.M[0,1]), s(x.M[0,2]), s(x.p[0]), "  ",
-           s(x.M[0,0]), s(x.M[0,1]), s(x.M[0,2]), s(x.p[1]), "  ",
-           s(x.M[0,0]), s(x.M[0,1]), s(x.M[0,2]), s(x.p[2]), "  ",
+           s(x.M[1,0]), s(x.M[1,1]), s(x.M[1,2]), s(x.p[1]), "  ",
+           s(x.M[2,0]), s(x.M[2,1]), s(x.M[2,2]), s(x.p[2]), "  ",
            "0 0 0 1 )")
