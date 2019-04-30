@@ -8,8 +8,11 @@ from PyKDL import *
 from math import pi
 import csv
 
-lengthsFileName = '/home/yo/repos/teo-developer-manual/csv/lengths.csv'
-dhFileName = '/home/yo/repos/teo-developer-manual/csv/dh-root-rightArm.csv'
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--lengthsFileName", default="/home/yo/repos/teo-developer-manual/csv/lengths.csv")
+parser.add_argument("--dhFileName", default="/home/yo/repos/teo-developer-manual/csv/dh-root-rightArm.csv")
+args = parser.parse_args()
 
 chain = Chain()
 
@@ -22,14 +25,14 @@ twoDigitJoints = {'q'+str(i):'0.0' for i in range(10,28)} # dof
 oneDigitjoints = {'q'+str(i):'0.0' for i in range(1,10)} # dof
 
 #-- lengths
-lengthsFile = open(lengthsFileName, 'r')
+lengthsFile = open(args.lengthsFileName, 'r')
 reader = csv.reader(lengthsFile, delimiter=',')
 next(reader, None)  # skip the header
 lengths = {row[0]:str(float(row[1])/1000.0) for row in reader} # [mm] to [m]
 print('lengths: ',lengths)
 
 #-- dh params
-dhFile = open(dhFileName, 'r')
+dhFile = open(args.dhFileName, 'r')
 reader = csv.reader(dhFile, delimiter=',')
 
 #-- populate chain
