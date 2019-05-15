@@ -25,6 +25,8 @@ if(ENABLE_YarpTinyMathLib)
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+    set_property(GLOBAL APPEND PROPERTY _exported_dependencies YARP_sig)
+
 else()
 
     set(ENABLE_YarpTinyMathLib OFF CACHE BOOL "Enable/disable YarpTinyMathLib library" FORCE)
