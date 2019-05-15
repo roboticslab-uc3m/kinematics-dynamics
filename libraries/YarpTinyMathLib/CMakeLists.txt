@@ -12,8 +12,8 @@ if(ENABLE_YarpTinyMathLib)
 
     set_target_properties(YarpTinyMathLib PROPERTIES PUBLIC_HEADER YarpTinyMath.hpp)
 
-    target_link_libraries(YarpTinyMathLib YARP::YARP_sig
-                                          YARP::YARP_math)
+    target_link_libraries(YarpTinyMathLib PUBLIC YARP::YARP_sig
+                                          PRIVATE YARP::YARP_math)
 
     target_include_directories(YarpTinyMathLib PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

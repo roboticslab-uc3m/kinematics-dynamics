@@ -2,6 +2,8 @@
 
 #include "YarpTinyMath.hpp"
 
+#include <yarp/math/Math.h>  // provides: eye, operators
+
 // ----------------------------------------------------------------------------
 
 double roboticslab::toDeg(const double inRad)
