@@ -37,8 +37,8 @@ make -j$(nproc)
 #include <yarp/os/Time.h>
 
 #include <yarp/dev/DeviceDriver.h>
-#include <yarp/dev/IControlLimits2.h>
-#include <yarp/dev/IControlMode2.h>
+#include <yarp/dev/IControlLimits.h>
+#include <yarp/dev/IControlMode.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionDirect.h>
 #include <yarp/dev/PolyDriver.h>
@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
     }
 
     yarp::dev::IEncoders * iEncoders;
-    yarp::dev::IControlLimits2 * iControlLimits;
-    yarp::dev::IControlMode2 * iControlMode;
+    yarp::dev::IControlLimits * iControlLimits;
+    yarp::dev::IControlMode * iControlMode;
     yarp::dev::IPositionDirect * iPositionDirect;
 
     if (!jointDevice.view(iEncoders) || !jointDevice.view(iControlLimits)
