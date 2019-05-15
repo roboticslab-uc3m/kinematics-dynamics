@@ -55,7 +55,7 @@ install:
     --package-name YARP
     --repo-url https://github.com/robotology/yarp
     --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YARP_CHECKOUT}"
-    --additional-cmake-options "-DSKIP_ACE:BOOL=ON -DCREATE_LIB_MATH:BOOL=ON"
+    --additional-cmake-options "-DSKIP_ACE:BOOL=ON"
     --prepend-to-linker-path lib
     --additional-export-paths "YARP_DATA_DIRS;share/yarp"
 
