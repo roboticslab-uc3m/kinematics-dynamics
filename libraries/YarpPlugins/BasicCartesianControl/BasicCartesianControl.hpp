@@ -23,7 +23,7 @@
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_DURATION 10.0
-#define DEFAULT_CMC_RATE_MS 50
+#define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
 #define DEFAULT_STREAMING_PRESET 0
@@ -116,7 +116,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver,
 {
 public:
 
-    BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_RATE_MS * 0.001),
+    BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
                               iCartesianSolver(NULL),
                               iEncoders(NULL),
                               iPositionControl(NULL),
@@ -130,7 +130,7 @@ public:
                               gain(DEFAULT_GAIN),
                               maxJointVelocity(DEFAULT_QDOT_LIMIT),
                               duration(DEFAULT_DURATION),
-                              cmcRateMs(DEFAULT_CMC_RATE_MS),
+                              cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
@@ -244,7 +244,7 @@ protected:
     double maxJointVelocity;
     double duration; // [s]
 
-    int cmcRateMs;
+    int cmcPeriodMs;
     int waitPeriodMs;
     int numRobotJoints, numSolverJoints;
 

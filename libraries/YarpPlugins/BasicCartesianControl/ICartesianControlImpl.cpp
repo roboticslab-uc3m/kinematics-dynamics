@@ -663,13 +663,13 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         duration = value;
         break;
-    case VOCAB_CC_CONFIG_CMC_RATE:
+    case VOCAB_CC_CONFIG_CMC_PERIOD:
         if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
             CD_ERROR("Cannot set new CMC period.\n");
             return false;
         }
-        cmcRateMs = value;
+        cmcPeriodMs = value;
         break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         if (value <= 0.0)
@@ -718,8 +718,8 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         *value = duration;
         break;
-    case VOCAB_CC_CONFIG_CMC_RATE:
-        *value = cmcRateMs;
+    case VOCAB_CC_CONFIG_CMC_PERIOD:
+        *value = cmcPeriodMs;
         break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         *value = waitPeriodMs;
@@ -765,7 +765,7 @@ bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & p
     params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING, streamingCommand));
