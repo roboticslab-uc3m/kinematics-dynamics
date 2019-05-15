@@ -264,7 +264,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
-    //-- Set velocity mode and set state which makes rate thread implement control.
+    //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Unable to set velocity mode.\n");
@@ -340,7 +340,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     trajectoryMutex.post();
 
-    //-- Set velocity mode and set state which makes rate thread implement control.
+    //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Unable to set velocity mode.\n");
@@ -361,7 +361,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
 bool roboticslab::BasicCartesianControl::gcmp()
 {
-    //-- Set torque mode and set state which makes rate thread implement control.
+    //-- Set torque mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
         CD_ERROR("Unable to set torque mode.\n");
@@ -384,7 +384,7 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
         return false;
     }
 
-    //-- Set torque mode and set state which makes rate thread implement control.
+    //-- Set torque mode and set state which makes periodic thread implement control.
     this->td = td;
 
     if (!setControlModes(VOCAB_CM_TORQUE))
@@ -664,9 +664,9 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         duration = value;
         break;
     case VOCAB_CC_CONFIG_CMC_RATE:
-        if (!yarp::os::RateThread::setRate(value))
+        if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
-            CD_ERROR("Cannot set new CMC rate.\n");
+            CD_ERROR("Cannot set new CMC period.\n");
             return false;
         }
         cmcRateMs = value;

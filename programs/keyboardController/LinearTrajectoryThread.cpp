@@ -14,7 +14,7 @@
 using namespace roboticslab;
 
 LinearTrajectoryThread::LinearTrajectoryThread(int _period, ICartesianControl * _iCartesianControl)
-    : yarp::os::RateThread(_period),
+    : yarp::os::PeriodicThread(_period * 0.001),
       period(_period),
       iCartesianControl(_iCartesianControl),
       iCartesianTrajectory(new KdlTrajectory),

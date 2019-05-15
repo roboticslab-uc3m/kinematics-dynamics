@@ -6,7 +6,7 @@
 
 #include <ColorDebug.h>
 
-// ------------------- RateThread Related ------------------------------------
+// ------------------- PeriodicThread Related ------------------------------------
 
 void roboticslab::BasicCartesianControl::run()
 {

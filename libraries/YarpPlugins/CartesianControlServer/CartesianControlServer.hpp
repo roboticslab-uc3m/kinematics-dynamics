@@ -3,7 +3,11 @@
 #ifndef __CARTESIAN_CONTROL_SERVER_HPP__
 #define __CARTESIAN_CONTROL_SERVER_HPP__
 
-#include <yarp/os/all.h>
+#include <yarp/os/Bottle.h>
+#include <yarp/os/BufferedPort.h>
+#include <yarp/os/PeriodicThread.h>
+#include <yarp/os/RpcServer.h>
+
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
@@ -34,12 +38,12 @@ class StreamResponder;
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 
-class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::RateThread
+class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::PeriodicThread
 {
 public:
 
     CartesianControlServer()
-        : yarp::os::RateThread(DEFAULT_MS),
+        : yarp::os::PeriodicThread(DEFAULT_MS * 0.001),
           iCartesianControl(NULL),
           rpcResponder(NULL), rpcTransformResponder(NULL),
           streamResponder(NULL),

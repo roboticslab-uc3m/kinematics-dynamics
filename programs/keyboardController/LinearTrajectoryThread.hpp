@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <yarp/os/Mutex.h>
-#include <yarp/os/RateThread.h>
+#include <yarp/os/PeriodicThread.h>
 
 #include "ICartesianControl.h"
 #include "ICartesianTrajectory.hpp"
@@ -19,7 +19,7 @@ namespace roboticslab
  *
  * @brief Periodic thread that encapsulates a linear trajectory
  */
-class LinearTrajectoryThread : public yarp::os::RateThread
+class LinearTrajectoryThread : public yarp::os::PeriodicThread
 {
 public:
     LinearTrajectoryThread(int period, ICartesianControl * iCartesianControl);

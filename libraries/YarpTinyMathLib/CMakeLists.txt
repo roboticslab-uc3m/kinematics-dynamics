@@ -1,9 +1,9 @@
-if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_YarpTinyMathLib OR ENABLE_YarpTinyMathLib))
-    message(WARNING "YARP math lib not found, disabling YarpTinyMathLib")
+if(NOT YARP_math_FOUND AND (NOT DEFINED ENABLE_YarpTinyMathLib OR ENABLE_YarpTinyMathLib))
+    message(WARNING "YARP_math lib not found, disabling YarpTinyMathLib")
 endif()
 
 cmake_dependent_option(ENABLE_YarpTinyMathLib "Enable/disable YarpTinyMathLib library" ON
-                       YARP_HAS_MATH_LIB OFF)
+                       YARP_math_FOUND OFF)
 
 if(ENABLE_YarpTinyMathLib)
 

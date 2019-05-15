@@ -4,7 +4,7 @@
 
 #include <vector>
 
-// ------------------- RateThread related ------------------------------------
+// ------------------- PeriodicThread related ------------------------------------
 
 void roboticslab::CartesianControlServer::run()
 {

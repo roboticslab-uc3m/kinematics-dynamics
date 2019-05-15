@@ -157,10 +157,10 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (cmcRateMs != DEFAULT_CMC_RATE_MS)
     {
-        yarp::os::RateThread::setRate(cmcRateMs);
+        yarp::os::PeriodicThread::setPeriod(cmcRateMs * 0.001);
     }
 
-    return yarp::os::RateThread::start();
+    return yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 bool roboticslab::BasicCartesianControl::close()
 {
     stopControl();
-    yarp::os::RateThread::stop();
+    yarp::os::PeriodicThread::stop();
     robotDevice.close();
     solverDevice.close();
     return true;

@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>

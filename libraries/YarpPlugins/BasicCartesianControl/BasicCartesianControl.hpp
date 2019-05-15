@@ -110,11 +110,13 @@ are YARP devices (further reading on why this is good: <a href="http://asrob.uc3
  * @ingroup BasicCartesianControl
  * @brief The BasicCartesianControl class implements ICartesianControl.
  */
-class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread
+class BasicCartesianControl : public yarp::dev::DeviceDriver,
+                              public yarp::os::PeriodicThread,
+                              public ICartesianControl
 {
 public:
 
-    BasicCartesianControl() : yarp::os::RateThread(DEFAULT_CMC_RATE_MS),
+    BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_RATE_MS * 0.001),
                               iCartesianSolver(NULL),
                               iEncoders(NULL),
                               iPositionControl(NULL),
@@ -177,7 +179,7 @@ public:
 
     virtual bool getParameters(std::map<int, double> & params);
 
-    // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
+    // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
 
     /** Loop function. This is the thread itself. */
     virtual void run();
@@ -233,7 +235,7 @@ protected:
     yarp::dev::IVelocityControl *iVelocityControl;
     yarp::dev::IControlLimits *iControlLimits;
     yarp::dev::ITorqueControl *iTorqueControl;
-    yarp::dev::IControlMode2 *iControlMode;
+    yarp::dev::IControlMode *iControlMode;
     yarp::dev::IPreciselyTimed *iPreciselyTimed;
 
     ICartesianSolver::reference_frame referenceFrame;
