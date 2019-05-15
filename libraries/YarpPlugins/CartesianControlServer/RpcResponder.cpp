@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
@@ -160,8 +161,8 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "(config param) trajectory duration");
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_RATE) << "] value";
-    addUsage(ss.str().c_str(), "(config param) CMC rate [ms]");
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_PERIOD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) CMC period [ms]");
     ss.str("");
 
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_WAIT_PERIOD) << "] value";

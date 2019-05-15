@@ -19,7 +19,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     duration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
             "trajectory duration (seconds)").asDouble();
 
-    cmcRateMs = config.check("cmcRateMs", yarp::os::Value(DEFAULT_CMC_RATE_MS),
+    cmcPeriodMs = config.check("cmcPeriodMs", yarp::os::Value(DEFAULT_CMC_PERIOD_MS),
             "CMC rate (milliseconds)").asInt();
 
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
@@ -155,12 +155,12 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n", numRobotJoints, numSolverJoints);
     }
 
-    if (cmcRateMs != DEFAULT_CMC_RATE_MS)
+    if (cmcPeriodMs != DEFAULT_CMC_PERIOD_MS)
     {
-        yarp::os::RateThread::setRate(cmcRateMs);
+        yarp::os::PeriodicThread::setPeriod(cmcPeriodMs * 0.001);
     }
 
-    return yarp::os::RateThread::start();
+    return yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 bool roboticslab::BasicCartesianControl::close()
 {
     stopControl();
-    yarp::os::RateThread::stop();
+    yarp::os::PeriodicThread::stop();
     robotDevice.close();
     solverDevice.close();
     return true;

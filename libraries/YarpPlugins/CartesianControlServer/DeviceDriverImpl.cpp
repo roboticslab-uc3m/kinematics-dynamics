@@ -4,6 +4,9 @@
 
 #include <string>
 
+#include <yarp/os/Property.h>
+#include <yarp/os/Value.h>
+
 #include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
@@ -70,8 +73,8 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     {
         fkOutPort.open(prefix + "/state:o");
 
-        yarp::os::RateThread::setRate(periodInMs);
-        yarp::os::RateThread::start();
+        yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);
+        yarp::os::PeriodicThread::start();
     }
     else
     {
@@ -105,7 +108,7 @@ bool roboticslab::CartesianControlServer::close()
 {
     if (fkStreamEnabled)
     {
-        yarp::os::RateThread::stop();
+        yarp::os::PeriodicThread::stop();
 
         fkOutPort.interrupt();
         fkOutPort.close();
