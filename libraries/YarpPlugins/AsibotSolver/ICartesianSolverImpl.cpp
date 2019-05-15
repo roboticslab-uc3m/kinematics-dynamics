@@ -18,8 +18,6 @@ namespace
 {
     yarp::sig::Matrix vectorToMatrix(const std::vector<double> &v, bool fillTransl)
     {
-        using namespace yarp::math;
-
         yarp::sig::Vector axisAngleScaled(3);
 
         for (int i = 0; i < 3; i++)
@@ -57,8 +55,6 @@ namespace
 
     void matrixToVector(const yarp::sig::Matrix &H, std::vector<double> &v, bool fillTransl)
     {
-        using namespace yarp::math;
-
         yarp::sig::Vector axisAngle = yarp::math::dcm2axis(H);
         yarp::sig::Vector axisAngleScaled = axisAngle.subVector(0, 2) * axisAngle[3];
 
@@ -196,8 +192,6 @@ bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 
 bool roboticslab::AsibotSolver::appendLink(const std::vector<double> &x)
 {
-    using namespace yarp::math;
-
     yarp::sig::Matrix newFrame = vectorToMatrix(x, true);
 
     AsibotTcpFrame tcpFrameStruct = getTcpFrame();
@@ -224,8 +218,6 @@ bool roboticslab::AsibotSolver::restoreOriginalChain()
 bool roboticslab::AsibotSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old,
         std::vector<double> &x_new_obj)
 {
-    using namespace yarp::math;
-
     yarp::sig::Matrix H_old_obj = vectorToMatrix(x_old_obj, true);
     yarp::sig::Matrix H_new_old = vectorToMatrix(x_new_old, true);
     yarp::sig::Matrix H_new_obj = H_new_old * H_old_obj;
@@ -276,7 +268,6 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
     if (tcpFrameStruct.hasFrame)
     {
-        using namespace yarp::math;
         yarp::sig::Matrix H_base_tcp = vectorToMatrix(x, true) * tcpFrameStruct.frameTcp;
         matrixToVector(H_base_tcp, x, true);
     }
@@ -288,8 +279,6 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
 bool roboticslab::AsibotSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut)
 {
-    using namespace yarp::math;
-
     xOut.resize(6);
 
     xOut[0] = xLhs[0] - xRhs[0];
@@ -339,7 +328,6 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
     if (tcpFrameStruct.hasFrame)
     {
-        using namespace yarp::math;
         yarp::sig::Matrix H_0_N = vectorToMatrix(xd_base_obj, true) * yarp::math::luinv(tcpFrameStruct.frameTcp);
         matrixToVector(H_0_N, xd_base_obj, true);
     }
@@ -426,8 +414,6 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
         const reference_frame frame)
 {
-    using namespace yarp::math;
-
     std::vector<double> qInRad(q);
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
