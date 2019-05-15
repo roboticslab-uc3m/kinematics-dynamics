@@ -37,14 +37,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YCM 0.8 REQUIRED)
-
-# https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
-find_package(YARP 3.0 QUIET)
-if(NOT YARP_FOUND)
-    find_package(YARP 2.3.70 REQUIRED)
-endif()
-
+find_package(YCM 0.10 REQUIRED)
+find_package(YARP 3.0 REQUIRED COMPONENTS OS dev sig
+                               OPTIONAL_COMPONENTS math)
 find_package(COLOR_DEBUG REQUIRED)
 
 # Soft dependencies.
@@ -52,6 +47,7 @@ find_package(orocos_kdl 1.4 QUIET)
 find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 find_package(AMOR_API QUIET)
 find_package(GTestSources 1.6.0 QUIET)
+find_package(Doxygen QUIET)
 
 # Always build YARP devices as MODULE libraries.
 set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
@@ -85,6 +81,7 @@ add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(tests)
 add_subdirectory(share)
+add_subdirectory(doc)
 
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
@@ -95,11 +92,9 @@ include(InstallBasicPackageFiles)
 install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
                             VERSION 0.1.0
                             COMPATIBILITY AnyNewerVersion
-                            FIRST_TARGET KinematicsDynamicsInterfaces
                             NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
-                            NAMESPACE ROBOTICSLAB::
-                            NO_COMPATIBILITY_VARS)
+                            NAMESPACE ROBOTICSLAB::)
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)

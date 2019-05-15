@@ -15,6 +15,7 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup kinematics-dynamics-tests
  * @brief Tests \ref KdlSolver ikin and idyn on a simple mechanism.
  */
 class KdlSolverTestFromFile : public testing::Test

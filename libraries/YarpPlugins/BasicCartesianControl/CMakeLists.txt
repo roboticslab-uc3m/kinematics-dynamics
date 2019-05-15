@@ -19,7 +19,7 @@ yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
                                       BasicCartesianControl.cpp
                                       DeviceDriverImpl.cpp
                                       ICartesianControlImpl.cpp
-                                      RateThreadImpl.cpp)
+                                      PeriodicThreadImpl.cpp)
 
 target_link_libraries(BasicCartesianControl YARP::YARP_OS
                                             YARP::YARP_dev

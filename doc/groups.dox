@@ -33,3 +33,8 @@ namespace roboticslab {}
  * \defgroup kinematics-dynamics-examples kinematics-dynamics Examples
  * @brief kinematics-dynamics examples.
  */
+
+/**
+ * \defgroup kinematics-dynamics-tests kinematics-dynamics Tests
+ * @brief kinematics-dynamics tests.
+ */

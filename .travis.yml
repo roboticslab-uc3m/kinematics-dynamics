@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: xenial
 os: linux
 
 compiler:
@@ -11,9 +11,8 @@ env:
     - CACHE_DIR=~/cached-deps
   matrix:
     - YARP_CHECKOUT=master
+    - YARP_CHECKOUT=v3.1.1
     - YARP_CHECKOUT=30dce54 # hotfix for v3.0.1
-    - YARP_CHECKOUT=v2.3.72.1
-    - YARP_CHECKOUT=v2.3.70.2
 
 matrix:
   include:
@@ -36,10 +35,6 @@ addons:
     - lcov # code coverage
 
 before_install:
-  #-- Configure Git (needed by YCM)
-  - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
-  - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
-
   #-- Register SSH deploy key for AMOR API private repository
   - source "$TRAVIS_BUILD_DIR/scripts/travis/configure-ssh.sh"
 

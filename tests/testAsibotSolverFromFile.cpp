@@ -16,6 +16,7 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup kinematics-dynamics-tests
  * @brief Tests AsibotSolver ikin from loaded configuration file.
  */
 class AsibotSolverTestFromFile : public testing::Test

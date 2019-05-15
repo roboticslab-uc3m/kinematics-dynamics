@@ -6,7 +6,7 @@
 
 #include <ColorDebug.h>
 
-// ------------------- RateThread Related ------------------------------------
+// ------------------- PeriodicThread Related ------------------------------------
 
 void roboticslab::BasicCartesianControl::run()
 {
@@ -114,7 +114,7 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
+        commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
     }
 
@@ -185,7 +185,7 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
+        commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
     }
 

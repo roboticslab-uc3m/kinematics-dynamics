@@ -3,7 +3,7 @@
 #ifndef __TRAJECTORY_THREAD_HPP__
 #define __TRAJECTORY_THREAD_HPP__
 
-#include <yarp/os/RateThread.h>
+#include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/api.h> // upstream bug in the IPositionDirect API
 #include <yarp/dev/IEncoders.h>
@@ -13,7 +13,7 @@
 #include <ConfigurationSelector.hpp>
 #include <ICartesianTrajectory.hpp>
 
-class TrajectoryThread : public yarp::os::RateThread
+class TrajectoryThread : public yarp::os::PeriodicThread
 {
 public:
     TrajectoryThread(yarp::dev::IEncoders * iEncoders, yarp::dev::IPositionDirect * iPosDirect,
@@ -21,7 +21,7 @@ public:
             roboticslab::ConfigurationSelector * ikConfig,
             roboticslab::ICartesianTrajectory * iCartTrajectory,
             int period)
-        : yarp::os::RateThread(period),
+        : yarp::os::PeriodicThread(period * 0.001),
           iEncoders(iEncoders),
           iPosDirect(iPosDirect),
           ikProblem(ikProblem),

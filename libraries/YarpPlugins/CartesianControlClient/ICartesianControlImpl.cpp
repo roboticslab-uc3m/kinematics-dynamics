@@ -136,18 +136,18 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &x)
+bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * state, double * timestamp)
 {
-    if (fkStreamEnabled)
+    if (!fkInPort.isClosed())
     {
-        double localArrivalTime = fkStreamResponder.getLastStatData(&state, x);
-
-        if (yarp::os::Time::now() - localArrivalTime <= fkStreamTimeoutSecs)
+        if (!fkStreamResponder.getLastStatData(x, state, timestamp, fkStreamTimeoutSecs))
+        {
+            CD_WARNING("FK stream timeout, falling back to RPC request.\n");
+        }
+        else
         {
             return true;
         }
-
-        CD_WARNING("FK stream timeout, sending RPC request.\n");
     }
 
     yarp::os::Bottle cmd, response;
@@ -161,12 +161,21 @@ bool roboticslab::CartesianControlClient::stat(int &state, std::vector<double> &
         return false;
     }
 
-    state = response.get(0).asVocab();
-    x.resize(response.size() - 1);
+    if (state != 0)
+    {
+        *state = response.get(0).asVocab();
+    }
+
+    x.resize(response.size() - 2);
 
     for (size_t i = 0; i < x.size(); i++)
     {
         x[i] = response.get(i + 1).asDouble();
+    }
+
+    if (timestamp != 0)
+    {
+        *timestamp = response.get(response.size() - 1).asDouble();
     }
 
     return true;

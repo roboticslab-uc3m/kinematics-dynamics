@@ -4,14 +4,15 @@
 
 #include <vector>
 
-// ------------------- RateThread related ------------------------------------
+// ------------------- PeriodicThread related ------------------------------------
 
 void roboticslab::CartesianControlServer::run()
 {
     std::vector<double> x;
     int state;
+    double timestamp;
 
-    if (!iCartesianControl->stat(state, x))
+    if (!iCartesianControl->stat(x, &state, &timestamp))
     {
         return;
     }
@@ -24,6 +25,8 @@ void roboticslab::CartesianControlServer::run()
     {
         out.addDouble(x[i]);
     }
+
+    out.addDouble(timestamp);
 
     fkOutPort.write();
 

@@ -14,7 +14,7 @@
 using namespace roboticslab;
 
 LinearTrajectoryThread::LinearTrajectoryThread(int _period, ICartesianControl * _iCartesianControl)
-    : yarp::os::RateThread(_period),
+    : yarp::os::PeriodicThread(_period * 0.001),
       period(_period),
       iCartesianControl(_iCartesianControl),
       iCartesianTrajectory(new KdlTrajectory),
@@ -64,10 +64,9 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
         return true;
     }
 
-    int state;
     std::vector<double> x;
 
-    if (!iCartesianControl->stat(state, x))
+    if (!iCartesianControl->stat(x))
     {
         CD_ERROR("stat failed.\n");
         return false;

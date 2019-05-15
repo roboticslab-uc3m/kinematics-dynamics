@@ -9,6 +9,7 @@ namespace roboticslab
 {
 
 /**
+ * @ingroup kinematics-dynamics-tests
  * @brief Tests \ref KdlTrajectory.
  */
 class KdlTrajectoryTest : public testing::Test

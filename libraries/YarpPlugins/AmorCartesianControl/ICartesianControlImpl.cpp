@@ -13,7 +13,7 @@
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
+bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state, double * timestamp)
 {
     AMOR_VECTOR7 positions;
 
@@ -35,7 +35,15 @@ bool roboticslab::AmorCartesianControl::stat(int &state, std::vector<double> &x)
 
     KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
 
-    state = currentState;
+    if (state != 0)
+    {
+        *state = currentState;
+    }
+
+    if (timestamp != 0)
+    {
+        *timestamp = yarp::os::Time::now();
+    }
 
     return true;
 }
@@ -107,10 +115,9 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
         return movj(xd);
     }
 
-    int state;
     std::vector<double> x;
 
-    if (!stat(state, x))
+    if (!stat(x))
     {
         CD_ERROR("stat failed.\n");
         return false;
@@ -201,10 +208,9 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
         return false;
     }
 
-    int state;
     std::vector<double> xCurrent;
 
-    if (!stat(state, xCurrent))
+    if (!stat(xCurrent))
     {
         CD_ERROR("stat failed\n");
         return false;

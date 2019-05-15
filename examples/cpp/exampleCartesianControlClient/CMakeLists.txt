@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # Start a project.
-project(exampleCartesianControlClient)
+project(exampleCartesianControlClient LANGUAGES CXX)
 
-find_package(YARP REQUIRED)
+find_package(YARP 3.0 REQUIRED COMPONENTS OS dev)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 
 # Set up our main executable.

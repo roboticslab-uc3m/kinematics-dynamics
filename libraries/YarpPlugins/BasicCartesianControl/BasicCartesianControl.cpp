@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <yarp/os/Vocab.h>
+
 #include <ColorDebug.h>
 
 // -----------------------------------------------------------------------------
@@ -130,7 +132,7 @@ bool roboticslab::BasicCartesianControl::setControlModes(int mode)
 
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
         {
-            CD_WARNING("setControlModes failed.\n");
+            CD_WARNING("setControlModes failed (%s).\n", yarp::os::Vocab::decode(mode).c_str());
             return false;
         }
     }
@@ -162,7 +164,7 @@ bool roboticslab::BasicCartesianControl::presetStreamingCommand(int command)
         return false;
     }
 
-    return true;
+    return ret;
 }
 
 // -----------------------------------------------------------------------------

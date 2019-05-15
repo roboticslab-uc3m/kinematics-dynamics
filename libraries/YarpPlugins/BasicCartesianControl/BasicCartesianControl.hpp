@@ -7,6 +7,7 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/PreciselyTimed.h>
 
 #include <iostream> // only windows
 #include <vector>
@@ -22,7 +23,7 @@
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_DURATION 10.0
-#define DEFAULT_CMC_RATE_MS 50
+#define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
 #define DEFAULT_STREAMING_PRESET 0
@@ -109,11 +110,13 @@ are YARP devices (further reading on why this is good: <a href="http://asrob.uc3
  * @ingroup BasicCartesianControl
  * @brief The BasicCartesianControl class implements ICartesianControl.
  */
-class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread
+class BasicCartesianControl : public yarp::dev::DeviceDriver,
+                              public yarp::os::PeriodicThread,
+                              public ICartesianControl
 {
 public:
 
-    BasicCartesianControl() : yarp::os::RateThread(DEFAULT_CMC_RATE_MS),
+    BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
                               iCartesianSolver(NULL),
                               iEncoders(NULL),
                               iPositionControl(NULL),
@@ -122,11 +125,12 @@ public:
                               iControlLimits(NULL),
                               iTorqueControl(NULL),
                               iControlMode(NULL),
+                              iPreciselyTimed(NULL),
                               referenceFrame(ICartesianSolver::BASE_FRAME),
                               gain(DEFAULT_GAIN),
                               maxJointVelocity(DEFAULT_QDOT_LIMIT),
                               duration(DEFAULT_DURATION),
-                              cmcRateMs(DEFAULT_CMC_RATE_MS),
+                              cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
@@ -139,7 +143,7 @@ public:
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
 
-    virtual bool stat(int &state, std::vector<double> &x);
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
 
     virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
 
@@ -177,7 +181,7 @@ public:
 
     virtual bool getParameters(std::map<int, double> & params);
 
-    // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
+    // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
 
     /** Loop function. This is the thread itself. */
     virtual void run();
@@ -233,7 +237,8 @@ protected:
     yarp::dev::IVelocityControl *iVelocityControl;
     yarp::dev::IControlLimits *iControlLimits;
     yarp::dev::ITorqueControl *iTorqueControl;
-    yarp::dev::IControlMode2 *iControlMode;
+    yarp::dev::IControlMode *iControlMode;
+    yarp::dev::IPreciselyTimed *iPreciselyTimed;
 
     ICartesianSolver::reference_frame referenceFrame;
 
@@ -241,7 +246,7 @@ protected:
     double maxJointVelocity;
     double duration; // [s]
 
-    int cmcRateMs;
+    int cmcPeriodMs;
     int waitPeriodMs;
     int numRobotJoints, numSolverJoints;
 

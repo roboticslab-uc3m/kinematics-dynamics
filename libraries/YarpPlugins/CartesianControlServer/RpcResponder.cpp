@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
@@ -91,7 +92,7 @@ void roboticslab::RpcResponder::makeUsage()
     std::stringstream ss;
 
     ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_STAT) << "]";
-    addUsage(ss.str().c_str(), "get current position in cartesian space");
+    addUsage(ss.str().c_str(), "get controller state, current position in cartesian space and encoder acquisition timestamp");
     ss.str("");
 
     ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_INV) << "] coord1 coord2 ...";
@@ -166,8 +167,8 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "(config param) trajectory duration");
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_RATE) << "] value";
-    addUsage(ss.str().c_str(), "(config param) CMC rate [ms]");
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_PERIOD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) CMC period [ms]");
     ss.str("");
 
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_WAIT_PERIOD) << "] value";
@@ -200,8 +201,9 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 {
     std::vector<double> x;
     int state;
+    double timestamp;
 
-    if (iCartesianControl->stat(state, x))
+    if (iCartesianControl->stat(x, &state, &timestamp))
     {
         if (!transformOutgoingData(x))
         {
@@ -215,6 +217,8 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
         {
             out.addDouble(x[i]);
         }
+
+        out.addDouble(timestamp);
 
         return true;
     }

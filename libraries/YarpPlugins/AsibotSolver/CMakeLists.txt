@@ -1,5 +1,5 @@
-if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_AsibotSolver OR ENABLE_AsibotSolver))
-    message(WARNING "YARP math lib not found, disabling AsibotSolver")
+if(NOT YARP_math_FOUND AND (NOT DEFINED ENABLE_AsibotSolver OR ENABLE_AsibotSolver))
+    message(WARNING "YARP_math lib not found, disabling AsibotSolver")
 endif()
 
 yarp_prepare_plugin(AsibotSolver
@@ -7,7 +7,7 @@ yarp_prepare_plugin(AsibotSolver
                     TYPE roboticslab::AsibotSolver
                     INCLUDE AsibotSolver.hpp
                     DEFAULT ON
-                    DEPENDS "YARP_HAS_MATH_LIB;ENABLE_KinematicRepresentationLib")
+                    DEPENDS "YARP_math_FOUND;ENABLE_KinematicRepresentationLib")
 
 if(NOT SKIP_AsibotSolver)
 

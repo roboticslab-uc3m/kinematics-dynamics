@@ -8,6 +8,8 @@
 
 #include "ICartesianSolver.h"
 
+#include <ColorDebug.h> // FIXME: stat() deprecation
+
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 #define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
@@ -126,7 +128,7 @@
 #define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')          ///< Controller gain
 #define VOCAB_CC_CONFIG_MAX_JOINT_VEL ROBOTICSLAB_VOCAB('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d') ///< Trajectory duration
-#define VOCAB_CC_CONFIG_CMC_RATE ROBOTICSLAB_VOCAB('c','p','c','r')      ///< CMC rate [ms]
+#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')    ///< CMC period [ms]
 #define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
 #define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)           ///< Reference frame
 #define VOCAB_CC_CONFIG_STREAMING ROBOTICSLAB_VOCAB('c','p','s','c')     ///< Preset streaming command
@@ -162,14 +164,24 @@ class ICartesianControl
          *
          * Inform on control state, get robot position and perform forward kinematics.
          *
-         * @param state Identifier for a cartesian control vocab.
          * @param x 6-element vector describing current position in cartesian space; first
          * three elements denote translation (meters), last three denote rotation in scaled
          * axis-angle representation (radians).
+         * @param state Identifier for a cartesian control vocab.
+         * @param timestamp Remote encoder acquisition time.
          *
          * @return true on success, false otherwise
          */
-        virtual bool stat(int &state, std::vector<double> &x) = 0;
+        virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+        __attribute__((__deprecated__))
+        virtual bool stat(int & state, std::vector<double> & x)
+        {
+            CD_WARNING("Deprecated signature.\n");
+            return stat(x, &state);
+        }
+#endif
 
         /**
          * @brief Inverse kinematics
