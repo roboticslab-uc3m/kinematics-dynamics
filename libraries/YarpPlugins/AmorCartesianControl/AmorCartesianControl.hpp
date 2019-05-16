@@ -18,7 +18,6 @@
 #define DEFAULT_CAN_PORT 0
 
 #define DEFAULT_GAIN 0.05
-#define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
 
@@ -47,7 +46,6 @@ public:
                              iCartesianSolver(NULL),
                              currentState(VOCAB_CC_NOT_CONTROLLING),
                              gain(DEFAULT_GAIN),
-                             maxJointVelocity(DEFAULT_QDOT_LIMIT),
                              waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
                              referenceFrame(ICartesianSolver::BASE_FRAME)
     {}
@@ -126,7 +124,6 @@ private:
     int currentState;
 
     double gain;
-    double maxJointVelocity;
     int waitPeriodMs;
 
     std::vector<double> qdotMax;

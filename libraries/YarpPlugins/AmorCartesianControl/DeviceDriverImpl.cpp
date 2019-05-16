@@ -21,9 +21,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asDouble();
 
-    maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity (meters/second or degrees/second)").asDouble();
-
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt();
 

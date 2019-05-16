@@ -13,9 +13,6 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asDouble();
 
-    maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity (meters/second or degrees/second)").asDouble();
-
     duration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
             "trajectory duration (seconds)").asDouble();
 

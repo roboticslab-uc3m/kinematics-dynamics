@@ -478,14 +478,6 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
         }
         gain = value;
         break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        if (value <= 0.0)
-        {
-            CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
-            return false;
-        }
-        maxJointVelocity = value;
-        break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         if (value <= 0.0)
         {
@@ -518,9 +510,6 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
     {
     case VOCAB_CC_CONFIG_GAIN:
         *value = gain;
-        break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        *value = maxJointVelocity;
         break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         *value = waitPeriodMs;
@@ -561,7 +550,6 @@ bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double
 bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & params)
 {
     params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;

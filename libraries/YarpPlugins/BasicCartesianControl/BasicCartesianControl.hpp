@@ -21,7 +21,6 @@
 #define DEFAULT_ROBOT "remote_controlboard"
 #define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_GAIN 0.05
-#define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_DURATION 10.0
 #define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
@@ -128,7 +127,6 @@ public:
                               iPreciselyTimed(NULL),
                               referenceFrame(ICartesianSolver::BASE_FRAME),
                               gain(DEFAULT_GAIN),
-                              maxJointVelocity(DEFAULT_QDOT_LIMIT),
                               duration(DEFAULT_DURATION),
                               cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
@@ -218,6 +216,7 @@ protected:
 
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
+    void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> &q);
     void handleMovl(const std::vector<double> &q);
@@ -241,7 +240,6 @@ protected:
     ICartesianSolver::reference_frame referenceFrame;
 
     double gain;
-    double maxJointVelocity;
     double duration; // [s]
 
     int cmcPeriodMs;
