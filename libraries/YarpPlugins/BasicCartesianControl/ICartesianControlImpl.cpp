@@ -576,18 +576,16 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> qdot(numRobotJoints);
-
-    double interval = yarp::os::Time::now() - movementStartTime;
+    std::vector<double> qdiff(numRobotJoints);
 
     for (int i = 0; i < numRobotJoints; i++)
     {
-        qdot[i] = (q[i] - currentQ[i]) / interval;
+        qdiff[i] = q[i] - currentQ[i];
     }
 
-    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
+    if (!checkJointLimits(currentQ, qdiff))
     {
-        CD_ERROR("Joint position or velocity limits exceeded, not moving.\n");
+        CD_ERROR("Joint position exceeded, not moving.\n");
         return;
     }
 
@@ -595,8 +593,6 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
     {
         CD_ERROR("setPositions failed.\n");
     }
-
-    movementStartTime = yarp::os::Time::now();
 }
 
 // -----------------------------------------------------------------------------
