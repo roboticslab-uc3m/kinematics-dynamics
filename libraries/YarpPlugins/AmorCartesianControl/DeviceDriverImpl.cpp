@@ -21,9 +21,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asDouble();
 
-    maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity (meters/second or degrees/second)").asDouble();
-
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt();
 
@@ -74,6 +71,8 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
     CD_SUCCESS("Acquired AMOR handle!\n");
 
+    qdotMax.resize(AMOR_NUM_JOINTS);
+
     yarp::os::Bottle qMin, qMax;
 
     for (int i = 0; i < AMOR_NUM_JOINTS; i++)
@@ -86,6 +85,8 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
             close();
             return false;
         }
+
+        qdotMax[i] = KinRepresentation::radToDeg(jointInfo.maxVelocity);
 
         qMin.addDouble(KinRepresentation::radToDeg(jointInfo.lowerJointLimit));
         qMax.addDouble(KinRepresentation::radToDeg(jointInfo.upperJointLimit));

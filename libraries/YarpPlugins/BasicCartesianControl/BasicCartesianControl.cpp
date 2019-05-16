@@ -8,6 +8,8 @@
 
 #include <ColorDebug.h>
 
+using namespace roboticslab;
+
 // -----------------------------------------------------------------------------
 
 namespace
@@ -24,7 +26,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-int roboticslab::BasicCartesianControl::getCurrentState() const
+int BasicCartesianControl::getCurrentState() const
 {
     int tmp;
     currentStateReady.wait();
@@ -36,7 +38,7 @@ int roboticslab::BasicCartesianControl::getCurrentState() const
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::setCurrentState(int value)
+void BasicCartesianControl::setCurrentState(int value)
 {
     currentStateReady.wait();
     currentState = value;
@@ -46,7 +48,7 @@ void roboticslab::BasicCartesianControl::setCurrentState(int value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
+bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 {
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {
@@ -56,7 +58,8 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
+            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (def).\n",
+                    joint, value, qMin[joint], qMax[joint]);
             return false;
         }
     }
@@ -66,19 +69,20 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qd)
+bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot)
 {
     for (unsigned int joint = 0; joint < numRobotJoints; joint++)
     {
         double value = q[joint];
 
-        if (value < qMin[joint] || value > qMax[joint])
+        if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
+            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg).\n",
+                    joint, value, qMin[joint], qMax[joint]);
             double midRange = (qMax[joint] + qMin[joint]) / 2;
 
             // Let the joint get away from its nearest limit.
-            if (qd.empty() || sgn(value - midRange) == sgn(qd[joint]))
+            if (sgn(value - midRange) == sgn(qdot[joint]))
             {
                 return false;
             }
@@ -90,13 +94,16 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
+bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
 {
-    for (unsigned int i = 0; i < qdot.size(); i++)
+    for (unsigned int joint = 0; joint < qdot.size(); joint++)
     {
-        if (std::abs(qdot[i]) > maxJointVelocity)
+        double value = qdot[joint];
+
+        if (value < qdotMin[joint] || value > qdotMax[joint])
         {
-            CD_WARNING("Maximum angular velocity hit: qdot[%d] = |%f| > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
+            CD_WARNING("Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s).\n",
+                    joint, value, qdotMin[joint], qdotMax[joint]);
             return false;
         }
     }
@@ -106,7 +113,7 @@ bool roboticslab::BasicCartesianControl::checkJointVelocities(const std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::setControlModes(int mode)
+bool BasicCartesianControl::setControlModes(int mode)
 {
     std::vector<int> modes(numRobotJoints);
 
@@ -142,7 +149,7 @@ bool roboticslab::BasicCartesianControl::setControlModes(int mode)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::presetStreamingCommand(int command)
+bool BasicCartesianControl::presetStreamingCommand(int command)
 {
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
@@ -165,6 +172,60 @@ bool roboticslab::BasicCartesianControl::presetStreamingCommand(int command)
     }
 
     return ret;
+}
+
+// -----------------------------------------------------------------------------
+
+void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd,
+        std::vector<double> & qdot)
+{
+    double maxTime = 0.0;
+
+    //-- Find out the maximum time to move
+
+    for (int joint = 0; joint < numSolverJoints; joint++)
+    {
+        double distance = qd[joint] - q[joint];
+
+        CD_INFO("Distance (joint %d): %f\n", joint, std::abs(distance));
+
+        double targetTime;
+
+        if (distance >= 0.0 && qdotMax[joint] != 0.0)
+        {
+            targetTime = std::abs(distance / qdotMax[joint]);
+        }
+        else if (distance < 0.0 && qdotMin[joint] != 0.0)
+        {
+            targetTime = std::abs(distance / qdotMin[joint]);
+        }
+        else
+        {
+            CD_WARNING("Zero velocities sent, not moving.\n");
+            return;
+        }
+
+        if (targetTime > maxTime)
+        {
+            maxTime = targetTime;
+            CD_INFO("Candidate: %f\n", maxTime);
+        }
+    }
+
+    //-- Compute, store old and set joint velocities given this time
+
+    for (int joint = 0; joint < numRobotJoints; joint++)
+    {
+        if (joint >= numSolverJoints)
+        {
+            CD_INFO("qdot[%d] = 0.0 (forced)\n", joint);
+        }
+        else
+        {
+            qdot[joint] = std::abs(qd[joint] - q[joint]) / maxTime;
+            CD_INFO("qdot[%d] = %f\n", joint, qdot[joint]);
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------

@@ -13,9 +13,6 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asDouble();
 
-    maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity (meters/second or degrees/second)").asDouble();
-
     duration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
             "trajectory duration (seconds)").asDouble();
 
@@ -112,20 +109,39 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     qMin.resize(numRobotJoints);
     qMax.resize(numRobotJoints);
 
+    qdotMin.resize(numRobotJoints);
+    qdotMax.resize(numRobotJoints);
+
     yarp::os::Bottle bMin, bMax;
 
     for (int joint = 0; joint < numRobotJoints; joint++)
     {
-        double min, max;
-        iControlLimits->getLimits(joint, &min, &max);
+        double _qMin, _qMax;
 
-        qMin[joint] = min;
-        qMax[joint] = max;
+        if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
+        {
+            CD_ERROR("Unable to retrieve position limits for joint %d.\n");
+            return false;
+        }
 
-        bMin.addDouble(min);
-        bMax.addDouble(max);
+        qMin[joint] = _qMin;
+        qMax[joint] = _qMax;
 
-        CD_INFO("Joint %d limits: [%f,%f]\n", joint, min, max);
+        double _qdotMin, _qdotMax;
+
+        if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
+        {
+            CD_ERROR("Unable to retrieve speed limits for joint %d.\n");
+            return false;
+        }
+
+        qdotMin[joint] = _qdotMin;
+        qdotMax[joint] = _qdotMax;
+
+        CD_INFO("Joint %d limits: [%f,%f] [%f,%f]\n", joint, _qMin, _qMax, _qdotMin, _qdotMax);
+
+        bMin.addDouble(_qMin);
+        bMax.addDouble(_qMax);
     }
 
     yarp::os::Property solverOptions;

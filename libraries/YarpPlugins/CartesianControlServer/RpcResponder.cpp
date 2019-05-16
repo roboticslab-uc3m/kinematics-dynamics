@@ -153,10 +153,6 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "(config param) controller gain");
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_MAX_JOINT_VEL) << "] value";
-    addUsage(ss.str().c_str(), "(config param) maximum joint velocity");
-    ss.str("");
-
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_TRAJ_DURATION) << "] value";
     addUsage(ss.str().c_str(), "(config param) trajectory duration");
     ss.str("");
