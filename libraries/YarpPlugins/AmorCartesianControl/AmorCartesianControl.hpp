@@ -3,6 +3,8 @@
 #ifndef __AMOR_CARTESIAN_CONTROL_HPP__
 #define __AMOR_CARTESIAN_CONTROL_HPP__
 
+#include <vector>
+
 #include <yarp/os/Searchable.h>
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PolyDriver.h>
@@ -126,6 +128,8 @@ private:
     double gain;
     double maxJointVelocity;
     int waitPeriodMs;
+
+    std::vector<double> qdotMax;
 
     ICartesianSolver::reference_frame referenceFrame;
 };

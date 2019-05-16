@@ -271,6 +271,7 @@ protected:
     bool cmcSuccess;
 
     std::vector<double> qMin, qMax;
+    std::vector<double> qdotMin, qdotMax;
 };
 
 }  // namespace roboticslab

@@ -74,6 +74,8 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
     CD_SUCCESS("Acquired AMOR handle!\n");
 
+    qdotMax.resize(AMOR_NUM_JOINTS);
+
     yarp::os::Bottle qMin, qMax;
 
     for (int i = 0; i < AMOR_NUM_JOINTS; i++)
@@ -86,6 +88,8 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
             close();
             return false;
         }
+
+        qdotMax[i] = KinRepresentation::radToDeg(jointInfo.maxVelocity);
 
         qMin.addDouble(KinRepresentation::radToDeg(jointInfo.lowerJointLimit));
         qMax.addDouble(KinRepresentation::radToDeg(jointInfo.upperJointLimit));

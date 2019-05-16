@@ -56,7 +56,8 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
+            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (def).\n",
+                    joint, value, qMin[joint], qMax[joint]);
             return false;
         }
     }
@@ -74,7 +75,8 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
 
         if (value < qMin[joint] || value > qMax[joint])
         {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f].\n", joint, value, qMin[joint], qMax[joint]);
+            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg).\n",
+                    joint, value, qMin[joint], qMax[joint]);
             double midRange = (qMax[joint] + qMin[joint]) / 2;
 
             // Let the joint get away from its nearest limit.
@@ -92,11 +94,14 @@ bool roboticslab::BasicCartesianControl::checkJointLimits(const std::vector<doub
 
 bool roboticslab::BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
 {
-    for (unsigned int i = 0; i < qdot.size(); i++)
+    for (unsigned int joint = 0; joint < qdot.size(); joint++)
     {
-        if (std::abs(qdot[i]) > maxJointVelocity)
+        double value = qdot[joint];
+
+        if (value < qdotMin[joint] || value > qdotMax[joint])
         {
-            CD_WARNING("Maximum angular velocity hit: qdot[%d] = |%f| > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
+            CD_WARNING("Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s).\n",
+                    joint, value, qdotMin[joint], qdotMax[joint]);
             return false;
         }
     }
