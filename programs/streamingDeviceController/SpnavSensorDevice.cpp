@@ -103,6 +103,26 @@ bool roboticslab::SpnavSensorDevice::transformData(double scaling)
     }
 }
 
+bool roboticslab::SpnavSensorDevice::hasValidMovementData() const
+{
+    if (usingMovi)
+    {
+        for (int i = 0; i < data.size(); i++)
+        {
+            if (!fixedAxes[i] && data[i] != currentX[i])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    else
+    {
+        return StreamingDevice::hasValidMovementData();
+    }
+}
+
 void roboticslab::SpnavSensorDevice::sendMovementCommand()
 {
     if (usingMovi)

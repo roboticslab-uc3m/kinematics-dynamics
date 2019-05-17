@@ -29,6 +29,8 @@ public:
 
     virtual bool transformData(double scaling);
 
+    virtual bool hasValidMovementData() const;
+
     virtual void sendMovementCommand();
 
     virtual void stopMotion();
