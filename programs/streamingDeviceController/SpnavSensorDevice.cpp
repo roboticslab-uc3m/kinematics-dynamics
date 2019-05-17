@@ -81,19 +81,26 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
 bool roboticslab::SpnavSensorDevice::transformData(double scaling)
 {
-    double localScaling = scaling;
-
     if (usingMovi)
     {
         for (int i = 0; i < data.size(); i++)
         {
-            data[i] = currentX[i] + (gain / scaling) * data[i];
+            if (!fixedAxes[i])
+            {
+                data[i] = currentX[i] + (gain / scaling) * data[i];
+            }
+            else
+            {
+                data[i] = currentX[i];
+            }
         }
 
-        localScaling = 1.0; // override default scaling algorithm
+        return true;
     }
-
-    return StreamingDevice::transformData(localScaling);
+    else
+    {
+        return StreamingDevice::transformData(scaling);
+    }
 }
 
 void roboticslab::SpnavSensorDevice::sendMovementCommand()
