@@ -49,6 +49,12 @@ bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
+    if (!iCartesianControl->stat(currentX))
+    {
+        CD_WARNING("Unable to stat initial position.\n");
+        return false;
+    }
+
     return true;
 }
 
@@ -68,12 +74,6 @@ bool roboticslab::SpnavSensorDevice::acquireData()
     for (int i = 0; i < data.size(); i++)
     {
         this->data[i] = data[i];
-    }
-
-    if (!iCartesianControl->stat(currentX))
-    {
-        CD_WARNING("stat failed.\n");
-        return false;
     }
 
     return true;
@@ -128,6 +128,11 @@ void roboticslab::SpnavSensorDevice::sendMovementCommand()
     if (usingMovi)
     {
         iCartesianControl->movi(data);
+
+        for (int i = 0; i < data.size(); i++)
+        {
+            currentX[i] = data[i];
+        }
     }
     else
     {
