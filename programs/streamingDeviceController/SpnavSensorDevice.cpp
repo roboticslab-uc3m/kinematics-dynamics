@@ -110,6 +110,9 @@ void roboticslab::SpnavSensorDevice::sendMovementCommand()
 
 void roboticslab::SpnavSensorDevice::stopMotion()
 {
-    std::vector<double> zeros(6, 0.0);
-    iCartesianControl->twist(zeros);
+    if (!usingMovi)
+    {
+        std::vector<double> zeros(6, 0.0);
+        iCartesianControl->twist(zeros);
+    }
 }

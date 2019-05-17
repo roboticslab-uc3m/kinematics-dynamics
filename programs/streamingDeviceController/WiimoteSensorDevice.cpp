@@ -158,6 +158,9 @@ void roboticslab::WiimoteSensorDevice::sendMovementCommand()
 
 void roboticslab::WiimoteSensorDevice::stopMotion()
 {
-    std::vector<double> zeros(6, 0.0);
-    iCartesianControl->twist(zeros);
+    if (!usingMovi)
+    {
+        std::vector<double> zeros(6, 0.0);
+        iCartesianControl->twist(zeros);
+    }
 }
