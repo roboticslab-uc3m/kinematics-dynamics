@@ -67,7 +67,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
 
-    int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt();
+    int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt32();
 
     if (periodInMs > 0)
     {

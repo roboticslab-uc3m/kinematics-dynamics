@@ -39,7 +39,7 @@ void roboticslab::StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& 
 
         for (size_t i = 1; i < in.size(); i++)
         {
-            v.push_back(in.get(i).asDouble());
+            v.push_back(in.get(i).asFloat64());
         }
 
         (iCartesianControl->*cmd)(v);
@@ -56,12 +56,12 @@ void roboticslab::StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle
 {
     if (in.size() > 2)
     {
-        double d = in.get(1).asDouble();
+        double d = in.get(1).asFloat64();
         std::vector<double> v;
 
         for (size_t i = 2; i < in.size(); i++)
         {
-            v.push_back(in.get(i).asDouble());
+            v.push_back(in.get(i).asFloat64());
         }
 
         (iCartesianControl->*cmd)(v, d);

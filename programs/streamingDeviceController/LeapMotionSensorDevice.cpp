@@ -25,9 +25,9 @@ roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable
 
     if (!leapFrameRPY->isNull() && leapFrameRPY->size() == 3)
     {
-        double roll = leapFrameRPY->get(0).asDouble() * M_PI / 180.0;
-        double pitch = leapFrameRPY->get(1).asDouble() * M_PI / 180.0;
-        double yaw = leapFrameRPY->get(2).asDouble() * M_PI / 180.0;
+        double roll = leapFrameRPY->get(0).asFloat64() * M_PI / 180.0;
+        double pitch = leapFrameRPY->get(1).asFloat64() * M_PI / 180.0;
+        double yaw = leapFrameRPY->get(2).asFloat64() * M_PI / 180.0;
 
         CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
 

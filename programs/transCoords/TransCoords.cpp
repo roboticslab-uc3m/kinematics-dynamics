@@ -87,8 +87,8 @@ bool TransCoords::configure(yarp::os::ResourceFinder &rf)
         {
             double min, max;
             iControlLimits->getLimits(i, &min, &max);
-            qMin.addDouble(min);
-            qMax.addDouble(max);
+            qMin.addFloat64(min);
+            qMax.addFloat64(max);
         }
 
         yarp::os::Property solverOptions;
@@ -175,19 +175,19 @@ bool TransCoords::getMatrixFromProperties(const yarp::os::Bottle &b, KDL::Frame 
         return false;
     }
 
-    if (l->get(12).asDouble() != 0 || l->get(13).asDouble() != 0 || l->get(14).asDouble() != 0 || l->get(15).asDouble() != 1)
+    if (l->get(12).asFloat64() != 0 || l->get(13).asFloat64() != 0 || l->get(14).asFloat64() != 0 || l->get(15).asFloat64() != 1)
     {
         CD_ERROR("Unsupported non-null frame components (perspective and scaling).\n");
         return false;
     }
 
-    frame.M.UnitX(KDL::Vector(l->get(0).asDouble(), l->get(4).asDouble(), l->get(8).asDouble()));
-    frame.M.UnitY(KDL::Vector(l->get(1).asDouble(), l->get(5).asDouble(), l->get(9).asDouble()));
-    frame.M.UnitZ(KDL::Vector(l->get(2).asDouble(), l->get(6).asDouble(), l->get(10).asDouble()));
+    frame.M.UnitX(KDL::Vector(l->get(0).asFloat64(), l->get(4).asFloat64(), l->get(8).asFloat64()));
+    frame.M.UnitY(KDL::Vector(l->get(1).asFloat64(), l->get(5).asFloat64(), l->get(9).asFloat64()));
+    frame.M.UnitZ(KDL::Vector(l->get(2).asFloat64(), l->get(6).asFloat64(), l->get(10).asFloat64()));
 
-    frame.p.x(l->get(3).asDouble());
-    frame.p.y(l->get(7).asDouble());
-    frame.p.z(l->get(11).asDouble());
+    frame.p.x(l->get(3).asFloat64());
+    frame.p.y(l->get(7).asFloat64());
+    frame.p.z(l->get(11).asFloat64());
 
     return true;
 }
@@ -202,7 +202,7 @@ void TransCoords::onRead(yarp::os::Bottle &b)
 
     for (int i = 0; i < b.size(); i++)
     {
-        x_in.push_back(b.get(i).asDouble());
+        x_in.push_back(b.get(i).asFloat64());
     }
 
     if (!KinRepresentation::encodePose(x_in, x_in, KinRepresentation::CARTESIAN, orient))
@@ -269,7 +269,7 @@ void TransCoords::onRead(yarp::os::Bottle &b)
 
     for (unsigned int i = 0; i < x_out.size(); i++)
     {
-        outB.addDouble(x_out[i]);
+        outB.addFloat64(x_out[i]);
     }
 
     outPort.write();

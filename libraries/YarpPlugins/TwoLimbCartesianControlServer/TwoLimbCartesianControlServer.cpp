@@ -30,7 +30,7 @@ bool roboticslab::TwoLimbCartesianControlServer::read(yarp::os::ConnectionReader
         {
             out.addVocab(state);
             for(size_t i=0; i<x.size(); i++)
-                out.addDouble(x[i]);
+                out.addFloat64(x[i]);
         }
         else
         {

@@ -26,10 +26,10 @@ void FkStreamResponder::onRead(yarp::os::Bottle & b)
 
     for (size_t i = 0; i < x.size(); i++)
     {
-        x[i] = b.get(i + 1).asDouble();
+        x[i] = b.get(i + 1).asFloat64();
     }
 
-    timestamp = b.get(b.size() - 1).asDouble();
+    timestamp = b.get(b.size() - 1).asFloat64();
 
     mutex.post();
 }

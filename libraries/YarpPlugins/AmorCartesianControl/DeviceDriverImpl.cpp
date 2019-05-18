@@ -19,10 +19,10 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     CD_DEBUG("AmorCartesianControl config: %s.\n", config.toString().c_str());
 
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
-            "controller gain").asDouble();
+            "controller gain").asFloat64();
 
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
-            "wait command period (milliseconds)").asInt();
+            "wait command period (milliseconds)").asInt32();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
             "reference frame (base|tcp)").asString();
@@ -50,7 +50,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
         std::string canLibrary = config.check("canLibrary", yarp::os::Value(DEFAULT_CAN_LIBRARY),
                 "CAN plugin library").asString();
         int canPort = config.check("canPort", yarp::os::Value(DEFAULT_CAN_PORT),
-                "CAN port number").asInt();
+                "CAN port number").asInt32();
 
         ownsHandle = true;
         handle = amor_connect(const_cast<char *>(canLibrary.c_str()), canPort);
@@ -88,8 +88,8 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
         qdotMax[i] = KinRepresentation::radToDeg(jointInfo.maxVelocity);
 
-        qMin.addDouble(KinRepresentation::radToDeg(jointInfo.lowerJointLimit));
-        qMax.addDouble(KinRepresentation::radToDeg(jointInfo.upperJointLimit));
+        qMin.addFloat64(KinRepresentation::radToDeg(jointInfo.lowerJointLimit));
+        qMax.addFloat64(KinRepresentation::radToDeg(jointInfo.upperJointLimit));
     }
 
     std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
