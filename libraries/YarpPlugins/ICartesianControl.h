@@ -126,7 +126,6 @@
 // Controller configuration (parameter keys)
 #define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')        ///< Parameter group
 #define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')          ///< Controller gain
-#define VOCAB_CC_CONFIG_MAX_JOINT_VEL ROBOTICSLAB_VOCAB('c','p','j','v') ///< Maximum joint velocity
 #define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d') ///< Trajectory duration
 #define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')    ///< CMC period [ms]
 #define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]

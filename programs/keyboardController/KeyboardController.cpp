@@ -222,7 +222,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         usingThread = rf.check("movi", "use MOVI command");
 
-        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt();
+        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt32();
 
         if (usingThread)
         {

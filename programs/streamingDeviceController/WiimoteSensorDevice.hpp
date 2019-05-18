@@ -32,7 +32,7 @@ public:
     {
         data.resize(3);  // already called by base constructor
         buffer.resize(5);
-        step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asDouble();
+        step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asFloat64();
     }
 
     virtual bool acquireInterfaces();

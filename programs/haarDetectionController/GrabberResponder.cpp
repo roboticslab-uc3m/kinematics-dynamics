@@ -28,8 +28,8 @@ void roboticslab::GrabberResponder::onRead(yarp::os::Bottle &b)
         return;
     }
 
-    const double input_x = b.get(0).asDouble();
-    const double input_y = b.get(1).asDouble();
+    const double input_x = b.get(0).asFloat64();
+    const double input_y = b.get(1).asFloat64();
 
     double target_x = 0.0;
     double target_y = 0.0;

@@ -9,8 +9,6 @@
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
 
-#include <yarp/math/Math.h>  // provides: eye, operators
-
 namespace roboticslab
 {
 

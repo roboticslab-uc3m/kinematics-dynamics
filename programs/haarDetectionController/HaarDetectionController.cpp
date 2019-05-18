@@ -27,7 +27,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_REMOTE_CARTESIAN),
             "remote cartesian port").asString();
 
-    period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asDouble();
+    period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
 
     yarp::os::Property cartesianControlClientOptions;
     cartesianControlClientOptions.put("device", "CartesianControlClient");

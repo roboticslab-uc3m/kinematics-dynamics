@@ -23,7 +23,7 @@ namespace
         }
         else
         {
-            b.addDouble(value);
+            b.addFloat64(value);
         }
     }
 
@@ -35,7 +35,7 @@ namespace
         }
         else
         {
-            return v.asDouble();
+            return v.asFloat64();
         }
     }
 }
@@ -63,7 +63,7 @@ bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const 
 
     for (size_t i = 0; i < in.size(); i++)
     {
-        cmd.addDouble(in[i]);
+        cmd.addFloat64(in[i]);
     }
 
     rpcClient.write(cmd, response);
@@ -81,7 +81,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
     for (size_t i = 0; i < in.size(); i++)
     {
-        cmd.addDouble(in[i]);
+        cmd.addFloat64(in[i]);
     }
 
     rpcClient.write(cmd, response);
@@ -93,7 +93,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
     for (size_t i = 0; i < response.size(); i++)
     {
-        out.push_back(response.get(i).asDouble());
+        out.push_back(response.get(i).asFloat64());
     }
 
     return true;
@@ -110,7 +110,7 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
 
     for (size_t i = 0; i < in.size(); i++)
     {
-        cmd.addDouble(in[i]);
+        cmd.addFloat64(in[i]);
     }
 
     commandPort.write();
@@ -124,11 +124,11 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
     cmd.clear();
     cmd.addVocab(vocab);
-    cmd.addDouble(in2);
+    cmd.addFloat64(in2);
 
     for (size_t i = 0; i < in1.size(); i++)
     {
-        cmd.addDouble(in1[i]);
+        cmd.addFloat64(in1[i]);
     }
 
     commandPort.write();
@@ -170,12 +170,12 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
 
     for (size_t i = 0; i < x.size(); i++)
     {
-        x[i] = response.get(i + 1).asDouble();
+        x[i] = response.get(i + 1).asFloat64();
     }
 
     if (timestamp != 0)
     {
-        *timestamp = response.get(response.size() - 1).asDouble();
+        *timestamp = response.get(response.size() - 1).asFloat64();
     }
 
     return true;
@@ -244,7 +244,7 @@ bool roboticslab::CartesianControlClient::wait(double timeout)
     yarp::os::Bottle cmd, response;
 
     cmd.addVocab(VOCAB_CC_WAIT);
-    cmd.addDouble(timeout);
+    cmd.addFloat64(timeout);
 
     rpcClient.write(cmd, response);
 

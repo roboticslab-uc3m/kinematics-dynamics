@@ -94,40 +94,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    //-- Find out the maximum time to move
-    double max_time = 0;
+    std::vector<double> vmo(numRobotJoints);
 
-    for (int joint = 0; joint < numSolverJoints; joint++)
-    {
-        CD_INFO("dist[%d]: %f\n", joint, std::abs(qd[joint] - currentQ[joint]));
-
-        if (std::abs((qd[joint] - currentQ[joint]) / maxJointVelocity) > max_time)
-        {
-            max_time = std::abs((qd[joint] - currentQ[joint]) / maxJointVelocity);
-            CD_INFO(" -->candidate: %f\n", max_time);
-        }
-    }
-
-    CD_INFO("max_time[final]: %f\n", max_time);
-
-    //-- Compute, store old and set joint velocities given this time
-    std::vector<double> vmo;
-
-    for (int joint = 0; joint < numRobotJoints; joint++)
-    {
-        if (joint >= numSolverJoints)
-        {
-            vmo.push_back(0.0);
-            CD_INFO("vmo[%d]: 0.0 (forced)\n", joint);
-        }
-        else
-        {
-            vmo.push_back(std::abs(qd[joint] - currentQ[joint]) / max_time);
-            CD_INFO("vmo[%d]: %f\n", joint, vmo[joint]);
-        }
-    }
-
-    vmoStored.resize(numRobotJoints);
+    computeIsocronousSpeeds(currentQ, qd, vmo);
 
     if (!iPositionControl->getRefSpeeds(vmoStored.data()))
     {
@@ -613,24 +582,27 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> qd(numRobotJoints);
+    std::vector<double> qdot(numRobotJoints);
+
+    double interval = yarp::os::Time::now() - movementStartTime;
 
     for (int i = 0; i < numRobotJoints; i++)
     {
-        qd[i] = q[i] - currentQ[i];
+        qdot[i] = (q[i] - currentQ[i]) / interval;
     }
 
-    if (!checkJointLimits(currentQ, qd))
+    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
-        CD_ERROR("checkJointLimits failed, stopping.\n");
+        CD_ERROR("Joint position or velocity limits exceeded, not moving.\n");
         return;
     }
 
     if (!iPositionDirect->setPositions(q.data()))
     {
         CD_ERROR("setPositions failed.\n");
-        return;
     }
+
+    movementStartTime = yarp::os::Time::now();
 }
 
 // -----------------------------------------------------------------------------
@@ -652,14 +624,6 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
             return false;
         }
         gain = value;
-        break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        if (value <= 0.0)
-        {
-            CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
-            return false;
-        }
-        maxJointVelocity = value;
         break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         if (value <= 0.0)
@@ -718,9 +682,6 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_GAIN:
         *value = gain;
         break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        *value = maxJointVelocity;
-        break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         *value = duration;
         break;
@@ -769,7 +730,6 @@ bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, doubl
 bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
     params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
