@@ -21,10 +21,10 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 {
     CD_DEBUG("config: %s.\n", config.toString().c_str());
 
-    A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asDouble();
-    A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asDouble();
-    A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3 (meters)").asDouble();
-    A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4 (meters)").asDouble();
+    A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asFloat64();
+    A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asFloat64();
+    A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3 (meters)").asFloat64();
+    A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4 (meters)").asFloat64();
 
     CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
 
@@ -54,8 +54,8 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     for (int i = 0; i < NUM_MOTORS; i++)
     {
-        qMin[i] = mins->get(i).asDouble();
-        qMax[i] = maxs->get(i).asDouble();
+        qMin[i] = mins->get(i).asFloat64();
+        qMax[i] = maxs->get(i).asFloat64();
 
         if (qMin[i] == qMax[i])
         {

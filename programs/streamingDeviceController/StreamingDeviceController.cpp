@@ -27,8 +27,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote cartesian port").asString();
 
-    period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
-    scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
+    period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
+    scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asFloat64();
 
     streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf);
 

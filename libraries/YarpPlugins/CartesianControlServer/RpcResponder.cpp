@@ -26,7 +26,7 @@ namespace
         }
         else
         {
-            b.addDouble(value);
+            b.addFloat64(value);
         }
     }
 
@@ -38,7 +38,7 @@ namespace
         }
         else
         {
-            return v.asDouble();
+            return v.asFloat64();
         }
     }
 }
@@ -205,10 +205,10 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
         for (size_t i = 0; i < x.size(); i++)
         {
-            out.addDouble(x[i]);
+            out.addFloat64(x[i]);
         }
 
-        out.addDouble(timestamp);
+        out.addFloat64(timestamp);
 
         return true;
     }
@@ -227,7 +227,7 @@ bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::
 
     if (in.size() > 1)
     {
-        double timeout = in.get(1).asDouble();
+        double timeout = in.get(1).asFloat64();
         res = iCartesianControl->wait(timeout);
     }
     else
@@ -271,7 +271,7 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
 
         for (size_t i = 1; i < in.size(); i++)
         {
-            vin.push_back(in.get(i).asDouble());
+            vin.push_back(in.get(i).asFloat64());
         }
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
@@ -301,7 +301,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
         for (size_t i = 1; i < in.size(); i++)
         {
-            vin.push_back(in.get(i).asDouble());
+            vin.push_back(in.get(i).asFloat64());
         }
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
@@ -312,7 +312,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
         for (size_t i = 0; i < vout.size(); i++)
         {
-            out.addDouble(vout[i]);
+            out.addFloat64(vout[i]);
         }
 
         return true;

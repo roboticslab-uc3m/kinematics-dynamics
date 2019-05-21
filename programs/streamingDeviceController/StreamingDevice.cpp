@@ -21,12 +21,12 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 
     if (deviceName == "SpaceNavigator")
     {
-        double gain = config.check("gain", yarp::os::Value(0.0)).asDouble();
+        double gain = config.check("gain", yarp::os::Value(0.0)).asFloat64();
         return new SpnavSensorDevice(deviceConfig, usingMovi, gain);
     }
     else if (deviceName == "LeapMotionSensor")
     {
-        double period = config.check("period", yarp::os::Value(0.0)).asDouble();
+        double period = config.check("period", yarp::os::Value(0.0)).asFloat64();
         return new LeapMotionSensorDevice(deviceConfig, usingMovi, period);
     }
     else if (deviceName == "WiimoteSensor")
