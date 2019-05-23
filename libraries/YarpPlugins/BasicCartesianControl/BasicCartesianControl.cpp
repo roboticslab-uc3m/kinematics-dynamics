@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
@@ -19,7 +20,8 @@ namespace
     // return -1 for negative numbers, +1 for positive numbers, 0 for zero
     // https://stackoverflow.com/a/4609795
     template <typename T>
-    inline int sgn(T val) {
+    inline int sgn(T val)
+    {
         return (T(0) < val) - (val < T(0));
     }
 }
@@ -113,6 +115,26 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
 
 // -----------------------------------------------------------------------------
 
+bool BasicCartesianControl::setRemoteStreamingPeriod()
+{
+    if (robotSupportsPtMode)
+    {
+        yarp::os::Bottle val;
+        yarp::os::Bottle & b = val.addList();
+        b.addInt32(streamingPeriodMs);
+
+        if (!iRemoteVariables->setRemoteVariable("ptModeMs", val))
+        {
+            CD_WARNING("Unable to set remote ptModeMs.\n");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool BasicCartesianControl::setControlModes(int mode)
 {
     std::vector<int> modes(numRobotJoints);
@@ -153,25 +175,18 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
 {
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
-    bool ret;
-
     switch (command)
     {
     case VOCAB_CC_TWIST:
-        ret = setControlModes(VOCAB_CM_VELOCITY);
-        break;
     case VOCAB_CC_POSE:
-        ret = setControlModes(VOCAB_CM_VELOCITY);
-        break;
+        return setControlModes(VOCAB_CM_VELOCITY);
     case VOCAB_CC_MOVI:
-        ret = setControlModes(VOCAB_CM_POSITION_DIRECT);
-        break;
+        return setRemoteStreamingPeriod() && setControlModes(VOCAB_CM_POSITION_DIRECT);
     default:
         CD_ERROR("Unrecognized or unsupported streaming command vocab.\n");
-        return false;
     }
 
-    return ret;
+    return false;
 }
 
 // -----------------------------------------------------------------------------

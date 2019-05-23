@@ -136,6 +136,7 @@ public:
                               numSolverJoints(0),
                               currentState(DEFAULT_INIT_STATE),
                               streamingCommand(DEFAULT_STREAMING_PRESET),
+                              robotSupportsPtMode(false),
                               movementStartTime(0),
                               iCartesianTrajectory(NULL),
                               cmcSuccess(true)
@@ -216,6 +217,7 @@ protected:
     bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot);
     bool checkJointVelocities(const std::vector<double> &qdot);
 
+    bool setRemoteStreamingPeriod();
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
     void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
@@ -238,6 +240,7 @@ protected:
     yarp::dev::ITorqueControl *iTorqueControl;
     yarp::dev::IControlMode *iControlMode;
     yarp::dev::IPreciselyTimed *iPreciselyTimed;
+    yarp::dev::IRemoteVariables *iRemoteVariables;
 
     ICartesianSolver::reference_frame referenceFrame;
 
@@ -248,11 +251,10 @@ protected:
     int waitPeriodMs;
     int streamingPeriodMs;
     int numRobotJoints, numSolverJoints;
-
-    /** State encoded as a VOCAB which can be stored as an int */
     int currentState;
-
     int streamingCommand;
+
+    bool robotSupportsPtMode;
 
     mutable yarp::os::Semaphore currentStateReady;
     mutable yarp::os::Semaphore trajectoryMutex;

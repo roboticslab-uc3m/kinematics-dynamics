@@ -106,6 +106,25 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         CD_WARNING("Could not view iPreciselyTimed in: %s. Using local timestamps.\n", robotStr.c_str());
     }
 
+    if (!robotDevice.view(iRemoteVariables))
+    {
+        CD_WARNING("Could not view iRemoteVariables in: %s.\n", robotStr.c_str());
+    }
+    else
+    {
+        yarp::os::Bottle listOfKeys;
+
+        if (!iRemoteVariables->getRemoteVariablesList(&listOfKeys))
+        {
+            CD_ERROR("Could not retrieve list of remote variables in: %s.\n", robotStr.c_str());
+            return false;
+        }
+        else
+        {
+            robotSupportsPtMode = listOfKeys.check("ptModeMs");
+        }
+    }
+
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n", numRobotJoints);
 
