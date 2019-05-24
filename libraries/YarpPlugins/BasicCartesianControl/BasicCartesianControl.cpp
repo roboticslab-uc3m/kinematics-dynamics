@@ -52,7 +52,7 @@ void BasicCartesianControl::setCurrentState(int value)
 
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
     {
         double value = q[joint];
 
@@ -73,7 +73,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot)
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
     {
         double value = q[joint];
 
@@ -98,7 +98,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const
 
 bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
 {
-    for (unsigned int joint = 0; joint < qdot.size(); joint++)
+    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
     {
         double value = qdot[joint];
 
