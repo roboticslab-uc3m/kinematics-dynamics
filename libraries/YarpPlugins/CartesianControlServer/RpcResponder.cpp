@@ -20,7 +20,7 @@ namespace
 
     inline void addValue(yarp::os::Bottle& b, int vocab, double value)
     {
-        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING)
+        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
         {
             b.addVocab(value);
         }
@@ -32,7 +32,7 @@ namespace
 
     inline double asValue(int vocab, const yarp::os::Value& v)
     {
-        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING)
+        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
         {
             return v.asVocab();
         }
@@ -179,9 +179,13 @@ void roboticslab::RpcResponder::makeUsage()
     ss_cmd << " [" << yarp::os::Vocab::decode(VOCAB_CC_POSE) << "]";
     ss_cmd << " [" << yarp::os::Vocab::decode(VOCAB_CC_MOVI) << "]";
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING) << "] vocab";
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING_CMD) << "] vocab";
     addUsage(ss.str().c_str(), ss_cmd.str().c_str());
 
+    ss.str("");
+
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING_PERIOD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) streaming command send period [ms]");
     ss.str("");
 }
 
