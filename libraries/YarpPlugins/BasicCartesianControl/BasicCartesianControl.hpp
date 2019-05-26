@@ -116,14 +116,15 @@ public:
 
     BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
                               iCartesianSolver(NULL),
+                              iControlLimits(NULL),
+                              iControlMode(NULL),
                               iEncoders(NULL),
                               iPositionControl(NULL),
                               iPositionDirect(NULL),
-                              iVelocityControl(NULL),
-                              iControlLimits(NULL),
-                              iTorqueControl(NULL),
-                              iControlMode(NULL),
                               iPreciselyTimed(NULL),
+                              iRemoteVariables(NULL),
+                              iTorqueControl(NULL),
+                              iVelocityControl(NULL),
                               referenceFrame(ICartesianSolver::BASE_FRAME),
                               gain(DEFAULT_GAIN),
                               duration(DEFAULT_DURATION),
@@ -227,18 +228,18 @@ protected:
     void handleForc(const std::vector<double> &q);
 
     yarp::dev::PolyDriver solverDevice;
-    roboticslab::ICartesianSolver *iCartesianSolver;
+    ICartesianSolver *iCartesianSolver;
 
     yarp::dev::PolyDriver robotDevice;
+    yarp::dev::IControlLimits *iControlLimits;
+    yarp::dev::IControlMode *iControlMode;
     yarp::dev::IEncoders *iEncoders;
     yarp::dev::IPositionControl *iPositionControl;
     yarp::dev::IPositionDirect * iPositionDirect;
-    yarp::dev::IVelocityControl *iVelocityControl;
-    yarp::dev::IControlLimits *iControlLimits;
-    yarp::dev::ITorqueControl *iTorqueControl;
-    yarp::dev::IControlMode *iControlMode;
     yarp::dev::IPreciselyTimed *iPreciselyTimed;
     yarp::dev::IRemoteVariables *iRemoteVariables;
+    yarp::dev::ITorqueControl *iTorqueControl;
+    yarp::dev::IVelocityControl *iVelocityControl;
 
     ICartesianSolver::reference_frame referenceFrame;
 
