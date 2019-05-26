@@ -580,7 +580,7 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 
     for (int i = 0; i < numRobotJoints; i++)
     {
-        qdot[i] = (q[i] - currentQ[i]) / streamingPeriodMs;
+        qdot[i] = (q[i] - currentQ[i]) / (streamingPeriodMs * 0.001);
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
