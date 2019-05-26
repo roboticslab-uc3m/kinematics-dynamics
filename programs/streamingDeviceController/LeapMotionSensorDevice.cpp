@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/Value.h>
 #include <yarp/sig/Vector.h>
 
 #include <kdl/frames.hpp>
@@ -16,23 +17,29 @@ namespace
     KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
 }
 
-roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, double period)
+roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi, double period)
     : StreamingDevice(config),
       iAnalogSensor(NULL),
-      period(period)
+      period(period),
+      usingMovi(usingMovi)
 {
-    yarp::os::Bottle *leapFrameRPY = config.find("leapFrameRPY").asList();
+    yarp::os::Value v = config.find("leapFrameRPY");
 
-    if (!leapFrameRPY->isNull() && leapFrameRPY->size() == 3)
+    if (!v.isNull())
     {
-        double roll = leapFrameRPY->get(0).asFloat64() * M_PI / 180.0;
-        double pitch = leapFrameRPY->get(1).asFloat64() * M_PI / 180.0;
-        double yaw = leapFrameRPY->get(2).asFloat64() * M_PI / 180.0;
+        yarp::os::Bottle *leapFrameRPY = v.asList();
 
-        CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+        if (!leapFrameRPY->isNull() && leapFrameRPY->size() == 3)
+        {
+            double roll = leapFrameRPY->get(0).asFloat64() * M_PI / 180.0;
+            double pitch = leapFrameRPY->get(1).asFloat64() * M_PI / 180.0;
+            double yaw = leapFrameRPY->get(2).asFloat64() * M_PI / 180.0;
 
-        frame_ee_leap = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
-        frame_leap_ee = frame_ee_leap.Inverse();
+            CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+
+            frame_ee_leap = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
+            frame_leap_ee = frame_ee_leap.Inverse();
+        }
     }
 }
 
@@ -51,10 +58,21 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
 
 bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_POSE))
+    if (!usingMovi && period <= 0.0)
     {
-        CD_WARNING("Unable to preset streaming command.\n");
+        CD_WARNING("Invalid period for pose command: %f.\n", period);
         return false;
+    }
+
+    if (usingStreamingPreset)
+    {
+        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_POSE;
+
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
+        {
+            CD_WARNING("Unable to preset streaming command.\n");
+            return false;
+        }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
@@ -144,5 +162,12 @@ bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
 
 void roboticslab::LeapMotionSensorDevice::sendMovementCommand()
 {
-    iCartesianControl->pose(data, period);
+    if (usingMovi)
+    {
+        iCartesianControl->movi(data);
+    }
+    else
+    {
+        iCartesianControl->pose(data, period);
+    }
 }

@@ -19,16 +19,17 @@ class SpnavSensorDevice : public StreamingDevice
 public:
 
     //! Constructor
-    SpnavSensorDevice(yarp::os::Searchable & config)
-        : StreamingDevice(config),
-          iAnalogSensor(NULL)
-    {}
+    SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain = 0.0);
 
     virtual bool acquireInterfaces();
 
     virtual bool initialize(bool usingStreamingPreset);
 
     virtual bool acquireData();
+
+    virtual bool transformData(double scaling);
+
+    virtual bool hasValidMovementData() const;
 
     virtual void sendMovementCommand();
 
@@ -37,6 +38,11 @@ public:
 private:
 
     yarp::dev::IAnalogSensor * iAnalogSensor;
+
+    std::vector<double> currentX;
+
+    bool usingMovi;
+    double gain;
 };
 
 }  // namespace roboticslab

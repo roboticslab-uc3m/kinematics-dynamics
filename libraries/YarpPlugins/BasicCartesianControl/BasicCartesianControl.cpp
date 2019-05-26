@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
@@ -19,7 +20,8 @@ namespace
     // return -1 for negative numbers, +1 for positive numbers, 0 for zero
     // https://stackoverflow.com/a/4609795
     template <typename T>
-    inline int sgn(T val) {
+    inline int sgn(T val)
+    {
         return (T(0) < val) - (val < T(0));
     }
 }
@@ -50,7 +52,7 @@ void BasicCartesianControl::setCurrentState(int value)
 
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
     {
         double value = q[joint];
 
@@ -71,7 +73,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot)
 {
-    for (unsigned int joint = 0; joint < numRobotJoints; joint++)
+    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
     {
         double value = q[joint];
 
@@ -96,7 +98,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const
 
 bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
 {
-    for (unsigned int joint = 0; joint < qdot.size(); joint++)
+    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
     {
         double value = qdot[joint];
 
@@ -104,6 +106,26 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
         {
             CD_WARNING("Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s).\n",
                     joint, value, qdotMin[joint], qdotMax[joint]);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool BasicCartesianControl::setRemoteStreamingPeriod()
+{
+    if (robotSupportsPtMode)
+    {
+        yarp::os::Bottle val;
+        yarp::os::Bottle & b = val.addList();
+        b.addInt32(streamingPeriodMs);
+
+        if (!iRemoteVariables->setRemoteVariable("ptModeMs", val))
+        {
+            CD_WARNING("Unable to set remote ptModeMs.\n");
             return false;
         }
     }
@@ -153,25 +175,18 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
 {
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
-    bool ret;
-
     switch (command)
     {
     case VOCAB_CC_TWIST:
-        ret = setControlModes(VOCAB_CM_VELOCITY);
-        break;
     case VOCAB_CC_POSE:
-        ret = setControlModes(VOCAB_CM_VELOCITY);
-        break;
+        return setControlModes(VOCAB_CM_VELOCITY);
     case VOCAB_CC_MOVI:
-        ret = setControlModes(VOCAB_CM_POSITION_DIRECT);
-        break;
+        return setRemoteStreamingPeriod() && setControlModes(VOCAB_CM_POSITION_DIRECT);
     default:
         CD_ERROR("Unrecognized or unsupported streaming command vocab.\n");
-        return false;
     }
 
-    return ret;
+    return false;
 }
 
 // -----------------------------------------------------------------------------

@@ -39,14 +39,23 @@ bool LinearTrajectoryThread::checkStreamingConfig()
         return false;
     }
 
-    usingStreamingCommandConfig = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+    usingStreamingCommandConfig = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+
+    if (params.find(VOCAB_CC_CONFIG_STREAMING_PERIOD) != params.end())
+    {
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_PERIOD, period))
+        {
+            CD_WARNING("setParameter(VOCAB_CC_CONFIG_STREAMING_PERIOD) failed.\n");
+            return false;
+        }
+    }
 
     return true;
 }
 
 bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
-    if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_MOVI))
+    if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
     {
         CD_WARNING("Unable to preset streaming command.\n");
         return false;

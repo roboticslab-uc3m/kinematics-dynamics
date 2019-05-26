@@ -24,16 +24,7 @@ class WiimoteSensorDevice : public StreamingDevice
 public:
 
     //! Constructor
-    WiimoteSensorDevice(yarp::os::Searchable & config)
-        : StreamingDevice(config),
-          iAnalogSensor(NULL),
-          mode(NONE),
-          step(0.0)
-    {
-        data.resize(3);  // already called by base constructor
-        buffer.resize(5);
-        step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asFloat64();
-    }
+    WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi);
 
     virtual bool acquireInterfaces();
 
@@ -59,6 +50,7 @@ private:
 
     std::vector<double> buffer;
 
+    bool usingMovi;
     double step;
 };
 
