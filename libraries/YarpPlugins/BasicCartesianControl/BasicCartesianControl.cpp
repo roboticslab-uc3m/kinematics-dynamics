@@ -44,7 +44,7 @@ void BasicCartesianControl::setCurrentState(int value)
 {
     currentStateReady.wait();
     currentState = value;
-    streamingCommand = DEFAULT_STREAMING_PRESET;
+    streamingCommand = VOCAB_CC_NOT_SET;
     currentStateReady.post();
 }
 

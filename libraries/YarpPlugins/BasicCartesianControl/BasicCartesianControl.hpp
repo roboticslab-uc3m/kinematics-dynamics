@@ -19,14 +19,12 @@
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
-#define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_GAIN 0.05
 #define DEFAULT_DURATION 10.0
 #define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_STREAMING_PERIOD_MS 50
 #define DEFAULT_REFERENCE_FRAME "base"
-#define DEFAULT_STREAMING_PRESET 0
 
 namespace roboticslab
 {
@@ -134,8 +132,8 @@ public:
                               streamingPeriodMs(DEFAULT_STREAMING_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
-                              currentState(DEFAULT_INIT_STATE),
-                              streamingCommand(DEFAULT_STREAMING_PRESET),
+                              currentState(VOCAB_CC_NOT_CONTROLLING),
+                              streamingCommand(VOCAB_CC_NOT_SET),
                               robotSupportsPtMode(false),
                               movementStartTime(0),
                               iCartesianTrajectory(NULL),

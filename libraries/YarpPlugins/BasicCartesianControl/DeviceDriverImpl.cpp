@@ -26,7 +26,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
             "streaming command send period (milliseconds)").asInt32();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-             "reference frame (base|tcp)").asString();
+            "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
