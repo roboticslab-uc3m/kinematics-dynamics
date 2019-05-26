@@ -7,8 +7,6 @@
 
 #include <yarp/dev/IAnalogSensor.h>
 
-#define VERTICAL_OFFSET 0.2 // [m]
-
 namespace roboticslab
 {
 
@@ -45,7 +43,8 @@ private:
     double period;
     bool usingMovi;
 
-    std::vector<double> initialOffset;
+    std::vector<double> initialTcpOffset;
+    std::vector<double> initialLeapOffset;
 };
 
 }  // namespace roboticslab

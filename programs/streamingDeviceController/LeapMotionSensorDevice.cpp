@@ -81,21 +81,31 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    std::vector<double> x;
-
-    if (!iCartesianControl->stat(initialOffset))
+    if (!iCartesianControl->stat(initialTcpOffset))
     {
         CD_WARNING("stat failed.\n");
         return false;
     }
 
-    CD_INFO("Initial offset: %f %f %f [m], %f %f %f [rad]\n",
-            initialOffset[0], initialOffset[1], initialOffset[2],
-            initialOffset[3], initialOffset[4], initialOffset[5]);
+    CD_INFO("Initial TCP offset: %f %f %f [m], %f %f %f [rad]\n",
+            initialTcpOffset[0], initialTcpOffset[1], initialTcpOffset[2],
+            initialTcpOffset[3], initialTcpOffset[4], initialTcpOffset[5]);
 
-    KDL::Frame frame_base_ee = KdlVectorConverter::vectorToFrame(initialOffset);
+    KDL::Frame frame_base_ee = KdlVectorConverter::vectorToFrame(initialTcpOffset);
 
     frame_base_leap = frame_base_ee * frame_ee_leap;
+
+    if (!acquireData())
+    {
+        CD_WARNING("Initial acquireData failed.\n");
+        return false;
+    }
+
+    initialLeapOffset = data;
+
+    CD_INFO("Initial Leap offset: %f %f %f [m], %f %f %f [rad]\n",
+            initialLeapOffset[0], initialLeapOffset[1], initialLeapOffset[2],
+            initialLeapOffset[3], initialLeapOffset[4], initialLeapOffset[5]);
 
     return true;
 }
@@ -128,17 +138,20 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
 
 bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
 {
-    data[1] -= VERTICAL_OFFSET;
-
     for (int i = 0; i < 6; i++)
     {
         if (fixedAxes[i])
         {
             data[i] = 0.0;
         }
-        else if (i < 3)
+        else
         {
-            data[i] /= scaling;
+            data[i] -= initialLeapOffset[i];
+
+            if (i < 3)
+            {
+                data[i] /= scaling;
+            }
         }
     }
 
