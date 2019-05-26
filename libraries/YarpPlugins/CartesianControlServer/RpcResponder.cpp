@@ -161,16 +161,20 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "(config param) CMC period [ms]");
     ss.str("");
 
+    std::stringstream ss_wait;
+    ss_wait << "(config param) check period of [" << yarp::os::Vocab::decode(VOCAB_CC_WAIT) << "] command [ms]";
+
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_WAIT_PERIOD) << "] value";
-    addUsage(ss.str().c_str(), "(config param) check period of 'wait' command [ms]");
+    addUsage(ss.str().c_str(), ss_wait.str().c_str());
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::BASE_FRAME) << "]";
-    addUsage(ss.str().c_str(), "(config param) reference frame (base)");
-    ss.str("");
+    std::stringstream ss_frame;
+    ss_frame << "(config param) reference frame, available (base/TCP):";
+    ss_frame << " [" << yarp::os::Vocab::decode(ICartesianSolver::BASE_FRAME) << "]";
+    ss_frame << " [" << yarp::os::Vocab::decode(ICartesianSolver::TCP_FRAME) << "]";
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::TCP_FRAME) << "]";
-    addUsage(ss.str().c_str(), "(config param) reference frame (TCP)");
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] vocab";
+    addUsage(ss.str().c_str(), ss_frame.str().c_str());
     ss.str("");
 
     std::stringstream ss_cmd;
@@ -181,7 +185,6 @@ void roboticslab::RpcResponder::makeUsage()
 
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING_CMD) << "] vocab";
     addUsage(ss.str().c_str(), ss_cmd.str().c_str());
-
     ss.str("");
 
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING_PERIOD) << "] value";
