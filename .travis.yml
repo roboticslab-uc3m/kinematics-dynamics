@@ -11,7 +11,7 @@ env:
     - CACHE_DIR=~/cached-deps
   matrix:
     - YARP_CHECKOUT=master
-    - YARP_CHECKOUT=v3.1.1
+    - YARP_CHECKOUT=v3.1.2
 
 matrix:
   include:
