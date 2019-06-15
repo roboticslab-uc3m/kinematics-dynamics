@@ -98,6 +98,15 @@ before_script:
   - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
   - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
 
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleCartesianControlClient"
+  - (cd "$_"; cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleCartesianControlClient" && make)
+
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleScrewTheoryTrajectory"
+  - (cd "$_"; cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleScrewTheoryTrajectory" && make)
+
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleYarpTinyMath"
+  - (cd "$_"; cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleYarpTinyMath" && make)
+
 script:
   - (cd tests && ctest -V)
 
