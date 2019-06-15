@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 # Start a project.
 project(exampleScrewTheoryTrajectory LANGUAGES CXX)
 
-find_package(YARP 3.0 REQUIRED COMPONENTS OS dev)
+find_package(YARP 3.1 REQUIRED COMPONENTS OS dev)
 find_package(COLOR_DEBUG REQUIRED)
 find_package(orocos_kdl 1.4 QUIET)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
