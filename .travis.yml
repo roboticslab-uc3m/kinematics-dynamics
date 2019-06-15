@@ -95,9 +95,10 @@ before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
   - cmake .. -DCMAKE_INSTALL_PREFIX="$PWD/install" -DENABLE_coverage:BOOL=ON
   - make install
+
   - export LD_LIBRARY_PATH="$PWD/install/lib:$LD_LIBRARY_PATH"
   - export YARP_DATA_DIRS="$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS"
-  - export CMAKE_PREFIX_PATH="$PWD:$CMAKE_PREFIX_PATH"
+  - export CMAKE_PREFIX_PATH="$PWD/install/lib/cmake/ROBOTICSLAB_KINEMATICS_DYNAMICS:$CMAKE_PREFIX_PATH"
 
   - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleCartesianControlClient" && cd "$_"
   - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleCartesianControlClient" && make
