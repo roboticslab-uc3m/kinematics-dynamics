@@ -370,13 +370,11 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
-    if (!setControlModes(VOCAB_CM_POSITION))
+    if (!iPositionControl->stop())
     {
-        CD_ERROR("Unable to set position mode.\n");
-        return false;
+        CD_WARNING("stop() failed.\n");
     }
 
-    iPositionControl->stop();
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     if (iCartesianTrajectory != 0)
