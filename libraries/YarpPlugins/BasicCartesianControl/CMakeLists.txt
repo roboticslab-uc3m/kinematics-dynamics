@@ -14,7 +14,7 @@ yarp_prepare_plugin(BasicCartesianControl
 
 if(NOT SKIP_BasicCartesianControl)
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
 
     yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
                                           BasicCartesianControl.cpp

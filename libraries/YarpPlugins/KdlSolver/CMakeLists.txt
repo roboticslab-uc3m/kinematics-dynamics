@@ -17,9 +17,7 @@ yarp_prepare_plugin(KdlSolver
 
 if(NOT SKIP_KdlSolver)
 
-    # KDLConfig.cmake brings Eigen_INCLUDE_DIR into scope with orocos_kdl_INCLUDE_DIRS
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
-                        ${orocos_kdl_INCLUDE_DIRS})
+    set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
 
     yarp_add_plugin(KdlSolver KdlSolver.hpp
                               DeviceDriverImpl.cpp
@@ -40,6 +38,8 @@ if(NOT SKIP_KdlSolver)
                                     KdlVectorConverterLib
                                     KinematicRepresentationLib
                                     KinematicsDynamicsInterfaces)
+
+    target_include_directories(KdlSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
     if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
         yarp_install(TARGETS KdlSolver
