@@ -10,11 +10,12 @@ yarp_prepare_plugin(AmorCartesianControl
                     TYPE roboticslab::AmorCartesianControl
                     INCLUDE AmorCartesianControl.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_KinematicRepresentationLib;AMOR_API_FOUND")
+                    DEPENDS "ENABLE_KinematicRepresentationLib;AMOR_API_FOUND"
+                    EXTRA_CONFIG WRAPPER=CartesianControlServer)
 
 if(NOT SKIP_AmorCartesianControl)
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
 
     yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
                                          AmorCartesianControl.cpp
@@ -28,14 +29,20 @@ if(NOT SKIP_AmorCartesianControl)
                                                KinematicRepresentationLib
                                                KinematicsDynamicsInterfaces)
 
-    yarp_install(TARGETS AmorCartesianControl
-                 COMPONENT runtime
-                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
-                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
+    if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
+        yarp_install(TARGETS AmorCartesianControl
+                     LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR}
+                     YARP_INI DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    else()
+        yarp_install(TARGETS AmorCartesianControl
+                     LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
-    yarp_install(FILES AmorCartesianControl.ini
-                 COMPONENT runtime
-                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+        yarp_install(FILES AmorCartesianControl.ini
+                     DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    endif()
+
 else()
 
     set(ENABLE_AmorCartesianControl OFF CACHE BOOL "Enable/disable AmorCartesianControl device" FORCE)
