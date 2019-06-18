@@ -3,8 +3,10 @@
 
 #include <vector>
 
-#include <yarp/os/RFModule.h>
+#include <yarp/os/Bottle.h>
+#include <yarp/os/BufferedPort.h>
 #include <yarp/os/ResourceFinder.h>
+#include <yarp/os/RFModule.h>
 
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/IAnalogSensor.h>
@@ -58,6 +60,8 @@ private:
     bool disableSensorsLowLevel;
     static const double SCALING_FACTOR_ON_ALERT;
 #endif  // SDC_WITH_SENSORS
+
+    yarp::os::BufferedPort<yarp::os::Bottle> centroidPort;
 
     double period;
     double scaling;

@@ -105,7 +105,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!sensorsClientDevice.isValid())
         {
-            CD_ERROR("sensors device not valid.\n");
+            CD_ERROR("Sensors device not valid.\n");
             return false;
         }
 
@@ -118,6 +118,23 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
     }
 #endif  // SDC_WITH_SENSORS
+
+    if (rf.check("remoteCentroid", "remote centroid port"))
+    {
+        std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
+
+        if (!centroidPort.open("/sdc" + remoteCentroid + "/state:i"))
+        {
+            CD_ERROR("Unable to open local centroid port.\n");
+            return false;
+        }
+
+        if (!yarp::os::Network::connect(centroidPort.getName(), remoteCentroid, "udp"))
+        {
+            CD_ERROR("Unable to connect to %s.\n", remoteCentroid.c_str());
+            return false;
+        }
+    }
 
     isStopped = true;
 
@@ -200,6 +217,8 @@ bool StreamingDeviceController::close()
 #ifdef SDC_WITH_SENSORS
     ok &= sensorsClientDevice.close();
 #endif  // SDC_WITH_SENSORS
+
+    centroidPort.close();
 
     return ok;
 }
