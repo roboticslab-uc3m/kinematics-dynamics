@@ -29,14 +29,19 @@ if(NOT SKIP_AsibotSolver)
                                        KinematicRepresentationLib
                                        KinematicsDynamicsInterfaces)
 
-    yarp_install(TARGETS AsibotSolver
-                 COMPONENT runtime
-                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
-                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
+    if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
+        yarp_install(TARGETS AsibotSolver
+                     LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR}
+                     YARP_INI DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    else()
+        yarp_install(TARGETS AsibotSolver
+                     LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
-    yarp_install(FILES AsibotSolver.ini
-                 COMPONENT runtime
-                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+        yarp_install(FILES AsibotSolver.ini
+                     DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    endif()
 
 else()
 

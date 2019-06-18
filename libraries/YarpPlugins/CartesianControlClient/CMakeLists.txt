@@ -12,25 +12,30 @@ yarp_prepare_plugin(CartesianControlClient
 
 if(NOT SKIP_CartesianControlClient)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # yarp plugin builder needs this
 
-yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
-                                       DeviceDriverImpl.cpp
-                                       ICartesianControlImpl.cpp
-                                       FkStreamResponder.cpp)
+    yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
+                                           DeviceDriverImpl.cpp
+                                           ICartesianControlImpl.cpp
+                                           FkStreamResponder.cpp)
 
-target_link_libraries(CartesianControlClient YARP::YARP_OS
-                                             YARP::YARP_dev
-                                             ROBOTICSLAB::ColorDebug
-                                             KinematicsDynamicsInterfaces)
+    target_link_libraries(CartesianControlClient YARP::YARP_OS
+                                                 YARP::YARP_dev
+                                                 ROBOTICSLAB::ColorDebug
+                                                 KinematicsDynamicsInterfaces)
 
-yarp_install(TARGETS CartesianControlClient
-             COMPONENT runtime
-             LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
-             ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
+    if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
+        yarp_install(TARGETS CartesianControlClient
+                     LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR}
+                     YARP_INI DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    else()
+        yarp_install(TARGETS CartesianControlClient
+                     LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
 
-yarp_install(FILES CartesianControlClient.ini
-             COMPONENT runtime
-             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+        yarp_install(FILES CartesianControlClient.ini
+                     DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    endif()
 
 endif()
