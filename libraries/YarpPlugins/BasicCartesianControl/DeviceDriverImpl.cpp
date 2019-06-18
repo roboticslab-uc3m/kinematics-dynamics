@@ -22,8 +22,11 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt32();
 
+    streamingPeriodMs = config.check("streamingPeriodMs", yarp::os::Value(DEFAULT_STREAMING_PERIOD_MS),
+            "streaming command send period (milliseconds)").asInt32();
+
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-             "reference frame (base|tcp)").asString();
+            "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
@@ -101,6 +104,25 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     if (!robotDevice.view(iPreciselyTimed))
     {
         CD_WARNING("Could not view iPreciselyTimed in: %s. Using local timestamps.\n", robotStr.c_str());
+    }
+
+    if (!robotDevice.view(iRemoteVariables))
+    {
+        CD_WARNING("Could not view iRemoteVariables in: %s.\n", robotStr.c_str());
+    }
+    else
+    {
+        yarp::os::Bottle listOfKeys;
+
+        if (!iRemoteVariables->getRemoteVariablesList(&listOfKeys))
+        {
+            CD_ERROR("Could not retrieve list of remote variables in: %s.\n", robotStr.c_str());
+            return false;
+        }
+        else
+        {
+            robotSupportsPtMode = listOfKeys.check("ptModeMs");
+        }
     }
 
     iEncoders->getAxes(&numRobotJoints);

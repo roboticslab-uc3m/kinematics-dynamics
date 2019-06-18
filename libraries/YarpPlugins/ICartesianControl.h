@@ -35,10 +35,11 @@
  */
 
 // General-purpose vocabs
-#define VOCAB_CC_OK ROBOTICSLAB_VOCAB('o','k',0,0)         ///< Success
-#define VOCAB_CC_FAILED ROBOTICSLAB_VOCAB('f','a','i','l') ///< Failure
-#define VOCAB_CC_SET ROBOTICSLAB_VOCAB('s','e','t',0)      ///< Setter
-#define VOCAB_CC_GET ROBOTICSLAB_VOCAB('g','e','t',0)      ///< Getter
+#define VOCAB_CC_OK ROBOTICSLAB_VOCAB('o','k',0,0)          ///< Success
+#define VOCAB_CC_FAILED ROBOTICSLAB_VOCAB('f','a','i','l')  ///< Failure
+#define VOCAB_CC_SET ROBOTICSLAB_VOCAB('s','e','t',0)       ///< Setter
+#define VOCAB_CC_GET ROBOTICSLAB_VOCAB('g','e','t',0)       ///< Getter
+#define VOCAB_CC_NOT_SET ROBOTICSLAB_VOCAB('n','s','e','t') ///< State: not set
 
  /** @} */
 
@@ -124,13 +125,14 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')        ///< Parameter group
-#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')          ///< Controller gain
-#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d') ///< Trajectory duration
-#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')    ///< CMC period [ms]
-#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
-#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)           ///< Reference frame
-#define VOCAB_CC_CONFIG_STREAMING ROBOTICSLAB_VOCAB('c','p','s','c')     ///< Preset streaming command
+#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')           ///< Parameter group
+#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')             ///< Controller gain
+#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d')    ///< Trajectory duration
+#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')       ///< CMC period [ms]
+#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')      ///< Check period of 'wait' command [ms]
+#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)              ///< Reference frame
+#define VOCAB_CC_CONFIG_STREAMING_CMD ROBOTICSLAB_VOCAB('c','p','s','c')    ///< Preset streaming command
+#define VOCAB_CC_CONFIG_STREAMING_PERIOD ROBOTICSLAB_VOCAB('c','p','s','p') ///< Streaming command send period [ms]
 
 /** @} */
 

@@ -15,27 +15,23 @@ using namespace roboticslab;
 StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
     yarp::os::Searchable & deviceConfig = config.findGroup(deviceName.c_str());
+    bool usingMovi = config.check("movi", "enable movi command");
 
     CD_DEBUG("Device configuration: %s\n", deviceConfig.toString().c_str());
 
     if (deviceName == "SpaceNavigator")
     {
-        return new SpnavSensorDevice(deviceConfig);
+        double gain = config.check("gain", yarp::os::Value(0.0)).asFloat64();
+        return new SpnavSensorDevice(deviceConfig, usingMovi, gain);
     }
     else if (deviceName == "LeapMotionSensor")
     {
-        if (!config.check("period"))
-        {
-            CD_WARNING("Missing \"period\" parameter.\n");
-            return new InvalidDevice();
-        }
-
-        double period = config.check("period", yarp::os::Value(1.0)).asFloat64();
-        return new LeapMotionSensorDevice(deviceConfig, period);
+        double period = config.check("period", yarp::os::Value(0.0)).asFloat64();
+        return new LeapMotionSensorDevice(deviceConfig, usingMovi, period);
     }
     else if (deviceName == "WiimoteSensor")
     {
-        return new WiimoteSensorDevice(deviceConfig);
+        return new WiimoteSensorDevice(deviceConfig, usingMovi);
     }
     else
     {

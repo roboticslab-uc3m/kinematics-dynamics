@@ -83,6 +83,13 @@ add_subdirectory(tests)
 add_subdirectory(share)
 add_subdirectory(doc)
 
+# Collect public exported dependencies.
+get_property(_exported_dependencies GLOBAL PROPERTY _exported_dependencies)
+
+if(DEFINED _exported_dependencies)
+    list(REMOVE_DUPLICATES _exported_dependencies)
+endif()
+
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
@@ -94,7 +101,8 @@ install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
                             COMPATIBILITY AnyNewerVersion
                             NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
-                            NAMESPACE ROBOTICSLAB::)
+                            NAMESPACE ROBOTICSLAB::
+                            DEPENDENCIES ${_exported_dependencies})
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)

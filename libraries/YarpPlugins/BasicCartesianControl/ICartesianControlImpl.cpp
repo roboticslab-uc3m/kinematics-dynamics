@@ -370,13 +370,11 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
-    if (!setControlModes(VOCAB_CM_POSITION))
+    if (!iPositionControl->stop())
     {
-        CD_ERROR("Unable to set position mode.\n");
-        return false;
+        CD_WARNING("stop() failed.\n");
     }
 
-    iPositionControl->stop();
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     if (iCartesianTrajectory != 0)
@@ -584,11 +582,9 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 
     std::vector<double> qdot(numRobotJoints);
 
-    double interval = yarp::os::Time::now() - movementStartTime;
-
     for (int i = 0; i < numRobotJoints; i++)
     {
-        qdot[i] = (q[i] - currentQ[i]) / interval;
+        qdot[i] = (q[i] - currentQ[i]) / (streamingPeriodMs * 0.001);
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
@@ -601,8 +597,6 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
     {
         CD_ERROR("setPositions failed.\n");
     }
-
-    movementStartTime = yarp::os::Time::now();
 }
 
 // -----------------------------------------------------------------------------
@@ -657,13 +651,21 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
-    case VOCAB_CC_CONFIG_STREAMING:
+    case VOCAB_CC_CONFIG_STREAMING_CMD:
         if (!presetStreamingCommand(value))
         {
             CD_ERROR("Unable to preset streaming command.\n");
             return false;
         }
         streamingCommand = value;
+        break;
+    case VOCAB_CC_CONFIG_STREAMING_PERIOD:
+        if (value <= 0.0)
+        {
+            CD_ERROR("Streaming command rate cannot be negative nor zero.\n");
+            return false;
+        }
+        streamingPeriodMs = value;
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
@@ -694,8 +696,11 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
-    case VOCAB_CC_CONFIG_STREAMING:
+    case VOCAB_CC_CONFIG_STREAMING_CMD:
         *value = streamingCommand;
+        break;
+    case VOCAB_CC_CONFIG_STREAMING_PERIOD:
+        *value = streamingPeriodMs;
         break;
     default:
         CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
@@ -734,7 +739,8 @@ bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & p
     params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING, streamingCommand));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING_PERIOD, streamingPeriodMs));
     return true;
 }
 

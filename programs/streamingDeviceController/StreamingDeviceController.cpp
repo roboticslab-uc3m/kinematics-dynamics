@@ -27,7 +27,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote cartesian port").asString();
 
-    period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
+    period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asFloat64();
 
     streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf);
@@ -71,7 +71,16 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+    if (params.find(VOCAB_CC_CONFIG_STREAMING_PERIOD) != params.end())
+    {
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_PERIOD, period * 1000))
+        {
+            CD_ERROR("Unable to set streaming command period.\n");
+            return false;
+        }
+    }
+
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 

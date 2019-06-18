@@ -41,6 +41,8 @@ if(ENABLE_ScrewTheoryLib)
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+    set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
+
 else()
 
     set(ENABLE_ScrewTheoryLib OFF CACHE BOOL "Enable/disable ScrewTheoryLib library" FORCE)

@@ -7,8 +7,6 @@
 
 #include <yarp/dev/IAnalogSensor.h>
 
-#define VERTICAL_OFFSET 0.2 // [m]
-
 namespace roboticslab
 {
 
@@ -23,7 +21,7 @@ class LeapMotionSensorDevice : public StreamingDevice
 public:
 
     //! Constructor
-    LeapMotionSensorDevice(yarp::os::Searchable & config, double period);
+    LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi, double period = 0.0);
 
     virtual bool acquireInterfaces();
 
@@ -45,8 +43,10 @@ private:
     yarp::dev::IAnalogSensor * iAnalogSensor;
 
     double period;
+    bool usingMovi;
 
-    std::vector<double> initialOffset;
+    std::vector<double> initialTcpOffset;
+    std::vector<double> initialLeapOffset;
 
     bool hasActuator;
     bool grab, pinch;
