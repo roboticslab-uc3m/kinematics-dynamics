@@ -955,4 +955,45 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     delete config;
 }
 
+TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
+{
+    PoeExpression poe = makeTeoRightLegKinematicsFromPoE();
+
+    KDL::JntArray q(poe.size());
+    q(2) = -0.3; // approx. 20 degrees
+    q(3) = 0.6;
+    q(4) = -0.3;
+
+    KDL::Frame H;
+    ASSERT_TRUE(poe.evaluate(q, H));
+
+    ScrewTheoryIkProblemBuilder builder(poe);
+    ScrewTheoryIkProblem * ikProblem = builder.build();
+
+    ASSERT_TRUE(ikProblem);
+    ASSERT_EQ(ikProblem->solutions(), 8);
+
+    ScrewTheoryIkProblem::Solutions solutions;
+    ASSERT_TRUE(ikProblem->solve(H, solutions));
+
+    KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
+    KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);
+
+    ConfigurationSelectorHumanoidGaitFactory confFactory(qMin, qMax);
+    ConfigurationSelector * config = confFactory.create();
+
+    KDL::JntArray qInitial(poe.size());
+
+    ASSERT_TRUE(config);
+    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->findOptimalConfiguration(qInitial));
+
+    KDL::JntArray qSolved;
+    config->retrievePose(qSolved);
+    int n1 = findTargetConfiguration(solutions, q);
+
+    ASSERT_NE(n1, -1);
+    delete config;
+}
+
 }  // namespace roboticslab
