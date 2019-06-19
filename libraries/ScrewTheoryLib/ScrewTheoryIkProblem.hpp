@@ -202,6 +202,8 @@ private:
 
     ScrewTheoryIkProblem::Steps searchSolutions();
 
+    void refreshSimplificationState();
+
     void simplify(int depth);
     void simplifyWithPadenKahanOne(const KDL::Vector & point);
     void simplifyWithPadenKahanThree(const KDL::Vector & point);
