@@ -79,6 +79,36 @@ public:
         return poe;
     }
 
+    static KDL::Chain makeTeoRightLegKinematicsFromDH()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI / 2,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI / 2,      0, KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    -0.33,            0,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     -0.3,            0, 0.0175,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0, -KDL::PI / 2,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.123005,            0,      0,           0)));
+
+        return chain;
+    }
+
+    static PoeExpression makeTeoRightLegKinematicsFromPoE()
+    {
+        KDL::Frame H_S_T(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.0175, 0, -0.753005));
+        PoeExpression poe(H_S_T);
+
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(     0, 0, -0.33)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.0175, 0, -0.63)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.0175, 0, -0.63)));
+
+        return poe;
+    }
+
     static KDL::Chain makeAbbIrb120KinematicsFromDH()
     {
         const KDL::Joint rotZ(KDL::Joint::RotZ);
@@ -863,6 +893,14 @@ TEST_F(ScrewTheoryTest, TeoRightArmKinematics)
 {
     KDL::Chain chain = makeTeoRightArmKinematicsFromDH();
     PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
+
+    checkRobotKinematics(chain, poe, 8);
+}
+
+TEST_F(ScrewTheoryTest, TeoRightLegKinematics)
+{
+    KDL::Chain chain = makeTeoRightLegKinematicsFromDH();
+    PoeExpression poe = makeTeoRightLegKinematicsFromPoE();
 
     checkRobotKinematics(chain, poe, 8);
 }
