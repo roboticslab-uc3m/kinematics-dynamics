@@ -54,27 +54,27 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,       0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,       0, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2, 0.32901, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0, -KDL::PI / 2,       0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,   0.202,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.187496, -KDL::PI / 2,       0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,        0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,        0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2, -0.32901, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0,  KDL::PI / 2,        0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,   -0.215,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.09,            0,        0, -KDL::PI / 2)));
 
         return chain;
     }
 
     static PoeExpression makeTeoRightArmKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI), KDL::Vector(-0.718506, 0, 0));
+        KDL::Frame H_S_T(KDL::Vector(-0.63401, 0, 0));
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0, -1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1,  0, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1,  0, 0), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.53101, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.54401, 0, 0)));
 
         return poe;
     }
