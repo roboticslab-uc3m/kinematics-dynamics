@@ -116,8 +116,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
         if (!iRemoteVariables->getRemoteVariablesList(&listOfKeys))
         {
-            CD_ERROR("Could not retrieve list of remote variables in: %s.\n", robotStr.c_str());
-            return false;
+            CD_WARNING("Could not retrieve list of remote variables in: %s.\n", robotStr.c_str());
         }
         else
         {
