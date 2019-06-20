@@ -93,6 +93,10 @@ protected:
         bool isValid() const
         { return valid; }
 
+        //! @brief Mark this configuration as invalid.
+        void invalidate()
+        { valid = false; }
+
     private:
 
         const KDL::JntArray * q;
@@ -135,7 +139,7 @@ public:
 
     virtual bool findOptimalConfiguration(const KDL::JntArray & qGuess);
 
-private:
+protected:
 
     //! @brief Obtains vector of differences between current and desired joint values.
     std::vector<double> getDiffs(const KDL::JntArray & qGuess, const Configuration & config);
@@ -143,6 +147,36 @@ private:
     int lastValid;
 
     static const int INVALID_CONFIG = -1;
+};
+
+/**
+ * @ingroup ScrewTheoryLib
+ *
+ * @brief IK solver configuration strategy selector based on human walking.
+ *
+ * Intended for use on lower-body limbs, specifically UC3M TEO's 6-DOF legs.
+ * Discards non-human-like configurations, such as the inverted knee pose.
+ */
+class ConfigurationSelectorHumanoidGait : public ConfigurationSelectorLeastOverallAngularDisplacement
+{
+public:
+
+    /**
+     * @brief Constructor
+     *
+     * @param qMin Joint array of minimum joint limits.
+     * @param qMax Joint array of maximum joint limits.
+     */
+    ConfigurationSelectorHumanoidGait(const KDL::JntArray & qMin, const KDL::JntArray & qMax)
+        : ConfigurationSelectorLeastOverallAngularDisplacement(qMin, qMax)
+    {}
+
+    virtual bool findOptimalConfiguration(const KDL::JntArray & qGuess);
+
+private:
+
+    //! @brief Determines whether the configuration is valid according to this selector's premises.
+    bool applyConstraints(const Configuration & config);
 };
 
 /**
@@ -198,12 +232,46 @@ public:
      * @param qMax Joint array of maximum joint limits.
      */
     ConfigurationSelectorLeastOverallAngularDisplacementFactory(const KDL::JntArray & qMin, const KDL::JntArray & qMax)
-        : ConfigurationSelectorFactory( qMin, qMax)
+        : ConfigurationSelectorFactory(qMin, qMax)
     {}
 
     virtual ConfigurationSelector * create() const
     {
         return new ConfigurationSelectorLeastOverallAngularDisplacement(_qMin, _qMax);
+    }
+};
+
+/**
+ * @ingroup ScrewTheoryLib
+ *
+ * @brief Implementation factory class for ConfigurationSelectorHumanoidGait.
+ *
+ * Implements ConfigurationSelectorFactory::create.
+ */
+class ConfigurationSelectorHumanoidGaitFactory : public ConfigurationSelectorFactory
+{
+public:
+
+    /**
+     * @brief Constructor
+     *
+     * @param qMin Joint array of minimum joint limits.
+     * @param qMax Joint array of maximum joint limits.
+     */
+    ConfigurationSelectorHumanoidGaitFactory(const KDL::JntArray & qMin, const KDL::JntArray & qMax)
+        : ConfigurationSelectorFactory(qMin, qMax)
+    {}
+
+    virtual ConfigurationSelector * create() const
+    {
+        if (_qMin.rows() == 6 && _qMax.rows() == 6)
+        {
+            return new ConfigurationSelectorHumanoidGait(_qMin, _qMax);
+        }
+        else
+        {
+            return NULL;
+        }
     }
 };
 

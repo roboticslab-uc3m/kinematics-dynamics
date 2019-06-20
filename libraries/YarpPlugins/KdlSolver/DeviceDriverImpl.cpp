@@ -29,6 +29,7 @@
 #include <ColorDebug.h>
 
 #include "KinematicRepresentation.hpp"
+#include "ConfigurationSelector.hpp"
 
 #include "ChainIkSolverPos_ST.hpp"
 #include "ChainIkSolverPos_ID.hpp"
@@ -338,6 +339,11 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         if (strategy == "leastOverallAngularDisplacement")
         {
             ConfigurationSelectorLeastOverallAngularDisplacementFactory factory(qMin, qMax);
+            ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
+        }
+        else if (strategy == "humanoidGait")
+        {
+            ConfigurationSelectorHumanoidGaitFactory factory(qMin, qMax);
             ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
         }
         else
