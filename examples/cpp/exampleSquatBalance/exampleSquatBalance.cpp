@@ -2,7 +2,7 @@
 
 /**
  * @ingroup kinematics-dynamics-examples
- * \defgroup exampleSquatBalance exampleSquatBalance
+ * \defgroup screwTheoryTrajectoryExample screwTheoryTrajectoryExample
  */
 
 #include <string>
@@ -12,6 +12,7 @@
 #include <yarp/os/Property.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Time.h>
+#include <yarp/os/Timer.h>
 
 #include <yarp/dev/PolyDriver.h>
 
@@ -19,13 +20,29 @@
 #include <KdlTrajectory.hpp>
 #include <ColorDebug.h>
 
-#include "TrajectoryThread.hpp"
-
 #define TRAJ_DURATION 10.0
 #define TRAJ_MAX_VEL 0.05
-#define PT_MODE_MS 50.0
+#define TRAJ_PERIOD_MS 50.0
 
 namespace rl = roboticslab;
+
+namespace
+{
+    struct Worker
+    {
+        bool doWork(const yarp::os::YarpTimerEvent & timerEvent)
+        {
+            std::vector<double> position;
+            iCartesianTrajectory->getPosition(timerEvent.runCount * period, position);
+            iCartesianControl->movi(position);
+            return true;
+        }
+
+        rl::ICartesianControl * iCartesianControl;
+        rl::ICartesianTrajectory * iCartesianTrajectory;
+        double period;
+    };
+}
 
 int main(int argc, char *argv[])
 {
@@ -42,8 +59,12 @@ int main(int argc, char *argv[])
 
     std::string robotPrefix = rf.check("prefix", yarp::os::Value("/teoSim")).asString();
 
-    double y = rf.check("y", yarp::os::Value(0.0)).asFloat64();
-    double z = rf.check("z", yarp::os::Value(0.0)).asFloat64();
+    double y = rf.check("y", yarp::os::Value(0.0), "y offset (COG)").asFloat64();
+    double z = rf.check("z", yarp::os::Value(0.0), "z offset (COG)").asFloat64();
+
+    double duration = rf.check("duration", yarp::os::Value(TRAJ_DURATION), "trajectory duration [s]").asFloat64();
+    double maxVel = rf.check("maxvel", yarp::os::Value(TRAJ_MAX_VEL), "trajectory max velocity [m/s]").asFloat64();
+    double period = rf.check("period", yarp::os::Value(TRAJ_PERIOD_MS * 0.001), "trajectory period [s]").asFloat64();
 
     // Create devices.
 
@@ -68,6 +89,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if (!iCartesianControlLeftLeg->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
+    {
+        CD_ERROR("Cannot preset streaming command (left leg).\n");
+        return 1;
+    }
+
     yarp::os::Property rightLegDeviceOptions;
     rightLegDeviceOptions.put("device", "CartesianControlClient");
     rightLegDeviceOptions.put("cartesianRemote", robotPrefix + "/CartesianControl/rightLeg");
@@ -86,6 +113,12 @@ int main(int argc, char *argv[])
     if (!rightLegDevice.view(iCartesianControlRightLeg))
     {
         CD_ERROR("Cannot view iCartesianControlRightLeg.\n");
+        return 1;
+    }
+
+    if (!iCartesianControlRightLeg->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
+    {
+        CD_ERROR("Cannot preset streaming command (right leg).\n");
         return 1;
     }
 
@@ -108,8 +141,8 @@ int main(int argc, char *argv[])
 
     rl::KdlTrajectory trajectoryLeftLeg;
 
-    trajectoryLeftLeg.setDuration(TRAJ_DURATION);
-    trajectoryLeftLeg.setMaxVelocity(TRAJ_MAX_VEL);
+    trajectoryLeftLeg.setDuration(duration);
+    trajectoryLeftLeg.setMaxVelocity(maxVel);
     trajectoryLeftLeg.addWaypoint(x_leftLeg);
     trajectoryLeftLeg.addWaypoint(xd_leftLeg);
     trajectoryLeftLeg.configurePath(rl::ICartesianTrajectory::LINE);
@@ -138,8 +171,8 @@ int main(int argc, char *argv[])
 
     rl::KdlTrajectory trajectoryRightLeg;
 
-    trajectoryRightLeg.setDuration(TRAJ_DURATION);
-    trajectoryRightLeg.setMaxVelocity(TRAJ_MAX_VEL);
+    trajectoryRightLeg.setDuration(duration);
+    trajectoryRightLeg.setMaxVelocity(maxVel);
     trajectoryRightLeg.addWaypoint(x_rightLeg);
     trajectoryRightLeg.addWaypoint(xd_rightLeg);
     trajectoryRightLeg.configurePath(rl::ICartesianTrajectory::LINE);
@@ -153,29 +186,28 @@ int main(int argc, char *argv[])
 
     // Configure workers.
 
-    if (!iCartesianControlLeftLeg->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
-    {
-        CD_ERROR("Cannot preset streaming command (left leg).\n");
-        return 1;
-    }
+    Worker leftLegWorker, rightLegWorker;
 
-    if (!iCartesianControlRightLeg->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
-    {
-        CD_ERROR("Cannot preset streaming command (right leg).\n");
-        return 1;
-    }
+    leftLegWorker.iCartesianControl = iCartesianControlLeftLeg;
+    leftLegWorker.iCartesianTrajectory = &trajectoryLeftLeg;
 
-    TrajectoryThread trajThreadLeftLeg(iCartesianControlLeftLeg, &trajectoryLeftLeg, PT_MODE_MS);
+    rightLegWorker.iCartesianControl = iCartesianControlRightLeg;
+    rightLegWorker.iCartesianTrajectory = &trajectoryRightLeg;
 
-    TrajectoryThread trajThreadRightLeg(iCartesianControlRightLeg, &trajectoryRightLeg, PT_MODE_MS);
+    leftLegWorker.period = rightLegWorker.period = period;
+
+    yarp::os::TimerSettings timerSettings(period, duration / period, duration);
+
+    yarp::os::Timer leftLegTimer(timerSettings, &Worker::doWork, &leftLegWorker, true);
+    yarp::os::Timer rightLegTimer(timerSettings, &Worker::doWork, &rightLegWorker, true);
 
     // Perform actions.
 
-    if (trajThreadLeftLeg.start() && trajThreadRightLeg.start())
+    if (leftLegTimer.start() && rightLegTimer.start())
     {
         yarp::os::Time::delay(TRAJ_DURATION);
-        trajThreadLeftLeg.stop();
-        trajThreadRightLeg.stop();
+        leftLegTimer.stop();
+        rightLegTimer.stop();
     }
 
     leftLegDevice.close();

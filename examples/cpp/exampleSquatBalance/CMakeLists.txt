@@ -8,9 +8,7 @@ find_package(COLOR_DEBUG REQUIRED)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 
 # Set up our main executable.
-add_executable(exampleSquatBalance exampleSquatBalance.cpp
-                                   TrajectoryThread.hpp
-                                   TrajectoryThread.cpp)
+add_executable(exampleSquatBalance exampleSquatBalance.cpp)
 
 target_link_libraries(exampleSquatBalance YARP::YARP_OS
                                           YARP::YARP_init
