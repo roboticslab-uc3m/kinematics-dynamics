@@ -3,6 +3,34 @@
 /**
  * @ingroup kinematics-dynamics-examples
  * \defgroup screwTheoryTrajectoryExample screwTheoryTrajectoryExample
+ *
+ * <b>Building</b>
+ *
+\verbatim
+cd examples/cpp/exampleSquatBalance/
+mkdir build; cd build; cmake ..
+make -j$(nproc)
+\endverbatim
+ *
+ * <b>Running example with teoSim</b>
+ * First we must run a YARP name server if it is not running in our current namespace:
+ *
+\verbatim
+[on terminal 1] yarp server
+\endverbatim
+ *
+ * The following is an example for the simulated robot's legs:
+ *
+\verbatim
+[on terminal 2] teoSim
+[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/leftLeg/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/leftLeg-Kinematics.ini--local /BasicCartesianControl/teoSim/leftLeg --remote /teoSim/leftLeg --ik st --invKinStrategy humanoidGait
+[on terminal 4] yarpdev --device BasicCartesianControl --name /teoSim/rightLeg/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightLeg-Kinematics.ini--local /BasicCartesianControl/teoSim/rightLeg --remote /teoSim/rightLeg --ik st --invKinStrategy humanoidGait
+[on terminal 5] ./cartesianSquatBalance --x 0.045 # move robot's CoM 4.5 cm down
+[on terminal 5] ./cartesianSquatBalance --y 0.1 # move CoM 10 cm to its left
+[on terminal 5] ./cartesianSquatBalance --y -0.2 # move CoM 20 cm to its right
+[on terminal 5] ./cartesianSquatBalance --y 0.1 # move CoM 10 cm back to its left, now centered
+[on terminal 5] ./cartesianSquatBalance --z -0.045 # return to initial pose
+\endverbatim
  */
 
 #include <string>
@@ -70,7 +98,7 @@ int main(int argc, char *argv[])
 
     yarp::os::Property leftLegDeviceOptions;
     leftLegDeviceOptions.put("device", "CartesianControlClient");
-    leftLegDeviceOptions.put("cartesianRemote", robotPrefix + "/CartesianControl/leftLeg");
+    leftLegDeviceOptions.put("cartesianRemote", robotPrefix + "/leftLeg/CartesianControl");
     leftLegDeviceOptions.put("cartesianLocal", "/screwTheoryTrajectoryExample/leftLeg");
 
     yarp::dev::PolyDriver leftLegDevice(leftLegDeviceOptions);
@@ -97,7 +125,7 @@ int main(int argc, char *argv[])
 
     yarp::os::Property rightLegDeviceOptions;
     rightLegDeviceOptions.put("device", "CartesianControlClient");
-    rightLegDeviceOptions.put("cartesianRemote", robotPrefix + "/CartesianControl/rightLeg");
+    rightLegDeviceOptions.put("cartesianRemote", robotPrefix + "/rightLeg/CartesianControl");
     rightLegDeviceOptions.put("cartesianLocal", "/screwTheoryTrajectoryExample/rightLeg");
 
     yarp::dev::PolyDriver rightLegDevice(rightLegDeviceOptions);
