@@ -1,7 +1,8 @@
 #include "StreamingDeviceController.hpp"
 
-#include <string>
 #include <cmath>
+#include <string>
+#include <typeinfo>
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
@@ -9,6 +10,8 @@
 #include <yarp/sig/Vector.h>
 
 #include <ColorDebug.h>
+
+#include "SpnavSensorDevice.hpp" // for typeid() check
 
 using namespace roboticslab;
 
@@ -121,6 +124,14 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (rf.check("remoteCentroid", "remote centroid port"))
     {
+        const std::type_info & spnavType = typeid(SpnavSensorDevice);
+
+        if (typeid(*streamingDevice) != spnavType)
+        {
+            CD_ERROR("Centroid transform extension only available with %s.\n", spnavType.name());
+            return false;
+        }
+
         std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
 
         if (!centroidPort.open("/sdc" + remoteCentroid + "/state:i"))
@@ -134,6 +145,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             CD_ERROR("Unable to connect to %s.\n", remoteCentroid.c_str());
             return false;
         }
+
+        centroidTransform.registerStreamingDevice(streamingDevice);
     }
 
     isStopped = true;
@@ -181,6 +194,12 @@ bool StreamingDeviceController::updateModule()
     if (!streamingDevice->transformData(localScaling))
     {
         CD_ERROR("Failed to transform acquired data from streaming device.\n");
+        return true;
+    }
+
+    if (!centroidPort.isClosed() && !centroidTransform.processBottle(*centroidPort.read(false)))
+    {
+        CD_ERROR("Failed to process incoming centroid bottle.\n");
         return true;
     }
 

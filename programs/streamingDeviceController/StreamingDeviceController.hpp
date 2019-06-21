@@ -12,6 +12,7 @@
 #include <yarp/dev/IAnalogSensor.h>
 
 #include "StreamingDevice.hpp"
+#include "CentroidTransform.hpp"
 
 #include "ICartesianControl.h"
 
@@ -62,6 +63,7 @@ private:
 #endif  // SDC_WITH_SENSORS
 
     yarp::os::BufferedPort<yarp::os::Bottle> centroidPort;
+    CentroidTransform centroidTransform;
 
     double period;
     double scaling;
