@@ -197,10 +197,14 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
-    if (!centroidPort.isClosed() && !centroidTransform.processBottle(*centroidPort.read(false)))
+    if (!centroidPort.isClosed())
     {
-        CD_ERROR("Failed to process incoming centroid bottle.\n");
-        return true;
+        yarp::os::Bottle * centroidBottle = centroidPort.read(false);
+
+        if (centroidBottle && centroidTransform.processBottle(*centroidBottle))
+        {
+            CD_WARNING("Centroid transform handler takes control.\n");
+        }
     }
 
     if (streamingDevice->hasValidMovementData())

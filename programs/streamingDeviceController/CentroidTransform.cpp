@@ -44,7 +44,7 @@ bool CentroidTransform::processBottle(const yarp::os::Bottle & b)
     if (norm <= 0.0)
     {
         // no action if we move away from the target (negative TCP's z axis)
-        return true;
+        return false;
     }
 
     // project target vector into TCP's z axis, refer result to base frame
