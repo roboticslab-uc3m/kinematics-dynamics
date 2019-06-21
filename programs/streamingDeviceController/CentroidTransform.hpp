@@ -26,6 +26,7 @@ public:
     void registerStreamingDevice(StreamingDevice * streamingDevice)
     { this->streamingDevice = streamingDevice; }
 
+    //! Process incoming bottle
     bool processBottle(const yarp::os::Bottle & b);
 
 private:
