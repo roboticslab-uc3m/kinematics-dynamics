@@ -110,8 +110,8 @@ namespace
 
         for (int motor = 0; motor < nrOfJoints; motor++)
         {
-            qMax(motor) = maxs->get(motor).asFloat64();
-            qMin(motor) = mins->get(motor).asFloat64();
+            qMax(motor) = roboticslab::KinRepresentation::degToRad(maxs->get(motor).asFloat64());
+            qMin(motor) = roboticslab::KinRepresentation::degToRad(mins->get(motor).asFloat64());
 
             if (qMin(motor) == qMax(motor))
             {
