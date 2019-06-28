@@ -97,6 +97,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
     std::vector<double> vmo(numRobotJoints);
 
     computeIsocronousSpeeds(currentQ, qd, vmo);
+    vmoStored.resize(numRobotJoints);
 
     if (!iPositionControl->getRefSpeeds(vmoStored.data()))
     {
