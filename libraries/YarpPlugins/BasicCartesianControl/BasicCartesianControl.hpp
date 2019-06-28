@@ -274,6 +274,7 @@ protected:
 
     std::vector<double> qMin, qMax;
     std::vector<double> qdotMin, qdotMax;
+    std::vector<double> qRefSpeeds;
 };
 
 }  // namespace roboticslab

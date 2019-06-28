@@ -127,6 +127,14 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n", numRobotJoints);
 
+    qRefSpeeds.resize(numRobotJoints);
+
+    if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
+    {
+        CD_ERROR("Could not retrieve reference speeds.\n");
+        return false;
+    }
+
     qMin.resize(numRobotJoints);
     qMax.resize(numRobotJoints);
 
