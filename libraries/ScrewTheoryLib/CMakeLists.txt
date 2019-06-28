@@ -20,7 +20,8 @@ if(ENABLE_ScrewTheoryLib)
                                       PardosGotorSubproblems.cpp
                                       ConfigurationSelector.hpp
                                       ConfigurationSelector.cpp
-                                      ConfigurationSelectorLeastOverallAngularDisplacement.cpp)
+                                      ConfigurationSelectorLeastOverallAngularDisplacement.cpp
+                                      ConfigurationSelectorHumanoidGait.cpp)
 
     set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp

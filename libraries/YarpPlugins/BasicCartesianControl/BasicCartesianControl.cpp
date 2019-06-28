@@ -200,25 +200,17 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
 
     for (int joint = 0; joint < numSolverJoints; joint++)
     {
-        double distance = qd[joint] - q[joint];
-
-        CD_INFO("Distance (joint %d): %f\n", joint, std::abs(distance));
-
-        double targetTime;
-
-        if (distance >= 0.0 && qdotMax[joint] != 0.0)
+        if (qRefSpeeds[joint] <= 0.0)
         {
-            targetTime = std::abs(distance / qdotMax[joint]);
-        }
-        else if (distance < 0.0 && qdotMin[joint] != 0.0)
-        {
-            targetTime = std::abs(distance / qdotMin[joint]);
-        }
-        else
-        {
-            CD_WARNING("Zero velocities sent, not moving.\n");
+            CD_WARNING("Zero or negative velocities sent at joint %d, not moving: %f.\n", joint, qRefSpeeds[joint]);
             return;
         }
+
+        double distance = std::abs(qd[joint] - q[joint]);
+
+        CD_INFO("Distance (joint %d): %f\n", joint, distance);
+
+        double targetTime = distance / qRefSpeeds[joint];
 
         if (targetTime > maxTime)
         {

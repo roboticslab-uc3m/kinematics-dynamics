@@ -106,6 +106,9 @@ before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleScrewTheoryTrajectory" && cd "$_"
   - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleScrewTheoryTrajectory" && make
 
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleSquatBalance" && cd "$_"
+  - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleSquatBalance" && make
+
   - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleYarpTinyMath" && cd "$_"
   - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleYarpTinyMath" && make
 
