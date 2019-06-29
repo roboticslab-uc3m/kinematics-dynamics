@@ -22,10 +22,11 @@
 
 #define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
-#define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
+#define DEFAULT_CARTESIAN_LOCAL "/streamingDevice/cartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
 #define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
+#define DEFAULT_CENTROID_LOCAL "/streamingDevice/centroid"
 
 #define DEFAULT_PERIOD 0.02  // [s]
 #define DEFAULT_SCALING 10.0

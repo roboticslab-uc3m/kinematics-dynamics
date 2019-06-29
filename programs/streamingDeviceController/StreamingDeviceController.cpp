@@ -132,15 +132,17 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
+        std::string localCentroid = rf.check("localCentroid", yarp::os::Value(DEFAULT_CENTROID_LOCAL),
+                    "local centroid port").asString();
         std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
 
-        if (!centroidPort.open("/sdc" + remoteCentroid + "/state:i"))
+        if (!centroidPort.open(localCentroid + "/state:i"))
         {
             CD_ERROR("Unable to open local centroid port.\n");
             return false;
         }
 
-        if (!yarp::os::Network::connect(centroidPort.getName(), remoteCentroid, "udp"))
+        if (!yarp::os::Network::connect(remoteCentroid, centroidPort.getName(), "udp"))
         {
             CD_ERROR("Unable to connect to %s.\n", remoteCentroid.c_str());
             return false;

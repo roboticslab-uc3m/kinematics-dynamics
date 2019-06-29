@@ -13,7 +13,7 @@ CentroidTransform::CentroidTransform()
 
 bool CentroidTransform::processBottle(const yarp::os::Bottle & b)
 {
-    if (!b.size() != 2)
+    if (b.size() != 2)
     {
         CD_WARNING("Malformed input bottle, size %d (expected 2).\n", b.size());
         return false;
