@@ -34,9 +34,7 @@ bool CentroidTransform::processBottle(const yarp::os::Bottle & b)
     KDL::Frame H_base_tcp = KdlVectorConverter::vectorToFrame(x);
 
     // express TCP's z axis in base frame
-    KDL::Vector v_base = H_base_tcp.M.Inverse() * KDL::Vector(0, 0, 1);
-    v_base.Normalize();
-
+    KDL::Vector v_base = H_base_tcp.M * KDL::Vector(0, 0, 1);
     KDL::Frame H_base_target = KdlVectorConverter::vectorToFrame(streamingDevice->data);
 
     double norm = KDL::dot(H_base_target.p, v_base);
@@ -57,8 +55,12 @@ bool CentroidTransform::processBottle(const yarp::os::Bottle & b)
 
     // rotate towards the target in base frame
     H_base_target.M = H_base_tcp.M * rot_tcp_target;
+    std::vector<double> temp = KdlVectorConverter::frameToVector(H_base_target);
 
-    streamingDevice->data = KdlVectorConverter::frameToVector(H_base_target);
+    for (int i = 0; i < temp.size(); i++)
+    {
+        streamingDevice->data[i] = temp[i];
+    }
 
     return true;
 }
