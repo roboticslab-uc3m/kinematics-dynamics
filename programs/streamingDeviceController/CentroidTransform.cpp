@@ -1,5 +1,7 @@
 #include "CentroidTransform.hpp"
 
+#include <yarp/os/Time.h>
+
 #include <kdl/frames.hpp>
 
 #include <KdlVectorConverter.hpp>
@@ -8,20 +10,33 @@
 using namespace roboticslab;
 
 CentroidTransform::CentroidTransform()
-    : streamingDevice(NULL)
+    : streamingDevice(NULL),
+      permanenceTime(0.0)
 {}
 
-bool CentroidTransform::processBottle(const yarp::os::Bottle & b)
+bool CentroidTransform::acceptBottle(yarp::os::Bottle * b)
 {
-    if (b.size() != 2)
+    if (b)
     {
-        CD_WARNING("Malformed input bottle, size %d (expected 2).\n", b.size());
-        return false;
+        if (b->size() != 2)
+        {
+            CD_WARNING("Malformed input bottle, size %d (expected 2).\n", b->size());
+            return false;
+        }
+
+        lastBottle = *b;
+        lastAcquisition.update();
+        return true;
     }
 
+    return yarp::os::Time::now() - lastAcquisition.getTime() <= permanenceTime;
+}
+
+bool CentroidTransform::processStoredBottle() const
+{
     // object centroids scaled to fit into [-1, 1] range
-    double cx = b.get(0).asFloat64(); // points right (same as AMOR TCP's x axis)
-    double cy = b.get(1).asFloat64(); // points down (same as AMOR TCP's y axis)
+    double cx = lastBottle.get(0).asFloat64(); // points right (same as AMOR TCP's x axis)
+    double cy = lastBottle.get(1).asFloat64(); // points down (same as AMOR TCP's y axis)
 
     std::vector<double> x;
 
@@ -51,10 +66,12 @@ bool CentroidTransform::processBottle(const yarp::os::Bottle & b)
     // find axis along which to rotate (in TCP frame) given pixel coords
     KDL::Vector coords(cx, cy, 0);
     KDL::Vector tcp_axis = KDL::Rotation::RotZ(KDL::PI / 2) * coords;
-    KDL::Rotation rot_tcp_target = KDL::Rotation::Rot(tcp_axis, coords.Norm());
+    KDL::Vector base_axis = H_base_tcp.M * tcp_axis;
 
     // rotate towards the target in base frame
-    H_base_target.M = H_base_tcp.M * rot_tcp_target;
+    H_base_target.M = KDL::Rotation::Rot(base_axis, coords.Norm() * 0.1);
+
+    // apply changes to input transform
     std::vector<double> temp = KdlVectorConverter::frameToVector(H_base_target);
 
     for (int i = 0; i < temp.size(); i++)

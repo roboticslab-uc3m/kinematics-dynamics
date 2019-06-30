@@ -136,6 +136,18 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
                     "local centroid port").asString();
         std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
 
+        double permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
+
+        if (permanenceTime < 0.0)
+        {
+            CD_ERROR("Illegal argument: --centroidPermTime cannot be less than zero: %f.\n", permanenceTime);
+            return false;
+        }
+        else
+        {
+            centroidTransform.setPermanenceTime(permanenceTime);
+        }
+
         if (!centroidPort.open(localCentroid + "/state:i"))
         {
             CD_ERROR("Unable to open local centroid port.\n");
@@ -203,7 +215,7 @@ bool StreamingDeviceController::updateModule()
     {
         yarp::os::Bottle * centroidBottle = centroidPort.read(false);
 
-        if (centroidBottle && centroidTransform.processBottle(*centroidBottle))
+        if (centroidTransform.acceptBottle(centroidBottle) && centroidTransform.processStoredBottle())
         {
             CD_WARNING("Centroid transform handler takes control.\n");
         }

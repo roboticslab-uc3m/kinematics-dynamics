@@ -2,6 +2,7 @@
 #define __CENTROID_TRANSFORM_HPP__
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/Stamp.h>
 
 #include "StreamingDevice.hpp"
 
@@ -26,12 +27,22 @@ public:
     void registerStreamingDevice(StreamingDevice * streamingDevice)
     { this->streamingDevice = streamingDevice; }
 
-    //! Process incoming bottle
-    bool processBottle(const yarp::os::Bottle & b);
+    //! Set new permanence time
+    void setPermanenceTime(double permanenceTime)
+    { this->permanenceTime = permanenceTime; }
+
+    //! Register or dismiss incoming bottle
+    bool acceptBottle(yarp::os::Bottle * b);
+
+    //! Process last stored bottle
+    bool processStoredBottle() const;
 
 private:
 
     StreamingDevice * streamingDevice;
+    double permanenceTime;
+    yarp::os::Bottle lastBottle;
+    yarp::os::Stamp lastAcquisition;
 };
 
 }  // namespace roboticslab
