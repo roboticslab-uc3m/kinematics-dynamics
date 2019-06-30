@@ -69,7 +69,7 @@ bool CentroidTransform::processStoredBottle() const
     KDL::Vector base_axis = H_base_tcp.M * tcp_axis;
 
     // rotate towards the target in base frame
-    H_base_target.M = KDL::Rotation::Rot(base_axis, coords.Norm() * 0.1);
+    H_base_target.M = KDL::Rotation::Rot(base_axis, coords.Norm() * ROT_FACTOR);
 
     // apply changes to input transform
     std::vector<double> temp = KdlVectorConverter::frameToVector(H_base_target);

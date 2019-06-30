@@ -6,6 +6,8 @@
 
 #include "StreamingDevice.hpp"
 
+#define ROT_FACTOR 0.1
+
 namespace roboticslab
 {
 
