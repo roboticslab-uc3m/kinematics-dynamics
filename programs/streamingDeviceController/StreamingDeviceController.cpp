@@ -1,7 +1,8 @@
 #include "StreamingDeviceController.hpp"
 
-#include <string>
 #include <cmath>
+#include <string>
+#include <typeinfo>
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
@@ -9,6 +10,8 @@
 #include <yarp/sig/Vector.h>
 
 #include <ColorDebug.h>
+
+#include "SpnavSensorDevice.hpp" // for typeid() check
 
 using namespace roboticslab;
 
@@ -105,7 +108,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!sensorsClientDevice.isValid())
         {
-            CD_ERROR("sensors device not valid.\n");
+            CD_ERROR("Sensors device not valid.\n");
             return false;
         }
 
@@ -118,6 +121,55 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
     }
 #endif  // SDC_WITH_SENSORS
+
+    if (rf.check("remoteCentroid", "remote centroid port"))
+    {
+        const std::type_info & spnavType = typeid(SpnavSensorDevice);
+
+        if (typeid(*streamingDevice) != spnavType)
+        {
+            CD_ERROR("Centroid transform extension only available with %s.\n", spnavType.name());
+            return false;
+        }
+
+        std::string localCentroid = rf.check("localCentroid", yarp::os::Value(DEFAULT_CENTROID_LOCAL),
+                    "local centroid port").asString();
+        std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
+
+        yarp::os::Value vCentroidRPY = rf.check("centroidRPY", yarp::os::Value::getNullValue());
+
+        double permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
+
+        if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
+        {
+            CD_ERROR("Illegal argument: malformed bottle --centroidRPY: %s.\n", vCentroidRPY.toString().c_str());
+            return false;
+        }
+
+        if (permanenceTime < 0.0)
+        {
+            CD_ERROR("Illegal argument: --centroidPermTime cannot be less than zero: %f.\n", permanenceTime);
+            return false;
+        }
+        else
+        {
+            centroidTransform.setPermanenceTime(permanenceTime);
+        }
+
+        if (!centroidPort.open(localCentroid + "/state:i"))
+        {
+            CD_ERROR("Unable to open local centroid port.\n");
+            return false;
+        }
+
+        if (!yarp::os::Network::connect(remoteCentroid, centroidPort.getName(), "udp"))
+        {
+            CD_ERROR("Unable to connect to %s.\n", remoteCentroid.c_str());
+            return false;
+        }
+
+        centroidTransform.registerStreamingDevice(streamingDevice);
+    }
 
     isStopped = true;
 
@@ -167,6 +219,16 @@ bool StreamingDeviceController::updateModule()
         return true;
     }
 
+    if (!centroidPort.isClosed())
+    {
+        yarp::os::Bottle * centroidBottle = centroidPort.read(false);
+
+        if (centroidTransform.acceptBottle(centroidBottle) && centroidTransform.processStoredBottle())
+        {
+            CD_WARNING("Centroid transform handler takes control.\n");
+        }
+    }
+
     if (streamingDevice->hasValidMovementData())
     {
         streamingDevice->sendMovementCommand();
@@ -200,6 +262,8 @@ bool StreamingDeviceController::close()
 #ifdef SDC_WITH_SENSORS
     ok &= sensorsClientDevice.close();
 #endif  // SDC_WITH_SENSORS
+
+    centroidPort.close();
 
     return ok;
 }

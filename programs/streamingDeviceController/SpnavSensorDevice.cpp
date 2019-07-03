@@ -65,13 +65,13 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
     CD_DEBUG("%s\n", data.toString(4, 1).c_str());
 
-    if (data.size() != 6)
+    if (data.size() != 6 && data.size() != 8)
     {
         CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;
     }
 
-    for (int i = 0; i < data.size(); i++)
+    for (int i = 0; i < 6; i++)
     {
         this->data[i] = data[i];
     }
@@ -83,7 +83,7 @@ bool roboticslab::SpnavSensorDevice::transformData(double scaling)
 {
     if (usingMovi)
     {
-        for (int i = 0; i < data.size(); i++)
+        for (int i = 0; i < 6; i++)
         {
             if (!fixedAxes[i])
             {
@@ -107,7 +107,7 @@ bool roboticslab::SpnavSensorDevice::hasValidMovementData() const
 {
     if (usingMovi)
     {
-        for (int i = 0; i < data.size(); i++)
+        for (int i = 0; i < 6; i++)
         {
             if (!fixedAxes[i] && data[i] != currentX[i])
             {
@@ -129,7 +129,7 @@ void roboticslab::SpnavSensorDevice::sendMovementCommand()
     {
         iCartesianControl->movi(data);
 
-        for (int i = 0; i < data.size(); i++)
+        for (int i = 0; i < 6; i++)
         {
             currentX[i] = data[i];
         }

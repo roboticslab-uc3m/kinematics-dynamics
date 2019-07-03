@@ -21,7 +21,9 @@ if(ENABLE_streamingDeviceController)
                                              WiimoteSensorDevice.hpp
                                              WiimoteSensorDevice.cpp
                                              StreamingDeviceController.hpp
-                                             StreamingDeviceController.cpp)
+                                             StreamingDeviceController.cpp
+                                             CentroidTransform.hpp
+                                             CentroidTransform.cpp)
 
     target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
                                                     YARP::YARP_OS

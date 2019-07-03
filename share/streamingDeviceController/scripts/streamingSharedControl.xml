@@ -1,0 +1,79 @@
+<application>
+    <name>haarDetection2D shared control app</name>
+
+    <module>
+        <name>opencv_grabber</name>
+        <parameters>--name /frameGrabber2D --camera 1</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>haarDetection2D</name>
+        <parameters>--xmlCascade haarcascade_cocacola_can.xml</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>haarDetection2D</name>
+        <parameters>--xmlCascade haarcascade_frontalface_alt.xml</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /haarDetection2D/yarpview/img:i --compact</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>amorSim</name>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>AmorCartesianControl</name>
+        <parameters>--name /amor/CartesianControl --kinematics /usr/local/share/amor/contexts/kinematics/armKinematics.ini</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>BasicCartesianControl</name>
+        <parameters>--name /amorSim/CartesianControl --from /usr/local/share/amor/contexts/kinematics/armKinematics.ini --local /BasicCartesianControl/amorSim --remote /amorRobot/amorManipulator</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>SpaceNavigator</name>
+        <parameters>--period 5 --name /spacenavigator --channels 8</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>streamingDeviceController</name>
+        <parameters>--streamingDevice SpaceNavigator --remoteCartesian /amor/CartesianControl --SpaceNavigator::remote /spacenavigator</parameters>
+    </module>
+
+    <module>
+        <name>streamingDeviceController</name>
+        <parameters>--streamingDevice SpaceNavigator --remoteCartesian /amorSim/CartesianControl --SpaceNavigator::remote /spacenavigator</parameters>
+    </module>
+
+    <module>
+        <name>streamingDeviceController</name>
+        <parameters>--streamingDevice SpaceNavigator --remoteCartesian /amor/CartesianControl --SpaceNavigator::remote /spacenavigator --remoteCentroid /haarDetection2D/state:o --centroidPermTime 1.0</parameters>
+    </module>
+
+    <module>
+        <name>streamingDeviceController</name>
+        <parameters>--streamingDevice SpaceNavigator --remoteCartesian /amorSim/CartesianControl --SpaceNavigator::remote /spacenavigator --remoteCentroid /haarDetection2D/state:o --centroidPermTime 1.0</parameters>
+    </module>
+
+    <connection>
+        <from>/haarDetection2D/img:o</from>
+        <to>/haarDetection2D/yarpview/img:i</to>
+    </connection>
+</application>
