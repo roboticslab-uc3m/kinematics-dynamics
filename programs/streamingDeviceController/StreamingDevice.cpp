@@ -58,7 +58,7 @@ StreamingDevice::~StreamingDevice()
 
 bool StreamingDevice::transformData(double scaling)
 {
-    for (int i = 0; i < data.size(); i++)
+    for (int i = 0; i < 6; i++)
     {
         if (!fixedAxes[i])
         {
@@ -80,7 +80,7 @@ bool StreamingDevice::hasValidMovementData() const
         return false;
     }
 
-    for (int i = 0; i < data.size(); i++)
+    for (int i = 0; i < 6; i++)
     {
         if (data[i] != 0.0)
         {

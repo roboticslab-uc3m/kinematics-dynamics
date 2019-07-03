@@ -72,12 +72,7 @@ bool CentroidTransform::processStoredBottle() const
     H_base_target.M = KDL::Rotation::Rot(base_axis, coords.Norm() * ROT_FACTOR);
 
     // apply changes to input transform
-    std::vector<double> temp = KdlVectorConverter::frameToVector(H_base_target);
-
-    for (int i = 0; i < temp.size(); i++)
-    {
-        streamingDevice->data[i] = temp[i];
-    }
+    streamingDevice->data = KdlVectorConverter::frameToVector(H_base_target);
 
     return true;
 }
