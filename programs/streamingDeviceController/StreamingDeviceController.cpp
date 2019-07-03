@@ -136,7 +136,15 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
                     "local centroid port").asString();
         std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
 
+        yarp::os::Value vCentroidRPY = rf.check("centroidRPY", yarp::os::Value::getNullValue());
+
         double permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
+
+        if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
+        {
+            CD_ERROR("Illegal argument: malformed bottle --centroidRPY: %s.\n", vCentroidRPY.toString().c_str());
+            return false;
+        }
 
         if (permanenceTime < 0.0)
         {
