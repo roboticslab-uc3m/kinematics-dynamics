@@ -8,7 +8,9 @@ roboticslab::SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config,
     : StreamingDevice(config),
       iAnalogSensor(NULL),
       usingMovi(usingMovi),
-      gain(gain)
+      gain(gain),
+      buttonClose(false),
+      buttonOpen(false)
 {}
 
 bool roboticslab::SpnavSensorDevice::acquireInterfaces()
@@ -65,15 +67,21 @@ bool roboticslab::SpnavSensorDevice::acquireData()
 
     CD_DEBUG("%s\n", data.toString(4, 1).c_str());
 
-    if (data.size() != 8)
+    if (data.size() != 6 && data.size() != 8)
     {
         CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;
     }
 
-    for (int i = 0; i < data.size(); i++)
+    for (int i = 0; i < 6; i++)
     {
         this->data[i] = data[i];
+    }
+
+    if (data.size() == 8)
+    {
+        buttonClose = data[6] == 1;
+        buttonOpen = data[7] == 1;
     }
 
     return true;
@@ -83,7 +91,7 @@ bool roboticslab::SpnavSensorDevice::transformData(double scaling)
 {
     if (usingMovi)
     {
-        for (int i = 0; i < data.size(); i++)
+        for (int i = 0; i < 6; i++)
         {
             if (!fixedAxes[i])
             {
@@ -105,14 +113,11 @@ bool roboticslab::SpnavSensorDevice::transformData(double scaling)
 
 int roboticslab::SpnavSensorDevice::getActuatorState()
 {
-    int button1 = data[6];
-    int button2 = data[7];
-
-    if (button1 == 1)
+    if (buttonClose)
     {
         actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
     }
-    else if (button2 == 1)
+    else if (buttonOpen)
     {
         actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
     }
@@ -139,7 +144,7 @@ bool roboticslab::SpnavSensorDevice::hasValidMovementData() const
 {
     if (usingMovi)
     {
-        for (int i = 0; i < data.size(); i++)
+        for (int i = 0; i < 6; i++)
         {
             if (!fixedAxes[i] && data[i] != currentX[i])
             {
@@ -161,7 +166,7 @@ void roboticslab::SpnavSensorDevice::sendMovementCommand()
     {
         iCartesianControl->movi(data);
 
-        for (int i = 0; i < data.size(); i++)
+        for (int i = 0; i < 6; i++)
         {
             currentX[i] = data[i];
         }

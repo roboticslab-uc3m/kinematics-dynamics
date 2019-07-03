@@ -3,11 +3,15 @@
 
 #include <vector>
 
-#include <yarp/os/RFModule.h>
+#include <yarp/os/Bottle.h>
+#include <yarp/os/BufferedPort.h>
 #include <yarp/os/ResourceFinder.h>
+#include <yarp/os/RFModule.h>
+
 #include <yarp/dev/PolyDriver.h>
 
 #include "StreamingDevice.hpp"
+#include "CentroidTransform.hpp"
 
 #include "ICartesianControl.h"
 
@@ -17,10 +21,11 @@
 
 #define DEFAULT_DEVICE_NAME "SpaceNavigator"
 
-#define DEFAULT_CARTESIAN_LOCAL "/StreamingDeviceCartesianControlClient"
+#define DEFAULT_CARTESIAN_LOCAL "/streamingDevice/cartesianControlClient"
 #define DEFAULT_CARTESIAN_REMOTE "/CartesianControl"
 
 #define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
+#define DEFAULT_CENTROID_LOCAL "/streamingDevice/centroid"
 
 #define DEFAULT_PERIOD 0.02  // [s]
 #define DEFAULT_SCALING 10.0
@@ -56,6 +61,9 @@ private:
     bool disableSensorsLowLevel;
     static const double SCALING_FACTOR_ON_ALERT;
 #endif  // SDC_WITH_SENSORS
+
+    yarp::os::BufferedPort<yarp::os::Bottle> centroidPort;
+    CentroidTransform centroidTransform;
 
     double period;
     double scaling;

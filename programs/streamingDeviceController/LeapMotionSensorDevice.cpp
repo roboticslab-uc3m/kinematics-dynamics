@@ -119,7 +119,7 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
 
     CD_DEBUG("%s\n", data.toString(4, 1).c_str());
 
-    if (data.size() < 6)
+    if (data.size() != 6 && data.size() != 8)
     {
         CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;

@@ -9,11 +9,13 @@
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianControl.h"
+#include "CentroidTransform.hpp"
 
 namespace roboticslab
 {
 
 class StreamingDevice;
+class CentroidTransform;
 
 /**
  * @ingroup streamingDeviceController
@@ -42,6 +44,8 @@ private:
  */
 class StreamingDevice : protected yarp::dev::PolyDriver
 {
+    friend CentroidTransform;
+
 public:
 
     using PolyDriver::isValid;

@@ -45,6 +45,8 @@ private:
 
     bool usingMovi;
     double gain;
+    bool buttonClose;
+    bool buttonOpen;
 };
 
 }  // namespace roboticslab
