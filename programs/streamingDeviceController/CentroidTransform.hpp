@@ -4,6 +4,8 @@
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Stamp.h>
 
+#include <kdl/frames.hpp>
+
 #include "StreamingDevice.hpp"
 
 #define ROT_FACTOR 0.1
@@ -29,6 +31,9 @@ public:
     void registerStreamingDevice(StreamingDevice * streamingDevice)
     { this->streamingDevice = streamingDevice; }
 
+    //! Set TCP to camera frame
+    bool setTcpToCameraRotation(yarp::os::Bottle * b);
+
     //! Set new permanence time
     void setPermanenceTime(double permanenceTime)
     { this->permanenceTime = permanenceTime; }
@@ -45,6 +50,7 @@ private:
     double permanenceTime;
     yarp::os::Bottle lastBottle;
     yarp::os::Stamp lastAcquisition;
+    KDL::Rotation rot_tcp_camera;
 };
 
 }  // namespace roboticslab
