@@ -8,7 +8,9 @@ roboticslab::SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config,
     : StreamingDevice(config),
       iAnalogSensor(NULL),
       usingMovi(usingMovi),
-      gain(gain)
+      gain(gain),
+      buttonClose(false),
+      buttonOpen(false)
 {}
 
 bool roboticslab::SpnavSensorDevice::acquireInterfaces()
@@ -76,6 +78,12 @@ bool roboticslab::SpnavSensorDevice::acquireData()
         this->data[i] = data[i];
     }
 
+    if (data.size() == 8)
+    {
+        buttonClose = data[6] == 1;
+        buttonOpen = data[7] == 1;
+    }
+
     return true;
 }
 
@@ -105,14 +113,11 @@ bool roboticslab::SpnavSensorDevice::transformData(double scaling)
 
 int roboticslab::SpnavSensorDevice::getActuatorState()
 {
-    int button1 = data[6];
-    int button2 = data[7];
-
-    if (button1 == 1)
+    if (buttonClose)
     {
         actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
     }
-    else if (button2 == 1)
+    else if (buttonOpen)
     {
         actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
     }
