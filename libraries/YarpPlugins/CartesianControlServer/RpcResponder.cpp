@@ -74,6 +74,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleWaitMsg(in, out);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
+    case VOCAB_CC_ACT:
+        return handleActMsg(in, out);
     case VOCAB_CC_SET:
         return isGroupParam(in) ? handleParameterSetterGroup(in, out) : handleParameterSetter(in, out);
     case VOCAB_CC_GET:
@@ -131,6 +133,10 @@ void roboticslab::RpcResponder::makeUsage()
 
     ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_TOOL) << "] coord1 coord2 ...";
     addUsage(ss.str().c_str(), "append fixed link to end effector");
+    ss.str("");
+
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_ACT) << "] vocab";
+    addUsage(ss.str().c_str(), "actuate tool using selected command vocab");
     ss.str("");
 
     ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_SET) << "] vocab value";
@@ -250,6 +256,33 @@ bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::
 
     out.addVocab(VOCAB_CC_OK);
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 1)
+    {
+        int commandCode = in.get(1).asVocab();
+
+        if (iCartesianControl->act(commandCode))
+        {
+            out.addVocab(VOCAB_CC_OK);
+            return true;
+        }
+        else
+        {
+            out.addVocab(VOCAB_CC_FAILED);
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_CC_FAILED);
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------

@@ -213,6 +213,13 @@ bool StreamingDeviceController::updateModule()
     }
 #endif  // SDC_WITH_SENSORS
 
+    int actuatorState = streamingDevice->getActuatorState();
+
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        iCartesianControl->act(actuatorState);
+    }
+
     if (!streamingDevice->transformData(localScaling))
     {
         CD_ERROR("Failed to transform acquired data from streaming device.\n");

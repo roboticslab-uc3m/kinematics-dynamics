@@ -438,6 +438,12 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::act(int command)
+{
+    CD_ERROR("Not implemented.\n");
+    return false;
+}
+
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST)

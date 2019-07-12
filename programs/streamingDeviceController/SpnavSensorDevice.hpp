@@ -29,6 +29,8 @@ public:
 
     virtual bool transformData(double scaling);
 
+    virtual int getActuatorState();
+
     virtual bool hasValidMovementData() const;
 
     virtual void sendMovementCommand();
@@ -43,6 +45,8 @@ private:
 
     bool usingMovi;
     double gain;
+    bool buttonClose;
+    bool buttonOpen;
 };
 
 }  // namespace roboticslab

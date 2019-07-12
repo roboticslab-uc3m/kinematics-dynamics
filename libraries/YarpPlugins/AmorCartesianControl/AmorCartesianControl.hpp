@@ -74,6 +74,8 @@ public:
 
     virtual bool tool(const std::vector<double> &x);
 
+    virtual bool act(int command);
+
     virtual void twist(const std::vector<double> &xdot);
 
     virtual void pose(const std::vector<double> &x, double interval);

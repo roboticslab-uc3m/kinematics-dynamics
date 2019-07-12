@@ -130,6 +130,7 @@ protected:
 
     bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
     bool handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
 
     bool handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd);
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);

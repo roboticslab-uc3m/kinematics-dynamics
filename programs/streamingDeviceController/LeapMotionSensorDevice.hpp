@@ -31,6 +31,8 @@ public:
 
     virtual bool transformData(double scaling);
 
+    virtual int getActuatorState();
+
     virtual void sendMovementCommand();
 
     virtual void stopMotion()
@@ -45,6 +47,9 @@ private:
 
     std::vector<double> initialTcpOffset;
     std::vector<double> initialLeapOffset;
+
+    bool hasActuator;
+    bool grab, pinch;
 };
 
 }  // namespace roboticslab

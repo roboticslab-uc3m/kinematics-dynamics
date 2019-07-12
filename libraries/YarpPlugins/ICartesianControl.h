@@ -61,6 +61,7 @@
 #define VOCAB_CC_STOP ROBOTICSLAB_VOCAB('s','t','o','p') ///< Stop control
 #define VOCAB_CC_WAIT ROBOTICSLAB_VOCAB('w','a','i','t') ///< Wait motion done
 #define VOCAB_CC_TOOL ROBOTICSLAB_VOCAB('t','o','o','l') ///< Change tool
+#define VOCAB_CC_ACT ROBOTICSLAB_VOCAB('a','c','t',0)    ///< Actuate tool
 
 /** @} */
 
@@ -96,6 +97,22 @@
 #define VOCAB_CC_FORC_CONTROLLING ROBOTICSLAB_VOCAB('c','c','f','c') ///< Controlling FORC commands
 
 /** @} */
+
+/**
+ * @anchor ICartesianControl_actuator_vocabs
+ * @name Actuator control vocabs
+ *
+ * Used by roboticslab::ICartesianControl::act to control the actuator.
+ *
+ * @{
+ */
+
+// Actuator control
+#define VOCAB_CC_ACTUATOR_NONE ROBOTICSLAB_VOCAB('a','c','n',0)            ///< No actuator or no action
+#define VOCAB_CC_ACTUATOR_CLOSE_GRIPPER ROBOTICSLAB_VOCAB('a','c','c','g') ///< Close gripper
+#define VOCAB_CC_ACTUATOR_OPEN_GRIPPER ROBOTICSLAB_VOCAB('a','c','o','g')  ///< Open gripper
+#define VOCAB_CC_ACTUATOR_STOP_GRIPPER ROBOTICSLAB_VOCAB('a','c','s','g')  ///< Stop gripper
+#define VOCAB_CC_ACTUATOR_GENERIC ROBOTICSLAB_VOCAB('a','c','g',0)         ///< Generic actuator
 
 /**
  * @name Controller configuration vocabs
@@ -284,6 +301,17 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool tool(const std::vector<double> &x) = 0;
+
+        /**
+         * @brief Actuate tool
+         *
+         * Send control command to actuate the robot's tool, if available.
+         *
+         * @param command One of available @ref ICartesianControl_actuator_vocabs "actuator vocabs".
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool act(int command) = 0;
 
         /** @} */
 

@@ -260,6 +260,20 @@ bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::CartesianControlClient::act(int command)
+{
+    yarp::os::Bottle cmd, response;
+
+    cmd.addVocab(VOCAB_CC_ACT);
+    cmd.addVocab(command);
+
+    rpcClient.write(cmd,response);
+
+    return checkSuccess(response);
+}
+
+// -----------------------------------------------------------------------------
+
 void roboticslab::CartesianControlClient::twist(const std::vector<double> &xdot)
 {
     handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);

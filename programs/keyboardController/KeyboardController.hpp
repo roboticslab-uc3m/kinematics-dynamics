@@ -70,6 +70,8 @@ private:
 
     void toggleReferenceFrame();
 
+    void actuateTool(int command);
+
     void printJointPositions();
     void printCartesianPositions();
 
@@ -78,6 +80,7 @@ private:
     void printHelp();
 
     int axes;
+    int currentActuatorCommand;
 
     ICartesianSolver::reference_frame cartFrame;
     std::string angleRepr;
