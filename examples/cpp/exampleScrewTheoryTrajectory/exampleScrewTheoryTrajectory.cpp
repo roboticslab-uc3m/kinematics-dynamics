@@ -68,17 +68,17 @@ namespace
 {
     rl::PoeExpression makeTeoLeftArmKinematics()
     {
-        KDL::Frame H_S_0(KDL::Rotation::RotY(KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), KDL::Vector(0, 0.34692, 0.1932 + 0.305));
-        KDL::Frame H_0_T(KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.718506, 0, 0));
+        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), KDL::Vector(0, 0.34692, 0.1932 + 0.305));
+        KDL::Frame H_0_T(KDL::Vector(-0.63401, 0, 0));
 
         rl::PoeExpression poe(H_0_T);
 
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(0.32901, 0, 0)));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.32901, 0, 0)));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(0.53101, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.54401, 0, 0)));
 
         poe.changeBaseFrame(H_S_0);
 
