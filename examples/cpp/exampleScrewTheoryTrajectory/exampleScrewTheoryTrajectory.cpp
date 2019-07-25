@@ -42,7 +42,6 @@ make -j$(nproc)
 #include <yarp/dev/IControlMode.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionDirect.h>
-#include <yarp/dev/IRemoteVariables.h>
 #include <yarp/dev/PolyDriver.h>
 
 #include <kdl/frames.hpp>
@@ -114,11 +113,9 @@ int main(int argc, char *argv[])
     yarp::dev::IControlLimits * iControlLimits;
     yarp::dev::IControlMode * iControlMode;
     yarp::dev::IPositionDirect * iPositionDirect;
-    yarp::dev::IRemoteVariables * iRemoteVariables;
 
     if (!jointDevice.view(iEncoders) || !jointDevice.view(iControlLimits)
-            || !jointDevice.view(iControlMode) || !jointDevice.view(iPositionDirect)
-            || !jointDevice.view(iRemoteVariables))
+            || !jointDevice.view(iControlMode) || !jointDevice.view(iPositionDirect))
     {
         CD_ERROR("Problems acquiring joint interfaces.\n");
         return 1;
@@ -201,16 +198,6 @@ int main(int argc, char *argv[])
     if (!trajectory.create())
     {
         CD_ERROR("Problem creating cartesian trajectory.\n");
-        return 1;
-    }
-
-    yarp::os::Bottle b;
-    yarp::os::Bottle & bb = b.addList();
-    bb.addInt32(PT_MODE_MS);
-
-    if (!iRemoteVariables->setRemoteVariable("ptModeMs", b))
-    {
-        CD_ERROR("Unable to set remote variable.\n");
         return 1;
     }
 
