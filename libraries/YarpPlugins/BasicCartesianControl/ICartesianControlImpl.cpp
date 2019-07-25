@@ -588,7 +588,7 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         qdot[i] = (q[i] - currentQ[i]) / (streamingPeriodMs * 0.001);
     }
 
-    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
+    if (!checkJointLimits(currentQ, qdot))
     {
         CD_ERROR("Joint position or velocity limits exceeded, not moving.\n");
         return;
