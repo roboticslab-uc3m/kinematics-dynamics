@@ -23,7 +23,6 @@
 #define DEFAULT_DURATION 10.0
 #define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
-#define DEFAULT_STREAMING_PERIOD_MS 50
 #define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
@@ -129,7 +128,6 @@ public:
                               duration(DEFAULT_DURATION),
                               cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
-                              streamingPeriodMs(DEFAULT_STREAMING_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
                               currentState(VOCAB_CC_NOT_CONTROLLING),
@@ -246,7 +244,6 @@ protected:
 
     int cmcPeriodMs;
     int waitPeriodMs;
-    int streamingPeriodMs;
     int numRobotJoints, numSolverJoints;
     int currentState;
     int streamingCommand;

@@ -74,15 +74,6 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    if (params.find(VOCAB_CC_CONFIG_STREAMING_PERIOD) != params.end())
-    {
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_PERIOD, period * 1000))
-        {
-            CD_ERROR("Unable to set streaming command period.\n");
-            return false;
-        }
-    }
-
     bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
