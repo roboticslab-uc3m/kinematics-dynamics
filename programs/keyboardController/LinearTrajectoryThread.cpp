@@ -41,15 +41,6 @@ bool LinearTrajectoryThread::checkStreamingConfig()
 
     usingStreamingCommandConfig = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
-    if (params.find(VOCAB_CC_CONFIG_STREAMING_PERIOD) != params.end())
-    {
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_PERIOD, period))
-        {
-            CD_WARNING("setParameter(VOCAB_CC_CONFIG_STREAMING_PERIOD) failed.\n");
-            return false;
-        }
-    }
-
     return true;
 }
 

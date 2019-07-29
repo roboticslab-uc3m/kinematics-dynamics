@@ -115,26 +115,6 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::setRemoteStreamingPeriod()
-{
-    if (robotSupportsPtMode)
-    {
-        yarp::os::Bottle val;
-        yarp::os::Bottle & b = val.addList();
-        b.addInt32(streamingPeriodMs);
-
-        if (!iRemoteVariables->setRemoteVariable("ptModeMs", val))
-        {
-            CD_WARNING("Unable to set remote ptModeMs.\n");
-            return false;
-        }
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
 bool BasicCartesianControl::setControlModes(int mode)
 {
     std::vector<int> modes(numRobotJoints);
@@ -181,7 +161,7 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
     case VOCAB_CC_POSE:
         return setControlModes(VOCAB_CM_VELOCITY);
     case VOCAB_CC_MOVI:
-        return setRemoteStreamingPeriod() && setControlModes(VOCAB_CM_POSITION_DIRECT);
+        return setControlModes(VOCAB_CM_POSITION_DIRECT);
     default:
         CD_ERROR("Unrecognized or unsupported streaming command vocab.\n");
     }

@@ -130,7 +130,6 @@
 #define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')      ///< Check period of 'wait' command [ms]
 #define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)              ///< Reference frame
 #define VOCAB_CC_CONFIG_STREAMING_CMD ROBOTICSLAB_VOCAB('c','p','s','c')    ///< Preset streaming command
-#define VOCAB_CC_CONFIG_STREAMING_PERIOD ROBOTICSLAB_VOCAB('c','p','s','p') ///< Streaming command send period [ms]
 
 /** @} */
 

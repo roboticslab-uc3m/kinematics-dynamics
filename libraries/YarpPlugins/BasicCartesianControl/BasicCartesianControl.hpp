@@ -23,7 +23,6 @@
 #define DEFAULT_DURATION 10.0
 #define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
-#define DEFAULT_STREAMING_PERIOD_MS 50
 #define DEFAULT_REFERENCE_FRAME "base"
 
 namespace roboticslab
@@ -122,7 +121,6 @@ public:
                               iPositionControl(NULL),
                               iPositionDirect(NULL),
                               iPreciselyTimed(NULL),
-                              iRemoteVariables(NULL),
                               iTorqueControl(NULL),
                               iVelocityControl(NULL),
                               referenceFrame(ICartesianSolver::BASE_FRAME),
@@ -130,12 +128,10 @@ public:
                               duration(DEFAULT_DURATION),
                               cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
-                              streamingPeriodMs(DEFAULT_STREAMING_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
                               currentState(VOCAB_CC_NOT_CONTROLLING),
                               streamingCommand(VOCAB_CC_NOT_SET),
-                              robotSupportsPtMode(false),
                               movementStartTime(0),
                               iCartesianTrajectory(NULL),
                               cmcSuccess(true)
@@ -218,7 +214,6 @@ protected:
     bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot);
     bool checkJointVelocities(const std::vector<double> &qdot);
 
-    bool setRemoteStreamingPeriod();
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
     void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
@@ -239,7 +234,6 @@ protected:
     yarp::dev::IPositionControl *iPositionControl;
     yarp::dev::IPositionDirect * iPositionDirect;
     yarp::dev::IPreciselyTimed *iPreciselyTimed;
-    yarp::dev::IRemoteVariables *iRemoteVariables;
     yarp::dev::ITorqueControl *iTorqueControl;
     yarp::dev::IVelocityControl *iVelocityControl;
 
@@ -250,12 +244,9 @@ protected:
 
     int cmcPeriodMs;
     int waitPeriodMs;
-    int streamingPeriodMs;
     int numRobotJoints, numSolverJoints;
     int currentState;
     int streamingCommand;
-
-    bool robotSupportsPtMode;
 
     mutable yarp::os::Semaphore currentStateReady;
     mutable yarp::os::Semaphore trajectoryMutex;
