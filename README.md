@@ -29,7 +29,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ## Status
 
-[![Build Status (Linux/OSX)](https://travis-ci.org/roboticslab-uc3m/kinematics-dynamics.svg?branch=master)](https://travis-ci.org/roboticslab-uc3m/kinematics-dynamics)
+[![Build Status (Linux)](https://travis-ci.com/roboticslab-uc3m/kinematics-dynamics.svg?branch=develop)](https://travis-ci.com/roboticslab-uc3m/kinematics-dynamics)
 
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/kinematics-dynamics/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/kinematics-dynamics)
 
