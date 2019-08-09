@@ -3,14 +3,14 @@
 #ifndef __BASIC_CARTESIAN_CONTROL_HPP__
 #define __BASIC_CARTESIAN_CONTROL_HPP__
 
+#include <mutex>
+#include <vector>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/PreciselyTimed.h>
-
-#include <iostream> // only windows
-#include <vector>
 
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
@@ -248,8 +248,8 @@ protected:
     int currentState;
     int streamingCommand;
 
-    mutable yarp::os::Semaphore currentStateReady;
-    mutable yarp::os::Semaphore trajectoryMutex;
+    mutable std::mutex stateMutex;
+    mutable std::mutex trajectoryMutex;
 
     /** MOVJ store previous reference speeds */
     std::vector<double> vmoStored;

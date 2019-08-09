@@ -3,11 +3,12 @@
 #ifndef __CARTESIAN_CONTROL_CLIENT_HPP__
 #define __CARTESIAN_CONTROL_CLIENT_HPP__
 
+#include <mutex>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/PortReaderBuffer.h>
 #include <yarp/os/RpcClient.h>
-#include <yarp/os/Semaphore.h>
 
 #include <yarp/dev/Drivers.h>
 
@@ -48,7 +49,7 @@ protected:
     int state;
     double timestamp;
     std::vector<double> x;
-    mutable yarp::os::Semaphore mutex;
+    mutable std::mutex mtx;
 };
 
 /**

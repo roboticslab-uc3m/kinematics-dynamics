@@ -18,7 +18,7 @@ FkStreamResponder::FkStreamResponder()
 
 void FkStreamResponder::onRead(yarp::os::Bottle & b)
 {
-    mutex.wait();
+    std::lock_guard<std::mutex> lock(mtx);
 
     localArrivalTime = yarp::os::Time::now();
     state = b.get(0).asVocab();
@@ -30,20 +30,14 @@ void FkStreamResponder::onRead(yarp::os::Bottle & b)
     }
 
     timestamp = b.get(b.size() - 1).asFloat64();
-
-    mutex.post();
 }
 
 // -----------------------------------------------------------------------------
 
 bool FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, double *timestamp, const double timeout)
 {
-    double now = yarp::os::Time::now();
-    double localArrivalTime;
+    std::lock_guard<std::mutex> lock(mtx);
 
-    mutex.wait();
-
-    localArrivalTime = this->localArrivalTime;
     x = this->x;
 
     if (state != 0)
@@ -56,9 +50,7 @@ bool FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, doub
         *timestamp = this->timestamp;
     }
 
-    mutex.post();
-
-    return now - localArrivalTime <= timeout;
+    return yarp::os::Time::now() - localArrivalTime <= timeout;
 }
 
 // -----------------------------------------------------------------------------

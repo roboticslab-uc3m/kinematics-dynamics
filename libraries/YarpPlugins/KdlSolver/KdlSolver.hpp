@@ -3,7 +3,8 @@
 #ifndef __KDL_SOLVER_HPP__
 #define __KDL_SOLVER_HPP__
 
-#include <yarp/os/Semaphore.h>
+#include <mutex>
+
 #include <yarp/dev/DeviceDriver.h>
 
 #include <kdl/chain.hpp>
@@ -114,7 +115,7 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
 
     protected:
 
-        mutable yarp::os::Semaphore mutex;
+        mutable std::mutex mtx;
 
         /** The chain. **/
         KDL::Chain chain;

@@ -174,10 +174,10 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
     //-- Obtain desired Cartesian position and velocity.
     std::vector<double> desiredX, desiredXdot;
 
-    trajectoryMutex.wait();
+    trajectoryMutex.lock();
     iCartesianTrajectory->getPosition(movementTime, desiredX);
     iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
-    trajectoryMutex.post();
+    trajectoryMutex.unlock();
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;

@@ -297,7 +297,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
         return false;
     }
 
-    trajectoryMutex.wait();
+    trajectoryMutex.lock();
 
     if (iCartesianTrajectory != NULL)
     {
@@ -308,7 +308,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
     //-- Transfer ownership.
     iCartesianTrajectory = iCartTraj;
 
-    trajectoryMutex.post();
+    trajectoryMutex.unlock();
 
     //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))

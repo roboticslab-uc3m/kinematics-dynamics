@@ -57,9 +57,9 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
         std::vector<double> deltaX(vels.size());
         std::transform(vels.begin(), vels.end(), deltaX.begin(), std::bind1st(std::multiplies<double>(), period / 1000.0));
 
-        mutex.lock();
+        mtx.lock();
         this->deltaX = deltaX;
-        mutex.unlock();
+        mtx.unlock();
 
         return true;
     }
@@ -74,7 +74,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 
     bool ok = true;
 
-    mutex.lock();
+    mtx.lock();
 
     ok = ok && iCartesianTrajectory->destroy(); // discard previous state
     ok = ok && iCartesianTrajectory->addWaypoint(x, vels);
@@ -91,7 +91,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
         CD_ERROR("Unable to create trajectory.\n");
     }
 
-    mutex.unlock();
+    mtx.unlock();
 
     return ok;
 }
@@ -102,9 +102,9 @@ void LinearTrajectoryThread::run()
     {
         std::vector<double> deltaX;
 
-        mutex.lock();
+        mtx.lock();
         deltaX = this->deltaX;
-        mutex.unlock();
+        mtx.unlock();
 
         iCartesianControl->movi(deltaX);
     }
@@ -112,9 +112,9 @@ void LinearTrajectoryThread::run()
     {
         std::vector<double> position;
 
-        mutex.lock();
+        mtx.lock();
         bool ok = iCartesianTrajectory->getPosition(yarp::os::Time::now() - startTime, position);
-        mutex.unlock();
+        mtx.unlock();
 
         if (ok)
         {

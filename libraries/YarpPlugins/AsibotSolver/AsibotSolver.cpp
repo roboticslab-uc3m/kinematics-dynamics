@@ -29,20 +29,16 @@ roboticslab::AsibotConfiguration * roboticslab::AsibotSolver::getConfiguration()
 
 roboticslab::AsibotSolver::AsibotTcpFrame roboticslab::AsibotSolver::getTcpFrame() const
 {
-    AsibotTcpFrame tcpFrameStructLocal;
-    mutex.wait();
-    tcpFrameStructLocal = tcpFrameStruct;
-    mutex.post();
-    return tcpFrameStructLocal;
+    std::lock_guard<std::mutex> lock(mtx);
+    return tcpFrameStruct;
 }
 
 // -----------------------------------------------------------------------------
 
 void roboticslab::AsibotSolver::setTcpFrame(const AsibotTcpFrame & tcpFrameStruct)
 {
-    mutex.wait();
+    std::lock_guard<std::mutex> lock(mtx);
     this->tcpFrameStruct = tcpFrameStruct;
-    mutex.post();
 }
 
 // -----------------------------------------------------------------------------

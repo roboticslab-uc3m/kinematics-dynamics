@@ -26,7 +26,7 @@ bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x)
 {
     KDL::Frame frameX = KdlVectorConverter::vectorToFrame(x);
 
-    mutex.wait();
+    std::lock_guard<std::mutex> lock(mtx);
 
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), frameX));
 
@@ -35,8 +35,6 @@ bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x)
     ikSolverVel->updateInternalDataStructures();
     idSolver->updateInternalDataStructures();
 
-    mutex.post();
-
     return true;
 }
 
@@ -44,7 +42,7 @@ bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x)
 
 bool roboticslab::KdlSolver::restoreOriginalChain()
 {
-    mutex.wait();
+    std::lock_guard<std::mutex> lock(mtx);
 
     chain = originalChain;
 
@@ -52,8 +50,6 @@ bool roboticslab::KdlSolver::restoreOriginalChain()
     ikSolverPos->updateInternalDataStructures();
     ikSolverVel->updateInternalDataStructures();
     idSolver->updateInternalDataStructures();
-
-    mutex.post();
 
     return true;
 }
@@ -83,12 +79,12 @@ bool roboticslab::KdlSolver::fwdKin(const std::vector<double> &q, std::vector<do
         qInRad(motor) = KinRepresentation::degToRad(q[motor]);
     }
 
-    mutex.wait();
-
     KDL::Frame fOutCart;
-    fkSolverPos->JntToCart(qInRad, fOutCart);
 
-    mutex.post();
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        fkSolverPos->JntToCart(qInRad, fOutCart);
+    }
 
     x = KdlVectorConverter::frameToVector(fOutCart);
 
@@ -122,25 +118,25 @@ bool roboticslab::KdlSolver::invKin(const std::vector<double> &xd, const std::ve
     }
 
     KDL::JntArray kdlq(chain.getNrOfJoints());
+    int ret;
 
-    mutex.wait();
-
-    if (frame == TCP_FRAME)
     {
-        KDL::Frame fOutCart;
-        fkSolverPos->JntToCart(qGuessInRad, fOutCart);
-        frameXd = fOutCart * frameXd;
-    }
-    else if (frame != BASE_FRAME)
-    {
-        CD_WARNING("Unsupported frame.\n");
-        mutex.post();
-        return false;
-    }
+        std::lock_guard<std::mutex> lock(mtx);
 
-    int ret = ikSolverPos->CartToJnt(qGuessInRad, frameXd, kdlq);
+        if (frame == TCP_FRAME)
+        {
+            KDL::Frame fOutCart;
+            fkSolverPos->JntToCart(qGuessInRad, fOutCart);
+            frameXd = fOutCart * frameXd;
+        }
+        else if (frame != BASE_FRAME)
+        {
+            CD_WARNING("Unsupported frame.\n");
+            return false;
+        }
 
-    mutex.post();
+        ret = ikSolverPos->CartToJnt(qGuessInRad, frameXd, kdlq);
+    }
 
     if (ret < 0)
     {
@@ -175,30 +171,29 @@ bool roboticslab::KdlSolver::diffInvKin(const std::vector<double> &q, const std:
     }
 
     KDL::Twist kdlxdot = KdlVectorConverter::vectorToTwist(xdot);
-
-    mutex.wait();
-
-    if (frame == TCP_FRAME)
-    {
-        KDL::Frame fOutCart;
-        fkSolverPos->JntToCart(qInRad, fOutCart);
-
-        //-- Transform the basis to which the twist is expressed, but leave the reference point intact
-        //-- "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
-        kdlxdot = fOutCart.M * kdlxdot;
-    }
-    else if (frame != BASE_FRAME)
-    {
-        CD_WARNING("Unsupported frame.\n");
-        mutex.post();
-        return false;
-    }
-
     KDL::JntArray qDotOutRadS(chain.getNrOfJoints());
+    int ret;
 
-    int ret = ikSolverVel->CartToJnt(qInRad, kdlxdot, qDotOutRadS);
+    {
+        std::lock_guard<std::mutex> lock(mtx);
 
-    mutex.post();
+        if (frame == TCP_FRAME)
+        {
+            KDL::Frame fOutCart;
+            fkSolverPos->JntToCart(qInRad, fOutCart);
+
+            //-- Transform the basis to which the twist is expressed, but leave the reference point intact
+            //-- "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
+            kdlxdot = fOutCart.M * kdlxdot;
+        }
+        else if (frame != BASE_FRAME)
+        {
+            CD_WARNING("Unsupported frame.\n");
+            return false;
+        }
+
+        ret = ikSolverVel->CartToJnt(qInRad, kdlxdot, qDotOutRadS);
+    }
 
     if (ret < 0)
     {
@@ -233,15 +228,15 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,std::vector<dou
 
     KDL::JntArray qdotInRad(chain.getNrOfJoints());
     KDL::JntArray qdotdotInRad(chain.getNrOfJoints());
-
-    mutex.wait();
-
-    KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
     KDL::JntArray kdlt(chain.getNrOfJoints());
+    KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
 
-    int ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+    int ret;
 
-    mutex.post();
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+    }
 
     if (ret < 0)
     {
@@ -288,8 +283,6 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vect
         qdotdotInRad(motor) = KinRepresentation::degToRad(qdotdot[motor]);
     }
 
-    mutex.wait();
-
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
 
     for (int i = 0; i < fexts.size(); i++)
@@ -301,10 +294,12 @@ bool roboticslab::KdlSolver::invDyn(const std::vector<double> &q,const std::vect
     }
 
     KDL::JntArray kdlt(chain.getNrOfJoints());
+    int ret;
 
-    int ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
-
-    mutex.post();
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
+    }
 
     if (ret < 0)
     {

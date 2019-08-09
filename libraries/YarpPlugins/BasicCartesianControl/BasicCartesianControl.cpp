@@ -30,22 +30,17 @@ namespace
 
 int BasicCartesianControl::getCurrentState() const
 {
-    int tmp;
-    currentStateReady.wait();
-    tmp = currentState;
-    currentStateReady.post();
-
-    return tmp;
+    std::lock_guard<std::mutex> lock(stateMutex);
+    return currentState;
 }
 
 // -----------------------------------------------------------------------------
 
 void BasicCartesianControl::setCurrentState(int value)
 {
-    currentStateReady.wait();
+    std::lock_guard<std::mutex> lock(stateMutex);
     currentState = value;
     streamingCommand = VOCAB_CC_NOT_SET;
-    currentStateReady.post();
 }
 
 // -----------------------------------------------------------------------------
