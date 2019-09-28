@@ -58,12 +58,12 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ### Path-Planning, Trajectory generation and optimization
 - All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
+- [PythonRobotics](https://atsushisakai.github.io/PythonRobotics/) ([AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics))
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
 - https://rosindustrial.org/news/2018/7/5/optimization-motion-planning-with-tesseract-and-trajopt-for-industrial-applications
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/) ([KCL-Planning/ROSPlan](https://github.com/KCL-Planning/ROSPlan)): Tools for AI Planning in a ROS system.
 - [jrl-umi3218/Tasks](https://github.com/jrl-umi3218/Tasks): It has been used extensively to control humanoid robots such as HOAP-3, HRP-2, HRP-4 and Atlas.
 - [googlecartographer (org)](https://github.com/googlecartographer): Cartographer is a system that provides real-time simultaneous localization and mapping (SLAM) in 2D and 3D across multiple platforms and sensor configuration
-
 
 ### Humanoid-oriented
 - [roboticslab-uc3m/gait](https://github.com/roboticslab-uc3m/gait)
