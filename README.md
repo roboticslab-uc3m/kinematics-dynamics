@@ -49,8 +49,8 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ros-industrial-consortium/descartes](https://github.com/ros-industrial-consortium/descartes)
 
 ### Kinematics and Dynamics
-- [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics): Our main dependency
-- [robotology/iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library for computing kinematics and dynamics of serial-links chains of revolute joints and iCub limbs
+- [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics): Our main dependency ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)
+- [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
 
 ### Path-Planning, Trajectory generation and optimization
 - All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
