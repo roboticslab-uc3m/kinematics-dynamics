@@ -37,6 +37,9 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ## Similar and Related Projects
 
+### Quaternions
+- [pyquaternion](http://kieranwynn.github.io/pyquaternion/) ([KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion))
+
 ### Fast Solvers
 - [ocra-recipes/eigen_lgsm](https://github.com/ocra-recipes/eigen_lgsm): used by [robotology/codyco-superbuild](https://github.com/robotology/codyco-superbuild)
 - [cuSolver](https://docs.nvidia.com/cuda/cusolver/index.html)
@@ -51,6 +54,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 ### Kinematics and Dynamics
 - [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics) ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)): A dependency of this repository
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
+- [adityadua24/robopy](https://github.com/adityadua24/robopy)
 
 ### Path-Planning, Trajectory generation and optimization
 - All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
@@ -59,6 +63,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/) ([KCL-Planning/ROSPlan](https://github.com/KCL-Planning/ROSPlan)): Tools for AI Planning in a ROS system.
 - [jrl-umi3218/Tasks](https://github.com/jrl-umi3218/Tasks): It has been used extensively to control humanoid robots such as HOAP-3, HRP-2, HRP-4 and Atlas.
 - [googlecartographer (org)](https://github.com/googlecartographer): Cartographer is a system that provides real-time simultaneous localization and mapping (SLAM) in 2D and 3D across multiple platforms and sensor configuration
+
 
 ### Humanoid-oriented
 - [roboticslab-uc3m/gait](https://github.com/roboticslab-uc3m/gait)
