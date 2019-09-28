@@ -68,7 +68,9 @@ Installation instructions for installing from source can be found [here](doc/kin
 ### Humanoid-oriented
 - [roboticslab-uc3m/gait](https://github.com/roboticslab-uc3m/gait)
 - [roboticslab-uc3m/gaitcontrol](https://github.com/roboticslab-uc3m/gaitcontrol)
+- [roboticslab-uc3m/TEOTraGen](https://github.com/roboticslab-uc3m/TEOTraGen)
 - [roboticslab-uc3m/footsteps](https://github.com/roboticslab-uc3m/footsteps): Includes interesting links
+- [munozyanez/spgait](https://github.com/munozyanez/spgait)
 - [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
 - [robotology/whole-body-controllers](https://github.com/robotology/whole-body-controllers)
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
