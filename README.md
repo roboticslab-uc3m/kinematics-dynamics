@@ -42,7 +42,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [cuSolver](https://docs.nvidia.com/cuda/cusolver/index.html)
 
 ### Fast IK-Solvers
-- [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)
+- [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [NUKE](https://vanadiumlabs.github.io/pypose/nuke-intro.html#NUKE): The Nearly Universal Kinematic Engine
 - [ESROCOS/kin-gen](https://github.com/ESROCOS/kin-gen): Kinematics code generator by KUL
 - [AversivePlusPlus/ik](https://github.com/AversivePlusPlus/ik)
@@ -53,7 +53,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [robotology/iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library for computing kinematics and dynamics of serial-links chains of revolute joints and iCub limbs
 
 ### Path-Planning, Trajectory generation and optimization
-- All the parts of OpenRAVE ([website](http://openrave.org/), [rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
+- All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS
 - https://rosindustrial.org/news/2018/7/5/optimization-motion-planning-with-tesseract-and-trajopt-for-industrial-applications
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/): Tools for AI Planning in a ROS system. [github](https://github.com/KCL-Planning/ROSPlan)
