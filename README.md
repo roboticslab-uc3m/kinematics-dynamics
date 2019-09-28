@@ -66,7 +66,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [roboticslab-uc3m/footsteps](https://github.com/roboticslab-uc3m/footsteps): Includes interesting links
 - [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
 - [robotology/whole-body-controllers](https://github.com/robotology/whole-body-controllers)
-- [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on OpenRAVE
+- [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/): [github](https://github.com/stack-of-tasks)
 - [nav74neet/ddpg_biped](https://github.com/nav74neet/ddpg_biped)
