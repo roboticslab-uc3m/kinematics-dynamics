@@ -51,6 +51,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [AversivePlusPlus/ik](https://github.com/AversivePlusPlus/ik)
 - [ros-industrial-consortium/descartes](https://github.com/ros-industrial-consortium/descartes)
 - [IKPy](https://phylliade.github.io/ikpy) ([Phylliade/ikpy](https://github.com/Phylliade/ikpy))
+- [uts-magic-lab/Magiks](https://github.com/uts-magic-lab/Magiks)
 
 ### Kinematics and Dynamics
 - [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics) ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)): A dependency of this repository
