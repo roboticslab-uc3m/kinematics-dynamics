@@ -14,9 +14,9 @@ target_link_libraries(keyboardController YARP::YARP_OS
                                          YARP::YARP_init
                                          YARP::YARP_dev
                                          ROBOTICSLAB::ColorDebug
-                                         KinematicRepresentationLib
-                                         KinematicsDynamicsInterfaces
-                                         TrajectoryLib)
+                                         ROBOTICSLAB::KinematicRepresentationLib
+                                         ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                         ROBOTICSLAB::TrajectoryLib)
 
 install(TARGETS keyboardController
         DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -3,6 +3,7 @@
 
 # Create device interface target.
 add_library(KinematicsDynamicsInterfaces INTERFACE)
+add_library(ROBOTICSLAB::KinematicsDynamicsInterfaces ALIAS KinematicsDynamicsInterfaces)
 
 # Configure usage requirements.
 target_include_directories(KinematicsDynamicsInterfaces INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

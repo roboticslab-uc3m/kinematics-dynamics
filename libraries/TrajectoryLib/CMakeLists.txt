@@ -12,6 +12,8 @@ if(ENABLE_TrajectoryLib)
                                      KdlTrajectory.cpp
                                      KdlTrajectory.hpp)
 
+    add_library(ROBOTICSLAB::TrajectoryLib ALIAS TrajectoryLib)
+
     set_property(TARGET TrajectoryLib PROPERTY PUBLIC_HEADER ICartesianTrajectory.hpp
                                                              ITrajectory.hpp
                                                              KdlTrajectory.hpp)

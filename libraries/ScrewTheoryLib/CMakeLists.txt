@@ -23,6 +23,8 @@ if(ENABLE_ScrewTheoryLib)
                                       ConfigurationSelectorLeastOverallAngularDisplacement.cpp
                                       ConfigurationSelectorHumanoidGait.cpp)
 
+    add_library(ROBOTICSLAB::ScrewTheoryLib ALIAS ScrewTheoryLib)
+
     set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp
                                                               ScrewTheoryIkProblem.hpp

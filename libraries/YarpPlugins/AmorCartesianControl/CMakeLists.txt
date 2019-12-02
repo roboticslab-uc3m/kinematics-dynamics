@@ -26,8 +26,8 @@ if(NOT SKIP_AmorCartesianControl)
                                                YARP::YARP_dev
                                                AMOR::amor_api
                                                ROBOTICSLAB::ColorDebug
-                                               KinematicRepresentationLib
-                                               KinematicsDynamicsInterfaces)
+                                               ROBOTICSLAB::KinematicRepresentationLib
+                                               ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
         yarp_install(TARGETS AmorCartesianControl

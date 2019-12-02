@@ -18,7 +18,7 @@ if(ENABLE_tests)
     if(TARGET KinematicRepresentationLib)
         add_executable(testKinRepresentation testKinRepresentation.cpp)
 
-        target_link_libraries(testKinRepresentation KinematicRepresentationLib
+        target_link_libraries(testKinRepresentation ROBOTICSLAB::KinematicRepresentationLib
                                                     gtest_main)
 
         gtest_add_tests(testKinRepresentation "" AUTO)
@@ -29,7 +29,7 @@ if(ENABLE_tests)
     if(TARGET ScrewTheoryLib)
         add_executable(testScrewTheory testScrewTheory.cpp)
 
-        target_link_libraries(testScrewTheory ScrewTheoryLib
+        target_link_libraries(testScrewTheory ROBOTICSLAB::ScrewTheoryLib
                                               gtest_main)
 
         gtest_add_tests(testScrewTheory "" AUTO)
@@ -42,7 +42,7 @@ if(ENABLE_tests)
     target_link_libraries(testKdlSolver YARP::YARP_OS
                                         YARP::YARP_dev
                                         ROBOTICSLAB::ColorDebug
-                                        KinematicsDynamicsInterfaces
+                                        ROBOTICSLAB::KinematicsDynamicsInterfaces
                                         gtest_main)
 
     gtest_add_tests(testKdlSolver "" AUTO)
@@ -54,7 +54,7 @@ if(ENABLE_tests)
     target_link_libraries(testKdlSolverFromFile YARP::YARP_OS
                                                 YARP::YARP_dev
                                                 ROBOTICSLAB::ColorDebug
-                                                KinematicsDynamicsInterfaces
+                                                ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                 gtest_main)
 
     gtest_add_tests(testKdlSolverFromFile "" AUTO)
@@ -67,8 +67,8 @@ if(ENABLE_tests)
         target_link_libraries(testAsibotSolverFromFile YARP::YARP_OS
                                                        YARP::YARP_dev
                                                        ROBOTICSLAB::ColorDebug
-                                                       KinematicRepresentationLib
-                                                       KinematicsDynamicsInterfaces
+                                                       ROBOTICSLAB::KinematicRepresentationLib
+                                                       ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                        gtest_main)
 
         gtest_add_tests(testAsibotSolverFromFile "" AUTO)
@@ -79,7 +79,7 @@ if(ENABLE_tests)
     if(TARGET TrajectoryLib)
         add_executable(testKdlTrajectory testKdlTrajectory.cpp)
 
-        target_link_libraries(testKdlTrajectory TrajectoryLib
+        target_link_libraries(testKdlTrajectory ROBOTICSLAB::TrajectoryLib
                                                 gtest_main)
 
         gtest_add_tests(testKdlTrajectory "" AUTO)
@@ -92,7 +92,7 @@ if(ENABLE_tests)
     target_link_libraries(testBasicCartesianControl YARP::YARP_OS
                                                     YARP::YARP_dev
                                                     ROBOTICSLAB::ColorDebug
-                                                    KinematicsDynamicsInterfaces
+                                                    ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                     gtest_main)
 
     gtest_add_tests(testBasicCartesianControl "" AUTO)
