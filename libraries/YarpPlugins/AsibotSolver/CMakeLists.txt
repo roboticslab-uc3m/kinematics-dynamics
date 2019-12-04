@@ -26,8 +26,8 @@ if(NOT SKIP_AsibotSolver)
                                        YARP::YARP_sig
                                        YARP::YARP_math
                                        ROBOTICSLAB::ColorDebug
-                                       ROBOTICSLAB::KinematicRepresentationLib
-                                       ROBOTICSLAB::KinematicsDynamicsInterfaces)
+                                       KinematicRepresentationLib
+                                       KinematicsDynamicsInterfaces)
 
     if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
         yarp_install(TARGETS AsibotSolver

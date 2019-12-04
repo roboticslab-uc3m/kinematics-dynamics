@@ -22,7 +22,7 @@ if(NOT SKIP_CartesianControlClient)
     target_link_libraries(CartesianControlClient YARP::YARP_OS
                                                  YARP::YARP_dev
                                                  ROBOTICSLAB::ColorDebug
-                                                 ROBOTICSLAB::KinematicsDynamicsInterfaces)
+                                                 KinematicsDynamicsInterfaces)
 
     if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
         yarp_install(TARGETS CartesianControlClient

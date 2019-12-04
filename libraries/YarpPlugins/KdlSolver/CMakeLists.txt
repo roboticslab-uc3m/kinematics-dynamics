@@ -34,10 +34,10 @@ if(NOT SKIP_KdlSolver)
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
                                     ROBOTICSLAB::ColorDebug
-                                    ROBOTICSLAB::ScrewTheoryLib
-                                    ROBOTICSLAB::KdlVectorConverterLib
-                                    ROBOTICSLAB::KinematicRepresentationLib
-                                    ROBOTICSLAB::KinematicsDynamicsInterfaces)
+                                    ScrewTheoryLib
+                                    KdlVectorConverterLib
+                                    KinematicRepresentationLib
+                                    KinematicsDynamicsInterfaces)
 
     target_include_directories(KdlSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 

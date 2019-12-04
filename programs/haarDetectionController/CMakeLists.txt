@@ -17,7 +17,7 @@ if(ENABLE_haarDetectionController)
                                                   YARP::YARP_init
                                                   YARP::YARP_dev
                                                   ROBOTICSLAB::ColorDebug
-                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                  KinematicsDynamicsInterfaces
                                                   ROBOTICSLAB::YarpDevicesInterfaces)
 
     install(TARGETS haarDetectionController

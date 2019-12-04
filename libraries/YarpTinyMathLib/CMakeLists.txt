@@ -10,8 +10,6 @@ if(ENABLE_YarpTinyMathLib)
     add_library(YarpTinyMathLib SHARED YarpTinyMath.hpp
                                        YarpTinyMath.cpp)
 
-    add_library(ROBOTICSLAB::YarpTinyMathLib ALIAS YarpTinyMathLib)
-
     set_target_properties(YarpTinyMathLib PROPERTIES PUBLIC_HEADER YarpTinyMath.hpp)
 
     target_link_libraries(YarpTinyMathLib PUBLIC YARP::YARP_sig

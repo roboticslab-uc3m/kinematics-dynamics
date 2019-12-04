@@ -7,10 +7,9 @@ cmake_dependent_option(ENABLE_KdlVectorConverterLib "Enable/disable KdlVectorCon
 
 if(ENABLE_KdlVectorConverterLib)
 
+    # Set up our library.
     add_library(KdlVectorConverterLib SHARED KdlVectorConverter.cpp
                                              KdlVectorConverter.hpp)
-
-    add_library(ROBOTICSLAB::KdlVectorConverterLib ALIAS KdlVectorConverterLib)
 
     set_target_properties(KdlVectorConverterLib PROPERTIES PUBLIC_HEADER KdlVectorConverter.hpp)
 

@@ -20,9 +20,9 @@ if(ENABLE_transCoords)
                                       YARP::YARP_dev
                                       ${orocos_kdl_LIBRARIES}
                                       ROBOTICSLAB::ColorDebug
-                                      ROBOTICSLAB::KdlVectorConverterLib
-                                      ROBOTICSLAB::KinematicRepresentationLib
-                                      ROBOTICSLAB::KinematicsDynamicsInterfaces)
+                                      KdlVectorConverterLib
+                                      KinematicRepresentationLib
+                                      KinematicsDynamicsInterfaces)
 
     install(TARGETS transCoords
             DESTINATION ${CMAKE_INSTALL_BINDIR})

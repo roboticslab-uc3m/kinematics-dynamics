@@ -10,8 +10,6 @@ if(ENABLE_KinematicRepresentationLib)
     add_library(KinematicRepresentationLib SHARED KinematicRepresentation.hpp
                                                   KinematicRepresentation.cpp)
 
-    add_library(ROBOTICSLAB::KinematicRepresentationLib ALIAS KinematicRepresentationLib)
-
     set_target_properties(KinematicRepresentationLib PROPERTIES PUBLIC_HEADER KinematicRepresentation.hpp)
 
     target_link_libraries(KinematicRepresentationLib PRIVATE ${orocos_kdl_LIBRARIES}
