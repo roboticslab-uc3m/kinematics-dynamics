@@ -9,25 +9,57 @@
 
 #include <ColorDebug.h>
 
-namespace roboticslab
-{
-
 namespace
 {
-    inline double degToRadHelper(KinRepresentation::angular_units angle, double val)
+    using namespace roboticslab::KinRepresentation;
+
+    inline double degToRadHelper(angular_units angle, double val)
     {
-        return angle == KinRepresentation::RADIANS ? val : KinRepresentation::degToRad(val);
+        return angle == RADIANS ? val : degToRad(val);
     }
 
-    inline double radToDegHelper(KinRepresentation::angular_units angle, double val)
+    inline double radToDegHelper(angular_units angle, double val)
     {
-        return angle == KinRepresentation::RADIANS ? val: KinRepresentation::radToDeg(val);
+        return angle == RADIANS ? val: radToDeg(val);
+    }
+
+    bool checkVectorSize(const std::vector<double> & v_in, orientation_system orient, int * expectedSize)
+    {
+        switch (orient)
+        {
+        case AXIS_ANGLE:
+            *expectedSize = 7;
+            return v_in.size() >= *expectedSize;
+        case AXIS_ANGLE_SCALED:
+            *expectedSize = 6;
+            return v_in.size() >= *expectedSize;
+        case RPY:
+            *expectedSize = 6;
+            return v_in.size() >= *expectedSize;
+        case EULER_YZ:
+            *expectedSize = 5;
+            return v_in.size() >= *expectedSize;
+        case EULER_ZYZ:
+            *expectedSize = 6;
+            return v_in.size() >= *expectedSize;
+        default:
+            *expectedSize = 0;
+            return false;
+        }
+
+        return true;
     }
 }
 
+namespace roboticslab
+{
+
+namespace KinRepresentation
+{
+
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
+bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
@@ -116,7 +148,7 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
+bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
@@ -214,8 +246,8 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
 
@@ -302,8 +334,8 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const st
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
 
@@ -391,8 +423,8 @@ bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const st
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     CD_ERROR("Not implemented.\n");
@@ -401,8 +433,8 @@ bool KinRepresentation::encodeAcceleration(const std::vector<double> &x_in, cons
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+bool decodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     CD_ERROR("Not implemented.\n");
@@ -411,21 +443,21 @@ bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, cons
 
 // -----------------------------------------------------------------------------
 
-double KinRepresentation::degToRad(double deg)
+double degToRad(double deg)
 {
     return deg * KDL::deg2rad;
 }
 
 // -----------------------------------------------------------------------------
 
-double KinRepresentation::radToDeg(double rad)
+double radToDeg(double rad)
 {
     return rad * KDL::rad2deg;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::parseEnumerator(const std::string &str, orientation_system *orient, orientation_system fallback)
+bool parseEnumerator(const std::string & str, orientation_system * orient, orientation_system fallback)
 {
     if (str == "axisAngle")
     {
@@ -456,33 +488,6 @@ bool KinRepresentation::parseEnumerator(const std::string &str, orientation_syst
     return true;
 }
 
-// -----------------------------------------------------------------------------
+} // namespace KinRepresentation
 
-bool KinRepresentation::checkVectorSize(const std::vector<double> &v_in, orientation_system orient, int *expectedSize)
-{
-    switch (orient)
-    {
-    case AXIS_ANGLE:
-        *expectedSize = 7;
-        return v_in.size() >= *expectedSize;
-    case AXIS_ANGLE_SCALED:
-        *expectedSize = 6;
-        return v_in.size() >= *expectedSize;
-    case RPY:
-        *expectedSize = 6;
-        return v_in.size() >= *expectedSize;
-    case EULER_YZ:
-        *expectedSize = 5;
-        return v_in.size() >= *expectedSize;
-    case EULER_ZYZ:
-        *expectedSize = 6;
-        return v_in.size() >= *expectedSize;
-    default:
-        *expectedSize = 0;
-        return false;
-    }
-
-    return true;
-}
-
-}  // namespace roboticslab
+} // namespace roboticslab
