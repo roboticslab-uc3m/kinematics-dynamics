@@ -177,6 +177,23 @@ double radToDeg(double rad);
  *
  * Input string    | Enum value
  * --------------- | ----------
+ * cartesian       | @ref CARTESIAN
+ * cylindrical     | @ref CYLINDRICAL
+ * spherical       | @ref SPHERICAL
+ *
+ * @param str Input string.
+ * @param coord See @ref coordinate_system.
+ * @param fallback Default value if no match found.
+ *
+ * @return true if match found, false otherwise
+ */
+bool parseEnumerator(const std::string & str, coordinate_system * coord, coordinate_system fallback = CARTESIAN);
+
+/**
+ * @brief Parses input string, returns matching enumerator value
+ *
+ * Input string    | Enum value
+ * --------------- | ----------
  * axisAngle       | @ref AXIS_ANGLE
  * axisAngleScaled | @ref AXIS_ANGLE_SCALED
  * RPY             | @ref RPY

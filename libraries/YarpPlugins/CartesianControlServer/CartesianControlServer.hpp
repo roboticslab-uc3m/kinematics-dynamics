@@ -163,7 +163,8 @@ class RpcTransformResponder : public RpcResponder
 {
 public:
 
-    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::orientation_system orient)
+    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::coordinate_system coord,
+            KinRepresentation::orientation_system orient)
         : RpcResponder(iCartesianControl),
           orient(orient)
     {}
@@ -173,6 +174,7 @@ protected:
     virtual bool transformIncomingData(std::vector<double>& vin);
     virtual bool transformOutgoingData(std::vector<double>& vout);
 
+    KinRepresentation::coordinate_system coord;
     KinRepresentation::orientation_system orient;
 };
 

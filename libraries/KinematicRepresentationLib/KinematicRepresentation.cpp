@@ -457,6 +457,31 @@ double radToDeg(double rad)
 
 // -----------------------------------------------------------------------------
 
+bool parseEnumerator(const std::string & str, coordinate_system * coord, coordinate_system fallback)
+{
+    if (str == "cartesian")
+    {
+        *coord = CARTESIAN;
+    }
+    else if (str == "cylindrical")
+    {
+        *coord = CYLINDRICAL;
+    }
+    else if (str == "spherical")
+    {
+        *coord = SPHERICAL;
+    }
+    else
+    {
+        *coord = fallback;
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
 bool parseEnumerator(const std::string & str, orientation_system * orient, orientation_system fallback)
 {
     if (str == "axisAngle")
