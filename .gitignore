@@ -6,6 +6,7 @@
 tags
 CMakeLists.txt.user
 **/build*/
+/.settings/
 /.cproject
 /.project
 /external/
