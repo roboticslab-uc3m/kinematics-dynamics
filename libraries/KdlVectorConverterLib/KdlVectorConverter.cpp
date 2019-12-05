@@ -4,9 +4,15 @@
 
 #include <ColorDebug.h>
 
+namespace roboticslab
+{
+
+namespace KdlVectorConverter
+{
+
 // -----------------------------------------------------------------------------
 
-KDL::Frame roboticslab::KdlVectorConverter::vectorToFrame(const std::vector<double> &x)
+KDL::Frame vectorToFrame(const std::vector<double> &x)
 {
     if (x.size() != 6)
     {
@@ -29,7 +35,7 @@ KDL::Frame roboticslab::KdlVectorConverter::vectorToFrame(const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
-std::vector<double> roboticslab::KdlVectorConverter::frameToVector(const KDL::Frame& f)
+std::vector<double> frameToVector(const KDL::Frame& f)
 {
     std::vector<double> x(6);
 
@@ -48,7 +54,7 @@ std::vector<double> roboticslab::KdlVectorConverter::frameToVector(const KDL::Fr
 
 // -----------------------------------------------------------------------------
 
-KDL::Twist roboticslab::KdlVectorConverter::vectorToTwist(const std::vector<double> &xdot)
+KDL::Twist vectorToTwist(const std::vector<double> &xdot)
 {
     if (xdot.size() != 6)
     {
@@ -71,7 +77,7 @@ KDL::Twist roboticslab::KdlVectorConverter::vectorToTwist(const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
-std::vector<double> roboticslab::KdlVectorConverter::twistToVector(const KDL::Twist& t)
+std::vector<double> twistToVector(const KDL::Twist& t)
 {
     std::vector<double> xdot(6);
 
@@ -87,3 +93,6 @@ std::vector<double> roboticslab::KdlVectorConverter::twistToVector(const KDL::Tw
 }
 
 // -----------------------------------------------------------------------------
+
+} // namespace KdlVectorConverter
+} // namespace roboticslab

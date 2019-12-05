@@ -246,7 +246,6 @@ bool parseEnumerator(const std::string & str, angular_units * units,
         angular_units fallback = angular_units::RADIANS);
 
 } // namespace KinRepresentation
-
 } // namespace roboticslab
 
 #endif // __KINEMATIC_REPRESENTATION_HPP__
