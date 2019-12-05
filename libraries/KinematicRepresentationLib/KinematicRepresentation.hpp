@@ -212,6 +212,23 @@ bool parseEnumerator(const std::string & str, coordinate_system * coord,
 bool parseEnumerator(const std::string & str, orientation_system * orient,
         orientation_system fallback = orientation_system::AXIS_ANGLE_SCALED);
 
+/**
+ * @brief Parses input string, returns matching enumerator value
+ *
+ * Input string    | Enum value
+ * --------------- | ----------
+ * degrees         | @ref DEGREES
+ * radians         | @ref RADIANS
+ *
+ * @param str Input string.
+ * @param units See @ref angular_units.
+ * @param fallback Default value if no match found.
+ *
+ * @return true if match found, false otherwise
+ */
+bool parseEnumerator(const std::string & str, angular_units * units,
+        angular_units fallback = angular_units::RADIANS);
+
 } // namespace KinRepresentation
 
 } // namespace roboticslab

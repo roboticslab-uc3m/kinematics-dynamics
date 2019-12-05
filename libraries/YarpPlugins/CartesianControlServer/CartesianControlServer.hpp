@@ -164,9 +164,11 @@ class RpcTransformResponder : public RpcResponder
 public:
 
     RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::coordinate_system coord,
-            KinRepresentation::orientation_system orient)
+            KinRepresentation::orientation_system orient, KinRepresentation::angular_units units)
         : RpcResponder(iCartesianControl),
-          orient(orient)
+          coord(coord),
+          orient(orient),
+          units(units)
     {}
 
 protected:
@@ -176,6 +178,7 @@ protected:
 
     KinRepresentation::coordinate_system coord;
     KinRepresentation::orientation_system orient;
+    KinRepresentation::angular_units units;
 };
 
 /**

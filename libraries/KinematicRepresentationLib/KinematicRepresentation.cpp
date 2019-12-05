@@ -513,6 +513,25 @@ bool parseEnumerator(const std::string & str, orientation_system * orient, orien
     return true;
 }
 
+bool parseEnumerator(const std::string & str, angular_units * units, angular_units fallback)
+{
+    if (str == "degrees")
+    {
+        *units = angular_units::DEGREES;
+    }
+    else if (str == "radians")
+    {
+        *units = angular_units::RADIANS;
+    }
+    else
+    {
+        *units = fallback;
+        return false;
+    }
+
+    return true;
+}
+
 } // namespace KinRepresentation
 
 } // namespace roboticslab

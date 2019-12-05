@@ -13,7 +13,7 @@
 
 bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 {
-    yarp::os::Value *name, *angleRepr, *coordRepr;
+    yarp::os::Value *name, *angleRepr, *coordRepr, *angularUnits;
 
     if (config.check("subdevice", name))
     {
@@ -83,15 +83,18 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     bool hasCoordRepr = config.check("coordRepr", coordRepr, "coordinate representation for transform port");
     bool hasAngleRepr = config.check("angleRepr", angleRepr, "angle representation for transform port");
+    bool hasAngularUnits = config.check("angularUnits", angularUnits, "angular units for transform port");
 
     // check angle representation, leave this block last to allow inner return instruction
-    if (hasCoordRepr || hasAngleRepr)
+    if (hasCoordRepr || hasAngleRepr || hasAngularUnits)
     {
         std::string coordReprStr = coordRepr->asString();
         std::string angleReprStr = angleRepr->asString();
+        std::string angularUnitsStr = angularUnits->asString();
 
         KinRepresentation::coordinate_system coord;
         KinRepresentation::orientation_system orient;
+        KinRepresentation::angular_units units;
 
         if (!KinRepresentation::parseEnumerator(coordReprStr, &coord))
         {
@@ -105,7 +108,13 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
             return true;
         }
 
-        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, coord, orient);
+        if (!KinRepresentation::parseEnumerator(angularUnitsStr, &units))
+        {
+            CD_WARNING("Unknown angularUnits \"%s\", falling back to default.\n", angularUnitsStr.c_str());
+            return true;
+        }
+
+        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, coord, orient, units);
 
         rpcTransformServer.open(prefix + "/rpc_transform:s");
         rpcTransformServer.setReader(*rpcTransformResponder);
