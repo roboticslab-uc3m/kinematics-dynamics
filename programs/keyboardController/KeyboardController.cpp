@@ -212,7 +212,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
-        if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
+        if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::orientation_system::AXIS_ANGLE))
         {
             CD_WARNING("Unable to parse \"angleRepr\" option (%s), defaulting to %s.\n", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
             angleRepr = DEFAULT_ANGLE_REPR;
@@ -628,7 +628,7 @@ void roboticslab::KeyboardController::printCartesianPositions()
 
     std::vector<double> x;
     iCartesianControl->stat(x);
-    KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, orient, KinRepresentation::angular_units::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
     std::cout << roundZeroes(x) << std::endl;

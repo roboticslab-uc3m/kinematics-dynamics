@@ -12,6 +12,9 @@
 
 #include "KinematicRepresentation.hpp"
 
+using namespace roboticslab;
+using namespace roboticslab::KinRepresentation;
+
 // -----------------------------------------------------------------------------
 
 namespace
@@ -182,7 +185,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
+bool AsibotSolver::getNumJoints(int* numJoints)
 {
     *numJoints = NUM_MOTORS;
     return true;
@@ -190,7 +193,7 @@ bool roboticslab::AsibotSolver::getNumJoints(int* numJoints)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::appendLink(const std::vector<double> &x)
+bool AsibotSolver::appendLink(const std::vector<double> &x)
 {
     yarp::sig::Matrix newFrame = vectorToMatrix(x, true);
 
@@ -204,7 +207,7 @@ bool roboticslab::AsibotSolver::appendLink(const std::vector<double> &x)
 
 // --------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::restoreOriginalChain()
+bool AsibotSolver::restoreOriginalChain()
 {
     AsibotTcpFrame tcpFrameStruct = getTcpFrame();
     tcpFrameStruct.hasFrame = false;
@@ -215,7 +218,7 @@ bool roboticslab::AsibotSolver::restoreOriginalChain()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old,
+bool AsibotSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old,
         std::vector<double> &x_new_obj)
 {
     yarp::sig::Matrix H_old_obj = vectorToMatrix(x_old_obj, true);
@@ -229,13 +232,13 @@ bool roboticslab::AsibotSolver::changeOrigin(const std::vector<double> &x_old_ob
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
+bool AsibotSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 {
     std::vector<double> qInRad(q);
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
     {
-        *it = KinRepresentation::degToRad(*it);
+        *it = degToRad(*it);
     }
 
     double s1 = std::sin(qInRad[0]);
@@ -262,7 +265,7 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
     x[3] = oyP;  // = pitchP
     x[4] = q[4];  // = ozPP
 
-    KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES);
+    encodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES);
 
     const AsibotTcpFrame & tcpFrameStruct = getTcpFrame();
 
@@ -277,7 +280,7 @@ bool roboticslab::AsibotSolver::fwdKin(const std::vector<double> &q, std::vector
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut)
+bool AsibotSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut)
 {
     xOut.resize(6);
 
@@ -303,7 +306,7 @@ bool roboticslab::AsibotSolver::poseDiff(const std::vector<double> &xLhs, const 
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
+bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
         const reference_frame frame)
 {
     std::vector<double> xd_base_obj;
@@ -334,7 +337,7 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
     std::vector<double> xd_eYZ;
 
-    if (!KinRepresentation::decodePose(xd_base_obj, xd_eYZ, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ))
+    if (!decodePose(xd_base_obj, xd_eYZ, coordinate_system::CARTESIAN, orientation_system::EULER_YZ))
     {
         CD_ERROR("Unable to convert to eulerYZ angle representation.\n");
         return false;
@@ -386,13 +389,13 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
     std::auto_ptr<AsibotConfiguration> conf(getConfiguration());
 
-    if (!conf->configure(KinRepresentation::radToDeg(ozdRad),
-            KinRepresentation::radToDeg(t1uRad),
-            KinRepresentation::radToDeg(t1dRad),
-            KinRepresentation::radToDeg(t2Rad),
-            KinRepresentation::radToDeg(t3uRad),
-            KinRepresentation::radToDeg(t3dRad),
-            KinRepresentation::radToDeg(xd_eYZ[4])))
+    if (!conf->configure(radToDeg(ozdRad),
+            radToDeg(t1uRad),
+            radToDeg(t1dRad),
+            radToDeg(t2Rad),
+            radToDeg(t3uRad),
+            radToDeg(t3dRad),
+            radToDeg(xd_eYZ[4])))
     {
         CD_ERROR("Unable to find a valid configuration within joint limits.\n");
         return false;
@@ -411,14 +414,14 @@ bool roboticslab::AsibotSolver::invKin(const std::vector<double> &xd, const std:
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
+bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
         const reference_frame frame)
 {
     std::vector<double> qInRad(q);
 
     for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
     {
-        *it = KinRepresentation::degToRad(*it);
+        *it = degToRad(*it);
     }
 
     yarp::sig::Matrix Ja(6, 5);
@@ -470,7 +473,7 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        qdot[i] = KinRepresentation::radToDeg(qdotv[i]);
+        qdot[i] = radToDeg(qdotv[i]);
     }
 
     return true;
@@ -478,7 +481,7 @@ bool roboticslab::AsibotSolver::diffInvKin(const std::vector<double> &q, const s
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
+bool AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 {
     CD_WARNING("Not implemented.\n");
     return false;
@@ -486,7 +489,7 @@ bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
+bool AsibotSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
 {
     CD_WARNING("Not implemented.\n");
     return false;

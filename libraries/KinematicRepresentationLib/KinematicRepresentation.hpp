@@ -26,7 +26,7 @@ namespace KinRepresentation
 {
 
 //! Lists available translational representations.
-enum coordinate_system
+enum class coordinate_system
 {
     CARTESIAN,   ///< (x distance, y distance, z distance)
     CYLINDRICAL, ///< (radial distance, azimuthal angle, height)
@@ -34,7 +34,7 @@ enum coordinate_system
 };
 
 //! Lists available rotational representations.
-enum orientation_system
+enum class orientation_system
 {
     AXIS_ANGLE,        ///< (axis_x, axis_y, axis_z, rotation angle) [axis needs not to be normalized]
     AXIS_ANGLE_SCALED, ///< (axis_x, axis_y, axis_z) [axis' norm is the rotation angle]
@@ -44,7 +44,7 @@ enum orientation_system
 };
 
 //! Lists recognized angular units.
-enum angular_units
+enum class angular_units
 {
     DEGREES, ///< degrees (deg)
     RADIANS  ///< radians (rad)
@@ -64,7 +64,7 @@ enum angular_units
  * @return true on success, false otherwise.
  */
 bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
-        coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+        coordinate_system coord, orientation_system orient, angular_units angle = angular_units::RADIANS);
 
 /**
  * @brief Converts the translation and rotation values of a specific pose to the chosen representation systems.
@@ -80,7 +80,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
  * @return true on success, false otherwise.
  */
 bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
-        coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+        coordinate_system coord, orientation_system orient, angular_units angle = angular_units::RADIANS);
 
 /**
  * @brief Converts the translation and rotation values of a specific velocity to @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
@@ -97,7 +97,8 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
  * @return true on success, false otherwise.
  */
 bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
-        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient,
+        angular_units angle = angular_units::RADIANS);
 
 /**
  * @brief Converts the translation and rotation values of a specific velocity to the chosen representation systems.
@@ -114,7 +115,8 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
  * @return true on success, false otherwise.
  */
 bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
-        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient,
+        angular_units angle = angular_units::RADIANS);
 
 /**
  * @brief Converts the translation and rotation values of a specific acceleration to @ref CARTESIAN/@ref AXIS_ANGLE_SCALED systems.
@@ -133,7 +135,7 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
  */
 bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
         const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
-        coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+        coordinate_system coord, orientation_system orient, angular_units angle = angular_units::RADIANS);
 
 /**
  * @brief Converts the translation and rotation values of a specific acceleration to the chosen representation systems.
@@ -152,7 +154,7 @@ bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<doub
  */
 bool decodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
         const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
-        coordinate_system coord, orientation_system orient, angular_units angle = RADIANS);
+        coordinate_system coord, orientation_system orient, angular_units angle = angular_units::RADIANS);
 
 /**
  * @brief Converts degrees to radians.
@@ -187,7 +189,8 @@ double radToDeg(double rad);
  *
  * @return true if match found, false otherwise
  */
-bool parseEnumerator(const std::string & str, coordinate_system * coord, coordinate_system fallback = CARTESIAN);
+bool parseEnumerator(const std::string & str, coordinate_system * coord,
+        coordinate_system fallback = coordinate_system::CARTESIAN);
 
 /**
  * @brief Parses input string, returns matching enumerator value
@@ -206,7 +209,8 @@ bool parseEnumerator(const std::string & str, coordinate_system * coord, coordin
  *
  * @return true if match found, false otherwise
  */
-bool parseEnumerator(const std::string & str, orientation_system * orient, orientation_system fallback = AXIS_ANGLE_SCALED);
+bool parseEnumerator(const std::string & str, orientation_system * orient,
+        orientation_system fallback = orientation_system::AXIS_ANGLE_SCALED);
 
 } // namespace KinRepresentation
 

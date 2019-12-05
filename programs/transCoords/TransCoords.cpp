@@ -205,7 +205,7 @@ void TransCoords::onRead(yarp::os::Bottle &b)
         x_in.push_back(b.get(i).asFloat64());
     }
 
-    if (!KinRepresentation::encodePose(x_in, x_in, KinRepresentation::CARTESIAN, orient))
+    if (!KinRepresentation::encodePose(x_in, x_in, KinRepresentation::coordinate_system::CARTESIAN, orient))
     {
         CD_ERROR("encodePose failed.\n");
         return;
@@ -258,7 +258,7 @@ void TransCoords::onRead(yarp::os::Bottle &b)
     x_out[4] = rotvec_root.y();
     x_out[5] = rotvec_root.z();
 
-    if (!KinRepresentation::decodePose(x_out, x_out, KinRepresentation::CARTESIAN, orient))
+    if (!KinRepresentation::decodePose(x_out, x_out, KinRepresentation::coordinate_system::CARTESIAN, orient))
     {
         CD_ERROR("decodePose failed.\n");
         return;

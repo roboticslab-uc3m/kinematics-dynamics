@@ -33,7 +33,7 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
     x[4] = positions[4];
     x[5] = positions[5];
 
-    KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::encodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
     if (state != 0)
     {
@@ -175,7 +175,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
     std::vector<double> xd_rpy;
 
-    KinRepresentation::decodePose(xd_obj, xd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::decodePose(xd_obj, xd_rpy, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
     AMOR_VECTOR7 positions;
 
@@ -218,7 +218,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
     std::vector<double> xdotd_rpy;
 
-    KinRepresentation::decodeVelocity(xCurrent, xdotd, xdotd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::decodeVelocity(xCurrent, xdotd, xdotd_rpy, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
     AMOR_VECTOR7 velocities;
 
