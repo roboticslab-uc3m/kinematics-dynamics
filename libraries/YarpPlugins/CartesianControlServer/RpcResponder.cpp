@@ -489,14 +489,14 @@ bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottl
 
 bool roboticslab::RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
 {
-    return KinRepresentation::encodePose(vin, vin, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+    return KinRepresentation::encodePose(vin, vin, coord, orient, units);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::RpcTransformResponder::transformOutgoingData(std::vector<double>& vout)
 {
-    return KinRepresentation::decodePose(vout, vout, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+    return KinRepresentation::decodePose(vout, vout, coord, orient, units);
 }
 
 // -----------------------------------------------------------------------------

@@ -9,30 +9,75 @@
 
 #include <ColorDebug.h>
 
-namespace roboticslab
-{
-
 namespace
 {
-    inline double degToRadHelper(KinRepresentation::angular_units angle, double val)
+    using namespace roboticslab::KinRepresentation;
+
+    inline double degToRadHelper(angular_units angle, double val)
     {
-        return angle == KinRepresentation::RADIANS ? val : KinRepresentation::degToRad(val);
+        return angle == angular_units::RADIANS ? val : degToRad(val);
     }
 
-    inline double radToDegHelper(KinRepresentation::angular_units angle, double val)
+    inline double radToDegHelper(angular_units angle, double val)
     {
-        return angle == KinRepresentation::RADIANS ? val: KinRepresentation::radToDeg(val);
+        return angle == angular_units::RADIANS ? val: radToDeg(val);
+    }
+
+    bool checkVectorSize(const std::vector<double> & v_in, coordinate_system coord, orientation_system orient, int * expectedSize)
+    {
+        int accSize = 0;
+
+        switch (coord)
+        {
+        case coordinate_system::CARTESIAN:
+        case coordinate_system::CYLINDRICAL:
+        case coordinate_system::SPHERICAL:
+            accSize += 3;
+            break;
+        case coordinate_system::NONE:
+            break;
+        default:
+            return false;
+        }
+
+        switch (orient)
+        {
+        case orientation_system::AXIS_ANGLE:
+            accSize += 4;
+            break;
+        case orientation_system::AXIS_ANGLE_SCALED:
+        case orientation_system::RPY:
+        case orientation_system::EULER_ZYZ:
+            accSize += 3;
+            break;
+        case orientation_system::EULER_YZ:
+            accSize += 2;
+            break;
+        case orientation_system::NONE:
+            break;
+        default:
+            return false;
+        }
+
+        *expectedSize = accSize;
+        return v_in.size() >= accSize;
     }
 }
 
+namespace roboticslab
+{
+
+namespace KinRepresentation
+{
+
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
+bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
 
-    if (!checkVectorSize(x_in, orient, &expectedSize))
+    if (!checkVectorSize(x_in, coord, orient, &expectedSize))
     {
         CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, x_in.size());
         return false;
@@ -40,36 +85,43 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
 
     // expand current size if needed, but never truncate
     x_out.resize(std::max<int>(6, x_out.size()));
+    int off = coord == coordinate_system::NONE ? 0 : 3;
 
     switch (orient)
     {
-    case AXIS_ANGLE:
+    case orientation_system::AXIS_ANGLE:
     {
-        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(x_in[3], x_in[4], x_in[5]), degToRadHelper(angle, x_in[6]));
+        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(x_in[0 + off], x_in[1 + off], x_in[2 + off]), degToRadHelper(angle, x_in[3 + off]));
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
         x_out[4] = axis.y();
         x_out[5] = axis.z();
         break;
     }
-    case AXIS_ANGLE_SCALED:
+    case orientation_system::AXIS_ANGLE_SCALED:
     {
-        x_out[3] = degToRadHelper(angle, x_in[3]);
-        x_out[4] = degToRadHelper(angle, x_in[4]);
-        x_out[5] = degToRadHelper(angle, x_in[5]);
+        x_out[3] = degToRadHelper(angle, x_in[0 + off]);
+        x_out[4] = degToRadHelper(angle, x_in[1 + off]);
+        x_out[5] = degToRadHelper(angle, x_in[2 + off]);
         break;
     }
-    case RPY:
+    case orientation_system::RPY:
     {
-        KDL::Rotation rot = KDL::Rotation::RPY(degToRadHelper(angle, x_in[3]), degToRadHelper(angle, x_in[4]), degToRadHelper(angle, x_in[5]));
+        KDL::Rotation rot = KDL::Rotation::RPY(degToRadHelper(angle, x_in[0 + off]), degToRadHelper(angle, x_in[1 + off]), degToRadHelper(angle, x_in[2 + off]));
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
         x_out[4] = axis.y();
         x_out[5] = axis.z();
         break;
     }
-    case EULER_YZ:
+    case orientation_system::EULER_YZ:
     {
+        if (coord == coordinate_system::NONE)
+        {
+            CD_ERROR("Mandatory coordinate system missing for orientation EULER_YZ.\n");
+            return false;
+        }
+
         double alpha = std::atan2(x_in[1], x_in[0]);
         KDL::Rotation rot = KDL::Rotation::EulerZYZ(alpha, degToRadHelper(angle, x_in[3]), degToRadHelper(angle, x_in[4]));
         KDL::Vector axis = rot.GetRot();
@@ -78,15 +130,18 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
         x_out[5] = axis.z();
         break;
     }
-    case EULER_ZYZ:
+    case orientation_system::EULER_ZYZ:
     {
-        KDL::Rotation rot = KDL::Rotation::EulerZYZ(degToRadHelper(angle, x_in[3]), degToRadHelper(angle, x_in[4]), degToRadHelper(angle, x_in[5]));
+        KDL::Rotation rot = KDL::Rotation::EulerZYZ(degToRadHelper(angle, x_in[0 + off]), degToRadHelper(angle, x_in[1 + off]), degToRadHelper(angle, x_in[2 + off]));
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
         x_out[4] = axis.y();
         x_out[5] = axis.z();
         break;
     }
+    case orientation_system::NONE:
+        x_out[3] = x_out[4] = x_out[5] = 0.0;
+        break;
     default:
         return false;
     }
@@ -96,17 +151,20 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
 
     switch (coord)
     {
-    case CARTESIAN:
+    case coordinate_system::CARTESIAN:
         x_out[0] = x_in[0];
         x_out[1] = x_in[1];
         x_out[2] = x_in[2];
         break;
-    case CYLINDRICAL:
+    case coordinate_system::CYLINDRICAL:
         CD_ERROR("Not implemented.\n");
         return false;
-    case SPHERICAL:
+    case coordinate_system::SPHERICAL:
         CD_ERROR("Not implemented.\n");
         return false;
+    case coordinate_system::NONE:
+        x_out[0] = x_out[1] = x_out[2] = 0.0;
+        break;
     default:
         return false;
     }
@@ -116,95 +174,102 @@ bool KinRepresentation::encodePose(const std::vector<double> &x_in, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<double> &x_out,
+bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
 
-    if (!checkVectorSize(x_in, AXIS_ANGLE_SCALED, &expectedSize))
+    if (!checkVectorSize(x_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
     {
         CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, x_in.size());
         return false;
     }
 
+    int off = coord == coordinate_system::NONE ? 0 : 3;
+
     switch (orient)
     {
-    case AXIS_ANGLE:
+    case orientation_system::AXIS_ANGLE:
     {
-        x_out.resize(std::max<int>(7, x_out.size()));
+        x_out.resize(std::max<int>(4 + off, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
-        x_out[6] = radToDegHelper(angle, axis.Norm());
+        x_out[3 + off] = radToDegHelper(angle, axis.Norm());
         axis.Normalize();
-        x_out[3] = axis.x();
-        x_out[4] = axis.y();
-        x_out[5] = axis.z();
-        x_out.resize(7);
+        x_out[0 + off] = axis.x();
+        x_out[1 + off] = axis.y();
+        x_out[2 + off] = axis.z();
+        x_out.resize(4 + off);
         break;
     }
-    case AXIS_ANGLE_SCALED:
+    case orientation_system::AXIS_ANGLE_SCALED:
     {
-        x_out.resize(std::max<int>(6, x_out.size()));
-        x_out[3] = radToDegHelper(angle, x_in[3]);
-        x_out[4] = radToDegHelper(angle, x_in[4]);
-        x_out[5] = radToDegHelper(angle, x_in[5]);
-        x_out.resize(6);
+        x_out.resize(std::max<int>(3 + off, x_out.size()));
+        x_out[0 + off] = radToDegHelper(angle, x_in[3]);
+        x_out[1 + off] = radToDegHelper(angle, x_in[4]);
+        x_out[2 + off] = radToDegHelper(angle, x_in[5]);
+        x_out.resize(3 + off);
         break;
     }
-    case RPY:
+    case orientation_system::RPY:
     {
-        x_out.resize(std::max<int>(6, x_out.size()));
+        x_out.resize(std::max<int>(3 + off, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double roll, pitch, yaw;
         rot.GetRPY(roll, pitch, yaw);
-        x_out[3] = radToDegHelper(angle, roll);
-        x_out[4] = radToDegHelper(angle, pitch);
-        x_out[5] = radToDegHelper(angle, yaw);
-        x_out.resize(6);
+        x_out[0 + off] = radToDegHelper(angle, roll);
+        x_out[1 + off] = radToDegHelper(angle, pitch);
+        x_out[2 + off] = radToDegHelper(angle, yaw);
+        x_out.resize(3 + off);
         break;
     }
-    case EULER_YZ:
+    case orientation_system::EULER_YZ:
     {
-        x_out.resize(std::max<int>(5, x_out.size()));
+        x_out.resize(std::max<int>(2 + off, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double alpha, beta, gamma;
         rot.GetEulerZYZ(alpha, beta, gamma);
-        x_out[3] = radToDegHelper(angle, beta);
-        x_out[4] = radToDegHelper(angle, gamma);
-        x_out.resize(5);
+        x_out[0 + off] = radToDegHelper(angle, beta);
+        x_out[1 + off] = radToDegHelper(angle, gamma);
+        x_out.resize(2 + off);
         break;
     }
-    case EULER_ZYZ:
+    case orientation_system::EULER_ZYZ:
     {
-        x_out.resize(std::max<int>(6, x_out.size()));
+        x_out.resize(std::max<int>(3 + off, x_out.size()));
         KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
         KDL::Rotation rot = KDL::Rotation::Rot(axis, axis.Norm());
         double alpha, beta, gamma;
         rot.GetEulerZYZ(alpha, beta, gamma);
-        x_out[3] = radToDegHelper(angle, alpha);
-        x_out[4] = radToDegHelper(angle, beta);
-        x_out[5] = radToDegHelper(angle, gamma);
-        x_out.resize(6);
+        x_out[0 + off] = radToDegHelper(angle, alpha);
+        x_out[1 + off] = radToDegHelper(angle, beta);
+        x_out[2 + off] = radToDegHelper(angle, gamma);
+        x_out.resize(3 + off);
         break;
     }
+    case orientation_system::NONE:
+        x_out.resize(off);
+        break;
     default:
         return false;
     }
 
     switch (coord)
     {
-    case CARTESIAN:
+    case coordinate_system::CARTESIAN:
         x_out[0] = x_in[0];
         x_out[1] = x_in[1];
         x_out[2] = x_in[2];
         break;
-    case CYLINDRICAL:
+    case coordinate_system::CYLINDRICAL:
         CD_ERROR("Not implemented.\n");
         return false;
-    case SPHERICAL:
+    case coordinate_system::SPHERICAL:
         CD_ERROR("Not implemented.\n");
         return false;
+    case coordinate_system::NONE:
+        break;
     default:
         return false;
     }
@@ -214,12 +279,12 @@ bool KinRepresentation::decodePose(const std::vector<double> &x_in, std::vector<
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
 
-    if (!checkVectorSize(xdot_in, orient, &expectedSize))
+    if (!checkVectorSize(xdot_in, coord, orient, &expectedSize))
     {
         CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, xdot_in.size());
         return false;
@@ -227,26 +292,27 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const st
 
     // expand current size if needed, but never truncate
     xdot_out.resize(std::max<int>(6, xdot_out.size()));
+    int off = coord == coordinate_system::NONE ? 0 : 3;
 
     switch (orient)
     {
-    case AXIS_ANGLE:
+    case orientation_system::AXIS_ANGLE:
     {
-        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(xdot_in[3], xdot_in[4], xdot_in[5]), degToRadHelper(angle, xdot_in[6]));
+        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(xdot_in[0 + off], xdot_in[1 + off], xdot_in[2 + off]), degToRadHelper(angle, xdot_in[3 + off]));
         KDL::Vector axis = rot.GetRot();
         xdot_out[3] = axis.x();
         xdot_out[4] = axis.y();
         xdot_out[5] = axis.z();
         break;
     }
-    case AXIS_ANGLE_SCALED:
+    case orientation_system::AXIS_ANGLE_SCALED:
     {
-        xdot_out[3] = degToRadHelper(angle, xdot_in[3]);
-        xdot_out[4] = degToRadHelper(angle, xdot_in[4]);
-        xdot_out[5] = degToRadHelper(angle, xdot_in[5]);
+        xdot_out[3] = degToRadHelper(angle, xdot_in[0 + off]);
+        xdot_out[4] = degToRadHelper(angle, xdot_in[1 + off]);
+        xdot_out[5] = degToRadHelper(angle, xdot_in[2 + off]);
         break;
     }
-    case RPY:
+    case orientation_system::RPY:
     {
         // [0 -sa ca*cb]
         // [0  ca sa*cb]
@@ -254,25 +320,26 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const st
         // where a (alpha): z, b (beta): y, g (gamma, unused): x
         // FIXME: really? review this, check which angle corresponds to which coordinate
         KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
-        KDL::Rotation rotZ = KDL::Rotation::RotZ(degToRadHelper(angle, x_in[5]));
+        KDL::Rotation rotZ = KDL::Rotation::RotZ(degToRadHelper(angle, x_in[2 + off]));
         KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
-        KDL::Vector colZ = rotZ * KDL::Rotation::RotY(degToRadHelper(angle, x_in[4])) * KDL::Rotation::Identity().UnitX();
+        KDL::Vector colZ = rotZ * KDL::Rotation::RotY(degToRadHelper(angle, x_in[1 + off])) * KDL::Rotation::Identity().UnitX();
         KDL::Rotation rot(colX, colY, colZ);
-        KDL::Vector v_in(degToRadHelper(angle, xdot_in[3]), degToRadHelper(angle, xdot_in[4]), degToRadHelper(angle, xdot_in[5]));
+        KDL::Vector v_in(degToRadHelper(angle, xdot_in[0 + off]), degToRadHelper(angle, xdot_in[1 + off]), degToRadHelper(angle, xdot_in[2 + off]));
         KDL::Vector v_out = rot * v_in;
         xdot_out[3] = v_out.x();
         xdot_out[4] = v_out.y();
         xdot_out[5] = v_out.z();
         break;
     }
-    case EULER_YZ:
-    {
+    case orientation_system::EULER_YZ:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    case orientation_system::EULER_ZYZ:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    case orientation_system::NONE:
+        xdot_out[3] = xdot_out[4] = xdot_out[5] = 0.0;
         break;
-    }
-    case EULER_ZYZ:
-    {
-        break;
-    }
     default:
         return false;
     }
@@ -282,17 +349,20 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const st
 
     switch (coord)
     {
-    case CARTESIAN:
+    case coordinate_system::CARTESIAN:
         xdot_out[0] = xdot_in[0];
         xdot_out[1] = xdot_in[1];
         xdot_out[2] = xdot_in[2];
         break;
-    case CYLINDRICAL:
+    case coordinate_system::CYLINDRICAL:
         CD_ERROR("Not implemented.\n");
         return false;
-    case SPHERICAL:
+    case coordinate_system::SPHERICAL:
         CD_ERROR("Not implemented.\n");
         return false;
+    case coordinate_system::NONE:
+        xdot_out[0] = xdot_out[1] = xdot_out[2] = 0.0;
+        break;
     default:
         return false;
     }
@@ -302,44 +372,46 @@ bool KinRepresentation::encodeVelocity(const std::vector<double> &x_in, const st
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        std::vector<double> &xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
 {
     int expectedSize;
 
-    if (!checkVectorSize(xdot_in, AXIS_ANGLE_SCALED, &expectedSize))
+    if (!checkVectorSize(xdot_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
     {
         CD_ERROR("Size error; expected: %d, was: %d\n", expectedSize, xdot_in.size());
         return false;
     }
 
+    int off = coord == coordinate_system::NONE ? 0 : 3;
+
     switch (orient)
     {
-    case AXIS_ANGLE:
+    case orientation_system::AXIS_ANGLE:
     {
-        xdot_out.resize(std::max<int>(7, xdot_out.size()));
+        xdot_out.resize(std::max<int>(4 + off, xdot_out.size()));
         KDL::Vector axis(xdot_in[3], xdot_in[4], xdot_in[5]);
-        xdot_out[6] = radToDegHelper(angle, axis.Norm());
+        xdot_out[3 + off] = radToDegHelper(angle, axis.Norm());
         axis.Normalize();
-        xdot_out[3] = axis.x();
-        xdot_out[4] = axis.y();
-        xdot_out[5] = axis.z();
-        xdot_out.resize(7);
+        xdot_out[0 + off] = axis.x();
+        xdot_out[1 + off] = axis.y();
+        xdot_out[2 + off] = axis.z();
+        xdot_out.resize(4 + off);
         break;
     }
-    case AXIS_ANGLE_SCALED:
+    case orientation_system::AXIS_ANGLE_SCALED:
     {
-        xdot_out.resize(std::max<int>(6, xdot_out.size()));
-        xdot_out[3] = radToDegHelper(angle, xdot_in[3]);
-        xdot_out[4] = radToDegHelper(angle, xdot_in[4]);
-        xdot_out[5] = radToDegHelper(angle, xdot_in[5]);
-        xdot_out.resize(6);
+        xdot_out.resize(std::max<int>(3 + off, xdot_out.size()));
+        xdot_out[0 + off] = radToDegHelper(angle, xdot_in[3]);
+        xdot_out[1 + off] = radToDegHelper(angle, xdot_in[4]);
+        xdot_out[2 + off] = radToDegHelper(angle, xdot_in[5]);
+        xdot_out.resize(3 + off);
         break;
     }
-    case RPY:
+    case orientation_system::RPY:
     {
         // FIXME: see note at 'encodeVelocity'
-        xdot_out.resize(std::max<int>(6, xdot_out.size()));
+        xdot_out.resize(std::max<int>(3 + off, xdot_out.size()));
         KDL::Vector colX = KDL::Rotation::Identity().UnitZ();
         KDL::Rotation rotZ = KDL::Rotation::RotZ(x_in[5]);
         KDL::Vector colY = rotZ * KDL::Rotation::Identity().UnitY();
@@ -347,41 +419,44 @@ bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const st
         KDL::Rotation rot(colX, colY, colZ);
         KDL::Vector v_in(xdot_in[3], xdot_in[4], xdot_in[5]);
         KDL::Vector v_out = rot.Inverse() * v_in;
-        xdot_out[3] = radToDegHelper(angle, v_out.x());
-        xdot_out[4] = radToDegHelper(angle, v_out.y());
-        xdot_out[5] = radToDegHelper(angle, v_out.z());
-        xdot_out.resize(6);
+        xdot_out[0 + off] = radToDegHelper(angle, v_out.x());
+        xdot_out[1 + off] = radToDegHelper(angle, v_out.y());
+        xdot_out[2 + off] = radToDegHelper(angle, v_out.z());
+        xdot_out.resize(3 + off);
         break;
     }
-    case EULER_YZ:
+    case orientation_system::EULER_YZ:
     {
-        xdot_out.resize(std::max<int>(5, xdot_out.size()));
-        xdot_out.resize(5);
-        break;
+        CD_ERROR("Not implemented.\n");
+        return false;
     }
-    case EULER_ZYZ:
+    case orientation_system::EULER_ZYZ:
     {
-        xdot_out.resize(std::max<int>(6, xdot_out.size()));
-        xdot_out.resize(6);
-        break;
+        CD_ERROR("Not implemented.\n");
+        return false;
     }
+    case orientation_system::NONE:
+        xdot_out.resize(off);
+        break;
     default:
         return false;
     }
 
     switch (coord)
     {
-    case CARTESIAN:
+    case coordinate_system::CARTESIAN:
         xdot_out[0] = xdot_in[0];
         xdot_out[1] = xdot_in[1];
         xdot_out[2] = xdot_in[2];
         break;
-    case CYLINDRICAL:
+    case coordinate_system::CYLINDRICAL:
         CD_ERROR("Not implemented.\n");
         return false;
-    case SPHERICAL:
+    case coordinate_system::SPHERICAL:
         CD_ERROR("Not implemented.\n");
         return false;
+    case coordinate_system::NONE:
+        break;
     default:
         return false;
     }
@@ -391,8 +466,8 @@ bool KinRepresentation::decodeVelocity(const std::vector<double> &x_in, const st
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::encodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     CD_ERROR("Not implemented.\n");
@@ -401,8 +476,8 @@ bool KinRepresentation::encodeAcceleration(const std::vector<double> &x_in, cons
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, const std::vector<double> &xdot_in,
-        const std::vector<double> &xdotdot_in, std::vector<double> &xdotdot_out,
+bool decodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
+        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
     CD_ERROR("Not implemented.\n");
@@ -411,41 +486,66 @@ bool KinRepresentation::decodeAcceleration(const std::vector<double> &x_in, cons
 
 // -----------------------------------------------------------------------------
 
-double KinRepresentation::degToRad(double deg)
+double degToRad(double deg)
 {
     return deg * KDL::deg2rad;
 }
 
 // -----------------------------------------------------------------------------
 
-double KinRepresentation::radToDeg(double rad)
+double radToDeg(double rad)
 {
     return rad * KDL::rad2deg;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KinRepresentation::parseEnumerator(const std::string &str, orientation_system *orient, orientation_system fallback)
+bool parseEnumerator(const std::string & str, coordinate_system * coord, coordinate_system fallback)
+{
+    if (str == "coordinate_system::CARTESIAN")
+    {
+        *coord = coordinate_system::CARTESIAN;
+    }
+    else if (str == "coordinate_system::CYLINDRICAL")
+    {
+        *coord = coordinate_system::CYLINDRICAL;
+    }
+    else if (str == "coordinate_system::SPHERICAL")
+    {
+        *coord = coordinate_system::SPHERICAL;
+    }
+    else
+    {
+        *coord = fallback;
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool parseEnumerator(const std::string & str, orientation_system * orient, orientation_system fallback)
 {
     if (str == "axisAngle")
     {
-        *orient = AXIS_ANGLE;
+        *orient = orientation_system::AXIS_ANGLE;
     }
     else if (str == "axisAngleScaled")
     {
-        *orient = AXIS_ANGLE_SCALED;
+        *orient = orientation_system::AXIS_ANGLE_SCALED;
     }
     else if (str == "RPY")
     {
-        *orient = RPY;
+        *orient = orientation_system::RPY;
     }
     else if (str == "eulerYZ")
     {
-        *orient = EULER_YZ;
+        *orient = orientation_system::EULER_YZ;
     }
     else if (str == "eulerZYZ")
     {
-        *orient = EULER_ZYZ;
+        *orient = orientation_system::EULER_ZYZ;
     }
     else
     {
@@ -456,33 +556,25 @@ bool KinRepresentation::parseEnumerator(const std::string &str, orientation_syst
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
-bool KinRepresentation::checkVectorSize(const std::vector<double> &v_in, orientation_system orient, int *expectedSize)
+bool parseEnumerator(const std::string & str, angular_units * units, angular_units fallback)
 {
-    switch (orient)
+    if (str == "degrees")
     {
-    case AXIS_ANGLE:
-        *expectedSize = 7;
-        return v_in.size() >= *expectedSize;
-    case AXIS_ANGLE_SCALED:
-        *expectedSize = 6;
-        return v_in.size() >= *expectedSize;
-    case RPY:
-        *expectedSize = 6;
-        return v_in.size() >= *expectedSize;
-    case EULER_YZ:
-        *expectedSize = 5;
-        return v_in.size() >= *expectedSize;
-    case EULER_ZYZ:
-        *expectedSize = 6;
-        return v_in.size() >= *expectedSize;
-    default:
-        *expectedSize = 0;
+        *units = angular_units::DEGREES;
+    }
+    else if (str == "radians")
+    {
+        *units = angular_units::RADIANS;
+    }
+    else
+    {
+        *units = fallback;
         return false;
     }
 
     return true;
 }
 
-}  // namespace roboticslab
+} // namespace KinRepresentation
+
+} // namespace roboticslab
