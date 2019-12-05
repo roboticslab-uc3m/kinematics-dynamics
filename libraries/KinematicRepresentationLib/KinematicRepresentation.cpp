@@ -502,17 +502,21 @@ double radToDeg(double rad)
 
 bool parseEnumerator(const std::string & str, coordinate_system * coord, coordinate_system fallback)
 {
-    if (str == "coordinate_system::CARTESIAN")
+    if (str == "cartesian")
     {
         *coord = coordinate_system::CARTESIAN;
     }
-    else if (str == "coordinate_system::CYLINDRICAL")
+    else if (str == "cylindrical")
     {
         *coord = coordinate_system::CYLINDRICAL;
     }
-    else if (str == "coordinate_system::SPHERICAL")
+    else if (str == "spherical")
     {
         *coord = coordinate_system::SPHERICAL;
+    }
+    else if (str == "none")
+    {
+        *coord = coordinate_system::NONE;
     }
     else
     {
@@ -546,6 +550,10 @@ bool parseEnumerator(const std::string & str, orientation_system * orient, orien
     else if (str == "eulerZYZ")
     {
         *orient = orientation_system::EULER_ZYZ;
+    }
+    else if (str == "none")
+    {
+        *orient = orientation_system::NONE;
     }
     else
     {
