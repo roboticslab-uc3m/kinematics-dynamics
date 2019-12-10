@@ -6,12 +6,13 @@ set -e
 package_name=
 repo_url=
 repo_checkout=
-clone_only_branches="master devel develop production"
+repo_archive=
 cmake_home_dir=
 additional_cmake_options=
 prepend_to_linker_path=
 prepend_to_standard_path=
 additional_export_paths=
+cmake_env=
 
 #-- Available getopt long option names
 #-- https://gist.github.com/magnetikonline/22c1eb412daa350eeceee76c97519da8
@@ -19,12 +20,13 @@ ARGUMENT_LIST=(
     "package-name"
     "repo-url"
     "repo-checkout"
-    "clone-only-branches"
+    "repo-archive"
     "cmake-home-dir"
     "additional-cmake-options"
     "prepend-to-linker-path"
     "prepend-to-standard-path"
     "additional-export-paths"
+    "cmake-env"
 )
 
 #-- Read arguments
@@ -50,12 +52,17 @@ while [ "$#" -gt 1 ]; do
 done
 
 #-- Check required arguments
-if [ -z "$package_name" ] || [ -z "$repo_url" ] || [ -z "$repo_checkout" ]; then
+if [ -z "$package_name" ] || [ -z "$repo_url" ] || [ -z "${repo_checkout}${repo_archive}" ]; then
     echo "Missing required options. Traceback:"
     for v in "${ARGUMENT_LIST[@]}"; do
         v_param=$(echo $v | tr '-' '_')
         echo "  --$v=${!v_param}"
     done
+    return 1
+fi
+
+if [ ! -z "$repo_checkout" ] && [ ! -z "$repo_archive" ]; then
+    echo "Cannot have both repo-checkout and repo-archive options."
     return 1
 fi
 
@@ -68,16 +75,8 @@ cmake_home_dir="$repo_source_dir/$cmake_home_dir"
 #-- Configure CMake command line options
 repo_cmake_options="$additional_cmake_options -DCMAKE_INSTALL_PREFIX:PATH=$repo_cache_dir"
 
-is_clone_only_branch=false
-
-for branch in $clone_only_branches; do
-    if [ "$repo_checkout" = "$branch" ]; then
-        is_clone_only_branch=true
-        break
-    fi
-done
-
-if $is_clone_only_branch; then
+#-- Do work
+if [ ! -z "$repo_checkout" ]; then
 
     #-- Clone, build and store in cache
 
@@ -91,14 +90,14 @@ if $is_clone_only_branch; then
     then
         echo "$package_name not in cache or not the latest commit of $repo_checkout branch"
         rm -rf "$repo_cache_dir"/*
-        cmake -H"$cmake_home_dir" -B"$repo_build_dir" $repo_cmake_options
+        eval $cmake_env cmake -H"$cmake_home_dir" -B"$repo_build_dir" $repo_cmake_options
         make -C "$repo_build_dir" -j$(nproc) install
         echo "$last_commit_sha" > "$repo_cache_dir/.last_commit_sha"
     else
         echo "$package_name found in cache ($(cat $repo_cache_dir/.last_commit_sha))"
     fi
 
-else
+elif [ ! -z "$repo_archive" ]; then
 
     #-- Download zipped file from archive, build and store in cache
 
@@ -106,7 +105,7 @@ else
         echo "Downloading $package_name $repo_checkout from archive"
         wget -q "$repo_url/archive/$repo_checkout.tar.gz" -P "$repo_source_dir"
         tar xzf "$repo_source_dir/$repo_checkout.tar.gz" -C "$repo_source_dir" --strip-components=1
-        cmake -H"$cmake_home_dir" -B"$repo_build_dir" $repo_cmake_options
+        eval $cmake_env cmake -H"$cmake_home_dir" -B"$repo_build_dir" $repo_cmake_options
         make -C "$repo_build_dir" -j$(nproc) install
     else
         echo "$package_name $repo_checkout already in cache"

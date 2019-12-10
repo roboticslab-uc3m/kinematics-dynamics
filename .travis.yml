@@ -1,5 +1,5 @@
 language: cpp
-dist: xenial
+dist: bionic
 os: linux
 
 compiler:
@@ -10,17 +10,17 @@ env:
   global:
     - CACHE_DIR=~/cached-deps
   matrix:
-    - YARP_CHECKOUT=master
-    - YARP_CHECKOUT=v3.1.2
+    - YARP_CHECKOUT=yarp-3.3 YCM_CHECKOUT=ycm-0.11
+    - YARP_CHECKOUT=yarp-3.2 YCM_CHECKOUT=ycm-0.10
 
 matrix:
   include:
     - if: type = cron
       compiler: gcc
-      env: ROBOTOLOGY_CHECKOUT=devel
+      env: ROBOTOLOGY_CHECKOUT=master
     - if: type = cron
       compiler: clang
-      env: ROBOTOLOGY_CHECKOUT=devel
+      env: ROBOTOLOGY_CHECKOUT=master
 
 cache:
   directories: $CACHE_DIR
@@ -46,7 +46,7 @@ install:
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name YCM
     --repo-url https://github.com/robotology/ycm
-    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}"
+    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YCM_CHECKOUT}"
 
   #-- Install YARP
   - >
