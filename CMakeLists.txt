@@ -37,7 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YCM 0.10 REQUIRED)
+find_package(YCM 0.11 REQUIRED)
 find_package(YARP 3.1 REQUIRED COMPONENTS OS dev sig
                                OPTIONAL_COMPONENTS math)
 find_package(COLOR_DEBUG REQUIRED)
@@ -91,7 +91,7 @@ if(DEFINED _exported_dependencies)
 endif()
 
 # Store the package in the user registry.
-export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
+set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 
 # Create and install config files.
 include(InstallBasicPackageFiles)
