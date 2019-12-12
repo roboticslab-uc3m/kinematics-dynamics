@@ -20,11 +20,7 @@ if(ENABLE_KdlVectorConverterLib)
                                                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-    if(NOT CMAKE_VERSION VERSION_LESS 3.8)
-        target_compile_features(KdlVectorConverterLib PUBLIC cxx_std_11)
-    else()
-        target_compile_features(KdlVectorConverterLib PUBLIC cxx_constexpr) # I'm too lazy
-    endif()
+    target_compile_features(KdlVectorConverterLib PUBLIC cxx_std_11)
 
     install(TARGETS KdlVectorConverterLib
             EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS

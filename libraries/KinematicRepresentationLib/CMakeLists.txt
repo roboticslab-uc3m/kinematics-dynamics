@@ -19,11 +19,7 @@ if(ENABLE_KinematicRepresentationLib)
                                                                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
                                                           PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    if(NOT CMAKE_VERSION VERSION_LESS 3.8)
-        target_compile_features(KinematicRepresentationLib PUBLIC cxx_std_11)
-    else()
-        target_compile_features(KinematicRepresentationLib PUBLIC cxx_constexpr) # I'm too lazy
-    endif()
+    target_compile_features(KinematicRepresentationLib PUBLIC cxx_std_11)
 
     install(TARGETS KinematicRepresentationLib
             EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
