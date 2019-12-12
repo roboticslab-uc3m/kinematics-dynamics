@@ -10,7 +10,13 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
-#include <yarp/dev/PreciselyTimed.h>
+
+#include <yarp/conf/version.h>
+#if YARP_VERSION_MINOR >= 3
+# include <yarp/dev/IPreciselyTimed.h>
+#else
+# include <yarp/dev/PreciselyTimed.h>
+#endif
 
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"

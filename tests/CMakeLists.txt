@@ -21,7 +21,7 @@ if(ENABLE_tests)
         target_link_libraries(testKinRepresentation KinematicRepresentationLib
                                                     gtest_main)
 
-        gtest_add_tests(testKinRepresentation "" AUTO)
+        gtest_discover_tests(testKinRepresentation)
     endif()
 
     # testScrewTheory
@@ -32,7 +32,7 @@ if(ENABLE_tests)
         target_link_libraries(testScrewTheory ScrewTheoryLib
                                               gtest_main)
 
-        gtest_add_tests(testScrewTheory "" AUTO)
+        gtest_discover_tests(testScrewTheory)
     endif()
 
     # testKdlSolver
@@ -45,7 +45,7 @@ if(ENABLE_tests)
                                         KinematicsDynamicsInterfaces
                                         gtest_main)
 
-    gtest_add_tests(testKdlSolver "" AUTO)
+    gtest_discover_tests(testKdlSolver)
 
     # testKdlSolverFromFile
 
@@ -57,7 +57,7 @@ if(ENABLE_tests)
                                                 KinematicsDynamicsInterfaces
                                                 gtest_main)
 
-    gtest_add_tests(testKdlSolverFromFile "" AUTO)
+    gtest_discover_tests(testKdlSolverFromFile)
 
     # testAsibotSolverFromFile
 
@@ -71,7 +71,7 @@ if(ENABLE_tests)
                                                        KinematicsDynamicsInterfaces
                                                        gtest_main)
 
-        gtest_add_tests(testAsibotSolverFromFile "" AUTO)
+        gtest_discover_tests(testAsibotSolverFromFile)
     endif()
 
     # testKdlTrajectory
@@ -82,7 +82,7 @@ if(ENABLE_tests)
         target_link_libraries(testKdlTrajectory TrajectoryLib
                                                 gtest_main)
 
-        gtest_add_tests(testKdlTrajectory "" AUTO)
+        gtest_discover_tests(testKdlTrajectory)
     endif()
 
     # testBasicCartesianControl
@@ -95,7 +95,7 @@ if(ENABLE_tests)
                                                     KinematicsDynamicsInterfaces
                                                     gtest_main)
 
-    gtest_add_tests(testBasicCartesianControl "" AUTO)
+    gtest_discover_tests(testBasicCartesianControl)
 
 else()
 
