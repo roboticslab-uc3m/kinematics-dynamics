@@ -5,7 +5,6 @@
 
 #include <yarp/os/PeriodicThread.h>
 
-#include <yarp/dev/api.h> // upstream bug in the IPositionDirect API
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionDirect.h>
 
