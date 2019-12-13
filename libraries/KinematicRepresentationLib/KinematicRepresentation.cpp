@@ -51,6 +51,7 @@ namespace
             accSize += 3;
             break;
         case orientation_system::EULER_YZ:
+        case orientation_system::POLAR_AZIMUTH:
             accSize += 2;
             break;
         case orientation_system::NONE:
@@ -137,6 +138,15 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out[3] = axis.x();
         x_out[4] = axis.y();
         x_out[5] = axis.z();
+        break;
+    }
+    case orientation_system::POLAR_AZIMUTH:
+    {
+        KDL::Rotation rot = KDL::Rotation::Rot2(KDL::Vector(-std::sin(degToRadHelper(angle, x_in[1 + off])), std::cos(degToRadHelper(angle, x_in[1 + off])), 0.0), degToRadHelper(angle, x_in[0 + off]));
+        KDL::Vector axis = rot.GetRot();
+        x_out[3] = axis.x();
+        x_out[4] = axis.y();
+        x_out[5] = axis.z(); // always 0.0
         break;
     }
     case orientation_system::NONE:
@@ -248,6 +258,21 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out.resize(3 + off);
         break;
     }
+    case orientation_system::POLAR_AZIMUTH:
+    {
+        if (std::abs(x_in[5]) > KDL::epsilon)
+        {
+            CD_ERROR("Non-null axis Z rotation component: %f.\n", x_in[5]);
+            return false;
+        }
+
+        x_out.resize(std::max<int>(2 + off, x_out.size()));
+        KDL::Vector axis(x_in[3], x_in[4], x_in[5]);
+        x_out[0 + off] = radToDegHelper(angle, axis.Norm());
+        x_out[1 + off] = radToDegHelper(angle, std::atan2(-axis.x(), axis.y()));
+        x_out.resize(2 + off);
+        break;
+    }
     case orientation_system::NONE:
         x_out.resize(off);
         break;
@@ -335,6 +360,9 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         CD_ERROR("Not implemented.\n");
         return false;
     case orientation_system::EULER_ZYZ:
+        CD_ERROR("Not implemented.\n");
+        return false;
+    case orientation_system::POLAR_AZIMUTH:
         CD_ERROR("Not implemented.\n");
         return false;
     case orientation_system::NONE:
@@ -426,15 +454,14 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         break;
     }
     case orientation_system::EULER_YZ:
-    {
         CD_ERROR("Not implemented.\n");
         return false;
-    }
     case orientation_system::EULER_ZYZ:
-    {
         CD_ERROR("Not implemented.\n");
         return false;
-    }
+    case orientation_system::POLAR_AZIMUTH:
+        CD_ERROR("Not implemented.\n");
+        return false;
     case orientation_system::NONE:
         xdot_out.resize(off);
         break;
@@ -550,6 +577,10 @@ bool parseEnumerator(const std::string & str, orientation_system * orient, orien
     else if (str == "eulerZYZ")
     {
         *orient = orientation_system::EULER_ZYZ;
+    }
+    else if (str == "polarAzimuth")
+    {
+        *orient = orientation_system::POLAR_AZIMUTH;
     }
     else if (str == "none")
     {
