@@ -42,6 +42,7 @@ enum class orientation_system
     RPY,               ///< fixed axes, roll is axis_x
     EULER_YZ,          ///< as @ref EULER_ZYZ, preceded by rotation about the azimuthal angle got from x-y coordinates
     EULER_ZYZ,         ///< mobile axes
+    POLAR_AZIMUTH,     ///< (polar angle, azimuthal angle)
     NONE               ///< omit orientation system in resulting combined coord+orient representation
 };
 
@@ -217,6 +218,7 @@ bool parseEnumerator(const std::string & str, coordinate_system * coord,
  * RPY             | @ref orientation_system::RPY
  * eulerYZ         | @ref orientation_system::EULER_YZ
  * eulerZYZ        | @ref orientation_system::EULER_ZYZ
+ * polarAzimuth    | @ref orientation_system::POLAR_AZIMUTH
  * none            | @ref orientation_system::NONE
  *
  * @param str Input string.

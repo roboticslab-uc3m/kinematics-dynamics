@@ -146,6 +146,28 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseEulerZYZ)
     ASSERT_NEAR(x_out[5], M_PI / 4, EPS);
 }
 
+TEST_F(KinRepresentationTest, KinRepresentationEncodePosePolarAzimuth)
+{
+    std::vector<double> x_in(5), x_out;
+
+    x_in[0] = 1.0;
+    x_in[1] = 1.0;
+    x_in[2] = 2.0;
+    x_in[3] = 45.0;
+    x_in[4] = 90.0;
+
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::POLAR_AZIMUTH, angular_units::DEGREES));
+
+    ASSERT_EQ(x_out.size(), 6);
+
+    ASSERT_NEAR(x_out[0], 1.0, EPS);
+    ASSERT_NEAR(x_out[1], 1.0, EPS);
+    ASSERT_NEAR(x_out[2], 2.0, EPS);
+    ASSERT_NEAR(x_out[3], -M_PI / 4, EPS);
+    ASSERT_NEAR(x_out[4], 0.0, EPS);
+    ASSERT_NEAR(x_out[5], 0.0, EPS);
+}
+
 TEST_F(KinRepresentationTest, KinRepresentationEncodePoseRadians)
 {
     std::vector<double> x_in(6), x_out;
@@ -282,6 +304,29 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseEulerZYZ)
     ASSERT_NEAR(x_out[3], 45.0, EPS);
     ASSERT_NEAR(x_out[4], 0.0, EPS);
     ASSERT_NEAR(x_out[5], 0.0, EPS);
+}
+
+TEST_F(KinRepresentationTest, KinRepresentationDecodePosePolarAzimuth)
+{
+    std::vector<double> x_in(6), x_out;
+    double factor = std::sqrt(2) / 2.0; // vector normalization
+
+    x_in[0] = 1.0;
+    x_in[1] = 1.0;
+    x_in[2] = 2.0;
+    x_in[3] = factor * M_PI / 4;
+    x_in[4] = factor * M_PI / 4;
+    x_in[5] = 0.0;
+
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::POLAR_AZIMUTH, angular_units::DEGREES));
+
+    ASSERT_EQ(x_out.size(), 5);
+
+    ASSERT_NEAR(x_out[0], 1.0, EPS);
+    ASSERT_NEAR(x_out[1], 1.0, EPS);
+    ASSERT_NEAR(x_out[2], 2.0, EPS);
+    ASSERT_NEAR(x_out[3], 45.0, EPS);
+    ASSERT_NEAR(x_out[4], -45.0, EPS);
 }
 
 TEST_F(KinRepresentationTest, KinRepresentationDecodePoseRadians)
