@@ -11,7 +11,9 @@ yarp_prepare_plugin(AsibotSolver
 
 if(NOT SKIP_AsibotSolver)
 
-    set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
+    if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
+        set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
+    endif()
 
     yarp_add_plugin(AsibotSolver AsibotSolver.hpp
                                  AsibotSolver.cpp
