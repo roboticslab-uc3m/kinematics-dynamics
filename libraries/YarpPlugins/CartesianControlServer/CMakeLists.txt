@@ -8,6 +8,7 @@ yarp_prepare_plugin(CartesianControlServer
                     CATEGORY device
                     TYPE roboticslab::CartesianControlServer
                     INCLUDE CartesianControlServer.hpp
+                    EXTRA_CONFIG WRAPPER=CartesianControlServer
                     DEFAULT ON
                     DEPENDS ENABLE_KinematicRepresentationLib)
 
