@@ -13,7 +13,7 @@
 
 bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 {
-    yarp::os::Value *name, *angleRepr, *coordRepr, *angularUnits;
+    yarp::os::Value * name;
 
     if (config.check("subdevice", name))
     {
@@ -61,8 +61,10 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     std::string prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
 
-    rpcServer.open(prefix + "/rpc:s");
-    commandPort.open(prefix + "/command:i");
+    bool ok = true;
+
+    ok &= rpcServer.open(prefix + "/rpc:s");
+    ok &= commandPort.open(prefix + "/command:i");
 
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
@@ -71,7 +73,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (periodInMs > 0)
     {
-        fkOutPort.open(prefix + "/state:o");
+        ok &= fkOutPort.open(prefix + "/state:o");
 
         yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);
         yarp::os::PeriodicThread::start();
@@ -81,46 +83,66 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
         fkStreamEnabled = false;
     }
 
-    bool hasCoordRepr = config.check("coordRepr", coordRepr, "coordinate representation for transform port");
-    bool hasAngleRepr = config.check("angleRepr", angleRepr, "angle representation for transform port");
-    bool hasAngularUnits = config.check("angularUnits", angularUnits, "angular units for transform port");
+    yarp::os::Value * angleRepr, * coordRepr, * angularUnits;
 
-    // check angle representation, leave this block last to allow inner return instruction
-    if (hasCoordRepr || hasAngleRepr || hasAngularUnits)
+    KinRepresentation::coordinate_system coord;
+    KinRepresentation::orientation_system orient;
+    KinRepresentation::angular_units units;
+
+    bool openTransformPort = false;
+
+    if (config.check("coordRepr", coordRepr, "coordinate representation for transform port"))
     {
         std::string coordReprStr = coordRepr->asString();
-        std::string angleReprStr = angleRepr->asString();
-        std::string angularUnitsStr = angularUnits->asString();
-
-        KinRepresentation::coordinate_system coord;
-        KinRepresentation::orientation_system orient;
-        KinRepresentation::angular_units units;
 
         if (!KinRepresentation::parseEnumerator(coordReprStr, &coord))
         {
             CD_WARNING("Unknown coordRepr \"%s\", falling back to default.\n", coordReprStr.c_str());
-            return true;
         }
+        else
+        {
+            openTransformPort = true;
+        }
+    }
+
+    if (config.check("angleRepr", angleRepr, "angle representation for transform port"))
+    {
+        std::string angleReprStr = angleRepr->asString();
 
         if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
             CD_WARNING("Unknown angleRepr \"%s\", falling back to default.\n", angleReprStr.c_str());
             return true;
         }
+        else
+        {
+            openTransformPort = true;
+        }
+    }
+
+    if (config.check("angularUnits", angularUnits, "angular units for transform port"))
+    {
+        std::string angularUnitsStr = angularUnits->asString();
 
         if (!KinRepresentation::parseEnumerator(angularUnitsStr, &units))
         {
             CD_WARNING("Unknown angularUnits \"%s\", falling back to default.\n", angularUnitsStr.c_str());
             return true;
         }
+        else
+        {
+            openTransformPort = true;
+        }
+    }
 
+    if (openTransformPort)
+    {
         rpcTransformResponder = new RpcTransformResponder(iCartesianControl, coord, orient, units);
-
-        rpcTransformServer.open(prefix + "/rpc_transform:s");
+        ok &= rpcTransformServer.open(prefix + "/rpc_transform:s");
         rpcTransformServer.setReader(*rpcTransformResponder);
     }
 
-    return true;
+    return ok;
 }
 
 // -----------------------------------------------------------------------------
