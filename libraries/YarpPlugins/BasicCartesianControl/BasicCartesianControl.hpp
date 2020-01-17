@@ -220,6 +220,7 @@ protected:
     bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot);
     bool checkJointVelocities(const std::vector<double> &qdot);
 
+    bool checkControlModes(int mode);
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
     void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);

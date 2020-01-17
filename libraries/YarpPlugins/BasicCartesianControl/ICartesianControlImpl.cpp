@@ -446,7 +446,8 @@ bool roboticslab::BasicCartesianControl::act(int command)
 
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST)
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
+            || !checkControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Streaming command not preset.\n");
         return;
@@ -485,7 +486,8 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE)
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE
+            || !checkControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Streaming command not preset.\n");
         return;
@@ -561,7 +563,8 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI)
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI
+            || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
         CD_ERROR("Streaming command not preset.\n");
         return;

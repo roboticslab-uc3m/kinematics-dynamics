@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <algorithm>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
@@ -106,6 +108,21 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
     }
 
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool BasicCartesianControl::checkControlModes(int mode)
+{
+    std::vector<int> modes(numRobotJoints);
+
+    if (!iControlMode->getControlModes(modes.data()))
+    {
+        CD_WARNING("getControlModes failed.\n");
+        return false;
+    }
+
+    return std::all_of(modes.begin(), modes.end(), [mode](int retrievedMode) { return retrievedMode == mode; });
 }
 
 // -----------------------------------------------------------------------------
