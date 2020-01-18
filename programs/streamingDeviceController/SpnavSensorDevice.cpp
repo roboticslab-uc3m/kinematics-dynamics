@@ -51,7 +51,7 @@ bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    if (!iCartesianControl->stat(currentX))
+    if (usingMovi && !iCartesianControl->stat(currentX))
     {
         CD_WARNING("Unable to stat initial position.\n");
         return false;
