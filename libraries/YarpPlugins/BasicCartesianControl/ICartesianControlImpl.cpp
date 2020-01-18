@@ -371,12 +371,19 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+
+    // first switch control so that manipulators don't fall due to e.g. gravity
+    if (!setControlModes(VOCAB_CM_POSITION))
+    {
+        CD_WARNING("setControlModes(VOCAB_CM_POSITION) failed.\n");
+    }
+
+    // stop joints if already controlling position
     if (!iPositionControl->stop())
     {
         CD_WARNING("stop() failed.\n");
     }
-
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     if (iCartesianTrajectory != 0)
     {
