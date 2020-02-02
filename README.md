@@ -80,4 +80,5 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
 - [nav74neet/ddpg_biped](https://github.com/nav74neet/ddpg_biped)
 - https://github.com/pal-robotics
+- https://github.com/loco-3d
 - https://discourse.ros.org/t/humanoids-sig/1949/12
