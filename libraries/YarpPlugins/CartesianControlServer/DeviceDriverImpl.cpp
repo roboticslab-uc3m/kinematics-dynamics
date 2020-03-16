@@ -85,9 +85,9 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     yarp::os::Value * angleRepr, * coordRepr, * angularUnits;
 
-    KinRepresentation::coordinate_system coord;
-    KinRepresentation::orientation_system orient;
-    KinRepresentation::angular_units units;
+    KinRepresentation::coordinate_system coord = KinRepresentation::coordinate_system::CARTESIAN;
+    KinRepresentation::orientation_system orient = KinRepresentation::orientation_system::AXIS_ANGLE_SCALED;
+    KinRepresentation::angular_units units = KinRepresentation::angular_units::DEGREES;
 
     bool openTransformPort = false;
 

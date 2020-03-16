@@ -153,6 +153,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out[3] = x_out[4] = x_out[5] = 0.0;
         break;
     default:
+        CD_WARNING("Unsupported orientation system.\n");
         return false;
     }
 
@@ -176,6 +177,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out[0] = x_out[1] = x_out[2] = 0.0;
         break;
     default:
+        CD_WARNING("Unsupported coordinate system.\n");
         return false;
     }
 
@@ -277,6 +279,7 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out.resize(off);
         break;
     default:
+        CD_WARNING("Unsupported orientation system.\n");
         return false;
     }
 
@@ -296,6 +299,7 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
     case coordinate_system::NONE:
         break;
     default:
+        CD_WARNING("Unsupported coordinate system.\n");
         return false;
     }
 
@@ -369,6 +373,7 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         xdot_out[3] = xdot_out[4] = xdot_out[5] = 0.0;
         break;
     default:
+        CD_WARNING("Unsupported orientation system.\n");
         return false;
     }
 
@@ -392,6 +397,7 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         xdot_out[0] = xdot_out[1] = xdot_out[2] = 0.0;
         break;
     default:
+        CD_WARNING("Unsupported coordinate system.\n");
         return false;
     }
 
@@ -466,6 +472,7 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         xdot_out.resize(off);
         break;
     default:
+        CD_WARNING("Unsupported orientation system.\n");
         return false;
     }
 
@@ -485,6 +492,7 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
     case coordinate_system::NONE:
         break;
     default:
+        CD_WARNING("Unsupported coordinate system.\n");
         return false;
     }
 
