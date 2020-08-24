@@ -31,7 +31,7 @@ if(NOT SKIP_KdlSolver)
                               ChainIkSolverPos_ID.hpp
                               ChainIkSolverPos_ID.cpp)
 
-    target_link_libraries(KdlSolver YARP::YARP_OS
+    target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}

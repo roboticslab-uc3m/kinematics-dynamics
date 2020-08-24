@@ -21,7 +21,7 @@ if(NOT SKIP_CartesianControlClient)
                                            ICartesianControlImpl.cpp
                                            FkStreamResponder.cpp)
 
-    target_link_libraries(CartesianControlClient YARP::YARP_OS
+    target_link_libraries(CartesianControlClient YARP::YARP_os
                                                  YARP::YARP_dev
                                                  ROBOTICSLAB::ColorDebug
                                                  KinematicsDynamicsInterfaces)

@@ -24,7 +24,7 @@ if(NOT SKIP_BasicCartesianControl)
                                           ICartesianControlImpl.cpp
                                           PeriodicThreadImpl.cpp)
 
-    target_link_libraries(BasicCartesianControl YARP::YARP_OS
+    target_link_libraries(BasicCartesianControl YARP::YARP_os
                                                 YARP::YARP_dev
                                                 ROBOTICSLAB::ColorDebug
                                                 TrajectoryLib

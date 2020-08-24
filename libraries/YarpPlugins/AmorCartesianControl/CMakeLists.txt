@@ -24,7 +24,7 @@ if(NOT SKIP_AmorCartesianControl)
                                          DeviceDriverImpl.cpp
                                          ICartesianControlImpl.cpp)
 
-    target_link_libraries(AmorCartesianControl YARP::YARP_OS
+    target_link_libraries(AmorCartesianControl YARP::YARP_os
                                                YARP::YARP_dev
                                                AMOR::amor_api
                                                ROBOTICSLAB::ColorDebug

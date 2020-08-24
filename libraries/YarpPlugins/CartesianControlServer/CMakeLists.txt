@@ -24,7 +24,7 @@ if(NOT SKIP_CartesianControlServer)
                                            RpcResponder.cpp
                                            StreamResponder.cpp)
 
-    target_link_libraries(CartesianControlServer YARP::YARP_OS
+    target_link_libraries(CartesianControlServer YARP::YARP_os
                                                  YARP::YARP_dev
                                                  ROBOTICSLAB::ColorDebug
                                                  KinematicRepresentationLib

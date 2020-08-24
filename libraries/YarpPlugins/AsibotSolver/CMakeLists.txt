@@ -23,13 +23,15 @@ if(NOT SKIP_AsibotSolver)
                                  AsibotConfiguration.cpp
                                  AsibotConfigurationLeastOverallAngularDisplacement.cpp)
 
-    target_link_libraries(AsibotSolver YARP::YARP_OS
+    target_link_libraries(AsibotSolver YARP::YARP_os
                                        YARP::YARP_dev
                                        YARP::YARP_sig
                                        YARP::YARP_math
                                        ROBOTICSLAB::ColorDebug
                                        KinematicRepresentationLib
                                        KinematicsDynamicsInterfaces)
+
+    target_compile_features(AsibotSolver PUBLIC cxx_std_11)
 
     yarp_install(TARGETS AsibotSolver
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

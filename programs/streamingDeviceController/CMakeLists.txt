@@ -26,7 +26,7 @@ if(ENABLE_streamingDeviceController)
                                              CentroidTransform.cpp)
 
     target_link_libraries(streamingDeviceController ${orocos_kdl_LIBRARIES}
-                                                    YARP::YARP_OS
+                                                    YARP::YARP_os
                                                     YARP::YARP_init
                                                     YARP::YARP_dev
                                                     YARP::YARP_sig

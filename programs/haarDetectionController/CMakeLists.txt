@@ -13,7 +13,7 @@ if(ENABLE_haarDetectionController)
                                            GrabberResponder.hpp
                                            GrabberResponder.cpp)
 
-    target_link_libraries(haarDetectionController YARP::YARP_OS
+    target_link_libraries(haarDetectionController YARP::YARP_os
                                                   YARP::YARP_init
                                                   YARP::YARP_dev
                                                   ROBOTICSLAB::ColorDebug

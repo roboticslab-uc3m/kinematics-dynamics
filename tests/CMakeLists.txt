@@ -39,7 +39,7 @@ if(ENABLE_tests)
 
     add_executable(testKdlSolver testKdlSolver.cpp)
 
-    target_link_libraries(testKdlSolver YARP::YARP_OS
+    target_link_libraries(testKdlSolver YARP::YARP_os
                                         YARP::YARP_dev
                                         ROBOTICSLAB::ColorDebug
                                         KinematicsDynamicsInterfaces
@@ -51,7 +51,7 @@ if(ENABLE_tests)
 
     add_executable(testKdlSolverFromFile testKdlSolverFromFile.cpp)
 
-    target_link_libraries(testKdlSolverFromFile YARP::YARP_OS
+    target_link_libraries(testKdlSolverFromFile YARP::YARP_os
                                                 YARP::YARP_dev
                                                 ROBOTICSLAB::ColorDebug
                                                 KinematicsDynamicsInterfaces
@@ -64,7 +64,7 @@ if(ENABLE_tests)
     if(TARGET KinematicRepresentationLib)
         add_executable(testAsibotSolverFromFile testAsibotSolverFromFile.cpp)
 
-        target_link_libraries(testAsibotSolverFromFile YARP::YARP_OS
+        target_link_libraries(testAsibotSolverFromFile YARP::YARP_os
                                                        YARP::YARP_dev
                                                        ROBOTICSLAB::ColorDebug
                                                        KinematicRepresentationLib
@@ -89,7 +89,7 @@ if(ENABLE_tests)
 
     add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 
-    target_link_libraries(testBasicCartesianControl YARP::YARP_OS
+    target_link_libraries(testBasicCartesianControl YARP::YARP_os
                                                     YARP::YARP_dev
                                                     ROBOTICSLAB::ColorDebug
                                                     KinematicsDynamicsInterfaces
