@@ -2,6 +2,8 @@
 
 #include "YarpTinyMath.hpp"
 
+#include <yarp/math/Math.h>  // provides: eye, operators
+
 // ----------------------------------------------------------------------------
 
 double roboticslab::toDeg(const double inRad)
@@ -74,7 +76,6 @@ yarp::sig::Matrix roboticslab::rotZ(const double &inDeg)
 
 yarp::sig::Matrix roboticslab::eulerZYZtoH(const yarp::sig::Vector &x, const yarp::sig::Vector &o)
 {
-    using namespace yarp::math;  // else matrix operators wreak havoc in the following line
     yarp::sig::Matrix result = rotZ(o[0]) * rotY(o[1]) * rotZ(o[2]);  // 3x3 
     result.resize(4, 4);
     result(3, 3) = 1;

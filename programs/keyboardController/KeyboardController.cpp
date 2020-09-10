@@ -16,8 +16,8 @@
 #include <algorithm>
 
 #include <yarp/os/Property.h>
-#include <yarp/os/Time.h>
 #include <yarp/os/Value.h>
+#include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
 
@@ -212,7 +212,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
-        if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::AXIS_ANGLE))
+        if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::orientation_system::AXIS_ANGLE))
         {
             CD_WARNING("Unable to parse \"angleRepr\" option (%s), defaulting to %s.\n", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
             angleRepr = DEFAULT_ANGLE_REPR;
@@ -222,7 +222,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         usingThread = rf.check("movi", "use MOVI command");
 
-        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt();
+        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt32();
 
         if (usingThread)
         {
@@ -245,13 +245,13 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         }
     }
 
+    currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
+
     issueStop(); // just in case
 
     ttyset();
 
     printHelp();
-
-    controlMode = NOT_CONTROLLING;
 
     return true;
 }
@@ -378,6 +378,14 @@ bool roboticslab::KeyboardController::updateModule()
     // toggle reference frame for cartesian commands
     case 'm':
         toggleReferenceFrame();
+        break;
+    // actuate tool (open gripper)
+    case 'k':
+        actuateTool(VOCAB_CC_ACTUATOR_OPEN_GRIPPER);
+        break;
+    // actuate tool (close gripper)
+    case 'l':
+        actuateTool(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
         break;
     // issue stop
     case 13:  // enter
@@ -574,6 +582,25 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
     std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;
 }
 
+void roboticslab::KeyboardController::actuateTool(int command)
+{
+    if (!cartesianControlDevice.isValid())
+    {
+        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        issueStop();
+        return;
+    }
+
+    if (!iCartesianControl->act(command))
+    {
+        CD_ERROR("Unable to send '%s' command to actuator.\n", yarp::os::Vocab::decode(command).c_str());
+    }
+    else
+    {
+        currentActuatorCommand = command;
+    }
+}
+
 void roboticslab::KeyboardController::printJointPositions()
 {
     if (!controlboardDevice.isValid())
@@ -601,7 +628,7 @@ void roboticslab::KeyboardController::printCartesianPositions()
 
     std::vector<double> x;
     iCartesianControl->stat(x);
-    KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+    KinRepresentation::decodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, orient, KinRepresentation::angular_units::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
     std::cout << roundZeroes(x) << std::endl;
@@ -611,6 +638,18 @@ void roboticslab::KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
+        if (currentActuatorCommand != VOCAB_CC_ACTUATOR_NONE)
+        {
+            if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER))
+            {
+                CD_WARNING("Unable to stop actuator.\n");
+            }
+            else
+            {
+                currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
+            }
+        }
+
         if (usingThread)
         {
             linTrajThread->suspend();
@@ -692,7 +731,10 @@ void roboticslab::KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
+
         std::cout << (cartFrame == ICartesianSolver::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
+
+        std::cout << " 'k'/'l' - open/close gripper" << std::endl;
     }
 
     std::cout << " [Enter] - issue stop" << std::endl;

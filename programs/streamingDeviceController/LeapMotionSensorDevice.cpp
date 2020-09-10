@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/Value.h>
 #include <yarp/sig/Vector.h>
 
 #include <kdl/frames.hpp>
@@ -16,23 +17,31 @@ namespace
     KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
 }
 
-roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, double period)
+roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi, double period)
     : StreamingDevice(config),
       iAnalogSensor(NULL),
-      period(period)
+      period(period),
+      usingMovi(usingMovi),
+      hasActuator(false),
+      grab(false), pinch(false)
 {
-    yarp::os::Bottle *leapFrameRPY = config.find("leapFrameRPY").asList();
+    yarp::os::Value v = config.find("leapFrameRPY");
 
-    if (!leapFrameRPY->isNull() && leapFrameRPY->size() == 3)
+    if (!v.isNull())
     {
-        double roll = leapFrameRPY->get(0).asDouble() * M_PI / 180.0;
-        double pitch = leapFrameRPY->get(1).asDouble() * M_PI / 180.0;
-        double yaw = leapFrameRPY->get(2).asDouble() * M_PI / 180.0;
+        yarp::os::Bottle *leapFrameRPY = v.asList();
 
-        CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+        if (!leapFrameRPY->isNull() && leapFrameRPY->size() == 3)
+        {
+            double roll = leapFrameRPY->get(0).asFloat64() * M_PI / 180.0;
+            double pitch = leapFrameRPY->get(1).asFloat64() * M_PI / 180.0;
+            double yaw = leapFrameRPY->get(2).asFloat64() * M_PI / 180.0;
 
-        frame_ee_leap = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
-        frame_leap_ee = frame_ee_leap.Inverse();
+            CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+
+            frame_ee_leap = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
+            frame_leap_ee = frame_ee_leap.Inverse();
+        }
     }
 }
 
@@ -51,10 +60,21 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
 
 bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING, VOCAB_CC_POSE))
+    if (!usingMovi && period <= 0.0)
     {
-        CD_WARNING("Unable to preset streaming command.\n");
+        CD_WARNING("Invalid period for pose command: %f.\n", period);
         return false;
+    }
+
+    if (usingStreamingPreset)
+    {
+        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_POSE;
+
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
+        {
+            CD_WARNING("Unable to preset streaming command.\n");
+            return false;
+        }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
@@ -63,21 +83,31 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    std::vector<double> x;
-
-    if (!iCartesianControl->stat(initialOffset))
+    if (!iCartesianControl->stat(initialTcpOffset))
     {
         CD_WARNING("stat failed.\n");
         return false;
     }
 
-    CD_INFO("Initial offset: %f %f %f [m], %f %f %f [rad]\n",
-            initialOffset[0], initialOffset[1], initialOffset[2],
-            initialOffset[3], initialOffset[4], initialOffset[5]);
+    CD_INFO("Initial TCP offset: %f %f %f [m], %f %f %f [rad]\n",
+            initialTcpOffset[0], initialTcpOffset[1], initialTcpOffset[2],
+            initialTcpOffset[3], initialTcpOffset[4], initialTcpOffset[5]);
 
-    KDL::Frame frame_base_ee = KdlVectorConverter::vectorToFrame(initialOffset);
+    KDL::Frame frame_base_ee = KdlVectorConverter::vectorToFrame(initialTcpOffset);
 
     frame_base_leap = frame_base_ee * frame_ee_leap;
+
+    if (!acquireData())
+    {
+        CD_WARNING("Initial acquireData failed.\n");
+        return false;
+    }
+
+    initialLeapOffset = data;
+
+    CD_INFO("Initial Leap offset: %f %f %f [m], %f %f %f [rad]\n",
+            initialLeapOffset[0], initialLeapOffset[1], initialLeapOffset[2],
+            initialLeapOffset[3], initialLeapOffset[4], initialLeapOffset[5]);
 
     return true;
 }
@@ -89,7 +119,7 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
 
     CD_DEBUG("%s\n", data.toString(4, 1).c_str());
 
-    if (data.size() < 6)
+    if (data.size() != 6 && data.size() != 8)
     {
         CD_WARNING("Invalid data size: %zu.\n", data.size());
         return false;
@@ -105,22 +135,33 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
     this->data[4] = data[4];
     this->data[5] = data[5];
 
+    if (data.size() == 8)
+    {
+        hasActuator = true;
+
+        grab = data[6] == 1.0;
+        pinch = data[7] == 1.0;
+    }
+
     return true;
 }
 
 bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
 {
-    data[1] -= VERTICAL_OFFSET;
-
     for (int i = 0; i < 6; i++)
     {
         if (fixedAxes[i])
         {
             data[i] = 0.0;
         }
-        else if (i < 3)
+        else
         {
-            data[i] /= scaling;
+            data[i] -= initialLeapOffset[i];
+
+            if (i < 3)
+            {
+                data[i] /= scaling;
+            }
         }
     }
 
@@ -142,7 +183,48 @@ bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
     return true;
 }
 
+int roboticslab::LeapMotionSensorDevice::getActuatorState()
+{
+    if (!hasActuator)
+    {
+        return VOCAB_CC_ACTUATOR_NONE;
+    }
+
+    if (grab)
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
+    }
+    else if (pinch)
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
+    }
+    else if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        if (actuatorState != VOCAB_CC_ACTUATOR_STOP_GRIPPER)
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+        }
+        else
+        {
+            actuatorState = VOCAB_CC_ACTUATOR_NONE;
+        }
+    }
+    else
+    {
+        actuatorState = VOCAB_CC_ACTUATOR_NONE;
+    }
+
+    return actuatorState;
+}
+
 void roboticslab::LeapMotionSensorDevice::sendMovementCommand()
 {
-    iCartesianControl->pose(data, period);
+    if (usingMovi)
+    {
+        iCartesianControl->movi(data);
+    }
+    else
+    {
+        iCartesianControl->pose(data, period);
+    }
 }

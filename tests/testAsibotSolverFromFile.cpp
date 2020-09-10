@@ -15,6 +15,8 @@
 namespace roboticslab
 {
 
+using namespace KinRepresentation;
+
 /**
  * @ingroup kinematics-dynamics-tests
  * @brief Tests AsibotSolver ikin from loaded configuration file.
@@ -88,7 +90,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverAppendLink)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -102,7 +104,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverAppendLink)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -128,7 +130,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverRestoreOriginalChain)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -142,7 +144,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverRestoreOriginalChain)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -159,7 +161,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin1)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -182,7 +184,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKin2)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -209,7 +211,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverFwdKinTool)
 
     ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x, x, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x.size(), 5);  //-- eulerYZ
 
@@ -263,7 +265,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
     // forces FORWARD UP, compare with AsibotSolverSetLimits
     qGuess[2] = 90.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
@@ -289,7 +291,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
     // force REVERSED
     qGuess[1] = 45.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 
@@ -316,7 +318,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
     // force FORWARD
     qGuess[1] = 45.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
@@ -332,7 +334,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
     // force REVERSED
     xd[4] = 180.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
@@ -356,7 +358,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
     // force REVERSED
     qGuess[1] = 45.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
@@ -371,7 +373,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
     // force FORWARD
     xd[4] = 0.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
@@ -397,7 +399,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     qGuess[1] = 15.0;
     qGuess[2] = 30.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd_encoded, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
 
@@ -439,7 +441,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKinTool)
 
     ASSERT_TRUE(iCartesianSolver->appendLink(tool));
 
-    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
 

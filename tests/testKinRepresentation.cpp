@@ -8,6 +8,8 @@
 namespace roboticslab
 {
 
+using namespace KinRepresentation;
+
 /**
  * @ingroup kinematics-dynamics-tests
  * @brief Tests \ref KinRepresentation.
@@ -41,7 +43,7 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseAxisAngle)
     x_in[5] = 1.0;
     x_in[6] = 45.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -64,7 +66,7 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseAxisAngleScaled)
     x_in[4] = 0.0;
     x_in[5] = 45.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE_SCALED, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -87,7 +89,7 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseRPY)
     x_in[4] = 0.0;
     x_in[5] = 45.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::RPY, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::RPY, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -109,7 +111,7 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseEulerYZ)
     x_in[3] = 0.0;
     x_in[4] = 0.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -132,7 +134,7 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseEulerZYZ)
     x_in[4] = 0.0;
     x_in[5] = 0.0;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::EULER_ZYZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::EULER_ZYZ, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -142,6 +144,28 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseEulerZYZ)
     ASSERT_NEAR(x_out[3], 0.0, EPS);
     ASSERT_NEAR(x_out[4], 0, EPS);
     ASSERT_NEAR(x_out[5], M_PI / 4, EPS);
+}
+
+TEST_F(KinRepresentationTest, KinRepresentationEncodePosePolarAzimuth)
+{
+    std::vector<double> x_in(5), x_out;
+
+    x_in[0] = 1.0;
+    x_in[1] = 1.0;
+    x_in[2] = 2.0;
+    x_in[3] = 45.0;
+    x_in[4] = 90.0;
+
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::POLAR_AZIMUTH, angular_units::DEGREES));
+
+    ASSERT_EQ(x_out.size(), 6);
+
+    ASSERT_NEAR(x_out[0], 1.0, EPS);
+    ASSERT_NEAR(x_out[1], 1.0, EPS);
+    ASSERT_NEAR(x_out[2], 2.0, EPS);
+    ASSERT_NEAR(x_out[3], -M_PI / 4, EPS);
+    ASSERT_NEAR(x_out[4], 0.0, EPS);
+    ASSERT_NEAR(x_out[5], 0.0, EPS);
 }
 
 TEST_F(KinRepresentationTest, KinRepresentationEncodePoseRadians)
@@ -155,7 +179,7 @@ TEST_F(KinRepresentationTest, KinRepresentationEncodePoseRadians)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::encodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE_SCALED, KinRepresentation::RADIANS));
+    ASSERT_TRUE(encodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, angular_units::RADIANS));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -178,7 +202,7 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseAxisAngle)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 7);
 
@@ -202,7 +226,7 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseAxisAngleScaled)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE_SCALED, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -225,7 +249,7 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseRPY)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::RPY, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::RPY, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -248,7 +272,7 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseEulerYZ)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::EULER_YZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 5);
 
@@ -270,7 +294,7 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseEulerZYZ)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::EULER_ZYZ, KinRepresentation::DEGREES));
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::EULER_ZYZ, angular_units::DEGREES));
 
     ASSERT_EQ(x_out.size(), 6);
 
@@ -280,6 +304,29 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseEulerZYZ)
     ASSERT_NEAR(x_out[3], 45.0, EPS);
     ASSERT_NEAR(x_out[4], 0.0, EPS);
     ASSERT_NEAR(x_out[5], 0.0, EPS);
+}
+
+TEST_F(KinRepresentationTest, KinRepresentationDecodePosePolarAzimuth)
+{
+    std::vector<double> x_in(6), x_out;
+    double factor = std::sqrt(2) / 2.0; // vector normalization
+
+    x_in[0] = 1.0;
+    x_in[1] = 1.0;
+    x_in[2] = 2.0;
+    x_in[3] = factor * M_PI / 4;
+    x_in[4] = factor * M_PI / 4;
+    x_in[5] = 0.0;
+
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::POLAR_AZIMUTH, angular_units::DEGREES));
+
+    ASSERT_EQ(x_out.size(), 5);
+
+    ASSERT_NEAR(x_out[0], 1.0, EPS);
+    ASSERT_NEAR(x_out[1], 1.0, EPS);
+    ASSERT_NEAR(x_out[2], 2.0, EPS);
+    ASSERT_NEAR(x_out[3], 45.0, EPS);
+    ASSERT_NEAR(x_out[4], -45.0, EPS);
 }
 
 TEST_F(KinRepresentationTest, KinRepresentationDecodePoseRadians)
@@ -293,7 +340,7 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseRadians)
     x_in[4] = 0.0;
     x_in[5] = M_PI / 4;
 
-    ASSERT_TRUE(KinRepresentation::decodePose(x_in, x_out, KinRepresentation::CARTESIAN, KinRepresentation::AXIS_ANGLE_SCALED, KinRepresentation::RADIANS));
+    ASSERT_TRUE(decodePose(x_in, x_out, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, angular_units::RADIANS));
 
     ASSERT_EQ(x_out.size(), 6);
 

@@ -11,9 +11,9 @@
 #include <yarp/os/ResourceFinder.h>
 
 #include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/IControlLimits.h>
+#include <yarp/dev/IControlMode.h>
 #include <yarp/dev/IEncoders.h>
-#include <yarp/dev/IControlMode2.h>
-#include <yarp/dev/IControlLimits2.h>
 #include <yarp/dev/IVelocityControl.h>
 
 #include "LinearTrajectoryThread.hpp"
@@ -70,6 +70,8 @@ private:
 
     void toggleReferenceFrame();
 
+    void actuateTool(int command);
+
     void printJointPositions();
     void printCartesianPositions();
 
@@ -78,6 +80,7 @@ private:
     void printHelp();
 
     int axes;
+    int currentActuatorCommand;
 
     ICartesianSolver::reference_frame cartFrame;
     std::string angleRepr;
@@ -91,8 +94,8 @@ private:
     yarp::dev::PolyDriver cartesianControlDevice;
 
     yarp::dev::IEncoders * iEncoders;
-    yarp::dev::IControlMode2 * iControlMode;
-    yarp::dev::IControlLimits2 * iControlLimits;
+    yarp::dev::IControlMode * iControlMode;
+    yarp::dev::IControlLimits * iControlLimits;
     yarp::dev::IVelocityControl * iVelocityControl;
 
     roboticslab::ICartesianControl * iCartesianControl;

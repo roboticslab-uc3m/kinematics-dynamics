@@ -4,13 +4,16 @@
 
 #include <string>
 
+#include <yarp/os/Property.h>
+#include <yarp/os/Value.h>
+
 #include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 {
-    yarp::os::Value *name, *angleRepr;
+    yarp::os::Value * name;
 
     if (config.check("subdevice", name))
     {
@@ -58,45 +61,88 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     std::string prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
 
-    rpcServer.open(prefix + "/rpc:s");
-    commandPort.open(prefix + "/command:i");
+    bool ok = true;
+
+    ok &= rpcServer.open(prefix + "/rpc:s");
+    ok &= commandPort.open(prefix + "/command:i");
 
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
 
-    int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt();
+    int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt32();
 
     if (periodInMs > 0)
     {
-        fkOutPort.open(prefix + "/state:o");
+        ok &= fkOutPort.open(prefix + "/state:o");
 
-        yarp::os::RateThread::setRate(periodInMs);
-        yarp::os::RateThread::start();
+        yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);
+        yarp::os::PeriodicThread::start();
     }
     else
     {
         fkStreamEnabled = false;
     }
 
-    // check angle representation, leave this block last to allow inner return instruction
+    yarp::os::Value * angleRepr, * coordRepr, * angularUnits;
+
+    KinRepresentation::coordinate_system coord = KinRepresentation::coordinate_system::CARTESIAN;
+    KinRepresentation::orientation_system orient = KinRepresentation::orientation_system::AXIS_ANGLE_SCALED;
+    KinRepresentation::angular_units units = KinRepresentation::angular_units::DEGREES;
+
+    bool openTransformPort = false;
+
+    if (config.check("coordRepr", coordRepr, "coordinate representation for transform port"))
+    {
+        std::string coordReprStr = coordRepr->asString();
+
+        if (!KinRepresentation::parseEnumerator(coordReprStr, &coord))
+        {
+            CD_WARNING("Unknown coordRepr \"%s\", falling back to default.\n", coordReprStr.c_str());
+        }
+        else
+        {
+            openTransformPort = true;
+        }
+    }
+
     if (config.check("angleRepr", angleRepr, "angle representation for transform port"))
     {
         std::string angleReprStr = angleRepr->asString();
-        KinRepresentation::orientation_system orient;
 
         if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
             CD_WARNING("Unknown angleRepr \"%s\", falling back to default.\n", angleReprStr.c_str());
             return true;
         }
+        else
+        {
+            openTransformPort = true;
+        }
+    }
 
-        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, orient);
+    if (config.check("angularUnits", angularUnits, "angular units for transform port"))
+    {
+        std::string angularUnitsStr = angularUnits->asString();
 
-        rpcTransformServer.open(prefix + "/rpc_transform:s");
+        if (!KinRepresentation::parseEnumerator(angularUnitsStr, &units))
+        {
+            CD_WARNING("Unknown angularUnits \"%s\", falling back to default.\n", angularUnitsStr.c_str());
+            return true;
+        }
+        else
+        {
+            openTransformPort = true;
+        }
+    }
+
+    if (openTransformPort)
+    {
+        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, coord, orient, units);
+        ok &= rpcTransformServer.open(prefix + "/rpc_transform:s");
         rpcTransformServer.setReader(*rpcTransformResponder);
     }
 
-    return true;
+    return ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -105,7 +151,7 @@ bool roboticslab::CartesianControlServer::close()
 {
     if (fkStreamEnabled)
     {
-        yarp::os::RateThread::stop();
+        yarp::os::PeriodicThread::stop();
 
         fkOutPort.interrupt();
         fkOutPort.close();

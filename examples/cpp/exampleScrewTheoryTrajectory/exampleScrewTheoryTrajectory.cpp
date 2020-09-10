@@ -32,13 +32,15 @@ make -j$(nproc)
 #include <memory>
 #include <vector>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Network.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Time.h>
 
 #include <yarp/dev/DeviceDriver.h>
-#include <yarp/dev/IControlLimits2.h>
-#include <yarp/dev/IControlMode2.h>
+#include <yarp/dev/IControlLimits.h>
+#include <yarp/dev/IControlMode.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionDirect.h>
 #include <yarp/dev/PolyDriver.h>
@@ -57,9 +59,10 @@ make -j$(nproc)
 
 #include "TrajectoryThread.hpp"
 
-#define TRAJ_DURATION 10.0
-#define TRAJ_MAX_VEL 0.05
-#define PT_MODE_MS 50.0
+#define DEFAULT_REMOTE_PORT "/teoSim/leftArm"
+#define DEFAULT_TRAJ_DURATION 10.0
+#define DEFAULT_TRAJ_MAX_VEL 0.05
+#define DEFAULT_PERIOD_MS 50.0
 
 namespace rl = roboticslab;
 
@@ -67,17 +70,17 @@ namespace
 {
     rl::PoeExpression makeTeoLeftArmKinematics()
     {
-        KDL::Frame H_S_0(KDL::Rotation::RotY(KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), KDL::Vector(0, 0.34692, 0.1932 + 0.305));
-        KDL::Frame H_0_T(KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.718506, 0, 0));
+        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), KDL::Vector(0, 0.34692, 0.1932 + 0.305));
+        KDL::Frame H_0_T(KDL::Vector(-0.63401, 0, 0));
 
         rl::PoeExpression poe(H_0_T);
 
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(0.32901, 0, 0)));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.32901, 0, 0)));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(0.53101, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.54401, 0, 0)));
 
         poe.changeBaseFrame(H_S_0);
 
@@ -95,10 +98,18 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    yarp::os::ResourceFinder rf;
+    rf.configure(argc, argv);
+
+    std::string remote = rf.check("remote", yarp::os::Value(DEFAULT_REMOTE_PORT), "remote port").asString();
+    double trajDuration = rf.check("trajDuration", yarp::os::Value(DEFAULT_TRAJ_DURATION), "trajectory duration (s)").asFloat64();
+    double trajMaxVel = rf.check("trajMaxVel", yarp::os::Value(DEFAULT_TRAJ_MAX_VEL), "trajectory max velocity (m/s)").asFloat64();
+    int periodMs = rf.check("periodMs", yarp::os::Value(DEFAULT_PERIOD_MS), "command send period (ms)").asInt32();
+
     yarp::os::Property jointDeviceOptions;
     jointDeviceOptions.put("device", "remote_controlboard");
-    jointDeviceOptions.put("remote", "/teoSim/leftArm"); // use /teo for real robot
-    jointDeviceOptions.put("local", "/screwTheoryTrajectoryExample");
+    jointDeviceOptions.put("remote", remote);
+    jointDeviceOptions.put("local", "/screwTheoryTrajectoryExample" + remote);
 
     yarp::dev::PolyDriver jointDevice(jointDeviceOptions);
 
@@ -109,8 +120,8 @@ int main(int argc, char *argv[])
     }
 
     yarp::dev::IEncoders * iEncoders;
-    yarp::dev::IControlLimits2 * iControlLimits;
-    yarp::dev::IControlMode2 * iControlMode;
+    yarp::dev::IControlLimits * iControlLimits;
+    yarp::dev::IControlMode * iControlMode;
     yarp::dev::IPositionDirect * iPositionDirect;
 
     if (!jointDevice.view(iEncoders) || !jointDevice.view(iControlLimits)
@@ -187,8 +198,8 @@ int main(int argc, char *argv[])
 
     rl::KdlTrajectory trajectory;
 
-    trajectory.setDuration(TRAJ_DURATION);
-    trajectory.setMaxVelocity(TRAJ_MAX_VEL);
+    trajectory.setDuration(trajDuration);
+    trajectory.setMaxVelocity(trajMaxVel);
     trajectory.addWaypoint(x);
     trajectory.addWaypoint(xd);
     trajectory.configurePath(rl::ICartesianTrajectory::LINE);
@@ -208,11 +219,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    TrajectoryThread trajThread(iEncoders, iPositionDirect, ikProblem.get(), ikConfig.get(), &trajectory, PT_MODE_MS);
+    TrajectoryThread trajThread(iEncoders, iPositionDirect, ikProblem.get(), ikConfig.get(), &trajectory, periodMs);
 
     if (trajThread.start())
     {
-        yarp::os::Time::delay(TRAJ_DURATION);
+        yarp::os::Time::delay(trajDuration);
         trajThread.stop();
     }
 

@@ -4,8 +4,11 @@ from PyKDL import *
 from math import pi
 import csv
 
-lengthsFileName = '/home/yo/repos/teo-developer-manual/csv/lengths.csv'
-dhFileName = '/home/yo/repos/teo-developer-manual/csv/dh-rightArm.csv'
+import os
+home = os.environ['HOME']
+
+lengthsFileName = home+'/repos/teo-developer-manual/csv/lengths.csv'
+dhFileName = home+'/repos/teo-developer-manual/csv/dh-rightArm.csv'
 
 segments = [] # required for roboview
 

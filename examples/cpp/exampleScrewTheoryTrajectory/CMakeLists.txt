@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 # Start a project.
-project(exampleScrewTheoryTrajectory)
+project(exampleScrewTheoryTrajectory LANGUAGES CXX)
 
-find_package(YARP REQUIRED)
+find_package(YARP 3.3 REQUIRED COMPONENTS os dev)
 find_package(COLOR_DEBUG REQUIRED)
 find_package(orocos_kdl 1.4 QUIET)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
@@ -13,7 +13,7 @@ add_executable(exampleScrewTheoryTrajectory exampleScrewTheoryTrajectory.cpp
                                             TrajectoryThread.hpp
                                             TrajectoryThread.cpp)
 
-target_link_libraries(exampleScrewTheoryTrajectory YARP::YARP_OS
+target_link_libraries(exampleScrewTheoryTrajectory YARP::YARP_os
                                                    YARP::YARP_init
                                                    YARP::YARP_dev
                                                    ${orocos_kdl_LIBRARIES}

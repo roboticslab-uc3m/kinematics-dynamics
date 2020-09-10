@@ -12,9 +12,9 @@ bool roboticslab::AmorCartesianControl::checkJointVelocities(const std::vector<d
 {
     for (unsigned int i = 0; i < qdot.size(); i++)
     {
-        if (std::abs(qdot[i]) > maxJointVelocity)
+        if (std::abs(qdot[i]) > qdotMax[i])
         {
-            CD_ERROR("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s].\n", i, qdot[i], maxJointVelocity);
+            CD_ERROR("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s].\n", i, qdot[i], qdotMax[i]);
             return false;
         }
     }

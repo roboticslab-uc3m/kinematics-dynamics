@@ -3,10 +3,10 @@
 #ifndef __LINEAR_TRAJECTORY_THREAD_HPP__
 #define __LINEAR_TRAJECTORY_THREAD_HPP__
 
+#include <mutex>
 #include <vector>
 
-#include <yarp/os/Mutex.h>
-#include <yarp/os/RateThread.h>
+#include <yarp/os/PeriodicThread.h>
 
 #include "ICartesianControl.h"
 #include "ICartesianTrajectory.hpp"
@@ -19,7 +19,7 @@ namespace roboticslab
  *
  * @brief Periodic thread that encapsulates a linear trajectory
  */
-class LinearTrajectoryThread : public yarp::os::RateThread
+class LinearTrajectoryThread : public yarp::os::PeriodicThread
 {
 public:
     LinearTrajectoryThread(int period, ICartesianControl * iCartesianControl);
@@ -39,7 +39,7 @@ private:
     bool usingStreamingCommandConfig;
     bool usingTcpFrame;
     std::vector<double> deltaX;
-    mutable yarp::os::Mutex mutex;
+    mutable std::mutex mtx;
 };
 
 }  // namespace roboticslab

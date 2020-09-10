@@ -3,14 +3,14 @@
 #ifndef __BASIC_CARTESIAN_CONTROL_HPP__
 #define __BASIC_CARTESIAN_CONTROL_HPP__
 
+#include <mutex>
+#include <vector>
+
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
-#include <yarp/dev/PreciselyTimed.h>
-
-#include <iostream> // only windows
-#include <vector>
+#include <yarp/dev/IPreciselyTimed.h>
 
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
@@ -19,14 +19,11 @@
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
-#define DEFAULT_INIT_STATE VOCAB_CC_NOT_CONTROLLING
 #define DEFAULT_GAIN 0.05
-#define DEFAULT_QDOT_LIMIT 10.0
 #define DEFAULT_DURATION 10.0
-#define DEFAULT_CMC_RATE_MS 50
+#define DEFAULT_CMC_PERIOD_MS 50
 #define DEFAULT_WAIT_PERIOD_MS 30
 #define DEFAULT_REFERENCE_FRAME "base"
-#define DEFAULT_STREAMING_PRESET 0
 
 namespace roboticslab
 {
@@ -48,7 +45,7 @@ First we must run a YARP name server if it is not running in our current namespa
 And then launch the actual library:
 
 \verbatim
-[on terminal 2] yarpdev --device BasicCartesianControl --robot FakeControlboard --angleRepr axisAngle --link_0 "(A 1)"
+[on terminal 2] yarpdev --device BasicCartesianControl --robot EmulatedControlboard --angleRepr axisAngle --link_0 "(A 1)"
 \endverbatim
 
 Along the output, observe a line like the following.
@@ -110,30 +107,31 @@ are YARP devices (further reading on why this is good: <a href="http://asrob.uc3
  * @ingroup BasicCartesianControl
  * @brief The BasicCartesianControl class implements ICartesianControl.
  */
-class BasicCartesianControl : public yarp::dev::DeviceDriver, public ICartesianControl, public yarp::os::RateThread
+class BasicCartesianControl : public yarp::dev::DeviceDriver,
+                              public yarp::os::PeriodicThread,
+                              public ICartesianControl
 {
 public:
 
-    BasicCartesianControl() : yarp::os::RateThread(DEFAULT_CMC_RATE_MS),
+    BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
                               iCartesianSolver(NULL),
+                              iControlLimits(NULL),
+                              iControlMode(NULL),
                               iEncoders(NULL),
                               iPositionControl(NULL),
                               iPositionDirect(NULL),
-                              iVelocityControl(NULL),
-                              iControlLimits(NULL),
-                              iTorqueControl(NULL),
-                              iControlMode(NULL),
                               iPreciselyTimed(NULL),
+                              iTorqueControl(NULL),
+                              iVelocityControl(NULL),
                               referenceFrame(ICartesianSolver::BASE_FRAME),
                               gain(DEFAULT_GAIN),
-                              maxJointVelocity(DEFAULT_QDOT_LIMIT),
                               duration(DEFAULT_DURATION),
-                              cmcRateMs(DEFAULT_CMC_RATE_MS),
+                              cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
                               waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
                               numRobotJoints(0),
                               numSolverJoints(0),
-                              currentState(DEFAULT_INIT_STATE),
-                              streamingCommand(DEFAULT_STREAMING_PRESET),
+                              currentState(VOCAB_CC_NOT_CONTROLLING),
+                              streamingCommand(VOCAB_CC_NOT_SET),
                               movementStartTime(0),
                               iCartesianTrajectory(NULL),
                               cmcSuccess(true)
@@ -163,6 +161,8 @@ public:
 
     virtual bool tool(const std::vector<double> &x);
 
+    virtual bool act(int command);
+
     virtual void twist(const std::vector<double> &xdot);
 
     virtual void pose(const std::vector<double> &x, double interval);
@@ -177,7 +177,7 @@ public:
 
     virtual bool getParameters(std::map<int, double> & params);
 
-    // -------- RateThread declarations. Implementation in RateThreadImpl.cpp --------
+    // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
 
     /** Loop function. This is the thread itself. */
     virtual void run();
@@ -211,11 +211,13 @@ protected:
     void setCurrentState(int value);
 
     bool checkJointLimits(const std::vector<double> &q);
-    bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qd);
+    bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot);
     bool checkJointVelocities(const std::vector<double> &qdot);
 
+    bool checkControlModes(int mode);
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
+    void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> &q);
     void handleMovl(const std::vector<double> &q);
@@ -224,35 +226,31 @@ protected:
     void handleForc(const std::vector<double> &q);
 
     yarp::dev::PolyDriver solverDevice;
-    roboticslab::ICartesianSolver *iCartesianSolver;
+    ICartesianSolver *iCartesianSolver;
 
     yarp::dev::PolyDriver robotDevice;
+    yarp::dev::IControlLimits *iControlLimits;
+    yarp::dev::IControlMode *iControlMode;
     yarp::dev::IEncoders *iEncoders;
     yarp::dev::IPositionControl *iPositionControl;
     yarp::dev::IPositionDirect * iPositionDirect;
-    yarp::dev::IVelocityControl *iVelocityControl;
-    yarp::dev::IControlLimits *iControlLimits;
-    yarp::dev::ITorqueControl *iTorqueControl;
-    yarp::dev::IControlMode2 *iControlMode;
     yarp::dev::IPreciselyTimed *iPreciselyTimed;
+    yarp::dev::ITorqueControl *iTorqueControl;
+    yarp::dev::IVelocityControl *iVelocityControl;
 
     ICartesianSolver::reference_frame referenceFrame;
 
     double gain;
-    double maxJointVelocity;
     double duration; // [s]
 
-    int cmcRateMs;
+    int cmcPeriodMs;
     int waitPeriodMs;
     int numRobotJoints, numSolverJoints;
-
-    /** State encoded as a VOCAB which can be stored as an int */
     int currentState;
-
     int streamingCommand;
 
-    mutable yarp::os::Semaphore currentStateReady;
-    mutable yarp::os::Semaphore trajectoryMutex;
+    mutable std::mutex stateMutex;
+    mutable std::mutex trajectoryMutex;
 
     /** MOVJ store previous reference speeds */
     std::vector<double> vmoStored;
@@ -269,6 +267,8 @@ protected:
     bool cmcSuccess;
 
     std::vector<double> qMin, qMax;
+    std::vector<double> qdotMin, qdotMax;
+    std::vector<double> qRefSpeeds;
 };
 
 }  // namespace roboticslab

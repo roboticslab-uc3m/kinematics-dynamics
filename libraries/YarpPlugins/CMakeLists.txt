@@ -21,8 +21,6 @@ install(TARGETS KinematicsDynamicsInterfaces
 add_subdirectory(AmorCartesianControl)
 add_subdirectory(AsibotSolver)
 add_subdirectory(BasicCartesianControl)
-#add_subdirectory(BasicTwoLimbCartesianControl)
 add_subdirectory(CartesianControlClient)
 add_subdirectory(CartesianControlServer)
 add_subdirectory(KdlSolver)
-#add_subdirectory(TwoLimbCartesianControlServer)

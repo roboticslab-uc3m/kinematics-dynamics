@@ -9,11 +9,13 @@
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianControl.h"
+#include "CentroidTransform.hpp"
 
 namespace roboticslab
 {
 
 class StreamingDevice;
+class CentroidTransform;
 
 /**
  * @ingroup streamingDeviceController
@@ -42,6 +44,8 @@ private:
  */
 class StreamingDevice : protected yarp::dev::PolyDriver
 {
+    friend CentroidTransform;
+
 public:
 
     using PolyDriver::isValid;
@@ -88,6 +92,16 @@ public:
     virtual bool transformData(double scaling);
 
     /**
+     * @brief If actuator command data is available, return its
+     * current state.
+     * @return integer value describing current actuator state
+     */
+    virtual int getActuatorState()
+    {
+        return actuatorState;
+    }
+
+    /**
      * @brief Checks whether the device may forward acquired and
      * processed data to the controller.
      * @return true if valid, false otherwise
@@ -119,6 +133,8 @@ protected:
 
     std::vector<double> data;
     std::vector<bool> fixedAxes;
+
+    int actuatorState;
 
 private:
 

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-// ------------------- RateThread related ------------------------------------
+// ------------------- PeriodicThread related ------------------------------------
 
 void roboticslab::CartesianControlServer::run()
 {
@@ -23,10 +23,10 @@ void roboticslab::CartesianControlServer::run()
 
     for (size_t i = 0; i < x.size(); i++)
     {
-        out.addDouble(x[i]);
+        out.addFloat64(x[i]);
     }
 
-    out.addDouble(timestamp);
+    out.addFloat64(timestamp);
 
     fkOutPort.write();
 

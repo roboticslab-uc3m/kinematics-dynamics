@@ -3,11 +3,11 @@
 #ifndef __ASIBOT_SOLVER_HPP__
 #define __ASIBOT_SOLVER_HPP__
 
+#include <mutex>
 #include <string>
 #include <vector>
 
 #include <yarp/os/Searchable.h>
-#include <yarp/os/Semaphore.h>
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/sig/Matrix.h>
 
@@ -127,7 +127,7 @@ private:
 
     AsibotTcpFrame tcpFrameStruct;
 
-    mutable yarp::os::Semaphore mutex;
+    mutable std::mutex mtx;
 };
 
 }  // namespace roboticslab

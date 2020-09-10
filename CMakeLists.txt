@@ -2,7 +2,7 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
 
@@ -37,14 +37,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YCM 0.10 REQUIRED)
-
-# https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
-find_package(YARP 3.0 QUIET)
-if(NOT YARP_FOUND)
-    find_package(YARP 2.3.70 REQUIRED)
-endif()
-
+find_package(YCM 0.11 REQUIRED)
+find_package(YARP 3.3 REQUIRED COMPONENTS os dev sig
+                               OPTIONAL_COMPONENTS math)
 find_package(COLOR_DEBUG REQUIRED)
 
 # Soft dependencies.
@@ -88,8 +83,15 @@ add_subdirectory(tests)
 add_subdirectory(share)
 add_subdirectory(doc)
 
+# Collect public exported dependencies.
+get_property(_exported_dependencies GLOBAL PROPERTY _exported_dependencies)
+
+if(DEFINED _exported_dependencies)
+    list(REMOVE_DUPLICATES _exported_dependencies)
+endif()
+
 # Store the package in the user registry.
-export(PACKAGE ROBOTICSLAB_KINEMATICS_DYNAMICS)
+set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 
 # Create and install config files.
 include(InstallBasicPackageFiles)
@@ -99,7 +101,8 @@ install_basic_package_files(ROBOTICSLAB_KINEMATICS_DYNAMICS
                             COMPATIBILITY AnyNewerVersion
                             NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
-                            NAMESPACE ROBOTICSLAB::)
+                            NAMESPACE ROBOTICSLAB::
+                            DEPENDENCIES ${_exported_dependencies})
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)

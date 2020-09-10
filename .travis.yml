@@ -1,5 +1,5 @@
 language: cpp
-dist: xenial
+dist: bionic
 os: linux
 
 compiler:
@@ -9,21 +9,19 @@ compiler:
 env:
   global:
     - CACHE_DIR=~/cached-deps
-  matrix:
-    - YARP_CHECKOUT=master
-    - YARP_CHECKOUT=v3.1.1
-    - YARP_CHECKOUT=30dce54 # hotfix for v3.0.1
-    - YARP_CHECKOUT=v2.3.72.1
-    - YARP_CHECKOUT=v2.3.70.2
+    - YCM_CHECKOUT=ycm-0.11
+  jobs:
+    - YARP_CHECKOUT=yarp-3.4
+    - YARP_CHECKOUT=yarp-3.3
 
-matrix:
+jobs:
   include:
     - if: type = cron
       compiler: gcc
-      env: ROBOTOLOGY_CHECKOUT=devel
+      env: ROBOTOLOGY_CHECKOUT=master
     - if: type = cron
       compiler: clang
-      env: ROBOTOLOGY_CHECKOUT=devel
+      env: ROBOTOLOGY_CHECKOUT=master
 
 cache:
   directories: $CACHE_DIR
@@ -49,7 +47,7 @@ install:
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name YCM
     --repo-url https://github.com/robotology/ycm
-    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}"
+    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YCM_CHECKOUT}"
 
   #-- Install YARP
   - >
@@ -57,7 +55,7 @@ install:
     --package-name YARP
     --repo-url https://github.com/robotology/yarp
     --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YARP_CHECKOUT}"
-    --additional-cmake-options "-DSKIP_ACE:BOOL=ON -DCREATE_LIB_MATH:BOOL=ON"
+    --additional-cmake-options "-DSKIP_ACE:BOOL=ON"
     --prepend-to-linker-path lib
     --additional-export-paths "YARP_DATA_DIRS;share/yarp"
 
@@ -98,14 +96,25 @@ before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
   - cmake .. -DCMAKE_INSTALL_PREFIX="$PWD/install" -DENABLE_coverage:BOOL=ON
   - make install
-  - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-  - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS
+
+  - export LD_LIBRARY_PATH="$PWD/install/lib:$LD_LIBRARY_PATH"
+  - export YARP_DATA_DIRS="$PWD/install/share/roboticslab-kinematics-dynamics:$YARP_DATA_DIRS"
+  - export CMAKE_PREFIX_PATH="$PWD/install/lib/cmake/ROBOTICSLAB_KINEMATICS_DYNAMICS:$CMAKE_PREFIX_PATH"
+
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleCartesianControlClient" && cd "$_"
+  - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleCartesianControlClient" && make
+
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleScrewTheoryTrajectory" && cd "$_"
+  - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleScrewTheoryTrajectory" && make
+
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/exampleYarpTinyMath" && cd "$_"
+  - cmake "$TRAVIS_BUILD_DIR/examples/cpp/exampleYarpTinyMath" && make
 
 script:
-  - (cd tests && ctest -V)
+  - cd "$TRAVIS_BUILD_DIR/build/tests" && ctest -V
 
 after_success:
   #-- Code coverage
   - if [ "$CXX" = "g++" ]; then source "$TRAVIS_BUILD_DIR/scripts/travis/coverage.sh"; fi
 
-  - make uninstall
+  - cd "$TRAVIS_BUILD_DIR/build" && make uninstall

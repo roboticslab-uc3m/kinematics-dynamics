@@ -20,7 +20,8 @@ if(ENABLE_ScrewTheoryLib)
                                       PardosGotorSubproblems.cpp
                                       ConfigurationSelector.hpp
                                       ConfigurationSelector.cpp
-                                      ConfigurationSelectorLeastOverallAngularDisplacement.cpp)
+                                      ConfigurationSelectorLeastOverallAngularDisplacement.cpp
+                                      ConfigurationSelectorHumanoidGait.cpp)
 
     set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp
@@ -40,6 +41,8 @@ if(ENABLE_ScrewTheoryLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+    set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
 
 else()
 

@@ -1,7 +1,8 @@
 #include "StreamingDeviceController.hpp"
 
-#include <string>
 #include <cmath>
+#include <string>
+#include <typeinfo>
 
 #include <yarp/os/Value.h>
 #include <yarp/os/Property.h>
@@ -9,6 +10,8 @@
 #include <yarp/sig/Vector.h>
 
 #include <ColorDebug.h>
+
+#include "SpnavSensorDevice.hpp" // for typeid() check
 
 using namespace roboticslab;
 
@@ -27,8 +30,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote cartesian port").asString();
 
-    period = rf.check("controllerPeriod", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asDouble();
-    scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asDouble();
+    period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
+    scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asFloat64();
 
     streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf);
 
@@ -71,7 +74,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING) != params.end();
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 
@@ -96,7 +99,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!sensorsClientDevice.isValid())
         {
-            CD_ERROR("sensors device not valid.\n");
+            CD_ERROR("Sensors device not valid.\n");
             return false;
         }
 
@@ -109,6 +112,55 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
     }
 #endif  // SDC_WITH_SENSORS
+
+    if (rf.check("remoteCentroid", "remote centroid port"))
+    {
+        const std::type_info & spnavType = typeid(SpnavSensorDevice);
+
+        if (typeid(*streamingDevice) != spnavType)
+        {
+            CD_ERROR("Centroid transform extension only available with %s.\n", spnavType.name());
+            return false;
+        }
+
+        std::string localCentroid = rf.check("localCentroid", yarp::os::Value(DEFAULT_CENTROID_LOCAL),
+                    "local centroid port").asString();
+        std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
+
+        yarp::os::Value vCentroidRPY = rf.check("centroidRPY", yarp::os::Value::getNullValue());
+
+        double permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
+
+        if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
+        {
+            CD_ERROR("Illegal argument: malformed bottle --centroidRPY: %s.\n", vCentroidRPY.toString().c_str());
+            return false;
+        }
+
+        if (permanenceTime < 0.0)
+        {
+            CD_ERROR("Illegal argument: --centroidPermTime cannot be less than zero: %f.\n", permanenceTime);
+            return false;
+        }
+        else
+        {
+            centroidTransform.setPermanenceTime(permanenceTime);
+        }
+
+        if (!centroidPort.open(localCentroid + "/state:i"))
+        {
+            CD_ERROR("Unable to open local centroid port.\n");
+            return false;
+        }
+
+        if (!yarp::os::Network::connect(remoteCentroid, centroidPort.getName(), "udp"))
+        {
+            CD_ERROR("Unable to connect to %s.\n", remoteCentroid.c_str());
+            return false;
+        }
+
+        centroidTransform.registerStreamingDevice(streamingDevice);
+    }
 
     isStopped = true;
 
@@ -152,10 +204,27 @@ bool StreamingDeviceController::updateModule()
     }
 #endif  // SDC_WITH_SENSORS
 
+    int actuatorState = streamingDevice->getActuatorState();
+
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        iCartesianControl->act(actuatorState);
+    }
+
     if (!streamingDevice->transformData(localScaling))
     {
         CD_ERROR("Failed to transform acquired data from streaming device.\n");
         return true;
+    }
+
+    if (!centroidPort.isClosed())
+    {
+        yarp::os::Bottle * centroidBottle = centroidPort.read(false);
+
+        if (centroidTransform.acceptBottle(centroidBottle) && centroidTransform.processStoredBottle())
+        {
+            CD_WARNING("Centroid transform handler takes control.\n");
+        }
     }
 
     if (streamingDevice->hasValidMovementData())
@@ -191,6 +260,8 @@ bool StreamingDeviceController::close()
 #ifdef SDC_WITH_SENSORS
     ok &= sensorsClientDevice.close();
 #endif  // SDC_WITH_SENSORS
+
+    centroidPort.close();
 
     return ok;
 }

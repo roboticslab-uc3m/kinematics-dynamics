@@ -8,8 +8,6 @@
 
 #include "ICartesianSolver.h"
 
-#include <ColorDebug.h> // FIXME: stat() deprecation
-
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 #define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
@@ -35,10 +33,11 @@
  */
 
 // General-purpose vocabs
-#define VOCAB_CC_OK ROBOTICSLAB_VOCAB('o','k',0,0)         ///< Success
-#define VOCAB_CC_FAILED ROBOTICSLAB_VOCAB('f','a','i','l') ///< Failure
-#define VOCAB_CC_SET ROBOTICSLAB_VOCAB('s','e','t',0)      ///< Setter
-#define VOCAB_CC_GET ROBOTICSLAB_VOCAB('g','e','t',0)      ///< Getter
+#define VOCAB_CC_OK ROBOTICSLAB_VOCAB('o','k',0,0)          ///< Success
+#define VOCAB_CC_FAILED ROBOTICSLAB_VOCAB('f','a','i','l')  ///< Failure
+#define VOCAB_CC_SET ROBOTICSLAB_VOCAB('s','e','t',0)       ///< Setter
+#define VOCAB_CC_GET ROBOTICSLAB_VOCAB('g','e','t',0)       ///< Getter
+#define VOCAB_CC_NOT_SET ROBOTICSLAB_VOCAB('n','s','e','t') ///< State: not set
 
  /** @} */
 
@@ -62,6 +61,7 @@
 #define VOCAB_CC_STOP ROBOTICSLAB_VOCAB('s','t','o','p') ///< Stop control
 #define VOCAB_CC_WAIT ROBOTICSLAB_VOCAB('w','a','i','t') ///< Wait motion done
 #define VOCAB_CC_TOOL ROBOTICSLAB_VOCAB('t','o','o','l') ///< Change tool
+#define VOCAB_CC_ACT ROBOTICSLAB_VOCAB('a','c','t',0)    ///< Actuate tool
 
 /** @} */
 
@@ -99,6 +99,22 @@
 /** @} */
 
 /**
+ * @anchor ICartesianControl_actuator_vocabs
+ * @name Actuator control vocabs
+ *
+ * Used by roboticslab::ICartesianControl::act to control the actuator.
+ *
+ * @{
+ */
+
+// Actuator control
+#define VOCAB_CC_ACTUATOR_NONE ROBOTICSLAB_VOCAB('a','c','n',0)            ///< No actuator or no action
+#define VOCAB_CC_ACTUATOR_CLOSE_GRIPPER ROBOTICSLAB_VOCAB('a','c','c','g') ///< Close gripper
+#define VOCAB_CC_ACTUATOR_OPEN_GRIPPER ROBOTICSLAB_VOCAB('a','c','o','g')  ///< Open gripper
+#define VOCAB_CC_ACTUATOR_STOP_GRIPPER ROBOTICSLAB_VOCAB('a','c','s','g')  ///< Stop gripper
+#define VOCAB_CC_ACTUATOR_GENERIC ROBOTICSLAB_VOCAB('a','c','g',0)         ///< Generic actuator
+
+/**
  * @name Controller configuration vocabs
  *
  * Used by @ref ICartesianControl_config_commands "configuration accessors".
@@ -107,14 +123,13 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')        ///< Parameter group
-#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')          ///< Controller gain
-#define VOCAB_CC_CONFIG_MAX_JOINT_VEL ROBOTICSLAB_VOCAB('c','p','j','v') ///< Maximum joint velocity
-#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d') ///< Trajectory duration
-#define VOCAB_CC_CONFIG_CMC_RATE ROBOTICSLAB_VOCAB('c','p','c','r')      ///< CMC rate [ms]
-#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')   ///< Check period of 'wait' command [ms]
-#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)           ///< Reference frame
-#define VOCAB_CC_CONFIG_STREAMING ROBOTICSLAB_VOCAB('c','p','s','c')     ///< Preset streaming command
+#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')           ///< Parameter group
+#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')             ///< Controller gain
+#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d')    ///< Trajectory duration
+#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')       ///< CMC period [ms]
+#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')      ///< Check period of 'wait' command [ms]
+#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)              ///< Reference frame
+#define VOCAB_CC_CONFIG_STREAMING_CMD ROBOTICSLAB_VOCAB('c','p','s','c')    ///< Preset streaming command
 
 /** @} */
 
@@ -156,15 +171,6 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
-
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-        __attribute__((__deprecated__))
-        virtual bool stat(int & state, std::vector<double> & x)
-        {
-            CD_WARNING("Deprecated signature.\n");
-            return stat(x, &state);
-        }
-#endif
 
         /**
          * @brief Inverse kinematics
@@ -294,6 +300,17 @@ class ICartesianControl
          * @return true on success, false otherwise
          */
         virtual bool tool(const std::vector<double> &x) = 0;
+
+        /**
+         * @brief Actuate tool
+         *
+         * Send control command to actuate the robot's tool, if available.
+         *
+         * @param command One of available @ref ICartesianControl_actuator_vocabs "actuator vocabs".
+         *
+         * @return true on success, false otherwise
+         */
+        virtual bool act(int command) = 0;
 
         /** @} */
 

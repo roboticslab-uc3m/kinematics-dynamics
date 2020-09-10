@@ -22,6 +22,7 @@ if(OpenCV_FOUND)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/../src/libraries/ColorClientLib)
+include_directories(/usr/local/include)
 
 # for yarp.i
 include_directories($ENV{YARP_ROOT}/bindings)

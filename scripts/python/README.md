@@ -1,5 +1,21 @@
 # scripts/python
 
+## kdl-from-csv
+
+### Install dependecies
+- Requires Python [KDL](http://robots.uc3m.es/gitbook-installation-guides/install-kdl.html) (PyKDL)
+- Defaults hard-coded from https://github.com/roboticslab-uc3m/teo-developer-manual
+
+### Help
+```bash
+python kdl-from-csv.py -h
+```
+
+### Run
+```bash
+python kdl-from-csv.py --dhFileName /home/yo/repos/teo-developer-manual/csv/dh-root-rightLeg.csv
+```
+
 ## roboview-from-csv
 Provides a kinematic chain description for [roboview](https://github.com/arcoslab/roboview), given a `.csv` file.
 

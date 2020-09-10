@@ -15,27 +15,23 @@ using namespace roboticslab;
 StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
     yarp::os::Searchable & deviceConfig = config.findGroup(deviceName.c_str());
+    bool usingMovi = config.check("movi", "enable movi command");
 
     CD_DEBUG("Device configuration: %s\n", deviceConfig.toString().c_str());
 
     if (deviceName == "SpaceNavigator")
     {
-        return new SpnavSensorDevice(deviceConfig);
+        double gain = config.check("gain", yarp::os::Value(0.0)).asFloat64();
+        return new SpnavSensorDevice(deviceConfig, usingMovi, gain);
     }
     else if (deviceName == "LeapMotionSensor")
     {
-        if (!config.check("period"))
-        {
-            CD_WARNING("Missing \"period\" parameter.\n");
-            return new InvalidDevice();
-        }
-
-        double period = config.check("period", yarp::os::Value(1.0)).asDouble();
-        return new LeapMotionSensorDevice(deviceConfig, period);
+        double period = config.check("period", yarp::os::Value(0.0)).asFloat64();
+        return new LeapMotionSensorDevice(deviceConfig, usingMovi, period);
     }
     else if (deviceName == "WiimoteSensor")
     {
-        return new WiimoteSensorDevice(deviceConfig);
+        return new WiimoteSensorDevice(deviceConfig, usingMovi);
     }
     else
     {
@@ -45,7 +41,8 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 }
 
 StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
-    : iCartesianControl(NULL)
+    : iCartesianControl(NULL),
+      actuatorState(VOCAB_CC_ACTUATOR_NONE)
 {
     data.resize(6, 0.0);
     fixedAxes.resize(6, false);
@@ -61,7 +58,7 @@ StreamingDevice::~StreamingDevice()
 
 bool StreamingDevice::transformData(double scaling)
 {
-    for (int i = 0; i < data.size(); i++)
+    for (int i = 0; i < 6; i++)
     {
         if (!fixedAxes[i])
         {
@@ -78,7 +75,12 @@ bool StreamingDevice::transformData(double scaling)
 
 bool StreamingDevice::hasValidMovementData() const
 {
-    for (int i = 0; i < data.size(); i++)
+    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    {
+        return false;
+    }
+
+    for (int i = 0; i < 6; i++)
     {
         if (data[i] != 0.0)
         {

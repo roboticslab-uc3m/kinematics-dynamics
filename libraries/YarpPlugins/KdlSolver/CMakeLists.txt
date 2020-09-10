@@ -17,9 +17,9 @@ yarp_prepare_plugin(KdlSolver
 
 if(NOT SKIP_KdlSolver)
 
-    # KDLConfig.cmake brings Eigen_INCLUDE_DIR into scope with orocos_kdl_INCLUDE_DIRS
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
-                        ${orocos_kdl_INCLUDE_DIRS})
+    if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
+        set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
+    endif()
 
     yarp_add_plugin(KdlSolver KdlSolver.hpp
                               DeviceDriverImpl.cpp
@@ -31,7 +31,7 @@ if(NOT SKIP_KdlSolver)
                               ChainIkSolverPos_ID.hpp
                               ChainIkSolverPos_ID.cpp)
 
-    target_link_libraries(KdlSolver YARP::YARP_OS
+    target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
@@ -41,14 +41,12 @@ if(NOT SKIP_KdlSolver)
                                     KinematicRepresentationLib
                                     KinematicsDynamicsInterfaces)
 
-    yarp_install(TARGETS KdlSolver
-                 COMPONENT runtime
-                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
-                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR})
+    target_include_directories(KdlSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    yarp_install(FILES KdlSolver.ini
-                 COMPONENT runtime
-                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
+    yarp_install(TARGETS KdlSolver
+                 LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR}
+                 YARP_INI DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_PLUGIN_MANIFESTS_INSTALL_DIR})
 
 else()
 

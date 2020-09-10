@@ -15,7 +15,7 @@ if(ENABLE_transCoords)
                                TransCoords.cpp
                                TransCoords.hpp)
 
-    target_link_libraries(transCoords YARP::YARP_OS
+    target_link_libraries(transCoords YARP::YARP_os
                                       YARP::YARP_init
                                       YARP::YARP_dev
                                       ${orocos_kdl_LIBRARIES}

@@ -31,6 +31,8 @@ if(ENABLE_TrajectoryLib)
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+    set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
+
 else()
 
     set(ENABLE_TrajectoryLib OFF CACHE BOOL "Enable/disable TrajectoryLib library" FORCE)

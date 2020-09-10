@@ -11,22 +11,19 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
 
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
-            "controller gain").asDouble();
-
-    maxJointVelocity = config.check("maxJointVelocity", yarp::os::Value(DEFAULT_QDOT_LIMIT),
-            "maximum joint velocity (meters/second or degrees/second)").asDouble();
+            "controller gain").asFloat64();
 
     duration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
-            "trajectory duration (seconds)").asDouble();
+            "trajectory duration (seconds)").asFloat64();
 
-    cmcRateMs = config.check("cmcRateMs", yarp::os::Value(DEFAULT_CMC_RATE_MS),
-            "CMC rate (milliseconds)").asInt();
+    cmcPeriodMs = config.check("cmcPeriodMs", yarp::os::Value(DEFAULT_CMC_PERIOD_MS),
+            "CMC rate (milliseconds)").asInt32();
 
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
-            "wait command period (milliseconds)").asInt();
+            "wait command period (milliseconds)").asInt32();
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-             "reference frame (base|tcp)").asString();
+            "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
     {
@@ -109,23 +106,50 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     iEncoders->getAxes(&numRobotJoints);
     CD_INFO("numRobotJoints: %d.\n", numRobotJoints);
 
+    qRefSpeeds.resize(numRobotJoints);
+
+    if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
+    {
+        CD_ERROR("Could not retrieve reference speeds.\n");
+        return false;
+    }
+
     qMin.resize(numRobotJoints);
     qMax.resize(numRobotJoints);
+
+    qdotMin.resize(numRobotJoints);
+    qdotMax.resize(numRobotJoints);
 
     yarp::os::Bottle bMin, bMax;
 
     for (int joint = 0; joint < numRobotJoints; joint++)
     {
-        double min, max;
-        iControlLimits->getLimits(joint, &min, &max);
+        double _qMin, _qMax;
 
-        qMin[joint] = min;
-        qMax[joint] = max;
+        if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
+        {
+            CD_ERROR("Unable to retrieve position limits for joint %d.\n");
+            return false;
+        }
 
-        bMin.addDouble(min);
-        bMax.addDouble(max);
+        qMin[joint] = _qMin;
+        qMax[joint] = _qMax;
 
-        CD_INFO("Joint %d limits: [%f,%f]\n", joint, min, max);
+        double _qdotMin, _qdotMax;
+
+        if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
+        {
+            CD_ERROR("Unable to retrieve speed limits for joint %d.\n");
+            return false;
+        }
+
+        qdotMin[joint] = _qdotMin;
+        qdotMax[joint] = _qdotMax;
+
+        CD_INFO("Joint %d limits: [%f,%f] [%f,%f]\n", joint, _qMin, _qMax, _qdotMin, _qdotMax);
+
+        bMin.addFloat64(_qMin);
+        bMax.addFloat64(_qMax);
     }
 
     yarp::os::Property solverOptions;
@@ -155,12 +179,12 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n", numRobotJoints, numSolverJoints);
     }
 
-    if (cmcRateMs != DEFAULT_CMC_RATE_MS)
+    if (cmcPeriodMs != DEFAULT_CMC_PERIOD_MS)
     {
-        yarp::os::RateThread::setRate(cmcRateMs);
+        yarp::os::PeriodicThread::setPeriod(cmcPeriodMs * 0.001);
     }
 
-    return yarp::os::RateThread::start();
+    return yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
@@ -168,7 +192,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 bool roboticslab::BasicCartesianControl::close()
 {
     stopControl();
-    yarp::os::RateThread::stop();
+    yarp::os::PeriodicThread::stop();
     robotDevice.close();
     solverDevice.close();
     return true;

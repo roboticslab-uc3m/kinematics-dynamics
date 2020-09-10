@@ -2,13 +2,13 @@
 
 First install the dependencies:
 
-- [Install CMake 3.5+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md/)
-- [Install YCM 0.10+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
-- [Install YARP 2.3.70+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
+- [Install CMake 3.12+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md/)
+- [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
+- [Install YARP 3.3+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
 - [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
 - [Install color-debug](https://github.com/roboticslab-uc3m/color-debug)
 
-Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `FakeControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
+Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `EmulatedControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
 
 ```bash
 cd  # go home
@@ -16,7 +16,7 @@ mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter
 git clone https://github.com/roboticslab-uc3m/yarp-devices
 cd yarp-devices
 mkdir build && cd build
-cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_FakeControlboard=ON -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=ON -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_tests=OFF
+cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_EmulatedControlboard=ON -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=ON -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_tests=OFF
 make -j$(nproc)  # compile
 sudo make install
 cd ../..
@@ -62,7 +62,7 @@ Make sure you have previously installed `kinematics-dynamics`.
 ```bash
 cd  # go home
 cd repos/kinematics-dynamics/bindings
-mkdir build && cd build
+mkdir -p build && cd build
 cmake .. -DCREATE_PYTHON=ON
 make -j$(nproc)  # compile
 sudo make install; sudo ldconfig; cd # install and go home

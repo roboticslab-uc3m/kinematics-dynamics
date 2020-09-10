@@ -3,7 +3,11 @@
 #ifndef __CARTESIAN_CONTROL_SERVER_HPP__
 #define __CARTESIAN_CONTROL_SERVER_HPP__
 
-#include <yarp/os/all.h>
+#include <yarp/os/Bottle.h>
+#include <yarp/os/BufferedPort.h>
+#include <yarp/os/PeriodicThread.h>
+#include <yarp/os/RpcServer.h>
+
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
@@ -34,12 +38,12 @@ class StreamResponder;
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 
-class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::RateThread
+class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::PeriodicThread
 {
 public:
 
     CartesianControlServer()
-        : yarp::os::RateThread(DEFAULT_MS),
+        : yarp::os::PeriodicThread(DEFAULT_MS * 0.001),
           iCartesianControl(NULL),
           rpcResponder(NULL), rpcTransformResponder(NULL),
           streamResponder(NULL),
@@ -126,6 +130,7 @@ protected:
 
     bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
     bool handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
 
     bool handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd);
     bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
@@ -158,9 +163,12 @@ class RpcTransformResponder : public RpcResponder
 {
 public:
 
-    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::orientation_system orient)
+    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::coordinate_system coord,
+            KinRepresentation::orientation_system orient, KinRepresentation::angular_units units)
         : RpcResponder(iCartesianControl),
-          orient(orient)
+          coord(coord),
+          orient(orient),
+          units(units)
     {}
 
 protected:
@@ -168,7 +176,9 @@ protected:
     virtual bool transformIncomingData(std::vector<double>& vin);
     virtual bool transformOutgoingData(std::vector<double>& vout);
 
+    KinRepresentation::coordinate_system coord;
     KinRepresentation::orientation_system orient;
+    KinRepresentation::angular_units units;
 };
 
 /**

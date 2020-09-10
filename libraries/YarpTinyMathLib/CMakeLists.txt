@@ -1,9 +1,9 @@
-if(NOT YARP_HAS_MATH_LIB AND (NOT DEFINED ENABLE_YarpTinyMathLib OR ENABLE_YarpTinyMathLib))
-    message(WARNING "YARP math lib not found, disabling YarpTinyMathLib")
+if(NOT YARP_math_FOUND AND (NOT DEFINED ENABLE_YarpTinyMathLib OR ENABLE_YarpTinyMathLib))
+    message(WARNING "YARP_math lib not found, disabling YarpTinyMathLib")
 endif()
 
 cmake_dependent_option(ENABLE_YarpTinyMathLib "Enable/disable YarpTinyMathLib library" ON
-                       YARP_HAS_MATH_LIB OFF)
+                       YARP_math_FOUND OFF)
 
 if(ENABLE_YarpTinyMathLib)
 
@@ -12,8 +12,8 @@ if(ENABLE_YarpTinyMathLib)
 
     set_target_properties(YarpTinyMathLib PROPERTIES PUBLIC_HEADER YarpTinyMath.hpp)
 
-    target_link_libraries(YarpTinyMathLib YARP::YARP_sig
-                                          YARP::YARP_math)
+    target_link_libraries(YarpTinyMathLib PUBLIC YARP::YARP_sig
+                                          PRIVATE YARP::YARP_math)
 
     target_include_directories(YarpTinyMathLib PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -24,6 +24,8 @@ if(ENABLE_YarpTinyMathLib)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+    set_property(GLOBAL APPEND PROPERTY _exported_dependencies YARP_sig)
 
 else()
 

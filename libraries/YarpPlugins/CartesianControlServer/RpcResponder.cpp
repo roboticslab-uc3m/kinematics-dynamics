@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include <yarp/os/Bottle.h>
 #include <yarp/os/Vocab.h>
 
 #include <ColorDebug.h>
@@ -19,25 +20,25 @@ namespace
 
     inline void addValue(yarp::os::Bottle& b, int vocab, double value)
     {
-        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING)
+        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
         {
             b.addVocab(value);
         }
         else
         {
-            b.addDouble(value);
+            b.addFloat64(value);
         }
     }
 
     inline double asValue(int vocab, const yarp::os::Value& v)
     {
-        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING)
+        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
         {
             return v.asVocab();
         }
         else
         {
-            return v.asDouble();
+            return v.asFloat64();
         }
     }
 }
@@ -73,6 +74,8 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
         return handleWaitMsg(in, out);
     case VOCAB_CC_TOOL:
         return handleConsumerCmdMsg(in, out, &ICartesianControl::tool);
+    case VOCAB_CC_ACT:
+        return handleActMsg(in, out);
     case VOCAB_CC_SET:
         return isGroupParam(in) ? handleParameterSetterGroup(in, out) : handleParameterSetter(in, out);
     case VOCAB_CC_GET:
@@ -132,6 +135,10 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "append fixed link to end effector");
     ss.str("");
 
+    ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_ACT) << "] vocab";
+    addUsage(ss.str().c_str(), "actuate tool using selected command vocab");
+    ss.str("");
+
     ss << "[" << yarp::os::Vocab::decode(VOCAB_CC_SET) << "] vocab value";
     addUsage(ss.str().c_str(), "set configuration parameter");
     ss.str("");
@@ -152,28 +159,28 @@ void roboticslab::RpcResponder::makeUsage()
     addUsage(ss.str().c_str(), "(config param) controller gain");
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_MAX_JOINT_VEL) << "] value";
-    addUsage(ss.str().c_str(), "(config param) maximum joint velocity");
-    ss.str("");
-
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_TRAJ_DURATION) << "] value";
     addUsage(ss.str().c_str(), "(config param) trajectory duration");
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_RATE) << "] value";
-    addUsage(ss.str().c_str(), "(config param) CMC rate [ms]");
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_CMC_PERIOD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) CMC period [ms]");
     ss.str("");
+
+    std::stringstream ss_wait;
+    ss_wait << "(config param) check period of [" << yarp::os::Vocab::decode(VOCAB_CC_WAIT) << "] command [ms]";
 
     ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_WAIT_PERIOD) << "] value";
-    addUsage(ss.str().c_str(), "(config param) check period of 'wait' command [ms]");
+    addUsage(ss.str().c_str(), ss_wait.str().c_str());
     ss.str("");
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::BASE_FRAME) << "]";
-    addUsage(ss.str().c_str(), "(config param) reference frame (base)");
-    ss.str("");
+    std::stringstream ss_frame;
+    ss_frame << "(config param) reference frame, available (base/TCP):";
+    ss_frame << " [" << yarp::os::Vocab::decode(ICartesianSolver::BASE_FRAME) << "]";
+    ss_frame << " [" << yarp::os::Vocab::decode(ICartesianSolver::TCP_FRAME) << "]";
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] [" << yarp::os::Vocab::decode(ICartesianSolver::TCP_FRAME) << "]";
-    addUsage(ss.str().c_str(), "(config param) reference frame (TCP)");
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_FRAME) << "] vocab";
+    addUsage(ss.str().c_str(), ss_frame.str().c_str());
     ss.str("");
 
     std::stringstream ss_cmd;
@@ -182,9 +189,8 @@ void roboticslab::RpcResponder::makeUsage()
     ss_cmd << " [" << yarp::os::Vocab::decode(VOCAB_CC_POSE) << "]";
     ss_cmd << " [" << yarp::os::Vocab::decode(VOCAB_CC_MOVI) << "]";
 
-    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING) << "] vocab";
+    ss << "... [" << yarp::os::Vocab::decode(VOCAB_CC_CONFIG_STREAMING_CMD) << "] vocab";
     addUsage(ss.str().c_str(), ss_cmd.str().c_str());
-
     ss.str("");
 }
 
@@ -208,10 +214,10 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
         for (size_t i = 0; i < x.size(); i++)
         {
-            out.addDouble(x[i]);
+            out.addFloat64(x[i]);
         }
 
-        out.addDouble(timestamp);
+        out.addFloat64(timestamp);
 
         return true;
     }
@@ -230,7 +236,7 @@ bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::
 
     if (in.size() > 1)
     {
-        double timeout = in.get(1).asDouble();
+        double timeout = in.get(1).asFloat64();
         res = iCartesianControl->wait(timeout);
     }
     else
@@ -246,6 +252,33 @@ bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::
 
     out.addVocab(VOCAB_CC_OK);
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+{
+    if (in.size() > 1)
+    {
+        int commandCode = in.get(1).asVocab();
+
+        if (iCartesianControl->act(commandCode))
+        {
+            out.addVocab(VOCAB_CC_OK);
+            return true;
+        }
+        else
+        {
+            out.addVocab(VOCAB_CC_FAILED);
+            return false;
+        }
+    }
+    else
+    {
+        CD_ERROR("size error\n");
+        out.addVocab(VOCAB_CC_FAILED);
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -274,7 +307,7 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
 
         for (size_t i = 1; i < in.size(); i++)
         {
-            vin.push_back(in.get(i).asDouble());
+            vin.push_back(in.get(i).asFloat64());
         }
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
@@ -304,7 +337,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
         for (size_t i = 1; i < in.size(); i++)
         {
-            vin.push_back(in.get(i).asDouble());
+            vin.push_back(in.get(i).asFloat64());
         }
 
         if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
@@ -315,7 +348,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
         for (size_t i = 0; i < vout.size(); i++)
         {
-            out.addDouble(vout[i]);
+            out.addFloat64(vout[i]);
         }
 
         return true;
@@ -456,14 +489,14 @@ bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottl
 
 bool roboticslab::RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
 {
-    return KinRepresentation::encodePose(vin, vin, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+    return KinRepresentation::encodePose(vin, vin, coord, orient, units);
 }
 
 // -----------------------------------------------------------------------------
 
 bool roboticslab::RpcTransformResponder::transformOutgoingData(std::vector<double>& vout)
 {
-    return KinRepresentation::decodePose(vout, vout, KinRepresentation::CARTESIAN, orient, KinRepresentation::DEGREES);
+    return KinRepresentation::decodePose(vout, vout, coord, orient, units);
 }
 
 // -----------------------------------------------------------------------------

@@ -22,16 +22,16 @@ bool ConfigurationSelector::configure(const std::vector<KDL::JntArray> & solutio
 {
     configs.resize(solutions.size());
 
-    bool allValid = true;
+    bool anyValid = false;
 
     for (int i = 0; i < solutions.size(); i++)
     {
         configs[i].store(&solutions[i]);
         configs[i].validate(_qMin, _qMax);
-        allValid = allValid && configs[i].isValid();
+        anyValid = anyValid || configs[i].isValid();
     }
 
-    return allValid;
+    return anyValid;
 }
 
 // -----------------------------------------------------------------------------

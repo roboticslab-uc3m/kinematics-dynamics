@@ -126,7 +126,7 @@ namespace
     };
 
     // Can't inline into previous definition, Doxygen output is messed up by the first variable.
-    poe_term_candidate knownTerm(true), unknownTerm(false), unknownNotSimplifiedTerm(false, false);
+    poe_term_candidate knownTerm(true), unknownTerm(false), knownNotSimplifiedTerm(true, false), unknownNotSimplifiedTerm(false, false);
 
     void clearSteps(ScrewTheoryIkProblem::Steps & steps)
     {
@@ -292,11 +292,8 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 
     do
     {
-        // Reset simplification state.
-        for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
-        {
-            it->simplified = false;
-        }
+        // Start over.
+        refreshSimplificationState();
 
         // For the current set of characteristic points, try to simplify the PoE.
         simplify(depth);
@@ -349,6 +346,43 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 
 // -----------------------------------------------------------------------------
 
+void ScrewTheoryIkProblemBuilder::refreshSimplificationState()
+{
+    // Reset simplification mark on all terms.
+    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    {
+        it->simplified = false;
+    }
+
+    // Leading known terms can be simplified (pre-multiply).
+    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    {
+        if (it->known)
+        {
+            it->simplified = true;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    // Trailing known terms can be simplified as well (post-multiply).
+    for (std::vector<PoeTerm>::reverse_iterator rit = poeTerms.rbegin(); rit != poeTerms.rend(); ++rit)
+    {
+        if (rit->known)
+        {
+            rit->simplified = true;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 {
     int unknownsCount = std::count_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
@@ -385,6 +419,12 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
         if (depth == 1)
         {
+            // There can be no other non-simplified terms to the left of our unknown.
+            if (std::find_if(poeTerms.begin(), poeTerms.end(), knownNotSimplifiedTerm) != poeTerms.end())
+            {
+                return NULL;
+            }
+
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
                     && !liesOnAxis(lastExp, testPoints[0])
                     && !liesOnAxis(lastExp, testPoints[1]))

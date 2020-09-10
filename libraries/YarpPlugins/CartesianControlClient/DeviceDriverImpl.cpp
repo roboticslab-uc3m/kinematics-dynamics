@@ -40,7 +40,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     }
 
     fkStreamTimeoutSecs = config.check("fkStreamTimeoutSecs", yarp::os::Value(DEFAULT_FK_STREAM_TIMEOUT_SECS),
-            "FK stream timeout (seconds)").asDouble();
+            "FK stream timeout (seconds)").asFloat64();
 
     if (transformEnabled)
     {

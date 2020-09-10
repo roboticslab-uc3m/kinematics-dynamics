@@ -10,7 +10,7 @@ add_executable(keyboardController main.cpp
                                   LinearTrajectoryThread.hpp
                                   LinearTrajectoryThread.cpp)
 
-target_link_libraries(keyboardController YARP::YARP_OS
+target_link_libraries(keyboardController YARP::YARP_os
                                          YARP::YARP_init
                                          YARP::YARP_dev
                                          ROBOTICSLAB::ColorDebug

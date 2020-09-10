@@ -94,39 +94,9 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    //-- Find out the maximum time to move
-    double max_time = 0;
+    std::vector<double> vmo(numRobotJoints);
 
-    for (int joint = 0; joint < numSolverJoints; joint++)
-    {
-        CD_INFO("dist[%d]: %f\n", joint, std::abs(qd[joint] - currentQ[joint]));
-
-        if (std::abs((qd[joint] - currentQ[joint]) / maxJointVelocity) > max_time)
-        {
-            max_time = std::abs((qd[joint] - currentQ[joint]) / maxJointVelocity);
-            CD_INFO(" -->candidate: %f\n", max_time);
-        }
-    }
-
-    CD_INFO("max_time[final]: %f\n", max_time);
-
-    //-- Compute, store old and set joint velocities given this time
-    std::vector<double> vmo;
-
-    for (int joint = 0; joint < numRobotJoints; joint++)
-    {
-        if (joint >= numSolverJoints)
-        {
-            vmo.push_back(0.0);
-            CD_INFO("vmo[%d]: 0.0 (forced)\n", joint);
-        }
-        else
-        {
-            vmo.push_back(std::abs(qd[joint] - currentQ[joint]) / max_time);
-            CD_INFO("vmo[%d]: %f\n", joint, vmo[joint]);
-        }
-    }
-
+    computeIsocronousSpeeds(currentQ, qd, vmo);
     vmoStored.resize(numRobotJoints);
 
     if (!iPositionControl->getRefSpeeds(vmoStored.data()))
@@ -264,7 +234,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
-    //-- Set velocity mode and set state which makes rate thread implement control.
+    //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Unable to set velocity mode.\n");
@@ -327,7 +297,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
         return false;
     }
 
-    trajectoryMutex.wait();
+    trajectoryMutex.lock();
 
     if (iCartesianTrajectory != NULL)
     {
@@ -338,9 +308,9 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
     //-- Transfer ownership.
     iCartesianTrajectory = iCartTraj;
 
-    trajectoryMutex.post();
+    trajectoryMutex.unlock();
 
-    //-- Set velocity mode and set state which makes rate thread implement control.
+    //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Unable to set velocity mode.\n");
@@ -361,7 +331,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
 bool roboticslab::BasicCartesianControl::gcmp()
 {
-    //-- Set torque mode and set state which makes rate thread implement control.
+    //-- Set torque mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
         CD_ERROR("Unable to set torque mode.\n");
@@ -384,7 +354,7 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
         return false;
     }
 
-    //-- Set torque mode and set state which makes rate thread implement control.
+    //-- Set torque mode and set state which makes periodic thread implement control.
     this->td = td;
 
     if (!setControlModes(VOCAB_CM_TORQUE))
@@ -401,14 +371,19 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool roboticslab::BasicCartesianControl::stopControl()
 {
+    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+
+    // first switch control so that manipulators don't fall due to e.g. gravity
     if (!setControlModes(VOCAB_CM_POSITION))
     {
-        CD_ERROR("Unable to set position mode.\n");
-        return false;
+        CD_WARNING("setControlModes(VOCAB_CM_POSITION) failed.\n");
     }
 
-    iPositionControl->stop();
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    // stop joints if already controlling position
+    if (!iPositionControl->stop())
+    {
+        CD_WARNING("stop() failed.\n");
+    }
 
     if (iCartesianTrajectory != 0)
     {
@@ -470,9 +445,16 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
+bool roboticslab::BasicCartesianControl::act(int command)
+{
+    CD_ERROR("Not implemented.\n");
+    return false;
+}
+
 void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST)
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
+            || !checkControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Streaming command not preset.\n");
         return;
@@ -511,7 +493,8 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE)
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE
+            || !checkControlModes(VOCAB_CM_VELOCITY))
     {
         CD_ERROR("Streaming command not preset.\n");
         return;
@@ -587,7 +570,8 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI)
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI
+            || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
         CD_ERROR("Streaming command not preset.\n");
         return;
@@ -607,23 +591,22 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> qd(numRobotJoints);
+    std::vector<double> qdiff(numRobotJoints);
 
     for (int i = 0; i < numRobotJoints; i++)
     {
-        qd[i] = q[i] - currentQ[i];
+        qdiff[i] = q[i] - currentQ[i];
     }
 
-    if (!checkJointLimits(currentQ, qd))
+    if (!checkJointLimits(currentQ, qdiff))
     {
-        CD_ERROR("checkJointLimits failed, stopping.\n");
+        CD_ERROR("Joint position or velocity limits exceeded, not moving.\n");
         return;
     }
 
     if (!iPositionDirect->setPositions(q.data()))
     {
         CD_ERROR("setPositions failed.\n");
-        return;
     }
 }
 
@@ -647,14 +630,6 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         gain = value;
         break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        if (value <= 0.0)
-        {
-            CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
-            return false;
-        }
-        maxJointVelocity = value;
-        break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         if (value <= 0.0)
         {
@@ -663,13 +638,13 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         duration = value;
         break;
-    case VOCAB_CC_CONFIG_CMC_RATE:
-        if (!yarp::os::RateThread::setRate(value))
+    case VOCAB_CC_CONFIG_CMC_PERIOD:
+        if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
-            CD_ERROR("Cannot set new CMC rate.\n");
+            CD_ERROR("Cannot set new CMC period.\n");
             return false;
         }
-        cmcRateMs = value;
+        cmcPeriodMs = value;
         break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         if (value <= 0.0)
@@ -687,7 +662,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
-    case VOCAB_CC_CONFIG_STREAMING:
+    case VOCAB_CC_CONFIG_STREAMING_CMD:
         if (!presetStreamingCommand(value))
         {
             CD_ERROR("Unable to preset streaming command.\n");
@@ -712,14 +687,11 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_GAIN:
         *value = gain;
         break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        *value = maxJointVelocity;
-        break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         *value = duration;
         break;
-    case VOCAB_CC_CONFIG_CMC_RATE:
-        *value = cmcRateMs;
+    case VOCAB_CC_CONFIG_CMC_PERIOD:
+        *value = cmcPeriodMs;
         break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         *value = waitPeriodMs;
@@ -727,7 +699,7 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_FRAME:
         *value = referenceFrame;
         break;
-    case VOCAB_CC_CONFIG_STREAMING:
+    case VOCAB_CC_CONFIG_STREAMING_CMD:
         *value = streamingCommand;
         break;
     default:
@@ -763,12 +735,11 @@ bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, doubl
 bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
     params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_RATE, cmcRateMs));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING, streamingCommand));
+    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand));
     return true;
 }
 

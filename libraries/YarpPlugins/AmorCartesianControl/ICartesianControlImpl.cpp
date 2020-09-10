@@ -7,6 +7,8 @@
 
 #include <ColorDebug.h>
 
+#include <yarp/os/Vocab.h>
+
 #include "KinematicRepresentation.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------
@@ -31,7 +33,7 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
     x[4] = positions[4];
     x[5] = positions[5];
 
-    KinRepresentation::encodePose(x, x, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::encodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
     if (state != 0)
     {
@@ -173,7 +175,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
     std::vector<double> xd_rpy;
 
-    KinRepresentation::decodePose(xd_obj, xd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::decodePose(xd_obj, xd_rpy, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
     AMOR_VECTOR7 positions;
 
@@ -216,7 +218,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
     std::vector<double> xdotd_rpy;
 
-    KinRepresentation::decodeVelocity(xCurrent, xdotd, xdotd_rpy, KinRepresentation::CARTESIAN, KinRepresentation::RPY);
+    KinRepresentation::decodeVelocity(xCurrent, xdotd, xdotd_rpy, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
     AMOR_VECTOR7 velocities;
 
@@ -317,6 +319,37 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 {
     CD_WARNING("Tool change is not supported on AMOR.\n");
     return false;
+}
+
+// -----------------------------------------------------------------------------
+
+bool roboticslab::AmorCartesianControl::act(int command)
+{
+    AMOR_RESULT (*amor_command)(AMOR_HANDLE);
+
+    switch (command)
+    {
+    case VOCAB_CC_ACTUATOR_CLOSE_GRIPPER:
+        amor_command = amor_close_hand;
+        break;
+    case VOCAB_CC_ACTUATOR_OPEN_GRIPPER:
+        amor_command = amor_open_hand;
+        break;
+    case VOCAB_CC_ACTUATOR_STOP_GRIPPER:
+        amor_command = amor_stop_hand;
+        break;
+    default:
+        CD_ERROR("Unrecognized command with code %d (%s).\n", command, yarp::os::Vocab::decode(command).c_str());
+        return false;
+    }
+
+    if (amor_command(handle) != AMOR_SUCCESS)
+    {
+        CD_ERROR("%s\n", amor_error());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -478,14 +511,6 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
         }
         gain = value;
         break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        if (value <= 0.0)
-        {
-            CD_ERROR("Maximum joint velocity cannot be negative nor zero.\n");
-            return false;
-        }
-        maxJointVelocity = value;
-        break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         if (value <= 0.0)
         {
@@ -518,9 +543,6 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
     {
     case VOCAB_CC_CONFIG_GAIN:
         *value = gain;
-        break;
-    case VOCAB_CC_CONFIG_MAX_JOINT_VEL:
-        *value = maxJointVelocity;
         break;
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         *value = waitPeriodMs;
@@ -561,7 +583,6 @@ bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double
 bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & params)
 {
     params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_MAX_JOINT_VEL, maxJointVelocity));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
     params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;

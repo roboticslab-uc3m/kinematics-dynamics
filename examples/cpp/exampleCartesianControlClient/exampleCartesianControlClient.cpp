@@ -32,10 +32,16 @@ make -j$(nproc)
 \endverbatim
  */
 
-#include <yarp/os/all.h>
-#include <yarp/dev/all.h>
+#include <vector>
 
-#include "ICartesianControl.h" // we need this to work with the CartesianControlClient device
+#include <yarp/os/Network.h>
+#include <yarp/os/Property.h>
+
+#include <yarp/dev/PolyDriver.h>
+
+#include <ICartesianControl.h> // we need this to work with the CartesianControlClient device
+
+#include <ColorDebug.h>
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +49,7 @@ int main(int argc, char *argv[])
 
     if (!yarp::os::Network::checkNetwork())
     {
-        printf("Please start a yarp name server first\n");
+        CD_ERROR("Please start a yarp name server first.\n");
         return 1;
     }
 
@@ -54,10 +60,10 @@ int main(int argc, char *argv[])
     options.put("transform", 1);  // Was yarp::os::Value::getNullValue()
 
     yarp::dev::PolyDriver dd(options);
+
     if (!dd.isValid())
     {
-        printf("Device not available.\n");
-        dd.close();
+        CD_ERROR("Device not available.\n");
         return 1;
     }
 
@@ -65,120 +71,29 @@ int main(int argc, char *argv[])
 
     if (!dd.view(iCartesianControl))
     {
-        printf("[error] Problems acquiring interface\n");
-        dd.close();
+        CD_ERROR("Problems acquiring interface.\n");
         return 1;
     }
-    printf("[success] acquired interface\n");
+
+    CD_SUCCESS("Acquired interface.\n");
 
     std::vector<double> vector;
-    int status;
+    iCartesianControl->stat(vector);
 
-    iCartesianControl->stat(status, vector);
-    printf("Controller status (forward kinematics): ");
+    CD_INFO("Controller status (forward kinematics):");
+
     for (int i = 0; i < vector.size(); i++)
     {
-        printf("%f ", vector[i]);
+        CD_INFO_NO_HEADER(" %f", vector[i]);
     }
-    printf("\n");
+
+    CD_INFO_NO_HEADER("\n");
 
     // -- Move arm in joint space:
     // -- set poss (0 0 0 90 0 0 0)
 
     // -- Position 1
-    std::vector<double> position;
-    position.push_back(0.390926); // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
-    position.push_back(-0.346663);
-    position.push_back(0.166873);
-    position.push_back(-0.004334);
-    position.push_back(0.70944);
-    position.push_back(0.704752);
-    position.push_back(0.353119);
-
-    // movj -> go to end position in joint space
-    // movl -> go to end position in task space
-
-    printf("Position 1: poss (0 0 0 90 0 0 0)\n");
-
-    if(iCartesianControl->movj(position))
-    {
-        printf("[ok]\n");
-        iCartesianControl->wait();
-    }
-    else
-    {
-        printf("[error]\n");
-        return 1;
-    }
-
-    // -- Position 2: move forward along axis X
-    printf("Position 2: move forward along axis X\n");
-    position[0] = 0.5;
-
-    if(iCartesianControl->movj(position))
-    {
-        printf("[ok]\n");
-        iCartesianControl->wait();
-    }
-    else
-    {
-        printf("[error]\n");
-        return 1;
-    }
-
-    // -- Position 3: move right along axis Y
-    printf("Position 3: move right along axis Y\n");
-    position[1] = -0.4;
-
-    if(iCartesianControl->movj(position))
-    {
-        printf("[ok]\n");
-        iCartesianControl->wait();
-    }
-    else
-    {
-        printf("[error]\n");
-        return 1;
-    }
-
-    // -- Position 4: rotate -12 degrees about axis Y
-    printf("Position 4: rotate -12 degrees about axis Y\n");
-    position[3] = 0.0;
-    position[4] = 1.0;
-    position[5] = 0.0;
-    position[6] = -12.0;
-
-    if(iCartesianControl->movj(position))
-    {
-        printf("[ok]\n");
-        iCartesianControl->wait();
-    }
-    else
-    {
-        printf("[error]\n");
-        return 1;
-    }
-
-    // -- Position 5: rotate 50 degrees about axis X
-    printf("Position 5: rotate 50 degrees about axis X\n");
-    position[3] = 1.0;
-    position[4] = 0.0;
-    position[5] = 0.0;
-    position[6] = -50.0;
-
-    if(iCartesianControl->movj(position))
-    {
-        printf("[ok]\n");
-        iCartesianControl->wait();
-    }
-    else
-    {
-        printf("[error]\n");
-        return 1;
-    }
-
-    // -- Position 6:
-    printf("Position 6: poss (0 0 0 90 0 0 0)\n");
+    std::vector<double> position(7);
     position[0] = 0.390926; // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
     position[1] = -0.346663;
     position[2] = 0.166873;
@@ -187,19 +102,111 @@ int main(int argc, char *argv[])
     position[5] = 0.704752;
     position[6] = 0.353119;
 
-    if(iCartesianControl->movj(position))
+    // movj -> go to end position in joint space
+    // movl -> go to end position in task space
+
+    CD_INFO("Position 1: poss (0 0 0 90 0 0 0) ... ");
+
+    if (iCartesianControl->movj(position))
     {
-        printf("[ok]\n");
+        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        printf("[error]\n");
+        CD_ERROR_NO_HEADER("[error]\n");
+        return 1;
+    }
+
+    // -- Position 2: move forward along axis X
+    CD_INFO("Position 2: move forward along axis X ... ");
+    position[0] = 0.5;
+
+    if (iCartesianControl->movj(position))
+    {
+        CD_SUCCESS_NO_HEADER("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        CD_ERROR_NO_HEADER("[error]\n");
+        return 1;
+    }
+
+    // -- Position 3: move right along axis Y
+    CD_INFO("Position 3: move right along axis Y ... ");
+    position[1] = -0.4;
+
+    if (iCartesianControl->movj(position))
+    {
+        CD_SUCCESS_NO_HEADER("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        CD_ERROR_NO_HEADER("[error]\n");
+        return 1;
+    }
+
+    // -- Position 4: rotate -12 degrees about axis Y
+    CD_INFO("Position 4: rotate -12 degrees about axis Y ... ");
+    position[3] = 0.0;
+    position[4] = 1.0;
+    position[5] = 0.0;
+    position[6] = -12.0;
+
+    if (iCartesianControl->movj(position))
+    {
+        CD_SUCCESS_NO_HEADER("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        CD_ERROR_NO_HEADER("[error]\n");
+        return 1;
+    }
+
+    // -- Position 5: rotate 50 degrees about axis X
+    CD_INFO("Position 5: rotate 50 degrees about axis X ... ");
+    position[3] = 1.0;
+    position[4] = 0.0;
+    position[5] = 0.0;
+    position[6] = -50.0;
+
+    if (iCartesianControl->movj(position))
+    {
+        CD_SUCCESS_NO_HEADER("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        CD_ERROR_NO_HEADER("[error]\n");
+        return 1;
+    }
+
+    // -- Position 6:
+    CD_INFO("Position 6: poss (0 0 0 90 0 0 0) ... ");
+    position[0] = 0.390926; // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
+    position[1] = -0.346663;
+    position[2] = 0.166873;
+    position[3] = -0.004334;
+    position[4] = 0.70944;
+    position[5] = 0.704752;
+    position[6] = 0.353119;
+
+    if (iCartesianControl->movj(position))
+    {
+        CD_SUCCESS_NO_HEADER("[ok]\n");
+        iCartesianControl->wait();
+    }
+    else
+    {
+        CD_ERROR_NO_HEADER("[error]\n");
         return 1;
     }
 
     // -- Initial position
-    printf("Position 7: Homing\n");
+    CD_INFO("Position 7: Homing ... ");
     position[0] = 0.0;
     position[1] = -0.34692;
     position[2] = -0.221806;
@@ -208,14 +215,14 @@ int main(int argc, char *argv[])
     position[5] = 0.0;
     position[6] = 90.0;
 
-    if(iCartesianControl->movj(position))
+    if (iCartesianControl->movj(position))
     {
-        printf("[ok]\n");
+        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        printf("[error]\n");
+        CD_ERROR_NO_HEADER("[error]\n");
         return 1;
     }
 

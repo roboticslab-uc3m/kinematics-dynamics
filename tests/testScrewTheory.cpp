@@ -54,27 +54,57 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,       0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,       0, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2, 0.32901, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0, -KDL::PI / 2,       0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(       0,  KDL::PI / 2,   0.202,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.187496, -KDL::PI / 2,       0,  KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,        0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,        0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2, -0.32901, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0,  KDL::PI / 2,        0,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,   -0.215,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.09,            0,        0, -KDL::PI / 2)));
 
         return chain;
     }
 
     static PoeExpression makeTeoRightArmKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI), KDL::Vector(-0.718506, 0, 0));
+        KDL::Frame H_S_T(KDL::Vector(-0.63401, 0, 0));
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0, -1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1,  0, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(-1,  0, 0), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector( 0,  0, 1), KDL::Vector(-0.53101, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.54401, 0, 0)));
+
+        return poe;
+    }
+
+    static KDL::Chain makeTeoRightLegKinematicsFromDH()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI / 2,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI / 2,      0, KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    -0.33,            0,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     -0.3,            0, 0.0175,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0, -KDL::PI / 2,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.123005,            0,      0,           0)));
+
+        return chain;
+    }
+
+    static PoeExpression makeTeoRightLegKinematicsFromPoE()
+    {
+        KDL::Frame H_S_T(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.0175, 0, -0.753005));
+        PoeExpression poe(H_S_T);
+
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(     0, 0, -0.33)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.0175, 0, -0.63)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.0175, 0, -0.63)));
 
         return poe;
     }
@@ -867,6 +897,14 @@ TEST_F(ScrewTheoryTest, TeoRightArmKinematics)
     checkRobotKinematics(chain, poe, 8);
 }
 
+TEST_F(ScrewTheoryTest, TeoRightLegKinematics)
+{
+    KDL::Chain chain = makeTeoRightLegKinematicsFromDH();
+    PoeExpression poe = makeTeoRightLegKinematicsFromPoE();
+
+    checkRobotKinematics(chain, poe, 8);
+}
+
 TEST_F(ScrewTheoryTest, ConfigurationSelector)
 {
     PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
@@ -914,6 +952,47 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     int n2 = findTargetConfiguration(solutions, qSolved);
 
     ASSERT_EQ(n2, n1);
+    delete config;
+}
+
+TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
+{
+    PoeExpression poe = makeTeoRightLegKinematicsFromPoE();
+
+    KDL::JntArray q(poe.size());
+    q(2) = -0.3; // approx. 20 degrees
+    q(3) = 0.6;
+    q(4) = -0.3;
+
+    KDL::Frame H;
+    ASSERT_TRUE(poe.evaluate(q, H));
+
+    ScrewTheoryIkProblemBuilder builder(poe);
+    ScrewTheoryIkProblem * ikProblem = builder.build();
+
+    ASSERT_TRUE(ikProblem);
+    ASSERT_EQ(ikProblem->solutions(), 8);
+
+    ScrewTheoryIkProblem::Solutions solutions;
+    ASSERT_TRUE(ikProblem->solve(H, solutions));
+
+    KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
+    KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);
+
+    ConfigurationSelectorHumanoidGaitFactory confFactory(qMin, qMax);
+    ConfigurationSelector * config = confFactory.create();
+
+    KDL::JntArray qInitial(poe.size());
+
+    ASSERT_TRUE(config);
+    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->findOptimalConfiguration(qInitial));
+
+    KDL::JntArray qSolved;
+    config->retrievePose(qSolved);
+    int n1 = findTargetConfiguration(solutions, q);
+
+    ASSERT_NE(n1, -1);
     delete config;
 }
 

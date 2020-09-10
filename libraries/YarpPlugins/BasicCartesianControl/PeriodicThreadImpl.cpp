@@ -6,7 +6,7 @@
 
 #include <ColorDebug.h>
 
-// ------------------- RateThread Related ------------------------------------
+// ------------------- PeriodicThread Related ------------------------------------
 
 void roboticslab::BasicCartesianControl::run()
 {
@@ -59,6 +59,14 @@ void roboticslab::BasicCartesianControl::run()
 
 void roboticslab::BasicCartesianControl::handleMovj(const std::vector<double> &q)
 {
+    if (!checkControlModes(VOCAB_CM_POSITION))
+    {
+        CD_ERROR("Not in position control mode.\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
+    }
+
     bool done;
 
     if (!iPositionControl->checkMotionDone(&done))
@@ -84,6 +92,14 @@ void roboticslab::BasicCartesianControl::handleMovj(const std::vector<double> &q
 
 void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q)
 {
+    if (!checkControlModes(VOCAB_CM_VELOCITY))
+    {
+        CD_ERROR("Not in velocity control mode.\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
+    }
+
     double currentTrajectoryDuration;
     iCartesianTrajectory->getDuration(&currentTrajectoryDuration);
 
@@ -114,7 +130,7 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
+        commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
     }
 
@@ -161,6 +177,14 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
 
 void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q)
 {
+    if (!checkControlModes(VOCAB_CM_VELOCITY))
+    {
+        CD_ERROR("Not in velocity control mode.\n");
+        cmcSuccess = false;
+        stopControl();
+        return;
+    }
+
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
     std::vector<double> currentX;
@@ -174,10 +198,10 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
     //-- Obtain desired Cartesian position and velocity.
     std::vector<double> desiredX, desiredXdot;
 
-    trajectoryMutex.wait();
+    trajectoryMutex.lock();
     iCartesianTrajectory->getPosition(movementTime, desiredX);
     iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
-    trajectoryMutex.post();
+    trajectoryMutex.unlock();
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
@@ -185,7 +209,7 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
 
     for (int i = 0; i < 6; i++)
     {
-        commandXdot[i] *= gain * (1000.0 / cmcRateMs);
+        commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
     }
 
@@ -232,6 +256,13 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
 
 void roboticslab::BasicCartesianControl::handleGcmp(const std::vector<double> &q)
 {
+    if (!checkControlModes(VOCAB_CM_TORQUE))
+    {
+        CD_ERROR("Not in torque control mode.\n");
+        stopControl();
+        return;
+    }
+
     std::vector<double> t(numRobotJoints);
 
     if (!iCartesianSolver->invDyn(q, t))
@@ -250,6 +281,13 @@ void roboticslab::BasicCartesianControl::handleGcmp(const std::vector<double> &q
 
 void roboticslab::BasicCartesianControl::handleForc(const std::vector<double> &q)
 {
+    if (!checkControlModes(VOCAB_CM_TORQUE))
+    {
+        CD_ERROR("Not in torque control mode.\n");
+        stopControl();
+        return;
+    }
+
     std::vector<double> qdot(numRobotJoints, 0), qdotdot(numRobotJoints, 0);
     std::vector< std::vector<double> > fexts;
 

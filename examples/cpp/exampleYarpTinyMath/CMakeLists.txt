@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 # Start a project.
-project(exampleYarpTinyMath)
+project(exampleYarpTinyMath LANGUAGES CXX)
 
-find_package(YARP REQUIRED)
+find_package(YARP 3.3 REQUIRED COMPONENTS sig math)
 find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 
 # Set up our main executable.
@@ -11,7 +11,7 @@ add_executable(exampleYarpTinyMath exampleYarpTinyMath.cpp)
 
 target_link_libraries(exampleYarpTinyMath YARP::YARP_sig
                                           YARP::YARP_math
-                                          YarpTinyMathLib)
+                                          ROBOTICSLAB::YarpTinyMathLib)
 
 include(GNUInstallDirs)
 
