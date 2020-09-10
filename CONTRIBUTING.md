@@ -7,4 +7,4 @@ Before opening a fresh issue, do a search on [the wiki](http://robots.uc3m.es/in
 * Feel free to attach any other information illustrating the issue if copying and pasting text is not an option.
 
 Notes:
-* We follow the [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow/) git workflow.
+* We follow the [Forking](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow/) Git workflow.
