@@ -215,7 +215,7 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
 
     for (int joint = 0; joint < numRobotJoints; joint++)
     {
-        if (joint >= numSolverJoints)
+        if (joint >= numSolverJoints || maxTime == 0.0)
         {
             CD_INFO("qdot[%d] = 0.0 (forced)\n", joint);
         }
