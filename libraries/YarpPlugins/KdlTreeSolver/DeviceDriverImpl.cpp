@@ -182,7 +182,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
         yInfo() << "hook:" << hook;
 
         //-- numlinks
-        int numLinks = chainConfig.check("numLinks", yarp::os::Value(DEFAULT_NUM_LINKS), "chain number of segments").asInt32();
+        int numLinks = chainConfig.check("numLinks", yarp::os::Value(0), "chain number of segments").asInt32();
         yInfo() << "numLinks:" << numLinks;
 
         //-- H0
@@ -313,7 +313,6 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
         yInfo() << "Chain number of segments:" << chain.getNrOfSegments();
         yInfo() << "Chain number of joints:" << chain.getNrOfJoints();
-        yInfo() << "Tree endpoints:" << endpoints;
 
         if (!tree.addChain(chain, hook))
         {
@@ -331,10 +330,17 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
     yInfo() << "Tree number of segments:" << tree.getNrOfSegments();
     yInfo() << "Tree number of joints:" << tree.getNrOfJoints();
+    yInfo() << "Tree endpoints:" << endpoints;
 
     fkSolverPos = new KDL::TreeFkSolverPos_recursive(tree);
     ikSolverVel = new KDL::TreeIkSolverVel_wdls(tree, endpoints);
     idSolver = new KDL::TreeIdSolver_RNE(tree, gravity);
+
+    {
+        auto * temp = dynamic_cast<KDL::TreeIkSolverVel_wdls *>(ikSolverVel);
+        auto lambda = fullConfig.check("lambda", yarp::os::Value(DEFAULT_LAMBDA), "lambda parameter for diff IK").asFloat64();
+        temp->setLambda(lambda); // disclaimer: never set this to zero (which is the default)
+    }
 
     KDL::JntArray qMax(tree.getNrOfJoints());
     KDL::JntArray qMin(tree.getNrOfJoints());

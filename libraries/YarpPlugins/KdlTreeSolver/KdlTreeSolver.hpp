@@ -16,8 +16,7 @@
 #include "ICartesianSolver.h"
 
 #define DEFAULT_KINEMATICS "none.ini"
-#define DEFAULT_NUM_LINKS 1
-
+#define DEFAULT_LAMBDA 0.01
 #define DEFAULT_EPS 1e-6
 #define DEFAULT_MAXITER 1000
 #define DEFAULT_V_TRANSL_MAX 1.0 // meters/s
