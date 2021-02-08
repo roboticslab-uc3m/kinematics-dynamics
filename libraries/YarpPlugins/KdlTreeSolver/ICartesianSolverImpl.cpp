@@ -276,7 +276,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
 
     for (const auto & endpoint : endpoints)
     {
-        // FIXME: mapping this is not trivial
+        // FIXME: not trivial, see https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/162
         return false;
     }
 

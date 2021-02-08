@@ -33,11 +33,11 @@ using namespace roboticslab;
 
 namespace
 {
-    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & H)
+    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & mat)
     {
-        yarp::os::Bottle * bH = options.find(tag).asList();
+        yarp::os::Bottle * bot = options.find(tag).asList();
 
-        if (!bH)
+        if (!bot)
         {
             yWarning() << "Unable to find tag" << tag.c_str();
             return false;
@@ -46,13 +46,13 @@ namespace
         int i = 0;
         int j = 0;
 
-        H.zero();
+        mat.zero();
 
-        for (int cnt = 0; cnt < bH->size() && cnt < H.rows() * H.cols(); cnt++)
+        for (int cnt = 0; cnt < bot->size() && cnt < mat.rows() * mat.cols(); cnt++)
         {
-            H(i, j) = bH->get(cnt).asFloat64();
+            mat(i, j) = bot->get(cnt).asFloat64();
 
-            if (++j >= H.cols())
+            if (++j >= mat.cols())
             {
                 i++;
                 j = 0;
@@ -338,8 +338,47 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
     {
         auto * temp = dynamic_cast<KDL::TreeIkSolverVel_wdls *>(ikSolverVel);
+
         auto lambda = fullConfig.check("lambda", yarp::os::Value(DEFAULT_LAMBDA), "lambda parameter for diff IK").asFloat64();
         temp->setLambda(lambda); // disclaimer: never set this to zero (which is the default)
+
+        yarp::sig::Matrix wJS(tree.getNrOfJoints(), tree.getNrOfJoints());
+
+        if (!getMatrixFromProperties(fullConfig, "weightJS", wJS))
+        {
+            wJS.eye();
+        }
+
+        Eigen::MatrixXd _wJS(wJS.rows(), wJS.cols());
+
+        for (auto i = 0; i < wJS.rows(); i++)
+        {
+            for (auto j = 0; j < wJS.cols(); j++)
+            {
+                _wJS(i, j) = wJS(i, j);
+            }
+        }
+
+        temp->setWeightJS(_wJS);
+
+        yarp::sig::Matrix wTS(6 * endpoints.size(), 6 * endpoints.size());
+
+        if (!getMatrixFromProperties(fullConfig, "weightTS", wTS))
+        {
+            wTS.eye();
+        }
+
+        Eigen::MatrixXd _wTS(wTS.rows(), wTS.cols());
+
+        for (auto i = 0; i < wTS.rows(); i++)
+        {
+            for (auto j = 0; j < wTS.cols(); j++)
+            {
+                _wTS(i, j) = wTS(i, j);
+            }
+        }
+
+        temp->setWeightTS(_wTS);
     }
 
     KDL::JntArray qMax(tree.getNrOfJoints());
