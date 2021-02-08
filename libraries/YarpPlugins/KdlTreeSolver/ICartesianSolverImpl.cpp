@@ -42,11 +42,21 @@ bool KdlTreeSolver::restoreOriginalChain()
 
 bool KdlTreeSolver::changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj)
 {
-    KDL::Frame H_old_obj = KdlVectorConverter::vectorToFrame(x_old_obj);
-    KDL::Frame H_new_old = KdlVectorConverter::vectorToFrame(x_new_old);
-    KDL::Frame H_new_obj = H_new_old * H_old_obj;
+    x_new_obj.clear();
+    x_new_obj.reserve(endpoints.size() * 6);
 
-    x_new_obj = KdlVectorConverter::frameToVector(H_new_obj);
+    for (auto i = 0; i < endpoints.size(); i++)
+    {
+        std::vector<double> temp_old_obj(x_old_obj.cbegin() + i * 6, x_old_obj.cbegin() + (i + 1) * 6);
+        std::vector<double> temp_new_old(x_new_old.cbegin() + i * 6, x_new_old.cbegin() + (i + 1) * 6);
+
+        KDL::Frame H_old_obj = KdlVectorConverter::vectorToFrame(temp_old_obj);
+        KDL::Frame H_new_old = KdlVectorConverter::vectorToFrame(temp_new_old);
+        KDL::Frame H_new_obj = H_new_old * H_old_obj;
+
+        std::vector<double> temp_new_obj = KdlVectorConverter::frameToVector(H_new_obj);
+        x_new_obj.insert(x_new_obj.end(), temp_new_obj.cbegin(), temp_new_obj.cend());
+    }
 
     return true;
 }
