@@ -95,11 +95,22 @@ bool KdlTreeSolver::fwdKin(const std::vector<double> & q, std::vector<double> & 
 
 bool KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut)
 {
-    KDL::Frame fLhs = KdlVectorConverter::vectorToFrame(xLhs);
-    KDL::Frame fRhs = KdlVectorConverter::vectorToFrame(xRhs);
+    xOut.clear();
+    xOut.reserve(endpoints.size() * 6);
 
-    KDL::Twist diff = KDL::diff(fRhs, fLhs); // [fLhs - fRhs] for translation
-    xOut = KdlVectorConverter::twistToVector(diff);
+    for (auto i = 0; i < endpoints.size(); i++)
+    {
+        std::vector<double> temp_xLhs(xLhs.cbegin() + i * 6, xLhs.cbegin() + (i + 1) * 6);
+        std::vector<double> temp_xRhs(xRhs.cbegin() + i * 6, xRhs.cbegin() + (i + 1) * 6);
+
+        KDL::Frame fLhs = KdlVectorConverter::vectorToFrame(temp_xLhs);
+        KDL::Frame fRhs = KdlVectorConverter::vectorToFrame(temp_xRhs);
+
+        KDL::Twist diff = KDL::diff(fRhs, fLhs); // [fLhs - fRhs] for translation
+        std::vector<double> temp_xOut = KdlVectorConverter::twistToVector(diff);
+
+        xOut.insert(xOut.end(), temp_xOut.cbegin(), temp_xOut.cend());
+    }
 
     return true;
 }

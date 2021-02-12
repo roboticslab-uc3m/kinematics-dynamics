@@ -3,6 +3,7 @@
 #ifndef __BASIC_CARTESIAN_CONTROL_HPP__
 #define __BASIC_CARTESIAN_CONTROL_HPP__
 
+#include <memory>
 #include <mutex>
 #include <vector>
 
@@ -133,7 +134,6 @@ public:
                               currentState(VOCAB_CC_NOT_CONTROLLING),
                               streamingCommand(VOCAB_CC_NOT_SET),
                               movementStartTime(0),
-                              iCartesianTrajectory(NULL),
                               cmcSuccess(true)
     {}
 
@@ -250,7 +250,6 @@ protected:
     int streamingCommand;
 
     mutable std::mutex stateMutex;
-    mutable std::mutex trajectoryMutex;
 
     /** MOVJ store previous reference speeds */
     std::vector<double> vmoStored;
@@ -259,7 +258,7 @@ protected:
     double movementStartTime;
 
     /** MOVL store Cartesian trajectory */
-    ICartesianTrajectory* iCartesianTrajectory;
+    std::vector<std::unique_ptr<ICartesianTrajectory>> trajectories;
 
     /** FORC desired Cartesian force */
     std::vector<double> td;
