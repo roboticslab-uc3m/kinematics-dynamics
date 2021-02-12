@@ -195,43 +195,53 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         xd_obj = xd;
     }
 
-    //-- Create line trajectory
-    iCartesianTrajectory = new KdlTrajectory;
+    trajectories.clear();
 
-    if (!iCartesianTrajectory->setDuration(duration))
+    //-- Create line trajectories (one per endpoint if robot is a kin-tree)
+    for (unsigned int i = 0; i < xd.size() / 6; i++)
     {
-        CD_ERROR("\n");
-        return false;
-    }
+        std::vector<double> xd_base_tcp_sub(x_base_tcp.cbegin() + i * 6, x_base_tcp.cbegin() + (i + 1) * 6);
+        std::vector<double> xd_obj_sub(xd_obj.cbegin() + i * 6, xd_obj.cbegin() + (i + 1) * 6);
 
-    if (!iCartesianTrajectory->addWaypoint(x_base_tcp))
-    {
-        CD_ERROR("\n");
-        return false;
-    }
+        auto iCartesianTrajectory = std::make_unique<KdlTrajectory>();
 
-    if (!iCartesianTrajectory->addWaypoint(xd_obj))
-    {
-        CD_ERROR("\n");
-        return false;
-    }
+        if (!iCartesianTrajectory->setDuration(duration))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
 
-    if (!iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE))
-    {
-        CD_ERROR("\n");
-        return false;
-    }
+        if (!iCartesianTrajectory->addWaypoint(xd_base_tcp_sub))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
 
-    if (!iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::TRAPEZOIDAL))
-    {
-        CD_ERROR("\n");
-        return false;
-    }
+        if (!iCartesianTrajectory->addWaypoint(xd_obj_sub))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
 
-    if (!iCartesianTrajectory->create())
-    {
-        CD_ERROR("\n");
-        return false;
+        if (!iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        if (!iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::TRAPEZOIDAL))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        if (!iCartesianTrajectory->create())
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        trajectories.push_back(std::move(iCartesianTrajectory));
     }
 
     //-- Set velocity mode and set state which makes periodic thread implement control.
@@ -271,44 +281,41 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
         return false;
     }
 
-    ICartesianTrajectory * iCartTraj = new KdlTrajectory;
+    trajectories.clear();
 
-    if (!iCartTraj->addWaypoint(x_base_tcp, xdotd))
+    for (unsigned int i = 0; i < xdotd.size() / 6; i++)
     {
-        CD_ERROR("\n");
-        return false;
+        std::vector<double> xd_base_tcp_sub(x_base_tcp.cbegin() + i * 6, x_base_tcp.cbegin() + (i + 1) * 6);
+        std::vector<double> xdotd_sub(xdotd.cbegin() + i * 6, xdotd.cbegin() + (i + 1) * 6);
+
+        auto iCartesianTrajectory = std::make_unique<KdlTrajectory>();
+
+        if (!iCartesianTrajectory->addWaypoint(xd_base_tcp_sub, xdotd_sub))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        if (!iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        if (!iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR))
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        if (!iCartesianTrajectory->create())
+        {
+            CD_ERROR("\n");
+            return false;
+        }
+
+        trajectories.push_back(std::move(iCartesianTrajectory));
     }
-
-    if (!iCartTraj->configurePath(ICartesianTrajectory::LINE))
-    {
-        CD_ERROR("\n");
-        return false;
-    }
-
-    if (!iCartTraj->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR))
-    {
-        CD_ERROR("\n");
-        return false;
-    }
-
-    if (!iCartTraj->create())
-    {
-        CD_ERROR("\n");
-        return false;
-    }
-
-    trajectoryMutex.lock();
-
-    if (iCartesianTrajectory != NULL)
-    {
-        iCartesianTrajectory->destroy();
-        delete iCartesianTrajectory;
-    }
-
-    //-- Transfer ownership.
-    iCartesianTrajectory = iCartTraj;
-
-    trajectoryMutex.unlock();
 
     //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
@@ -385,12 +392,7 @@ bool roboticslab::BasicCartesianControl::stopControl()
         CD_WARNING("stop() failed.\n");
     }
 
-    if (iCartesianTrajectory != 0)
-    {
-        iCartesianTrajectory->destroy();
-        delete iCartesianTrajectory;
-        iCartesianTrajectory = 0;
-    }
+    trajectories.clear();
 
     return true;
 }

@@ -120,7 +120,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     qdotMin.resize(numRobotJoints);
     qdotMax.resize(numRobotJoints);
 
-    yarp::os::Bottle bMin, bMax;
+    yarp::os::Bottle bMin, bMax, bMaxVel;
 
     for (int joint = 0; joint < numRobotJoints; joint++)
     {
@@ -128,7 +128,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
         if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
         {
-            CD_ERROR("Unable to retrieve position limits for joint %d.\n");
+            CD_ERROR("Unable to retrieve position limits for joint %d.\n", joint);
             return false;
         }
 
@@ -139,7 +139,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
         if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
         {
-            CD_ERROR("Unable to retrieve speed limits for joint %d.\n");
+            CD_ERROR("Unable to retrieve speed limits for joint %d.\n", joint);
             return false;
         }
 
@@ -150,6 +150,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
         bMin.addFloat64(_qMin);
         bMax.addFloat64(_qMax);
+        bMaxVel.addFloat64(_qdotMax);
     }
 
     yarp::os::Property solverOptions;
@@ -157,6 +158,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     solverOptions.put("device", solverStr);
     solverOptions.put("mins", yarp::os::Value::makeList(bMin.toString().c_str()));
     solverOptions.put("maxs", yarp::os::Value::makeList(bMax.toString().c_str()));
+    solverOptions.put("maxvels", yarp::os::Value::makeList(bMaxVel.toString().c_str()));
     solverOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     if (!solverDevice.open(solverOptions))

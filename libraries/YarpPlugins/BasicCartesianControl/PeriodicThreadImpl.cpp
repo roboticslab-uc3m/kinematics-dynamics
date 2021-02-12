@@ -100,15 +100,28 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
         return;
     }
 
-    double currentTrajectoryDuration;
-    iCartesianTrajectory->getDuration(&currentTrajectoryDuration);
-
     double movementTime = yarp::os::Time::now() - movementStartTime;
 
-    if (movementTime > currentTrajectoryDuration)
+    std::vector<double> desiredX, desiredXdot;
+
+    for (const auto & trajectory : trajectories)
     {
-        stopControl();
-        return;
+        double currentTrajectoryDuration;
+        trajectory->getDuration(&currentTrajectoryDuration);
+
+        if (movementTime > currentTrajectoryDuration)
+        {
+            stopControl();
+            return;
+        }
+
+        //-- Obtain desired Cartesian position and velocity.
+        std::vector<double> desiredX_sub, desiredXdot_sub;
+        trajectory->getPosition(movementTime, desiredX_sub);
+        trajectory->getVelocity(movementTime, desiredXdot_sub);
+
+        desiredX.insert(desiredX.end(), desiredX_sub.cbegin(), desiredX_sub.cend());
+        desiredXdot.insert(desiredXdot.end(), desiredXdot_sub.cbegin(), desiredXdot_sub.cend());
     }
 
     std::vector<double> currentX;
@@ -119,16 +132,11 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
         return;
     }
 
-    //-- Obtain desired Cartesian position and velocity.
-    std::vector<double> desiredX, desiredXdot;
-    iCartesianTrajectory->getPosition(movementTime, desiredX);
-    iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
-
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
     iCartesianSolver->poseDiff(desiredX, currentX, commandXdot);
 
-    for (int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < commandXdot.size(); i++)
     {
         commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
@@ -145,7 +153,7 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
 
     CD_DEBUG_NO_HEADER("[MOVL] [%f] ", movementTime);
 
-    for (int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < commandXdot.size(); i++)
     {
         CD_DEBUG_NO_HEADER("%f ", commandXdot[i]);
     }
@@ -198,16 +206,22 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
     //-- Obtain desired Cartesian position and velocity.
     std::vector<double> desiredX, desiredXdot;
 
-    trajectoryMutex.lock();
-    iCartesianTrajectory->getPosition(movementTime, desiredX);
-    iCartesianTrajectory->getVelocity(movementTime, desiredXdot);
-    trajectoryMutex.unlock();
+    for (const auto & trajectory : trajectories)
+    {
+        //-- Obtain desired Cartesian position and velocity.
+        std::vector<double> desiredX_sub, desiredXdot_sub;
+        trajectory->getPosition(movementTime, desiredX_sub);
+        trajectory->getVelocity(movementTime, desiredXdot_sub);
+
+        desiredX.insert(desiredX.end(), desiredX_sub.cbegin(), desiredX_sub.cend());
+        desiredXdot.insert(desiredXdot.end(), desiredXdot_sub.cbegin(), desiredXdot_sub.cend());
+    }
 
     //-- Apply control law to compute robot Cartesian velocity commands.
     std::vector<double> commandXdot;
     iCartesianSolver->poseDiff(desiredX, currentX, commandXdot);
 
-    for (int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < commandXdot.size(); i++)
     {
         commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
@@ -224,7 +238,7 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
 
     CD_DEBUG_NO_HEADER("[MOVV] [%f] ", movementTime);
 
-    for (int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < commandXdot.size(); i++)
     {
         CD_DEBUG_NO_HEADER("%f ", commandXdot[i]);
     }
