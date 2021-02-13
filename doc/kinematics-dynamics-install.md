@@ -68,6 +68,8 @@ make -j$(nproc)  # compile
 sudo make install; sudo ldconfig; cd # install and go home
 ```
 
+Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)) too.
+
 ### Check Python bindings installation
 
 Check your installation via (should output nothing; if bad you will see a `ModuleNotFoundError`):
