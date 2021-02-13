@@ -1,4 +1,4 @@
-## kinematics-dynamics: Installation from Source Code
+# kinematics-dynamics: Installation from Source Code
 
 First install the dependencies:
 
@@ -8,7 +8,7 @@ First install the dependencies:
 - [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
 - [Install color-debug](https://github.com/roboticslab-uc3m/color-debug)
 
-Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `EmulatedControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
+[Optional] Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `EmulatedControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
 
 ```bash
 cd  # go home
@@ -24,7 +24,7 @@ cd ../..
 
 For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-googletest.md/).
 
-### Install kinematics-dynamics on Ubuntu (working on all tested versions)
+## Install kinematics-dynamics on Ubuntu (working on all tested versions)
 
 Our software integrates the previous dependencies. Note that you will be prompted for your password upon using `sudo` a couple of times:
 
@@ -44,11 +44,9 @@ export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build
 
 For additional options use `ccmake` instead of `cmake`.
 
-# Install Bindings
+## Install Bindings
 
 Swig is needed in order to build all language bindings. Refer to [Install SWIG](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-swig.md/).
-
-## Install Python bindings
 
 First, install Python development packages.
 
