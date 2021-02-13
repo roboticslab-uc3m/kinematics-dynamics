@@ -70,7 +70,7 @@ sudo make install; sudo ldconfig; cd # install and go home
 
 Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)) too.
 
-### Check Python bindings installation
+### Install Python bindings (checking)
 
 Check your installation via (should output nothing; if bad you will see a `ModuleNotFoundError`):
 
@@ -78,7 +78,7 @@ Check your installation via (should output nothing; if bad you will see a `Modul
 python -c "import kinematics_dynamics"
 ```
 
-### Troubleshooting Python bindings installation
+### Install Python bindings (troubleshooting)
 
 Extra care should be taken with Python 2 vs 3, and with Python paths in general. Toggle `t` in `ccmake ..` to see paths. `python -c "import site; print(site.getsitepackages())"` is your friend, most probably the first element `python -c "import site; print(site.getsitepackages()[0])"` is good for you. 
 
