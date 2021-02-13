@@ -6,7 +6,7 @@ import kinematics_dynamics
 yarp.Network.init()
 
 if yarp.Network.checkNetwork() != True:
-    print '[error] Please try running yarp server'
+    print('[error] Please try running yarp server')
     raise SystemExit
 
 options = yarp.Property()
@@ -17,15 +17,15 @@ options.put('transform', 1)
 dd = yarp.PolyDriver(options)  # calls open -> connects
 
 if not dd.isValid():
-    print 'Cannot open the device!'
+    print('Cannot open the device!')
     raise SystemExit
 
 cartesianControl = kinematics_dynamics.viewICartesianControl(dd)  # view the actual interface
 
-print '> stat'
+print('> stat')
 x = yarp.DVector()
 ret, state, ts = cartesianControl.stat(x)
-print '<', yarp.decode(state), '[%s]' % ', '.join(map(str, x))
+print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
 
 xd = [0,0,0,0,0,0,0]
 
@@ -38,25 +38,25 @@ xd[5] = [0.389496, -0.34692, 0.16769, 1.0, 0.0, 0.0, 0.0]
 xd[6] = [0.0, -0.34692, -0.221806, 0.0, 1.0, 0.0, 90.0]
 
 for i in range(len(xd)):
-    print '-- movement '+str(i+1)+':'
-    print '> inv [%s]' % ', '.join(map(str, xd[i]))
+    print('-- movement '+str(i+1)+':')
+    print('> inv [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
     qd_vector = yarp.DVector()
     if cartesianControl.inv(xd_vector,qd_vector):
-        print '< [%s]' % ', '.join(map(str, qd_vector))
+        print('< [%s]' % ', '.join(map(str, qd_vector)))
     else:
-        print '< [fail]'
+        print('< [fail]')
         continue
     
-    print '> movj [%s]' % ', '.join(map(str, xd[i]))
+    print('> movj [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
     if cartesianControl.movj(xd_vector):
-        print '< [ok]'
-        print '< [wait...]'
+        print('< [ok]')
+        print('< [wait...]')
         cartesianControl.wait()
     else:
-        print '< [fail]'
+        print('< [fail]')
     
     
 
-print 'bye!'
+print('bye!')
