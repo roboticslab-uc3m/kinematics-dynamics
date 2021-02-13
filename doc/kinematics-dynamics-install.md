@@ -34,7 +34,7 @@ mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter
 git clone https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download kinematics-dynamics software from the repository
 cd kinematics-dynamics; mkdir build; cd build; cmake ..  # Configure the kinematics-dynamics software
 make -j$(nproc) # Compile
-sudo make install  # Install :-)
+sudo make install; sudo ldconfig  # Install :-)
 ```
 
 For CMake `find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
@@ -68,13 +68,33 @@ make -j$(nproc)  # compile
 sudo make install; sudo ldconfig; cd # install and go home
 ```
 
-Also, extra care should be taken with Python 2 vs 3 (e.g. toggle `t` to see paths 2.7 vs 3.5m). You may have to:
+### Check Python bindings installation
+
+Check your installation via (should output nothing; if bad you will see a `ModuleNotFoundError`):
+
+```bash
+python -c "import kinematics_dynamics"
+```
+
+### Troubleshooting Python bindings installation
+
+Extra care should be taken with Python 2 vs 3, and with Python paths in general. Toggle `t` in `ccmake ..` to see paths. `python -c "import site; print(site.getsitepackages())"` is your friend, most probably the first element `python -c "import site; print(site.getsitepackages()[0])"` is good for you. 
+
+For many Python 3.x you may have to:
+
+```bash
+sudo ln -s /usr/local/lib/python3/dist-packages/_kinematics_dynamics.so `python -c "import site; print(site.getsitepackages()[0])"`
+sudo ln -s /usr/local/lib/python3/dist-packages/kinematics_dynamics.py `python -c "import site; print(site.getsitepackages()[0])"`
+```
+
+Specifically for Python 3.5m this will expand to:
+
 ```bash
 sudo ln -s /usr/local/lib/python3/dist-packages/_kinematics_dynamics.so /usr/local/lib/python3.5/dist-packages/
 sudo ln -s /usr/local/lib/python3/dist-packages/kinematics_dynamics.py /usr/local/lib/python3.5/dist-packages/
 ```
 
-### Even more!
+## Even more!
 
 Done! You are now probably interested in one of the following links:
 - [Simulation and Basic Control: Now what can I do?]( teo-post-install.md )
