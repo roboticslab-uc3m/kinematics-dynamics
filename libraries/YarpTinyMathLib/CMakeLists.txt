@@ -27,6 +27,8 @@ if(ENABLE_YarpTinyMathLib)
 
     set_property(GLOBAL APPEND PROPERTY _exported_dependencies YARP_sig)
 
+    add_library(ROBOTICSLAB::YarpTinyMathLib ALIAS YarpTinyMathLib)
+
 else()
 
     set(ENABLE_YarpTinyMathLib OFF CACHE BOOL "Enable/disable YarpTinyMathLib library" FORCE)

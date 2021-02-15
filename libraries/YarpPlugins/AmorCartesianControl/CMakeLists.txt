@@ -28,8 +28,8 @@ if(NOT SKIP_AmorCartesianControl)
                                                YARP::YARP_dev
                                                AMOR::amor_api
                                                ROBOTICSLAB::ColorDebug
-                                               KinematicRepresentationLib
-                                               KinematicsDynamicsInterfaces)
+                                               ROBOTICSLAB::KinematicRepresentationLib
+                                               ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     yarp_install(TARGETS AmorCartesianControl
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

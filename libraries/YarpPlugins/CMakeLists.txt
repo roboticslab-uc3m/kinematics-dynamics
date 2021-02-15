@@ -17,6 +17,9 @@ install(FILES ICartesianControl.h
 install(TARGETS KinematicsDynamicsInterfaces
         EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
+# Create alias target.
+add_library(ROBOTICSLAB::KinematicsDynamicsInterfaces ALIAS KinematicsDynamicsInterfaces)
+
 # Create devices.
 add_subdirectory(AmorCartesianControl)
 add_subdirectory(AsibotSolver)

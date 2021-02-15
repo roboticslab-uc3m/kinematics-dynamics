@@ -1,14 +1,21 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-# Start a project.
 project(exampleScrewTheoryTrajectory LANGUAGES CXX)
 
-find_package(YARP 3.3 REQUIRED COMPONENTS os dev)
+if(NOT YARP_FOUND)
+    find_package(YARP 3.3 REQUIRED COMPONENTS os dev)
+endif()
+
+if(NOT TARGET ROBOTICSLAB::KdlVectorConverterLib
+        OR NOT TARGET ROBOTICSLAB::KinematicRepresentationLib
+        OR NOT TARGET ROBOTICSLAB::TrajectoryLib
+        OR NOT TARGET ROBOTICSLAB::ScrewTheoryLib)
+    find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
+endif()
+
 find_package(COLOR_DEBUG REQUIRED)
 find_package(orocos_kdl 1.4 QUIET)
-find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 
-# Set up our main executable.
 add_executable(exampleScrewTheoryTrajectory exampleScrewTheoryTrajectory.cpp
                                             TrajectoryThread.hpp
                                             TrajectoryThread.cpp)
@@ -22,8 +29,3 @@ target_link_libraries(exampleScrewTheoryTrajectory YARP::YARP_os
                                                    ROBOTICSLAB::TrajectoryLib
                                                    ROBOTICSLAB::ScrewTheoryLib
                                                    ROBOTICSLAB::ColorDebug)
-
-include(GNUInstallDirs)
-
-install(TARGETS exampleScrewTheoryTrajectory
-        DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -31,6 +31,8 @@ if(ENABLE_KdlVectorConverterLib)
 
     set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
 
+    add_library(ROBOTICSLAB::KdlVectorConverterLib ALIAS KdlVectorConverterLib)
+
 else()
 
     set(ENABLE_KdlVectorConverterLib OFF CACHE BOOL "Enable/disable KdlVectorConverterLib library" FORCE)

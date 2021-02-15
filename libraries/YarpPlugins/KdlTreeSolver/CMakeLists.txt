@@ -23,9 +23,9 @@ if(NOT SKIP_KdlTreeSolver)
                                         YARP::YARP_dev
                                         YARP::YARP_sig
                                         ${orocos_kdl_LIBRARIES}
-                                        KdlVectorConverterLib
-                                        KinematicRepresentationLib
-                                        KinematicsDynamicsInterfaces)
+                                        ROBOTICSLAB::KdlVectorConverterLib
+                                        ROBOTICSLAB::KinematicRepresentationLib
+                                        ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     target_include_directories(KdlTreeSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 

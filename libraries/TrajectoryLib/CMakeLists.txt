@@ -17,7 +17,7 @@ if(ENABLE_TrajectoryLib)
                                                              KdlTrajectory.hpp)
 
     target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
-                                        PRIVATE KdlVectorConverterLib
+                                        PRIVATE ROBOTICSLAB::KdlVectorConverterLib
                                                 ROBOTICSLAB::ColorDebug)
 
     target_include_directories(TrajectoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
@@ -32,6 +32,8 @@ if(ENABLE_TrajectoryLib)
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
     set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
+
+    add_library(ROBOTICSLAB::TrajectoryLib ALIAS TrajectoryLib)
 
 else()
 

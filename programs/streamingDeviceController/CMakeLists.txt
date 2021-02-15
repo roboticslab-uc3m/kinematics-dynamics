@@ -31,8 +31,8 @@ if(ENABLE_streamingDeviceController)
                                                     YARP::YARP_dev
                                                     YARP::YARP_sig
                                                     ROBOTICSLAB::ColorDebug
-                                                    KdlVectorConverterLib
-                                                    KinematicsDynamicsInterfaces)
+                                                    ROBOTICSLAB::KdlVectorConverterLib
+                                                    ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     if(ROBOTICSLAB_YARP_DEVICES_FOUND)
         message(STATUS "ROBOTICSLAB_YARP_DEVICES found, building streamingDeviceController with sensor support")

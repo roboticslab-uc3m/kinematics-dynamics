@@ -28,8 +28,8 @@ if(NOT SKIP_AsibotSolver)
                                        YARP::YARP_sig
                                        YARP::YARP_math
                                        ROBOTICSLAB::ColorDebug
-                                       KinematicRepresentationLib
-                                       KinematicsDynamicsInterfaces)
+                                       ROBOTICSLAB::KinematicRepresentationLib
+                                       ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     target_compile_features(AsibotSolver PUBLIC cxx_std_11)
 

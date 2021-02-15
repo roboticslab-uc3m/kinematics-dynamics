@@ -27,8 +27,8 @@ if(NOT SKIP_CartesianControlServer)
     target_link_libraries(CartesianControlServer YARP::YARP_os
                                                  YARP::YARP_dev
                                                  ROBOTICSLAB::ColorDebug
-                                                 KinematicRepresentationLib
-                                                 KinematicsDynamicsInterfaces)
+                                                 ROBOTICSLAB::KinematicRepresentationLib
+                                                 ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     yarp_install(TARGETS CartesianControlServer
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

@@ -28,6 +28,8 @@ if(ENABLE_KinematicRepresentationLib)
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+    add_library(ROBOTICSLAB::KinematicRepresentationLib ALIAS KinematicRepresentationLib)
+
 else()
 
     set(ENABLE_KinematicRepresentationLib OFF CACHE BOOL "Enable/disable KinematicRepresentationLib library" FORCE)

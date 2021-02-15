@@ -82,6 +82,7 @@ add_subdirectory(programs)
 add_subdirectory(tests)
 add_subdirectory(share)
 add_subdirectory(doc)
+add_subdirectory(examples/cpp)
 
 # Collect public exported dependencies.
 get_property(_exported_dependencies GLOBAL PROPERTY _exported_dependencies)

@@ -44,6 +44,8 @@ if(ENABLE_ScrewTheoryLib)
 
     set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
 
+    add_library(ROBOTICSLAB::ScrewTheoryLib ALIAS ScrewTheoryLib)
+
 else()
 
     set(ENABLE_ScrewTheoryLib OFF CACHE BOOL "Enable/disable ScrewTheoryLib library" FORCE)
