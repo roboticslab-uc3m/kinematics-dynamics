@@ -7,10 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Install dependencies via apt
-      run: sudo apt-get install -qq libeigen3-dev libgtest-dev
+    - name: Checkout kinematics-dynamics
+      uses: actions/checkout@v2
 
     - name: Checkout YCM
       uses: actions/checkout@v2
@@ -18,23 +16,11 @@ jobs:
         repository: robotology/ycm
         path: .deps/ycm
 
-    - name: Build YCM
-      run: |
-        cmake -S .deps/ycm -B .deps/ycm/build
-        cmake --build .deps/ycm/build
-        sudo cmake --install .deps/ycm/build
-
     - name: Checkout YARP
       uses: actions/checkout@v2
       with:
         repository: robotology/yarp
         path: .deps/yarp
-
-    - name: Build YARP
-      run: |
-        cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE:BOOL=ON
-        cmake --build .deps/yarp/build --parallel
-        sudo cmake --install .deps/yarp/build
 
     - name: Checkout Orocos KDL
       uses: actions/checkout@v2
@@ -42,36 +28,62 @@ jobs:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
 
-    - name: Build Orocos KDL
-      run: |
-        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build
-        cmake --build .deps/kdl/orocos_kdl/build --parallel
-        sudo cmake --install .deps/kdl/orocos_kdl/build
-
     - name: Checkout color-debug
       uses: actions/checkout@v2
       with:
         repository: roboticslab-uc3m/color-debug
         path: .deps/color-debug
 
-    - name: Build color-debug
-      run: |
-        cmake -S .deps/color-debug -B .deps/color-debug/build
-        cmake --build .deps/color-debug/build
-        sudo cmake --install .deps/color-debug/build
+    - name: Install dependencies via apt
+      run: sudo apt-get install -qq libeigen3-dev libgtest-dev
 
-    - name: Configure kinematics-dynamics
-      run: cmake -S . -B ./build -DENABLE_examples:BOOL=ON
+    - uses: jwlawson/actions-setup-cmake@v1.7
+      with:
+        cmake-version: '3.12.x'
+
+    - name: Create build trees
+      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/color-debug/build
+
+    - name: Build YCM
+      working-directory: ${{github.workspace}}/.deps/ycm/build
+      run: |
+        cmake ..
+        cmake --build .
+        sudo cmake --build . --target install
+
+    - name: Build YARP
+      working-directory: ${{github.workspace}}/.deps/yarp/build
+      run: |
+        cmake .. -DSKIP_ACE:BOOL=ON
+        cmake --build . --parallel
+        sudo cmake --build . --target install
+
+    - name: Build Orocos KDL
+      working-directory: ${{github.workspace}}/.deps/kdl/orocos_kdl/build
+      run: |
+        cmake ..
+        cmake --build . --parallel
+        sudo cmake --build . --target install
+
+    - name: Build color-debug
+      working-directory: ${{github.workspace}}/.deps/color-debug/build
+      run: |
+        cmake ..
+        cmake --build .
+        sudo cmake --build . --target install
 
     - name: Build and install kinematics-dynamics
+      working-directory: ${{github.workspace}}/build
       run: |
-        cmake --build ./build
-        sudo cmake --install ./build
+        cmake .. -DENABLE_examples:BOOL=ON
+        cmake --build .
+        sudo cmake --build . --target install
         sudo ldconfig
 
     - name: Test kinematics-dynamics
-      working-directory: build/tests
+      working-directory: ${{github.workspace}}/build/tests
       run: ctest -V
 
     - name: Uninstall kinematics-dynamics
-      run: sudo cmake --build ./build --target uninstall
+      working-directory: ${{github.workspace}}/build
+      run: sudo cmake --build . --target uninstall
