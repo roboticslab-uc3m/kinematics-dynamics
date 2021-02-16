@@ -1,46 +1,77 @@
 name: Continuous Integration
 
-on: [push]
-
-env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+on: [push, pull_request]
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Create Build Environment
-      # Some projects don't allow in-source building, so create a separate build directory
-      # We'll use this as our working directory for all subsequent commands
-      run: cmake -E make_directory ${{github.workspace}}/build
+    - name: Install dependencies via apt
+      run: sudo apt-get install -qq libeigen3-dev libgtest-dev
 
-    - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
-      shell: bash
-      working-directory: ${{github.workspace}}/build
-      # Note the current convention is to use the -S and -B options here to specify source
-      # and build directories, but this is only available with CMake 3.13 and higher.
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+    - name: Checkout YCM
+      uses: actions/checkout@v2
+      with:
+        repository: robotology/ycm
+        path: .deps/ycm
 
-    - name: Build
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
+    - name: Build YCM
+      run: |
+        cmake -S .deps/ycm -B .deps/ycm/build
+        cmake --build .deps/ycm/build
+        sudo cmake --install .deps/ycm/build
 
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C $BUILD_TYPE
+    - name: Checkout YARP
+      uses: actions/checkout@v2
+      with:
+        repository: robotology/yarp
+        path: .deps/yarp
+
+    - name: Build YARP
+      run: |
+        cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE:BOOL=ON
+        cmake --build .deps/yarp/build --parallel
+        sudo cmake --install .deps/yarp/build
+
+    - name: Checkout Orocos KDL
+      uses: actions/checkout@v2
+      with:
+        repository: orocos/orocos_kinematics_dynamics
+        path: .deps/kdl
+
+    - name: Build Orocos KDL
+      run: |
+        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build
+        cmake --build .deps/kdl/orocos_kdl/build --parallel
+        sudo cmake --install .deps/kdl/orocos_kdl/build
+
+    - name: Checkout color-debug
+      uses: actions/checkout@v2
+      with:
+        repository: roboticslab-uc3m/color-debug
+        path: .deps/color-debug
+
+    - name: Build color-debug
+      run: |
+        cmake -S .deps/color-debug -B .deps/color-debug/build
+        cmake --build .deps/color-debug/build
+        sudo cmake --install .deps/color-debug/build
+
+    - name: Configure kinematics-dynamics
+      run: cmake -S . -B ./build -DENABLE_examples:BOOL=ON
+
+    - name: Build and install kinematics-dynamics
+      run: |
+        cmake --build ./build
+        sudo cmake --install ./build
+        sudo ldconfig
+
+    - name: Test kinematics-dynamics
+      working-directory: build/tests
+      run: ctest -V
+
+    - name: Uninstall kinematics-dynamics
+      run: sudo cmake --build ./build --target uninstall
