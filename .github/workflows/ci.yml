@@ -41,6 +41,10 @@ jobs:
       with:
         cmake-version: '3.12.x'
 
+    - uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: kin-dyn-ccache-test
+
     - name: Create build trees
       run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/color-debug/build
 
@@ -54,14 +58,14 @@ jobs:
     - name: Build YARP
       working-directory: ${{github.workspace}}/.deps/yarp/build
       run: |
-        cmake .. -DSKIP_ACE:BOOL=ON
+        cmake .. -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DSKIP_ACE=ON
         cmake --build . --parallel
         sudo cmake --build . --target install
 
     - name: Build Orocos KDL
       working-directory: ${{github.workspace}}/.deps/kdl/orocos_kdl/build
       run: |
-        cmake ..
+        cmake .. -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         cmake --build . --parallel
         sudo cmake --build . --target install
 
