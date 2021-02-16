@@ -58,7 +58,7 @@ jobs:
     - name: Build YARP
       working-directory: ${{github.workspace}}/.deps/yarp/build
       run: |
-        cmake .. -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DSKIP_ACE=ON
+        cmake .. -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
         cmake --build . --parallel
         sudo cmake --build . --target install
 
