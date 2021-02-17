@@ -19,15 +19,10 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         yarp-branch: [yarp-3.3, yarp-3.4, master]
+        ycm-branch: [ycm-0.12]
         compiler:
-        - {
-            cc: gcc,
-            cxx: g++
-          }
-        - {
-            cc: clang,
-            cxx: clang++
-          }
+        - { cc: gcc, cxx: g++ }
+        - { cc: clang, cxx: clang++ }
         is-scheduled:
         - ${{github.event_name == 'schedule'}}
         exclude:
@@ -35,43 +30,43 @@ jobs:
           yarp-branch: master
 
     steps:
-    - name: Checkout kinematics-dynamics
+    - name: Check out kinematics-dynamics
       uses: actions/checkout@v2
 
-    - name: Checkout YCM
+    - name: Check out YCM
       uses: actions/checkout@v2
       with:
         repository: robotology/ycm
-        ref: ${{matrix.yarp-branch == 'master' && 'master' || 'ycm-0.12'}}
+        ref: ${{matrix.yarp-branch == 'master' && 'master' || matrix.ycm-branch}}
         path: .deps/ycm
 
-    - name: Checkout YARP
+    - name: Check out YARP
       uses: actions/checkout@v2
       with:
         repository: robotology/yarp
         ref: ${{matrix.yarp-branch}}
         path: .deps/yarp
 
-    - name: Checkout Orocos KDL
+    - name: Check out Orocos KDL
       uses: actions/checkout@v2
       with:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
 
-    - name: Checkout color-debug
+    - name: Check out color-debug
       uses: actions/checkout@v2
       with:
         repository: roboticslab-uc3m/color-debug
         path: .deps/color-debug
 
-    - name: Checkout amor-api
+    - name: Check out amor-api
       uses: actions/checkout@v2
       with:
         repository: roboticslab-uc3m/amor-api
         token: ${{secrets.AMOR_API}}
         path: .deps/amor-api
 
-    - name: Checkout yarp-devices
+    - name: Check out yarp-devices
       uses: actions/checkout@v2
       with:
         repository: roboticslab-uc3m/yarp-devices
@@ -80,11 +75,13 @@ jobs:
     - name: Install dependencies via apt
       run: sudo apt-get install -qq libboost-thread-dev libeigen3-dev libgtest-dev
 
-    - uses: jwlawson/actions-setup-cmake@v1.7
+    - name: Set up CMake 3.12
+      uses: jwlawson/actions-setup-cmake@v1.7
       with:
         cmake-version: '3.12.x'
 
-    - uses: hendrikmuhs/ccache-action@v1
+    - name: Set up Ccache
+      uses: hendrikmuhs/ccache-action@v1
       with:
         key: ${{matrix.os}}-${{matrix.yarp-branch}}-${{matrix.compiler.cc}}
 
@@ -125,7 +122,7 @@ jobs:
     - name: Build amor-api
       working-directory: ${{github.workspace}}/.deps/amor-api/build
       run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules:BOOL=OFF
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
         cmake --build . --parallel
         sudo cmake --build . --target install
 
@@ -136,10 +133,10 @@ jobs:
         cmake --build . --parallel
         sudo cmake --build . --target install
 
-    - name: Build and install kinematics-dynamics
+    - name: Build kinematics-dynamics
       working-directory: ${{github.workspace}}/build
       run: |
-        cmake .. $CMAKE_COMPILER -DENABLE_examples:BOOL=ON
+        cmake .. $CMAKE_COMPILER -DENABLE_examples=ON
         cmake --build .
         sudo cmake --build . --target install
         sudo ldconfig
