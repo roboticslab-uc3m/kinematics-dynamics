@@ -1,6 +1,10 @@
 name: Continuous Integration
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+  - cron: '45 14 * * *'
 
 env:
   CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
@@ -8,12 +12,13 @@ env:
 jobs:
   build:
     runs-on: ${{matrix.os}}
+    if: github.event_name != 'schedule' || matrix.yarp-branch == 'master'
 
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
-        yarp-branch: [yarp-3.3, yarp-3.4]
+        yarp-branch: [yarp-3.3, yarp-3.4, master]
         ycm-branch: [ycm-0.12]
         compiler:
         - {
