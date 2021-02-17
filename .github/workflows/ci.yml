@@ -2,9 +2,28 @@ name: Continuous Integration
 
 on: [push, pull_request]
 
+env:
+  CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+        yarp-branch: [yarp-3.3, yarp-3.4]
+        ycm-branch: [ycm-0.12]
+        compiler:
+        - {
+            cc: gcc,
+            cxx: g++
+          }
+        - {
+            cc: clang,
+            cxx: clang++
+          }
 
     steps:
     - name: Checkout kinematics-dynamics
@@ -14,12 +33,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: robotology/ycm
+        ref: ${{matrix.ycm-branch}}
         path: .deps/ycm
 
     - name: Checkout YARP
       uses: actions/checkout@v2
       with:
         repository: robotology/yarp
+        ref: ${{matrix.yarp-branch}}
         path: .deps/yarp
 
     - name: Checkout Orocos KDL
@@ -43,10 +64,13 @@ jobs:
 
     - uses: hendrikmuhs/ccache-action@v1
       with:
-        key: kin-dyn-ccache-test
+        key: ${{matrix.os}}-${{matrix.yarp-branch}}-${{matrix.compiler.cc}}
 
     - name: Create build trees
       run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/color-debug/build
+
+    - name: Set environment variables
+      run: echo "CMAKE_COMPILER=-DCMAKE_C_COMPILER=${{matrix.compiler.cc}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
 
     - name: Build YCM
       working-directory: ${{github.workspace}}/.deps/ycm/build
@@ -58,28 +82,28 @@ jobs:
     - name: Build YARP
       working-directory: ${{github.workspace}}/.deps/yarp/build
       run: |
-        cmake .. -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
         cmake --build . --parallel
         sudo cmake --build . --target install
 
     - name: Build Orocos KDL
       working-directory: ${{github.workspace}}/.deps/kdl/orocos_kdl/build
       run: |
-        cmake .. -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
         cmake --build . --parallel
         sudo cmake --build . --target install
 
     - name: Build color-debug
       working-directory: ${{github.workspace}}/.deps/color-debug/build
       run: |
-        cmake ..
+        cmake .. $CMAKE_COMPILER
         cmake --build .
         sudo cmake --build . --target install
 
     - name: Build and install kinematics-dynamics
       working-directory: ${{github.workspace}}/build
       run: |
-        cmake .. -DENABLE_examples:BOOL=ON
+        cmake .. $CMAKE_COMPILER -DENABLE_examples:BOOL=ON
         cmake --build .
         sudo cmake --build . --target install
         sudo ldconfig
