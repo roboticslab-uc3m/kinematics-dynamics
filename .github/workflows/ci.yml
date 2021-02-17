@@ -136,7 +136,7 @@ jobs:
     - name: Build kinematics-dynamics
       working-directory: ${{github.workspace}}/build
       run: |
-        cmake .. $CMAKE_COMPILER -DENABLE_examples=ON
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_examples=ON
         cmake --build .
         sudo cmake --build . --target install
         sudo ldconfig
