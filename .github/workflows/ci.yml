@@ -64,6 +64,13 @@ jobs:
         repository: roboticslab-uc3m/color-debug
         path: .deps/color-debug
 
+    - name: Checkout amor-api
+      uses: actions/checkout@v2
+      with:
+        repository: roboticslab-uc3m/amor-api
+        token: ${{secrets.AMOR_API}}
+        path: .deps/amor-api
+
     - name: Checkout yarp-devices
       uses: actions/checkout@v2
       with:
@@ -71,7 +78,7 @@ jobs:
         path: .deps/yarp-devices
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq libeigen3-dev libgtest-dev
+      run: sudo apt-get install -qq libboost-thread-dev libeigen3-dev libgtest-dev
 
     - uses: jwlawson/actions-setup-cmake@v1.7
       with:
@@ -82,7 +89,7 @@ jobs:
         key: ${{matrix.os}}-${{matrix.yarp-branch}}-${{matrix.compiler.cc}}
 
     - name: Create build trees
-      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/color-debug/build .deps/yarp-devices/build
+      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/color-debug/build .deps/amor-api/build .deps/yarp-devices/build
 
     - name: Set environment variables
       run: echo "CMAKE_COMPILER=-DCMAKE_C_COMPILER=${{matrix.compiler.cc}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
@@ -113,6 +120,13 @@ jobs:
       run: |
         cmake .. $CMAKE_COMPILER
         cmake --build .
+        sudo cmake --build . --target install
+
+    - name: Build amor-api
+      working-directory: ${{github.workspace}}/.deps/amor-api/build
+      run: |
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules:BOOL=OFF
+        cmake --build . --parallel
         sudo cmake --build . --target install
 
     - name: Build yarp-devices
