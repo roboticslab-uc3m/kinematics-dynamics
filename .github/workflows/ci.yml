@@ -73,7 +73,7 @@ jobs:
         path: .deps/yarp-devices
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq libboost-thread-dev libeigen3-dev libgtest-dev
+      run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev libgtest-dev
 
     - name: Set up CMake 3.12
       uses: jwlawson/actions-setup-cmake@v1.7
