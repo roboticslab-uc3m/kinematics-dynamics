@@ -11,6 +11,7 @@ env:
 
 jobs:
   build:
+    name: build (${{matrix.os}}, ${{matrix.yarp-branch}}, ${{matrix.compiler.cc}})
     runs-on: ${{matrix.os}}
 
     strategy:
@@ -18,9 +19,6 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         yarp-branch: [yarp-3.3, yarp-3.4, master]
-        ycm-branch: [ycm-0.12]
-        is-scheduled:
-        - ${{github.event_name == 'schedule'}}
         compiler:
         - {
             cc: gcc,
@@ -30,6 +28,8 @@ jobs:
             cc: clang,
             cxx: clang++
           }
+        is-scheduled:
+        - ${{github.event_name == 'schedule'}}
         exclude:
         - is-scheduled: false
           yarp-branch: master
@@ -42,7 +42,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: robotology/ycm
-        ref: ${{matrix.ycm-branch}}
+        ref: ${{matrix.yarp-branch == 'master' && 'master' || 'ycm-0.12'}}
         path: .deps/ycm
 
     - name: Checkout YARP
