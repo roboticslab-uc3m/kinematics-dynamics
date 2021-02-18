@@ -7,7 +7,7 @@ on:
     - '**.md'
   pull_request:
   schedule:
-  - cron: '30 * * * *'
+  - cron: '0 2 * * SUN'
 
 env:
   CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
