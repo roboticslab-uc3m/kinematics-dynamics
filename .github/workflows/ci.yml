@@ -28,9 +28,7 @@ jobs:
         is-scheduled:
         - ${{github.event_name == 'schedule'}}
         exclude:
-        - is-scheduled: false
-          robotology:
-          - { yarp: master, ycm: master, cmake: 3.12.x }
+        - { is-scheduled: false, robotology: { yarp: master } }
 
     steps:
     - name: Check out kinematics-dynamics
