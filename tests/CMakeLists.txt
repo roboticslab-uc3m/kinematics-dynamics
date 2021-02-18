@@ -87,15 +87,17 @@ if(ENABLE_tests)
 
     # testBasicCartesianControl
 
-    add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
+    if(ROBOTICSLAB_YARP_DEVICES_FOUND)
+        add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 
-    target_link_libraries(testBasicCartesianControl YARP::YARP_os
-                                                    YARP::YARP_dev
-                                                    ROBOTICSLAB::ColorDebug
-                                                    ROBOTICSLAB::KinematicsDynamicsInterfaces
-                                                    gtest_main)
+        target_link_libraries(testBasicCartesianControl YARP::YARP_os
+                                                        YARP::YARP_dev
+                                                        ROBOTICSLAB::ColorDebug
+                                                        ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                        gtest_main)
 
-    gtest_discover_tests(testBasicCartesianControl)
+        gtest_discover_tests(testBasicCartesianControl)
+    endif()
 
 else()
 

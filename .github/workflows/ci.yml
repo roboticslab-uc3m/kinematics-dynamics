@@ -1,0 +1,154 @@
+name: Continuous Integration
+
+on:
+  push:
+    paths-ignore:
+    - 'doc/**'
+    - '**.md'
+  pull_request:
+  schedule:
+  - cron: '30 * * * *'
+
+env:
+  CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+jobs:
+  build:
+    name: build (${{matrix.os}}, ${{matrix.robotology.yarp}}, ${{matrix.compiler.cc}})
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+        robotology:
+        - { yarp: yarp-3.3, ycm: ycm-0.12, cmake: 3.12.x }
+        - { yarp: yarp-3.4, ycm: ycm-0.12, cmake: 3.12.x }
+        - { yarp: master, ycm: master, cmake: 3.12.x }
+        compiler:
+        - { cc: gcc, cxx: g++ }
+        - { cc: clang, cxx: clang++ }
+        is-scheduled:
+        - ${{github.event_name == 'schedule'}}
+        exclude:
+        - { is-scheduled: false, robotology: { yarp: master } }
+
+    steps:
+    - name: Check out kinematics-dynamics
+      uses: actions/checkout@v2
+
+    - name: Check out YCM
+      uses: actions/checkout@v2
+      with:
+        repository: robotology/ycm
+        ref: ${{matrix.robotology.ycm}}
+        path: .deps/ycm
+
+    - name: Check out YARP
+      uses: actions/checkout@v2
+      with:
+        repository: robotology/yarp
+        ref: ${{matrix.robotology.yarp}}
+        path: .deps/yarp
+
+    - name: Check out Orocos KDL
+      uses: actions/checkout@v2
+      with:
+        repository: orocos/orocos_kinematics_dynamics
+        path: .deps/kdl
+
+    - name: Check out color-debug
+      uses: actions/checkout@v2
+      with:
+        repository: roboticslab-uc3m/color-debug
+        path: .deps/color-debug
+
+    - name: Check out amor-api
+      uses: actions/checkout@v2
+      with:
+        repository: roboticslab-uc3m/amor-api
+        token: ${{secrets.AMOR_API}}
+        path: .deps/amor-api
+
+    - name: Check out yarp-devices
+      uses: actions/checkout@v2
+      with:
+        repository: roboticslab-uc3m/yarp-devices
+        path: .deps/yarp-devices
+
+    - name: Install dependencies via apt
+      run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev libgtest-dev
+
+    - name: Set up CMake 3.12
+      uses: jwlawson/actions-setup-cmake@v1.7
+      with:
+        cmake-version: ${{matrix.robotology.cmake}}
+
+    - name: Set up Ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: ${{matrix.os}}-${{matrix.robotology.yarp}}-${{matrix.compiler.cc}}
+
+    - name: Create build trees
+      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/color-debug/build .deps/amor-api/build .deps/yarp-devices/build
+
+    - name: Set environment variables
+      run: echo "CMAKE_COMPILER=-DCMAKE_C_COMPILER=${{matrix.compiler.cc}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
+
+    - name: Build YCM
+      working-directory: ${{github.workspace}}/.deps/ycm/build
+      run: |
+        cmake ..
+        cmake --build .
+        sudo cmake --build . --target install
+
+    - name: Build YARP
+      working-directory: ${{github.workspace}}/.deps/yarp/build
+      run: |
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
+        cmake --build . --parallel
+        sudo cmake --build . --target install
+
+    - name: Build Orocos KDL
+      working-directory: ${{github.workspace}}/.deps/kdl/orocos_kdl/build
+      run: |
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
+        cmake --build . --parallel
+        sudo cmake --build . --target install
+
+    - name: Build color-debug
+      working-directory: ${{github.workspace}}/.deps/color-debug/build
+      run: |
+        cmake .. $CMAKE_COMPILER
+        cmake --build .
+        sudo cmake --build . --target install
+
+    - name: Build amor-api
+      working-directory: ${{github.workspace}}/.deps/amor-api/build
+      run: |
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
+        cmake --build . --parallel
+        sudo cmake --build . --target install
+
+    - name: Build yarp-devices
+      working-directory: ${{github.workspace}}/.deps/yarp-devices/build
+      run: |
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
+        cmake --build . --parallel
+        sudo cmake --build . --target install
+
+    - name: Build kinematics-dynamics
+      working-directory: ${{github.workspace}}/build
+      run: |
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_examples=ON
+        cmake --build .
+        sudo cmake --build . --target install
+        sudo ldconfig
+
+    - name: Test kinematics-dynamics
+      working-directory: ${{github.workspace}}/build/tests
+      run: ctest -V
+
+    - name: Uninstall kinematics-dynamics
+      working-directory: ${{github.workspace}}/build
+      run: sudo cmake --build . --target uninstall
