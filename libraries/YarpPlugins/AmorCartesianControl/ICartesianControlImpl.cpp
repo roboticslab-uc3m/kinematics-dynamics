@@ -2,10 +2,9 @@
 
 #include "AmorCartesianControl.hpp"
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
-
-#include <ColorDebug.h>
 
 #include <yarp/os/Vocab.h>
 
@@ -19,7 +18,7 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
 
     if (amor_get_cartesian_position(handle, positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_get_cartesian_position() failed:" << amor_error();
         return false;
     }
 
@@ -56,7 +55,7 @@ bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::
 
     if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_get_actual_positions() failed:" << amor_error();
         return false;
     }
 
@@ -69,7 +68,7 @@ bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::
 
     if (!iCartesianSolver->invKin(xd, currentQ, q, referenceFrame))
     {
-        CD_ERROR("invKin failed.\n");
+        yError() << "invKin() failed";
         return false;
     }
 
@@ -84,7 +83,7 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 
     if (!inv(xd, qd))
     {
-        CD_ERROR("inv failed.\n");
+        yError() << "inv() failed";
         return false;
     }
 
@@ -97,7 +96,7 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 
     if (amor_set_positions(handle, positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_set_positions() failed:" << amor_error();
         return false;
     }
 
@@ -119,7 +118,7 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 
     if (!stat(x))
     {
-        CD_ERROR("stat failed.\n");
+        yError() << "stat() failed";
         return false;
     }
 
@@ -143,7 +142,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
         if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
         {
-            CD_ERROR("%s\n", amor_error());
+            yError() << "amor_get_actual_positions() failed:" << amor_error();
             return false;
         }
 
@@ -158,13 +157,13 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
         if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
         {
-            CD_ERROR("fwdKin failed.\n");
+            yError() << "fwdKin() failed";
             return false;
         }
 
         if (!iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj))
         {
-            CD_ERROR("changeOrigin failed.\n");
+            yError() << "changeOrigin() failed";
             return false;
         }
     }
@@ -189,7 +188,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
     if (amor_set_cartesian_positions(handle, positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_set_cartesian_positions() failed:" << amor_error();
         return false;
     }
 
@@ -204,7 +203,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 {
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        CD_WARNING("TCP frame not supported yet in movv command.\n");
+        yWarning() << "TCP frame not supported yet in movv command";
         return false;
     }
 
@@ -212,7 +211,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
     if (!stat(xCurrent))
     {
-        CD_ERROR("stat failed\n");
+        yError() << "stat() failed";
         return false;
     }
 
@@ -233,7 +232,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
     if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_set_cartesian_velocities() failed:" << amor_error();
         return false;
     }
 
@@ -246,7 +245,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
 bool roboticslab::AmorCartesianControl::gcmp()
 {
-    CD_WARNING("Not implemented.\n");
+    yWarning() << "gcmp() not implemented";
     return false;
 }
 
@@ -254,7 +253,7 @@ bool roboticslab::AmorCartesianControl::gcmp()
 
 bool roboticslab::AmorCartesianControl::forc(const std::vector<double> &td)
 {
-    CD_WARNING("Not implemented.\n");
+    yWarning() << "forc() not implemented";
     return false;
 }
 
@@ -266,7 +265,7 @@ bool roboticslab::AmorCartesianControl::stopControl()
 
     if (amor_controlled_stop(handle) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_controlled_stop() failed:" << amor_error();
         return false;
     }
 
@@ -291,7 +290,7 @@ bool roboticslab::AmorCartesianControl::wait(double timeout)
     {
         if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
         {
-            CD_WARNING("Timeout reached (%f seconds), stopping control.\n", timeout);
+            yWarning("Timeout reached (%f seconds), stopping control", timeout);
             stopControl();
             break;
         }
@@ -300,7 +299,7 @@ bool roboticslab::AmorCartesianControl::wait(double timeout)
 
         if (res == AMOR_FAILED)
         {
-            CD_ERROR("%s\n", amor_error());
+            yError() << "amor_get_movement_status() failed:" << amor_error();
             break;
         }
 
@@ -317,7 +316,7 @@ bool roboticslab::AmorCartesianControl::wait(double timeout)
 
 bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 {
-    CD_WARNING("Tool change is not supported on AMOR.\n");
+    yWarning() << "Tool change is not supported on AMOR";
     return false;
 }
 
@@ -339,13 +338,13 @@ bool roboticslab::AmorCartesianControl::act(int command)
         amor_command = amor_stop_hand;
         break;
     default:
-        CD_ERROR("Unrecognized command with code %d (%s).\n", command, yarp::os::Vocab::decode(command).c_str());
+        yError("Unrecognized act() command with code %d (%s)", command, yarp::os::Vocab::decode(command).c_str());
         return false;
     }
 
     if (amor_command(handle) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_command() failed:" << amor_error();
         return false;
     }
 
@@ -360,7 +359,7 @@ void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
 
     if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_get_actual_positions() failed:" << amor_error();
         return;
     }
 
@@ -373,7 +372,7 @@ void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
-        CD_ERROR("diffInvKin failed.\n");
+        yError() << "diffInvKin() failed";
         return;
     }
 
@@ -392,7 +391,7 @@ void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
 
     if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_set_velocities() failed:" << amor_error();
         return;
     }
 }
@@ -405,7 +404,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_get_actual_positions() failed:" << amor_error();
         return;
     }
 
@@ -420,7 +419,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
-        CD_ERROR("fwdKin failed.\n");
+        yError() << "fwdKin() failed";
         return;
     }
 
@@ -430,7 +429,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
     {
         if (!iCartesianSolver->changeOrigin(x, x_base_tcp, x_obj))
         {
-            CD_ERROR("changeOrigin failed.\n");
+            yError() << "changeOrigin() failed";
             return;
         }
     }
@@ -443,7 +442,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     if (!iCartesianSolver->poseDiff(x_obj, x_base_tcp, xd))
     {
-        CD_ERROR("fwdKinError failed.\n");
+        yError() << "poseDiff() failed";
         return;
     }
 
@@ -459,7 +458,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
-        CD_ERROR("diffInvKin failed.\n");
+        yError() << "diffInvKin() failed";
         return;
     }
 
@@ -478,7 +477,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
     if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
     {
-        CD_ERROR("%s\n", amor_error());
+        yError() << "amor_set_velocities() failed:" << amor_error();
         return;
     }
 }
@@ -487,7 +486,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
 void roboticslab::AmorCartesianControl::movi(const std::vector<double> &x)
 {
-    CD_WARNING("movi not supported, falling back to movj.\n");
+    yWarning() << "movi() not supported, falling back to movj()";
     movj(x);
 }
 
@@ -497,7 +496,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 {
     if (currentState != VOCAB_CC_NOT_CONTROLLING)
     {
-        CD_ERROR("Unable to set config parameter while controlling.\n");
+        yError() << "Unable to set config parameter while controlling";
         return false;
     }
 
@@ -506,7 +505,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_GAIN:
         if (value < 0.0)
         {
-            CD_ERROR("Controller gain cannot be negative.\n");
+            yError() << "Controller gain cannot be negative";
             return false;
         }
         gain = value;
@@ -514,7 +513,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         if (value <= 0.0)
         {
-            CD_ERROR("Wait period cannot be negative nor zero.\n");
+            yError() << "Wait period cannot be negative nor zero";
             return false;
         }
         waitPeriodMs = value;
@@ -522,13 +521,13 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_FRAME:
         if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
-            CD_ERROR("Unrecognized or unsupported reference frame vocab.\n");
+            yError() << "Unrecognized or unsupported reference frame vocab";
             return false;
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
     default:
-        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
         return false;
     }
 
@@ -551,7 +550,7 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
         *value = referenceFrame;
         break;
     default:
-        CD_ERROR("Unrecognized or unsupported config parameter key: %s.\n", yarp::os::Vocab::decode(vocab).c_str());
+        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
         return false;
     }
 
@@ -564,7 +563,7 @@ bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double
 {
     if (currentState != VOCAB_CC_NOT_CONTROLLING)
     {
-        CD_ERROR("Unable to set config parameters while controlling.\n");
+        yError() << "Unable to set config parameters while controlling";
         return false;
     }
 

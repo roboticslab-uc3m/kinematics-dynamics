@@ -16,7 +16,6 @@ if(ENABLE_haarDetectionController)
     target_link_libraries(haarDetectionController YARP::YARP_os
                                                   YARP::YARP_init
                                                   YARP::YARP_dev
-                                                  ROBOTICSLAB::ColorDebug
                                                   ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                   ROBOTICSLAB::YarpDevicesInterfaces)
 

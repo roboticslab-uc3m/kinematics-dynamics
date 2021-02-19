@@ -8,8 +8,6 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <ColorDebug.h>
-
 #include "ICartesianControl.h"
 
 namespace roboticslab
@@ -24,17 +22,32 @@ class BasicCartesianControlTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            yarp::os::Property cartesianControlOptions("(device BasicCartesianControl) (robot EmulatedControlboard) (axes 1) (solver KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+            yarp::os::Property cartesianControlOptions {
+                {"device", yarp::os::Value("BasicCartesianControl")},
+                {"robot", yarp::os::Value("fakeMotionControl")},
+                {"solver", yarp::os::Value("KdlSolver")},
+                {"numLinks", yarp::os::Value(1)}
+            };
+
+            cartesianControlOptions.addGroup("link_0").put("A", yarp::os::Value(1));
+            cartesianControlOptions.put("mins", yarp::os::Value::makeList("-100.0"));
+            cartesianControlOptions.put("maxs", yarp::os::Value::makeList("100.0"));
+            cartesianControlOptions.put("maxvels", yarp::os::Value::makeList("100.0"));
 
             cartesianControlDevice.open(cartesianControlOptions);
-            if( ! cartesianControlDevice.isValid() ) {
-                CD_ERROR("CartesianControl device not valid: %s.\n",cartesianControlOptions.find("device").asString().c_str());
+
+            if (!cartesianControlDevice.isValid())
+            {
+                yError() << "CartesianControl device not valid:" << cartesianControlOptions.find("device").asString();
                 return;
             }
-            if( ! cartesianControlDevice.view(iCartesianControl) ) {
-                CD_ERROR("Could not view iCartesianControl in: %s.\n",cartesianControlOptions.find("device").asString().c_str());
+
+            if (!cartesianControlDevice.view(iCartesianControl))
+            {
+                yError() << "Could not view iCartesianControl in:" << cartesianControlOptions.find("device").asString();
                 return;
             }
+
             yarp::os::Time::delay(1);
         }
 

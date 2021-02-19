@@ -116,7 +116,6 @@ public:
 
     BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
                               iCartesianSolver(NULL),
-                              iControlLimits(NULL),
                               iControlMode(NULL),
                               iEncoders(NULL),
                               iPositionControl(NULL),
@@ -229,7 +228,6 @@ protected:
     ICartesianSolver *iCartesianSolver;
 
     yarp::dev::PolyDriver robotDevice;
-    yarp::dev::IControlLimits *iControlLimits;
     yarp::dev::IControlMode *iControlMode;
     yarp::dev::IEncoders *iEncoders;
     yarp::dev::IPositionControl *iPositionControl;

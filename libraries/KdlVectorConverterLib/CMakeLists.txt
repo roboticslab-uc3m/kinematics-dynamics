@@ -14,7 +14,7 @@ if(ENABLE_KdlVectorConverterLib)
     set_target_properties(KdlVectorConverterLib PROPERTIES PUBLIC_HEADER KdlVectorConverter.hpp)
 
     target_link_libraries(KdlVectorConverterLib PUBLIC ${orocos_kdl_LIBRARIES}
-                                                PRIVATE ROBOTICSLAB::ColorDebug)
+                                                PRIVATE YARP::YARP_os)
 
     target_include_directories(KdlVectorConverterLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

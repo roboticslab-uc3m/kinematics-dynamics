@@ -4,10 +4,9 @@
 
 #include <string>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
-
-#include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -17,7 +16,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (config.check("subdevice", name))
     {
-        CD_INFO("Subdevice %s\n", name->toString().c_str());
+        yInfo() << "Subdevice" << name->toString();
 
         if (name->isString())
         {
@@ -35,24 +34,24 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         if (!cartesianControlDevice.isValid())
         {
-            CD_ERROR("cannot make <%s>\n", name->toString().c_str());
+            yError() << "Cannot make" << name->toString();
         }
     }
     else
     {
-        CD_ERROR("\"--subdevice <name>\" not set in CartesianControlServer\n");
+        yError() << "Subdevice option not set in CartesianControlServer";
         return false;
     }
 
     if (!cartesianControlDevice.isValid())
     {
-        CD_ERROR("cartesianControlDevice not valid\n");
+        yError() << "Cartesian control device not valid";
         return false;
     }
 
     if (!cartesianControlDevice.view(iCartesianControl))
     {
-        CD_ERROR("iCartesianControl view failed\n");
+        yError() << "iCartesianControl view failed";
         return false;
     }
 
@@ -97,7 +96,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         if (!KinRepresentation::parseEnumerator(coordReprStr, &coord))
         {
-            CD_WARNING("Unknown coordRepr \"%s\", falling back to default.\n", coordReprStr.c_str());
+            yWarning("Unknown coordRepr \"%s\", falling back to default", coordReprStr.c_str());
         }
         else
         {
@@ -111,7 +110,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
-            CD_WARNING("Unknown angleRepr \"%s\", falling back to default.\n", angleReprStr.c_str());
+            yWarning("Unknown angleRepr \"%s\", falling back to default", angleReprStr.c_str());
             return true;
         }
         else
@@ -126,7 +125,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
         if (!KinRepresentation::parseEnumerator(angularUnitsStr, &units))
         {
-            CD_WARNING("Unknown angularUnits \"%s\", falling back to default.\n", angularUnitsStr.c_str());
+            yWarning("Unknown angularUnits \"%s\", falling back to default", angularUnitsStr.c_str());
             return true;
         }
         else

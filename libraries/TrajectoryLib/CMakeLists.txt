@@ -18,7 +18,7 @@ if(ENABLE_TrajectoryLib)
 
     target_link_libraries(TrajectoryLib PUBLIC ${orocos_kdl_LIBRARIES}
                                         PRIVATE ROBOTICSLAB::KdlVectorConverterLib
-                                                ROBOTICSLAB::ColorDebug)
+                                                YARP::YARP_os)
 
     target_include_directories(TrajectoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

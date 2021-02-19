@@ -29,7 +29,7 @@ if(ENABLE_ScrewTheoryLib)
                                                               ConfigurationSelector.hpp)
 
     target_link_libraries(ScrewTheoryLib PUBLIC ${orocos_kdl_LIBRARIES}
-                                         PRIVATE ROBOTICSLAB::ColorDebug)
+                                         PRIVATE YARP::YARP_os)
 
     target_include_directories(ScrewTheoryLib PUBLIC ${orocos_kdl_INCLUDE_DIRS}
                                                      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

@@ -5,7 +5,7 @@
 #include <cmath>
 #include <vector>
 
-#include <ColorDebug.h>
+#include <yarp/os/LogStream.h>
 
 namespace
 {
@@ -20,11 +20,11 @@ namespace
 
 void roboticslab::GrabberResponder::onRead(yarp::os::Bottle &b)
 {
-    CD_DEBUG("Got: %s\n", b.toString().c_str());
+    yDebug() << "Got:" << b.toString();
 
     if (b.size() != 2)
     {
-        CD_WARNING("Wrong data size: %d (expected: 2).\n", b.size());
+        yWarning() << "Wrong data size:" << b.size() << "(expected: 2)";
         return;
     }
 

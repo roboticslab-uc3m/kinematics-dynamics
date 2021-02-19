@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
 #include <kdl/frames.hpp>
@@ -12,8 +13,6 @@
 
 #include <KdlVectorConverter.hpp>
 #include <KinematicRepresentation.hpp>
-
-#include <ColorDebug.h>
 
 namespace
 {
@@ -23,20 +22,7 @@ namespace
         double roll, pitch, yaw;
         H.M.GetRPY(roll, pitch, yaw);
 
-        CD_DEBUG_NO_HEADER("GOAL -> p: %f %f %f, r: %f %f %f [%f]\n",
-                p.x(), p.y(), p.z(), roll, pitch, yaw, movementTime);
-    }
-
-    void printJointCoordinates(const std::vector<double> & q)
-    {
-        CD_INFO_NO_HEADER("IK ->");
-
-        for (int i = 0; i < q.size(); i++)
-        {
-            CD_INFO_NO_HEADER(" %f", q[i]);
-        }
-
-        CD_INFO_NO_HEADER("\n");
+        yInfo("GOAL -> p: %f %f %f, r: %f %f %f [%f]", p.x(), p.y(), p.z(), roll, pitch, yaw, movementTime);
     }
 }
 
@@ -60,12 +46,12 @@ void TrajectoryThread::run()
 
     if (!ikProblem->solve(H_S_T, solutions))
     {
-        CD_WARNING("IK exact solution not found.\n");
+        yWarning() << "IK exact solution not found";
     }
 
     if (!ikConfig->configure(solutions))
     {
-        CD_ERROR("IK solutions out of joint limits.\n");
+        yError() << "IK solutions out of joint limits";
         return;
     }
 
@@ -73,7 +59,7 @@ void TrajectoryThread::run()
 
     if (!iEncoders->getEncoders(q.data.data()))
     {
-        CD_ERROR("getEncoders() failed.\n");
+        yError() << "getEncoders() failed";
         return;
     }
 
@@ -84,7 +70,7 @@ void TrajectoryThread::run()
 
     if (!ikConfig->findOptimalConfiguration(q))
     {
-        CD_ERROR("Optimal configuration not found.\n");
+        yError() << "Optimal configuration not found";
         return;
     }
 
@@ -94,7 +80,7 @@ void TrajectoryThread::run()
 
     std::vector<double> refs(solution.data.data(), solution.data.data() + solution.data.size());
     std::transform(refs.begin(), refs.end(), refs.begin(), roboticslab::KinRepresentation::radToDeg);
-    printJointCoordinates(refs);
+    yInfo() << "IK ->" << refs;
 
     iPosDirect->setPositions(refs.data());
 }

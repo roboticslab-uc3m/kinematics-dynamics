@@ -4,13 +4,13 @@
 
 #include <vector>
 
-#include <ColorDebug.h>
+#include <yarp/os/LogStream.h>
 
 // ------------------- StreamResponder Related ------------------------------------
 
 void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
 {
-    CD_DEBUG("Got: %s\n", b.toString().c_str());
+    yDebug("Got: %s", b.toString().c_str());
 
     switch (b.get(0).asVocab())
     {
@@ -24,7 +24,7 @@ void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
         handleConsumerCmdMsg(b, &ICartesianControl::movi);
         break;
     default:
-        CD_ERROR("command not recognized\n");
+        yError() << "Command not recognized:" << b.get(0).toString();
         break;
     }
 }
@@ -46,7 +46,7 @@ void roboticslab::StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& 
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
     }
 }
 
@@ -68,7 +68,7 @@ void roboticslab::StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
     }
 }
 

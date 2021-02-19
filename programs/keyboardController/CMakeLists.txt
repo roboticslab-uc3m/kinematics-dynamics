@@ -13,7 +13,6 @@ add_executable(keyboardController main.cpp
 target_link_libraries(keyboardController YARP::YARP_os
                                          YARP::YARP_init
                                          YARP::YARP_dev
-                                         ROBOTICSLAB::ColorDebug
                                          ROBOTICSLAB::KinematicRepresentationLib
                                          ROBOTICSLAB::KinematicsDynamicsInterfaces
                                          ROBOTICSLAB::TrajectoryLib)

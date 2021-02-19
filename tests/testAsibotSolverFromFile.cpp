@@ -7,8 +7,6 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <ColorDebug.h>
-
 #include "ICartesianSolver.h"
 #include "KinematicRepresentation.hpp"
 
@@ -36,7 +34,7 @@ public:
 
         if (!solverOptions.fromConfigFile(kinematicsFileFullPath))
         {
-            CD_ERROR("Could not configure from \"%s\".\n", kinematicsFileFullPath.c_str());
+            yError() << "Could not configure from" << kinematicsFileFullPath;
             return;
         }
 
@@ -46,13 +44,13 @@ public:
 
         if (!solverDevice.isValid())
         {
-            CD_ERROR("solverDevice not valid: %s.\n", solverOptions.find("device").asString().c_str());
+            yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
             return;
         }
 
         if (!solverDevice.view(iCartesianSolver))
         {
-            CD_ERROR("Could not view ICartesianSolver in %s.\n", solverOptions.find("device").asString().c_str());
+            yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
             return;
         }
     }

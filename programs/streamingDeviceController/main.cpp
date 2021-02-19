@@ -1,9 +1,8 @@
 #include <cstdio>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Network.h>
-
-#include <ColorDebug.h>
 
 #include "StreamingDeviceController.hpp"
 
@@ -25,15 +24,14 @@ int main(int argc, char *argv[])
 
     roboticslab::StreamingDeviceController mod;
 
-    CD_INFO("streamingDeviceController checking for yarp network... ");
+    yInfo() << "streamingDeviceController checking for yarp network...";
     std::fflush(stdout);
 
     if (!yarp::os::Network::checkNetwork())
     {
-        CD_ERROR_NO_HEADER("[fail]\n");
-        CD_INFO("streamingDeviceController found no yarp network (try running \"yarpserver &\"), bye!\n");
+        yError() << "streamingDeviceController found no yarp network (try running \"yarpserver &\"), bye!";
         return 1;
-    } else CD_SUCCESS_NO_HEADER("[ok]\n");
+    }
 
     if (mod.configure(rf))
     {

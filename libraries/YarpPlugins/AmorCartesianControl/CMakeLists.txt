@@ -27,7 +27,6 @@ if(NOT SKIP_AmorCartesianControl)
     target_link_libraries(AmorCartesianControl YARP::YARP_os
                                                YARP::YARP_dev
                                                AMOR::amor_api
-                                               ROBOTICSLAB::ColorDebug
                                                ROBOTICSLAB::KinematicRepresentationLib
                                                ROBOTICSLAB::KinematicsDynamicsInterfaces)
 

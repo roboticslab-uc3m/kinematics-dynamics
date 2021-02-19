@@ -4,10 +4,9 @@
 
 #include <string>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
 #include <yarp/os/Time.h>
-
-#include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -20,7 +19,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 
     if (!rpcClient.open(local + "/rpc:c") || !commandPort.open(local + "/command:o"))
     {
-        CD_ERROR("Unable to open ports.\n");
+        yError() << "Unable to open ports";
         return false;
     }
 
@@ -29,13 +28,13 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 
     if (!rpcClient.addOutput(remote + suffix))
     {
-        CD_ERROR("Error on connect to remote RPC server.\n");
+        yError() << "Error on connect to remote RPC server";
         return false;
     }
 
     if (!commandPort.addOutput(remote + "/command:i", "udp"))
     {
-        CD_ERROR("Error on connect to remote command server.\n");
+        yError() << "Error on connect to remote command server";
         return false;
     }
 
@@ -46,7 +45,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
     {
         // Incoming FK stream data may not conform to standard representation, resort to RPC
         // if user requests --transform (see #143, #145).
-        CD_WARNING("FK streaming not supported in --transform mode, using RPC instead.\n");
+        yWarning() << "FK streaming not supported in --transform mode, using RPC instead";
     }
     else
     {
@@ -56,13 +55,13 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
         {
             if (!fkInPort.open(local + "/state:i"))
             {
-                CD_ERROR("Unable to open local stream port.\n");
+                yError() << "Unable to open local stream port";
                 return false;
             }
 
             if (!yarp::os::Network::connect(statePort, fkInPort.getName(), "udp"))
             {
-                CD_ERROR("Unable to connect to remote stream port.\n");
+                yError() << "Unable to connect to remote stream port";
                 return false;
             }
 
@@ -71,11 +70,11 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
         }
         else
         {
-            CD_WARNING("Missing remote %s stream port, using RPC instead.\n", statePort.c_str());
+            yWarning() << "Missing remote" << statePort << "stream port, using RPC instead";
         }
     }
 
-    CD_SUCCESS("Connected to remote.\n");
+    yInfo() << "Connected to remote";
 
     return true;
 }

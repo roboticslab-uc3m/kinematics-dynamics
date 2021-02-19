@@ -35,7 +35,6 @@ if(NOT SKIP_KdlSolver)
                                     YARP::YARP_dev
                                     YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
-                                    ROBOTICSLAB::ColorDebug
                                     ROBOTICSLAB::ScrewTheoryLib
                                     ROBOTICSLAB::KdlVectorConverterLib
                                     ROBOTICSLAB::KinematicRepresentationLib

@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-#include <ColorDebug.h>
+#include <yarp/os/Log.h>
 
 // -----------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ bool roboticslab::AmorCartesianControl::checkJointVelocities(const std::vector<d
     {
         if (std::abs(qdot[i]) > qdotMax[i])
         {
-            CD_ERROR("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s].\n", i, qdot[i], qdotMax[i]);
+            yError("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s]", i, qdot[i], qdotMax[i]);
             return false;
         }
     }

@@ -7,8 +7,6 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <ColorDebug.h>
-
 #include "ICartesianSolver.h"
 
 namespace roboticslab
@@ -26,12 +24,16 @@ class KdlSolverTest : public testing::Test
             yarp::os::Property solverOptions("(device KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
 
             solverDevice.open(solverOptions);
-            if( ! solverDevice.isValid() ) {
-                CD_ERROR("solverDevice not valid: %s.\n",solverOptions.find("device").asString().c_str());
+
+            if (!solverDevice.isValid())
+            {
+                yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
                 return;
             }
-            if( ! solverDevice.view(iCartesianSolver) ) {
-                CD_ERROR("Could not view ICartesianSolver in %s.\n",solverOptions.find("device").asString().c_str());
+
+            if (!solverDevice.view(iCartesianSolver))
+            {
+                yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
                 return;
             }
         }

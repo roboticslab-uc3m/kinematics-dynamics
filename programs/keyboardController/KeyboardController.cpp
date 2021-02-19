@@ -15,11 +15,10 @@
 #include <iterator>
 #include <algorithm>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
 #include <yarp/os/Vocab.h>
-
-#include <ColorDebug.h>
 
 namespace
 {
@@ -93,14 +92,14 @@ const double roboticslab::KeyboardController::CARTESIAN_ANGULAR_VELOCITY_STEP = 
 
 bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("KeyboardController config: %s.\n", rf.toString().c_str());
+    yDebug() << "KeyboardController config:" << rf.toString();
 
     bool skipControlboardController = rf.check("skipRCB", "don't load remote control board client");
     bool skipCartesianController = rf.check("skipCC", "don't load cartesian control client");
 
     if (skipControlboardController && skipCartesianController)
     {
-        CD_ERROR("You cannot skip both controllers.\n");
+        yError() << "You cannot skip both controllers";
         return false;
     }
 
@@ -120,31 +119,31 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         if (!controlboardDevice.isValid())
         {
-            CD_ERROR("controlboard client device not valid.\n");
+            yError() << "controlboard client device not valid";
             return false;
         }
 
         if (!controlboardDevice.view(iEncoders))
         {
-            CD_ERROR("Could not view iEncoders.\n");
+            yError() << "Could not view iEncoders";
             return false;
         }
 
         if (!controlboardDevice.view(iControlMode))
         {
-            CD_ERROR("Could not view iControlMode.\n");
+            yError() << "Could not view iControlMode";
             return false;
         }
 
         if (!controlboardDevice.view(iControlLimits))
         {
-            CD_ERROR("Could not view iControlLimits.\n");
+            yError() << "Could not view iControlLimits";
             return false;
         }
 
         if (!controlboardDevice.view(iVelocityControl))
         {
-            CD_ERROR("Could not view iVelocityControl.\n");
+            yError() << "Could not view iVelocityControl";
             return false;
         }
 
@@ -152,7 +151,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         if (axes > MAX_JOINTS)
         {
-            CD_ERROR("Number of joints (%d) exceeds supported limit (%d).\n", axes, MAX_JOINTS);
+            yError("Number of joints (%d) exceeds supported limit (%d)", axes, MAX_JOINTS);
             return false;
         }
 
@@ -184,13 +183,13 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         if (!cartesianControlDevice.isValid())
         {
-            CD_ERROR("cartesian control client device not valid.\n");
+            yError() << "cartesian control client device not valid";
             return false;
         }
 
         if (!cartesianControlDevice.view(iCartesianControl))
         {
-            CD_ERROR("Could not view iCartesianControl.\n");
+            yError() << "Could not view iCartesianControl";
             return false;
         }
 
@@ -198,13 +197,13 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
         {
-            CD_ERROR("Could not retrieve current frame.\n");
+            yError() << "Could not retrieve current frame";
             return false;
         }
 
         if (frameDouble != ICartesianSolver::BASE_FRAME && frameDouble != ICartesianSolver::TCP_FRAME)
         {
-            CD_ERROR("Unrecognized or unsupported frame.\n");
+            yError() << "Unrecognized or unsupported frame";
             return false;
         }
 
@@ -214,7 +213,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
         if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::orientation_system::AXIS_ANGLE))
         {
-            CD_WARNING("Unable to parse \"angleRepr\" option (%s), defaulting to %s.\n", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
+            yWarning("Unable to parse \"angleRepr\" option (%s), defaulting to %s", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
             angleRepr = DEFAULT_ANGLE_REPR;
         }
 
@@ -230,7 +229,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
             if (!linTrajThread->checkStreamingConfig())
             {
-                CD_ERROR("Unable to check streaming configuration.\n");
+                yError() << "Unable to check streaming configuration";
                 return false;
             }
 
@@ -239,7 +238,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
 
             if (!linTrajThread->start())
             {
-                CD_ERROR("Unable to start MOVI thread.\n");
+                yError() << "Unable to start MOVI thread";
                 return false;
             }
         }
@@ -431,7 +430,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
 {
     if (!controlboardDevice.isValid())
     {
-        CD_WARNING("Unrecognized command (you chose not to launch remote control board client).\n");
+        yWarning() << "Unrecognized command (you chose not to launch remote control board client)";
         issueStop();
         return;
     }
@@ -443,7 +442,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
 
     if (axes <= q)
     {
-        CD_WARNING("Unrecognized key, only %d joints available.\n", axes);
+        yWarning() << "Unrecognized key, only" << axes << "joints available";
         issueStop();
         return;
     }
@@ -452,7 +451,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
 
     if (!iControlMode->setControlModes(velModes.data()))
     {
-        CD_ERROR("setVelocityModes failed\n");
+        yError() << "setVelocityModes failed";
         issueStop();
         return;
     }
@@ -461,7 +460,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
 
     if (std::abs(currentJointVels[q]) > maxVelocityLimits[q])
     {
-        CD_WARNING("Absolute joint velocity limit exceeded: maxVel[%d] = %f\n", q, maxVelocityLimits[q]);
+        yWarning("Absolute joint velocity limit exceeded: maxVel[%d] = %f", q, maxVelocityLimits[q]);
         currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
     }
 
@@ -469,7 +468,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
 
     if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
     {
-        CD_ERROR("velocityMove failed\n");
+        yError() << "velocityMove failed";
         issueStop();
     }
     else
@@ -483,7 +482,7 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
 {
     if (!cartesianControlDevice.isValid())
     {
-        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -519,7 +518,7 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
         {
             if (!linTrajThread->configure(currentCartVels))
             {
-                CD_ERROR("Unable to configure cartesian command.\n");
+                yError() << "Unable to configure cartesian command";
                 return;
             }
 
@@ -538,7 +537,7 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
 {
     if (!cartesianControlDevice.isValid())
     {
-        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -567,7 +566,7 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
     {
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, newFrame))
         {
-            CD_ERROR("Unable to set reference frame: %s.\n", str.c_str());
+            yError() << "Unable to set reference frame:" << str;
             return;
         }
 
@@ -586,14 +585,14 @@ void roboticslab::KeyboardController::actuateTool(int command)
 {
     if (!cartesianControlDevice.isValid())
     {
-        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
 
     if (!iCartesianControl->act(command))
     {
-        CD_ERROR("Unable to send '%s' command to actuator.\n", yarp::os::Vocab::decode(command).c_str());
+        yError() << "Unable to send" << yarp::os::Vocab::decode(command) << "command to actuator";
     }
     else
     {
@@ -605,7 +604,7 @@ void roboticslab::KeyboardController::printJointPositions()
 {
     if (!controlboardDevice.isValid())
     {
-        CD_WARNING("Unrecognized command (you chose not to launch remote control board client).\n");
+        yWarning() << "Unrecognized command (you chose not to launch remote control board client)";
         issueStop();
         return;
     }
@@ -621,7 +620,7 @@ void roboticslab::KeyboardController::printCartesianPositions()
 {
     if (!cartesianControlDevice.isValid())
     {
-        CD_WARNING("Unrecognized command (you chose not to launch cartesian controller client).\n");
+        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -642,7 +641,7 @@ void roboticslab::KeyboardController::issueStop()
         {
             if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER))
             {
-                CD_WARNING("Unable to stop actuator.\n");
+                yWarning() << "Unable to stop actuator";
             }
             else
             {

@@ -1,8 +1,7 @@
 #include "SpnavSensorDevice.hpp"
 
+#include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
-
-#include <ColorDebug.h>
 
 roboticslab::SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain)
     : StreamingDevice(config),
@@ -19,7 +18,7 @@ bool roboticslab::SpnavSensorDevice::acquireInterfaces()
 
     if (!PolyDriver::view(iAnalogSensor))
     {
-        CD_WARNING("Could not view iAnalogSensor.\n");
+        yWarning() << "Could not view iAnalogSensor";
         ok = false;
     }
 
@@ -30,7 +29,7 @@ bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingMovi && gain <= 0.0)
     {
-        CD_WARNING("Invalid gain for movi command: %f.\n", gain);
+        yWarning() << "Invalid gain for movi command:" << gain;
         return false;
     }
 
@@ -40,20 +39,20 @@ bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
-            CD_WARNING("Unable to preset streaming command.\n");
+            yWarning() << "Unable to preset streaming command";
             return false;
         }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
     {
-        CD_WARNING("Unable to set inertial reference frame.\n");
+        yWarning() << "Unable to set inertial reference frame";
         return false;
     }
 
     if (usingMovi && !iCartesianControl->stat(currentX))
     {
-        CD_WARNING("Unable to stat initial position.\n");
+        yWarning() << "Unable to stat initial position";
         return false;
     }
 
@@ -65,11 +64,11 @@ bool roboticslab::SpnavSensorDevice::acquireData()
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
 
-    CD_DEBUG("%s\n", data.toString(4, 1).c_str());
+    yDebug() << data.toString(4, 1);
 
     if (data.size() != 6 && data.size() != 8)
     {
-        CD_WARNING("Invalid data size: %zu.\n", data.size());
+        yWarning() << "Invalid data size:" << data.size();
         return false;
     }
 

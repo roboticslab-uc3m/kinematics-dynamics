@@ -13,7 +13,6 @@ if(NOT TARGET ROBOTICSLAB::KdlVectorConverterLib
     find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
 endif()
 
-find_package(COLOR_DEBUG REQUIRED)
 find_package(orocos_kdl 1.4 QUIET)
 
 add_executable(exampleScrewTheoryTrajectory exampleScrewTheoryTrajectory.cpp
@@ -27,5 +26,4 @@ target_link_libraries(exampleScrewTheoryTrajectory YARP::YARP_os
                                                    ROBOTICSLAB::KdlVectorConverterLib
                                                    ROBOTICSLAB::KinematicRepresentationLib
                                                    ROBOTICSLAB::TrajectoryLib
-                                                   ROBOTICSLAB::ScrewTheoryLib
-                                                   ROBOTICSLAB::ColorDebug)
+                                                   ROBOTICSLAB::ScrewTheoryLib)

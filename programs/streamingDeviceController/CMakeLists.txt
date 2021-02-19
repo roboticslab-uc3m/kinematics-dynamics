@@ -30,7 +30,6 @@ if(ENABLE_streamingDeviceController)
                                                     YARP::YARP_init
                                                     YARP::YARP_dev
                                                     YARP::YARP_sig
-                                                    ROBOTICSLAB::ColorDebug
                                                     ROBOTICSLAB::KdlVectorConverterLib
                                                     ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
