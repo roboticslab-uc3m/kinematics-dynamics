@@ -27,7 +27,6 @@ if(NOT SKIP_AsibotSolver)
                                        YARP::YARP_dev
                                        YARP::YARP_sig
                                        YARP::YARP_math
-                                       ROBOTICSLAB::ColorDebug
                                        ROBOTICSLAB::KinematicRepresentationLib
                                        ROBOTICSLAB::KinematicsDynamicsInterfaces)
 

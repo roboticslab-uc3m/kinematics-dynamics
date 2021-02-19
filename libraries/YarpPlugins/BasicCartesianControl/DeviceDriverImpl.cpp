@@ -2,13 +2,13 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <ColorDebug.h>
+#include <yarp/os/LogStream.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 {
-    CD_DEBUG("BasicCartesianControl config: %s.\n", config.toString().c_str());
+    yDebug() << "BasicCartesianControl config:" << config.toString();
 
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asFloat64();
@@ -35,7 +35,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     }
     else
     {
-        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr.c_str());
+        yError() << "Unsupported reference frame:" << referenceFrameStr;
         return false;
     }
 
@@ -52,65 +52,65 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (!robotDevice.open(robotOptions))
     {
-        CD_ERROR("robot device not valid: %s.\n", robotStr.c_str());
+        yError() << "Tobot device not valid:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iEncoders))
     {
-        CD_ERROR("Could not view iEncoders in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iEncoders in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iPositionControl))
     {
-        CD_ERROR("Could not view iPositionControl in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iPositionControl in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iPositionDirect))
     {
-        CD_ERROR("Could not view iPositionDirect in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iPositionDirect in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iVelocityControl))
     {
-        CD_ERROR("Could not view iVelocityControl in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iVelocityControl in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iControlLimits))
     {
-        CD_ERROR("Could not view iControlLimits in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iControlLimits in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iTorqueControl))
     {
-        CD_ERROR("Could not view iTorqueControl in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iTorqueControl in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iControlMode))
     {
-        CD_ERROR("Could not view iControlMode in: %s.\n", robotStr.c_str());
+        yError() << "Could not view iControlMode in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iPreciselyTimed))
     {
-        CD_WARNING("Could not view iPreciselyTimed in: %s. Using local timestamps.\n", robotStr.c_str());
+        yWarning("Could not view iPreciselyTimed in: %s, using local timestamps", robotStr.c_str());
     }
 
     iEncoders->getAxes(&numRobotJoints);
-    CD_INFO("numRobotJoints: %d.\n", numRobotJoints);
+    yInfo() << "numRobotJoints:" << numRobotJoints;
 
     qRefSpeeds.resize(numRobotJoints);
 
     if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
     {
-        CD_ERROR("Could not retrieve reference speeds.\n");
+        yError() << "Could not retrieve reference speeds";
         return false;
     }
 
@@ -128,7 +128,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
         if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
         {
-            CD_ERROR("Unable to retrieve position limits for joint %d.\n", joint);
+            yError() << "Unable to retrieve position limits for joint" << joint;
             return false;
         }
 
@@ -139,14 +139,14 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
         if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
         {
-            CD_ERROR("Unable to retrieve speed limits for joint %d.\n", joint);
+            yError() << "Unable to retrieve speed limits for joint" << joint;
             return false;
         }
 
         qdotMin[joint] = _qdotMin;
         qdotMax[joint] = _qdotMax;
 
-        CD_INFO("Joint %d limits: [%f,%f] [%f,%f]\n", joint, _qMin, _qMax, _qdotMin, _qdotMax);
+        yInfo("Joint %d limits: [%f,%f] [%f,%f]", joint, _qMin, _qMax, _qdotMin, _qdotMax);
 
         bMin.addFloat64(_qMin);
         bMax.addFloat64(_qMax);
@@ -163,22 +163,22 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (!solverDevice.open(solverOptions))
     {
-        CD_ERROR("solver device not valid: %s.\n", solverStr.c_str());
+        yError() << "Solver device not valid:" << solverStr;
         return false;
     }
 
     if (!solverDevice.view(iCartesianSolver))
     {
-        CD_ERROR("Could not view iCartesianSolver in: %s.\n", solverStr.c_str());
+        yError() << "Could not view iCartesianSolver in:" << solverStr;
         return false;
     }
 
     iCartesianSolver->getNumJoints(&numSolverJoints);
-    CD_INFO("numSolverJoints: %d.\n", numSolverJoints);
+    yInfo() << "numSolverJoints:" << numSolverJoints;
 
     if (numRobotJoints != numSolverJoints)
     {
-        CD_WARNING("numRobotJoints(%d) != numSolverJoints(%d) !!!\n", numRobotJoints, numSolverJoints);
+        yWarning("numRobotJoints(%d) != numSolverJoints(%d)", numRobotJoints, numSolverJoints);
     }
 
     if (cmcPeriodMs != DEFAULT_CMC_PERIOD_MS)

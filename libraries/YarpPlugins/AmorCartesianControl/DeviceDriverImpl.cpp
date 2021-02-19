@@ -5,10 +5,9 @@
 #include <string>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
-
-#include <ColorDebug.h>
 
 #include "KinematicRepresentation.hpp"
 
@@ -16,7 +15,7 @@
 
 bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 {
-    CD_DEBUG("AmorCartesianControl config: %s.\n", config.toString().c_str());
+    yDebug() << "AmorCartesianControl config:" << config.toString();
 
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asFloat64();
@@ -37,7 +36,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     }
     else
     {
-        CD_ERROR("Unsupported reference frame: %s.\n", referenceFrameStr.c_str());
+        yError() << "Unsupported reference frame:" << referenceFrameStr;
         return false;
     }
 
@@ -45,7 +44,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
     if (vHandle.isNull())
     {
-        CD_INFO("Creating own AMOR handle.\n");
+        yInfo() << "Creating own AMOR handle";
 
         std::string canLibrary = config.check("canLibrary", yarp::os::Value(DEFAULT_CAN_LIBRARY),
                 "CAN plugin library").asString();
@@ -57,19 +56,17 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     }
     else
     {
-        CD_INFO("Using external AMOR handle.\n");
+        yInfo() << "Using external AMOR handle";
         ownsHandle = false;
         handle = *(reinterpret_cast<AMOR_HANDLE *>(const_cast<char *>(vHandle.asBlob())));
     }
 
     if (handle == AMOR_INVALID_HANDLE)
     {
-        CD_ERROR("Could not get AMOR handle (%s)\n", amor_error());
+        yError() << "Could not get AMOR handle:" << amor_error();
         close();
         return false;
     }
-
-    CD_SUCCESS("Acquired AMOR handle!\n");
 
     qdotMax.resize(AMOR_NUM_JOINTS);
 
@@ -81,7 +78,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
         if (amor_get_joint_info(handle, i, &jointInfo) != AMOR_SUCCESS)
         {
-            CD_ERROR("%s\n", amor_error());
+            yError() << "amor_get_joint_info() failed:" << amor_error();
             close();
             return false;
         }
@@ -99,7 +96,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
     if (!cartesianDeviceOptions.fromConfigFile(kinematicsFile))
     {
-        CD_ERROR("Cannot read from --kinematics \"%s\".\n", kinematicsFile.c_str());
+        yError() << "Cannot read from --kinematics" << kinematicsFile;
         return false;
     }
 
@@ -111,18 +108,16 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
     if (!cartesianDevice.open(cartesianDeviceOptions))
     {
-        CD_ERROR("Solver device not valid.\n");
+        yError() << "Solver device not valid";
         return false;
     }
 
     if (!cartesianDevice.view(iCartesianSolver))
     {
-        CD_ERROR("Could not view iCartesianSolver.\n");
+        yError() << "Could not view iCartesianSolver";
         close();
         return false;
     }
-
-    CD_SUCCESS("Created solver device!\n");
 
     return true;
 }
@@ -131,8 +126,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
 
 bool roboticslab::AmorCartesianControl::close()
 {
-    CD_INFO("Closing AmorCartesianControl...\n");
-
     if (handle != AMOR_INVALID_HANDLE)
     {
         amor_emergency_stop(handle);

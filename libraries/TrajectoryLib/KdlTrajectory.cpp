@@ -9,7 +9,7 @@
 #include <kdl/velocityprofile_rect.hpp>
 #include <kdl/utilities/error.h>
 
-#include <ColorDebug.h>
+#include <yarp/os/LogStream.h>
 
 #include "KdlVectorConverter.hpp"
 
@@ -55,7 +55,7 @@ bool roboticslab::KdlTrajectory::getPosition(double movementTime, std::vector<do
     }
     catch (const KDL::Error_MotionPlanning &e)
     {
-        CD_ERROR("Unable to retrieve position at %f.\n", movementTime);
+        yError() << "Unable to retrieve position at" << movementTime;
         return false;
     }
 }
@@ -72,7 +72,7 @@ bool roboticslab::KdlTrajectory::getVelocity(double movementTime, std::vector<do
     }
     catch (const KDL::Error_MotionPlanning &e)
     {
-        CD_ERROR("Unable to retrieve velocity at %f.\n", movementTime);
+        yError() << "Unable to retrieve velocity at" << movementTime;
         return false;
     }
 }
@@ -89,7 +89,7 @@ bool roboticslab::KdlTrajectory::getAcceleration(double movementTime, std::vecto
     }
     catch (const KDL::Error_MotionPlanning &e)
     {
-        CD_ERROR("Unable to retrieve acceleration at %f.\n", movementTime);
+        yError() << "Unable to retrieve acceleration at" << movementTime;
         return false;
     }
 }
@@ -145,7 +145,7 @@ bool roboticslab::KdlTrajectory::configurePath(int pathType)
 {
     if ( configuredPath )
     {
-        CD_WARNING("Already configured.\n");
+        yWarning() << "Path already configured";
         return false;
     }
 
@@ -155,7 +155,7 @@ bool roboticslab::KdlTrajectory::configurePath(int pathType)
     {
         if ( frames.empty() || frames.size() > 2 || ( frames.size() == 1 && twists.empty() ) )
         {
-            CD_ERROR("Need 2 waypoints (or 1 with initial twist) for Cartesian line (have %d)!\n", frames.size());
+            yError("Need 2 waypoints (or 1 with initial twist) for Cartesian line (have %zu)!", frames.size());
             return false;
         }
 
@@ -176,7 +176,7 @@ bool roboticslab::KdlTrajectory::configurePath(int pathType)
         break;
     }
     default:
-        CD_ERROR("Only LINE cartesian path implemented for now!\n");
+        yError() << "Only LINE cartesian path implemented for now!";
         return false;
     }
 
@@ -191,7 +191,7 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(int velocityProfileTyp
 {
     if ( configuredVelocityProfile )
     {
-        CD_WARNING("Already configured.\n");
+        yWarning() << "Velocity profile already configured";
         return false;
     }
 
@@ -208,7 +208,7 @@ bool roboticslab::KdlTrajectory::configureVelocityProfile(int velocityProfileTyp
         break;
     }
     default:
-        CD_ERROR("Only TRAPEZOIDAL and RECTANGULAR cartesian velocity profiles implemented for now!\n");
+        yError() << "Only TRAPEZOIDAL and RECTANGULAR cartesian velocity profiles implemented for now!";
         return false;
     }
 
@@ -223,19 +223,19 @@ bool roboticslab::KdlTrajectory::create()
 {
     if( created )
     {
-        CD_WARNING("Already created.\n");
+        yWarning() << "Trajectory already created";
         return false;
     }
 
     if( ! configuredPath )
     {
-        CD_ERROR("Path not configured!\n");
+        yError() << "Path not configured!";
         return false;
     }
 
     if( ! configuredVelocityProfile )
     {
-        CD_ERROR("Velocity profile not configured!\n");
+        yError() << "Velocity profile not configured!";
         return false;
     }
 

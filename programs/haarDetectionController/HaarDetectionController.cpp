@@ -4,11 +4,10 @@
 
 #include <string>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Value.h>
-
-#include <ColorDebug.h>
 
 using namespace roboticslab;
 
@@ -36,14 +35,14 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
     if (!cartesianControlDevice.open(cartesianControlClientOptions))
     {
-        CD_ERROR("Cartesian control client device not valid.\n");
+        yError() << "Cartesian control client device not valid";
         close();
         return false;
     }
 
     if (!cartesianControlDevice.view(iCartesianControl))
     {
-        CD_ERROR("Could not view iCartesianControl.\n");
+        yError() << "Could not view iCartesianControl";
         close();
         return false;
     }
@@ -63,20 +62,20 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
         if (!sensorsClientDevice.isValid())
         {
-            CD_ERROR("Proximity sensors device not valid.\n");
+            yError() << "Proximity sensors device not valid";
             return false;
         }
 
         if (!sensorsClientDevice.view(iProximitySensors))
         {
-            CD_ERROR("Could not view iProximitySensors.\n");
+            yError() << "Could not view iProximitySensors";
             return false;
         }
     }
 
     if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER))
     {
-        CD_ERROR("Unable to actuate tool.\n.");
+        yError() << "Unable to actuate tool";
         close();
         return false;
     }
@@ -87,7 +86,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
         {
-            CD_ERROR("Unable to set TCP reference frame.\n");
+            yError() << "Unable to set TCP reference frame";
             return false;
         }
 
@@ -98,13 +97,13 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
         if (!yarp::os::Network::connect(remoteVision + "/state:o", localPort + "/state:i"))
         {
-            CD_ERROR("Unable to connect to remote vision port with prefix: %s.\n", remoteVision.c_str());
+            yError() << "Unable to connect to remote vision port with prefix:" << remoteVision;
             close();
             return false;
         }
     }
 
-    CD_INFO("Delaying %d seconds...\n", INITIAL_ACT_DELAY);
+    yInfo() << "Delaying" << INITIAL_ACT_DELAY << "seconds...";
     yarp::os::Time::delay(INITIAL_ACT_DELAY);
 
     return true;
@@ -114,7 +113,7 @@ bool HaarDetectionController::updateModule()
 {
     if (sensorsClientDevice.isValid() && iProximitySensors->hasTarget())
     {
-        CD_INFO("Target detected.\n");
+        yInfo() << "Target detected";
 
         // disable servo control, stop motors and close stream of sensor data
         grabberPort.interrupt();

@@ -5,9 +5,8 @@
 #include <sstream>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
-
-#include <ColorDebug.h>
 
 // -----------------------------------------------------------------------------
 
@@ -47,9 +46,6 @@ namespace
 
 bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
-    // process data "in", prepare "out"
-    CD_DEBUG("Got: %s\n", in.toString().c_str());
-
     switch (in.get(0).asVocab())
     {
     case VOCAB_CC_STAT:
@@ -275,7 +271,7 @@ bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::o
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
@@ -321,7 +317,7 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
@@ -355,7 +351,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
@@ -381,7 +377,7 @@ bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
@@ -407,7 +403,7 @@ bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
@@ -425,7 +421,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
         {
             if (!in.get(i).isList() || in.get(i).asList()->size() != 2)
             {
-                CD_ERROR("bottle format error\n");
+                yError() << "Bottle format error";
                 out.addVocab(VOCAB_CC_FAILED);
                 return false;
             }
@@ -448,7 +444,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }
@@ -479,7 +475,7 @@ bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottl
     }
     else
     {
-        CD_ERROR("size error\n");
+        yError() << "Size error:" << in.size();
         out.addVocab(VOCAB_CC_FAILED);
         return false;
     }

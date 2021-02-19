@@ -41,7 +41,6 @@ if(ENABLE_tests)
 
     target_link_libraries(testKdlSolver YARP::YARP_os
                                         YARP::YARP_dev
-                                        ROBOTICSLAB::ColorDebug
                                         ROBOTICSLAB::KinematicsDynamicsInterfaces
                                         gtest_main)
 
@@ -53,7 +52,6 @@ if(ENABLE_tests)
 
     target_link_libraries(testKdlSolverFromFile YARP::YARP_os
                                                 YARP::YARP_dev
-                                                ROBOTICSLAB::ColorDebug
                                                 ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                 gtest_main)
 
@@ -66,7 +64,6 @@ if(ENABLE_tests)
 
         target_link_libraries(testAsibotSolverFromFile YARP::YARP_os
                                                        YARP::YARP_dev
-                                                       ROBOTICSLAB::ColorDebug
                                                        ROBOTICSLAB::KinematicRepresentationLib
                                                        ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                        gtest_main)
@@ -92,7 +89,6 @@ if(ENABLE_tests)
 
         target_link_libraries(testBasicCartesianControl YARP::YARP_os
                                                         YARP::YARP_dev
-                                                        ROBOTICSLAB::ColorDebug
                                                         ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                         gtest_main)
 

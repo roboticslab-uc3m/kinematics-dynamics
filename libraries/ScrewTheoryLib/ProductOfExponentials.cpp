@@ -7,7 +7,7 @@
 #include <kdl/joint.hpp>
 #include <kdl/segment.hpp>
 
-#include <ColorDebug.h>
+#include <yarp/os/Log.h>
 
 using namespace roboticslab;
 
@@ -81,7 +81,7 @@ bool PoeExpression::evaluate(const KDL::JntArray & q, KDL::Frame & H) const
 {
     if (exps.size() != q.rows())
     {
-        CD_WARNING("Size mismatch: %d (terms of PoE) != %d (joint array).\n", exps.size(), q.rows());
+        yWarning("Size mismatch: %zu (terms of PoE) != %d (joint array)", exps.size(), q.rows());
         return false;
     }
 

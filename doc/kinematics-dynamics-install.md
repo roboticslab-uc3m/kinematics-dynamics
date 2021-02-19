@@ -6,7 +6,6 @@ First install the dependencies:
 - [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
 - [Install YARP 3.3+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
 - [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
-- [Install color-debug](https://github.com/roboticslab-uc3m/color-debug)
 
 [Optional] Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `EmulatedControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
 
@@ -80,7 +79,7 @@ python -c "import kinematics_dynamics"
 
 #### Install Python bindings (troubleshooting)
 
-Extra care should be taken with Python 2 vs 3, and with Python paths in general. Toggle `t` in `ccmake ..` to see paths. `python -c "import site; print(site.getsitepackages())"` is your friend, most probably the first element `python -c "import site; print(site.getsitepackages()[0])"` is good for you. 
+Extra care should be taken with Python 2 vs 3, and with Python paths in general. Toggle `t` in `ccmake ..` to see paths. `python -c "import site; print(site.getsitepackages())"` is your friend, most probably the first element `python -c "import site; print(site.getsitepackages()[0])"` is good for you.
 
 For many Python 3.x you may have to:
 

@@ -26,7 +26,6 @@ if(NOT SKIP_BasicCartesianControl)
 
     target_link_libraries(BasicCartesianControl YARP::YARP_os
                                                 YARP::YARP_dev
-                                                ROBOTICSLAB::ColorDebug
                                                 ROBOTICSLAB::TrajectoryLib
                                                 ROBOTICSLAB::KinematicsDynamicsInterfaces)
 

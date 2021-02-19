@@ -4,12 +4,11 @@
 #include <string>
 #include <typeinfo>
 
-#include <yarp/os/Value.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Value.h>
 
 #include <yarp/sig/Vector.h>
-
-#include <ColorDebug.h>
 
 #include "SpnavSensorDevice.hpp" // for typeid() check
 
@@ -21,7 +20,7 @@ const double roboticslab::StreamingDeviceController::SCALING_FACTOR_ON_ALERT = 2
 
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
-    CD_DEBUG("streamingDeviceController config: %s.\n", rf.toString().c_str());
+    yDebug() << "streamingDeviceController config:" << rf.toString();
 
     std::string deviceName = rf.check("streamingDevice", yarp::os::Value(DEFAULT_DEVICE_NAME),
             "device name").asString();
@@ -37,13 +36,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!streamingDevice->isValid())
     {
-        CD_ERROR("Streaming device not valid.\n");
+        yError() << "Streaming device not valid";
         return false;
     }
 
     if (!streamingDevice->acquireInterfaces())
     {
-        CD_ERROR("Unable to acquire plugin interfaces from streaming device.\n");
+        yError() << "Unable to acquire plugin interfaces from streaming device";
         return false;
     }
 
@@ -56,13 +55,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!cartesianControlClientDevice.isValid())
     {
-        CD_ERROR("Cartesian control client device not valid.\n");
+        yError() << "Cartesian control client device not valid";
         return false;
     }
 
     if (!cartesianControlClientDevice.view(iCartesianControl))
     {
-        CD_ERROR("Could not view iCartesianControl.\n");
+        yError() << "Could not view iCartesianControl";
         return false;
     }
 
@@ -70,7 +69,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!iCartesianControl->getParameters(params))
     {
-        CD_ERROR("Unable to retrieve configuration parameters.\n");
+        yError() << "Unable to retrieve configuration parameters";
         return false;
     }
 
@@ -80,7 +79,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!streamingDevice->initialize(usingStreamingPreset))
     {
-        CD_ERROR("Device initialization failed.\n");
+        yError() << "Device initialization failed";
         return false;
     }
 
@@ -99,13 +98,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!sensorsClientDevice.isValid())
         {
-            CD_ERROR("Sensors device not valid.\n");
+            yError() << "Sensors device not valid";
             return false;
         }
 
         if (!sensorsClientDevice.view(iProximitySensors))
         {
-            CD_ERROR("Could not view iSensors.\n");
+            yError() << "Could not view iSensors";
             return false;
         }
 
@@ -119,7 +118,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (typeid(*streamingDevice) != spnavType)
         {
-            CD_ERROR("Centroid transform extension only available with %s.\n", spnavType.name());
+            yError() << "Centroid transform extension only available with" << spnavType.name();
             return false;
         }
 
@@ -133,13 +132,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
         {
-            CD_ERROR("Illegal argument: malformed bottle --centroidRPY: %s.\n", vCentroidRPY.toString().c_str());
+            yError() << "Illegal argument: malformed bottle --centroidRPY:" << vCentroidRPY.toString();
             return false;
         }
 
         if (permanenceTime < 0.0)
         {
-            CD_ERROR("Illegal argument: --centroidPermTime cannot be less than zero: %f.\n", permanenceTime);
+            yError() << "Illegal argument: --centroidPermTime cannot be less than zero:" << permanenceTime;
             return false;
         }
         else
@@ -149,13 +148,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!centroidPort.open(localCentroid + "/state:i"))
         {
-            CD_ERROR("Unable to open local centroid port.\n");
+            yError() << "Unable to open local centroid port";
             return false;
         }
 
         if (!yarp::os::Network::connect(remoteCentroid, centroidPort.getName(), "udp"))
         {
-            CD_ERROR("Unable to connect to %s.\n", remoteCentroid.c_str());
+            yError() << "Unable to connect to" << remoteCentroid;
             return false;
         }
 
@@ -171,7 +170,7 @@ bool StreamingDeviceController::updateModule()
 {
     if (!streamingDevice->acquireData())
     {
-        CD_ERROR("Failed to acquire data from streaming device.\n");
+        yError() << "Failed to acquire data from streaming device";
         return true;
     }
 
@@ -187,11 +186,11 @@ bool StreamingDeviceController::updateModule()
         if (!disableSensorsLowLevel && alertLevel == IProximitySensors::LOW)
         {
             localScaling *= SCALING_FACTOR_ON_ALERT;
-            CD_WARNING("Obstacle (low level) - decrease speed, factor %f.\n", SCALING_FACTOR_ON_ALERT);
+            yWarning() << "Obstacle (low level) - decrease speed, factor" << SCALING_FACTOR_ON_ALERT;
         }
         else if (alertLevel == IProximitySensors::HIGH)
         {
-            CD_WARNING("Obstacle (high level) - command stop.\n");
+            yWarning() << "Obstacle (high level) - command stop";
 
             if (!isStopped)
             {
@@ -213,7 +212,7 @@ bool StreamingDeviceController::updateModule()
 
     if (!streamingDevice->transformData(localScaling))
     {
-        CD_ERROR("Failed to transform acquired data from streaming device.\n");
+        yError() << "Failed to transform acquired data from streaming device";
         return true;
     }
 
@@ -223,7 +222,7 @@ bool StreamingDeviceController::updateModule()
 
         if (centroidTransform.acceptBottle(centroidBottle) && centroidTransform.processStoredBottle())
         {
-            CD_WARNING("Centroid transform handler takes control.\n");
+            yWarning() << "Centroid transform handler takes control";
         }
     }
 

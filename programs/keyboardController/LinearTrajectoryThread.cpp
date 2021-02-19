@@ -5,11 +5,10 @@
 #include <algorithm>
 #include <functional>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
 #include "KdlTrajectory.hpp"
-
-#include <ColorDebug.h>
 
 using namespace roboticslab;
 
@@ -35,7 +34,7 @@ bool LinearTrajectoryThread::checkStreamingConfig()
 
     if (!iCartesianControl->getParameters(params))
     {
-        CD_WARNING("getParameters failed.\n");
+        yWarning() << "getParameters failed";
         return false;
     }
 
@@ -48,7 +47,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
     if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
     {
-        CD_WARNING("Unable to preset streaming command.\n");
+        yWarning() << "Unable to preset streaming command";
         return false;
     }
 
@@ -68,7 +67,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 
     if (!iCartesianControl->stat(x))
     {
-        CD_ERROR("stat failed.\n");
+        yError() << "stat failed";
         return false;
     }
 
@@ -88,7 +87,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
     }
     else
     {
-        CD_ERROR("Unable to create trajectory.\n");
+        yError() << "Unable to create trajectory";
     }
 
     mtx.unlock();

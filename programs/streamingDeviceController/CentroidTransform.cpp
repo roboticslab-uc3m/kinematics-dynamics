@@ -2,12 +2,12 @@
 
 #include <cmath>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
 #include <kdl/frames.hpp>
 
 #include <KdlVectorConverter.hpp>
-#include <ColorDebug.h>
 
 using namespace roboticslab;
 
@@ -20,7 +20,7 @@ bool CentroidTransform::setTcpToCameraRotation(yarp::os::Bottle * b)
 {
     if (b->size() != 3)
     {
-        CD_WARNING("Bottle size must equal 3, was: %d.\n", b->size());
+        yWarning() << "Bottle size must equal 3, was:" << b->size();
         return false;
     }
 
@@ -28,7 +28,7 @@ bool CentroidTransform::setTcpToCameraRotation(yarp::os::Bottle * b)
     double pitch = b->get(1).asFloat64() * M_PI / 180.0;
     double yaw = b->get(2).asFloat64() * M_PI / 180.0;
 
-    CD_INFO("centroidFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+    yInfo() << "centroidFrameRPY [rad]:" << roll << pitch << yaw;
 
     rot_tcp_camera = KDL::Rotation::RPY(roll, pitch, yaw);
 
@@ -41,7 +41,7 @@ bool CentroidTransform::acceptBottle(yarp::os::Bottle * b)
     {
         if (b->size() != 2)
         {
-            CD_WARNING("Malformed input bottle, size %d (expected 2).\n", b->size());
+            yWarning() << "Malformed input bottle, size" << b->size() << "(expected 2)";
             return false;
         }
 
@@ -63,7 +63,7 @@ bool CentroidTransform::processStoredBottle() const
 
     if (!streamingDevice->iCartesianControl->stat(x))
     {
-        CD_WARNING("stat failed.\n");
+        yWarning() << "stat failed";
         return false;
     }
 

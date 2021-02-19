@@ -2,7 +2,7 @@
 
 #include "MatrixExponential.hpp"
 
-#include <ColorDebug.h>
+#include <yarp/os/LogStream.h>
 
 #include "ScrewTheoryTools.hpp"
 
@@ -46,7 +46,7 @@ KDL::Frame MatrixExponential::asFrame(double theta) const
         H.p = axis * theta;
         break;
     default:
-        CD_WARNING("Unrecognized motion type: %d.\n", motionType);
+        yWarning() << "Unrecognized motion type:" << motionType;
     }
 
     return H;

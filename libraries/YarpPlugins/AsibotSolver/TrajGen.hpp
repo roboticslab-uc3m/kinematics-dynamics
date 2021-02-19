@@ -3,7 +3,7 @@
 #ifndef __TRAJ_GEN_HPP__
 #define __TRAJ_GEN_HPP__
 
-#include <ColorDebug.h>
+#include <yarp/os/Log.h>
 
 /**
  * @ingroup kinematics-dynamics-libraries
@@ -94,7 +94,7 @@ public:
     {
         for (double i = 0; i < T; i += (T / samples))
         {
-            CD_INFO("%05.2f %+02.6f %+02.6f %+02.6f\n", i, get(i), getdot(i), getdotdot(i));
+            yInfo("%05.2f %+02.6f %+02.6f %+02.6f", i, get(i), getdot(i), getdotdot(i));
         }
     }
 
@@ -206,7 +206,7 @@ public:
     {
         for (double i = 0; i < T; i += (T / samples))
         {
-            CD_INFO("%05.2f %+02.6f %+02.6f %+02.6f\n", i, get(i), getdot(i), getdotdot(i));
+            yInfo("%05.2f %+02.6f %+02.6f %+02.6f", i, get(i), getdot(i), getdotdot(i));
         }
     }
 

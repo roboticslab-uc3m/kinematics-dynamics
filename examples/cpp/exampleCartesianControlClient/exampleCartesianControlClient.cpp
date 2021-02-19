@@ -34,6 +34,7 @@ make -j$(nproc)
 
 #include <vector>
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
 #include <yarp/os/Property.h>
 
@@ -41,15 +42,13 @@ make -j$(nproc)
 
 #include <ICartesianControl.h> // we need this to work with the CartesianControlClient device
 
-#include <ColorDebug.h>
-
 int main(int argc, char *argv[])
 {
     yarp::os::Network yarp;
 
     if (!yarp::os::Network::checkNetwork())
     {
-        CD_ERROR("Please start a yarp name server first.\n");
+        yError() << "Please start a yarp name server first";
         return 1;
     }
 
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
 
     if (!dd.isValid())
     {
-        CD_ERROR("Device not available.\n");
+        yError() << "Device not available";
         return 1;
     }
 
@@ -71,23 +70,16 @@ int main(int argc, char *argv[])
 
     if (!dd.view(iCartesianControl))
     {
-        CD_ERROR("Problems acquiring interface.\n");
+        yError() << "Problems acquiring interface";
         return 1;
     }
 
-    CD_SUCCESS("Acquired interface.\n");
+    yInfo() << "Acquired interface";
 
     std::vector<double> vector;
     iCartesianControl->stat(vector);
 
-    CD_INFO("Controller status (forward kinematics):");
-
-    for (int i = 0; i < vector.size(); i++)
-    {
-        CD_INFO_NO_HEADER(" %f", vector[i]);
-    }
-
-    CD_INFO_NO_HEADER("\n");
+    yInfo() << "Controller status (forward kinematics):" << vector;
 
     // -- Move arm in joint space:
     // -- set poss (0 0 0 90 0 0 0)
@@ -105,51 +97,48 @@ int main(int argc, char *argv[])
     // movj -> go to end position in joint space
     // movl -> go to end position in task space
 
-    CD_INFO("Position 1: poss (0 0 0 90 0 0 0) ... ");
+    yInfo() << "Position 1: poss (0 0 0 90 0 0 0)";
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 
     // -- Position 2: move forward along axis X
-    CD_INFO("Position 2: move forward along axis X ... ");
+    yInfo() << "Position 2: move forward along axis X";
     position[0] = 0.5;
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 
     // -- Position 3: move right along axis Y
-    CD_INFO("Position 3: move right along axis Y ... ");
+    yInfo() << "Position 3: move right along axis Y";
     position[1] = -0.4;
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 
     // -- Position 4: rotate -12 degrees about axis Y
-    CD_INFO("Position 4: rotate -12 degrees about axis Y ... ");
+    yInfo() << "Position 4: rotate -12 degrees about axis Y ...";
     position[3] = 0.0;
     position[4] = 1.0;
     position[5] = 0.0;
@@ -157,17 +146,16 @@ int main(int argc, char *argv[])
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 
     // -- Position 5: rotate 50 degrees about axis X
-    CD_INFO("Position 5: rotate 50 degrees about axis X ... ");
+    yInfo() << "Position 5: rotate 50 degrees about axis X ...";
     position[3] = 1.0;
     position[4] = 0.0;
     position[5] = 0.0;
@@ -175,17 +163,16 @@ int main(int argc, char *argv[])
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 
     // -- Position 6:
-    CD_INFO("Position 6: poss (0 0 0 90 0 0 0) ... ");
+    yInfo() << "Position 6: poss (0 0 0 90 0 0 0) ...";
     position[0] = 0.390926; // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
     position[1] = -0.346663;
     position[2] = 0.166873;
@@ -196,17 +183,16 @@ int main(int argc, char *argv[])
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 
     // -- Initial position
-    CD_INFO("Position 7: Homing ... ");
+    yInfo() << "Position 7: Homing ...";
     position[0] = 0.0;
     position[1] = -0.34692;
     position[2] = -0.221806;
@@ -217,12 +203,11 @@ int main(int argc, char *argv[])
 
     if (iCartesianControl->movj(position))
     {
-        CD_SUCCESS_NO_HEADER("[ok]\n");
         iCartesianControl->wait();
     }
     else
     {
-        CD_ERROR_NO_HEADER("[error]\n");
+        yError() << "failure";
         return 1;
     }
 

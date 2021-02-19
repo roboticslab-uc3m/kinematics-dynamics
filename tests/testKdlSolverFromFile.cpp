@@ -7,8 +7,6 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <ColorDebug.h>
-
 #include "ICartesianSolver.h"
 
 namespace roboticslab
@@ -30,20 +28,27 @@ class KdlSolverTestFromFile : public testing::Test
             std::string kinematicsFileFullPath = rf.findFileByName( "testKdlSolverFromFile.ini" );
 
             yarp::os::Property solverOptions;
-            if (! solverOptions.fromConfigFile(kinematicsFileFullPath) ) {  //-- Put first because defaults to wiping out.
-                CD_ERROR("Could not configure from \"%s\".\n",kinematicsFileFullPath.c_str());
+
+            if (!solverOptions.fromConfigFile(kinematicsFileFullPath)) //-- Put first because defaults to wiping out.
+            {
+                yError() << "Could not configure from" << kinematicsFileFullPath;
                 return;
             }
+
             solverOptions.put("device","KdlSolver");
             solverOptions.fromString("(mins (-70 -15 -10 -100 -90 -100)) (maxs (45 70 75 10 90 10))", false);
 
             solverDevice.open(solverOptions);
-            if( ! solverDevice.isValid() ) {
-                CD_ERROR("solverDevice not valid: %s.\n",solverOptions.find("device").asString().c_str());
+
+            if (!solverDevice.isValid())
+            {
+                yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
                 return;
             }
-            if( ! solverDevice.view(iCartesianSolver) ) {
-                CD_ERROR("Could not view ICartesianSolver in %s.\n",solverOptions.find("device").asString().c_str());
+
+            if (!solverDevice.view(iCartesianSolver))
+            {
+                yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
                 return;
             }
         }

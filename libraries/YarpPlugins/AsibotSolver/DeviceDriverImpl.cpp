@@ -6,31 +6,30 @@
 #include <cstdlib>
 #include <string>
 
+#include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
+#include <yarp/os/Property.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Value.h>
-#include <yarp/os/Property.h>
-#include <yarp/os/Bottle.h>
 
 #include <yarp/math/Math.h>
-
-#include <ColorDebug.h>
 
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 {
-    CD_DEBUG("config: %s.\n", config.toString().c_str());
+    yDebug() << "config:" << config.toString();
 
     A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asFloat64();
     A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asFloat64();
     A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3 (meters)").asFloat64();
     A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4 (meters)").asFloat64();
 
-    CD_INFO("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f.\n", A0, A1, A2, A3);
+    yInfo("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f", A0, A1, A2, A3);
 
     if (!config.check("mins") || !config.check("maxs"))
     {
-        CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+        yError() << "Missing 'mins' and/or 'maxs' option(s)";
         return false;
     }
 
@@ -39,13 +38,13 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     if (mins == YARP_NULLPTR || maxs == YARP_NULLPTR)
     {
-        CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+        yError() << "Empty 'mins' and/or 'maxs' option(s)";
         return false;
     }
 
     if (mins->size() != NUM_MOTORS || maxs->size() != NUM_MOTORS)
     {
-        CD_ERROR("mins.size(), maxs.size() (%d, %d) != NUM_MOTORS (%d)\n", mins->size(), maxs->size(), NUM_MOTORS);
+        yError("mins.size(), maxs.size() (%zu, %zu) != NUM_MOTORS (%d)", mins->size(), maxs->size(), NUM_MOTORS);
         return false;
     }
 
@@ -59,11 +58,11 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
         if (qMin[i] == qMax[i])
         {
-            CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", i, qMin[i]);
+            yWarning("qMin[%1$d] == qMax[%1$d] (%2$f)", i, qMin[i]);
         }
         if (qMin[i] > qMax[i])
         {
-            CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", i, qMin[i], qMax[i]);
+            yError("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", i, qMin[i], qMax[i]);
             return false;
         }
     }
@@ -72,7 +71,7 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
     if (!buildStrategyFactory(strategy))
     {
-        CD_ERROR("Unsupported IK configuration strategy: %s.\n", strategy.c_str());
+        yError() << "Unsupported IK configuration strategy:" << strategy;
         return false;
     }
 

@@ -3,14 +3,13 @@
 #include <cmath>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Value.h>
 #include <yarp/sig/Vector.h>
 
 #include <kdl/frames.hpp>
 
 #include <KdlVectorConverter.hpp>
-
-#include <ColorDebug.h>
 
 namespace
 {
@@ -37,7 +36,7 @@ roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable
             double pitch = leapFrameRPY->get(1).asFloat64() * M_PI / 180.0;
             double yaw = leapFrameRPY->get(2).asFloat64() * M_PI / 180.0;
 
-            CD_INFO("leapFrameRPY [rad]: %f %f %f\n", roll, pitch, yaw);
+            yInfo() << "leapFrameRPY [rad]:" << roll << pitch << yaw;
 
             frame_ee_leap = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
             frame_leap_ee = frame_ee_leap.Inverse();
@@ -51,7 +50,7 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
 
     if (!PolyDriver::view(iAnalogSensor))
     {
-        CD_WARNING("Could not view iAnalogSensor.\n");
+        yWarning() << "Could not view iAnalogSensor";
         ok = false;
     }
 
@@ -62,7 +61,7 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (!usingMovi && period <= 0.0)
     {
-        CD_WARNING("Invalid period for pose command: %f.\n", period);
+        yWarning() << "Invalid period for pose command:" << period;
         return false;
     }
 
@@ -72,26 +71,26 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
-            CD_WARNING("Unable to preset streaming command.\n");
+            yWarning() << "Unable to preset streaming command";
             return false;
         }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
     {
-        CD_WARNING("Unable to set inertial reference frame.\n");
+        yWarning() << "Unable to set inertial reference frame";
         return false;
     }
 
     if (!iCartesianControl->stat(initialTcpOffset))
     {
-        CD_WARNING("stat failed.\n");
+        yWarning() << "stat failed";
         return false;
     }
 
-    CD_INFO("Initial TCP offset: %f %f %f [m], %f %f %f [rad]\n",
-            initialTcpOffset[0], initialTcpOffset[1], initialTcpOffset[2],
-            initialTcpOffset[3], initialTcpOffset[4], initialTcpOffset[5]);
+    yInfo("Initial TCP offset: %f %f %f [m], %f %f %f [rad]",
+          initialTcpOffset[0], initialTcpOffset[1], initialTcpOffset[2],
+          initialTcpOffset[3], initialTcpOffset[4], initialTcpOffset[5]);
 
     KDL::Frame frame_base_ee = KdlVectorConverter::vectorToFrame(initialTcpOffset);
 
@@ -99,15 +98,15 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 
     if (!acquireData())
     {
-        CD_WARNING("Initial acquireData failed.\n");
+        yWarning() << "Initial acquireData failed";
         return false;
     }
 
     initialLeapOffset = data;
 
-    CD_INFO("Initial Leap offset: %f %f %f [m], %f %f %f [rad]\n",
-            initialLeapOffset[0], initialLeapOffset[1], initialLeapOffset[2],
-            initialLeapOffset[3], initialLeapOffset[4], initialLeapOffset[5]);
+    yInfo("Initial Leap offset: %f %f %f [m], %f %f %f [rad]",
+          initialLeapOffset[0], initialLeapOffset[1], initialLeapOffset[2],
+          initialLeapOffset[3], initialLeapOffset[4], initialLeapOffset[5]);
 
     return true;
 }
@@ -117,11 +116,11 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
 
-    CD_DEBUG("%s\n", data.toString(4, 1).c_str());
+    yDebug() << data.toString(4, 1);
 
     if (data.size() != 6 && data.size() != 8)
     {
-        CD_WARNING("Invalid data size: %zu.\n", data.size());
+        yWarning() << "Invalid data size:" << data.size();
         return false;
     }
 

@@ -7,9 +7,8 @@
 #include <algorithm>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
-
-#include <ColorDebug.h>
 
 using namespace roboticslab;
 
@@ -57,8 +56,8 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (def).\n",
-                    joint, value, qMin[joint], qMax[joint]);
+            yWarning("Joint near or out of limits: q[%d] = %f not in [%f,%f] (def)",
+                     joint, value, qMin[joint], qMax[joint]);
             return false;
         }
     }
@@ -76,8 +75,8 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const
 
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            CD_WARNING("Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg).\n",
-                    joint, value, qMin[joint], qMax[joint]);
+            yWarning("Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg)",
+                     joint, value, qMin[joint], qMax[joint]);
             double midRange = (qMax[joint] + qMin[joint]) / 2;
 
             // Let the joint get away from its nearest limit.
@@ -101,8 +100,8 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
 
         if (value < qdotMin[joint] || value > qdotMax[joint])
         {
-            CD_WARNING("Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s).\n",
-                    joint, value, qdotMin[joint], qdotMax[joint]);
+            yWarning("Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s)",
+                     joint, value, qdotMin[joint], qdotMax[joint]);
             return false;
         }
     }
@@ -118,7 +117,7 @@ bool BasicCartesianControl::checkControlModes(int mode)
 
     if (!iControlMode->getControlModes(modes.data()))
     {
-        CD_WARNING("getControlModes failed.\n");
+        yWarning() << "getControlModes() failed";
         return false;
     }
 
@@ -133,7 +132,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     if (!iControlMode->getControlModes(modes.data()))
     {
-        CD_WARNING("getControlModes failed.\n");
+        yWarning() << "getControlModes() failed";
         return false;
     }
 
@@ -153,7 +152,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
         {
-            CD_WARNING("setControlModes failed (%s).\n", yarp::os::Vocab::decode(mode).c_str());
+            yWarning() << "setControlModes() failed for mode:" << yarp::os::Vocab::decode(mode);
             return false;
         }
     }
@@ -175,7 +174,7 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
     case VOCAB_CC_MOVI:
         return setControlModes(VOCAB_CM_POSITION_DIRECT);
     default:
-        CD_ERROR("Unrecognized or unsupported streaming command vocab.\n");
+        yError() << "Unrecognized or unsupported streaming command vocab:" << command;
     }
 
     return false;
@@ -194,20 +193,20 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
     {
         if (qRefSpeeds[joint] <= 0.0)
         {
-            CD_WARNING("Zero or negative velocities sent at joint %d, not moving: %f.\n", joint, qRefSpeeds[joint]);
+            yWarning("Zero or negative velocities sent at joint %d, not moving: %f", joint, qRefSpeeds[joint]);
             return;
         }
 
         double distance = std::abs(qd[joint] - q[joint]);
 
-        CD_INFO("Distance (joint %d): %f\n", joint, distance);
+        yInfo("Distance (joint %d): %f", joint, distance);
 
         double targetTime = distance / qRefSpeeds[joint];
 
         if (targetTime > maxTime)
         {
             maxTime = targetTime;
-            CD_INFO("Candidate: %f\n", maxTime);
+            yInfo("Candidate: %f", maxTime);
         }
     }
 
@@ -217,12 +216,12 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
     {
         if (joint >= numSolverJoints || maxTime == 0.0)
         {
-            CD_INFO("qdot[%d] = 0.0 (forced)\n", joint);
+            yInfo("qdot[%d] = 0.0 (forced)", joint);
         }
         else
         {
             qdot[joint] = std::abs(qd[joint] - q[joint]) / maxTime;
-            CD_INFO("qdot[%d] = %f\n", joint, qdot[joint]);
+            yInfo("qdot[%d] = %f", joint, qdot[joint]);
         }
     }
 }

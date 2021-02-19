@@ -26,7 +26,6 @@ if(NOT SKIP_CartesianControlServer)
 
     target_link_libraries(CartesianControlServer YARP::YARP_os
                                                  YARP::YARP_dev
-                                                 ROBOTICSLAB::ColorDebug
                                                  ROBOTICSLAB::KinematicRepresentationLib
                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces)
 

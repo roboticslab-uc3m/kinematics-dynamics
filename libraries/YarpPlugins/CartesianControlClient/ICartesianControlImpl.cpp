@@ -2,9 +2,8 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
-
-#include <ColorDebug.h>
 
 // -----------------------------------------------------------------------------
 
@@ -142,7 +141,7 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
     {
         if (!fkStreamResponder.getLastStatData(x, state, timestamp, fkStreamTimeoutSecs))
         {
-            CD_WARNING("FK stream timeout, falling back to RPC request.\n");
+            yWarning() << "FK stream timeout, falling back to RPC request";
         }
         else
         {

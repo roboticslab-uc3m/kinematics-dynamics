@@ -5,6 +5,7 @@
 #include <string>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Value.h>
@@ -26,8 +27,6 @@
 
 #include <Eigen/Core> // Eigen::Matrix
 
-#include <ColorDebug.h>
-
 #include "KinematicRepresentation.hpp"
 #include "ConfigurationSelector.hpp"
 
@@ -44,7 +43,7 @@ namespace
 
         if (!bH)
         {
-            CD_WARNING("Unable to find tag %s.\n", tag.c_str());
+            yWarning() << "Unable to find tag" << tag;
             return false;
         }
 
@@ -71,7 +70,7 @@ namespace
     {
         if (b.size() != 6)
         {
-            CD_WARNING("Wrong bottle size (expected: %d, was: %d).\n", 6, b.size());
+            yWarning("Wrong bottle size (expected: %d, was: %zu)", 6, b.size());
             return false;
         }
 
@@ -89,7 +88,7 @@ namespace
 
         if (!options.check("mins") || !options.check("maxs"))
         {
-            CD_ERROR("Missing 'mins' and/or 'maxs' option(s).\n");
+            yError() << "Missing 'mins' and/or 'maxs' option(s)";
             return false;
         }
 
@@ -98,13 +97,13 @@ namespace
 
         if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
         {
-            CD_ERROR("Empty 'mins' and/or 'maxs' option(s)\n");
+            yError() << "Empty 'mins' and/or 'maxs' option(s)";
             return false;
         }
 
         if (maxs->size() < nrOfJoints || mins->size() < nrOfJoints)
         {
-            CD_ERROR("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%d, %d)\n", nrOfJoints, maxs->size(), mins->size());
+            yError("chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%zu, %zu)", nrOfJoints, maxs->size(), mins->size());
             return false;
         }
 
@@ -115,11 +114,11 @@ namespace
 
             if (qMin(motor) == qMax(motor))
             {
-                CD_WARNING("qMin[%1$d] == qMax[%1$d] (%2$f)\n", motor, qMin(motor));
+                yWarning("qMin[%1$d] == qMax[%1$d] (%2$f)", motor, qMin(motor));
             }
             else if (qMin(motor) > qMax(motor))
             {
-                CD_ERROR("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)\n", motor, qMin(motor), qMax(motor));
+                yError("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", motor, qMin(motor), qMax(motor));
                 return false;
             }
         }
@@ -132,11 +131,11 @@ namespace
 
 bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 {
-    CD_DEBUG("config: %s.\n", config.toString().c_str());
+    yDebug() << "KdlSolver config:" << config.toString();
 
     //-- kinematics
     std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"path to file with description of robot kinematics").asString();
-    CD_INFO("kinematics: %s [%s]\n", kinematics.c_str(),DEFAULT_KINEMATICS);
+    yInfo() << "Kinematics file:" << kinematics;
     yarp::os::ResourceFinder rf;
     rf.setVerbose(false);
     rf.setDefaultContext("kinematics");
@@ -147,11 +146,11 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     fullConfig.fromString(config.toString(),false);  //-- Can override kinematics file contents.
     fullConfig.setMonitor(config.getMonitor(), "KdlSolver");
 
-    CD_DEBUG("fullConfig: %s.\n", fullConfig.toString().c_str());
+    yDebug() << "Full config:" << fullConfig.toString();
 
     //-- numlinks
     int numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt32();
-    CD_INFO("numLinks: %d [%d]\n",numLinks,DEFAULT_NUM_LINKS);
+    yInfo() << "numLinks:" << numLinks;
 
     //-- gravity
     yarp::os::Value defaultGravityValue;
@@ -163,7 +162,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     yarp::os::Value gravityValue = fullConfig.check("gravity", defaultGravityValue, "gravity vector (SI units)");
     yarp::os::Bottle *gravityBottle = gravityValue.asList();
     KDL::Vector gravity(gravityBottle->get(0).asFloat64(),gravityBottle->get(1).asFloat64(),gravityBottle->get(2).asFloat64());
-    CD_INFO("gravity: %s [%s]\n",gravityBottle->toString().c_str(),defaultGravityBottle->toString().c_str());
+    yInfo() << "gravity:" << gravityBottle->toString();
 
     //-- H0
     yarp::sig::Matrix defaultYmH0(4,4);
@@ -179,7 +178,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     KDL::Vector kdlVec0(ymH0(0,3),ymH0(1,3),ymH0(2,3));
     KDL::Rotation kdlRot0( ymH0(0,0),ymH0(0,1),ymH0(0,2),ymH0(1,0),ymH0(1,1),ymH0(1,2),ymH0(2,0),ymH0(2,1),ymH0(2,2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0,kdlVec0)));  //-- H0 = Frame(kdlRot0,kdlVec0);
-    CD_INFO("H0:\n%s\n[%s]\n",ymH0.toString().c_str(),defaultYmH0.toString().c_str());
+    yInfo() << "H0:" << ymH0.toString();
 
     //-- links
     for(int linkIndex=0;linkIndex<numLinks;linkIndex++)
@@ -203,7 +202,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
                 chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset)),
                                               KDL::RigidBodyInertia(linkMass,KDL::Vector(linkCog.get(0).asFloat64(),linkCog.get(1).asFloat64(),linkCog.get(2).asFloat64()),
                                                                     KDL::RotationalInertia(linkInertia.get(0).asFloat64(),linkInertia.get(1).asFloat64(),linkInertia.get(2).asFloat64(),0,0,0))));
-                CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)\n",
+                yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)",
                            link.c_str(), linkOffset,linkD,linkA,linkAlpha,linkMass,
                            linkCog.get(0).asFloat64(),linkCog.get(1).asFloat64(),linkCog.get(2).asFloat64(),
                            linkInertia.get(0).asFloat64(),linkInertia.get(1).asFloat64(),linkInertia.get(2).asFloat64());
@@ -211,7 +210,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
             else //-- No mass -> skip dynamics
             {
                 chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset))));
-                CD_INFO("Added: %s (offset %f) (D %f) (A %f) (alpha %f)\n",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
+                yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f)",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
             }
             continue;
         }
@@ -220,10 +219,10 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         std::ostringstream xyzS;
         xyzS << linkIndex;
         xyzLink += xyzS.str();
-        CD_WARNING("Not found: \"%s\", looking for \"%s\" instead.\n", link.c_str(), xyzLink.c_str());
+        yWarning("Not found: \"%s\", looking for \"%s\" instead", link.c_str(), xyzLink.c_str());
         yarp::os::Bottle &bXyzLink = fullConfig.findGroup(xyzLink);
         if( bXyzLink.isNull() ) {
-            CD_ERROR("Not found: \"%s\" either.\n", xyzLink.c_str());
+            yError() << "Not found" << xyzLink << "either";
             return false;
         }
         double linkX = bXyzLink.check("x",yarp::os::Value(0.0), "X coordinate of next frame (meters)").asFloat64();
@@ -257,10 +256,10 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         } else if(linkType == "InvTransZ") {
             chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
         } else {
-            CD_WARNING("Link joint type \"%s\" unrecognized!\n",linkType.c_str());
+            yWarning() << "Link joint type" << linkType << "unrecognized";
         }
 
-        CD_SUCCESS("Added: %s (Type %s) (x %f) (y %f) (z %f)\n",xyzLink.c_str(),linkType.c_str(),linkX,linkY,linkZ);
+        yInfo("Added: %s (Type %s) (x %f) (y %f) (z %f)",xyzLink.c_str(),linkType.c_str(),linkX,linkY,linkZ);
     }
 
     //-- HN
@@ -277,10 +276,10 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     KDL::Vector kdlVecN(ymHN(0,3),ymHN(1,3),ymHN(2,3));
     KDL::Rotation kdlRotN( ymHN(0,0),ymHN(0,1),ymHN(0,2),ymHN(1,0),ymHN(1,1),ymHN(1,2),ymHN(2,0),ymHN(2,1),ymHN(2,2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN,kdlVecN)));
-    CD_INFO("HN:\n%s\n[%s]\n",ymHN.toString().c_str(),defaultYmHN.toString().c_str());
+    yInfo() << "HN:" << ymHN.toString();
 
-    CD_INFO("Chain number of segments (post- H0 and HN): %d\n",chain.getNrOfSegments());
-    CD_INFO("Chain number of joints (post- H0 and HN): %d\n",chain.getNrOfJoints());
+    yInfo() << "Chain number of segments (post- H0 and HN):" << chain.getNrOfSegments();
+    yInfo() << "Chain number of joints (post- H0 and HN):" << chain.getNrOfJoints();
 
     fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
     ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain);
@@ -297,7 +296,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
         if (!parseLmaFromBottle(weights, L))
         {
-            CD_ERROR("Unable to parse LMA weights.\n");
+            yError() << "Unable to parse LMA weights";
             return false;
         }
 
@@ -311,7 +310,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         //-- Joint limits.
         if (!retrieveJointLimits(fullConfig, qMin, qMax))
         {
-            CD_ERROR("Unable to retrieve joint limits.\n");
+            yError() << "Unable to retrieve joint limits";
             return false;
         }
 
@@ -329,7 +328,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         //-- Joint limits.
         if (!retrieveJointLimits(fullConfig, qMin, qMax))
         {
-            CD_ERROR("Unable to retrieve joint limits.\n");
+            yError() << "Unable to retrieve joint limits";
             return false;
         }
 
@@ -348,13 +347,13 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         }
         else
         {
-            CD_ERROR("Unsupported IK strategy: %s.\n", strategy.c_str());
+            yError() << "Unsupported IK strategy:" << strategy;
             return false;
         }
 
         if (ikSolverPos == NULL)
         {
-            CD_ERROR("Unable to solve IK.\n");
+            yError() << "Unable to solve IK";
             return false;
         }
     }
@@ -366,7 +365,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
         //-- Joint limits.
         if (!retrieveJointLimits(fullConfig, qMin, qMax))
         {
-            CD_ERROR("Unable to retrieve joint limits.\n");
+            yError() << "Unable to retrieve joint limits";
             return false;
         }
 
@@ -374,7 +373,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
     }
     else
     {
-        CD_ERROR("Unsupported IK solver algorithm: %s.\n", ik.c_str());
+        yError() << "Unsupported IK solver algorithm:" << ik.c_str();
         return false;
     }
 

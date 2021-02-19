@@ -7,7 +7,7 @@
 #include <numeric>
 #include <utility>
 
-#include <ColorDebug.h>
+#include <yarp/os/LogStream.h>
 
 using namespace roboticslab;
 
@@ -47,7 +47,7 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguratio
 
     if (angularDisplacementPerConfiguration.empty())
     {
-        CD_WARNING("No valid configuration found.\n");
+        yWarning() << "No valid configuration found";
         return false;
     }
 
@@ -75,7 +75,7 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguratio
         }
     }
 
-    CD_SUCCESS("%s\n", optimalPose.toString().c_str());
+    yInfo() << "Using config:" << optimalPose.toString();
 
     return true;
 }

@@ -33,6 +33,7 @@ make -j$(nproc)
 #include <vector>
 
 #include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/ResourceFinder.h>
@@ -46,8 +47,6 @@ make -j$(nproc)
 #include <yarp/dev/PolyDriver.h>
 
 #include <kdl/frames.hpp>
-
-#include <ColorDebug.h>
 
 #include <ConfigurationSelector.hpp>
 #include <KdlTrajectory.hpp>
@@ -94,7 +93,7 @@ int main(int argc, char *argv[])
 
     if (!yarp::os::Network::checkNetwork())
     {
-        CD_ERROR("Please start a yarp name server first.\n");
+        yError() << "Please start a yarp name server first";
         return 1;
     }
 
@@ -115,7 +114,7 @@ int main(int argc, char *argv[])
 
     if (!jointDevice.isValid())
     {
-        CD_ERROR("Joint device not available.\n");
+        yError() << "Joint device not available";
         return 1;
     }
 
@@ -127,7 +126,7 @@ int main(int argc, char *argv[])
     if (!jointDevice.view(iEncoders) || !jointDevice.view(iControlLimits)
             || !jointDevice.view(iControlMode) || !jointDevice.view(iPositionDirect))
     {
-        CD_ERROR("Problems acquiring joint interfaces.\n");
+        yError() << "Problems acquiring joint interfaces";
         return 1;
     }
 
@@ -135,7 +134,7 @@ int main(int argc, char *argv[])
 
     if (!iEncoders->getAxes(&axes))
     {
-        CD_ERROR("getAxes() failed.\n");
+        yError() << "getAxes() failed";
         return 1;
     }
 
@@ -161,7 +160,7 @@ int main(int argc, char *argv[])
 
     if (!poe.evaluate(jntArray, H))
     {
-        CD_ERROR("FK error.\n");
+        yError() << "FK error";
         return 1;
     }
 
@@ -170,7 +169,7 @@ int main(int argc, char *argv[])
 
     if (!ikProblem.get())
     {
-        CD_ERROR("Unable to solve IK.\n");
+        yError() << "Unable to solve IK";
         return 1;
     }
 
@@ -181,7 +180,7 @@ int main(int argc, char *argv[])
     {
         if (!iControlLimits->getLimits(i, &qMin(i), &qMax(i)))
         {
-            CD_ERROR("Unable to retrieve limits for joint %d.\n", i);
+            yError() << "Unable to retrieve limits for joint" << i;
             return 1;
         }
     }
@@ -207,7 +206,7 @@ int main(int argc, char *argv[])
 
     if (!trajectory.create())
     {
-        CD_ERROR("Problem creating cartesian trajectory.\n");
+        yError() << "Problem creating cartesian trajectory";
         return 1;
     }
 
@@ -215,7 +214,7 @@ int main(int argc, char *argv[])
 
     if (!iControlMode->setControlModes(modes.data()))
     {
-        CD_ERROR("Unable to change mode.\n");
+        yError() << "Unable to change mode";
         return 1;
     }
 
