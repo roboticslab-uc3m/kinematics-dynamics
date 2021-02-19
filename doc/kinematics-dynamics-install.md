@@ -7,19 +7,7 @@ First install the dependencies:
 - [Install YARP 3.3+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
 - [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
 
-[Optional] Only for `testBasicCartesianControl` and `streamingDeviceController`, we use `EmulatedControlboard` and `ProximitySensorsClient` from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices), respectively:
-
-```bash
-cd  # go home
-mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
-git clone https://github.com/roboticslab-uc3m/yarp-devices
-cd yarp-devices
-mkdir build && cd build
-cmake .. -DENABLE_OneCanBusOneWrapper=OFF -DENABLE_TwoCanBusThreeWrappers=OFF -DENABLE_dumpCanBus=OFF -DENABLE_checkCanBus=OFF -DENABLE_oneCanBusOneWrapper=OFF -DENABLE_launchManipulation=OFF -DENABLE_launchLocomotion=OFF -DENABLE_CanBusControlboard=OFF -DENABLE_CanBusHico=OFF -DENABLE_CuiAbsolute=OFF -DENABLE_EmulatedControlboard=ON -DENABLE_FakeJoint=OFF -DENABLE_Jr3=OFF -DENABLE_LacqueyFetch=OFF -DENABLE_LeapMotionSensor=OFF -DENABLE_ProximitySensorsClient=ON -DENABLE_SpaceNavigator=OFF -DENABLE_TechnosoftIpos=OFF -DENABLE_TextilesHand=OFF -DENABLE_WiimoteSensor=OFF -DENABLE_tests=OFF
-make -j$(nproc)  # compile
-sudo make install
-cd ../..
-```
+We optionally use the `ProximitySensorsClient` device from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices) in the `streamingDeviceController` app. Refer to its installation guide for instructions.
 
 For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-googletest.md/).
 
