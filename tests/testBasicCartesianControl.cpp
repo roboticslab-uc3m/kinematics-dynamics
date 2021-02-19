@@ -22,7 +22,17 @@ class BasicCartesianControlTest : public testing::Test
 
     public:
         virtual void SetUp() {
-            yarp::os::Property cartesianControlOptions("(device BasicCartesianControl) (robot EmulatedControlboard) (axes 1) (solver KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1))");
+            yarp::os::Property cartesianControlOptions {
+                {"device", yarp::os::Value("BasicCartesianControl")},
+                {"robot", yarp::os::Value("fakeMotionControl")},
+                {"solver", yarp::os::Value("KdlSolver")},
+                {"numLinks", yarp::os::Value(1)}
+            };
+
+            cartesianControlOptions.addGroup("link_0").put("A", yarp::os::Value(1));
+            cartesianControlOptions.put("mins", yarp::os::Value::makeList("-100.0"));
+            cartesianControlOptions.put("maxs", yarp::os::Value::makeList("100.0"));
+            cartesianControlOptions.put("maxvels", yarp::os::Value::makeList("100.0"));
 
             cartesianControlDevice.open(cartesianControlOptions);
 

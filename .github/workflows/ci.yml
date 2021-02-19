@@ -64,12 +64,6 @@ jobs:
         token: ${{secrets.AMOR_API}}
         path: .deps/amor-api
 
-    - name: Check out yarp-devices
-      uses: actions/checkout@v2
-      with:
-        repository: roboticslab-uc3m/yarp-devices
-        path: .deps/yarp-devices
-
     - name: Install dependencies via apt
       run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev libgtest-dev
 
@@ -84,7 +78,7 @@ jobs:
         key: ${{matrix.os}}-${{matrix.robotology.yarp}}-${{matrix.compiler.cc}}
 
     - name: Create build trees
-      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/amor-api/build .deps/yarp-devices/build
+      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/amor-api/build
 
     - name: Set environment variables
       run: echo "CMAKE_COMPILER=-DCMAKE_C_COMPILER=${{matrix.compiler.cc}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
@@ -99,7 +93,7 @@ jobs:
     - name: Build YARP
       working-directory: ${{github.workspace}}/.deps/yarp/build
       run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
         cmake --build . --parallel
         sudo cmake --build . --target install
 
@@ -114,13 +108,6 @@ jobs:
       working-directory: ${{github.workspace}}/.deps/amor-api/build
       run: |
         cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
-        cmake --build . --parallel
-        sudo cmake --build . --target install
-
-    - name: Build yarp-devices
-      working-directory: ${{github.workspace}}/.deps/yarp-devices/build
-      run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
         cmake --build . --parallel
         sudo cmake --build . --target install
 

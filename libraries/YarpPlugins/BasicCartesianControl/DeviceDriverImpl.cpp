@@ -80,11 +80,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (!robotDevice.view(iControlLimits))
-    {
-        yError() << "Could not view iControlLimits in:" << robotStr;
-        return false;
-    }
+
 
     if (!robotDevice.view(iTorqueControl))
     {
@@ -114,51 +110,70 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    qMin.resize(numRobotJoints);
-    qMax.resize(numRobotJoints);
-
-    qdotMin.resize(numRobotJoints);
-    qdotMax.resize(numRobotJoints);
-
-    yarp::os::Bottle bMin, bMax, bMaxVel;
-
-    for (int joint = 0; joint < numRobotJoints; joint++)
-    {
-        double _qMin, _qMax;
-
-        if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
-        {
-            yError() << "Unable to retrieve position limits for joint" << joint;
-            return false;
-        }
-
-        qMin[joint] = _qMin;
-        qMax[joint] = _qMax;
-
-        double _qdotMin, _qdotMax;
-
-        if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
-        {
-            yError() << "Unable to retrieve speed limits for joint" << joint;
-            return false;
-        }
-
-        qdotMin[joint] = _qdotMin;
-        qdotMax[joint] = _qdotMax;
-
-        yInfo("Joint %d limits: [%f,%f] [%f,%f]", joint, _qMin, _qMax, _qdotMin, _qdotMax);
-
-        bMin.addFloat64(_qMin);
-        bMax.addFloat64(_qMax);
-        bMaxVel.addFloat64(_qdotMax);
-    }
-
     yarp::os::Property solverOptions;
     solverOptions.fromString(config.toString());
     solverOptions.put("device", solverStr);
-    solverOptions.put("mins", yarp::os::Value::makeList(bMin.toString().c_str()));
-    solverOptions.put("maxs", yarp::os::Value::makeList(bMax.toString().c_str()));
-    solverOptions.put("maxvels", yarp::os::Value::makeList(bMaxVel.toString().c_str()));
+
+    if (!config.check("mins") || !config.check("maxs") || !config.check("maxvels"))
+    {
+        yInfo() << "Using joint limits provided by robot";
+
+        yarp::dev::IControlLimits * iControlLimits;
+
+        if (!robotDevice.view(iControlLimits))
+        {
+            yError() << "Could not view iControlLimits in:" << robotStr;
+            return false;
+        }
+
+        qMin.resize(numRobotJoints);
+        qMax.resize(numRobotJoints);
+
+        qdotMin.resize(numRobotJoints);
+        qdotMax.resize(numRobotJoints);
+
+        yarp::os::Bottle bMin, bMax, bMaxVel;
+
+        for (int joint = 0; joint < numRobotJoints; joint++)
+        {
+            double _qMin, _qMax;
+
+            if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
+            {
+                yError() << "Unable to retrieve position limits for joint" << joint;
+                return false;
+            }
+
+            qMin[joint] = _qMin;
+            qMax[joint] = _qMax;
+
+            double _qdotMin, _qdotMax;
+
+            if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
+            {
+                yError() << "Unable to retrieve speed limits for joint" << joint;
+                return false;
+            }
+
+            qdotMin[joint] = _qdotMin;
+            qdotMax[joint] = _qdotMax;
+
+            yInfo("Joint %d limits: [%f,%f] [%f,%f]", joint, _qMin, _qMax, _qdotMin, _qdotMax);
+
+            bMin.addFloat64(_qMin);
+            bMax.addFloat64(_qMax);
+            bMaxVel.addFloat64(_qdotMax);
+        }
+
+        solverOptions.put("mins", yarp::os::Value::makeList(bMin.toString().c_str()));
+        solverOptions.put("maxs", yarp::os::Value::makeList(bMax.toString().c_str()));
+        solverOptions.put("maxvels", yarp::os::Value::makeList(bMaxVel.toString().c_str()));
+    }
+    else
+    {
+        yInfo() << "Using joint limits provided via user configuration";
+    }
+
     solverOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     if (!solverDevice.open(solverOptions))
