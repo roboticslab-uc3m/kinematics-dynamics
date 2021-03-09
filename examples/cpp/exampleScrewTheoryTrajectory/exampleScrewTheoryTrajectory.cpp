@@ -24,7 +24,7 @@ make -j$(nproc)
  * What mostly changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
 [on terminal 2] teoSim
-[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/lefttArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/lefttArmKinematics.ini --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm --angleRepr axisAngle
+[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/leftArm/CartesianControl --kinematics teo-fixedTrunk-leftArm-fetch.ini --robot remote_controlboard --local /BasicCartesianControl/teoSim/leftArm --remote /teoSim/leftArm --angleRepr axisAngle
 [on terminal 4] ./exampleScrewTheoryTrajectory
 \endverbatim
  */
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
     }
 
     rl::ScrewTheoryIkProblemBuilder builder(poe);
-    std::auto_ptr<rl::ScrewTheoryIkProblem> ikProblem(builder.build());
+    std::unique_ptr<rl::ScrewTheoryIkProblem> ikProblem(builder.build());
 
     if (!ikProblem.get())
     {
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
     }
 
     rl::ConfigurationSelectorLeastOverallAngularDisplacementFactory confFactory(qMin, qMax);
-    std::auto_ptr<rl::ConfigurationSelector> ikConfig(confFactory.create());
+    std::unique_ptr<rl::ConfigurationSelector> ikConfig(confFactory.create());
 
     KDL::Frame H_base_end = H_base_start;
     H_base_end.p += KDL::Vector(0.15, 0.1, 0.1);
