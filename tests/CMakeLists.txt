@@ -71,17 +71,6 @@ if(ENABLE_tests)
         gtest_discover_tests(testAsibotSolverFromFile)
     endif()
 
-    # testKdlTrajectory
-
-    if(ENABLE_TrajectoryLib)
-        add_executable(testKdlTrajectory testKdlTrajectory.cpp)
-
-        target_link_libraries(testKdlTrajectory ROBOTICSLAB::TrajectoryLib
-                                                gtest_main)
-
-        gtest_discover_tests(testKdlTrajectory)
-    endif()
-
     # testBasicCartesianControl
 
     add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
