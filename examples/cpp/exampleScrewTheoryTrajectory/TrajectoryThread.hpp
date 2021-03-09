@@ -8,24 +8,25 @@
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionDirect.h>
 
+#include <kdl/trajectory.hpp>
+
 #include <ScrewTheoryIkProblem.hpp>
 #include <ConfigurationSelector.hpp>
-#include <ICartesianTrajectory.hpp>
 
 class TrajectoryThread : public yarp::os::PeriodicThread
 {
 public:
     TrajectoryThread(yarp::dev::IEncoders * iEncoders, yarp::dev::IPositionDirect * iPosDirect,
-            roboticslab::ScrewTheoryIkProblem * ikProblem,
-            roboticslab::ConfigurationSelector * ikConfig,
-            roboticslab::ICartesianTrajectory * iCartTrajectory,
-            int period)
+                     roboticslab::ScrewTheoryIkProblem * ikProblem,
+                     roboticslab::ConfigurationSelector * ikConfig,
+                     KDL::Trajectory * trajectory,
+                     int period)
         : yarp::os::PeriodicThread(period * 0.001),
           iEncoders(iEncoders),
           iPosDirect(iPosDirect),
           ikProblem(ikProblem),
           ikConfig(ikConfig),
-          iCartTrajectory(iCartTrajectory),
+          trajectory(trajectory),
           axes(0),
           startTime(0)
     {}
@@ -39,7 +40,7 @@ private:
     yarp::dev::IPositionDirect * iPosDirect;
     roboticslab::ScrewTheoryIkProblem * ikProblem;
     roboticslab::ConfigurationSelector * ikConfig;
-    roboticslab::ICartesianTrajectory * iCartTrajectory;
+    KDL::Trajectory * trajectory;
     int axes;
     double startTime;
 };

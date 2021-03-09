@@ -9,7 +9,7 @@ yarp_prepare_plugin(BasicCartesianControl
                     TYPE roboticslab::BasicCartesianControl
                     INCLUDE BasicCartesianControl.hpp
                     DEFAULT ON
-                    DEPENDS ENABLE_TrajectoryLib
+                    DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
                     EXTRA_CONFIG WRAPPER=CartesianControlServer)
 
 if(NOT SKIP_BasicCartesianControl)
@@ -26,8 +26,11 @@ if(NOT SKIP_BasicCartesianControl)
 
     target_link_libraries(BasicCartesianControl YARP::YARP_os
                                                 YARP::YARP_dev
-                                                ROBOTICSLAB::TrajectoryLib
+                                                ${orocos_kdl_LIBRARIES}
+                                                ROBOTICSLAB::KdlVectorConverterLib
                                                 ROBOTICSLAB::KinematicsDynamicsInterfaces)
+
+    target_include_directories(BasicCartesianControl PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
     target_compile_features(BasicCartesianControl PUBLIC cxx_std_11)
 

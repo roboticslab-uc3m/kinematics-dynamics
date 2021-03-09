@@ -47,11 +47,13 @@ make -j$(nproc)
 #include <yarp/dev/PolyDriver.h>
 
 #include <kdl/frames.hpp>
+#include <kdl/utilities/utility.h>
+#include <kdl/path_line.hpp>
+#include <kdl/rotational_interpolation_sa.hpp>
+#include <kdl/trajectory_segment.hpp>
+#include <kdl/velocityprofile_trap.hpp>
 
 #include <ConfigurationSelector.hpp>
-#include <KdlTrajectory.hpp>
-#include <KdlVectorConverter.hpp>
-#include <KinematicRepresentation.hpp>
 #include <MatrixExponential.hpp>
 #include <ProductOfExponentials.hpp>
 #include <ScrewTheoryIkProblem.hpp>
@@ -153,12 +155,12 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < axes; i++)
     {
-        jntArray(i) = rl::KinRepresentation::degToRad(q[i]);
+        jntArray(i) = KDL::deg2rad * q[i];
     }
 
-    KDL::Frame H;
+    KDL::Frame H_base_start;
 
-    if (!poe.evaluate(jntArray, H))
+    if (!poe.evaluate(jntArray, H_base_start))
     {
         yError() << "FK error";
         return 1;
@@ -188,27 +190,13 @@ int main(int argc, char *argv[])
     rl::ConfigurationSelectorLeastOverallAngularDisplacementFactory confFactory(qMin, qMax);
     std::auto_ptr<rl::ConfigurationSelector> ikConfig(confFactory.create());
 
-    std::vector<double> x = rl::KdlVectorConverter::frameToVector(H);
+    KDL::Frame H_base_end = H_base_start;
+    H_base_end.p += KDL::Vector(0.15, 0.1, 0.1);
 
-    std::vector<double> xd(x);
-    xd[0] += 0.15;
-    xd[1] += 0.1;
-    xd[2] += 0.1;
-
-    rl::KdlTrajectory trajectory;
-
-    trajectory.setDuration(trajDuration);
-    trajectory.setMaxVelocity(trajMaxVel);
-    trajectory.addWaypoint(x);
-    trajectory.addWaypoint(xd);
-    trajectory.configurePath(rl::ICartesianTrajectory::LINE);
-    trajectory.configureVelocityProfile(rl::ICartesianTrajectory::TRAPEZOIDAL);
-
-    if (!trajectory.create())
-    {
-        yError() << "Problem creating cartesian trajectory";
-        return 1;
-    }
+    KDL::RotationalInterpolation_SingleAxis interp;
+    KDL::Path_Line path(H_base_start, H_base_end, &interp, 0.1, false);
+    KDL::VelocityProfile_Trap profile(trajMaxVel, 0.2);
+    KDL::Trajectory_Segment trajectory(&path, &profile, trajDuration, false);
 
     std::vector<int> modes(axes, VOCAB_CM_POSITION_DIRECT);
 
