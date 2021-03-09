@@ -10,9 +10,7 @@
 
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
-
-#include <KdlVectorConverter.hpp>
-#include <KinematicRepresentation.hpp>
+#include <kdl/utilities/utility.h>
 
 namespace
 {
@@ -35,11 +33,8 @@ bool TrajectoryThread::threadInit()
 void TrajectoryThread::run()
 {
     double movementTime = yarp::os::Time::now() - startTime;
+    KDL::Frame H_S_T = trajectory->Pos(movementTime);
 
-    std::vector<double> position;
-    iCartTrajectory->getPosition(movementTime, position);
-
-    KDL::Frame H_S_T = roboticslab::KdlVectorConverter::vectorToFrame(position);
     printCartesianCoordinates(H_S_T, movementTime);
 
     std::vector<KDL::JntArray> solutions;
@@ -65,7 +60,7 @@ void TrajectoryThread::run()
 
     for (int i = 0; i < q.rows(); i++)
     {
-        q(i) = roboticslab::KinRepresentation::degToRad(q(i));
+        q(i) = KDL::deg2rad * q(i);
     }
 
     if (!ikConfig->findOptimalConfiguration(q))
@@ -79,7 +74,7 @@ void TrajectoryThread::run()
     ikConfig->retrievePose(solution);
 
     std::vector<double> refs(solution.data.data(), solution.data.data() + solution.data.size());
-    std::transform(refs.begin(), refs.end(), refs.begin(), roboticslab::KinRepresentation::radToDeg);
+    std::transform(refs.begin(), refs.end(), refs.begin(), [](const auto & v) { return v * KDL::rad2deg; });
     yInfo() << "IK ->" << refs;
 
     iPosDirect->setPositions(refs.data());

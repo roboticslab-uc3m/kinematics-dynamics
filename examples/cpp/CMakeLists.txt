@@ -5,10 +5,7 @@ if(ENABLE_examples)
         add_subdirectory(exampleCartesianControlClient)
     endif()
 
-    if(TARGET ROBOTICSLAB::KdlVectorConverterLib
-            AND TARGET ROBOTICSLAB::KinematicRepresentationLib
-            AND TARGET ROBOTICSLAB::TrajectoryLib
-            AND TARGET ROBOTICSLAB::ScrewTheoryLib)
+    if(TARGET ROBOTICSLAB::ScrewTheoryLib)
         add_subdirectory(exampleScrewTheoryTrajectory)
     endif()
 

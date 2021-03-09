@@ -13,10 +13,10 @@
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/IPreciselyTimed.h>
 
+#include <kdl/trajectory.hpp>
+
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
-
-#include "ICartesianTrajectory.hpp"
 
 #define DEFAULT_SOLVER "KdlSolver"
 #define DEFAULT_ROBOT "remote_controlboard"
@@ -256,7 +256,7 @@ protected:
     double movementStartTime;
 
     /** MOVL store Cartesian trajectory */
-    std::vector<std::unique_ptr<ICartesianTrajectory>> trajectories;
+    std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
 
     /** FORC desired Cartesian force */
     std::vector<double> td;

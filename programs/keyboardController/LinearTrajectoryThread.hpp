@@ -8,8 +8,9 @@
 
 #include <yarp/os/PeriodicThread.h>
 
+#include <kdl/trajectory.hpp>
+
 #include "ICartesianControl.h"
-#include "ICartesianTrajectory.hpp"
 
 namespace roboticslab
 {
@@ -34,7 +35,7 @@ protected:
 private:
     double period;
     ICartesianControl * iCartesianControl;
-    ICartesianTrajectory * iCartesianTrajectory;
+    KDL::Trajectory * trajectory;
     double startTime;
     bool usingStreamingCommandConfig;
     bool usingTcpFrame;

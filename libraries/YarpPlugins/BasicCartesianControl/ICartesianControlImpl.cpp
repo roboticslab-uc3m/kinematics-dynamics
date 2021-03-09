@@ -11,7 +11,13 @@
 #include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
-#include "KdlTrajectory.hpp"
+#include <kdl/path_line.hpp>
+#include <kdl/rotational_interpolation_sa.hpp>
+#include <kdl/trajectory_segment.hpp>
+#include <kdl/velocityprofile_rect.hpp>
+#include <kdl/velocityprofile_trap.hpp>
+
+#include "KdlVectorConverter.hpp"
 
 // -----------------------------------------------------------------------------
 
@@ -202,45 +208,14 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
         std::vector<double> xd_base_tcp_sub(x_base_tcp.cbegin() + i * 6, x_base_tcp.cbegin() + (i + 1) * 6);
         std::vector<double> xd_obj_sub(xd_obj.cbegin() + i * 6, xd_obj.cbegin() + (i + 1) * 6);
 
-        auto iCartesianTrajectory = std::make_unique<KdlTrajectory>();
+        auto H_base_start = KdlVectorConverter::vectorToFrame(xd_base_tcp_sub);
+        auto H_base_end = KdlVectorConverter::vectorToFrame(xd_obj_sub);
 
-        if (!iCartesianTrajectory->setDuration(duration))
-        {
-            yError() << "setDuration() failed";
-            return false;
-        }
+        auto * interpolator = new KDL::RotationalInterpolation_SingleAxis();
+        auto * path = new KDL::Path_Line(H_base_start, H_base_end, interpolator, 1.0);
+        auto * profile = new KDL::VelocityProfile_Trap(10.0, 10.0);
 
-        if (!iCartesianTrajectory->addWaypoint(xd_base_tcp_sub))
-        {
-            yError() << "First addWaypoint() failed";
-            return false;
-        }
-
-        if (!iCartesianTrajectory->addWaypoint(xd_obj_sub))
-        {
-            yError() << "Second addWaypoint() failed";
-            return false;
-        }
-
-        if (!iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE))
-        {
-            yError() << "configurePath() failed";
-            return false;
-        }
-
-        if (!iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::TRAPEZOIDAL))
-        {
-            yError() << "configureVelocityProfile() failed";
-            return false;
-        }
-
-        if (!iCartesianTrajectory->create())
-        {
-            yError() << "create() failed";
-            return false;
-        }
-
-        trajectories.push_back(std::move(iCartesianTrajectory));
+        trajectories.emplace_back(std::make_unique<KDL::Trajectory_Segment>(path, profile, duration));
     }
 
     //-- Set velocity mode and set state which makes periodic thread implement control.
@@ -287,33 +262,15 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
         std::vector<double> xd_base_tcp_sub(x_base_tcp.cbegin() + i * 6, x_base_tcp.cbegin() + (i + 1) * 6);
         std::vector<double> xdotd_sub(xdotd.cbegin() + i * 6, xdotd.cbegin() + (i + 1) * 6);
 
-        auto iCartesianTrajectory = std::make_unique<KdlTrajectory>();
+        auto H_base_start = KdlVectorConverter::vectorToFrame(xd_base_tcp_sub);
+        auto twist_in_base = KdlVectorConverter::vectorToTwist(xdotd_sub);
 
-        if (!iCartesianTrajectory->addWaypoint(xd_base_tcp_sub, xdotd_sub))
-        {
-            yError() << "addWaypoint() failed";
-            return false;
-        }
+        auto * interpolator = new KDL::RotationalInterpolation_SingleAxis();
+        auto * path = new KDL::Path_Line(H_base_start, twist_in_base, interpolator, 1.0);
+        auto * profile = new KDL::VelocityProfile_Rectangular(10.0);
+        profile->SetProfileDuration(0, 10.0, 10.0 / path->PathLength());
 
-        if (!iCartesianTrajectory->configurePath(ICartesianTrajectory::LINE))
-        {
-            yError() << "configurePath() failed";
-            return false;
-        }
-
-        if (!iCartesianTrajectory->configureVelocityProfile(ICartesianTrajectory::RECTANGULAR))
-        {
-            yError() << "configureVelocityProfile() failed";
-            return false;
-        }
-
-        if (!iCartesianTrajectory->create())
-        {
-            yError() << "create() failed";
-            return false;
-        }
-
-        trajectories.push_back(std::move(iCartesianTrajectory));
+        trajectories.emplace_back(std::make_unique<KDL::Trajectory_Segment>(path, profile));
     }
 
     //-- Set velocity mode and set state which makes periodic thread implement control.

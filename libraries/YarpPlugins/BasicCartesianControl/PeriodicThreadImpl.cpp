@@ -5,6 +5,8 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
+#include "KdlVectorConverter.hpp"
+
 // ------------------- PeriodicThread Related ------------------------------------
 
 void roboticslab::BasicCartesianControl::run()
@@ -105,19 +107,18 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
 
     for (const auto & trajectory : trajectories)
     {
-        double currentTrajectoryDuration;
-        trajectory->getDuration(&currentTrajectoryDuration);
-
-        if (movementTime > currentTrajectoryDuration)
+        if (movementTime > trajectory->Duration())
         {
             stopControl();
             return;
         }
 
         //-- Obtain desired Cartesian position and velocity.
-        std::vector<double> desiredX_sub, desiredXdot_sub;
-        trajectory->getPosition(movementTime, desiredX_sub);
-        trajectory->getVelocity(movementTime, desiredXdot_sub);
+        KDL::Frame H = trajectory->Pos(movementTime);
+        KDL::Twist tw = trajectory->Vel(movementTime);
+
+        std::vector<double> desiredX_sub = KdlVectorConverter::frameToVector(H);
+        std::vector<double> desiredXdot_sub = KdlVectorConverter::twistToVector(tw);
 
         desiredX.insert(desiredX.end(), desiredX_sub.cbegin(), desiredX_sub.cend());
         desiredXdot.insert(desiredXdot.end(), desiredXdot_sub.cbegin(), desiredXdot_sub.cend());
@@ -194,9 +195,11 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
     for (const auto & trajectory : trajectories)
     {
         //-- Obtain desired Cartesian position and velocity.
-        std::vector<double> desiredX_sub, desiredXdot_sub;
-        trajectory->getPosition(movementTime, desiredX_sub);
-        trajectory->getVelocity(movementTime, desiredXdot_sub);
+        KDL::Frame H = trajectory->Pos(movementTime);
+        KDL::Twist tw = trajectory->Vel(movementTime);
+
+        std::vector<double> desiredX_sub = KdlVectorConverter::frameToVector(H);
+        std::vector<double> desiredXdot_sub = KdlVectorConverter::twistToVector(tw);
 
         desiredX.insert(desiredX.end(), desiredX_sub.cbegin(), desiredX_sub.cend());
         desiredXdot.insert(desiredXdot.end(), desiredXdot_sub.cbegin(), desiredXdot_sub.cend());
