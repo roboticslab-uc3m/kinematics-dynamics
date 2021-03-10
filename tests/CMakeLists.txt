@@ -37,25 +37,29 @@ if(ENABLE_tests)
 
     # testKdlSolver
 
-    add_executable(testKdlSolver testKdlSolver.cpp)
+    if(ENABLE_KdlSolver)
+        add_executable(testKdlSolver testKdlSolver.cpp)
 
-    target_link_libraries(testKdlSolver YARP::YARP_os
-                                        YARP::YARP_dev
-                                        ROBOTICSLAB::KinematicsDynamicsInterfaces
-                                        gtest_main)
+        target_link_libraries(testKdlSolver YARP::YARP_os
+                                            YARP::YARP_dev
+                                            ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                            gtest_main)
 
-    gtest_discover_tests(testKdlSolver)
+        gtest_discover_tests(testKdlSolver)
+    endif()
 
     # testKdlSolverFromFile
 
-    add_executable(testKdlSolverFromFile testKdlSolverFromFile.cpp)
+    if(ENABLE_KdlSolver)
+        add_executable(testKdlSolverFromFile testKdlSolverFromFile.cpp)
 
-    target_link_libraries(testKdlSolverFromFile YARP::YARP_os
-                                                YARP::YARP_dev
-                                                ROBOTICSLAB::KinematicsDynamicsInterfaces
-                                                gtest_main)
+        target_link_libraries(testKdlSolverFromFile YARP::YARP_os
+                                                    YARP::YARP_dev
+                                                    ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                    gtest_main)
 
-    gtest_discover_tests(testKdlSolverFromFile)
+        gtest_discover_tests(testKdlSolverFromFile)
+    endif()
 
     # testAsibotSolverFromFile
 
@@ -73,14 +77,16 @@ if(ENABLE_tests)
 
     # testBasicCartesianControl
 
-    add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
+    if(ENABLE_BasicCartesianControl)
+        add_executable(testBasicCartesianControl testBasicCartesianControl.cpp)
 
-    target_link_libraries(testBasicCartesianControl YARP::YARP_os
-                                                    YARP::YARP_dev
-                                                    ROBOTICSLAB::KinematicsDynamicsInterfaces
-                                                    gtest_main)
+        target_link_libraries(testBasicCartesianControl YARP::YARP_os
+                                                        YARP::YARP_dev
+                                                        ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                        gtest_main)
 
-    gtest_discover_tests(testBasicCartesianControl)
+        gtest_discover_tests(testBasicCartesianControl)
+    endif()
 
 else()
 
