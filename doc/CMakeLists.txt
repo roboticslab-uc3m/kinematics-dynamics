@@ -1,15 +1,12 @@
 # https://stackoverflow.com/a/25217937
 get_directory_property(_has_parent PARENT_DIRECTORY)
 
-if(_has_parent)
-    if(NOT DOXYGEN_FOUND)
-        return()
-    endif()
-else()
-    cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-    project(_ NONE) # dummy project, disable compiler check
-    find_package(YCM 0.10 REQUIRED)
+if(NOT _has_parent)
+    cmake_minimum_required(VERSION 3.9)
+    project(doxygen NONE)
     find_package(Doxygen REQUIRED)
+elseif(NOT DOXYGEN_FOUND)
+    return()
 endif()
 
 set(DOXYGEN_PROJECT_NAME "")
