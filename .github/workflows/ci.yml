@@ -13,9 +13,19 @@ env:
   CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
 jobs:
+  maybe_skip:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{steps.skip_check.outputs.should_skip}}
+    steps:
+    - uses: fkirc/skip-duplicate-actions@master
+      id: skip_check
+
   build:
     name: build (${{matrix.os}}, ${{matrix.robotology.yarp}}, ${{matrix.compiler.cc}})
     runs-on: ${{matrix.os}}
+    needs: maybe_skip
+    if: ${{needs.maybe_skip.outputs.should_skip != 'true'}}
 
     strategy:
       fail-fast: false
