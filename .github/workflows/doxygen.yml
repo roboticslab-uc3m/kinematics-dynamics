@@ -1,0 +1,31 @@
+name: Doxygen
+
+on:
+  push:
+    branches:
+    - master
+    paths:
+    - .github/workflows/doxygen.yml
+    # keep in sync with doxygen_add_docs() at doc/CMakeLists.txt
+    - 'doc/**'
+    - 'examples/**'
+    - 'libraries/**'
+    - 'programs/**'
+    - 'share/**'
+    - 'tests/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: fkirc/skip-duplicate-actions@master
+    - run: sudo apt-get install -qq --no-install-recommends doxygen texlive-bibtex-extra
+    - uses: actions/checkout@v2
+    - run: cmake -S doc -B doc/build
+    - run: cmake --build doc/build --target dox
+    - uses: crazy-max/ghaction-github-pages@v2
+      with:
+        build_dir: doc/build/html
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
