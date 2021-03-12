@@ -7,6 +7,7 @@ on:
     paths:
     - .github/workflows/doxygen.yml
     # keep in sync with doxygen_add_docs() at doc/CMakeLists.txt
+    - 'README.md'
     - 'doc/**'
     - 'examples/**'
     - 'libraries/**'

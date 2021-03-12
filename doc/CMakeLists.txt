@@ -9,22 +9,20 @@ elseif(NOT DOXYGEN_FOUND)
     return()
 endif()
 
-set(DOXYGEN_PROJECT_NAME "")
-set(DOXYGEN_DOXYGEN_PROJECT_NUMBER "")
-set(DOXYGEN_PROJECT_BRIEF "")
+set(DOXYGEN_PROJECT_NAME "kinematics-dynamics")
 set(DOXYGEN_REPEAT_BRIEF NO)
-set(DOXYGEN_GROUP_NESTED_COMPOUNDS YES)
 set(DOXYGEN_EXTRACT_PRIVATE YES)
 set(DOXYGEN_EXTRACT_STATIC YES)
-set(DOXYGEN_CITE_BIB_FILES ${CMAKE_CURRENT_SOURCE_DIR}/kinematics-dynamics.bib)
 set(DOXYGEN_EXAMPLE_PATH examples)
 set(DOXYGEN_EXAMPLE_RECURSIVE YES)
-set(DOXYGEN_IMAGE_PATH dox/fig)
+set(DOXYGEN_IMAGE_PATH doc/fig/)
 set(DOXYGEN_HTML_TIMESTAMP YES)
-set(DOXYGEN_FORMULA_FONTSIZE 14)
-set(DOXYGEN_HAVE_DOT NO)
+set(DOXYGEN_USE_MATHJAX YES)
+set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
+set(DOXYGEN_CITE_BIB_FILES doc/kinematics-dynamics.bib)
 
-set(_doxygen_input doc
+set(_doxygen_input README.md
+                   doc
                    examples
                    libraries
                    programs
