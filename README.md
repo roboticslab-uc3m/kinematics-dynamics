@@ -4,9 +4,7 @@ Kinematics and dynamics solvers and controllers.
 
 Link to Doxygen generated documentation: http://robots.uc3m.es/dox-kinematics-dynamics
 
-<p align="center">
-    <img src="doc/fig/kinematics-dynamics.png" alt="kinematics-dynamics image"/>
-</p>
+<p align="center">![RMRC Control Scheme](doc/fig/kinematics-dynamics.png)</p>
 
 ## Installation
 
