@@ -7,7 +7,8 @@ on:
     - '**.md'
   pull_request:
   schedule:
-  - cron: '0 2 * * SUN'
+  - cron: '0 0 * * TUE'
+  workflow_dispatch:
 
 env:
   CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
@@ -20,6 +21,8 @@ jobs:
     steps:
     - uses: fkirc/skip-duplicate-actions@master
       id: skip_check
+      with:
+        cancel_others: 'true'
 
   build:
     name: build (${{matrix.os}}, ${{matrix.robotology.yarp}}, ${{matrix.compiler.cc}})
@@ -38,10 +41,10 @@ jobs:
         compiler:
         - { cc: gcc, cxx: g++ }
         - { cc: clang, cxx: clang++ }
-        is-scheduled:
-        - ${{github.event_name == 'schedule'}}
+        experimental:
+        - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
         exclude:
-        - { is-scheduled: false, robotology: { yarp: master } }
+        - { experimental: false, robotology: { yarp: master } }
 
     steps:
     - name: Check out kinematics-dynamics
