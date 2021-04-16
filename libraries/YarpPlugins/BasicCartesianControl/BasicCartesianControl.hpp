@@ -7,6 +7,7 @@
 #include <mutex>
 #include <vector>
 
+#include <yarp/conf/version.h>
 #include <yarp/os/all.h>
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
@@ -114,26 +115,31 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver,
 {
 public:
 
-    BasicCartesianControl() : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
-                              iCartesianSolver(NULL),
-                              iControlMode(NULL),
-                              iEncoders(NULL),
-                              iPositionControl(NULL),
-                              iPositionDirect(NULL),
-                              iPreciselyTimed(NULL),
-                              iTorqueControl(NULL),
-                              iVelocityControl(NULL),
-                              referenceFrame(ICartesianSolver::BASE_FRAME),
-                              gain(DEFAULT_GAIN),
-                              duration(DEFAULT_DURATION),
-                              cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
-                              waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
-                              numRobotJoints(0),
-                              numSolverJoints(0),
-                              currentState(VOCAB_CC_NOT_CONTROLLING),
-                              streamingCommand(VOCAB_CC_NOT_SET),
-                              movementStartTime(0),
-                              cmcSuccess(true)
+    BasicCartesianControl()
+#if YARP_VERSION_MINOR >= 5
+        : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001, yarp::os::PeriodicThreadClock::Absolute),
+#else
+        : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
+#endif
+            iCartesianSolver(NULL),
+            iControlMode(NULL),
+            iEncoders(NULL),
+            iPositionControl(NULL),
+            iPositionDirect(NULL),
+            iPreciselyTimed(NULL),
+            iTorqueControl(NULL),
+            iVelocityControl(NULL),
+            referenceFrame(ICartesianSolver::BASE_FRAME),
+            gain(DEFAULT_GAIN),
+            duration(DEFAULT_DURATION),
+            cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
+            waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
+            numRobotJoints(0),
+            numSolverJoints(0),
+            currentState(VOCAB_CC_NOT_CONTROLLING),
+            streamingCommand(VOCAB_CC_NOT_SET),
+            movementStartTime(0),
+            cmcSuccess(true)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
