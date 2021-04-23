@@ -21,7 +21,7 @@ class LeapMotionSensorDevice : public StreamingDevice
 public:
 
     //! Constructor
-    LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi, double period = 0.0);
+    LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi);
 
     virtual bool acquireInterfaces();
 
@@ -33,7 +33,7 @@ public:
 
     virtual int getActuatorState();
 
-    virtual void sendMovementCommand();
+    virtual void sendMovementCommand(double timestamp);
 
     virtual void stopMotion()
     {}
@@ -42,7 +42,6 @@ private:
 
     yarp::dev::IAnalogSensor * iAnalogSensor;
 
-    double period;
     bool usingMovi;
 
     std::vector<double> initialTcpOffset;

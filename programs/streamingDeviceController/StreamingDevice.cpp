@@ -25,8 +25,7 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     }
     else if (deviceName == "LeapMotionSensor")
     {
-        double period = config.check("period", yarp::os::Value(0.0)).asFloat64();
-        return new LeapMotionSensorDevice(deviceConfig, usingMovi, period);
+        return new LeapMotionSensorDevice(deviceConfig, usingMovi);
     }
     else if (deviceName == "WiimoteSensor")
     {

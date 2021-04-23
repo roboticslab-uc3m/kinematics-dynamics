@@ -159,7 +159,7 @@ bool roboticslab::SpnavSensorDevice::hasValidMovementData() const
     }
 }
 
-void roboticslab::SpnavSensorDevice::sendMovementCommand()
+void roboticslab::SpnavSensorDevice::sendMovementCommand(double timestamp)
 {
     if (usingMovi)
     {

@@ -33,7 +33,7 @@ public:
 
     virtual bool hasValidMovementData() const;
 
-    virtual void sendMovementCommand();
+    virtual void sendMovementCommand(double timestamp);
 
     virtual void stopMotion();
 

@@ -110,8 +110,9 @@ public:
 
     /**
      * @brief Sends movement command to the cartesian controller.
+     * @param timestamp Current timestamp.
      */
-    virtual void sendMovementCommand() = 0;
+    virtual void sendMovementCommand(double timestamp) = 0;
 
     /**
      * @brief Sends a movement command that would stop motion.
@@ -170,7 +171,7 @@ public:
         return false;
     }
 
-    virtual void sendMovementCommand()
+    virtual void sendMovementCommand(double timestamp)
     {}
 
     virtual void stopMotion()

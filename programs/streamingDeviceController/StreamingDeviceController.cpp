@@ -5,7 +5,9 @@
 #include <typeinfo>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/Network.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/Time.h>
 #include <yarp/os/Value.h>
 
 #include <yarp/sig/Vector.h>
@@ -22,11 +24,11 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
     yDebug() << "streamingDeviceController config:" << rf.toString();
 
+    std::string localPrefix = rf.check("prefix", yarp::os::Value(DEFAULT_LOCAL_PREFIX),
+            "local port name prefix").asString();
     std::string deviceName = rf.check("streamingDevice", yarp::os::Value(DEFAULT_DEVICE_NAME),
             "device name").asString();
-    std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
-            "local cartesian port").asString();
-    std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
+    std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(""),
             "remote cartesian port").asString();
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
@@ -48,7 +50,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     yarp::os::Property cartesianControlClientOptions;
     cartesianControlClientOptions.put("device", "CartesianControlClient");
-    cartesianControlClientOptions.put("cartesianLocal", localCartesian);
+    cartesianControlClientOptions.put("cartesianLocal", localPrefix + "/cartesian");
     cartesianControlClientOptions.put("cartesianRemote", remoteCartesian);
 
     cartesianControlClientDevice.open(cartesianControlClientOptions);
@@ -86,7 +88,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 #ifdef SDC_WITH_SENSORS
     if (rf.check("useSensors", "enable proximity sensors"))
     {
-        std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
+        std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value("/sensor_reader"),
                 "remote sensors port").asString();
 
         yarp::os::Property sensorsClientOptions;
@@ -122,12 +124,8 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
-        std::string localCentroid = rf.check("localCentroid", yarp::os::Value(DEFAULT_CENTROID_LOCAL),
-                    "local centroid port").asString();
         std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
-
         yarp::os::Value vCentroidRPY = rf.check("centroidRPY", yarp::os::Value::getNullValue());
-
         double permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
 
         if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
@@ -146,7 +144,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             centroidTransform.setPermanenceTime(permanenceTime);
         }
 
-        if (!centroidPort.open(localCentroid + "/state:i"))
+        if (!centroidPort.open(localPrefix + "/centroid/state:i"))
         {
             yError() << "Unable to open local centroid port";
             return false;
@@ -163,10 +161,53 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     isStopped = true;
 
+    if (rf.check("syncPort", "remote synchronization port"))
+    {
+        auto remoteSync = rf.find("syncPort").asString();
+
+        if (!syncPort.open(localPrefix + "/sync:i"))
+        {
+            yError() << "Unable to open local sync port";
+            return false;
+        }
+
+        if (!yarp::os::Network::connect(remoteSync, syncPort.getName(), "fast_tcp"))
+        {
+            yError() << "Unable to connect to remote sync port" << remoteSync;
+            return false;
+        }
+
+        syncPort.useCallback(*this);
+    }
+
     return true;
 }
 
 bool StreamingDeviceController::updateModule()
+{
+    if (syncPort.isClosed())
+    {
+        auto now = yarp::os::Time::now();
+        return update(now);
+    }
+
+    return true;
+}
+
+void StreamingDeviceController::onRead(yarp::os::Bottle & bot)
+{
+    if (bot.size() == 2)
+    {
+        double now = bot.get(0).asInt32() + bot.get(1).asInt32() * 1e-9;
+        update(now);
+    }
+    else
+    {
+        yWarning() << "Illegal bottle size";
+    }
+}
+
+bool StreamingDeviceController::update(double timestamp)
 {
     if (!streamingDevice->acquireData())
     {
@@ -228,7 +269,7 @@ bool StreamingDeviceController::updateModule()
 
     if (streamingDevice->hasValidMovementData())
     {
-        streamingDevice->sendMovementCommand();
+        streamingDevice->sendMovementCommand(timestamp);
         isStopped = false;
     }
     else
@@ -246,11 +287,22 @@ bool StreamingDeviceController::updateModule()
 
 bool StreamingDeviceController::interruptModule()
 {
+    if (!syncPort.isClosed())
+    {
+        syncPort.interrupt();
+        syncPort.disableCallback();
+    }
+
     return iCartesianControl->stopControl();
 }
 
 bool StreamingDeviceController::close()
 {
+    if (!syncPort.isClosed())
+    {
+        syncPort.close();
+    }
+
     delete streamingDevice;
     streamingDevice = NULL;
 

@@ -125,7 +125,7 @@ bool roboticslab::WiimoteSensorDevice::hasValidMovementData() const
     return mode != NONE;
 }
 
-void roboticslab::WiimoteSensorDevice::sendMovementCommand()
+void roboticslab::WiimoteSensorDevice::sendMovementCommand(double timestamp)
 {
     std::vector<double> xdot(6, 0.0);
     std::copy(data.begin(), data.end(), xdot.begin() + 3);

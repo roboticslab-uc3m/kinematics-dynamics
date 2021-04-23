@@ -16,10 +16,9 @@ namespace
     KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
 }
 
-roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi, double period)
+roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi)
     : StreamingDevice(config),
       iAnalogSensor(NULL),
-      period(period),
       usingMovi(usingMovi),
       hasActuator(false),
       grab(false), pinch(false)
@@ -59,12 +58,6 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
 
 bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (!usingMovi && period <= 0.0)
-    {
-        yWarning() << "Invalid period for pose command:" << period;
-        return false;
-    }
-
     if (usingStreamingPreset)
     {
         int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_POSE;
@@ -216,7 +209,7 @@ int roboticslab::LeapMotionSensorDevice::getActuatorState()
     return actuatorState;
 }
 
-void roboticslab::LeapMotionSensorDevice::sendMovementCommand()
+void roboticslab::LeapMotionSensorDevice::sendMovementCommand(double timestamp)
 {
     if (usingMovi)
     {
@@ -224,6 +217,14 @@ void roboticslab::LeapMotionSensorDevice::sendMovementCommand()
     }
     else
     {
-        iCartesianControl->pose(data, period);
+        static double lastTimestamp = 0.0;
+
+        if (lastTimestamp != 0.0) // skip motion for the very first time
+        {
+            double period = timestamp - lastTimestamp;
+            iCartesianControl->pose(data, timestamp - lastTimestamp);
+        }
+
+        lastTimestamp = timestamp;
     }
 }
