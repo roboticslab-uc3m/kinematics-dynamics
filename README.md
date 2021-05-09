@@ -74,6 +74,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [munozyanez/spgait](https://github.com/munozyanez/spgait)
 - [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
 - [robotology/whole-body-controllers](https://github.com/robotology/whole-body-controllers)
+- [epfl-lasa/icub-ds-walking](https://github.com/epfl-lasa/icub-ds-walking)
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros): Contains interesting walking motion in [./src/nimbro/motion](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
