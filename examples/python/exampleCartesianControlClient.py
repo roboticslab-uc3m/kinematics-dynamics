@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 import yarp
-import kinematics_dynamics
+import roboticslab_kinematics_dynamics as kd
 
 yarp.Network.init()
 
-if yarp.Network.checkNetwork() != True:
+if not yarp.Network.checkNetwork():
     print('[error] Please try running yarp server')
     raise SystemExit
 
@@ -20,7 +20,7 @@ if not dd.isValid():
     print('Cannot open the device!')
     raise SystemExit
 
-cartesianControl = kinematics_dynamics.viewICartesianControl(dd)  # view the actual interface
+cartesianControl = kd.viewICartesianControl(dd)  # view the actual interface
 
 print('> stat')
 x = yarp.DVector()
@@ -47,7 +47,7 @@ for i in range(len(xd)):
     else:
         print('< [fail]')
         continue
-    
+
     print('> movj [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
     if cartesianControl.movj(xd_vector):
@@ -56,7 +56,5 @@ for i in range(len(xd)):
         cartesianControl.wait()
     else:
         print('< [fail]')
-    
-    
 
 print('bye!')

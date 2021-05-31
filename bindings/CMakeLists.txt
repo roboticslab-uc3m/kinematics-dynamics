@@ -47,7 +47,7 @@ if(CREATE_BINDINGS)
   set(SWIG_RL_LIBRARIES YARP::YARP_dev
                         ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
-  set(SWIG_BINDINGS_SOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/kinematics_dynamics.i")
+  set(SWIG_BINDINGS_SOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/roboticslab_kinematics_dynamics.i")
 
   if(CREATE_BINDINGS_PYTHON)
     add_subdirectory(python)

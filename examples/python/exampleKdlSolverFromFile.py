@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import yarp
-import kinematics_dynamics
+import roboticslab_kinematics_dynamics as kd
 
 #-- Locate the file with the kinematic chain DH parameters
 
@@ -24,7 +24,7 @@ if not solverDevice.isValid():
     print("Cannot open the device!")
     raise SystemExit
 
-cartesianSolver = kinematics_dynamics.viewICartesianSolver(solverDevice) # view the actual interface
+cartesianSolver = kd.viewICartesianSolver(solverDevice) # view the actual interface
 
 ##-- Illustration of forward kinematics, for different joint-space positions
 

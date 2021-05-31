@@ -1,9 +1,9 @@
-// Copyright: 
-// Author: 
-// CopyPolicy: 
+// Copyright:
+// Author:
+// CopyPolicy:
 
 //////////////////////////////////////////////////////////////////////////
-// 
+//
 // This is a configuration file to explain kinematics_dynamics to SWIG
 //
 // SWIG, for the most part, understands kinematics_dynamics auto-magically.
@@ -12,15 +12,13 @@
 //  + use of names that clash with special names in Java/Python/Perl/...
 //  + use of templates
 
-%module "kinematics_dynamics"
+%module "roboticslab_kinematics_dynamics"
 
 %include "std_vector.i"  /* Do not doubt about the importance of this line */
 %include "typemaps.i"
 
 %apply int *OUTPUT { int *state };
 %apply double *OUTPUT { double *timestamp };
-
-//%import "yarp.i"
 
 %define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS %enddef
 
