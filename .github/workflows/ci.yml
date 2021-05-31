@@ -78,7 +78,7 @@ jobs:
         path: .deps/amor-api
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev libgtest-dev
+      run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev swig googletest
 
     - name: Set up CMake 3.12
       uses: jwlawson/actions-setup-cmake@v1.7
@@ -127,7 +127,7 @@ jobs:
     - name: Build kinematics-dynamics
       working-directory: ${{github.workspace}}/build
       run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_examples=ON
+        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
         cmake --build .
         sudo cmake --build . --target install
         sudo ldconfig

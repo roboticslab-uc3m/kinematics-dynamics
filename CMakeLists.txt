@@ -46,6 +46,7 @@ find_package(orocos_kdl 1.4 QUIET)
 find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 find_package(AMOR_API QUIET)
 find_package(GTestSources 1.6.0 QUIET)
+find_package(SWIG 3.0.12 QUIET)
 find_package(Doxygen QUIET)
 
 # Always build YARP devices as MODULE libraries.
@@ -80,6 +81,7 @@ add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(tests)
 add_subdirectory(share)
+add_subdirectory(bindings)
 add_subdirectory(doc)
 add_subdirectory(examples/cpp)
 
