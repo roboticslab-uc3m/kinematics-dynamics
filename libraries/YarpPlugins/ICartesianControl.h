@@ -5,12 +5,8 @@
 
 #include <map>
 #include <vector>
-
-#include "ICartesianSolver.h"
-
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-#define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
-#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+#include <yarp/os/Vocab.h>
+#include <ICartesianSolver.h>
 
 /**
  * @file
@@ -33,11 +29,11 @@
  */
 
 // General-purpose vocabs
-#define VOCAB_CC_OK ROBOTICSLAB_VOCAB('o','k',0,0)          ///< Success
-#define VOCAB_CC_FAILED ROBOTICSLAB_VOCAB('f','a','i','l')  ///< Failure
-#define VOCAB_CC_SET ROBOTICSLAB_VOCAB('s','e','t',0)       ///< Setter
-#define VOCAB_CC_GET ROBOTICSLAB_VOCAB('g','e','t',0)       ///< Getter
-#define VOCAB_CC_NOT_SET ROBOTICSLAB_VOCAB('n','s','e','t') ///< State: not set
+constexpr yarp::conf::vocab32_t VOCAB_CC_OK = yarp::os::createVocab('o','k');              ///< Success
+constexpr yarp::conf::vocab32_t VOCAB_CC_FAILED = yarp::os::createVocab('f','a','i','l');  ///< Failure
+constexpr yarp::conf::vocab32_t VOCAB_CC_SET = yarp::os::createVocab('s','e','t');         ///< Setter
+constexpr yarp::conf::vocab32_t VOCAB_CC_GET = yarp::os::createVocab('g','e','t');         ///< Getter
+constexpr yarp::conf::vocab32_t VOCAB_CC_NOT_SET = yarp::os::createVocab('n','s','e','t'); ///< State: not set
 
  /** @} */
 
@@ -50,18 +46,18 @@
  */
 
 // RPC commands
-#define VOCAB_CC_STAT ROBOTICSLAB_VOCAB('s','t','a','t') ///< Current state and position
-#define VOCAB_CC_INV ROBOTICSLAB_VOCAB('i','n','v',0)    ///< Inverse kinematics
-#define VOCAB_CC_MOVJ ROBOTICSLAB_VOCAB('m','o','v','j') ///< Move in joint space, absolute coordinates
-#define VOCAB_CC_RELJ ROBOTICSLAB_VOCAB('r','e','l','j') ///< Move in joint space, relative coordinates
-#define VOCAB_CC_MOVL ROBOTICSLAB_VOCAB('m','o','v','l') ///< Linear move to target position
-#define VOCAB_CC_MOVV ROBOTICSLAB_VOCAB('m','o','v','v') ///< Linear move with given velocity
-#define VOCAB_CC_GCMP ROBOTICSLAB_VOCAB('g','c','m','p') ///< Gravity compensation
-#define VOCAB_CC_FORC ROBOTICSLAB_VOCAB('f','o','r','c') ///< Force control
-#define VOCAB_CC_STOP ROBOTICSLAB_VOCAB('s','t','o','p') ///< Stop control
-#define VOCAB_CC_WAIT ROBOTICSLAB_VOCAB('w','a','i','t') ///< Wait motion done
-#define VOCAB_CC_TOOL ROBOTICSLAB_VOCAB('t','o','o','l') ///< Change tool
-#define VOCAB_CC_ACT ROBOTICSLAB_VOCAB('a','c','t',0)    ///< Actuate tool
+constexpr yarp::conf::vocab32_t VOCAB_CC_STAT = yarp::os::createVocab('s','t','a','t'); ///< Current state and position
+constexpr yarp::conf::vocab32_t VOCAB_CC_INV = yarp::os::createVocab('i','n','v');      ///< Inverse kinematics
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVJ = yarp::os::createVocab('m','o','v','j'); ///< Move in joint space, absolute coordinates
+constexpr yarp::conf::vocab32_t VOCAB_CC_RELJ = yarp::os::createVocab('r','e','l','j'); ///< Move in joint space, relative coordinates
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVL = yarp::os::createVocab('m','o','v','l'); ///< Linear move to target position
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVV = yarp::os::createVocab('m','o','v','v'); ///< Linear move with given velocity
+constexpr yarp::conf::vocab32_t VOCAB_CC_GCMP = yarp::os::createVocab('g','c','m','p'); ///< Gravity compensation
+constexpr yarp::conf::vocab32_t VOCAB_CC_FORC = yarp::os::createVocab('f','o','r','c'); ///< Force control
+constexpr yarp::conf::vocab32_t VOCAB_CC_STOP = yarp::os::createVocab('s','t','o','p'); ///< Stop control
+constexpr yarp::conf::vocab32_t VOCAB_CC_WAIT = yarp::os::createVocab('w','a','i','t'); ///< Wait motion done
+constexpr yarp::conf::vocab32_t VOCAB_CC_TOOL = yarp::os::createVocab('t','o','o','l'); ///< Change tool
+constexpr yarp::conf::vocab32_t VOCAB_CC_ACT = yarp::os::createVocab('a','c','t');      ///< Actuate tool
 
 /** @} */
 
@@ -74,9 +70,9 @@
  */
 
 // Streaming commands
-#define VOCAB_CC_TWIST ROBOTICSLAB_VOCAB('t','w','s','t') ///< Instantaneous velocity steps
-#define VOCAB_CC_POSE ROBOTICSLAB_VOCAB('p','o','s','e')  ///< Achieve pose (velocity control)
-#define VOCAB_CC_MOVI ROBOTICSLAB_VOCAB('m','o','v','i')  ///< Achieve pose (position control)
+constexpr yarp::conf::vocab32_t VOCAB_CC_TWIST = yarp::os::createVocab('t','w','s','t'); ///< Instantaneous velocity steps
+constexpr yarp::conf::vocab32_t VOCAB_CC_POSE = yarp::os::createVocab('p','o','s','e');  ///< Achieve pose (velocity control)
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVI = yarp::os::createVocab('m','o','v','i');  ///< Achieve pose (position control)
 
 /** @} */
 
@@ -89,12 +85,12 @@
  */
 
 // Control state
-#define VOCAB_CC_NOT_CONTROLLING ROBOTICSLAB_VOCAB('c','c','n','c')  ///< Not controlling
-#define VOCAB_CC_MOVJ_CONTROLLING ROBOTICSLAB_VOCAB('c','c','j','c') ///< Controlling MOVJ commands
-#define VOCAB_CC_MOVL_CONTROLLING ROBOTICSLAB_VOCAB('c','c','l','c') ///< Controlling MOVL commands
-#define VOCAB_CC_MOVV_CONTROLLING ROBOTICSLAB_VOCAB('c','c','v','c') ///< Controlling MOVV commands
-#define VOCAB_CC_GCMP_CONTROLLING ROBOTICSLAB_VOCAB('c','c','g','c') ///< Controlling GCMP commands
-#define VOCAB_CC_FORC_CONTROLLING ROBOTICSLAB_VOCAB('c','c','f','c') ///< Controlling FORC commands
+constexpr yarp::conf::vocab32_t VOCAB_CC_NOT_CONTROLLING = yarp::os::createVocab('c','c','n','c');  ///< Not controlling
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVJ_CONTROLLING = yarp::os::createVocab('c','c','j','c'); ///< Controlling MOVJ commands
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVL_CONTROLLING = yarp::os::createVocab('c','c','l','c'); ///< Controlling MOVL commands
+constexpr yarp::conf::vocab32_t VOCAB_CC_MOVV_CONTROLLING = yarp::os::createVocab('c','c','v','c'); ///< Controlling MOVV commands
+constexpr yarp::conf::vocab32_t VOCAB_CC_GCMP_CONTROLLING = yarp::os::createVocab('c','c','g','c'); ///< Controlling GCMP commands
+constexpr yarp::conf::vocab32_t VOCAB_CC_FORC_CONTROLLING = yarp::os::createVocab('c','c','f','c'); ///< Controlling FORC commands
 
 /** @} */
 
@@ -108,11 +104,11 @@
  */
 
 // Actuator control
-#define VOCAB_CC_ACTUATOR_NONE ROBOTICSLAB_VOCAB('a','c','n',0)            ///< No actuator or no action
-#define VOCAB_CC_ACTUATOR_CLOSE_GRIPPER ROBOTICSLAB_VOCAB('a','c','c','g') ///< Close gripper
-#define VOCAB_CC_ACTUATOR_OPEN_GRIPPER ROBOTICSLAB_VOCAB('a','c','o','g')  ///< Open gripper
-#define VOCAB_CC_ACTUATOR_STOP_GRIPPER ROBOTICSLAB_VOCAB('a','c','s','g')  ///< Stop gripper
-#define VOCAB_CC_ACTUATOR_GENERIC ROBOTICSLAB_VOCAB('a','c','g',0)         ///< Generic actuator
+constexpr yarp::conf::vocab32_t VOCAB_CC_ACTUATOR_NONE = yarp::os::createVocab('a','c','n');              ///< No actuator or no action
+constexpr yarp::conf::vocab32_t VOCAB_CC_ACTUATOR_CLOSE_GRIPPER = yarp::os::createVocab('a','c','c','g'); ///< Close gripper
+constexpr yarp::conf::vocab32_t VOCAB_CC_ACTUATOR_OPEN_GRIPPER = yarp::os::createVocab('a','c','o','g');  ///< Open gripper
+constexpr yarp::conf::vocab32_t VOCAB_CC_ACTUATOR_STOP_GRIPPER = yarp::os::createVocab('a','c','s','g');  ///< Stop gripper
+constexpr yarp::conf::vocab32_t VOCAB_CC_ACTUATOR_GENERIC = yarp::os::createVocab('a','c','g');           ///< Generic actuator
 
 /**
  * @name Controller configuration vocabs
@@ -123,13 +119,13 @@
  */
 
 // Controller configuration (parameter keys)
-#define VOCAB_CC_CONFIG_PARAMS ROBOTICSLAB_VOCAB('p','r','m','s')           ///< Parameter group
-#define VOCAB_CC_CONFIG_GAIN ROBOTICSLAB_VOCAB('c','p','c','g')             ///< Controller gain
-#define VOCAB_CC_CONFIG_TRAJ_DURATION ROBOTICSLAB_VOCAB('c','p','t','d')    ///< Trajectory duration
-#define VOCAB_CC_CONFIG_CMC_PERIOD ROBOTICSLAB_VOCAB('c','p','c','p')       ///< CMC period [ms]
-#define VOCAB_CC_CONFIG_WAIT_PERIOD ROBOTICSLAB_VOCAB('c','p','w','p')      ///< Check period of 'wait' command [ms]
-#define VOCAB_CC_CONFIG_FRAME ROBOTICSLAB_VOCAB('c','p','f',0)              ///< Reference frame
-#define VOCAB_CC_CONFIG_STREAMING_CMD ROBOTICSLAB_VOCAB('c','p','s','c')    ///< Preset streaming command
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_PARAMS = yarp::os::createVocab('p','r','m','s');        ///< Parameter group
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_GAIN = yarp::os::createVocab('c','p','c','g');          ///< Controller gain
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_TRAJ_DURATION = yarp::os::createVocab('c','p','t','d'); ///< Trajectory duration
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_CMC_PERIOD = yarp::os::createVocab('c','p','c','p');    ///< CMC period [ms]
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_WAIT_PERIOD = yarp::os::createVocab('c','p','w','p');   ///< Check period of 'wait' command [ms]
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_FRAME = yarp::os::createVocab('c','p','f');             ///< Reference frame
+constexpr yarp::conf::vocab32_t VOCAB_CC_CONFIG_STREAMING_CMD = yarp::os::createVocab('c','p','s','c'); ///< Preset streaming command
 
 /** @} */
 
@@ -142,7 +138,6 @@ namespace roboticslab
 class ICartesianControl
 {
     public:
-
         //! Destructor
         virtual ~ICartesianControl() {}
 

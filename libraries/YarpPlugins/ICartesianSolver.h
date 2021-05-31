@@ -4,10 +4,7 @@
 #define __I_CARTESIAN_SOLVER__
 
 #include <vector>
-
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-#define ROBOTICSLAB_VOCAB(a,b,c,d) ((((int)(d))<<24)+(((int)(c))<<16)+(((int)(b))<<8)+((int)(a)))
-#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+#include <yarp/os/Vocab.h>
 
 /**
  * @file
@@ -29,8 +26,8 @@ class ICartesianSolver
         //! Lists supported reference frames.
         enum reference_frame
         {
-            BASE_FRAME = ROBOTICSLAB_VOCAB('c','p','f','b'), //!< Base frame
-            TCP_FRAME = ROBOTICSLAB_VOCAB('c','p','f','t')   //!< End-effector frame (TCP)
+            BASE_FRAME = yarp::os::createVocab('c','p','f','b'), //!< Base frame
+            TCP_FRAME = yarp::os::createVocab('c','p','f','t')   //!< End-effector frame (TCP)
         };
 
         //! Destructor
