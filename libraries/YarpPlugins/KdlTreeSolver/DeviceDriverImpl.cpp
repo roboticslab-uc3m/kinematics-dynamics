@@ -252,7 +252,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
                 if (bXyzLink.isNull())
                 {
-                    yError("Not found: \"%s\" either.\n", xyzLink.c_str());
+                    yError("Not found: \"%s\" either.", xyzLink.c_str());
                     return false;
                 }
 

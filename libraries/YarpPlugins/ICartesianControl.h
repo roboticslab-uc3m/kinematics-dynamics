@@ -137,288 +137,288 @@ namespace roboticslab
  */
 class ICartesianControl
 {
-    public:
-        //! Destructor
-        virtual ~ICartesianControl() {}
+public:
+    //! Destructor
+    virtual ~ICartesianControl() {}
 
-        //--------------------- RPC commands ---------------------
+    //--------------------- RPC commands ---------------------
 
-        /**
-         * @anchor ICartesianControl_RPC_commands
-         * @name RPC commands
-         *
-         * RPC commands with success/failure response.
-         *
-         * @{
-         */
+    /**
+     * @anchor ICartesianControl_RPC_commands
+     * @name RPC commands
+     *
+     * RPC commands with success/failure response.
+     *
+     * @{
+     */
 
-        /**
-         * @brief Current state and position
-         *
-         * Inform on control state, get robot position and perform forward kinematics.
-         *
-         * @param x 6-element vector describing current position in cartesian space; first
-         * three elements denote translation (meters), last three denote rotation in scaled
-         * axis-angle representation (radians).
-         * @param state Identifier for a cartesian control vocab.
-         * @param timestamp Remote encoder acquisition time.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
+    /**
+     * @brief Current state and position
+     *
+     * Inform on control state, get robot position and perform forward kinematics.
+     *
+     * @param x 6-element vector describing current position in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in scaled
+     * axis-angle representation (radians).
+     * @param state Identifier for a cartesian control vocab.
+     * @param timestamp Remote encoder acquisition time.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
 
-        /**
-         * @brief Inverse kinematics
-         *
-         * Perform inverse kinematics (using robot position as initial guess), but do not move.
-         *
-         * @param xd 6-element vector describing desired position in cartesian space; first
-         * three elements denote translation (meters), last three denote rotation in scaled
-         * axis-angle representation (radians).
-         * @param q Vector describing current position in joint space (meters or degrees).
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;
+    /**
+     * @brief Inverse kinematics
+     *
+     * Perform inverse kinematics (using robot position as initial guess), but do not move.
+     *
+     * @param xd 6-element vector describing desired position in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in scaled
+     * axis-angle representation (radians).
+     * @param q Vector describing current position in joint space (meters or degrees).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;
 
-        /**
-         * @brief Move in joint space, absolute coordinates
-         *
-         * Perform inverse kinematics and move to desired position in joint space using absolute
-         * coordinates.
-         *
-         * @param xd 6-element vector describing desired position in cartesian space; first
-         * three elements denote translation (meters), last three denote rotation in scaled
-         * axis-angle representation (radians).
-         *
-         * @see relj (relative coordinates)
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool movj(const std::vector<double> &xd) = 0;
+    /**
+     * @brief Move in joint space, absolute coordinates
+     *
+     * Perform inverse kinematics and move to desired position in joint space using absolute
+     * coordinates.
+     *
+     * @param xd 6-element vector describing desired position in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in scaled
+     * axis-angle representation (radians).
+     *
+     * @see relj (relative coordinates)
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool movj(const std::vector<double> &xd) = 0;
 
-        /**
-         * @brief Move in joint space, relative coordinates
-         *
-         * Perform inverse kinematics and move to desired position in joint space using relative
-         * coordinates.
-         *
-         * @param xd 6-element vector describing desired offset in cartesian space; first
-         * three elements denote translation (meters), last three denote rotation in scaled
-         * axis-angle representation (radians).
-         *
-         * @see movj (absolute coordinates)
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool relj(const std::vector<double> &xd) = 0;
+    /**
+     * @brief Move in joint space, relative coordinates
+     *
+     * Perform inverse kinematics and move to desired position in joint space using relative
+     * coordinates.
+     *
+     * @param xd 6-element vector describing desired offset in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in scaled
+     * axis-angle representation (radians).
+     *
+     * @see movj (absolute coordinates)
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool relj(const std::vector<double> &xd) = 0;
 
-        /**
-         * @brief Linear move to target position
-         *
-         * Move to end position along a line trajectory.
-         *
-         * @param xd 6-element vector describing desired position in cartesian space; first
-         * three elements denote translation (meters), last three denote rotation in scaled
-         * axis-angle representation (radians).
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool movl(const std::vector<double> &xd) = 0;
+    /**
+     * @brief Linear move to target position
+     *
+     * Move to end position along a line trajectory.
+     *
+     * @param xd 6-element vector describing desired position in cartesian space; first
+     * three elements denote translation (meters), last three denote rotation in scaled
+     * axis-angle representation (radians).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool movl(const std::vector<double> &xd) = 0;
 
-        /**
-         * @brief Linear move with given velocity
-         *
-         * Move along a line with constant velocity.
-         *
-         * @param xdotd 6-element vector describing desired velocity in cartesian space; first
-         * three elements denote translational velocity (meters/second), last three denote
-         * angular velocity (radians/second).
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool movv(const std::vector<double> &xdotd) = 0;
+    /**
+     * @brief Linear move with given velocity
+     *
+     * Move along a line with constant velocity.
+     *
+     * @param xdotd 6-element vector describing desired velocity in cartesian space; first
+     * three elements denote translational velocity (meters/second), last three denote
+     * angular velocity (radians/second).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool movv(const std::vector<double> &xdotd) = 0;
 
-        /**
-         * @brief Gravity compensation
-         *
-         * Enable gravity compensation.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool gcmp() = 0;
+    /**
+     * @brief Gravity compensation
+     *
+     * Enable gravity compensation.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool gcmp() = 0;
 
-        /**
-         * @brief Force control
-         *
-         * Apply desired forces in task space.
-         *
-         * @param td 6-element vector describing desired forces in cartesian space; first
-         * three elements denote translational acceleration (meters/second²), last three
-         * denote angular acceleration (radians/second²).
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool forc(const std::vector<double> &td) = 0;
+    /**
+     * @brief Force control
+     *
+     * Apply desired forces in task space.
+     *
+     * @param td 6-element vector describing desired forces in cartesian space; first
+     * three elements denote translational acceleration (meters/second²), last three
+     * denote angular acceleration (radians/second²).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool forc(const std::vector<double> &td) = 0;
 
-        /**
-         * @brief Stop control
-         *
-         * Halt current control loop if any and cease movement.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool stopControl() = 0;
+    /**
+     * @brief Stop control
+     *
+     * Halt current control loop if any and cease movement.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool stopControl() = 0;
 
-        /**
-         * @brief Wait until completion
-         *
-         * Block execution until the movement is completed, errors occur or timeout
-         * is reached.
-         *
-         * @param timeout Timeout in seconds, '0.0' means no timeout.
-         *
-         * @return true on success, false if errors occurred during the execution
-         * of the trajectory
-         */
-        virtual bool wait(double timeout = 0.0) = 0;
+    /**
+     * @brief Wait until completion
+     *
+     * Block execution until the movement is completed, errors occur or timeout
+     * is reached.
+     *
+     * @param timeout Timeout in seconds, '0.0' means no timeout.
+     *
+     * @return true on success, false if errors occurred during the execution
+     * of the trajectory
+     */
+    virtual bool wait(double timeout = 0.0) = 0;
 
-        /**
-         * @brief Change tool
-         *
-         * Unload current tool if any and append new tool frame to the kinematic chain.
-         *
-         * @param x 6-element vector describing new tool tip with regard to current end-effector
-         * frame in cartesian space; first three elements denote translation (meters), last three
-         * denote rotation in scaled axis-angle representation (radians).
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool tool(const std::vector<double> &x) = 0;
+    /**
+     * @brief Change tool
+     *
+     * Unload current tool if any and append new tool frame to the kinematic chain.
+     *
+     * @param x 6-element vector describing new tool tip with regard to current end-effector
+     * frame in cartesian space; first three elements denote translation (meters), last three
+     * denote rotation in scaled axis-angle representation (radians).
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool tool(const std::vector<double> &x) = 0;
 
-        /**
-         * @brief Actuate tool
-         *
-         * Send control command to actuate the robot's tool, if available.
-         *
-         * @param command One of available @ref ICartesianControl_actuator_vocabs "actuator vocabs".
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool act(int command) = 0;
+    /**
+     * @brief Actuate tool
+     *
+     * Send control command to actuate the robot's tool, if available.
+     *
+     * @param command One of available @ref ICartesianControl_actuator_vocabs "actuator vocabs".
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool act(int command) = 0;
 
-        /** @} */
+    /** @} */
 
-        //--------------------- Streaming commands ---------------------
+    //--------------------- Streaming commands ---------------------
 
-        /**
-         * @anchor ICartesianControl_streaming_commands
-         * @name Streaming commands
-         *
-         * High-frequency streaming commands, no acknowledge.
-         *
-         * @{
-         */
+    /**
+     * @anchor ICartesianControl_streaming_commands
+     * @name Streaming commands
+     *
+     * High-frequency streaming commands, no acknowledge.
+     *
+     * @{
+     */
 
-        /**
-         * @brief Instantaneous velocity steps
-         *
-         * Move in instantaneous velocity increments.
-         *
-         * @param xdot 6-element vector describing velocity increments in cartesian space;
-         * first three elements denote translational velocity (meters/second), last three
-         * denote angular velocity (radians/second).
-         */
-        virtual void twist(const std::vector<double> &xdot) = 0;
+    /**
+     * @brief Instantaneous velocity steps
+     *
+     * Move in instantaneous velocity increments.
+     *
+     * @param xdot 6-element vector describing velocity increments in cartesian space;
+     * first three elements denote translational velocity (meters/second), last three
+     * denote angular velocity (radians/second).
+     */
+    virtual void twist(const std::vector<double> &xdot) = 0;
 
-        /**
-         * @brief Achieve pose (velocity control)
-         *
-         * Move to desired position, computing the error with respect to the current pose. Then,
-         * perform numerical differentiation and obtain the final velocity increment (as in @ref twist).
-         *
-         * @param x 6-element vector describing desired instantaneous pose in cartesian space;
-         * first three elements denote translation (meters), last three denote rotation (radians).
-         * @param interval Time interval between successive command invocations, expressed in seconds
-         * and used for numerical differentiation with desired/current poses.
-         */
-        virtual void pose(const std::vector<double> &x, double interval) = 0;
+    /**
+     * @brief Achieve pose (velocity control)
+     *
+     * Move to desired position, computing the error with respect to the current pose. Then,
+     * perform numerical differentiation and obtain the final velocity increment (as in @ref twist).
+     *
+     * @param x 6-element vector describing desired instantaneous pose in cartesian space;
+     * first three elements denote translation (meters), last three denote rotation (radians).
+     * @param interval Time interval between successive command invocations, expressed in seconds
+     * and used for numerical differentiation with desired/current poses.
+     */
+    virtual void pose(const std::vector<double> &x, double interval) = 0;
 
-        /**
-         * @brief Achieve pose (position control)
-         *
-         * Move to desired position instantaneously, no further intermediate calculations are
-         * expected other than computing the inverse kinematics.
-         *
-         * @param x 6-element vector describing desired instantaneous pose in cartesian space;
-         * first three elements denote translation (meters), last three denote rotation (radians).
-         */
-        virtual void movi(const std::vector<double> &x) = 0;
+    /**
+     * @brief Achieve pose (position control)
+     *
+     * Move to desired position instantaneously, no further intermediate calculations are
+     * expected other than computing the inverse kinematics.
+     *
+     * @param x 6-element vector describing desired instantaneous pose in cartesian space;
+     * first three elements denote translation (meters), last three denote rotation (radians).
+     */
+    virtual void movi(const std::vector<double> &x) = 0;
 
-        /** @} */
+    /** @} */
 
-        //--------------------- Configuration accessors ---------------------
+    //--------------------- Configuration accessors ---------------------
 
-        /**
-         * @anchor ICartesianControl_config_commands
-         * @name Configuration accessors
-         *
-         * Configuration setters and getters with success/failure response.
-         *
-         * @{
-         */
+    /**
+     * @anchor ICartesianControl_config_commands
+     * @name Configuration accessors
+     *
+     * Configuration setters and getters with success/failure response.
+     *
+     * @{
+     */
 
-        /**
-         * @brief Set a configuration parameter.
-         *
-         * Ask the controller to store or update a parameter of 'double' type.
-         *
-         * @param vocab YARP-encoded vocab (parameter key).
-         * @param value Parameter value encoded as a double.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool setParameter(int vocab, double value) = 0;
+    /**
+     * @brief Set a configuration parameter.
+     *
+     * Ask the controller to store or update a parameter of 'double' type.
+     *
+     * @param vocab YARP-encoded vocab (parameter key).
+     * @param value Parameter value encoded as a double.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setParameter(int vocab, double value) = 0;
 
-        /**
-         * @brief Retrieve a configuration parameter.
-         *
-         * Ask the controller to retrieve a parameter of 'double' type.
-         *
-         * @param vocab YARP-encoded vocab (parameter key).
-         * @param value Parameter value encoded as a double.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool getParameter(int vocab, double * value) = 0;
+    /**
+     * @brief Retrieve a configuration parameter.
+     *
+     * Ask the controller to retrieve a parameter of 'double' type.
+     *
+     * @param vocab YARP-encoded vocab (parameter key).
+     * @param value Parameter value encoded as a double.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool getParameter(int vocab, double * value) = 0;
 
-        /**
-         * @brief Set multiple configuration parameters.
-         *
-         * Ask the controller to store or update multiple parameters at once.
-         *
-         * @param params Dictionary of YARP-encoded vocabs as keys and their values.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool setParameters(const std::map<int, double> & params) = 0;
+    /**
+     * @brief Set multiple configuration parameters.
+     *
+     * Ask the controller to store or update multiple parameters at once.
+     *
+     * @param params Dictionary of YARP-encoded vocabs as keys and their values.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool setParameters(const std::map<int, double> & params) = 0;
 
-        /**
-         * @brief Retrieve multiple configuration parameters.
-         *
-         * Ask the controller to retrieve all available parameters at once.
-         *
-         * @param params Dictionary of YARP-encoded vocabs as keys and their values.
-         *
-         * @return true on success, false otherwise
-         */
-        virtual bool getParameters(std::map<int, double> & params) = 0;
+    /**
+     * @brief Retrieve multiple configuration parameters.
+     *
+     * Ask the controller to retrieve all available parameters at once.
+     *
+     * @param params Dictionary of YARP-encoded vocabs as keys and their values.
+     *
+     * @return true on success, false otherwise
+     */
+    virtual bool getParameters(std::map<int, double> & params) = 0;
 
-        /** @} */
+    /** @} */
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
 /** @} */
 
-#endif  //  __I_CARTESIAN_CONTROL__
+#endif // __I_CARTESIAN_CONTROL__
