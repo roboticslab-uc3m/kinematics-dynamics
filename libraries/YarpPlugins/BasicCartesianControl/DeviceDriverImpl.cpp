@@ -188,7 +188,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    iCartesianSolver->getNumJoints(&numSolverJoints);
+    numSolverJoints = iCartesianSolver->getNumJoints();
     yInfo() << "numSolverJoints:" << numSolverJoints;
 
     if (numRobotJoints != numSolverJoints)

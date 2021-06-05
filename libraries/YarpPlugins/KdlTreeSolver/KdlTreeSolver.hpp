@@ -50,7 +50,7 @@ public:
     // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --
 
     // Get number of joints for which the solver has been configured.
-    bool getNumJoints(int * numJoints) override;
+    int getNumJoints() override;
 
     // Append an additional link.
     bool appendLink(const std::vector<double> & x) override;

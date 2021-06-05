@@ -50,7 +50,7 @@ public:
 // -------- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --------
 
     // Get number of joints for which the solver has been configured.
-    virtual bool getNumJoints(int* numJoints);
+    virtual int getNumJoints();
 
     // Append an additional link.
     virtual bool appendLink(const std::vector<double> &x);

@@ -16,10 +16,9 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::getNumJoints(int * numJoints)
+int KdlTreeSolver::getNumJoints()
 {
-    *numJoints = tree.getNrOfJoints();
-    return true;
+    return tree.getNrOfJoints();
 }
 
 // -----------------------------------------------------------------------------

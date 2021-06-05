@@ -184,10 +184,9 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-bool AsibotSolver::getNumJoints(int* numJoints)
+int AsibotSolver::getNumJoints()
 {
-    *numJoints = NUM_MOTORS;
-    return true;
+    return NUM_MOTORS;
 }
 
 // -----------------------------------------------------------------------------
