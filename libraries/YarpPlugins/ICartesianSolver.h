@@ -55,6 +55,13 @@ public:
     virtual int getNumJoints() = 0;
 
     /**
+     * @brief Get number of TCPs for which the solver has been configured
+     *
+     * @return The number of TCPs.
+     */
+    virtual int getNumTcps() = 0;
+
+    /**
      * @brief Append an additional link
      *
      * @param x 6-element vector describing end-effector frame in cartesian space; first

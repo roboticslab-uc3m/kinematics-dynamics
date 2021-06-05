@@ -61,6 +61,9 @@ class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
         // Get number of joints for which the solver has been configured.
         virtual int getNumJoints();
 
+        // Get number of TCPs for which the solver has been configured.
+        virtual int getNumTcps();
+
         // Append an additional link.
         virtual bool appendLink(const std::vector<double>& x);
 

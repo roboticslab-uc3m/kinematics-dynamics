@@ -23,6 +23,13 @@ int KdlTreeSolver::getNumJoints()
 
 // -----------------------------------------------------------------------------
 
+int KdlTreeSolver::getNumTcps()
+{
+    return endpoints.size();
+}
+
+// -----------------------------------------------------------------------------
+
 bool KdlTreeSolver::appendLink(const std::vector<double> & x)
 {
     yError() << "Not supported: appendLink";

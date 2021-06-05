@@ -191,6 +191,13 @@ int AsibotSolver::getNumJoints()
 
 // -----------------------------------------------------------------------------
 
+int AsibotSolver::getNumTcps()
+{
+    return 1;
+}
+
+// -----------------------------------------------------------------------------
+
 bool AsibotSolver::appendLink(const std::vector<double> &x)
 {
     yarp::sig::Matrix newFrame = vectorToMatrix(x, true);

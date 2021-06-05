@@ -21,6 +21,13 @@ int roboticslab::KdlSolver::getNumJoints()
 
 // -----------------------------------------------------------------------------
 
+int roboticslab::KdlSolver::getNumTcps()
+{
+    return 1;
+}
+
+// -----------------------------------------------------------------------------
+
 bool roboticslab::KdlSolver::appendLink(const std::vector<double>& x)
 {
     KDL::Frame frameX = KdlVectorConverter::vectorToFrame(x);

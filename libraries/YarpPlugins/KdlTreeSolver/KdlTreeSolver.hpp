@@ -52,6 +52,9 @@ public:
     // Get number of joints for which the solver has been configured.
     int getNumJoints() override;
 
+    // Get number of TCPs for which the solver has been configured.
+    int getNumTcps() override;
+
     // Append an additional link.
     bool appendLink(const std::vector<double> & x) override;
 
