@@ -20,6 +20,8 @@
 #include <yarp/os/Value.h>
 #include <yarp/os/Vocab.h>
 
+using namespace roboticslab;
+
 namespace
 {
     struct termios ots;
@@ -84,13 +86,13 @@ namespace
     }
 }
 
-const std::vector<double> roboticslab::KeyboardController::ZERO_CARTESIAN_VELOCITY(NUM_CART_COORDS);
+const std::vector<double> ZERO_CARTESIAN_VELOCITY(KeyboardController::NUM_CART_COORDS);
 
-const double roboticslab::KeyboardController::JOINT_VELOCITY_STEP = 0.5;  // [deg]
-const double roboticslab::KeyboardController::CARTESIAN_LINEAR_VELOCITY_STEP = 0.005;  // [m]
-const double roboticslab::KeyboardController::CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01;  // [deg]
+constexpr auto JOINT_VELOCITY_STEP = 0.5; // [deg]
+constexpr auto CARTESIAN_LINEAR_VELOCITY_STEP = 0.005; // [m]
+constexpr auto CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01; // [deg]
 
-bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
+bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 {
     yDebug() << "KeyboardController config:" << rf.toString();
 
@@ -110,16 +112,15 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         std::string remoteRobot = rf.check("remoteRobot", yarp::os::Value(DEFAULT_ROBOT_REMOTE),
                 "remote robot port").asString();
 
-        yarp::os::Property controlboardClientOptions;
-        controlboardClientOptions.put("device", "remote_controlboard");
-        controlboardClientOptions.put("local", localRobot);
-        controlboardClientOptions.put("remote", remoteRobot);
+        yarp::os::Property controlboardClientOptions {
+            {"device", yarp::os::Value("remote_controlboard")},
+            {"local", yarp::os::Value(localRobot)},
+            {"remote", yarp::os::Value(remoteRobot)}
+        };
 
-        controlboardDevice.open(controlboardClientOptions);
-
-        if (!controlboardDevice.isValid())
+        if (!controlboardDevice.open(controlboardClientOptions))
         {
-            yError() << "controlboard client device not valid";
+            yError() << "Unable to open control board client device";
             return false;
         }
 
@@ -174,16 +175,15 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
         std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
                 "remote cartesian port").asString();
 
-        yarp::os::Property cartesianControlClientOptions;
-        cartesianControlClientOptions.put("device", "CartesianControlClient");
-        cartesianControlClientOptions.put("cartesianLocal", localCartesian);
-        cartesianControlClientOptions.put("cartesianRemote", remoteCartesian);
+        yarp::os::Property cartesianControlClientOptions {
+            {"device", yarp::os::Value("CartesianControlClient")},
+            {"cartesianLocal", yarp::os::Value(localCartesian)},
+            {"cartesianRemote", yarp::os::Value(remoteCartesian)},
+        };
 
-        cartesianControlDevice.open(cartesianControlClientOptions);
-
-        if (!cartesianControlDevice.isValid())
+        if (!cartesianControlDevice.open(cartesianControlClientOptions))
         {
-            yError() << "cartesian control client device not valid";
+            yError() << "Unable to open cartesian control client device";
             return false;
         }
 
@@ -255,7 +255,7 @@ bool roboticslab::KeyboardController::configure(yarp::os::ResourceFinder &rf)
     return true;
 }
 
-bool roboticslab::KeyboardController::updateModule()
+bool KeyboardController::updateModule()
 {
     char key;
 
@@ -396,7 +396,7 @@ bool roboticslab::KeyboardController::updateModule()
     return true;
 }
 
-bool roboticslab::KeyboardController::interruptModule()
+bool KeyboardController::interruptModule()
 {
     issueStop();
     std::cout << "Exiting..." << std::endl;
@@ -405,18 +405,18 @@ bool roboticslab::KeyboardController::interruptModule()
     return true;
 }
 
-double roboticslab::KeyboardController::getPeriod()
+double KeyboardController::getPeriod()
 {
-    return 0.01;  // [s]
+    return 0.01; // [s]
 }
 
-bool roboticslab::KeyboardController::close()
+bool KeyboardController::close()
 {
     if (cartesianControlDevice.isValid() && usingThread)
     {
         linTrajThread->stop();
         delete linTrajThread;
-        linTrajThread = 0;
+        linTrajThread = nullptr;
     }
 
     controlboardDevice.close();
@@ -426,7 +426,7 @@ bool roboticslab::KeyboardController::close()
 }
 
 template <typename func>
-void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
+void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 {
     if (!controlboardDevice.isValid())
     {
@@ -478,7 +478,7 @@ void roboticslab::KeyboardController::incrementOrDecrementJointVelocity(joint q,
 }
 
 template <typename func>
-void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func op)
+void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func op)
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -533,7 +533,7 @@ void roboticslab::KeyboardController::incrementOrDecrementCartesianVelocity(cart
     controlMode = CARTESIAN_MODE;
 }
 
-void roboticslab::KeyboardController::toggleReferenceFrame()
+void KeyboardController::toggleReferenceFrame()
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -581,7 +581,7 @@ void roboticslab::KeyboardController::toggleReferenceFrame()
     std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;
 }
 
-void roboticslab::KeyboardController::actuateTool(int command)
+void KeyboardController::actuateTool(int command)
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -600,7 +600,7 @@ void roboticslab::KeyboardController::actuateTool(int command)
     }
 }
 
-void roboticslab::KeyboardController::printJointPositions()
+void KeyboardController::printJointPositions()
 {
     if (!controlboardDevice.isValid())
     {
@@ -616,7 +616,7 @@ void roboticslab::KeyboardController::printJointPositions()
     std::cout << roundZeroes(encs) << std::endl;
 }
 
-void roboticslab::KeyboardController::printCartesianPositions()
+void KeyboardController::printCartesianPositions()
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -633,7 +633,7 @@ void roboticslab::KeyboardController::printCartesianPositions()
     std::cout << roundZeroes(x) << std::endl;
 }
 
-void roboticslab::KeyboardController::issueStop()
+void KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
@@ -676,7 +676,7 @@ void roboticslab::KeyboardController::issueStop()
     controlMode = NOT_CONTROLLING;
 }
 
-void roboticslab::KeyboardController::printHelp()
+void KeyboardController::printHelp()
 {
     static const int markerWidth = 70;
 

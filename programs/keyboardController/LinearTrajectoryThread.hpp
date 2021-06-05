@@ -30,7 +30,7 @@ public:
     void useTcpFrame(bool enableTcpFrame) { usingTcpFrame = enableTcpFrame; }
 
 protected:
-    virtual void run();
+    void run() override;
 
 private:
     double period;
@@ -43,6 +43,6 @@ private:
     mutable std::mutex mtx;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __LINEAR_TRAJECTORY_THREAD_HPP__
+#endif // __LINEAR_TRAJECTORY_THREAD_HPP__

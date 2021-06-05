@@ -46,17 +46,17 @@ namespace roboticslab
 class KeyboardController : public yarp::os::RFModule
 {
 public:
-    virtual bool configure(yarp::os::ResourceFinder &rf);
-    virtual bool updateModule();
-    virtual bool interruptModule();
-    virtual double getPeriod();
-    virtual bool close();
-
-private:
     // used for array indexes and size checks
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };
 
+    bool configure(yarp::os::ResourceFinder & rf) override;
+    bool updateModule() override;
+    bool interruptModule() override;
+    double getPeriod() override;
+    bool close() override;
+
+private:
     enum control_modes { NOT_CONTROLLING, JOINT_MODE, CARTESIAN_MODE };
 
     static const std::plus<double> increment_functor;
@@ -103,14 +103,8 @@ private:
     std::vector<double> maxVelocityLimits;
     std::vector<double> currentJointVels;
     std::vector<double> currentCartVels;
-
-    static const std::vector<double> ZERO_CARTESIAN_VELOCITY;
-
-    static const double JOINT_VELOCITY_STEP;
-    static const double CARTESIAN_LINEAR_VELOCITY_STEP;
-    static const double CARTESIAN_ANGULAR_VELOCITY_STEP;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __KEYBOARD_CONTROLLER_HPP__
+#endif // __KEYBOARD_CONTROLLER_HPP__
