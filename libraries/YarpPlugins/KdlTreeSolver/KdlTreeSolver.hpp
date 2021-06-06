@@ -3,6 +3,7 @@
 #ifndef __KDL_TREE_SOLVER_HPP__
 #define __KDL_TREE_SOLVER_HPP__
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -90,6 +91,7 @@ public:
 
 protected:
     std::vector<std::string> endpoints;
+    std::map<std::string, std::string> mergedEndpoints;
     KDL::Tree tree;
     KDL::TreeFkSolverPos * fkSolverPos;
     KDL::TreeIkSolverPos * ikSolverPos;

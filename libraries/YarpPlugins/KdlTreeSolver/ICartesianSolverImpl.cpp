@@ -126,11 +126,20 @@ bool KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector
 bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, const reference_frame frame)
 {
     KDL::Frames frames;
+    int i = 0;
 
-    for (auto i = 0; i < endpoints.size(); i++)
+    for (const auto & endpoint : endpoints)
     {
-        std::vector<double> sub(xd.cbegin() + i * 6, xd.cbegin() + (i + 1) * 6);
-        frames.insert(std::make_pair(endpoints[i], KdlVectorConverter::vectorToFrame(sub)));
+        if (!mergedEndpoints.empty() && mergedEndpoints.find(endpoint) != mergedEndpoints.end())
+        {
+            frames.emplace(std::make_pair(endpoint, frames[mergedEndpoints[endpoint]]));
+        }
+        else
+        {
+            std::vector<double> sub(xd.cbegin() + i * 6, xd.cbegin() + (i + 1) * 6);
+            frames.emplace(std::make_pair(endpoint, KdlVectorConverter::vectorToFrame(sub)));
+            i++;
+        }
     }
 
     KDL::JntArray qGuessInRad(tree.getNrOfJoints());
@@ -183,11 +192,20 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
 bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, const reference_frame frame)
 {
     KDL::Twists twists;
+    int i = 0;
 
-    for (auto i = 0; i < endpoints.size(); i++)
+    for (const auto & endpoint : endpoints)
     {
-        std::vector<double> sub(xdot.cbegin() + i * 6, xdot.cbegin() + (i + 1) * 6);
-        twists.insert(std::make_pair(endpoints[i], KdlVectorConverter::vectorToTwist(sub)));
+        if (!mergedEndpoints.empty() && mergedEndpoints.find(endpoint) != mergedEndpoints.end())
+        {
+            twists.emplace(std::make_pair(endpoint, twists[mergedEndpoints[endpoint]]));
+        }
+        else
+        {
+            std::vector<double> sub(xdot.cbegin() + i * 6, xdot.cbegin() + (i + 1) * 6);
+            twists.emplace(std::make_pair(endpoint, KdlVectorConverter::vectorToTwist(sub)));
+            i++;
+        }
     }
 
     KDL::JntArray qInRad(tree.getNrOfJoints());
