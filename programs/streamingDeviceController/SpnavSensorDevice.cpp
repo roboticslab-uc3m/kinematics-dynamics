@@ -52,8 +52,8 @@ bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
     if (usingMovi && !iCartesianControl->stat(currentX))
     {
-        yWarning() << "Unable to stat initial position";
-        return false;
+        yWarning() << "Unable to stat initial position, assuming zero";
+        currentX.resize(6, 0.0);
     }
 
     return true;
