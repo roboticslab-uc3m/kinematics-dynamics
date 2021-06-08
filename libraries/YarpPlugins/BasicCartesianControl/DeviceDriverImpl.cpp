@@ -52,7 +52,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (!robotDevice.open(robotOptions))
     {
-        yError() << "Tobot device not valid:" << robotStr;
+        yError() << "Robot device not valid:" << robotStr;
         return false;
     }
 
@@ -80,8 +80,6 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-
-
     if (!robotDevice.view(iTorqueControl))
     {
         yError() << "Could not view iTorqueControl in:" << robotStr;
@@ -100,7 +98,7 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
     }
 
     iEncoders->getAxes(&numRobotJoints);
-    yInfo() << "numRobotJoints:" << numRobotJoints;
+    yInfo() << "Number of robot joints:" << numRobotJoints;
 
     qRefSpeeds.resize(numRobotJoints);
 
@@ -188,13 +186,15 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    iCartesianSolver->getNumJoints(&numSolverJoints);
-    yInfo() << "numSolverJoints:" << numSolverJoints;
+    numSolverJoints = iCartesianSolver->getNumJoints();
+    yInfo() << "Number of solver joints:" << numSolverJoints;
 
     if (numRobotJoints != numSolverJoints)
     {
         yWarning("numRobotJoints(%d) != numSolverJoints(%d)", numRobotJoints, numSolverJoints);
     }
+
+    yInfo() << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
 
     if (cmcPeriodMs != DEFAULT_CMC_PERIOD_MS)
     {

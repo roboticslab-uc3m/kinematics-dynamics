@@ -14,10 +14,16 @@
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::getNumJoints(int* numJoints)
+int roboticslab::KdlSolver::getNumJoints()
 {
-    *numJoints = chain.getNrOfJoints();
-    return true;
+    return chain.getNrOfJoints();
+}
+
+// -----------------------------------------------------------------------------
+
+int roboticslab::KdlSolver::getNumTcps()
+{
+    return 1;
 }
 
 // -----------------------------------------------------------------------------

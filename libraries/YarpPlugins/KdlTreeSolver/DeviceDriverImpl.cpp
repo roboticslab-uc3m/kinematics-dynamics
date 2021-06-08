@@ -2,6 +2,7 @@
 
 #include "KdlTreeSolver.hpp"
 
+#include <algorithm> // std::find
 #include <string>
 
 #include <yarp/os/Bottle.h>
@@ -320,11 +321,23 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
             return false;
         }
 
-        bool isEndpoint = chainConfig.check("endpoint", yarp::os::Value(false), "whether this chain is an endpoint").asBool();
-
-        if (isEndpoint)
+        if (chainConfig.check("endpoint", yarp::os::Value(false), "whether this chain is an endpoint (TCP)").asBool())
         {
             endpoints.push_back(chainName);
+
+            if (chainConfig.check("mergeWith", "other chain's TCP to merge this TCP with"))
+            {
+                auto mergeWith = chainConfig.find("mergeWith").asString();
+
+                if (std::find(endpoints.cbegin(), endpoints.cend(), mergeWith) == endpoints.cend())
+                {
+                    yError() << "Unable to find TCP" << mergeWith << "to be merged with" << chainName;
+                    return false;
+                }
+
+                mergedEndpoints.emplace(std::make_pair(chainName, mergeWith));
+                yInfo() << "TCP" << chainName << "merged with" << mergeWith;
+            }
         }
     }
 
