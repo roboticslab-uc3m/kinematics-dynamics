@@ -4,9 +4,11 @@
 
 #include <vector>
 
+using namespace roboticslab;
+
 // ------------------- PeriodicThread related ------------------------------------
 
-void roboticslab::CartesianControlServer::run()
+void CartesianControlServer::run()
 {
     std::vector<double> x;
     int state;
@@ -17,7 +19,7 @@ void roboticslab::CartesianControlServer::run()
         return;
     }
 
-    yarp::os::Bottle &out = fkOutPort.prepare();
+    yarp::os::Bottle & out = fkOutPort.prepare();
     out.clear();
     out.addVocab(state);
 
