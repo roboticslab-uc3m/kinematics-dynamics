@@ -17,28 +17,26 @@ namespace roboticslab
 class SpnavSensorDevice : public StreamingDevice
 {
 public:
-
     //! Constructor
     SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain = 0.0);
 
-    virtual bool acquireInterfaces();
+    bool acquireInterfaces() override;
 
-    virtual bool initialize(bool usingStreamingPreset);
+    bool initialize(bool usingStreamingPreset) override;
 
-    virtual bool acquireData();
+    bool acquireData() override;
 
-    virtual bool transformData(double scaling);
+    bool transformData(double scaling) override;
 
-    virtual int getActuatorState();
+    int getActuatorState() override;
 
-    virtual bool hasValidMovementData() const;
+    bool hasValidMovementData() const override;
 
-    virtual void sendMovementCommand(double timestamp);
+    void sendMovementCommand(double timestamp) override;
 
-    virtual void stopMotion();
+    void stopMotion() override;
 
 private:
-
     yarp::dev::IAnalogSensor * iAnalogSensor;
 
     std::vector<double> currentX;
@@ -49,6 +47,6 @@ private:
     bool buttonOpen;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __SPNAV_SENSOR_DEVICE_HPP__
+#endif // __SPNAV_SENSOR_DEVICE_HPP__

@@ -13,7 +13,7 @@ using namespace roboticslab;
 
 StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
-    yarp::os::Searchable & deviceConfig = config.findGroup(deviceName.c_str());
+    auto & deviceConfig = config.findGroup(deviceName.c_str());
     bool usingMovi = config.check("movi", "enable movi command");
 
     yDebug() << "Device configuration:" << deviceConfig.toString();
@@ -39,19 +39,19 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 }
 
 StreamingDevice::StreamingDevice(yarp::os::Searchable & config)
-    : iCartesianControl(NULL),
+    : iCartesianControl(nullptr),
       actuatorState(VOCAB_CC_ACTUATOR_NONE)
 {
     data.resize(6, 0.0);
     fixedAxes.resize(6, false);
 
-    PolyDriver::open(config);
+    yarp::dev::PolyDriver::open(config);
     configureFixedAxes(config.find("fixedAxes"));
 }
 
 StreamingDevice::~StreamingDevice()
 {
-    PolyDriver::close();
+    yarp::dev::PolyDriver::close();
 }
 
 bool StreamingDevice::transformData(double scaling)

@@ -6,9 +6,11 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
 
-roboticslab::WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi)
+using namespace roboticslab;
+
+WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi)
     : StreamingDevice(config),
-      iAnalogSensor(NULL),
+      iAnalogSensor(nullptr),
       mode(NONE),
       usingMovi(usingMovi),
       step(0.0)
@@ -18,11 +20,11 @@ roboticslab::WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & con
     step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asFloat64();
 }
 
-bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
+bool WiimoteSensorDevice::acquireInterfaces()
 {
     bool ok = true;
 
-    if (!PolyDriver::view(iAnalogSensor))
+    if (!yarp::dev::PolyDriver::view(iAnalogSensor))
     {
         yWarning() << "Could not view iAnalogSensor";
         ok = false;
@@ -31,7 +33,7 @@ bool roboticslab::WiimoteSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool roboticslab::WiimoteSensorDevice::initialize(bool usingStreamingPreset)
+bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingMovi && step <= 0.0)
     {
@@ -59,7 +61,7 @@ bool roboticslab::WiimoteSensorDevice::initialize(bool usingStreamingPreset)
     return true;
 }
 
-bool roboticslab::WiimoteSensorDevice::acquireData()
+bool WiimoteSensorDevice::acquireData()
 {
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
@@ -80,7 +82,7 @@ bool roboticslab::WiimoteSensorDevice::acquireData()
     return true;
 }
 
-bool roboticslab::WiimoteSensorDevice::transformData(double scaling)
+bool WiimoteSensorDevice::transformData(double scaling)
 {
     bool buttonA = buffer[2] == 1.0;
     bool buttonB = buffer[3] == 1.0;
@@ -120,12 +122,12 @@ bool roboticslab::WiimoteSensorDevice::transformData(double scaling)
     return true;
 }
 
-bool roboticslab::WiimoteSensorDevice::hasValidMovementData() const
+bool WiimoteSensorDevice::hasValidMovementData() const
 {
     return mode != NONE;
 }
 
-void roboticslab::WiimoteSensorDevice::sendMovementCommand(double timestamp)
+void WiimoteSensorDevice::sendMovementCommand(double timestamp)
 {
     std::vector<double> xdot(6, 0.0);
     std::copy(data.begin(), data.end(), xdot.begin() + 3);
@@ -155,7 +157,7 @@ void roboticslab::WiimoteSensorDevice::sendMovementCommand(double timestamp)
     }
 }
 
-void roboticslab::WiimoteSensorDevice::stopMotion()
+void WiimoteSensorDevice::stopMotion()
 {
     if (!usingMovi)
     {

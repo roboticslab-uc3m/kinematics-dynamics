@@ -11,14 +11,11 @@
 
 #include <KdlVectorConverter.hpp>
 
-namespace
-{
-    KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
-}
+using namespace roboticslab;
 
-roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi)
+LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi)
     : StreamingDevice(config),
-      iAnalogSensor(NULL),
+      iAnalogSensor(nullptr),
       usingMovi(usingMovi),
       hasActuator(false),
       grab(false), pinch(false)
@@ -43,11 +40,11 @@ roboticslab::LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable
     }
 }
 
-bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
+bool LeapMotionSensorDevice::acquireInterfaces()
 {
     bool ok = true;
 
-    if (!PolyDriver::view(iAnalogSensor))
+    if (!yarp::dev::PolyDriver::view(iAnalogSensor))
     {
         yWarning() << "Could not view iAnalogSensor";
         ok = false;
@@ -56,7 +53,7 @@ bool roboticslab::LeapMotionSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
+bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingStreamingPreset)
     {
@@ -104,7 +101,7 @@ bool roboticslab::LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
     return true;
 }
 
-bool roboticslab::LeapMotionSensorDevice::acquireData()
+bool LeapMotionSensorDevice::acquireData()
 {
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
@@ -138,7 +135,7 @@ bool roboticslab::LeapMotionSensorDevice::acquireData()
     return true;
 }
 
-bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
+bool LeapMotionSensorDevice::transformData(double scaling)
 {
     for (int i = 0; i < 6; i++)
     {
@@ -175,7 +172,7 @@ bool roboticslab::LeapMotionSensorDevice::transformData(double scaling)
     return true;
 }
 
-int roboticslab::LeapMotionSensorDevice::getActuatorState()
+int LeapMotionSensorDevice::getActuatorState()
 {
     if (!hasActuator)
     {
@@ -209,7 +206,7 @@ int roboticslab::LeapMotionSensorDevice::getActuatorState()
     return actuatorState;
 }
 
-void roboticslab::LeapMotionSensorDevice::sendMovementCommand(double timestamp)
+void LeapMotionSensorDevice::sendMovementCommand(double timestamp)
 {
     if (usingMovi)
     {

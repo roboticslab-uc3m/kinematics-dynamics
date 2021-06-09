@@ -11,8 +11,10 @@
 
 using namespace roboticslab;
 
+constexpr auto ROT_FACTOR = 0.1;
+
 CentroidTransform::CentroidTransform()
-    : streamingDevice(NULL),
+    : streamingDevice(nullptr),
       permanenceTime(0.0)
 {}
 

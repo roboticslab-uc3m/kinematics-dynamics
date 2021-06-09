@@ -1,5 +1,3 @@
-#include <cstdio>
-
 #include <yarp/os/LogStream.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Network.h>
@@ -17,7 +15,6 @@
 int main(int argc, char *argv[])
 {
     yarp::os::ResourceFinder rf;
-    rf.setVerbose(true);
     rf.setDefaultContext("streamingDeviceController");
     rf.setDefaultConfigFile("streamingDeviceController.ini");
     rf.configure(argc, argv);
@@ -25,7 +22,6 @@ int main(int argc, char *argv[])
     roboticslab::StreamingDeviceController mod;
 
     yInfo() << "streamingDeviceController checking for yarp network...";
-    std::fflush(stdout);
 
     if (!yarp::os::Network::checkNetwork())
     {

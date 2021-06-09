@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <kdl/frames.hpp>
+
 #include <yarp/dev/IAnalogSensor.h>
 
 namespace roboticslab
@@ -19,27 +21,25 @@ namespace roboticslab
 class LeapMotionSensorDevice : public StreamingDevice
 {
 public:
-
     //! Constructor
     LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi);
 
-    virtual bool acquireInterfaces();
+    bool acquireInterfaces() override;
 
-    virtual bool initialize(bool usingStreamingPreset);
+    bool initialize(bool usingStreamingPreset) override;
 
-    virtual bool acquireData();
+    bool acquireData() override;
 
-    virtual bool transformData(double scaling);
+    bool transformData(double scaling) override;
 
-    virtual int getActuatorState();
+    int getActuatorState() override;
 
-    virtual void sendMovementCommand(double timestamp);
+    void sendMovementCommand(double timestamp) override;
 
-    virtual void stopMotion()
+    void stopMotion() override
     {}
 
 private:
-
     yarp::dev::IAnalogSensor * iAnalogSensor;
 
     bool usingMovi;
@@ -47,10 +47,12 @@ private:
     std::vector<double> initialTcpOffset;
     std::vector<double> initialLeapOffset;
 
+    KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
+
     bool hasActuator;
     bool grab, pinch;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __LEAP_MOTION_SENSOR_DEVICE_HPP__
+#endif // __LEAP_MOTION_SENSOR_DEVICE_HPP__

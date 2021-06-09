@@ -1,6 +1,7 @@
 #include "StreamingDeviceController.hpp"
 
 #include <cmath>
+
 #include <sstream>
 #include <string>
 #include <typeinfo>
@@ -17,18 +18,26 @@
 
 using namespace roboticslab;
 
-const double SCALING_FACTOR_ON_ALERT = 2.0;
+constexpr auto DEFAULT_DEVICE_NAME = "SpaceNavigator";
+constexpr auto DEFAULT_LOCAL_PREFIX = "/streamingDeviceController";
+constexpr auto DEFAULT_PERIOD = 0.1;
+constexpr auto DEFAULT_SCALING = 10.0;
+
+constexpr auto DEFAULT_PORTMONITOR_TYPE = "lua";
+constexpr auto DEFAULT_PORTMONITOR_CONTEXT = "sensors";
+constexpr auto DEFAULT_PORTMONITOR_FILE = "amor_sensors_modifier";
+
+constexpr auto DEFAULT_THRESHOLD_ALERT_HIGH = 800;
+constexpr auto DEFAULT_THRESHOLD_ALERT_LOW = 100;
+constexpr auto SCALING_FACTOR_ON_ALERT = 2.0;
 
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
     yDebug() << "streamingDeviceController config:" << rf.toString();
 
-    std::string localPrefix = rf.check("prefix", yarp::os::Value(DEFAULT_LOCAL_PREFIX),
-            "local port name prefix").asString();
-    std::string deviceName = rf.check("streamingDevice", yarp::os::Value(DEFAULT_DEVICE_NAME),
-            "device name").asString();
-    std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(""),
-            "remote cartesian port").asString();
+    auto localPrefix = rf.check("prefix", yarp::os::Value(DEFAULT_LOCAL_PREFIX), "local port name prefix").asString();
+    auto deviceName = rf.check("streamingDevice", yarp::os::Value(DEFAULT_DEVICE_NAME), "device name").asString();
+    auto remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(""), "remote cartesian port").asString();
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asFloat64();
@@ -47,14 +56,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    yarp::os::Property cartesianControlClientOptions;
-    cartesianControlClientOptions.put("device", "CartesianControlClient");
-    cartesianControlClientOptions.put("cartesianLocal", localPrefix + "/cartesian");
-    cartesianControlClientOptions.put("cartesianRemote", remoteCartesian);
+    yarp::os::Property cartesianControlClientOptions {
+        {"device", yarp::os::Value("CartesianControlClient")},
+        {"cartesianLocal", yarp::os::Value(localPrefix + "/cartesian")},
+        {"cartesianRemote", yarp::os::Value(remoteCartesian)}
+    };
 
-    cartesianControlClientDevice.open(cartesianControlClientOptions);
-
-    if (!cartesianControlClientDevice.isValid())
+    if (!cartesianControlClientDevice.open(cartesianControlClientOptions))
     {
         yError() << "Cartesian control client device not valid";
         return false;
@@ -90,18 +98,14 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (rf.check("usePortMonitor", "enable port monitoring and additional options"))
         {
-            std::string pmType = rf.check("portMonitorType", yarp::os::Value(DEFAULT_PORTMONITOR_TYPE),
-                    "port monitor type").asString();
-            std::string pmContext = rf.check("portMonitorContext", yarp::os::Value(DEFAULT_PORTMONITOR_CONTEXT),
-                    "port monitor context").asString();
-            std::string pmFile = rf.check("portMonitorFile", yarp::os::Value(DEFAULT_PORTMONITOR_FILE),
-                    "port monitor file").asString();
+            auto pmType = rf.check("portMonitorType", yarp::os::Value(DEFAULT_PORTMONITOR_TYPE), "port monitor type").asString();
+            auto pmContext = rf.check("portMonitorContext", yarp::os::Value(DEFAULT_PORTMONITOR_CONTEXT), "port monitor context").asString();
+            auto pmFile = rf.check("portMonitorFile", yarp::os::Value(DEFAULT_PORTMONITOR_FILE), "port monitor file").asString();
 
             std::ostringstream oss;
             oss << "tcp+recv.portmonitor+type." << pmType << "+context." << pmContext << "+file." << pmFile;
 
             carrier = oss.str();
-
             yInfo() << "Using carrier:" << carrier;
         }
 
@@ -112,7 +116,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         disableSensorsLowLevel = rf.check("disableSensorsLowLevel");
 
-        std::string sensorsPort = rf.find("sensorsPort").asString();
+        auto sensorsPort = rf.find("sensorsPort").asString();
 
         if (!proximityPort.open(localPrefix + "/proximity:i"))
         {
@@ -129,7 +133,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (rf.check("remoteCentroid", "remote centroid port"))
     {
-        const std::type_info & spnavType = typeid(SpnavSensorDevice);
+        const auto & spnavType = typeid(SpnavSensorDevice);
 
         if (typeid(*streamingDevice) != spnavType)
         {
@@ -137,9 +141,9 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
 
-        std::string remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
-        yarp::os::Value vCentroidRPY = rf.check("centroidRPY", yarp::os::Value::getNullValue());
-        double permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
+        auto remoteCentroid = rf.check("remoteCentroid", yarp::os::Value::getNullValue()).asString();
+        auto vCentroidRPY = rf.check("centroidRPY", yarp::os::Value::getNullValue());
+        auto permanenceTime = rf.check("centroidPermTime", yarp::os::Value(0.0)).asFloat64();
 
         if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
         {
@@ -281,7 +285,7 @@ bool StreamingDeviceController::update(double timestamp)
 
     if (!centroidPort.isClosed())
     {
-        yarp::os::Bottle * centroidBottle = centroidPort.read(false);
+        auto * centroidBottle = centroidPort.read(false);
 
         if (centroidTransform.acceptBottle(centroidBottle) && centroidTransform.processStoredBottle())
         {
@@ -339,7 +343,7 @@ bool StreamingDeviceController::close()
     }
 
     delete streamingDevice;
-    streamingDevice = NULL;
+    streamingDevice = nullptr;
 
     return cartesianControlClientDevice.close();
 }
