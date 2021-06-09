@@ -8,8 +8,6 @@
 
 #include "StreamingDevice.hpp"
 
-#define ROT_FACTOR 0.1
-
 namespace roboticslab
 {
 
@@ -23,7 +21,6 @@ class StreamingDevice;
 class CentroidTransform
 {
 public:
-
     //! Constructor
     CentroidTransform();
 
@@ -45,7 +42,6 @@ public:
     bool processStoredBottle() const;
 
 private:
-
     StreamingDevice * streamingDevice;
     double permanenceTime;
     yarp::os::Bottle lastBottle;
@@ -53,6 +49,6 @@ private:
     KDL::Rotation rot_tcp_camera;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __CENTROID_TRANSFORM_HPP__
+#endif // __CENTROID_TRANSFORM_HPP__

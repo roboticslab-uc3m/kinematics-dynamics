@@ -22,26 +22,24 @@ namespace roboticslab
 class WiimoteSensorDevice : public StreamingDevice
 {
 public:
-
     //! Constructor
     WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi);
 
-    virtual bool acquireInterfaces();
+    bool acquireInterfaces() override;
 
-    virtual bool initialize(bool usingStreamingPreset);
+    bool initialize(bool usingStreamingPreset) override;
 
-    virtual bool acquireData();
+    bool acquireData() override;
 
-    virtual bool transformData(double scaling);
+    bool transformData(double scaling) override;
 
-    virtual bool hasValidMovementData() const;
+    bool hasValidMovementData() const override;
 
-    virtual void sendMovementCommand(double timestamp);
+    void sendMovementCommand(double timestamp) override;
 
-    virtual void stopMotion();
+    void stopMotion() override;
 
 private:
-
     enum cmd_mode { NONE, FWD, BKWD, ROT };
 
     yarp::dev::IAnalogSensor * iAnalogSensor;
@@ -54,6 +52,6 @@ private:
     double step;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __WIIMOTE_SENSOR_DEVICE_HPP__
+#endif // __WIIMOTE_SENSOR_DEVICE_HPP__

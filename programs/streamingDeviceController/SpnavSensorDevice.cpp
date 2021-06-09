@@ -3,20 +3,22 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
 
-roboticslab::SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain)
+using namespace roboticslab;
+
+SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain)
     : StreamingDevice(config),
-      iAnalogSensor(NULL),
+      iAnalogSensor(nullptr),
       usingMovi(usingMovi),
       gain(gain),
       buttonClose(false),
       buttonOpen(false)
 {}
 
-bool roboticslab::SpnavSensorDevice::acquireInterfaces()
+bool SpnavSensorDevice::acquireInterfaces()
 {
     bool ok = true;
 
-    if (!PolyDriver::view(iAnalogSensor))
+    if (!yarp::dev::PolyDriver::view(iAnalogSensor))
     {
         yWarning() << "Could not view iAnalogSensor";
         ok = false;
@@ -25,7 +27,7 @@ bool roboticslab::SpnavSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
+bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingMovi && gain <= 0.0)
     {
@@ -59,7 +61,7 @@ bool roboticslab::SpnavSensorDevice::initialize(bool usingStreamingPreset)
     return true;
 }
 
-bool roboticslab::SpnavSensorDevice::acquireData()
+bool SpnavSensorDevice::acquireData()
 {
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
@@ -86,7 +88,7 @@ bool roboticslab::SpnavSensorDevice::acquireData()
     return true;
 }
 
-bool roboticslab::SpnavSensorDevice::transformData(double scaling)
+bool SpnavSensorDevice::transformData(double scaling)
 {
     if (usingMovi)
     {
@@ -110,7 +112,7 @@ bool roboticslab::SpnavSensorDevice::transformData(double scaling)
     }
 }
 
-int roboticslab::SpnavSensorDevice::getActuatorState()
+int SpnavSensorDevice::getActuatorState()
 {
     if (buttonClose)
     {
@@ -139,7 +141,7 @@ int roboticslab::SpnavSensorDevice::getActuatorState()
     return actuatorState;
 }
 
-bool roboticslab::SpnavSensorDevice::hasValidMovementData() const
+bool SpnavSensorDevice::hasValidMovementData() const
 {
     if (usingMovi)
     {
@@ -159,7 +161,7 @@ bool roboticslab::SpnavSensorDevice::hasValidMovementData() const
     }
 }
 
-void roboticslab::SpnavSensorDevice::sendMovementCommand(double timestamp)
+void SpnavSensorDevice::sendMovementCommand(double timestamp)
 {
     if (usingMovi)
     {
@@ -176,7 +178,7 @@ void roboticslab::SpnavSensorDevice::sendMovementCommand(double timestamp)
     }
 }
 
-void roboticslab::SpnavSensorDevice::stopMotion()
+void SpnavSensorDevice::stopMotion()
 {
     if (!usingMovi)
     {

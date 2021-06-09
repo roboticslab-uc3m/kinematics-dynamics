@@ -47,7 +47,6 @@ class StreamingDevice : protected yarp::dev::PolyDriver
     friend CentroidTransform;
 
 public:
-
     using PolyDriver::isValid;
 
     /**
@@ -129,7 +128,6 @@ public:
     }
 
 protected:
-
     ICartesianControl * iCartesianControl;
 
     std::vector<double> data;
@@ -138,7 +136,6 @@ protected:
     int actuatorState;
 
 private:
-
     /**
      * @brief Stores vector of values representing axes that are always fixed.
      */
@@ -155,29 +152,28 @@ private:
 class InvalidDevice : public StreamingDevice
 {
 public:
-
     //! Creates an invalid device
     InvalidDevice()
         : StreamingDevice(yarp::os::Value::getNullValue())
     {}
 
-    virtual bool acquireInterfaces()
+    bool acquireInterfaces() override
     {
         return false;
     }
 
-    virtual bool acquireData()
+    bool acquireData() override
     {
         return false;
     }
 
-    virtual void sendMovementCommand(double timestamp)
+    void sendMovementCommand(double timestamp) override
     {}
 
-    virtual void stopMotion()
+    void stopMotion() override
     {}
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __STREAMING_DEVICE_HPP__
+#endif // __STREAMING_DEVICE_HPP__

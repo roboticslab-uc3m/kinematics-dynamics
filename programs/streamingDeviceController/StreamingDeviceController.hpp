@@ -5,7 +5,6 @@
 
 #include <yarp/os/Bottle.h>
 #include <yarp/os/BufferedPort.h>
-#include <yarp/os/ResourceFinder.h>
 #include <yarp/os/RFModule.h>
 #include <yarp/os/TypedReaderCallback.h>
 
@@ -15,15 +14,6 @@
 #include "CentroidTransform.hpp"
 
 #include "ICartesianControl.h"
-
-#ifdef SDC_WITH_SENSORS
-# include "IProximitySensors.h"
-#endif  // SDC_WITH_SENSORS
-
-#define DEFAULT_DEVICE_NAME "SpaceNavigator"
-#define DEFAULT_LOCAL_PREFIX "/streamingDeviceController"
-#define DEFAULT_PERIOD 0.1  // [s]
-#define DEFAULT_SCALING 10.0
 
 namespace roboticslab
 {
@@ -38,12 +28,12 @@ class StreamingDeviceController : public yarp::os::RFModule,
                                   public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
-    virtual bool configure(yarp::os::ResourceFinder &rf);
-    virtual bool updateModule();
-    virtual bool interruptModule();
-    virtual bool close();
-    virtual double getPeriod();
-    virtual void onRead(yarp::os::Bottle & bot);
+    bool configure(yarp::os::ResourceFinder & rf) override;
+    bool updateModule() override;
+    bool interruptModule() override;
+    bool close() override;
+    double getPeriod() override;
+    void onRead(yarp::os::Bottle & bot) override;
 
 private:
     bool update(double timestamp);
@@ -51,15 +41,12 @@ private:
     StreamingDevice * streamingDevice;
 
     yarp::dev::PolyDriver cartesianControlClientDevice;
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 
-#ifdef SDC_WITH_SENSORS
-    yarp::dev::PolyDriver sensorsClientDevice;
-    roboticslab::IProximitySensors *iProximitySensors;
-
+    yarp::os::BufferedPort<yarp::os::Bottle> proximityPort;
+    int thresholdAlertHigh;
+    int thresholdAlertLow;
     bool disableSensorsLowLevel;
-    static const double SCALING_FACTOR_ON_ALERT;
-#endif  // SDC_WITH_SENSORS
 
     yarp::os::BufferedPort<yarp::os::Bottle> centroidPort;
     CentroidTransform centroidTransform;
@@ -68,10 +55,9 @@ private:
 
     double period;
     double scaling;
-
     bool isStopped;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __STREAMING_DEVICE_CONTROLLER_HPP__
+#endif // __STREAMING_DEVICE_CONTROLLER_HPP__
