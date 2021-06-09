@@ -3,6 +3,8 @@
 #ifndef __CARTESIAN_CONTROL_SERVER_HPP__
 #define __CARTESIAN_CONTROL_SERVER_HPP__
 
+#include <vector>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/PeriodicThread.h>
@@ -11,20 +13,18 @@
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <vector>
-
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
-#define DEFAULT_PREFIX "/CartesianServer"
-#define DEFAULT_MS 20
+constexpr auto DEFAULT_PREFIX = "/CartesianServer";
+constexpr auto DEFAULT_MS = 20;
 
 namespace roboticslab
 {
 
 /**
  * @ingroup YarpPlugins
- * \defgroup CartesianControlServer
+ * @defgroup CartesianControlServer
  *
  * @brief Contains roboticslab::CartesianControlServer.
  */
@@ -37,58 +37,36 @@ class StreamResponder;
  * @ingroup CartesianControlServer
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
-
-class CartesianControlServer : public yarp::dev::DeviceDriver, public yarp::os::PeriodicThread
+class CartesianControlServer : public yarp::dev::DeviceDriver,
+                               public yarp::os::PeriodicThread
 {
 public:
-
     CartesianControlServer()
         : yarp::os::PeriodicThread(DEFAULT_MS * 0.001),
-          iCartesianControl(NULL),
-          rpcResponder(NULL), rpcTransformResponder(NULL),
-          streamResponder(NULL),
+          iCartesianControl(nullptr),
+          rpcResponder(nullptr), rpcTransformResponder(nullptr),
+          streamResponder(nullptr),
           fkStreamEnabled(true)
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
-    /**
-     * Open the DeviceDriver.
-     * @param config is a list of parameters for the device.
-     * Which parameters are effective for your device can vary.
-     * See \ref dev_examples "device invocation examples".
-     * If there is no example for your device,
-     * you can run the "yarpdev" program with the verbose flag
-     * set to probe what parameters the device is checking.
-     * If that fails too,
-     * you'll need to read the source code (please nag one of the
-     * yarp developers to add documentation for your device).
-     * @return true/false upon success/failure
-     */
-    virtual bool open(yarp::os::Searchable& config);
+    bool open(yarp::os::Searchable & config) override;
+    bool close() override;
 
-    /**
-     * Close the DeviceDriver.
-     * @return true/false on success/failure.
-     */
-    virtual bool close();
-
-    /**
-     * Loop function. This is the thread itself.
-     */
-    virtual void run();
+    // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
+    void run() override;
 
 protected:
-
     yarp::dev::PolyDriver cartesianControlDevice;
 
     yarp::os::RpcServer rpcServer, rpcTransformServer;
     yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 
-    RpcResponder *rpcResponder, *rpcTransformResponder;
-    StreamResponder *streamResponder;
+    RpcResponder * rpcResponder, * rpcTransformResponder;
+    StreamResponder * streamResponder;
 
     bool fkStreamEnabled;
 };
@@ -100,11 +78,9 @@ protected:
 class RpcResponder : public yarp::dev::DeviceResponder
 {
 public:
-
-    RpcResponder(roboticslab::ICartesianControl *iCartesianControl)
+    RpcResponder(roboticslab::ICartesianControl * _iCartesianControl)
+        : iCartesianControl(_iCartesianControl)
     {
-        this->iCartesianControl = iCartesianControl;
-
         // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
         makeUsage();
     }
@@ -115,7 +91,7 @@ public:
      * @param out the response
      * @return true if there was no critical failure
      */
-    virtual bool respond(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool respond(const yarp::os::Bottle & in, yarp::os::Bottle & out) override;
 
     /**
      * Generate command usage information.
@@ -123,36 +99,32 @@ public:
     void makeUsage();
 
 protected:
+    virtual bool transformIncomingData(std::vector<double> & vin)
+    { return true; }
 
-    typedef bool (ICartesianControl::*RunnableFun)();
-    typedef bool (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
-    typedef bool (ICartesianControl::*FunctionFun)(const std::vector<double>&, std::vector<double>&);
+    virtual bool transformOutgoingData(std::vector<double> & vout)
+    { return true; }
 
-    bool handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+private:
+    using RunnableFun = bool (ICartesianControl::*)();
+    using ConsumerFun = bool (ICartesianControl::*)(const std::vector<double> &);
+    using FunctionFun = bool (ICartesianControl::*)(const std::vector<double> &, std::vector<double> &);
 
-    bool handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd);
-    bool handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd);
-    bool handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd);
+    bool handleStatMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out);
+    bool handleWaitMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out);
+    bool handleActMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out);
 
-    bool handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleRunnableCmdMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out, RunnableFun cmd);
+    bool handleConsumerCmdMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out, ConsumerFun cmd);
+    bool handleFunctionCmdMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out, FunctionFun cmd);
 
-    bool handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out);
-    bool handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out);
+    bool handleParameterSetter(const yarp::os::Bottle & in, yarp::os::Bottle & out);
+    bool handleParameterGetter(const yarp::os::Bottle & in, yarp::os::Bottle & out);
 
-    virtual bool transformIncomingData(std::vector<double>& vin)
-    {
-        return true;
-    }
+    bool handleParameterSetterGroup(const yarp::os::Bottle & in, yarp::os::Bottle & out);
+    bool handleParameterGetterGroup(const yarp::os::Bottle & in, yarp::os::Bottle & out);
 
-    virtual bool transformOutgoingData(std::vector<double>& vout)
-    {
-        return true;
-    }
-
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 };
 
 /**
@@ -162,19 +134,19 @@ protected:
 class RpcTransformResponder : public RpcResponder
 {
 public:
-
-    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl, KinRepresentation::coordinate_system coord,
-            KinRepresentation::orientation_system orient, KinRepresentation::angular_units units)
+    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl,
+                          KinRepresentation::coordinate_system coord,
+                          KinRepresentation::orientation_system orient,
+                          KinRepresentation::angular_units units)
         : RpcResponder(iCartesianControl),
           coord(coord),
           orient(orient),
           units(units)
     {}
 
-protected:
-
-    virtual bool transformIncomingData(std::vector<double>& vin);
-    virtual bool transformOutgoingData(std::vector<double>& vout);
+private:
+    bool transformIncomingData(std::vector<double> & vin) override;
+    bool transformOutgoingData(std::vector<double> & vout) override;
 
     KinRepresentation::coordinate_system coord;
     KinRepresentation::orientation_system orient;
@@ -188,25 +160,22 @@ protected:
 class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
+    StreamResponder(roboticslab::ICartesianControl * _iCartesianControl)
+        : iCartesianControl(_iCartesianControl)
+    {}
 
-    StreamResponder(roboticslab::ICartesianControl *iCartesianControl)
-    {
-        this->iCartesianControl = iCartesianControl;
-    }
+    void onRead(yarp::os::Bottle & b) override;
 
-    void onRead(yarp::os::Bottle& b);
+private:
+    using ConsumerFun = void (ICartesianControl::*)(const std::vector<double> &);
+    using BiConsumerFun = void (ICartesianControl::*)(const std::vector<double> &, double);
 
-protected:
+    void handleConsumerCmdMsg(const yarp::os::Bottle & in, ConsumerFun cmd);
+    void handleBiConsumerCmdMsg(const yarp::os::Bottle & in, BiConsumerFun cmd);
 
-    typedef void (ICartesianControl::*ConsumerFun)(const std::vector<double>&);
-    typedef void (ICartesianControl::*BiConsumerFun)(const std::vector<double>&, double);
-
-    void handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd);
-    void handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsumerFun cmd);
-
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __CARTESIAN_CONTROL_SERVER_HPP__
+#endif // __CARTESIAN_CONTROL_SERVER_HPP__

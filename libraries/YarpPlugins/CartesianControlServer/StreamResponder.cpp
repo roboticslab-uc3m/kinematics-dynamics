@@ -6,9 +6,11 @@
 
 #include <yarp/os/LogStream.h>
 
+using namespace roboticslab;
+
 // ------------------- StreamResponder Related ------------------------------------
 
-void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
+void StreamResponder::onRead(yarp::os::Bottle& b)
 {
     yDebug("Got: %s", b.toString().c_str());
 
@@ -31,7 +33,7 @@ void roboticslab::StreamResponder::onRead(yarp::os::Bottle& b)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd)
+void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd)
 {
     if (in.size() > 1)
     {
@@ -52,7 +54,7 @@ void roboticslab::StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& 
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsumerFun cmd)
+void StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsumerFun cmd)
 {
     if (in.size() > 2)
     {

@@ -8,9 +8,11 @@
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
 
+using namespace roboticslab;
+
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
+bool CartesianControlServer::open(yarp::os::Searchable& config)
 {
     yarp::os::Value * name;
 
@@ -58,7 +60,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
     rpcResponder = new RpcResponder(iCartesianControl);
     streamResponder = new StreamResponder(iCartesianControl);
 
-    std::string prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
+    auto prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
 
     bool ok = true;
 
@@ -84,15 +86,15 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     yarp::os::Value * angleRepr, * coordRepr, * angularUnits;
 
-    KinRepresentation::coordinate_system coord = KinRepresentation::coordinate_system::CARTESIAN;
-    KinRepresentation::orientation_system orient = KinRepresentation::orientation_system::AXIS_ANGLE_SCALED;
-    KinRepresentation::angular_units units = KinRepresentation::angular_units::DEGREES;
+    auto coord = KinRepresentation::coordinate_system::CARTESIAN;
+    auto orient = KinRepresentation::orientation_system::AXIS_ANGLE_SCALED;
+    auto units = KinRepresentation::angular_units::DEGREES;
 
     bool openTransformPort = false;
 
     if (config.check("coordRepr", coordRepr, "coordinate representation for transform port"))
     {
-        std::string coordReprStr = coordRepr->asString();
+        auto coordReprStr = coordRepr->asString();
 
         if (!KinRepresentation::parseEnumerator(coordReprStr, &coord))
         {
@@ -106,7 +108,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (config.check("angleRepr", angleRepr, "angle representation for transform port"))
     {
-        std::string angleReprStr = angleRepr->asString();
+        auto angleReprStr = angleRepr->asString();
 
         if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
         {
@@ -121,7 +123,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (config.check("angularUnits", angularUnits, "angular units for transform port"))
     {
-        std::string angularUnitsStr = angularUnits->asString();
+        auto angularUnitsStr = angularUnits->asString();
 
         if (!KinRepresentation::parseEnumerator(angularUnitsStr, &units))
         {
@@ -146,7 +148,7 @@ bool roboticslab::CartesianControlServer::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlServer::close()
+bool CartesianControlServer::close()
 {
     if (fkStreamEnabled)
     {
@@ -159,20 +161,20 @@ bool roboticslab::CartesianControlServer::close()
     rpcServer.interrupt();
     rpcServer.close();
     delete rpcResponder;
-    rpcResponder = NULL;
+    rpcResponder = nullptr;
 
-    if (rpcTransformResponder != NULL)
+    if (rpcTransformResponder)
     {
         rpcTransformServer.interrupt();
         rpcTransformServer.close();
         delete rpcTransformResponder;
-        rpcTransformResponder = NULL;
+        rpcTransformResponder = nullptr;
     }
 
     commandPort.interrupt();
     commandPort.close();
     delete streamResponder;
-    streamResponder = NULL;
+    streamResponder = nullptr;
 
     return cartesianControlDevice.close();
 }

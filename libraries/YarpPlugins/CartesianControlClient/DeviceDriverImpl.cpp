@@ -8,13 +8,15 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/Time.h>
 
+using namespace roboticslab;
+
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
+bool CartesianControlClient::open(yarp::os::Searchable& config)
 {
-    std::string local = config.check("cartesianLocal", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
+    auto local = config.check("cartesianLocal", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
             "local port").asString();
-    std::string remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
+    auto remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
             "remote port").asString();
 
     if (!rpcClient.open(local + "/rpc:c") || !commandPort.open(local + "/command:o"))
@@ -81,7 +83,7 @@ bool roboticslab::CartesianControlClient::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::close()
+bool CartesianControlClient::close()
 {
     rpcClient.close();
     commandPort.close();

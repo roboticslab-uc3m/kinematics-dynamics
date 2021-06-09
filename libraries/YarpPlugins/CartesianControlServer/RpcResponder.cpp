@@ -8,6 +8,8 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
 
+using namespace roboticslab;
+
 // -----------------------------------------------------------------------------
 
 namespace
@@ -44,7 +46,7 @@ namespace
 
 // ------------------- RpcResponder Related ------------------------------------
 
-bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     switch (in.get(0).asVocab())
     {
@@ -83,7 +85,7 @@ bool roboticslab::RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bo
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::RpcResponder::makeUsage()
+void RpcResponder::makeUsage()
 {
     std::stringstream ss;
 
@@ -192,7 +194,7 @@ void roboticslab::RpcResponder::makeUsage()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     std::vector<double> x;
     int state;
@@ -226,7 +228,7 @@ bool roboticslab::RpcResponder::handleStatMsg(const yarp::os::Bottle& in, yarp::
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     bool res;
 
@@ -252,7 +254,7 @@ bool roboticslab::RpcResponder::handleWaitMsg(const yarp::os::Bottle& in, yarp::
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() > 1)
     {
@@ -279,7 +281,7 @@ bool roboticslab::RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::o
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd)
+bool RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd)
 {
     if ((iCartesianControl->*cmd)())
     {
@@ -295,7 +297,7 @@ bool roboticslab::RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd)
+bool RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, ConsumerFun cmd)
 {
     if (in.size() > 1)
     {
@@ -325,7 +327,7 @@ bool roboticslab::RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd)
+bool RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, FunctionFun cmd)
 {
     if (in.size() > 1)
     {
@@ -359,7 +361,7 @@ bool roboticslab::RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in,
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleParameterSetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() > 2)
     {
@@ -385,7 +387,7 @@ bool roboticslab::RpcResponder::handleParameterSetter(const yarp::os::Bottle& in
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleParameterGetter(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() > 1)
     {
@@ -411,7 +413,7 @@ bool roboticslab::RpcResponder::handleParameterGetter(const yarp::os::Bottle& in
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() > 2)
     {
@@ -429,8 +431,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
             yarp::os::Bottle * b = in.get(i).asList();
             int vocab = b->get(0).asVocab();
             double value = asValue(vocab, b->get(1));
-            std::pair<int, double> el(vocab, value);
-            params.insert(el);
+            params.emplace(std::make_pair(vocab, value));
         }
 
         if (!iCartesianControl->setParameters(params))
@@ -452,7 +453,7 @@ bool roboticslab::RpcResponder::handleParameterSetterGroup(const yarp::os::Bottl
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
+bool RpcResponder::handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
     if (in.size() == 2)
     {
@@ -464,11 +465,11 @@ bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottl
             return false;
         }
 
-        for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
+        for (const auto & it : params)
         {
             yarp::os::Bottle & b = out.addList();
-            b.addVocab(it->first);
-            addValue(b, it->first, it->second);
+            b.addVocab(it.first);
+            addValue(b, it.first, it.second);
         }
 
         return true;
@@ -483,14 +484,14 @@ bool roboticslab::RpcResponder::handleParameterGetterGroup(const yarp::os::Bottl
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
+bool RpcTransformResponder::transformIncomingData(std::vector<double>& vin)
 {
     return KinRepresentation::encodePose(vin, vin, coord, orient, units);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::RpcTransformResponder::transformOutgoingData(std::vector<double>& vout)
+bool RpcTransformResponder::transformOutgoingData(std::vector<double>& vout)
 {
     return KinRepresentation::decodePose(vout, vout, coord, orient, units);
 }
