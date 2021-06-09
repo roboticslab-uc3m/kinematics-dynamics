@@ -16,8 +16,7 @@ if(ENABLE_haarDetectionController)
     target_link_libraries(haarDetectionController YARP::YARP_os
                                                   YARP::YARP_init
                                                   YARP::YARP_dev
-                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces
-                                                  ROBOTICSLAB::YarpDevicesInterfaces)
+                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     install(TARGETS haarDetectionController
             DESTINATION ${CMAKE_INSTALL_BINDIR})
