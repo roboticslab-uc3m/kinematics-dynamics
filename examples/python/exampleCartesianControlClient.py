@@ -10,39 +10,40 @@ if not yarp.Network.checkNetwork():
     raise SystemExit
 
 options = yarp.Property()
-options.put('device','CartesianControlClient')
-options.put('cartesianRemote','/teoSim/rightArm/CartesianControl')
-options.put('cartesianLocal','/cartesianControlExample')
-options.put('transform', 1)
-dd = yarp.PolyDriver(options)  # calls open -> connects
+options.put('device', 'CartesianControlClient')
+options.put('cartesianRemote', '/teoSim/rightArm/CartesianControl')
+options.put('cartesianLocal', '/cartesianControlExample')
+
+dd = yarp.PolyDriver(options)
 
 if not dd.isValid():
     print('Cannot open the device!')
     raise SystemExit
 
-cartesianControl = kd.viewICartesianControl(dd)  # view the actual interface
+cartesianControl = kd.viewICartesianControl(dd)
 
 print('> stat')
 x = yarp.DVector()
 ret, state, ts = cartesianControl.stat(x)
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
 
-xd = [0,0,0,0,0,0,0]
-
-xd[0] = [0.389496, -0.34692, 0.16769, 1.0, 0.0, 0.0, 0.0]
-xd[1] = [0.5, -0.34692, 0.16769, 1.0, 0.0, 0.0, 0.0]
-xd[2] = [0.5, -0.4, 0.16769, 1.0, 0.0, 0.0, 0.0]
-xd[3] = [0.5, -0.4, 0.16769, 0.0, 1.0, 0.0, -12.0]
-xd[4] = [0.5, -0.4, 0.16769, 1.0, 0.0, 0.0, -50.0]
-xd[5] = [0.389496, -0.34692, 0.16769, 1.0, 0.0, 0.0, 0.0]
-xd[6] = [0.0, -0.34692, -0.221806, 0.0, 1.0, 0.0, 90.0]
+xd = [
+    [0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0],
+    [0.5, -0.3469, 0.1692, 0.0, 1.5708, 0.0],
+    [0.5, -0.4, 0.1692, 0.0, 1.5708, 0.0],
+    [0.5, -0.4, 0.1692, 0.0, 1.36, 0.0],
+    [0.5, -0.4, 0.1692, 0.6139, 1.4822, 0.6139],
+    [0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0],
+    [0.0, -0.3469, -0.2333, 0.0, 3.1416, 0.0]
+]
 
 for i in range(len(xd)):
-    print('-- movement '+str(i+1)+':')
+    print('-- movement ' + str(i + 1) + ':')
     print('> inv [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
     qd_vector = yarp.DVector()
-    if cartesianControl.inv(xd_vector,qd_vector):
+
+    if cartesianControl.inv(xd_vector, qd_vector):
         print('< [%s]' % ', '.join(map(str, qd_vector)))
     else:
         print('< [fail]')
@@ -50,6 +51,7 @@ for i in range(len(xd)):
 
     print('> movj [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
+
     if cartesianControl.movj(xd_vector):
         print('< [ok]')
         print('< [wait...]')

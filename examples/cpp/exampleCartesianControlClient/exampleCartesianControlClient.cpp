@@ -26,13 +26,11 @@ make -j$(nproc)
  * What mostly changes is the library command line invocation. We also change the server port name. The following is an example for the simulated robot's right arm.
 \verbatim
 [on terminal 2] teoSim
-[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --from /usr/local/share/teo-configuration-files/contexts/kinematics/rightArmKinematics.ini --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm --angleRepr axisAngle
+[on terminal 3] yarpdev --device BasicCartesianControl --name /teoSim/rightArm/CartesianControl --kinematics teo-fixedTrunk-rightArm-fetch.ini --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm
 [on terminal 4] ./cartesianControlExample
-[on possible terminal 5] yarp rpc /teoSim/rightArm/CartesianControl/rpc_transform:s (for manual operation)
+[on possible terminal 5] yarp rpc /teoSim/rightArm/CartesianControl/rpc:s (for manual operation)
 \endverbatim
  */
-
-#include <vector>
 
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
@@ -40,7 +38,7 @@ make -j$(nproc)
 
 #include <yarp/dev/PolyDriver.h>
 
-#include <ICartesianControl.h> // we need this to work with the CartesianControlClient device
+#include <ICartesianControl.h>
 
 int main(int argc, char *argv[])
 {
@@ -52,11 +50,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    yarp::os::Property options;
-    options.put("device", "CartesianControlClient"); // our device (a dynamically loaded library)
-    options.put("cartesianRemote", "/teoSim/rightArm/CartesianControl"); // remote port through which we'll talk to the server
-    options.put("cartesianLocal", "/CartesianControlExample");
-    options.put("transform", 1);  // Was yarp::os::Value::getNullValue()
+    yarp::os::Property options {
+        {"device", yarp::os::Value("CartesianControlClient")},
+        {"cartesianRemote", yarp::os::Value("/teoSim/rightArm/CartesianControl")},
+        {"cartesianLocal", yarp::os::Value("/CartesianControlExample")}
+    };
 
     yarp::dev::PolyDriver dd(options);
 
@@ -74,144 +72,81 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    yInfo() << "Acquired interface";
-
     std::vector<double> vector;
     iCartesianControl->stat(vector);
 
     yInfo() << "Controller status (forward kinematics):" << vector;
 
-    // -- Move arm in joint space:
-    // -- set poss (0 0 0 90 0 0 0)
+    yInfo() << "Position 1: poss (0 0 0 90 0 0)";
 
-    // -- Position 1
-    std::vector<double> position(7);
-    position[0] = 0.390926; // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
-    position[1] = -0.346663;
-    position[2] = 0.166873;
-    position[3] = -0.004334;
-    position[4] = 0.70944;
-    position[5] = 0.704752;
-    position[6] = 0.353119;
-
-    // movj -> go to end position in joint space
-    // movl -> go to end position in task space
-
-    yInfo() << "Position 1: poss (0 0 0 90 0 0 0)";
-
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    if (!iCartesianControl->movj({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    // -- Position 2: move forward along axis X
+    iCartesianControl->wait();
+
     yInfo() << "Position 2: move forward along axis X";
-    position[0] = 0.5;
 
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    if (!iCartesianControl->movj({0.5, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    // -- Position 3: move right along axis Y
+    iCartesianControl->wait();
+
     yInfo() << "Position 3: move right along axis Y";
-    position[1] = -0.4;
 
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    // -- Position 4: rotate -12 degrees about axis Y
-    yInfo() << "Position 4: rotate -12 degrees about axis Y ...";
-    position[3] = 0.0;
-    position[4] = 1.0;
-    position[5] = 0.0;
-    position[6] = -12.0;
+    iCartesianControl->wait();
 
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    yInfo() << "Position 4: rotate -12 degrees about global axis Y";
+
+    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.0, 1.36, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    // -- Position 5: rotate 50 degrees about axis X
-    yInfo() << "Position 5: rotate 50 degrees about axis X ...";
-    position[3] = 1.0;
-    position[4] = 0.0;
-    position[5] = 0.0;
-    position[6] = -50.0;
+    iCartesianControl->wait();
 
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    yInfo() << "Position 5: rotate 45 degrees about global axis X";
+
+    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.6139, 1.4822, 0.6139}))
     {
         yError() << "failure";
         return 1;
     }
 
-    // -- Position 6:
-    yInfo() << "Position 6: poss (0 0 0 90 0 0 0) ...";
-    position[0] = 0.390926; // 0.390926 -0.346663 0.166873 -0.004334 0.70944 0.704752 0.353119
-    position[1] = -0.346663;
-    position[2] = 0.166873;
-    position[3] = -0.004334;
-    position[4] = 0.70944;
-    position[5] = 0.704752;
-    position[6] = 0.353119;
+    iCartesianControl->wait();
 
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    yInfo() << "Position 6: poss (0 0 0 -90 0 0)";
+
+    if (!iCartesianControl->movj({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    // -- Initial position
-    yInfo() << "Position 7: Homing ...";
-    position[0] = 0.0;
-    position[1] = -0.34692;
-    position[2] = -0.221806;
-    position[3] = 0.0;
-    position[4] = 1.0;
-    position[5] = 0.0;
-    position[6] = 90.0;
+    iCartesianControl->wait();
 
-    if (iCartesianControl->movj(position))
-    {
-        iCartesianControl->wait();
-    }
-    else
+    yInfo() << "Position 7: homing";
+
+    if (!iCartesianControl->movj({0.0, -0.3469, -0.2333, 0.0, 3.1416, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
+
+    iCartesianControl->wait();
 
     dd.close();
-
     return 0;
 }
