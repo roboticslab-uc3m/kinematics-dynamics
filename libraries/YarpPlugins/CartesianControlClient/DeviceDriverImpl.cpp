@@ -25,10 +25,7 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
-    bool transformEnabled = config.check("transform", "connect to server transform port");
-    std::string suffix = transformEnabled ? "/rpc_transform:s" : "/rpc:s";
-
-    if (!rpcClient.addOutput(remote + suffix))
+    if (!rpcClient.addOutput(remote + "/rpc:s"))
     {
         yError() << "Error on connect to remote RPC server";
         return false;
@@ -43,40 +40,31 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
     fkStreamTimeoutSecs = config.check("fkStreamTimeoutSecs", yarp::os::Value(DEFAULT_FK_STREAM_TIMEOUT_SECS),
             "FK stream timeout (seconds)").asFloat64();
 
-    if (transformEnabled)
+    std::string statePort = remote + "/state:o";
+
+    if (yarp::os::Network::exists(statePort))
     {
-        // Incoming FK stream data may not conform to standard representation, resort to RPC
-        // if user requests --transform (see #143, #145).
-        yWarning() << "FK streaming not supported in --transform mode, using RPC instead";
+        if (!fkInPort.open(local + "/state:i"))
+        {
+            yError() << "Unable to open local stream port";
+            return false;
+        }
+
+        if (!yarp::os::Network::connect(statePort, fkInPort.getName(), "udp"))
+        {
+            yError() << "Unable to connect to remote stream port";
+            return false;
+        }
+
+        fkInPort.useCallback(fkStreamResponder);
+        yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
     }
     else
     {
-        std::string statePort = remote + "/state:o";
-
-        if (yarp::os::Network::exists(statePort))
-        {
-            if (!fkInPort.open(local + "/state:i"))
-            {
-                yError() << "Unable to open local stream port";
-                return false;
-            }
-
-            if (!yarp::os::Network::connect(statePort, fkInPort.getName(), "udp"))
-            {
-                yError() << "Unable to connect to remote stream port";
-                return false;
-            }
-
-            fkInPort.useCallback(fkStreamResponder);
-            yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
-        }
-        else
-        {
-            yWarning() << "Missing remote" << statePort << "stream port, using RPC instead";
-        }
+        yWarning() << "Missing remote" << statePort << "stream port, using RPC instead";
     }
 
-    yInfo() << "Connected to remote";
+    yInfo() << "Connected to remote" << remote;
 
     return true;
 }
