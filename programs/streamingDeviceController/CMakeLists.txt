@@ -33,14 +33,6 @@ if(ENABLE_streamingDeviceController)
                                                     ROBOTICSLAB::KdlVectorConverterLib
                                                     ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
-    if(ROBOTICSLAB_YARP_DEVICES_FOUND)
-        message(STATUS "ROBOTICSLAB_YARP_DEVICES found, building streamingDeviceController with sensor support")
-        target_link_libraries(streamingDeviceController ROBOTICSLAB::YarpDevicesInterfaces)
-        target_compile_definitions(streamingDeviceController PRIVATE SDC_WITH_SENSORS)
-    else()
-        message(STATUS "ROBOTICSLAB_YARP_DEVICES not found, building streamingDeviceController without sensor support")
-    endif()
-
     install(TARGETS streamingDeviceController
             DESTINATION ${CMAKE_INSTALL_BINDIR})
 

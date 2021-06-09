@@ -16,14 +16,19 @@
 
 #include "ICartesianControl.h"
 
-#ifdef SDC_WITH_SENSORS
-# include "IProximitySensors.h"
-#endif  // SDC_WITH_SENSORS
-
 #define DEFAULT_DEVICE_NAME "SpaceNavigator"
 #define DEFAULT_LOCAL_PREFIX "/streamingDeviceController"
 #define DEFAULT_PERIOD 0.1  // [s]
 #define DEFAULT_SCALING 10.0
+
+#define DEFAULT_SENSOR_REMOTE "/serial/out"
+
+#define DEFAULT_PORTMONITOR_TYPE "lua"
+#define DEFAULT_PORTMONITOR_CONTEXT "sensors"
+#define DEFAULT_PORTMONITOR_FILE "amor_sensors_modifier"
+
+#define DEFAULT_THRESHOLD_ALERT_HIGH 800
+#define DEFAULT_THRESHOLD_ALERT_LOW 100
 
 namespace roboticslab
 {
@@ -53,13 +58,10 @@ private:
     yarp::dev::PolyDriver cartesianControlClientDevice;
     roboticslab::ICartesianControl *iCartesianControl;
 
-#ifdef SDC_WITH_SENSORS
-    yarp::dev::PolyDriver sensorsClientDevice;
-    roboticslab::IProximitySensors *iProximitySensors;
-
+    yarp::os::BufferedPort<yarp::os::Bottle> proximityPort;
+    int thresholdAlertHigh;
+    int thresholdAlertLow;
     bool disableSensorsLowLevel;
-    static const double SCALING_FACTOR_ON_ALERT;
-#endif  // SDC_WITH_SENSORS
 
     yarp::os::BufferedPort<yarp::os::Bottle> centroidPort;
     CentroidTransform centroidTransform;
