@@ -18,7 +18,6 @@ namespace roboticslab
 class MatrixExponential
 {
 public:
-
     //! Lists available screw motion types.
     enum motion
     {
@@ -90,12 +89,11 @@ public:
     MatrixExponential cloneWithBase(const KDL::Frame & H_new_old) const;
 
 private:
-
     motion motionType;
     KDL::Vector axis;
     KDL::Vector origin;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __MATRIX_EXPONENTIAL_HPP__
+#endif // __MATRIX_EXPONENTIAL_HPP__

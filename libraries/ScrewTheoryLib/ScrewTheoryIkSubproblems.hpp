@@ -23,7 +23,6 @@ namespace roboticslab
 class PadenKahanOne : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -33,13 +32,12 @@ public:
      */
     PadenKahanOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 1; }
 
 private:
-
     const int id;
     const MatrixExponential exp;
     const KDL::Vector p;
@@ -58,7 +56,6 @@ private:
 class PadenKahanTwo : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -71,13 +68,12 @@ public:
      */
     PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p, const KDL::Vector & r);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 2; }
 
 private:
-
     const int id1, id2;
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, r, axesCross;
@@ -97,7 +93,6 @@ private:
 class PadenKahanThree : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -108,13 +103,12 @@ public:
      */
     PadenKahanThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 2; }
 
 private:
-
     const int id;
     const MatrixExponential exp;
     const KDL::Vector p, k;
@@ -133,7 +127,6 @@ private:
 class PardosGotorOne : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -143,13 +136,12 @@ public:
      */
     PardosGotorOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 1; }
 
 private:
-
     const int id;
     const MatrixExponential exp;
     const KDL::Vector p;
@@ -167,7 +159,6 @@ private:
 class PardosGotorTwo : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -179,13 +170,12 @@ public:
      */
     PardosGotorTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 1; }
 
 private:
-
     const int id1, id2;
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, crossPr2;
@@ -205,7 +195,6 @@ private:
 class PardosGotorThree : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -216,13 +205,12 @@ public:
      */
     PardosGotorThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 2; }
 
 private:
-
     const int id;
     const MatrixExponential exp;
     const KDL::Vector p, k;
@@ -241,7 +229,6 @@ private:
 class PardosGotorFour : public ScrewTheoryIkSubproblem
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -253,19 +240,18 @@ public:
      */
     PardosGotorFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    virtual bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
-    virtual int solutions() const
+    int solutions() const override
     { return 2; }
 
 private:
-
     const int id1, id2;
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, n;
     const KDL::Rotation axisPow;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __SCREW_THEORY_IK_SUBPROBLEMS_HPP__
+#endif // __SCREW_THEORY_IK_SUBPROBLEMS_HPP__

@@ -269,7 +269,7 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
         clearSteps(steps);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -301,7 +301,7 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
         // Find a solution if available.
         ScrewTheoryIkSubproblem * subproblem = trySolve(depth);
 
-        if (subproblem != NULL)
+        if (subproblem)
         {
             // Solution found, reset and start again. We'll iterate over the same points, taking
             // into account that some terms are already known.
@@ -390,7 +390,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
     if (unknownsCount == 0 || unknownsCount > 2) // TODO: hardcoded
     {
         // Can't solve yet, too many unknowns or oversimplified.
-        return NULL;
+        return nullptr;
     }
 
     // Find rightmost unknown and not simplified PoE term.
@@ -422,7 +422,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
             // There can be no other non-simplified terms to the left of our unknown.
             if (std::find_if(poeTerms.begin(), poeTerms.end(), knownNotSimplifiedTerm) != poeTerms.end())
             {
-                return NULL;
+                return nullptr;
             }
 
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
@@ -448,7 +448,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
         if (!unknownNotSimplifiedTerm(*nextToLastUnknown))
         {
-            return NULL;
+            return nullptr;
         }
 
         int nextToLastExpId = lastExpId - 1;
@@ -486,7 +486,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 // -----------------------------------------------------------------------------

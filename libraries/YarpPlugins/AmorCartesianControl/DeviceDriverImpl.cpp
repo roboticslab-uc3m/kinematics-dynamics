@@ -11,9 +11,17 @@
 
 #include "KinematicRepresentation.hpp"
 
+using namespace roboticslab;
+
+constexpr auto DEFAULT_CAN_LIBRARY = "libeddriver.so";
+constexpr auto DEFAULT_CAN_PORT = 0;
+constexpr auto DEFAULT_GAIN = 0.05;
+constexpr auto DEFAULT_WAIT_PERIOD_MS = 30;
+constexpr auto DEFAULT_REFERENCE_FRAME = "base";
+
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
+bool AmorCartesianControl::open(yarp::os::Searchable& config)
 {
     yDebug() << "AmorCartesianControl config:" << config.toString();
 
@@ -23,7 +31,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt32();
 
-    std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
+    auto referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
             "reference frame (base|tcp)").asString();
 
     if (referenceFrameStr == "base")
@@ -46,7 +54,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     {
         yInfo() << "Creating own AMOR handle";
 
-        std::string canLibrary = config.check("canLibrary", yarp::os::Value(DEFAULT_CAN_LIBRARY),
+        auto canLibrary = config.check("canLibrary", yarp::os::Value(DEFAULT_CAN_LIBRARY),
                 "CAN plugin library").asString();
         int canPort = config.check("canPort", yarp::os::Value(DEFAULT_CAN_PORT),
                 "CAN port number").asInt32();
@@ -64,7 +72,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     if (handle == AMOR_INVALID_HANDLE)
     {
         yError() << "Could not get AMOR handle:" << amor_error();
-        close();
         return false;
     }
 
@@ -79,7 +86,6 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
         if (amor_get_joint_info(handle, i, &jointInfo) != AMOR_SUCCESS)
         {
             yError() << "amor_get_joint_info() failed:" << amor_error();
-            close();
             return false;
         }
 
@@ -89,7 +95,7 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
         qMax.addFloat64(KinRepresentation::radToDeg(jointInfo.upperJointLimit));
     }
 
-    std::string kinematicsFile = config.check("kinematics", yarp::os::Value(""),
+    auto kinematicsFile = config.check("kinematics", yarp::os::Value(""),
             "path to file with description of AMOR kinematics").asString();
 
     yarp::os::Property cartesianDeviceOptions;
@@ -115,16 +121,16 @@ bool roboticslab::AmorCartesianControl::open(yarp::os::Searchable& config)
     if (!cartesianDevice.view(iCartesianSolver))
     {
         yError() << "Could not view iCartesianSolver";
-        close();
         return false;
     }
 
+    currentState = VOCAB_CC_NOT_CONTROLLING;
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::close()
+bool AmorCartesianControl::close()
 {
     if (handle != AMOR_INVALID_HANDLE)
     {

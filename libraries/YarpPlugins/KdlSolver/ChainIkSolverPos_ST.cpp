@@ -18,10 +18,10 @@ ChainIkSolverPos_ST::ChainIkSolverPos_ST(const KDL::Chain & _chain, ScrewTheoryI
 ChainIkSolverPos_ST::~ChainIkSolverPos_ST()
 {
     delete problem;
-    problem = NULL;
+    problem = nullptr;
 
     delete config;
-    config = NULL;
+    config = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void ChainIkSolverPos_ST::updateInternalDataStructures()
     ScrewTheoryIkProblemBuilder builder(poe);
     ScrewTheoryIkProblem * problem = builder.build();
 
-    if (problem == NULL)
+    if (!problem)
     {
         error = E_SOLUTION_NOT_FOUND;
         return;
@@ -78,9 +78,9 @@ KDL::ChainIkSolverPos * ChainIkSolverPos_ST::create(const KDL::Chain & chain, co
     ScrewTheoryIkProblemBuilder builder(poe);
     ScrewTheoryIkProblem * problem = builder.build();
 
-    if (problem == NULL)
+    if (!problem)
     {
-        return NULL;
+        return nullptr;
     }
 
     ConfigurationSelector * config = configFactory.create();

@@ -4,7 +4,6 @@
 #define __HAAR_DETECTION_CONTROLLER_HPP__
 
 #include <yarp/os/BufferedPort.h>
-#include <yarp/os/ResourceFinder.h>
 #include <yarp/os/RFModule.h>
 
 #include <yarp/dev/PolyDriver.h>
@@ -13,13 +12,6 @@
 #include "IProximitySensors.h"
 
 #include "GrabberResponder.hpp"
-
-#define DEFAULT_LOCAL_PORT "/HaarDetectionControl"
-#define DEFAULT_REMOTE_VISION "/haarDetection2D"
-#define DEFAULT_REMOTE_CARTESIAN "/CartesianControl"
-#define DEFAULT_PROXIMITY_SENSORS "/sensor_reader"
-
-#define DEFAULT_PERIOD 0.01 // [s]
 
 namespace roboticslab
 {
@@ -33,27 +25,28 @@ namespace roboticslab
 class HaarDetectionController : public yarp::os::RFModule
 {
 public:
+    ~HaarDetectionController()
+    { close(); }
 
-    virtual bool configure(yarp::os::ResourceFinder &rf);
-    virtual bool updateModule();
-    virtual bool interruptModule();
-    virtual bool close();
-    virtual double getPeriod();
+    bool configure(yarp::os::ResourceFinder & rf) override;
+    bool updateModule() override;
+    bool interruptModule() override;
+    bool close() override;
+    double getPeriod() override;
 
 private:
-
     GrabberResponder grabberResponder;
     yarp::os::BufferedPort<yarp::os::Bottle> grabberPort;
 
     yarp::dev::PolyDriver cartesianControlDevice;
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 
     yarp::dev::PolyDriver sensorsClientDevice;
-    roboticslab::IProximitySensors *iProximitySensors;
+    roboticslab::IProximitySensors * iProximitySensors;
 
     double period;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __HAAR_DETECTION_CONTROLLER_HPP__
+#endif // __HAAR_DETECTION_CONTROLLER_HPP__

@@ -33,6 +33,22 @@
 #include "ChainIkSolverPos_ST.hpp"
 #include "ChainIkSolverPos_ID.hpp"
 
+using namespace roboticslab;
+
+constexpr auto DEFAULT_KINEMATICS = "none.ini";
+constexpr auto DEFAULT_NUM_LINKS = 1;
+
+constexpr auto DEFAULT_EPSILON = 0.005; // Precision tolerance
+constexpr auto DEFAULT_DURATION = 20; // For Trajectory
+constexpr auto DEFAULT_MAXVEL = 7.5; // unit/s
+constexpr auto DEFAULT_MAXACC = 0.2; // unit/s^2
+
+constexpr auto DEFAULT_EPS = 1e-9;
+constexpr auto DEFAULT_MAXITER = 1000;
+constexpr auto DEFAULT_IK_SOLVER = "lma";
+constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
+constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 namespace
@@ -95,7 +111,7 @@ namespace
         yarp::os::Bottle * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
         yarp::os::Bottle * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
 
-        if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
+        if (!maxs || !mins)
         {
             yError() << "Empty 'mins' and/or 'maxs' option(s)";
             return false;
@@ -129,7 +145,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
+bool KdlSolver::open(yarp::os::Searchable& config)
 {
     yDebug() << "KdlSolver config:" << config.toString();
 
@@ -351,7 +367,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
             return false;
         }
 
-        if (ikSolverPos == NULL)
+        if (!ikSolverPos)
         {
             yError() << "Unable to solve IK";
             return false;
@@ -384,7 +400,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::close()
+bool KdlSolver::close()
 {
     delete fkSolverPos;
     delete ikSolverPos;

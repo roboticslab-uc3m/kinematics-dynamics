@@ -16,14 +16,6 @@
 
 #include "ICartesianSolver.h"
 
-#define DEFAULT_KINEMATICS "none.ini"
-#define DEFAULT_LAMBDA 0.01
-#define DEFAULT_EPS 1e-6
-#define DEFAULT_MAXITER 1000
-#define DEFAULT_V_TRANSL_MAX 1.0 // meters/s
-#define DEFAULT_V_ROT_MAX 50.0 // degrees/s
-#define DEFAULT_IK_SOLVER "nrjl"
-
 namespace roboticslab
 {
 

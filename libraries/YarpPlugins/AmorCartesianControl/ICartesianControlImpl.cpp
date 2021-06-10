@@ -10,9 +10,11 @@
 
 #include "KinematicRepresentation.hpp"
 
+using namespace roboticslab;
+
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state, double * timestamp)
+bool AmorCartesianControl::stat(std::vector<double> & x, int * state, double * timestamp)
 {
     AMOR_VECTOR7 positions;
 
@@ -24,22 +26,22 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
 
     x.resize(6);
 
-    x[0] = positions[0] * 0.001;  // [m]
+    x[0] = positions[0] * 0.001; // [m]
     x[1] = positions[1] * 0.001;
     x[2] = positions[2] * 0.001;
 
-    x[3] = positions[3];  // [rad]
+    x[3] = positions[3]; // [rad]
     x[4] = positions[4];
     x[5] = positions[5];
 
     KinRepresentation::encodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, KinRepresentation::orientation_system::RPY);
 
-    if (state != 0)
+    if (state)
     {
         *state = currentState;
     }
 
-    if (timestamp != 0)
+    if (timestamp)
     {
         *timestamp = yarp::os::Time::now();
     }
@@ -49,7 +51,7 @@ bool roboticslab::AmorCartesianControl::stat(std::vector<double> &x, int * state
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
+bool AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     AMOR_VECTOR7 positions;
 
@@ -77,7 +79,7 @@ bool roboticslab::AmorCartesianControl::inv(const std::vector<double> &xd, std::
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
+bool AmorCartesianControl::movj(const std::vector<double> &xd)
 {
     std::vector<double> qd;
 
@@ -107,7 +109,7 @@ bool roboticslab::AmorCartesianControl::movj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
+bool AmorCartesianControl::relj(const std::vector<double> &xd)
 {
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
@@ -132,7 +134,7 @@ bool roboticslab::AmorCartesianControl::relj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
+bool AmorCartesianControl::movl(const std::vector<double> &xd)
 {
     std::vector<double> xd_obj;
 
@@ -178,11 +180,11 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
     AMOR_VECTOR7 positions;
 
-    positions[0] = xd_rpy[0] * 1000;  // [mm]
+    positions[0] = xd_rpy[0] * 1000; // [mm]
     positions[1] = xd_rpy[1] * 1000;
     positions[2] = xd_rpy[2] * 1000;
 
-    positions[3] = xd_rpy[3];  // [rad]
+    positions[3] = xd_rpy[3]; // [rad]
     positions[4] = xd_rpy[4];
     positions[5] = xd_rpy[5];
 
@@ -199,7 +201,7 @@ bool roboticslab::AmorCartesianControl::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
+bool AmorCartesianControl::movv(const std::vector<double> &xdotd)
 {
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
@@ -221,12 +223,12 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
     AMOR_VECTOR7 velocities;
 
-    velocities[0] = xdotd_rpy[0] * 1000;  // [mm/s]
+    velocities[0] = xdotd_rpy[0] * 1000; // [mm/s]
     velocities[1] = xdotd_rpy[1] * 1000;
     velocities[2] = xdotd_rpy[2] * 1000;
 
     // FIXME: un-shuffle coordinates
-    velocities[3] = xdotd_rpy[4];  // [rad/s]
+    velocities[3] = xdotd_rpy[4]; // [rad/s]
     velocities[4] = -xdotd_rpy[5];
     velocities[5] = xdotd_rpy[3];
 
@@ -243,7 +245,7 @@ bool roboticslab::AmorCartesianControl::movv(const std::vector<double> &xdotd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::gcmp()
+bool AmorCartesianControl::gcmp()
 {
     yWarning() << "gcmp() not implemented";
     return false;
@@ -251,7 +253,7 @@ bool roboticslab::AmorCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::forc(const std::vector<double> &td)
+bool AmorCartesianControl::forc(const std::vector<double> &td)
 {
     yWarning() << "forc() not implemented";
     return false;
@@ -259,7 +261,7 @@ bool roboticslab::AmorCartesianControl::forc(const std::vector<double> &td)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::stopControl()
+bool AmorCartesianControl::stopControl()
 {
     currentState = VOCAB_CC_NOT_CONTROLLING;
 
@@ -274,7 +276,7 @@ bool roboticslab::AmorCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::wait(double timeout)
+bool AmorCartesianControl::wait(double timeout)
 {
     if (currentState != VOCAB_CC_MOVJ_CONTROLLING && currentState != VOCAB_CC_MOVL_CONTROLLING)
     {
@@ -314,7 +316,7 @@ bool roboticslab::AmorCartesianControl::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
+bool AmorCartesianControl::tool(const std::vector<double> &x)
 {
     yWarning() << "Tool change is not supported on AMOR";
     return false;
@@ -322,7 +324,7 @@ bool roboticslab::AmorCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::act(int command)
+bool AmorCartesianControl::act(int command)
 {
     AMOR_RESULT (*amor_command)(AMOR_HANDLE);
 
@@ -353,7 +355,7 @@ bool roboticslab::AmorCartesianControl::act(int command)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
+void AmorCartesianControl::twist(const std::vector<double> &xdot)
 {
     AMOR_VECTOR7 positions;
 
@@ -398,7 +400,7 @@ void roboticslab::AmorCartesianControl::twist(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, double interval)
+void AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     AMOR_VECTOR7 positions;
 
@@ -484,7 +486,7 @@ void roboticslab::AmorCartesianControl::pose(const std::vector<double> &x, doubl
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::AmorCartesianControl::movi(const std::vector<double> &x)
+void AmorCartesianControl::movi(const std::vector<double> &x)
 {
     yWarning() << "movi() not supported, falling back to movj()";
     movj(x);
@@ -492,7 +494,7 @@ void roboticslab::AmorCartesianControl::movi(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
+bool AmorCartesianControl::setParameter(int vocab, double value)
 {
     if (currentState != VOCAB_CC_NOT_CONTROLLING)
     {
@@ -536,7 +538,7 @@ bool roboticslab::AmorCartesianControl::setParameter(int vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
+bool AmorCartesianControl::getParameter(int vocab, double * value)
 {
     switch (vocab)
     {
@@ -559,7 +561,7 @@ bool roboticslab::AmorCartesianControl::getParameter(int vocab, double * value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double> & params)
+bool AmorCartesianControl::setParameters(const std::map<int, double> & params)
 {
     if (currentState != VOCAB_CC_NOT_CONTROLLING)
     {
@@ -569,9 +571,9 @@ bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double
 
     bool ok = true;
 
-    for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
+    for (const auto & it : params)
     {
-        ok &= setParameter(it->first, it->second);
+        ok &= setParameter(it.first, it.second);
     }
 
     return ok;
@@ -579,11 +581,11 @@ bool roboticslab::AmorCartesianControl::setParameters(const std::map<int, double
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::getParameters(std::map<int, double> & params)
+bool AmorCartesianControl::getParameters(std::map<int, double> & params)
 {
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
     return true;
 }
 

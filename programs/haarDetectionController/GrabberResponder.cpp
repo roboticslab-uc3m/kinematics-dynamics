@@ -7,18 +7,20 @@
 
 #include <yarp/os/LogStream.h>
 
+using namespace roboticslab;
+
 namespace
 {
-    const double STEP_X = 0.0001;
-    const double STEP_Y = 0.0001;
-    const double STEP_Z = 0.01;
+    constexpr double STEP_X = 0.0001;
+    constexpr double STEP_Y = 0.0001;
+    constexpr double STEP_Z = 0.01;
 
     // just in case, not used by now
-    const double DEADBAND_X_PX = 0.0;
-    const double DEADBAND_Y_PX = 0.0;
+    constexpr double DEADBAND_X_PX = 0.0;
+    constexpr double DEADBAND_Y_PX = 0.0;
 }
 
-void roboticslab::GrabberResponder::onRead(yarp::os::Bottle &b)
+void GrabberResponder::onRead(yarp::os::Bottle &b)
 {
     yDebug() << "Got:" << b.toString();
 

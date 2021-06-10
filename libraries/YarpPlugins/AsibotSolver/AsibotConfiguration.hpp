@@ -19,12 +19,11 @@ namespace roboticslab
 class AsibotConfiguration
 {
 public:
-
     //! @brief Const vector of joint angles (input parameter).
-    typedef const std::vector<double> & JointsIn;
+    using JointsIn = const std::vector<double> &;
 
     //! @brief Vector of joint angles (output parameter).
-    typedef std::vector<double> & JointsOut;
+    using JointsOut = std::vector<double> &;
 
     /**
      * @brief Constructor
@@ -36,7 +35,7 @@ public:
     {}
 
     //! @brief Destructor
-    virtual ~AsibotConfiguration() {}
+    virtual ~AsibotConfiguration() = default;
 
     /**
      * @brief Stores initial values for a specific pose.
@@ -74,7 +73,6 @@ public:
     }
 
 protected:
-
     /**
      * @brief Helper class to store a specific robot configuration.
      */
@@ -133,7 +131,6 @@ protected:
 class AsibotConfigurationLeastOverallAngularDisplacement : public AsibotConfiguration
 {
 public:
-
     /**
      * @brief Constructor
      * @param qMin vector of minimum joint limits [deg]
@@ -143,10 +140,9 @@ public:
         : AsibotConfiguration(qMin, qMax)
     {}
 
-    virtual bool findOptimalConfiguration(JointsIn qGuess);
+    bool findOptimalConfiguration(JointsIn qGuess) override;
 
 private:
-
     //! @brief Obtains vector of differences between current and desired joint angles [deg].
     std::vector<double> getDiffs(JointsIn qGuess, const Pose & pose);
 };
@@ -161,16 +157,14 @@ private:
 class AsibotConfigurationFactory
 {
 public:
-
     /**
      * @brief Creates an instance of the concrete class.
      * @return A pointer to the base class of the inheritance tree.
      */
     virtual AsibotConfiguration * create() const = 0;
-    virtual ~AsibotConfigurationFactory() {}
+    virtual ~AsibotConfigurationFactory() = default;
 
 protected:
-
     /**
      * @brief Constructor
      * @param qMin vector of minimum joint limits [deg]
@@ -192,7 +186,6 @@ protected:
 class AsibotConfigurationLeastOverallAngularDisplacementFactory : public AsibotConfigurationFactory
 {
 public:
-
     /**
      * @brief Constructor
      * @param qMin vector of minimum joint limits [deg]
@@ -202,12 +195,12 @@ public:
         : AsibotConfigurationFactory(qMin, qMax)
     {}
 
-    virtual AsibotConfiguration * create() const
+    AsibotConfiguration * create() const override
     {
         return new AsibotConfigurationLeastOverallAngularDisplacement(_qMin, _qMax);
     }
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __ASIBOT_CONFIGURATION_HPP__
+#endif // __ASIBOT_CONFIGURATION_HPP__

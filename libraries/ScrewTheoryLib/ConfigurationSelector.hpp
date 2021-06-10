@@ -19,7 +19,6 @@ namespace roboticslab
 class ConfigurationSelector
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -32,7 +31,7 @@ public:
     {}
 
     //! @brief Destructor
-    virtual ~ConfigurationSelector() {}
+    virtual ~ConfigurationSelector() = default;
 
     /**
      * @brief Stores initial values for a specific pose.
@@ -64,17 +63,15 @@ public:
     }
 
 protected:
-
     /**
      * @brief Helper class to store a specific robot configuration.
      */
     class Configuration
     {
     public:
-
         //! @brief Constructor
         Configuration()
-            : q(NULL),
+            : q(nullptr),
               valid(false)
         {}
 
@@ -98,7 +95,6 @@ protected:
         { valid = false; }
 
     private:
-
         const KDL::JntArray * q;
         bool valid;
     };
@@ -125,7 +121,6 @@ protected:
 class ConfigurationSelectorLeastOverallAngularDisplacement : public ConfigurationSelector
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -137,10 +132,9 @@ public:
           lastValid(INVALID_CONFIG)
     {}
 
-    virtual bool findOptimalConfiguration(const KDL::JntArray & qGuess);
+    bool findOptimalConfiguration(const KDL::JntArray & qGuess) override;
 
 protected:
-
     //! @brief Obtains vector of differences between current and desired joint values.
     std::vector<double> getDiffs(const KDL::JntArray & qGuess, const Configuration & config);
 
@@ -160,7 +154,6 @@ protected:
 class ConfigurationSelectorHumanoidGait : public ConfigurationSelectorLeastOverallAngularDisplacement
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -171,10 +164,9 @@ public:
         : ConfigurationSelectorLeastOverallAngularDisplacement(qMin, qMax)
     {}
 
-    virtual bool findOptimalConfiguration(const KDL::JntArray & qGuess);
+    bool findOptimalConfiguration(const KDL::JntArray & qGuess) override;
 
 private:
-
     //! @brief Determines whether the configuration is valid according to this selector's premises.
     bool applyConstraints(const Configuration & config);
 };
@@ -190,17 +182,15 @@ private:
 class ConfigurationSelectorFactory
 {
 public:
-
     /**
      * @brief Creates an instance of the concrete class.
      *
      * @return A pointer to the base class of the inheritance tree.
      */
     virtual ConfigurationSelector * create() const = 0;
-    virtual ~ConfigurationSelectorFactory() {}
+    virtual ~ConfigurationSelectorFactory() = default;
 
 protected:
-
     /**
      * @brief Constructor
      *
@@ -224,7 +214,6 @@ protected:
 class ConfigurationSelectorLeastOverallAngularDisplacementFactory : public ConfigurationSelectorFactory
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -235,7 +224,7 @@ public:
         : ConfigurationSelectorFactory(qMin, qMax)
     {}
 
-    virtual ConfigurationSelector * create() const
+    ConfigurationSelector * create() const override
     {
         return new ConfigurationSelectorLeastOverallAngularDisplacement(_qMin, _qMax);
     }
@@ -251,7 +240,6 @@ public:
 class ConfigurationSelectorHumanoidGaitFactory : public ConfigurationSelectorFactory
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -262,7 +250,7 @@ public:
         : ConfigurationSelectorFactory(qMin, qMax)
     {}
 
-    virtual ConfigurationSelector * create() const
+    ConfigurationSelector * create() const override
     {
         if (_qMin.rows() == 6 && _qMax.rows() == 6)
         {
@@ -270,11 +258,11 @@ public:
         }
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __CONFIGURATION_SELECTOR_HPP__
+#endif // __CONFIGURATION_SELECTOR_HPP__

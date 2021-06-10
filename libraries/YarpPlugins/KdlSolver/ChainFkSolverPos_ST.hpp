@@ -21,7 +21,6 @@ namespace roboticslab
 class ChainFkSolverPos_ST : public KDL::ChainFkSolverPos
 {
 public:
-
     /**
      * @brief Perform FK on the selected segment
      *
@@ -31,7 +30,7 @@ public:
      *
      * @return Return code, < 0 if something went wrong.
      */
-    virtual int JntToCart(const KDL::JntArray & q_in, KDL::Frame & p_out, int segmentNr = -1);
+    int JntToCart(const KDL::JntArray & q_in, KDL::Frame & p_out, int segmentNr = -1) override;
 
     /**
      * @brief Perform FK on the selected segments (unsupported)
@@ -44,7 +43,7 @@ public:
      *
      * @warning Unsupported, will return @ref E_OPERATION_NOT_SUPPORTED.
      */
-    virtual int JntToCart(const KDL::JntArray & q_in, std::vector<KDL::Frame> & p_out, int segmentNr = -1);
+    int JntToCart(const KDL::JntArray & q_in, std::vector<KDL::Frame> & p_out, int segmentNr = -1) override;
 
     /**
      * @brief Update the internal data structures.
@@ -53,7 +52,7 @@ public:
      * or number of joints of a chain has changed. This provides a single point of contact
      * for solver memory allocations.
      */
-    virtual void updateInternalDataStructures();
+    void updateInternalDataStructures() override;
 
     /**
      * @brief Return a description of the last error
@@ -63,7 +62,7 @@ public:
      * @return If \p error is known then a description of \p error, otherwise
      * "UNKNOWN ERROR".
      */
-    virtual const char * strError(const int error) const;
+    const char * strError(const int error) const override;
 
     /**
      * @brief Create an instance of \ref ChainFkSolverPos_ST.
@@ -81,7 +80,6 @@ public:
     static const int E_ILLEGAL_ARGUMENT_SIZE = -101;
 
 private:
-
     ChainFkSolverPos_ST(const KDL::Chain & chain);
 
     const KDL::Chain & chain;
@@ -89,6 +87,6 @@ private:
     PoeExpression poe;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __CHAIN_FK_SOLVER_POS_ST_HPP__
+#endif // __CHAIN_FK_SOLVER_POS_ST_HPP__

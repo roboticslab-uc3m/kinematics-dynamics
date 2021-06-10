@@ -12,30 +12,14 @@
 #include <kdl/chainiksolver.hpp>
 #include <kdl/chainidsolver.hpp>
 
-#include <iostream> // only windows
-
 #include "ICartesianSolver.h"
-
-#define DEFAULT_KINEMATICS "none.ini"  // string
-#define DEFAULT_NUM_LINKS 1  // int
-
-#define DEFAULT_EPSILON 0.005     // Precision tolerance
-#define DEFAULT_DURATION 20     // For Trajectory
-#define DEFAULT_MAXVEL 7.5      // unit/s
-#define DEFAULT_MAXACC 0.2      // unit/s^2
-
-#define DEFAULT_EPS 1e-9
-#define DEFAULT_MAXITER 1000
-#define DEFAULT_IK_SOLVER "lma"
-#define DEFAULT_LMA_WEIGHTS "1 1 1 0.1 0.1 0.1"
-#define DEFAULT_STRATEGY "leastOverallAngularDisplacement"
 
 namespace roboticslab
 {
 
 /**
  * @ingroup YarpPlugins
- * \defgroup KdlSolver
+ * @defgroup KdlSolver
  *
  * @brief Contains roboticslab::KdlSolver.
  */
@@ -44,94 +28,67 @@ namespace roboticslab
  * @ingroup KdlSolver
  * @brief The KdlSolver class implements ICartesianSolver.
  */
-
-class KdlSolver : public yarp::dev::DeviceDriver, public ICartesianSolver
+class KdlSolver : public yarp::dev::DeviceDriver,
+                  public ICartesianSolver
 {
-    public:
+public:
+    // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
 
-        KdlSolver()
-            : fkSolverPos(NULL),
-              ikSolverPos(NULL),
-              ikSolverVel(NULL),
-              idSolver(NULL)
-        {}
+    // Get number of joints for which the solver has been configured.
+    int getNumJoints() override;
 
-        // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
+    // Get number of TCPs for which the solver has been configured.
+    int getNumTcps() override;
 
-        // Get number of joints for which the solver has been configured.
-        virtual int getNumJoints();
+    // Append an additional link.
+    bool appendLink(const std::vector<double>& x) override;
 
-        // Get number of TCPs for which the solver has been configured.
-        virtual int getNumTcps();
+    // Restore original kinematic chain.
+    bool restoreOriginalChain() override;
 
-        // Append an additional link.
-        virtual bool appendLink(const std::vector<double>& x);
+    // Change reference frame.
+    bool changeOrigin(const std::vector<double> &x_old_obj,
+                      const std::vector<double> &x_new_old,
+                      std::vector<double> &x_new_obj) override;
 
-        // Restore original kinematic chain.
-        virtual bool restoreOriginalChain();
+    // Perform forward kinematics.
+    bool fwdKin(const std::vector<double> &q, std::vector<double> &x) override;
 
-        // Change reference frame.
-        virtual bool changeOrigin(const std::vector<double> &x_old_obj,
-                                  const std::vector<double> &x_new_old,
-                                  std::vector<double> &x_new_obj);
+    // Obtain difference between supplied pose inputs.
+    bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) override;
 
-        // Perform forward kinematics.
-        virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x);
+    // Perform inverse kinematics.
+    bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, const reference_frame frame) override;
 
-        // Obtain difference between supplied pose inputs.
-        virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut);
+    // Perform differential inverse kinematics.
+    bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, const reference_frame frame) override;
 
-        // Perform inverse kinematics.
-        virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, const reference_frame frame);
+    // Perform inverse dynamics.
+    bool invDyn(const std::vector<double> &q, std::vector<double> &t) override;
 
-        // Perform differential inverse kinematics.
-        virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, const reference_frame frame);
+    // Perform inverse dynamics.
+    bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) override;
 
-        // Perform inverse dynamics.
-        virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t);
+    // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 
-        // Perform inverse dynamics.
-        virtual bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t);
+    bool open(yarp::os::Searchable & config) override;
+    bool close() override;
 
-        // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
+protected:
+    mutable std::mutex mtx;
 
-        /**
-        * Open the DeviceDriver.
-        * @param config is a list of parameters for the device.
-        * Which parameters are effective for your device can vary.
-        * See \ref dev_examples "device invocation examples".
-        * If there is no example for your device,
-        * you can run the "yarpdev" program with the verbose flag
-        * set to probe what parameters the device is checking.
-        * If that fails too,
-        * you'll need to read the source code (please nag one of the
-        * yarp developers to add documentation for your device).
-        * @return true/false upon success/failure
-        */
-        virtual bool open(yarp::os::Searchable& config);
+    /** The chain. **/
+    KDL::Chain chain;
 
-        /**
-        * Close the DeviceDriver.
-        * @return true/false on success/failure.
-        */
-        virtual bool close();
+    /** To store a copy of the original chain. **/
+    KDL::Chain originalChain;
 
-    protected:
-
-        mutable std::mutex mtx;
-
-        /** The chain. **/
-        KDL::Chain chain;
-
-        /** To store a copy of the original chain. **/
-        KDL::Chain originalChain;
-
-        KDL::ChainFkSolverPos * fkSolverPos;
-        KDL::ChainIkSolverPos * ikSolverPos;
-        KDL::ChainIkSolverVel * ikSolverVel;
-        KDL::ChainIdSolver * idSolver;
+    KDL::ChainFkSolverPos * fkSolverPos {nullptr};
+    KDL::ChainIkSolverPos * ikSolverPos {nullptr};
+    KDL::ChainIkSolverVel * ikSolverVel {nullptr};
+    KDL::ChainIdSolver * idSolver {nullptr};
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __KDL_SOLVER_HPP__
+#endif // __KDL_SOLVER_HPP__

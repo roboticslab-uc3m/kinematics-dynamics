@@ -6,9 +6,11 @@
 
 #include <yarp/os/Log.h>
 
+using namespace roboticslab;
+
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AmorCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
+bool AmorCartesianControl::checkJointVelocities(const std::vector<double> & qdot)
 {
     for (unsigned int i = 0; i < qdot.size(); i++)
     {

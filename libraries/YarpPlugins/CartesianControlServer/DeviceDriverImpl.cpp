@@ -10,6 +10,9 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_PREFIX = "/CartesianServer";
+constexpr auto DEFAULT_MS = 20;
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool CartesianControlServer::open(yarp::os::Searchable& config)
@@ -74,6 +77,7 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (periodInMs > 0)
     {
+        fkStreamEnabled = true;
         ok &= fkOutPort.open(prefix + "/state:o");
 
         yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);

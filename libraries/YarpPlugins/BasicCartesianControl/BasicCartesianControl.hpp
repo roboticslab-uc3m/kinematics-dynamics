@@ -3,13 +3,14 @@
 #ifndef __BASIC_CARTESIAN_CONTROL_HPP__
 #define __BASIC_CARTESIAN_CONTROL_HPP__
 
-#include <memory>
 #include <mutex>
 #include <vector>
 
 #include <yarp/conf/version.h>
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
+
+#include <yarp/os/PeriodicThread.h>
+
+#include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/IPreciselyTimed.h>
@@ -19,20 +20,12 @@
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
 
-#define DEFAULT_SOLVER "KdlSolver"
-#define DEFAULT_ROBOT "remote_controlboard"
-#define DEFAULT_GAIN 0.05
-#define DEFAULT_DURATION 10.0
-#define DEFAULT_CMC_PERIOD_MS 50
-#define DEFAULT_WAIT_PERIOD_MS 30
-#define DEFAULT_REFERENCE_FRAME "base"
-
 namespace roboticslab
 {
 
 /**
  * @ingroup YarpPlugins
- * \defgroup BasicCartesianControl
+ * @defgroup BasicCartesianControl
  *
  * @brief Contains roboticslab::BasicCartesianControl.
 
@@ -114,133 +107,72 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver,
                               public ICartesianControl
 {
 public:
-
-    BasicCartesianControl()
+    BasicCartesianControl() :
 #if YARP_VERSION_MINOR >= 5
-        : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001, yarp::os::PeriodicThreadClock::Absolute),
+        yarp::os::PeriodicThread(1.0, yarp::os::PeriodicThreadClock::Absolute)
 #else
-        : yarp::os::PeriodicThread(DEFAULT_CMC_PERIOD_MS * 0.001),
+        yarp::os::PeriodicThread(1.0)
 #endif
-            iCartesianSolver(NULL),
-            iControlMode(NULL),
-            iEncoders(NULL),
-            iPositionControl(NULL),
-            iPositionDirect(NULL),
-            iPreciselyTimed(NULL),
-            iTorqueControl(NULL),
-            iVelocityControl(NULL),
-            referenceFrame(ICartesianSolver::BASE_FRAME),
-            gain(DEFAULT_GAIN),
-            duration(DEFAULT_DURATION),
-            cmcPeriodMs(DEFAULT_CMC_PERIOD_MS),
-            waitPeriodMs(DEFAULT_WAIT_PERIOD_MS),
-            numRobotJoints(0),
-            numSolverJoints(0),
-            currentState(VOCAB_CC_NOT_CONTROLLING),
-            streamingCommand(VOCAB_CC_NOT_SET),
-            movementStartTime(0),
-            cmcSuccess(true)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-
-    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0);
-
-    virtual bool inv(const std::vector<double> &xd, std::vector<double> &q);
-
-    virtual bool movj(const std::vector<double> &xd);
-
-    virtual bool relj(const std::vector<double> &xd);
-
-    virtual bool movl(const std::vector<double> &xd);
-
-    virtual bool movv(const std::vector<double> &xdotd);
-
-    virtual bool gcmp();
-
-    virtual bool forc(const std::vector<double> &td);
-
-    virtual bool stopControl();
-
-    virtual bool wait(double timeout);
-
-    virtual bool tool(const std::vector<double> &x);
-
-    virtual bool act(int command);
-
-    virtual void twist(const std::vector<double> &xdot);
-
-    virtual void pose(const std::vector<double> &x, double interval);
-
-    virtual void movi(const std::vector<double> &x);
-
-    virtual bool setParameter(int vocab, double value);
-
-    virtual bool getParameter(int vocab, double * value);
-
-    virtual bool setParameters(const std::map<int, double> & params);
-
-    virtual bool getParameters(std::map<int, double> & params);
+    bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr) override;
+    bool inv(const std::vector<double> & xd, std::vector<double> & q) override;
+    bool movj(const std::vector<double> & xd) override;
+    bool relj(const std::vector<double> & xd) override;
+    bool movl(const std::vector<double> & xd) override;
+    bool movv(const std::vector<double> & xdotd) override;
+    bool gcmp() override;
+    bool forc(const std::vector<double> & td) override;
+    bool stopControl() override;
+    bool wait(double timeout) override;
+    bool tool(const std::vector<double> & x) override;
+    bool act(int command) override;
+    void twist(const std::vector<double> & xdot) override;
+    void pose(const std::vector<double> & x, double interval) override;
+    void movi(const std::vector<double> & x) override;
+    bool setParameter(int vocab, double value) override;
+    bool getParameter(int vocab, double * value) override;
+    bool setParameters(const std::map<int, double> & params) override;
+    bool getParameters(std::map<int, double> & params) override;
 
     // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
-
-    /** Loop function. This is the thread itself. */
-    virtual void run();
+    void run() override;
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
-
-    /**
-    * Open the DeviceDriver.
-    * @param config is a list of parameters for the device.
-    * Which parameters are effective for your device can vary.
-    * See \ref dev_examples "device invocation examples".
-    * If there is no example for your device,
-    * you can run the "yarpdev" program with the verbose flag
-    * set to probe what parameters the device is checking.
-    * If that fails too,
-    * you'll need to read the source code (please nag one of the
-    * yarp developers to add documentation for your device).
-    * @return true/false upon success/failure
-    */
-    virtual bool open(yarp::os::Searchable& config);
-
-    /**
-    * Close the DeviceDriver.
-    * @return true/false on success/failure.
-    */
-    virtual bool close();
+    bool open(yarp::os::Searchable & config) override;
+    bool close() override;
 
 protected:
-
     int getCurrentState() const;
     void setCurrentState(int value);
 
-    bool checkJointLimits(const std::vector<double> &q);
-    bool checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot);
-    bool checkJointVelocities(const std::vector<double> &qdot);
+    bool checkJointLimits(const std::vector<double> & q);
+    bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
+    bool checkJointVelocities(const std::vector<double> & qdot);
 
     bool checkControlModes(int mode);
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
     void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
-    void handleMovj(const std::vector<double> &q);
-    void handleMovl(const std::vector<double> &q);
-    void handleMovv(const std::vector<double> &q);
-    void handleGcmp(const std::vector<double> &q);
-    void handleForc(const std::vector<double> &q);
+    void handleMovj(const std::vector<double> & q);
+    void handleMovl(const std::vector<double> & q);
+    void handleMovv(const std::vector<double> & q);
+    void handleGcmp(const std::vector<double> & q);
+    void handleForc(const std::vector<double> & q);
 
     yarp::dev::PolyDriver solverDevice;
-    ICartesianSolver *iCartesianSolver;
+    ICartesianSolver * iCartesianSolver {nullptr};
 
     yarp::dev::PolyDriver robotDevice;
-    yarp::dev::IControlMode *iControlMode;
-    yarp::dev::IEncoders *iEncoders;
-    yarp::dev::IPositionControl *iPositionControl;
-    yarp::dev::IPositionDirect * iPositionDirect;
-    yarp::dev::IPreciselyTimed *iPreciselyTimed;
-    yarp::dev::ITorqueControl *iTorqueControl;
-    yarp::dev::IVelocityControl *iVelocityControl;
+    yarp::dev::IControlMode * iControlMode {nullptr};
+    yarp::dev::IEncoders * iEncoders {nullptr};
+    yarp::dev::IPositionControl * iPositionControl {nullptr};
+    yarp::dev::IPositionDirect *  iPositionDirect {nullptr};
+    yarp::dev::IPreciselyTimed * iPreciselyTimed {nullptr};
+    yarp::dev::ITorqueControl * iTorqueControl {nullptr};
+    yarp::dev::IVelocityControl * iVelocityControl {nullptr};
 
     ICartesianSolver::reference_frame referenceFrame;
 
@@ -274,6 +206,6 @@ protected:
     std::vector<double> qRefSpeeds;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __BASIC_CARTESIAN_CONTROL_HPP__
+#endif // __BASIC_CARTESIAN_CONTROL_HPP__

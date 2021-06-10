@@ -2,32 +2,18 @@
 
 #include "AsibotSolver.hpp"
 
-// -----------------------------------------------------------------------------
-
-bool roboticslab::AsibotSolver::buildStrategyFactory(const std::string & strategy)
-{
-    if (strategy == DEFAULT_STRATEGY)
-    {
-        confFactory = new AsibotConfigurationLeastOverallAngularDisplacementFactory(qMin, qMax);
-    }
-    else
-    {
-        return false;
-    }
-
-    return true;
-}
+using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-roboticslab::AsibotConfiguration * roboticslab::AsibotSolver::getConfiguration() const
+AsibotConfiguration * AsibotSolver::getConfiguration() const
 {
     return confFactory->create();
 }
 
 // -----------------------------------------------------------------------------
 
-roboticslab::AsibotSolver::AsibotTcpFrame roboticslab::AsibotSolver::getTcpFrame() const
+AsibotSolver::AsibotTcpFrame AsibotSolver::getTcpFrame() const
 {
     std::lock_guard<std::mutex> lock(mtx);
     return tcpFrameStruct;
@@ -35,7 +21,7 @@ roboticslab::AsibotSolver::AsibotTcpFrame roboticslab::AsibotSolver::getTcpFrame
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::AsibotSolver::setTcpFrame(const AsibotTcpFrame & tcpFrameStruct)
+void AsibotSolver::setTcpFrame(const AsibotTcpFrame & tcpFrameStruct)
 {
     std::lock_guard<std::mutex> lock(mtx);
     this->tcpFrameStruct = tcpFrameStruct;

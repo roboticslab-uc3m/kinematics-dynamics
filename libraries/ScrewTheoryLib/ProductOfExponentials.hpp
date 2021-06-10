@@ -27,7 +27,6 @@ namespace roboticslab
 class PoeExpression
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -159,11 +158,10 @@ public:
     static PoeExpression fromChain(const KDL::Chain & chain);
 
 private:
-
     std::vector<MatrixExponential> exps;
     KDL::Frame H_S_T;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __PRODUCT_OF_EXPONENTIALS_HPP__
+#endif // __PRODUCT_OF_EXPONENTIALS_HPP__

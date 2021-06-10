@@ -20,17 +20,6 @@
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
-#define DEFAULT_ROBOT_LOCAL "/KeyboardControllerClient"
-#define DEFAULT_ROBOT_REMOTE "/asibot/asibotManipulator"
-
-#define DEFAULT_CARTESIAN_LOCAL "/KeyboardCartesianControlClient"
-#define DEFAULT_CARTESIAN_REMOTE "/asibotSim/BasicCartesianControl"
-
-#define DEFAULT_ANGLE_REPR "axisAngle" // keep in sync with KinRepresentation::parseEnumerator's
-                                       // fallback in ::open()
-
-#define DEFAULT_THREAD_MS 50
-
 namespace roboticslab
 {
 
@@ -46,6 +35,9 @@ namespace roboticslab
 class KeyboardController : public yarp::os::RFModule
 {
 public:
+    ~KeyboardController()
+    { close(); }
+
     // used for array indexes and size checks
     enum joint { Q1 = 0, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, MAX_JOINTS };
     enum cart { X = 0, Y, Z, ROTX, ROTY, ROTZ, NUM_CART_COORDS };

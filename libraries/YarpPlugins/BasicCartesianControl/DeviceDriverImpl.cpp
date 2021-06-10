@@ -4,9 +4,19 @@
 
 #include <yarp/os/LogStream.h>
 
+using namespace roboticslab;
+
+constexpr auto DEFAULT_SOLVER = "KdlSolver";
+constexpr auto DEFAULT_ROBOT = "remote_controlboard";
+constexpr auto DEFAULT_GAIN = 0.05;
+constexpr auto DEFAULT_DURATION = 10.0;
+constexpr auto DEFAULT_CMC_PERIOD_MS = 50;
+constexpr auto DEFAULT_WAIT_PERIOD_MS = 30;
+constexpr auto DEFAULT_REFERENCE_FRAME = "base";
+
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
+bool BasicCartesianControl::open(yarp::os::Searchable& config)
 {
     yDebug() << "BasicCartesianControl config:" << config.toString();
 
@@ -39,11 +49,8 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    std::string robotStr = config.check("robot", yarp::os::Value(DEFAULT_ROBOT),
-            "robot device").asString();
-
-    std::string solverStr = config.check("solver", yarp::os::Value(DEFAULT_SOLVER),
-            "cartesian solver device").asString();
+    auto robotStr = config.check("robot", yarp::os::Value(DEFAULT_ROBOT), "robot device").asString();
+    auto solverStr = config.check("solver", yarp::os::Value(DEFAULT_SOLVER), "cartesian solver device").asString();
 
     yarp::os::Property robotOptions;
     robotOptions.fromString(config.toString());
@@ -196,17 +203,19 @@ bool roboticslab::BasicCartesianControl::open(yarp::os::Searchable& config)
 
     yInfo() << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
 
-    if (cmcPeriodMs != DEFAULT_CMC_PERIOD_MS)
-    {
-        yarp::os::PeriodicThread::setPeriod(cmcPeriodMs * 0.001);
-    }
+    yarp::os::PeriodicThread::setPeriod(cmcPeriodMs * 0.001);
+
+    currentState = VOCAB_CC_NOT_CONTROLLING;
+    streamingCommand = VOCAB_CC_NOT_SET;
+    movementStartTime = 0.0;
+    cmcSuccess = true;
 
     return yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::close()
+bool BasicCartesianControl::close()
 {
     stopControl();
     yarp::os::PeriodicThread::stop();
