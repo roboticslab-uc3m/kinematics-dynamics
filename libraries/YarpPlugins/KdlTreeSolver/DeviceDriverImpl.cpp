@@ -196,9 +196,8 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
         //-- H0
         yarp::sig::Matrix ymH0(4, 4);
-        std::string ymH0_str = "H0";
 
-        if (!getMatrixFromProperties(chainConfig, ymH0_str, ymH0))
+        if (!getMatrixFromProperties(chainConfig, "H0", ymH0))
         {
             ymH0 = defaultYmH0;
         }
@@ -308,9 +307,8 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
         //-- HN
         yarp::sig::Matrix ymHN(4, 4);
-        std::string ymHN_str = "HN";
 
-        if (!getMatrixFromProperties(chainConfig, ymHN_str, ymHN))
+        if (!getMatrixFromProperties(chainConfig, "HN", ymHN))
         {
             ymHN = defaultYmHN;
         }
