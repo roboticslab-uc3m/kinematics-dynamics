@@ -25,18 +25,17 @@ namespace roboticslab
 class ScrewTheoryIkSubproblem
 {
 public:
-
     //! Maps a joint id to a screw magnitude
-    typedef std::pair<int, double> JointIdToSolution;
+    using JointIdToSolution = std::pair<int, double>;
 
     //! At least one joint-id+value pair per solution
-    typedef std::vector<JointIdToSolution> JointIdsToSolutions;
+    using JointIdsToSolutions = std::vector<JointIdToSolution>;
 
     //! Collection of local IK solutions
-    typedef std::vector<JointIdsToSolutions> Solutions;
+    using Solutions = std::vector<JointIdsToSolutions>;
 
     //! Destructor
-    virtual ~ScrewTheoryIkSubproblem() {}
+    virtual ~ScrewTheoryIkSubproblem() = default;
 
     /**
      * @brief Finds a closed geometric solution for this IK subproblem
@@ -92,15 +91,18 @@ public:
 class ScrewTheoryIkProblem
 {
 public:
-
     //! Ordered sequence of IK subproblems needed to solve a IK problem
-    typedef std::vector<const ScrewTheoryIkSubproblem *> Steps;
+    using Steps = std::vector<const ScrewTheoryIkSubproblem *>;
 
     //! Collection of global IK solutions
-    typedef std::vector<KDL::JntArray> Solutions;
+    using Solutions = std::vector<KDL::JntArray>;
 
     //! Destructor
     ~ScrewTheoryIkProblem();
+
+    // disable these, avoid issues related to dynamic alloc
+    ScrewTheoryIkProblem(const ScrewTheoryIkProblem &) = delete;
+    ScrewTheoryIkProblem & operator=(const ScrewTheoryIkProblem &) = delete;
 
     /**
      * @brief Find all available solutions
@@ -128,7 +130,6 @@ public:
     static ScrewTheoryIkProblem * create(const PoeExpression & poe, const Steps & steps, bool reversed = false);
 
 private:
-
     enum poe_term
     {
         EXP_KNOWN,
@@ -136,15 +137,11 @@ private:
         EXP_UNKNOWN
     };
 
-    typedef std::vector<KDL::Frame> Frames;
-    typedef std::vector<poe_term> PoeTerms;
+    using Frames = std::vector<KDL::Frame>;
+    using PoeTerms = std::vector<poe_term>;
 
     // disable instantiation, force users to call builder class
     ScrewTheoryIkProblem(const PoeExpression & poe, const Steps & steps, bool reversed);
-
-    // disable these too, avoid issues related to dynamic alloc
-    ScrewTheoryIkProblem(const ScrewTheoryIkProblem &);
-    ScrewTheoryIkProblem & operator=(const ScrewTheoryIkProblem &);
 
     void recalculateFrames(const Solutions & solutions, Frames & frames, PoeTerms & poeTerms);
     bool recalculateFrames(const Solutions & solutions, Frames & frames, PoeTerms & poeTerms, bool backwards);
@@ -174,7 +171,6 @@ private:
 class ScrewTheoryIkProblemBuilder
 {
 public:
-
     //! Helper structure that holds the state of a POE term
     struct PoeTerm
     {
@@ -192,12 +188,11 @@ public:
     /**
      * @brief Finds a valid sequence of geometric subproblems that solve a global IK problem
      *
-     * @return An instance of an IK problem solver if valid, NULL otherwise.
+     * @return An instance of an IK problem solver if valid, null otherwise.
      */
     ScrewTheoryIkProblem * build();
 
 private:
-
     static std::vector<KDL::Vector> searchPoints(const PoeExpression & poe);
 
     ScrewTheoryIkProblem::Steps searchSolutions();
@@ -221,6 +216,6 @@ private:
     static const int MAX_SIMPLIFICATION_DEPTH = 2;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __SCREW_THEORY_IK_PROBLEM_HPP__
+#endif // __SCREW_THEORY_IK_PROBLEM_HPP__

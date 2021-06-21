@@ -15,7 +15,7 @@ using namespace roboticslab;
 
 namespace
 {
-    const int UNKNOWN_OR_STATIC_JOINT = -1;
+    constexpr int UNKNOWN_OR_STATIC_JOINT = -1;
 
     inline KDL::Joint::JointType motionToJointType(MatrixExponential::motion motionType)
     {

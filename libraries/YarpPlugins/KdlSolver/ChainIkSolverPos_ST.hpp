@@ -23,7 +23,6 @@ namespace roboticslab
 class ChainIkSolverPos_ST : public KDL::ChainIkSolverPos
 {
 public:
-
     /** @brief Destructor. */
     virtual ~ChainIkSolverPos_ST();
 
@@ -37,7 +36,7 @@ public:
      * @return Return code, \ref E_SOLUTION_NOT_FOUND if there is no solution or
      * \ref E_NOT_REACHABLE if at least one of them is out of reach.
      */
-    virtual int CartToJnt(const KDL::JntArray & q_init, const KDL::Frame & p_in, KDL::JntArray & q_out);
+    int CartToJnt(const KDL::JntArray & q_init, const KDL::Frame & p_in, KDL::JntArray & q_out) override;
 
     /**
     * @brief Update the internal data structures.
@@ -46,7 +45,7 @@ public:
     * or number of joints of a chain has changed. This provides a single point of contact
     * for solver memory allocations.
     */
-    virtual void updateInternalDataStructures();
+    void updateInternalDataStructures() override;
 
     /**
      * @brief Return a description of the last error
@@ -56,7 +55,7 @@ public:
      * @return If \p error is known then a description of \p error, otherwise
      * "UNKNOWN ERROR".
      */
-    virtual const char * strError(const int error) const;
+    const char * strError(const int error) const override;
 
     /**
      * @brief Create an instance of \ref ChainIkSolverPos_ST.
@@ -65,7 +64,7 @@ public:
      * @param configFactory Instance of an abstract factory class that
      * instantiates a ConfigurationSelector.
      *
-     * @return Solver instance or NULL if no solution was found.
+     * @return Solver instance or null if no solution was found.
      */
     static KDL::ChainIkSolverPos * create(const KDL::Chain & chain, const ConfigurationSelectorFactory & configFactory);
 
@@ -79,7 +78,6 @@ public:
     static const int E_NOT_REACHABLE = 100;
 
 private:
-
     ChainIkSolverPos_ST(const KDL::Chain & chain, ScrewTheoryIkProblem * problem, ConfigurationSelector * config);
 
     const KDL::Chain & chain;
@@ -89,6 +87,6 @@ private:
     ConfigurationSelector * config;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __CHAIN_IK_SOLVER_POS_ST_HPP__
+#endif // __CHAIN_IK_SOLVER_POS_ST_HPP__

@@ -79,6 +79,6 @@ inline double normalizeAngle(double angle)
     }
 }
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __SCREW_THEORY_TOOLS_HPP__
+#endif // __SCREW_THEORY_TOOLS_HPP__

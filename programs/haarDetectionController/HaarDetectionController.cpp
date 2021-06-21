@@ -11,6 +11,12 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_LOCAL_PORT = "/HaarDetectionControl";
+constexpr auto DEFAULT_REMOTE_VISION = "/haarDetection2D";
+constexpr auto DEFAULT_REMOTE_CARTESIAN = "/CartesianControl";
+constexpr auto DEFAULT_PROXIMITY_SENSORS = "/sensor_reader";
+constexpr auto DEFAULT_PERIOD = 0.01; // [s]
+
 namespace
 {
     const int INITIAL_ACT_DELAY = 3;
@@ -28,22 +34,21 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
 
-    yarp::os::Property cartesianControlClientOptions;
-    cartesianControlClientOptions.put("device", "CartesianControlClient");
-    cartesianControlClientOptions.put("cartesianLocal", localPort);
-    cartesianControlClientOptions.put("cartesianRemote", remoteCartesian);
+    yarp::os::Property cartesianControlClientOptions {
+        {"device", yarp::os::Value("CartesianControlClient")},
+        {"cartesianLocal", yarp::os::Value(localPort)},
+        {"cartesianRemote", yarp::os::Value(remoteCartesian)}
+    };
 
     if (!cartesianControlDevice.open(cartesianControlClientOptions))
     {
         yError() << "Cartesian control client device not valid";
-        close();
         return false;
     }
 
     if (!cartesianControlDevice.view(iCartesianControl))
     {
         yError() << "Could not view iCartesianControl";
-        close();
         return false;
     }
 
@@ -76,7 +81,6 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
     if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER))
     {
         yError() << "Unable to actuate tool";
-        close();
         return false;
     }
 
@@ -98,7 +102,6 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
         if (!yarp::os::Network::connect(remoteVision + "/state:o", localPort + "/state:i"))
         {
             yError() << "Unable to connect to remote vision port with prefix:" << remoteVision;
-            close();
             return false;
         }
     }
@@ -139,7 +142,7 @@ bool HaarDetectionController::interruptModule()
 {
     grabberPort.interrupt();
 
-    if (iCartesianControl != NULL)
+    if (iCartesianControl)
     {
         iCartesianControl->stopControl();
     }

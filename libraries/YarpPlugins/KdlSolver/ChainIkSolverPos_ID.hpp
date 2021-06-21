@@ -24,7 +24,6 @@ namespace roboticslab
 class ChainIkSolverPos_ID : public KDL::ChainIkSolverPos
 {
 public:
-
     /**
      * @brief Constructor
      *
@@ -46,7 +45,7 @@ public:
      * @return Return code, \ref E_SOLUTION_NOT_FOUND if there is no solution or
      * \ref E_NOT_REACHABLE if at least one of them is out of reach.
      */
-    virtual int CartToJnt(const KDL::JntArray & q_init, const KDL::Frame & p_in, KDL::JntArray & q_out);
+    int CartToJnt(const KDL::JntArray & q_init, const KDL::Frame & p_in, KDL::JntArray & q_out) override;
 
     /**
     * @brief Update the internal data structures.
@@ -55,7 +54,7 @@ public:
     * or number of joints of a chain has changed. This provides a single point of contact
     * for solver memory allocations.
     */
-    virtual void updateInternalDataStructures();
+    void updateInternalDataStructures() override;
 
     /**
      * @brief Return a description of the last error
@@ -65,7 +64,7 @@ public:
      * @return If \p error is known then a description of \p error, otherwise
      * "UNKNOWN ERROR".
      */
-    virtual const char * strError(const int error) const;
+    const char * strError(const int error) const override;
 
     /** @brief Return code, internal FK position solver failed. */
     static const int E_FKSOLVERPOS_FAILED = -100;
@@ -74,7 +73,6 @@ public:
     static const int E_JACSOLVER_FAILED = -101;
 
 private:
-
     KDL::JntArray computeDiffInvKin(const KDL::Twist & delta_twist);
 
     const KDL::Chain & chain;
@@ -89,6 +87,6 @@ private:
     KDL::Jacobian jacobian;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __CHAIN_IK_SOLVER_POS_ID_HPP__
+#endif // __CHAIN_IK_SOLVER_POS_ID_HPP__

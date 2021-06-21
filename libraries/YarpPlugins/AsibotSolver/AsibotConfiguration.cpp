@@ -12,7 +12,7 @@ using namespace roboticslab;
 namespace
 {
     // epsilon for floating-point operations (represents degrees)
-    const double eps = 0.001;
+    constexpr double eps = 0.001;
 
     inline bool checkJointInLimits(double q, double qMin, double qMax)
     {
@@ -123,13 +123,7 @@ bool AsibotConfiguration::Pose::checkJointsInLimits(JointsIn qMin, JointsIn qMax
 
 void AsibotConfiguration::Pose::retrieveAngles(JointsOut q) const
 {
-    q.resize(5);
-
-    q[0] = _q1;
-    q[1] = _q2;
-    q[2] = _q3;
-    q[3] = _q4;
-    q[4] = _q5;
+    q = {_q1, _q2, _q3, _q4, _q5};
 }
 
 std::string AsibotConfiguration::Pose::toString() const

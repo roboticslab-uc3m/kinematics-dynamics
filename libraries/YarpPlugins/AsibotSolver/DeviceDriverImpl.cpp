@@ -14,11 +14,20 @@
 
 #include <yarp/math/Math.h>
 
+using namespace roboticslab;
+
+constexpr auto NUM_MOTORS = 5;
+constexpr auto DEFAULT_A0 = 0.3;
+constexpr auto DEFAULT_A1 = 0.4;
+constexpr auto DEFAULT_A2 = 0.4;
+constexpr auto DEFAULT_A3 = 0.3;
+constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
+
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
+bool AsibotSolver::open(yarp::os::Searchable& config)
 {
-    yDebug() << "config:" << config.toString();
+    yDebug() << "AsibotSolver config:" << config.toString();
 
     A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asFloat64();
     A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asFloat64();
@@ -33,10 +42,10 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         return false;
     }
 
-    yarp::os::Bottle *mins = config.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
-    yarp::os::Bottle *maxs = config.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
+    auto * mins = config.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+    auto * maxs = config.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
 
-    if (mins == YARP_NULLPTR || maxs == YARP_NULLPTR)
+    if (!mins || !maxs)
     {
         yError() << "Empty 'mins' and/or 'maxs' option(s)";
         return false;
@@ -67,9 +76,13 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
         }
     }
 
-    std::string strategy = config.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
+    auto strategy = config.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
 
-    if (!buildStrategyFactory(strategy))
+    if (strategy == DEFAULT_STRATEGY)
+    {
+        confFactory = new AsibotConfigurationLeastOverallAngularDisplacementFactory(qMin, qMax);
+    }
+    else
     {
         yError() << "Unsupported IK configuration strategy:" << strategy;
         return false;
@@ -83,11 +96,11 @@ bool roboticslab::AsibotSolver::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::AsibotSolver::close() {
-    if (confFactory != NULL)
+bool AsibotSolver::close() {
+    if (confFactory)
     {
         delete confFactory;
-        confFactory = NULL;
+        confFactory = nullptr;
     }
 
     return true;

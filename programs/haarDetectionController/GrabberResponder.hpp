@@ -20,13 +20,12 @@ namespace roboticslab
 class GrabberResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
-
-    GrabberResponder() : iCartesianControl(NULL),
+    GrabberResponder() : iCartesianControl(nullptr),
                          isStopped(true),
                          noApproach(false)
     {}
 
-    virtual void onRead(yarp::os::Bottle &b);
+    void onRead(yarp::os::Bottle &b) override;
 
     void setICartesianControlDriver(roboticslab::ICartesianControl *iCartesianControl)
     {
@@ -39,12 +38,11 @@ public:
     }
 
 private:
-
     roboticslab::ICartesianControl *iCartesianControl;
 
     bool isStopped, noApproach;
 };
 
-}  // namespace roboticslab
+} // namespace roboticslab
 
-#endif  // __GRABBER_RESPONDER_HPP__
+#endif // __GRABBER_RESPONDER_HPP__

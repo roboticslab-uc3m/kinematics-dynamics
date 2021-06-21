@@ -16,10 +16,6 @@
 
 #include "ICartesianControl.h"
 
-constexpr auto DEFAULT_CARTESIAN_LOCAL = "/CartesianControlClient";
-constexpr auto DEFAULT_CARTESIAN_REMOTE = "/CartesianControl";
-constexpr auto DEFAULT_FK_STREAM_TIMEOUT_SECS = 0.5;
-
 namespace roboticslab
 {
 

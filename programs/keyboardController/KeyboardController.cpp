@@ -22,6 +22,17 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_ROBOT_LOCAL = "/KeyboardControllerClient";
+constexpr auto DEFAULT_ROBOT_REMOTE = "/asibot/asibotManipulator";
+
+constexpr auto DEFAULT_CARTESIAN_LOCAL = "/KeyboardCartesianControlClient";
+constexpr auto DEFAULT_CARTESIAN_REMOTE = "/asibotSim/BasicCartesianControl";
+
+constexpr auto DEFAULT_ANGLE_REPR = "axisAngle"; // keep in sync with KinRepresentation::parseEnumerator's
+                                                 // fallback in ::open()
+
+constexpr auto DEFAULT_THREAD_MS = 50;
+
 namespace
 {
     struct termios ots;

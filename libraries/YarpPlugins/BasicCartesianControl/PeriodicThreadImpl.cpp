@@ -7,9 +7,11 @@
 
 #include "KdlVectorConverter.hpp"
 
+using namespace roboticslab;
+
 // ------------------- PeriodicThread Related ------------------------------------
 
-void roboticslab::BasicCartesianControl::run()
+void BasicCartesianControl::run()
 {
     const int currentState = getCurrentState();
 
@@ -58,7 +60,7 @@ void roboticslab::BasicCartesianControl::run()
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleMovj(const std::vector<double> &q)
+void BasicCartesianControl::handleMovj(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_POSITION))
     {
@@ -91,7 +93,7 @@ void roboticslab::BasicCartesianControl::handleMovj(const std::vector<double> &q
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q)
+void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
@@ -169,7 +171,7 @@ void roboticslab::BasicCartesianControl::handleMovl(const std::vector<double> &q
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q)
+void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
@@ -242,7 +244,7 @@ void roboticslab::BasicCartesianControl::handleMovv(const std::vector<double> &q
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleGcmp(const std::vector<double> &q)
+void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
@@ -267,7 +269,7 @@ void roboticslab::BasicCartesianControl::handleGcmp(const std::vector<double> &q
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::handleForc(const std::vector<double> &q)
+void BasicCartesianControl::handleForc(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {

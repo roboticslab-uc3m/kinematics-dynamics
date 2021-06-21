@@ -33,6 +33,22 @@
 #include "ChainIkSolverPos_ST.hpp"
 #include "ChainIkSolverPos_ID.hpp"
 
+using namespace roboticslab;
+
+constexpr auto DEFAULT_KINEMATICS = "none.ini";
+constexpr auto DEFAULT_NUM_LINKS = 1;
+
+constexpr auto DEFAULT_EPSILON = 0.005; // Precision tolerance
+constexpr auto DEFAULT_DURATION = 20; // For Trajectory
+constexpr auto DEFAULT_MAXVEL = 7.5; // unit/s
+constexpr auto DEFAULT_MAXACC = 0.2; // unit/s^2
+
+constexpr auto DEFAULT_EPS = 1e-9;
+constexpr auto DEFAULT_MAXITER = 1000;
+constexpr auto DEFAULT_IK_SOLVER = "lma";
+constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
+constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 namespace
@@ -92,10 +108,10 @@ namespace
             return false;
         }
 
-        yarp::os::Bottle * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
-        yarp::os::Bottle * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+        auto * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
+        auto * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
 
-        if (maxs == YARP_NULLPTR || mins == YARP_NULLPTR)
+        if (!maxs || maxs->isNull() || !mins || mins->isNull())
         {
             yError() << "Empty 'mins' and/or 'maxs' option(s)";
             return false;
@@ -107,10 +123,13 @@ namespace
             return false;
         }
 
+        yDebug() << "qMax:" << maxs->toString();
+        yDebug() << "qMin:" << mins->toString();
+
         for (int motor = 0; motor < nrOfJoints; motor++)
         {
-            qMax(motor) = roboticslab::KinRepresentation::degToRad(maxs->get(motor).asFloat64());
-            qMin(motor) = roboticslab::KinRepresentation::degToRad(mins->get(motor).asFloat64());
+            qMax(motor) = KinRepresentation::degToRad(maxs->get(motor).asFloat64());
+            qMin(motor) = KinRepresentation::degToRad(mins->get(motor).asFloat64());
 
             if (qMin(motor) == qMax(motor))
             {
@@ -129,13 +148,16 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
+bool KdlSolver::open(yarp::os::Searchable & config)
 {
-    yDebug() << "KdlSolver config:" << config.toString();
+    yDebug() << "config:" << config.toString();
 
     //-- kinematics
-    std::string kinematics = config.check("kinematics",yarp::os::Value(DEFAULT_KINEMATICS),"path to file with description of robot kinematics").asString();
-    yInfo() << "Kinematics file:" << kinematics;
+    std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
+        "path to file with description of robot kinematics").asString();
+
+    yInfo() << "kinematics:" << kinematics;
+
     yarp::os::ResourceFinder rf;
     rf.setVerbose(false);
     rf.setDefaultContext("kinematics");
@@ -143,150 +165,165 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
     yarp::os::Property fullConfig;
     fullConfig.fromConfigFile(kinematicsFullPath.c_str());
-    fullConfig.fromString(config.toString(),false);  //-- Can override kinematics file contents.
+    fullConfig.fromString(config.toString(), false);
     fullConfig.setMonitor(config.getMonitor(), "KdlSolver");
 
-    yDebug() << "Full config:" << fullConfig.toString();
+    yDebug() << "fullConfig:" << fullConfig.toString();
 
     //-- numlinks
     int numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt32();
     yInfo() << "numLinks:" << numLinks;
 
-    //-- gravity
+    //-- gravity (default)
     yarp::os::Value defaultGravityValue;
-    yarp::os::Bottle *defaultGravityBottle = defaultGravityValue.asList();
-    defaultGravityBottle->addFloat64(0);
-    defaultGravityBottle->addFloat64(0);
+    yarp::os::Bottle * defaultGravityBottle = defaultGravityValue.asList();
+    defaultGravityBottle->addFloat64(0.0);
+    defaultGravityBottle->addFloat64(0.0);
     defaultGravityBottle->addFloat64(-9.81);
 
+    //-- gravity
     yarp::os::Value gravityValue = fullConfig.check("gravity", defaultGravityValue, "gravity vector (SI units)");
-    yarp::os::Bottle *gravityBottle = gravityValue.asList();
-    KDL::Vector gravity(gravityBottle->get(0).asFloat64(),gravityBottle->get(1).asFloat64(),gravityBottle->get(2).asFloat64());
+    yarp::os::Bottle * gravityBottle = gravityValue.asList();
+    KDL::Vector gravity(gravityBottle->get(0).asFloat64(), gravityBottle->get(1).asFloat64(), gravityBottle->get(2).asFloat64());
     yInfo() << "gravity:" << gravityBottle->toString();
 
-    //-- H0
-    yarp::sig::Matrix defaultYmH0(4,4);
+    //-- H0 (default)
+    yarp::sig::Matrix defaultYmH0(4, 4);
     defaultYmH0.eye();
 
-    yarp::sig::Matrix ymH0(4,4);
-    std::string ymH0_str("H0");
-    if( ! getMatrixFromProperties(fullConfig, ymH0_str, ymH0))
+    //-- H0
+    yarp::sig::Matrix ymH0(4, 4);
+
+    if (!getMatrixFromProperties(fullConfig, "H0", ymH0))
     {
         ymH0 = defaultYmH0;
     }
 
-    KDL::Vector kdlVec0(ymH0(0,3),ymH0(1,3),ymH0(2,3));
-    KDL::Rotation kdlRot0( ymH0(0,0),ymH0(0,1),ymH0(0,2),ymH0(1,0),ymH0(1,1),ymH0(1,2),ymH0(2,0),ymH0(2,1),ymH0(2,2));
-    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0,kdlVec0)));  //-- H0 = Frame(kdlRot0,kdlVec0);
-    yInfo() << "H0:" << ymH0.toString();
+    KDL::Vector kdlVec0(ymH0(0, 3), ymH0(1, 3), ymH0(2, 3));
+    KDL::Rotation kdlRot0(ymH0(0, 0), ymH0(0, 1), ymH0(0, 2), ymH0(1, 0), ymH0(1, 1), ymH0(1, 2), ymH0(2, 0), ymH0(2, 1), ymH0(2, 2));
+    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0, kdlVec0)));
+    yInfo() << "H0:\n" << ymH0.toString();
 
     //-- links
-    for(int linkIndex=0;linkIndex<numLinks;linkIndex++)
+    for (int linkIndex = 0; linkIndex < numLinks; linkIndex++)
     {
-        std::string link("link_");
-        std::ostringstream s;
-        s << linkIndex;
-        link += s.str();
-        yarp::os::Bottle &bLink = fullConfig.findGroup(link);
-        if( ! bLink.isNull() ) {
+        std::string link = "link_" + std::to_string(linkIndex);
+        yarp::os::Bottle & bLink = fullConfig.findGroup(link);
+
+        if (!bLink.isNull())
+        {
             //-- Kinematic
-            double linkOffset = bLink.check("offset",yarp::os::Value(0.0), "DH joint angle (degrees)").asFloat64();
-            double linkD = bLink.check("D",yarp::os::Value(0.0), "DH link offset (meters)").asFloat64();
-            double linkA = bLink.check("A",yarp::os::Value(0.0), "DH link length (meters)").asFloat64();
-            double linkAlpha = bLink.check("alpha",yarp::os::Value(0.0), "DH link twist (degrees)").asFloat64();
+            double linkOffset = bLink.check("offset", yarp::os::Value(0.0), "DH joint angle (degrees)").asFloat64();
+            double linkD = bLink.check("D", yarp::os::Value(0.0), "DH link offset (meters)").asFloat64();
+            double linkA = bLink.check("A", yarp::os::Value(0.0), "DH link length (meters)").asFloat64();
+            double linkAlpha = bLink.check("alpha", yarp::os::Value(0.0), "DH link twist (degrees)").asFloat64();
+
+            KDL::Joint axis(KDL::Joint::RotZ);
+            KDL::Frame H = KDL::Frame::DH(linkA, KinRepresentation::degToRad(linkAlpha), linkD, KinRepresentation::degToRad(linkOffset));
+
             //-- Dynamic
-            if( bLink.check("mass") && bLink.check("cog") && bLink.check("inertia")) {
-                double linkMass = bLink.check("mass",yarp::os::Value(0.0), "link mass (SI units)").asFloat64();
+            if (bLink.check("mass") && bLink.check("cog") && bLink.check("inertia"))
+            {
+                double linkMass = bLink.check("mass", yarp::os::Value(0.0), "link mass (SI units)").asFloat64();
                 yarp::os::Bottle linkCog = bLink.findGroup("cog", "vector of link's center of gravity (SI units)").tail();
                 yarp::os::Bottle linkInertia = bLink.findGroup("inertia", "vector of link's inertia (SI units)").tail();
-                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset)),
-                                              KDL::RigidBodyInertia(linkMass,KDL::Vector(linkCog.get(0).asFloat64(),linkCog.get(1).asFloat64(),linkCog.get(2).asFloat64()),
-                                                                    KDL::RotationalInertia(linkInertia.get(0).asFloat64(),linkInertia.get(1).asFloat64(),linkInertia.get(2).asFloat64(),0,0,0))));
+
+                KDL::Vector cog(linkCog.get(0).asFloat64(), linkCog.get(1).asFloat64(), linkCog.get(2).asFloat64());
+                KDL::RotationalInertia inertia(linkInertia.get(0).asFloat64(), linkInertia.get(1).asFloat64(), linkInertia.get(2).asFloat64());
+
+                chain.addSegment(KDL::Segment(axis, H, KDL::RigidBodyInertia(linkMass, cog, inertia)));
+
                 yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)",
-                           link.c_str(), linkOffset,linkD,linkA,linkAlpha,linkMass,
-                           linkCog.get(0).asFloat64(),linkCog.get(1).asFloat64(),linkCog.get(2).asFloat64(),
-                           linkInertia.get(0).asFloat64(),linkInertia.get(1).asFloat64(),linkInertia.get(2).asFloat64());
+                        link.c_str(), linkOffset, linkD, linkA, linkAlpha, linkMass,
+                        linkCog.get(0).asFloat64(), linkCog.get(1).asFloat64(), linkCog.get(2).asFloat64(),
+                        linkInertia.get(0).asFloat64(), linkInertia.get(1).asFloat64(), linkInertia.get(2).asFloat64());
             }
-            else //-- No mass -> skip dynamics
+            else
             {
-                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(linkA,KinRepresentation::degToRad(linkAlpha),linkD,KinRepresentation::degToRad(linkOffset))));
-                yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f)",link.c_str(), linkOffset,linkD,linkA,linkAlpha);
+                chain.addSegment(KDL::Segment(axis, H));
+                yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f)", link.c_str(), linkOffset, linkD, linkA, linkAlpha);
             }
-            continue;
         }
+        else
+        {
+            std::string xyzLink = "xyzLink_" + std::to_string(linkIndex);
+            yWarning("Not found: \"%s\", looking for \"%s\" instead.", link.c_str(), xyzLink.c_str());
 
-        std::string xyzLink("xyzLink_");
-        std::ostringstream xyzS;
-        xyzS << linkIndex;
-        xyzLink += xyzS.str();
-        yWarning("Not found: \"%s\", looking for \"%s\" instead", link.c_str(), xyzLink.c_str());
-        yarp::os::Bottle &bXyzLink = fullConfig.findGroup(xyzLink);
-        if( bXyzLink.isNull() ) {
-            yError() << "Not found" << xyzLink << "either";
-            return false;
+            yarp::os::Bottle & bXyzLink = fullConfig.findGroup(xyzLink);
+
+            if (bXyzLink.isNull())
+            {
+                yError("Not found: \"%s\" either.", xyzLink.c_str());
+                return false;
+            }
+
+            double linkX = bXyzLink.check("x", yarp::os::Value(0.0), "X coordinate of next frame (meters)").asFloat64();
+            double linkY = bXyzLink.check("y", yarp::os::Value(0.0), "Y coordinate of next frame (meters)").asFloat64();
+            double linkZ = bXyzLink.check("z", yarp::os::Value(0.0), "Z coordinate of next frame (meters)").asFloat64();
+
+            std::string linkTypes = "joint type (Rot[XYZ]|InvRot[XYZ]|Trans[XYZ]|InvTrans[XYZ]), e.g. 'RotZ'";
+            std::string linkType = bXyzLink.check("Type", yarp::os::Value("NULL"), linkTypes.c_str()).asString();
+
+            KDL::Frame H(KDL::Vector(linkX, linkY, linkZ));
+
+            if (linkType == "RotX") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX), H));
+            } else if (linkType == "RotY") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotY), H));
+            } else if (linkType == "RotZ") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), H));
+            } else if (linkType == "InvRotX") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX, -1.0), H));
+            } else if (linkType == "InvRotY") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotY, -1.0), H));
+            } else if (linkType == "InvRotZ") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ, -1.0), H));
+            } else if (linkType == "TransX") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransX), H));
+            } else if (linkType == "TransY") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransY), H));
+            } else if (linkType == "TransZ") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ), H));
+            } else if (linkType == "InvTransX") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransX, -1.0), H));
+            } else if (linkType == "InvTransY") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransY, -1.0), H));
+            } else if (linkType == "InvTransZ") {
+                chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ, -1.0), H));
+            } else {
+                yWarning("Link joint type \"%s\" unrecognized!", linkType.c_str());
+            }
+
+            yInfo("Added: %s (Type %s) (x %f) (y %f) (z %f)", xyzLink.c_str(), linkType.c_str(), linkX, linkY, linkZ);
         }
-        double linkX = bXyzLink.check("x",yarp::os::Value(0.0), "X coordinate of next frame (meters)").asFloat64();
-        double linkY = bXyzLink.check("y",yarp::os::Value(0.0), "Y coordinate of next frame (meters)").asFloat64();
-        double linkZ = bXyzLink.check("z",yarp::os::Value(0.0), "Z coordinate of next frame (meters)").asFloat64();
-
-        std::string linkTypes = "joint type (Rot[XYZ]|InvRot[XYZ]|Trans[XYZ]|InvTrans[XYZ]), e.g. 'RotZ'";
-        std::string linkType = bXyzLink.check("Type",yarp::os::Value("NULL"), linkTypes.c_str()).asString();
-        if(linkType == "RotX") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "RotY") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotY),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "RotZ") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "InvRotX") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "InvRotY") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotY,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "InvRotZ") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "TransX") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransX),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "TransY") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransY),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "TransZ") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "InvTransX") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransX,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "InvTransY") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransY,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else if(linkType == "InvTransZ") {
-            chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::TransZ,-1.0),KDL::Frame(KDL::Vector(linkX,linkY,linkZ))));
-        } else {
-            yWarning() << "Link joint type" << linkType << "unrecognized";
-        }
-
-        yInfo("Added: %s (Type %s) (x %f) (y %f) (z %f)",xyzLink.c_str(),linkType.c_str(),linkX,linkY,linkZ);
     }
 
-    //-- HN
-    yarp::sig::Matrix defaultYmHN(4,4);
+    //-- HN (default)
+    yarp::sig::Matrix defaultYmHN(4, 4);
     defaultYmHN.eye();
 
-    yarp::sig::Matrix ymHN(4,4);
-    std::string ymHN_str("HN");
-    if( ! getMatrixFromProperties(fullConfig, ymHN_str, ymHN))
+    //-- HN
+    yarp::sig::Matrix ymHN(4, 4);
+
+    if (!getMatrixFromProperties(fullConfig, "HN", ymHN))
     {
         ymHN = defaultYmHN;
     }
 
-    KDL::Vector kdlVecN(ymHN(0,3),ymHN(1,3),ymHN(2,3));
-    KDL::Rotation kdlRotN( ymHN(0,0),ymHN(0,1),ymHN(0,2),ymHN(1,0),ymHN(1,1),ymHN(1,2),ymHN(2,0),ymHN(2,1),ymHN(2,2));
-    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN,kdlVecN)));
-    yInfo() << "HN:" << ymHN.toString();
+    KDL::Vector kdlVecN(ymHN(0, 3), ymHN(1, 3), ymHN(2, 3));
+    KDL::Rotation kdlRotN(ymHN(0, 0), ymHN(0, 1), ymHN(0, 2), ymHN(1, 0), ymHN(1, 1), ymHN(1, 2), ymHN(2, 0), ymHN(2, 1), ymHN(2, 2));
+    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN, kdlVecN)));
+    yInfo() << "HN:\n" << ymHN.toString();
 
-    yInfo() << "Chain number of segments (post- H0 and HN):" << chain.getNrOfSegments();
-    yInfo() << "Chain number of joints (post- H0 and HN):" << chain.getNrOfJoints();
+    yInfo() << "Chain number of segments:" << chain.getNrOfSegments();
+    yInfo() << "Chain number of joints:" << chain.getNrOfJoints();
 
     fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
     ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain);
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
     //-- IK solver algorithm.
-    std::string ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st, id)").asString();
+    auto ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st, id)").asString();
 
     if (ik == "lma")
     {
@@ -351,7 +388,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
             return false;
         }
 
-        if (ikSolverPos == NULL)
+        if (!ikSolverPos)
         {
             yError() << "Unable to solve IK";
             return false;
@@ -384,7 +421,7 @@ bool roboticslab::KdlSolver::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::KdlSolver::close()
+bool KdlSolver::close()
 {
     delete fkSolverPos;
     delete ikSolverPos;

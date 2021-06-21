@@ -186,7 +186,7 @@ namespace
 
 int AsibotSolver::getNumJoints()
 {
-    return NUM_MOTORS;
+    return 5;
 }
 
 // -----------------------------------------------------------------------------
@@ -223,8 +223,7 @@ bool AsibotSolver::restoreOriginalChain()
 
 // -----------------------------------------------------------------------------
 
-bool AsibotSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old,
-        std::vector<double> &x_new_obj)
+bool AsibotSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old, std::vector<double> &x_new_obj)
 {
     yarp::sig::Matrix H_old_obj = vectorToMatrix(x_old_obj, true);
     yarp::sig::Matrix H_new_old = vectorToMatrix(x_new_old, true);
@@ -241,9 +240,9 @@ bool AsibotSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 {
     std::vector<double> qInRad(q);
 
-    for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
+    for (auto & val : qInRad)
     {
-        *it = degToRad(*it);
+        val = degToRad(val);
     }
 
     double s1 = std::sin(qInRad[0]);
@@ -311,8 +310,7 @@ bool AsibotSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<d
 
 // -----------------------------------------------------------------------------
 
-bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-        const reference_frame frame)
+bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, const reference_frame frame)
 {
     std::vector<double> xd_base_obj;
 
@@ -424,9 +422,9 @@ bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<do
 {
     std::vector<double> qInRad(q);
 
-    for (std::vector<double>::iterator it = qInRad.begin(); it != qInRad.end(); ++it)
+    for (auto & val : qInRad)
     {
-        *it = degToRad(*it);
+        val = degToRad(val);
     }
 
     yarp::sig::Matrix Ja(6, 5);
@@ -474,7 +472,7 @@ bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<do
 
     yarp::sig::Vector qdotv = Ja_inv * xdotv;
 
-    qdot.resize(NUM_MOTORS);
+    qdot.resize(5);
 
     for (unsigned int i = 0; i < qdot.size(); i++)
     {

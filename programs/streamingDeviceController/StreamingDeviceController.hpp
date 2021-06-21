@@ -28,6 +28,9 @@ class StreamingDeviceController : public yarp::os::RFModule,
                                   public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
+    ~StreamingDeviceController()
+    { close(); }
+
     bool configure(yarp::os::ResourceFinder & rf) override;
     bool updateModule() override;
     bool interruptModule() override;

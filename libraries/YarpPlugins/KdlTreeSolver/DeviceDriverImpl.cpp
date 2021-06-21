@@ -30,6 +30,14 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_KINEMATICS = "none.ini";
+constexpr auto DEFAULT_LAMBDA = 0.01;
+constexpr auto DEFAULT_EPS = 1e-6;
+constexpr auto DEFAULT_MAXITER = 1000;
+constexpr auto DEFAULT_V_TRANSL_MAX = 1.0; // meters/s
+constexpr auto DEFAULT_V_ROT_MAX = 50.0; // degrees/s
+constexpr auto DEFAULT_IK_SOLVER = "nrjl";
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 namespace
@@ -188,9 +196,8 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
         //-- H0
         yarp::sig::Matrix ymH0(4, 4);
-        std::string ymH0_str = "H0";
 
-        if (!getMatrixFromProperties(chainConfig, ymH0_str, ymH0))
+        if (!getMatrixFromProperties(chainConfig, "H0", ymH0))
         {
             ymH0 = defaultYmH0;
         }
@@ -300,9 +307,8 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
         //-- HN
         yarp::sig::Matrix ymHN(4, 4);
-        std::string ymHN_str = "HN";
 
-        if (!getMatrixFromProperties(chainConfig, ymHN_str, ymHN))
+        if (!getMatrixFromProperties(chainConfig, "HN", ymHN))
         {
             ymHN = defaultYmHN;
         }

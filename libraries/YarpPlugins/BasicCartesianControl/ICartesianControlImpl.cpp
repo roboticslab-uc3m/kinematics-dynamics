@@ -19,19 +19,21 @@
 
 #include "KdlVectorConverter.hpp"
 
+using namespace roboticslab;
+
 // -----------------------------------------------------------------------------
 
 namespace
 {
     inline double getTimestamp(yarp::dev::IPreciselyTimed * iPreciselyTimed)
     {
-        return iPreciselyTimed != NULL ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
+        return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
     }
 }
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * state, double * timestamp)
+bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * timestamp)
 {
     std::vector<double> currentQ(numRobotJoints);
 
@@ -41,7 +43,7 @@ bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * stat
         return false;
     }
 
-    if (timestamp != NULL)
+    if (timestamp)
     {
         *timestamp = getTimestamp(iPreciselyTimed);
     }
@@ -52,7 +54,7 @@ bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * stat
         return false;
     }
 
-    if (state != 0)
+    if (state)
     {
         *state = getCurrentState();
     }
@@ -62,7 +64,7 @@ bool roboticslab::BasicCartesianControl::stat(std::vector<double> &x, int * stat
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
+bool BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     std::vector<double> currentQ(numRobotJoints);
 
@@ -83,7 +85,7 @@ bool roboticslab::BasicCartesianControl::inv(const std::vector<double> &xd, std:
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
+bool BasicCartesianControl::movj(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numRobotJoints), qd;
 
@@ -140,7 +142,7 @@ bool roboticslab::BasicCartesianControl::movj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
+bool BasicCartesianControl::relj(const std::vector<double> &xd)
 {
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
@@ -165,7 +167,7 @@ bool roboticslab::BasicCartesianControl::relj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
+bool BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     yWarning() << "MOVL mode still experimental";
 
@@ -237,7 +239,7 @@ bool roboticslab::BasicCartesianControl::movl(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
+bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     std::vector<double> currentQ(numRobotJoints);
 
@@ -292,7 +294,7 @@ bool roboticslab::BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::gcmp()
+bool BasicCartesianControl::gcmp()
 {
     //-- Set torque mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_TORQUE))
@@ -307,7 +309,7 @@ bool roboticslab::BasicCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
+bool BasicCartesianControl::forc(const std::vector<double> &td)
 {
     yWarning() << "FORC mode still experimental";
 
@@ -332,7 +334,7 @@ bool roboticslab::BasicCartesianControl::forc(const std::vector<double> &td)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::stopControl()
+bool BasicCartesianControl::stopControl()
 {
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
@@ -355,7 +357,7 @@ bool roboticslab::BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::wait(double timeout)
+bool BasicCartesianControl::wait(double timeout)
 {
     int state = getCurrentState();
 
@@ -384,7 +386,7 @@ bool roboticslab::BasicCartesianControl::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
+bool BasicCartesianControl::tool(const std::vector<double> &x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
     {
@@ -403,13 +405,13 @@ bool roboticslab::BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::act(int command)
+bool BasicCartesianControl::act(int command)
 {
     yError() << "act() not implemented";
     return false;
 }
 
-void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
+void BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
             || !checkControlModes(VOCAB_CM_VELOCITY))
@@ -449,7 +451,7 @@ void roboticslab::BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, double interval)
+void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE
             || !checkControlModes(VOCAB_CM_VELOCITY))
@@ -526,7 +528,7 @@ void roboticslab::BasicCartesianControl::pose(const std::vector<double> &x, doub
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
+void BasicCartesianControl::movi(const std::vector<double> &x)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI
             || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
@@ -570,7 +572,7 @@ void roboticslab::BasicCartesianControl::movi(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
+bool BasicCartesianControl::setParameter(int vocab, double value)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
     {
@@ -638,7 +640,7 @@ bool roboticslab::BasicCartesianControl::setParameter(int vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
+bool BasicCartesianControl::getParameter(int vocab, double * value)
 {
     switch (vocab)
     {
@@ -670,7 +672,7 @@ bool roboticslab::BasicCartesianControl::getParameter(int vocab, double * value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, double> & params)
+bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
     {
@@ -680,9 +682,9 @@ bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, doubl
 
     bool ok = true;
 
-    for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
+    for (const auto & it : params)
     {
-        ok &= setParameter(it->first, it->second);
+        ok &= setParameter(it.first, it.second);
     }
 
     return ok;
@@ -690,14 +692,14 @@ bool roboticslab::BasicCartesianControl::setParameters(const std::map<int, doubl
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::BasicCartesianControl::getParameters(std::map<int, double> & params)
+bool BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
-    params.insert(std::make_pair(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
+    params.emplace(std::make_pair(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand));
     return true;
 }
 

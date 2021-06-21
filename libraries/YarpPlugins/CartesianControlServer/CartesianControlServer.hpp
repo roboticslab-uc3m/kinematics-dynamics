@@ -16,9 +16,6 @@
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
 
-constexpr auto DEFAULT_PREFIX = "/CartesianServer";
-constexpr auto DEFAULT_MS = 20;
-
 namespace roboticslab
 {
 
@@ -41,12 +38,7 @@ class CartesianControlServer : public yarp::dev::DeviceDriver,
                                public yarp::os::PeriodicThread
 {
 public:
-    CartesianControlServer()
-        : yarp::os::PeriodicThread(DEFAULT_MS * 0.001),
-          iCartesianControl(nullptr),
-          rpcResponder(nullptr), rpcTransformResponder(nullptr),
-          streamResponder(nullptr),
-          fkStreamEnabled(true)
+    CartesianControlServer() : yarp::os::PeriodicThread(1.0)
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
@@ -63,10 +55,11 @@ protected:
     yarp::os::RpcServer rpcServer, rpcTransformServer;
     yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
-    RpcResponder * rpcResponder, * rpcTransformResponder;
-    StreamResponder * streamResponder;
+    RpcResponder * rpcResponder {nullptr};
+    RpcResponder * rpcTransformResponder {nullptr};
+    StreamResponder * streamResponder {nullptr};
 
     bool fkStreamEnabled;
 };

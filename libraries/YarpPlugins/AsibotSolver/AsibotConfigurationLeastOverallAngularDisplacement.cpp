@@ -13,8 +13,8 @@ using namespace roboticslab;
 
 bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguration(JointsIn qGuess)
 {
-    typedef std::pair<double, const Pose *> MapPair;
-    typedef std::map<MapPair::first_type, MapPair::second_type> MapType;
+    using MapPair = std::pair<double, const Pose *>;
+    using MapType = std::map<MapPair::first_type, MapPair::second_type>;
     MapType angularDisplacementPerConfiguration;
 
     if (forwardElbowUp.valid)
@@ -82,13 +82,11 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguratio
 
 std::vector<double> AsibotConfigurationLeastOverallAngularDisplacement::getDiffs(JointsIn qGuess, const Pose & pose)
 {
-    std::vector<double> diffs(5);
-
-    diffs[0] = std::abs(qGuess[0] - pose._q1);
-    diffs[1] = std::abs(qGuess[1] - pose._q2);
-    diffs[2] = std::abs(qGuess[2] - pose._q3);
-    diffs[3] = std::abs(qGuess[3] - pose._q4);
-    diffs[4] = std::abs(qGuess[4] - pose._q5);
-
-    return diffs;
+    return {
+        std::abs(qGuess[0] - pose._q1),
+        std::abs(qGuess[1] - pose._q2),
+        std::abs(qGuess[2] - pose._q3),
+        std::abs(qGuess[3] - pose._q4),
+        std::abs(qGuess[4] - pose._q5)
+    };
 }
