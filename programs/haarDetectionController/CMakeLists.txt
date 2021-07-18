@@ -1,9 +1,9 @@
-if(NOT ROBOTICSLAB_YARP_DEVICES_FOUND AND (NOT DEFINED ENABLE_haarDetectionController OR ENABLE_haarDetectionController))
-    message(WARNING "ROBOTICSLAB_YARP_DEVICES package not found, disabling haarDetectionController program")
+if(NOT TARGET ROBOTICSLAB::YarpDevicesInterfaces AND (NOT DEFINED ENABLE_haarDetectionController OR ENABLE_haarDetectionController))
+    message(WARNING "ROBOTICSLAB::YarpDevicesInterfaces target not found, disabling haarDetectionController program")
 endif()
 
 cmake_dependent_option(ENABLE_haarDetectionController "Enable/disable haarDetectionController program" ON
-                       ROBOTICSLAB_YARP_DEVICES_FOUND OFF)
+                       "TARGET ROBOTICSLAB::YarpDevicesInterfaces" OFF)
 
 if(ENABLE_haarDetectionController)
 
@@ -16,7 +16,8 @@ if(ENABLE_haarDetectionController)
     target_link_libraries(haarDetectionController YARP::YARP_os
                                                   YARP::YARP_init
                                                   YARP::YARP_dev
-                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces)
+                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                  ROBOTICSLAB::YarpDevicesInterfaces)
 
     install(TARGETS haarDetectionController
             DESTINATION ${CMAKE_INSTALL_BINDIR})
