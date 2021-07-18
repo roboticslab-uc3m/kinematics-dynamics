@@ -4,6 +4,7 @@
 #define __I_CARTESIAN_SOLVER__
 
 #include <vector>
+#include <yarp/conf/version.h>
 #include <yarp/os/Vocab.h>
 
 /**
@@ -25,8 +26,13 @@ public:
     //! Lists supported reference frames.
     enum reference_frame
     {
+#if YARP_VERSION_MINOR >= 5
+        BASE_FRAME = yarp::os::createVocab32('c','p','f','b'), //!< Base frame
+        TCP_FRAME = yarp::os::createVocab32('c','p','f','t')   //!< End-effector frame (TCP)
+#else
         BASE_FRAME = yarp::os::createVocab('c','p','f','b'), //!< Base frame
         TCP_FRAME = yarp::os::createVocab('c','p','f','t')   //!< End-effector frame (TCP)
+#endif
     };
 
     //! Destructor

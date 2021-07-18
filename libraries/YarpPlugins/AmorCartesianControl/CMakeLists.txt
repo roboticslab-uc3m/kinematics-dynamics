@@ -15,10 +15,6 @@ yarp_prepare_plugin(AmorCartesianControl
 
 if(NOT SKIP_AmorCartesianControl)
 
-    if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
-        set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
-    endif()
-
     yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
                                          AmorCartesianControl.cpp
                                          DeviceDriverImpl.cpp

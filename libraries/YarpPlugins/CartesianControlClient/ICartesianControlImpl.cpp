@@ -2,6 +2,7 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <yarp/conf/version.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
@@ -11,14 +12,22 @@ namespace
 {
     inline bool checkSuccess(const yarp::os::Bottle & response)
     {
+#if YARP_VERSION_MINOR >= 5
+        return !response.get(0).isVocab32() || response.get(0).asVocab32() != VOCAB_CC_FAILED;
+#else
         return !response.get(0).isVocab() || response.get(0).asVocab() != VOCAB_CC_FAILED;
+#endif
     }
 
     inline void addValue(yarp::os::Bottle& b, int vocab, double value)
     {
         if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
         {
+#if YARP_VERSION_MINOR >= 5
+            b.addVocab32(static_cast<yarp::conf::vocab32_t>(value));
+#else
             b.addVocab(value);
+#endif
         }
         else
         {
@@ -30,7 +39,11 @@ namespace
     {
         if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
         {
+#if YARP_VERSION_MINOR >= 5
+            return v.asVocab32();
+#else
             return v.asVocab();
+#endif
         }
         else
         {
@@ -45,7 +58,11 @@ bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(vocab);
+#endif
 
     rpcClient.write(cmd, response);
 
@@ -58,7 +75,11 @@ bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const 
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(vocab);
+#endif
 
     for (size_t i = 0; i < in.size(); i++)
     {
@@ -76,7 +97,11 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(vocab);
+#endif
 
     for (size_t i = 0; i < in.size(); i++)
     {
@@ -105,7 +130,11 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
     yarp::os::Bottle& cmd = commandPort.prepare();
 
     cmd.clear();
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(vocab);
+#endif
 
     for (size_t i = 0; i < in.size(); i++)
     {
@@ -122,7 +151,11 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
     yarp::os::Bottle& cmd = commandPort.prepare();
 
     cmd.clear();
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(vocab);
+#endif
     cmd.addFloat64(in2);
 
     for (size_t i = 0; i < in1.size(); i++)
@@ -151,7 +184,11 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
 
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_STAT);
+#else
     cmd.addVocab(VOCAB_CC_STAT);
+#endif
 
     rpcClient.write(cmd, response);
 
@@ -162,7 +199,11 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
 
     if (state != 0)
     {
+#if YARP_VERSION_MINOR >= 5
+        *state = response.get(0).asVocab32();
+#else
         *state = response.get(0).asVocab();
+#endif
     }
 
     x.resize(response.size() - 2);
@@ -242,7 +283,11 @@ bool roboticslab::CartesianControlClient::wait(double timeout)
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_WAIT);
+#else
     cmd.addVocab(VOCAB_CC_WAIT);
+#endif
     cmd.addFloat64(timeout);
 
     rpcClient.write(cmd, response);
@@ -263,8 +308,13 @@ bool roboticslab::CartesianControlClient::act(int command)
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_ACT);
+    cmd.addVocab32(command);
+#else
     cmd.addVocab(VOCAB_CC_ACT);
     cmd.addVocab(command);
+#endif
 
     rpcClient.write(cmd,response);
 
@@ -298,8 +348,13 @@ bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_SET);
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(VOCAB_CC_SET);
     cmd.addVocab(vocab);
+#endif
     addValue(cmd, vocab, value);
 
     rpcClient.write(cmd, response);
@@ -313,8 +368,13 @@ bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_GET);
+    cmd.addVocab32(vocab);
+#else
     cmd.addVocab(VOCAB_CC_GET);
     cmd.addVocab(vocab);
+#endif
 
     rpcClient.write(cmd, response);
 
@@ -334,13 +394,22 @@ bool roboticslab::CartesianControlClient::setParameters(const std::map<int, doub
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_SET);
+    cmd.addVocab32(VOCAB_CC_CONFIG_PARAMS);
+#else
     cmd.addVocab(VOCAB_CC_SET);
     cmd.addVocab(VOCAB_CC_CONFIG_PARAMS);
+#endif
 
     for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
     {
         yarp::os::Bottle & b = cmd.addList();
+#if YARP_VERSION_MINOR >= 5
+        b.addVocab32(it->first);
+#else
         b.addVocab(it->first);
+#endif
         addValue(b, it->first, it->second);
     }
 
@@ -355,8 +424,13 @@ bool roboticslab::CartesianControlClient::getParameters(std::map<int, double> & 
 {
     yarp::os::Bottle cmd, response;
 
+#if YARP_VERSION_MINOR >= 5
+    cmd.addVocab32(VOCAB_CC_GET);
+    cmd.addVocab32(VOCAB_CC_CONFIG_PARAMS);
+#else
     cmd.addVocab(VOCAB_CC_GET);
     cmd.addVocab(VOCAB_CC_CONFIG_PARAMS);
+#endif
 
     rpcClient.write(cmd, response);
 
@@ -368,7 +442,11 @@ bool roboticslab::CartesianControlClient::getParameters(std::map<int, double> & 
     for (int i = 0; i < response.size(); i++)
     {
         yarp::os::Bottle * b = response.get(i).asList();
+#if YARP_VERSION_MINOR >= 5
+        int vocab = b->get(0).asVocab32();
+#else
         int vocab = b->get(0).asVocab();
+#endif
         double value = asValue(vocab, b->get(1));
         std::pair<int, double> el(vocab, value);
         params.insert(el);

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
@@ -152,7 +154,11 @@ bool BasicCartesianControl::setControlModes(int mode)
 
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
         {
+#if YARP_VERSION_MINOR >= 5
+            yWarning() << "setControlModes() failed for mode:" << yarp::os::Vocab32::decode(mode);
+#else
             yWarning() << "setControlModes() failed for mode:" << yarp::os::Vocab::decode(mode);
+#endif
             return false;
         }
     }

@@ -7,6 +7,8 @@
 #include <functional>
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
@@ -631,7 +633,11 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         streamingCommand = value;
         break;
     default:
+#if YARP_VERSION_MINOR >= 5
+        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
+#else
         yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
+#endif
         return false;
     }
 
@@ -663,7 +669,11 @@ bool BasicCartesianControl::getParameter(int vocab, double * value)
         *value = streamingCommand;
         break;
     default:
+#if YARP_VERSION_MINOR >= 5
+        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
+#else
         yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
+#endif
         return false;
     }
 

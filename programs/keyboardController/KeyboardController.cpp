@@ -15,6 +15,8 @@
 #include <iterator>
 #include <algorithm>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
@@ -603,7 +605,11 @@ void KeyboardController::actuateTool(int command)
 
     if (!iCartesianControl->act(command))
     {
+#if YARP_VERSION_MINOR >= 5
+        yError() << "Unable to send" << yarp::os::Vocab32::decode(command) << "command to actuator";
+#else
         yError() << "Unable to send" << yarp::os::Vocab::decode(command) << "command to actuator";
+#endif
     }
     else
     {
