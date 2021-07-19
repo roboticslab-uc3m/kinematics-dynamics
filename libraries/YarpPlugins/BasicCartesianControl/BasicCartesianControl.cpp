@@ -6,9 +6,13 @@
 
 #include <algorithm>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
+
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -16,8 +20,6 @@ using namespace roboticslab;
 
 namespace
 {
-    constexpr double epsilon = 1e-5;
-
     // return -1 for negative numbers, +1 for positive numbers, 0 for zero
     // https://stackoverflow.com/a/4609795
     template <typename T>
@@ -26,6 +28,8 @@ namespace
         return (T(0) < val) - (val < T(0));
     }
 }
+
+constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
@@ -56,7 +60,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            yWarning("Joint near or out of limits: q[%d] = %f not in [%f,%f] (def)",
+            yCWarning(BCC, "Joint near or out of limits: q[%d] = %f not in [%f,%f] (def)",
                      joint, value, qMin[joint], qMax[joint]);
             return false;
         }
@@ -75,7 +79,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const
 
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            yWarning("Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg)",
+            yCWarning(BCC, "Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg)",
                      joint, value, qMin[joint], qMax[joint]);
             double midRange = (qMax[joint] + qMin[joint]) / 2;
 
@@ -100,7 +104,7 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
 
         if (value < qdotMin[joint] || value > qdotMax[joint])
         {
-            yWarning("Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s)",
+            yCWarning(BCC, "Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s)",
                      joint, value, qdotMin[joint], qdotMax[joint]);
             return false;
         }
@@ -117,7 +121,7 @@ bool BasicCartesianControl::checkControlModes(int mode)
 
     if (!iControlMode->getControlModes(modes.data()))
     {
-        yWarning() << "getControlModes() failed";
+        yCWarning(BCC) << "getControlModes() failed";
         return false;
     }
 
@@ -132,7 +136,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     if (!iControlMode->getControlModes(modes.data()))
     {
-        yWarning() << "getControlModes() failed";
+        yCWarning(BCC) << "getControlModes() failed";
         return false;
     }
 
@@ -152,7 +156,11 @@ bool BasicCartesianControl::setControlModes(int mode)
 
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
         {
-            yWarning() << "setControlModes() failed for mode:" << yarp::os::Vocab::decode(mode);
+#if YARP_VERSION_MINOR >= 5
+            yCWarning(BCC) << "setControlModes() failed for mode:" << yarp::os::Vocab32::decode(mode);
+#else
+            yCWarning(BCC) << "setControlModes() failed for mode:" << yarp::os::Vocab::decode(mode);
+#endif
             return false;
         }
     }
@@ -174,7 +182,7 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
     case VOCAB_CC_MOVI:
         return setControlModes(VOCAB_CM_POSITION_DIRECT);
     default:
-        yError() << "Unrecognized or unsupported streaming command vocab:" << command;
+        yCError(BCC) << "Unrecognized or unsupported streaming command vocab:" << command;
     }
 
     return false;
@@ -193,20 +201,20 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
     {
         if (qRefSpeeds[joint] <= 0.0)
         {
-            yWarning("Zero or negative velocities sent at joint %d, not moving: %f", joint, qRefSpeeds[joint]);
+            yCWarning(BCC, "Zero or negative velocities sent at joint %d, not moving: %f", joint, qRefSpeeds[joint]);
             return;
         }
 
         double distance = std::abs(qd[joint] - q[joint]);
 
-        yInfo("Distance (joint %d): %f", joint, distance);
+        yCInfo(BCC, "Distance (joint %d): %f", joint, distance);
 
         double targetTime = distance / qRefSpeeds[joint];
 
         if (targetTime > maxTime)
         {
             maxTime = targetTime;
-            yInfo("Candidate: %f", maxTime);
+            yCInfo(BCC, "Candidate: %f", maxTime);
         }
     }
 
@@ -216,12 +224,12 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
     {
         if (joint >= numSolverJoints || maxTime == 0.0)
         {
-            yInfo("qdot[%d] = 0.0 (forced)", joint);
+            yCInfo(BCC, "qdot[%d] = 0.0 (forced)", joint);
         }
         else
         {
             qdot[joint] = std::abs(qd[joint] - q[joint]) / maxTime;
-            yInfo("qdot[%d] = %f", joint, qdot[joint]);
+            yCInfo(BCC, "qdot[%d] = %f", joint, qdot[joint]);
         }
     }
 }

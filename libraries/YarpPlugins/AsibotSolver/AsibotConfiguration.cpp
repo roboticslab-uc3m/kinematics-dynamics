@@ -7,6 +7,8 @@
 
 #include <yarp/os/LogStream.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 namespace
@@ -46,8 +48,8 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
 {
     if (std::abs((q2u + q3 + q4u) - (q2d - q3 + q4d)) > eps)
     {
-        yError("Assertion failed: oyP = q2u + q3 + q4u = q2d - q3 + q4d");
-        yDebug("q1: %f, q2u: %f, q2d: %f, q3: %f, q4u: %f, q4d: %f, q5: %f", q1, q2u, q2d, q3, q4u, q4d, q5);
+        yCError(ASIBOT, "Assertion failed: oyP = q2u + q3 + q4u = q2d - q3 + q4d");
+        yCDebug(ASIBOT, "q1: %f, q2u: %f, q2d: %f, q3: %f, q4u: %f, q4d: %f, q5: %f", q1, q2u, q2d, q3, q4u, q4d, q5);
         return false;
     }
 
@@ -58,7 +60,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         forwardElbowUp.valid = false;
     }
 
-    yInfo() << forwardElbowUp.toString();
+    yCInfo(ASIBOT) << forwardElbowUp.toString();
 
     forwardElbowDown.storeAngles(q1, q2d, -q3, q4d, q5, Pose::FORWARD, Pose::DOWN);
 
@@ -67,7 +69,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         forwardElbowDown.valid = false;
     }
 
-    yInfo() << forwardElbowDown.toString();
+    yCInfo(ASIBOT) << forwardElbowDown.toString();
 
     reversedElbowUp.storeAngles(q1 + 180, -q2u, -q3, -q4u, q5 + 180, Pose::REVERSED, Pose::UP);
 
@@ -76,7 +78,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         reversedElbowUp.valid = false;
     }
 
-    yInfo() << reversedElbowUp.toString();
+    yCInfo(ASIBOT) << reversedElbowUp.toString();
 
     reversedElbowDown.storeAngles(q1 + 180, -q2d, q3, -q4d, q5 + 180, Pose::REVERSED, Pose::DOWN);
 
@@ -85,7 +87,7 @@ bool AsibotConfiguration::configure(double q1, double q2u, double q2d, double q3
         reversedElbowDown.valid = false;
     }
 
-    yInfo() << reversedElbowDown.toString();
+    yCInfo(ASIBOT) << reversedElbowDown.toString();
 
     return forwardElbowUp.valid || forwardElbowDown.valid || reversedElbowUp.valid || reversedElbowDown.valid;
 }
@@ -113,7 +115,7 @@ bool AsibotConfiguration::Pose::checkJointsInLimits(JointsIn qMin, JointsIn qMax
 
         if (!checkJointInLimits(joint, qMin[i], qMax[i]))
         {
-            yWarning("Joint out of limits: q[%d] = %f not in [%f,%f]", i, joint, qMin[i], qMax[i]);
+            yCWarning(ASIBOT, "Joint out of limits: q[%d] = %f not in [%f,%f]", i, joint, qMin[i], qMax[i]);
             ok = false;
         }
     }

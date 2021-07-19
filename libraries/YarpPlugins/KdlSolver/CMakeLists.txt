@@ -17,10 +17,6 @@ yarp_prepare_plugin(KdlSolver
 
 if(NOT SKIP_KdlSolver)
 
-    if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
-        set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
-    endif()
-
     yarp_add_plugin(KdlSolver KdlSolver.hpp
                               DeviceDriverImpl.cpp
                               ICartesianSolverImpl.cpp
@@ -29,7 +25,9 @@ if(NOT SKIP_KdlSolver)
                               ChainIkSolverPos_ST.hpp
                               ChainIkSolverPos_ST.cpp
                               ChainIkSolverPos_ID.hpp
-                              ChainIkSolverPos_ID.cpp)
+                              ChainIkSolverPos_ID.cpp
+                              LogComponent.hpp
+                              LogComponent.cpp)
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev

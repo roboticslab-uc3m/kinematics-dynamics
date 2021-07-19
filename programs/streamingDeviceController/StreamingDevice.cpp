@@ -5,6 +5,7 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
+#include "LogComponent.hpp"
 #include "SpnavSensorDevice.hpp"
 #include "LeapMotionSensorDevice.hpp"
 #include "WiimoteSensorDevice.hpp"
@@ -16,7 +17,7 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     auto & deviceConfig = config.findGroup(deviceName.c_str());
     bool usingMovi = config.check("movi", "enable movi command");
 
-    yDebug() << "Device configuration:" << deviceConfig.toString();
+    yCDebug(SDC) << "Device configuration:" << deviceConfig.toString();
 
     if (deviceName == "SpaceNavigator")
     {
@@ -33,7 +34,7 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     }
     else
     {
-        yError() << "Invalid device:" << deviceName;
+        yCError(SDC) << "Invalid device:" << deviceName;
         return new InvalidDevice();
     }
 }
@@ -128,7 +129,7 @@ void StreamingDevice::configureFixedAxes(const yarp::os::Value & v)
         }
         else
         {
-            yWarning() << "Ignoring unrecognized fixed axis label:" << str;
+            yCWarning(SDC) << "Ignoring unrecognized fixed axis label:" << str;
         }
     }
 }

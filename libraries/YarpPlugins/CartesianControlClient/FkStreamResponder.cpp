@@ -2,6 +2,7 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <yarp/conf/version.h>
 #include <yarp/os/Time.h>
 
 using namespace roboticslab;
@@ -21,7 +22,11 @@ void FkStreamResponder::onRead(yarp::os::Bottle & b)
     std::lock_guard<std::mutex> lock(mtx);
 
     localArrivalTime = yarp::os::Time::now();
+#if YARP_VERSION_MINOR >= 5
+    state = b.get(0).asVocab32();
+#else
     state = b.get(0).asVocab();
+#endif
     x.resize(b.size() - 2);
 
     for (size_t i = 0; i < x.size(); i++)

@@ -6,6 +6,7 @@
 #include <yarp/os/Time.h>
 
 #include "KdlVectorConverter.hpp"
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -24,13 +25,13 @@ void BasicCartesianControl::run()
 
     if (!iEncoders->getEncoders(q.data()))
     {
-        yError() << "getEncoders() failed, unable to check joint limits";
+        yCError(BCC) << "getEncoders() failed, unable to check joint limits";
         return;
     }
 
     if (!checkJointLimits(q))
     {
-        yError() << "checkJointLimits() failed, stopping control";
+        yCError(BCC) << "checkJointLimits() failed, stopping control";
         cmcSuccess = false;
         stopControl();
         return;
@@ -64,7 +65,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_POSITION))
     {
-        yError() << "Not in position control mode";
+        yCError(BCC) << "Not in position control mode";
         cmcSuccess = false;
         stopControl();
         return;
@@ -74,7 +75,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q)
 
     if (!iPositionControl->checkMotionDone(&done))
     {
-        yError() << "Unable to query current robot state";
+        yCError(BCC) << "Unable to query current robot state";
         cmcSuccess = false;
         stopControl();
         return;
@@ -86,7 +87,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q)
 
         if (!iPositionControl->setRefSpeeds(vmoStored.data()))
         {
-             yWarning() << "setRefSpeeds() (to restore) failed";
+             yCWarning(BCC) << "setRefSpeeds() (to restore) failed";
         }
     }
 }
@@ -97,7 +98,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
-        yError() << "Not in velocity control mode";
+        yCError(BCC) << "Not in velocity control mode";
         cmcSuccess = false;
         stopControl();
         return;
@@ -130,7 +131,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 
     if (!iCartesianSolver->fwdKin(q, currentX))
     {
-        yWarning() << "fwdKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "fwdKin() failed, not updating control this iteration";
         return;
     }
 
@@ -149,15 +150,15 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 
     if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot))
     {
-        yWarning() << "diffInvKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "diffInvKin() failed, not updating control this iteration";
         return;
     }
 
-    yDebug() << "[MOVL]" << movementTime << "||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVL]" << movementTime << "||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
-        yError() << "diffInvKin() too dangerous, stopping";
+        yCError(BCC) << "diffInvKin() too dangerous, stopping";
         cmcSuccess = false;
         stopControl();
         return;
@@ -165,7 +166,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 
     if (!iVelocityControl->velocityMove(commandQdot.data()))
     {
-        yWarning() << "velocityMove() failed, not updating control this iteration";
+        yCWarning(BCC) << "velocityMove() failed, not updating control this iteration";
     }
 }
 
@@ -175,7 +176,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
-        yError() << "Not in velocity control mode";
+        yCError(BCC) << "Not in velocity control mode";
         cmcSuccess = false;
         stopControl();
         return;
@@ -187,7 +188,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 
     if (!iCartesianSolver->fwdKin(q, currentX))
     {
-        yWarning() << "fwdKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "fwdKin() failed, not updating control this iteration";
         return;
     }
 
@@ -222,15 +223,15 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 
     if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, referenceFrame))
     {
-        yWarning() << "diffInvKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "diffInvKin() failed, not updating control this iteration";
         return;
     }
 
-    yDebug() << "[MOVV]" << movementTime << "||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVV]" << movementTime << "||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
-        yError() << "diffInvKin() too dangerous, stopping";
+        yCError(BCC) << "diffInvKin() too dangerous, stopping";
         cmcSuccess = false;
         stopControl();
         return;
@@ -238,7 +239,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 
     if (!iVelocityControl->velocityMove(commandQdot.data()))
     {
-        yWarning() << "velocityMove() failed, not updating control this iteration";
+        yCWarning(BCC) << "velocityMove() failed, not updating control this iteration";
     }
 }
 
@@ -248,7 +249,7 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
-        yError() << "Not in torque control mode";
+        yCError(BCC) << "Not in torque control mode";
         stopControl();
         return;
     }
@@ -257,13 +258,13 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
 
     if (!iCartesianSolver->invDyn(q, t))
     {
-        yWarning() << "invDyn() failed, not updating control this iteration";
+        yCWarning(BCC) << "invDyn() failed, not updating control this iteration";
         return;
     }
 
     if (!iTorqueControl->setRefTorques(t.data()))
     {
-        yWarning() << "setRefTorques() failed, not updating control this iteration";
+        yCWarning(BCC) << "setRefTorques() failed, not updating control this iteration";
     }
 }
 
@@ -273,7 +274,7 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
-        yError() << "Not in torque control mode";
+        yCError(BCC) << "Not in torque control mode";
         stopControl();
         return;
     }
@@ -293,13 +294,13 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q)
 
     if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fexts, t))
     {
-        yWarning() << "invDyn() failed, not updating control this iteration";
+        yCWarning(BCC) << "invDyn() failed, not updating control this iteration";
         return;
     }
 
     if (!iTorqueControl->setRefTorques(t.data()))
     {
-        yWarning() << "setRefTorques() failed, not updating control this iteration";
+        yCWarning(BCC) << "setRefTorques() failed, not updating control this iteration";
     }
 }
 

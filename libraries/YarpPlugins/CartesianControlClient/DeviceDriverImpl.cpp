@@ -8,6 +8,8 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/Time.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 constexpr auto DEFAULT_CARTESIAN_LOCAL = "/CartesianControlClient";
@@ -25,19 +27,19 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
 
     if (!rpcClient.open(local + "/rpc:c") || !commandPort.open(local + "/command:o"))
     {
-        yError() << "Unable to open ports";
+        yCError(CCC) << "Unable to open ports";
         return false;
     }
 
     if (!rpcClient.addOutput(remote + "/rpc:s"))
     {
-        yError() << "Error on connect to remote RPC server";
+        yCError(CCC) << "Error on connect to remote RPC server";
         return false;
     }
 
     if (!commandPort.addOutput(remote + "/command:i", "udp"))
     {
-        yError() << "Error on connect to remote command server";
+        yCError(CCC) << "Error on connect to remote command server";
         return false;
     }
 
@@ -50,13 +52,13 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
     {
         if (!fkInPort.open(local + "/state:i"))
         {
-            yError() << "Unable to open local stream port";
+            yCError(CCC) << "Unable to open local stream port";
             return false;
         }
 
         if (!yarp::os::Network::connect(statePort, fkInPort.getName(), "udp"))
         {
-            yError() << "Unable to connect to remote stream port";
+            yCError(CCC) << "Unable to connect to remote stream port";
             return false;
         }
 
@@ -65,10 +67,10 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
     }
     else
     {
-        yWarning() << "Missing remote" << statePort << "stream port, using RPC instead";
+        yCWarning(CCC) << "Missing remote" << statePort << "stream port, using RPC instead";
     }
 
-    yInfo() << "Connected to remote" << remote;
+    yCInfo(CCC) << "Connected to remote" << remote;
 
     return true;
 }

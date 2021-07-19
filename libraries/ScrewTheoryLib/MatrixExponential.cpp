@@ -4,6 +4,7 @@
 
 #include <yarp/os/LogStream.h>
 
+#include "LogComponent.hpp"
 #include "ScrewTheoryTools.hpp"
 
 using namespace roboticslab;
@@ -46,7 +47,7 @@ KDL::Frame MatrixExponential::asFrame(double theta) const
         H.p = axis * theta;
         break;
     default:
-        yWarning() << "Unrecognized motion type:" << motionType;
+        yCWarning(ST) << "Unrecognized motion type:" << motionType;
     }
 
     return H;

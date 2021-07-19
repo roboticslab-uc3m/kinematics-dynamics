@@ -21,7 +21,9 @@ if(ENABLE_ScrewTheoryLib)
                                       ConfigurationSelector.hpp
                                       ConfigurationSelector.cpp
                                       ConfigurationSelectorLeastOverallAngularDisplacement.cpp
-                                      ConfigurationSelectorHumanoidGait.cpp)
+                                      ConfigurationSelectorHumanoidGait.cpp
+                                      LogComponent.hpp
+                                      LogComponent.cpp)
 
     set_property(TARGET ScrewTheoryLib PROPERTY PUBLIC_HEADER MatrixExponential.hpp
                                                               ProductOfExponentials.hpp

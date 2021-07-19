@@ -1,0 +1,8 @@
+#ifndef __KDL_TREE_SOLVER_LOG_COMPONENT_HPP__
+#define __KDL_TREE_SOLVER_LOG_COMPONENT_HPP__
+
+#include <yarp/os/LogComponent.h>
+
+YARP_DECLARE_LOG_COMPONENT(KDLS)
+
+#endif // __KDL_TREE_SOLVER_LOG_COMPONENT_HPP__

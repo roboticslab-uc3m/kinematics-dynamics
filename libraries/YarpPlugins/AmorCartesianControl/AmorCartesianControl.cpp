@@ -6,6 +6,8 @@
 
 #include <yarp/os/Log.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
@@ -16,7 +18,7 @@ bool AmorCartesianControl::checkJointVelocities(const std::vector<double> & qdot
     {
         if (std::abs(qdot[i]) > qdotMax[i])
         {
-            yError("Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s]", i, qdot[i], qdotMax[i]);
+            yCError(AMOR, "Maximum angular velocity hit: qdot[%d] = %f > %f [deg/s]", i, qdot[i], qdotMax[i]);
             return false;
         }
     }

@@ -4,7 +4,10 @@
 
 #include <vector>
 
+#include <yarp/conf/version.h>
 #include <yarp/os/LogStream.h>
+
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -12,9 +15,13 @@ using namespace roboticslab;
 
 void StreamResponder::onRead(yarp::os::Bottle& b)
 {
-    yDebug("Got: %s", b.toString().c_str());
+    yCDebug(CCS, "Got: %s", b.toString().c_str());
 
+#if YARP_VERSION_MINOR >= 5
+    switch (b.get(0).asVocab32())
+#else
     switch (b.get(0).asVocab())
+#endif
     {
     case VOCAB_CC_TWIST:
         handleConsumerCmdMsg(b, &ICartesianControl::twist);
@@ -26,7 +33,7 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
         handleConsumerCmdMsg(b, &ICartesianControl::movi);
         break;
     default:
-        yError() << "Command not recognized:" << b.get(0).toString();
+        yCError(CCS) << "Command not recognized:" << b.get(0).toString();
         break;
     }
 }
@@ -48,7 +55,7 @@ void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerF
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
     }
 }
 
@@ -70,7 +77,7 @@ void StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsu
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
     }
 }
 

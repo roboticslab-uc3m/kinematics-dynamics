@@ -6,6 +6,8 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi)
@@ -26,7 +28,7 @@ bool WiimoteSensorDevice::acquireInterfaces()
 
     if (!yarp::dev::PolyDriver::view(iAnalogSensor))
     {
-        yWarning() << "Could not view iAnalogSensor";
+        yCWarning(SDC) << "Could not view iAnalogSensor";
         ok = false;
     }
 
@@ -37,7 +39,7 @@ bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingMovi && step <= 0.0)
     {
-        yWarning() << "Invalid step:" << step;
+        yCWarning(SDC) << "Invalid step:" << step;
         return false;
     }
 
@@ -47,14 +49,14 @@ bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
-            yWarning() << "Unable to preset streaming command";
+            yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
     {
-        yWarning() << "Unable to set TCP reference frame";
+        yCWarning(SDC) << "Unable to set TCP reference frame";
         return false;
     }
 
@@ -66,11 +68,11 @@ bool WiimoteSensorDevice::acquireData()
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
 
-    yDebug() << data.toString(4, 1);
+    yCDebug(SDC) << data.toString(4, 1);
 
     if (data.size() != 5)
     {
-        yWarning() << "Invalid data size:" << data.size();
+        yCWarning(SDC) << "Invalid data size:" << data.size();
         return false;
     }
 

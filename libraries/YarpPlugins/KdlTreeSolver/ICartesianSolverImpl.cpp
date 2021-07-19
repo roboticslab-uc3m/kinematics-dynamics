@@ -11,6 +11,7 @@
 
 #include "KdlVectorConverter.hpp"
 #include "KinematicRepresentation.hpp"
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -32,7 +33,7 @@ int KdlTreeSolver::getNumTcps()
 
 bool KdlTreeSolver::appendLink(const std::vector<double> & x)
 {
-    yError() << "Not supported: appendLink";
+    yCError(KDLS) << "Not supported: appendLink";
     return false;
 }
 
@@ -40,7 +41,7 @@ bool KdlTreeSolver::appendLink(const std::vector<double> & x)
 
 bool KdlTreeSolver::restoreOriginalChain()
 {
-    yError() << "Not supported: restoreOriginalChain";
+    yCError(KDLS) << "Not supported: restoreOriginalChain";
     return false;
 }
 
@@ -166,7 +167,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
     }
     else if (frame != BASE_FRAME)
     {
-        yWarning() << "Unsupported frame";
+        yCWarning(KDLS) << "Unsupported frame";
         return false;
     }
 
@@ -235,7 +236,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
     }
     else if (frame != BASE_FRAME)
     {
-        yWarning() << "Unsupported frame";
+        yCWarning(KDLS) << "Unsupported frame";
         return false;
     }
 

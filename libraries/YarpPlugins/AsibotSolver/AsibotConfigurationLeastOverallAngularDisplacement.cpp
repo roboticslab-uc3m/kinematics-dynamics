@@ -9,6 +9,8 @@
 
 #include <yarp/os/LogStream.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguration(JointsIn qGuess)
@@ -47,7 +49,7 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguratio
 
     if (angularDisplacementPerConfiguration.empty())
     {
-        yWarning() << "No valid configuration found";
+        yCWarning(ASIBOT) << "No valid configuration found";
         return false;
     }
 
@@ -75,7 +77,7 @@ bool AsibotConfigurationLeastOverallAngularDisplacement::findOptimalConfiguratio
         }
     }
 
-    yInfo() << "Using config:" << optimalPose.toString();
+    yCInfo(ASIBOT) << "Using config:" << optimalPose.toString();
 
     return true;
 }

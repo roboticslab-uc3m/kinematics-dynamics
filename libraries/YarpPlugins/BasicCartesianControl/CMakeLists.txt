@@ -14,15 +14,13 @@ yarp_prepare_plugin(BasicCartesianControl
 
 if(NOT SKIP_BasicCartesianControl)
 
-    if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
-        set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
-    endif()
-
     yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
                                           BasicCartesianControl.cpp
                                           DeviceDriverImpl.cpp
                                           ICartesianControlImpl.cpp
-                                          PeriodicThreadImpl.cpp)
+                                          PeriodicThreadImpl.cpp
+                                          LogComponent.hpp
+                                          LogComponent.cpp)
 
     target_link_libraries(BasicCartesianControl YARP::YARP_os
                                                 YARP::YARP_dev

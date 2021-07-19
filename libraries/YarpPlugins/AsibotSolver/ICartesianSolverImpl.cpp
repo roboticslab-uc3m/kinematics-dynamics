@@ -10,6 +10,7 @@
 #include <yarp/math/SVD.h>
 
 #include "KinematicRepresentation.hpp"
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 using namespace roboticslab::KinRepresentation;
@@ -326,7 +327,7 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
     }
     else
     {
-        yError() << "Unsupported reference frame";
+        yCError(ASIBOT) << "Unsupported reference frame";
         return false;
     }
 
@@ -342,7 +343,7 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
 
     if (!decodePose(xd_base_obj, xd_eYZ, coordinate_system::CARTESIAN, orientation_system::EULER_YZ))
     {
-        yError() << "Unable to convert to eulerYZ angle representation";
+        yCError(ASIBOT) << "Unable to convert to eulerYZ angle representation";
         return false;
     }
 
@@ -354,7 +355,7 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
 
     if (std::sqrt(prPd * prPd + phPd * phPd) > A1 + A2 + A3)
     {
-        yError() << "Target out of reach";
+        yCError(ASIBOT) << "Target out of reach";
         return false;
     }
 
@@ -365,7 +366,7 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
 
     if (std::sqrt(len_2) > A1 + A2)
     {
-        yError() << "Target out of reach";
+        yCError(ASIBOT) << "Target out of reach";
         return false;
     }
 
@@ -400,13 +401,13 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
             radToDeg(t3dRad),
             radToDeg(xd_eYZ[4])))
     {
-        yError() << "Unable to find a valid configuration within joint limits";
+        yCError(ASIBOT) << "Unable to find a valid configuration within joint limits";
         return false;
     }
 
     if (!conf->findOptimalConfiguration(qGuess))
     {
-        yError() << "findOptimalConfiguration() failed";
+        yCError(ASIBOT) << "findOptimalConfiguration() failed";
         return false;
     }
 
@@ -439,7 +440,7 @@ bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<do
     }
     else
     {
-        yWarning() << "Unsupported frame";
+        yCWarning(ASIBOT) << "Unsupported frame";
         return false;
     }
 
@@ -486,7 +487,7 @@ bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<do
 
 bool AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 {
-    yWarning() << "invDyn() not implemented";
+    yCWarning(ASIBOT) << "invDyn() not implemented";
     return false;
 }
 
@@ -494,7 +495,7 @@ bool AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
 bool AsibotSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
 {
-    yWarning() << "invDyn() not implemented";
+    yCWarning(ASIBOT) << "invDyn() not implemented";
     return false;
 }
 

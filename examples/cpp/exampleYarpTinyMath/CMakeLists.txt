@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12)
 
 project(exampleYarpTinyMath LANGUAGES CXX)
 
 if(NOT YARP_math_FOUND)
-    find_package(YARP 3.3 REQUIRED COMPONENTS sig math)
+    find_package(YARP 3.4 REQUIRED COMPONENTS sig math)
 endif()
 
 if(NOT TARGET ROBOTICSLAB::YarpTinyMathLib)

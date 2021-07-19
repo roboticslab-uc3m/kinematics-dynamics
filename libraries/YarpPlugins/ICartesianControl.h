@@ -5,6 +5,7 @@
 
 #include <map>
 #include <vector>
+#include <yarp/conf/version.h>
 #include <yarp/os/Vocab.h>
 #include <ICartesianSolver.h>
 
@@ -30,11 +31,19 @@
  */
 
 // General-purpose vocabs
+#if YARP_VERSION_MINOR >= 5
+constexpr int VOCAB_CC_OK = yarp::os::createVocab32('o','k');              ///< Success
+constexpr int VOCAB_CC_FAILED = yarp::os::createVocab32('f','a','i','l');  ///< Failure
+constexpr int VOCAB_CC_SET = yarp::os::createVocab32('s','e','t');         ///< Setter
+constexpr int VOCAB_CC_GET = yarp::os::createVocab32('g','e','t');         ///< Getter
+constexpr int VOCAB_CC_NOT_SET = yarp::os::createVocab32('n','s','e','t'); ///< State: not set
+#else
 constexpr int VOCAB_CC_OK = yarp::os::createVocab('o','k');              ///< Success
 constexpr int VOCAB_CC_FAILED = yarp::os::createVocab('f','a','i','l');  ///< Failure
 constexpr int VOCAB_CC_SET = yarp::os::createVocab('s','e','t');         ///< Setter
 constexpr int VOCAB_CC_GET = yarp::os::createVocab('g','e','t');         ///< Getter
 constexpr int VOCAB_CC_NOT_SET = yarp::os::createVocab('n','s','e','t'); ///< State: not set
+#endif
 
  /** @} */
 
@@ -47,6 +56,20 @@ constexpr int VOCAB_CC_NOT_SET = yarp::os::createVocab('n','s','e','t'); ///< St
  */
 
 // RPC commands
+#if YARP_VERSION_MINOR >= 5
+constexpr int VOCAB_CC_STAT = yarp::os::createVocab32('s','t','a','t'); ///< Current state and position
+constexpr int VOCAB_CC_INV = yarp::os::createVocab32('i','n','v');      ///< Inverse kinematics
+constexpr int VOCAB_CC_MOVJ = yarp::os::createVocab32('m','o','v','j'); ///< Move in joint space, absolute coordinates
+constexpr int VOCAB_CC_RELJ = yarp::os::createVocab32('r','e','l','j'); ///< Move in joint space, relative coordinates
+constexpr int VOCAB_CC_MOVL = yarp::os::createVocab32('m','o','v','l'); ///< Linear move to target position
+constexpr int VOCAB_CC_MOVV = yarp::os::createVocab32('m','o','v','v'); ///< Linear move with given velocity
+constexpr int VOCAB_CC_GCMP = yarp::os::createVocab32('g','c','m','p'); ///< Gravity compensation
+constexpr int VOCAB_CC_FORC = yarp::os::createVocab32('f','o','r','c'); ///< Force control
+constexpr int VOCAB_CC_STOP = yarp::os::createVocab32('s','t','o','p'); ///< Stop control
+constexpr int VOCAB_CC_WAIT = yarp::os::createVocab32('w','a','i','t'); ///< Wait motion done
+constexpr int VOCAB_CC_TOOL = yarp::os::createVocab32('t','o','o','l'); ///< Change tool
+constexpr int VOCAB_CC_ACT = yarp::os::createVocab32('a','c','t');      ///< Actuate tool
+#else
 constexpr int VOCAB_CC_STAT = yarp::os::createVocab('s','t','a','t'); ///< Current state and position
 constexpr int VOCAB_CC_INV = yarp::os::createVocab('i','n','v');      ///< Inverse kinematics
 constexpr int VOCAB_CC_MOVJ = yarp::os::createVocab('m','o','v','j'); ///< Move in joint space, absolute coordinates
@@ -59,6 +82,7 @@ constexpr int VOCAB_CC_STOP = yarp::os::createVocab('s','t','o','p'); ///< Stop 
 constexpr int VOCAB_CC_WAIT = yarp::os::createVocab('w','a','i','t'); ///< Wait motion done
 constexpr int VOCAB_CC_TOOL = yarp::os::createVocab('t','o','o','l'); ///< Change tool
 constexpr int VOCAB_CC_ACT = yarp::os::createVocab('a','c','t');      ///< Actuate tool
+#endif
 
 /** @} */
 
@@ -71,9 +95,15 @@ constexpr int VOCAB_CC_ACT = yarp::os::createVocab('a','c','t');      ///< Actua
  */
 
 // Streaming commands
+#if YARP_VERSION_MINOR >= 5
+constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t'); ///< Instantaneous velocity steps
+constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');  ///< Achieve pose (velocity control)
+constexpr int VOCAB_CC_MOVI = yarp::os::createVocab32('m','o','v','i');  ///< Achieve pose (position control)
+#else
 constexpr int VOCAB_CC_TWIST = yarp::os::createVocab('t','w','s','t'); ///< Instantaneous velocity steps
 constexpr int VOCAB_CC_POSE = yarp::os::createVocab('p','o','s','e');  ///< Achieve pose (velocity control)
 constexpr int VOCAB_CC_MOVI = yarp::os::createVocab('m','o','v','i');  ///< Achieve pose (position control)
+#endif
 
 /** @} */
 
@@ -86,12 +116,21 @@ constexpr int VOCAB_CC_MOVI = yarp::os::createVocab('m','o','v','i');  ///< Achi
  */
 
 // Control state
+#if YARP_VERSION_MINOR >= 5
+constexpr int VOCAB_CC_NOT_CONTROLLING = yarp::os::createVocab32('c','c','n','c');  ///< Not controlling
+constexpr int VOCAB_CC_MOVJ_CONTROLLING = yarp::os::createVocab32('c','c','j','c'); ///< Controlling MOVJ commands
+constexpr int VOCAB_CC_MOVL_CONTROLLING = yarp::os::createVocab32('c','c','l','c'); ///< Controlling MOVL commands
+constexpr int VOCAB_CC_MOVV_CONTROLLING = yarp::os::createVocab32('c','c','v','c'); ///< Controlling MOVV commands
+constexpr int VOCAB_CC_GCMP_CONTROLLING = yarp::os::createVocab32('c','c','g','c'); ///< Controlling GCMP commands
+constexpr int VOCAB_CC_FORC_CONTROLLING = yarp::os::createVocab32('c','c','f','c'); ///< Controlling FORC commands
+#else
 constexpr int VOCAB_CC_NOT_CONTROLLING = yarp::os::createVocab('c','c','n','c');  ///< Not controlling
 constexpr int VOCAB_CC_MOVJ_CONTROLLING = yarp::os::createVocab('c','c','j','c'); ///< Controlling MOVJ commands
 constexpr int VOCAB_CC_MOVL_CONTROLLING = yarp::os::createVocab('c','c','l','c'); ///< Controlling MOVL commands
 constexpr int VOCAB_CC_MOVV_CONTROLLING = yarp::os::createVocab('c','c','v','c'); ///< Controlling MOVV commands
 constexpr int VOCAB_CC_GCMP_CONTROLLING = yarp::os::createVocab('c','c','g','c'); ///< Controlling GCMP commands
 constexpr int VOCAB_CC_FORC_CONTROLLING = yarp::os::createVocab('c','c','f','c'); ///< Controlling FORC commands
+#endif
 
 /** @} */
 
@@ -105,11 +144,19 @@ constexpr int VOCAB_CC_FORC_CONTROLLING = yarp::os::createVocab('c','c','f','c')
  */
 
 // Actuator control
+#if YARP_VERSION_MINOR >= 5
+constexpr int VOCAB_CC_ACTUATOR_NONE = yarp::os::createVocab32('a','c','n');              ///< No actuator or no action
+constexpr int VOCAB_CC_ACTUATOR_CLOSE_GRIPPER = yarp::os::createVocab32('a','c','c','g'); ///< Close gripper
+constexpr int VOCAB_CC_ACTUATOR_OPEN_GRIPPER = yarp::os::createVocab32('a','c','o','g');  ///< Open gripper
+constexpr int VOCAB_CC_ACTUATOR_STOP_GRIPPER = yarp::os::createVocab32('a','c','s','g');  ///< Stop gripper
+constexpr int VOCAB_CC_ACTUATOR_GENERIC = yarp::os::createVocab32('a','c','g');           ///< Generic actuator
+#else
 constexpr int VOCAB_CC_ACTUATOR_NONE = yarp::os::createVocab('a','c','n');              ///< No actuator or no action
 constexpr int VOCAB_CC_ACTUATOR_CLOSE_GRIPPER = yarp::os::createVocab('a','c','c','g'); ///< Close gripper
 constexpr int VOCAB_CC_ACTUATOR_OPEN_GRIPPER = yarp::os::createVocab('a','c','o','g');  ///< Open gripper
 constexpr int VOCAB_CC_ACTUATOR_STOP_GRIPPER = yarp::os::createVocab('a','c','s','g');  ///< Stop gripper
 constexpr int VOCAB_CC_ACTUATOR_GENERIC = yarp::os::createVocab('a','c','g');           ///< Generic actuator
+#endif
 
 /**
  * @name Controller configuration vocabs
@@ -120,6 +167,15 @@ constexpr int VOCAB_CC_ACTUATOR_GENERIC = yarp::os::createVocab('a','c','g');   
  */
 
 // Controller configuration (parameter keys)
+#if YARP_VERSION_MINOR >= 5
+constexpr int VOCAB_CC_CONFIG_PARAMS = yarp::os::createVocab32('p','r','m','s');        ///< Parameter group
+constexpr int VOCAB_CC_CONFIG_GAIN = yarp::os::createVocab32('c','p','c','g');          ///< Controller gain
+constexpr int VOCAB_CC_CONFIG_TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'); ///< Trajectory duration
+constexpr int VOCAB_CC_CONFIG_CMC_PERIOD = yarp::os::createVocab32('c','p','c','p');    ///< CMC period [ms]
+constexpr int VOCAB_CC_CONFIG_WAIT_PERIOD = yarp::os::createVocab32('c','p','w','p');   ///< Check period of 'wait' command [ms]
+constexpr int VOCAB_CC_CONFIG_FRAME = yarp::os::createVocab32('c','p','f');             ///< Reference frame
+constexpr int VOCAB_CC_CONFIG_STREAMING_CMD = yarp::os::createVocab32('c','p','s','c'); ///< Preset streaming command
+#else
 constexpr int VOCAB_CC_CONFIG_PARAMS = yarp::os::createVocab('p','r','m','s');        ///< Parameter group
 constexpr int VOCAB_CC_CONFIG_GAIN = yarp::os::createVocab('c','p','c','g');          ///< Controller gain
 constexpr int VOCAB_CC_CONFIG_TRAJ_DURATION = yarp::os::createVocab('c','p','t','d'); ///< Trajectory duration
@@ -127,6 +183,7 @@ constexpr int VOCAB_CC_CONFIG_CMC_PERIOD = yarp::os::createVocab('c','p','c','p'
 constexpr int VOCAB_CC_CONFIG_WAIT_PERIOD = yarp::os::createVocab('c','p','w','p');   ///< Check period of 'wait' command [ms]
 constexpr int VOCAB_CC_CONFIG_FRAME = yarp::os::createVocab('c','p','f');             ///< Reference frame
 constexpr int VOCAB_CC_CONFIG_STREAMING_CMD = yarp::os::createVocab('c','p','s','c'); ///< Preset streaming command
+#endif
 
 /** @} */
 

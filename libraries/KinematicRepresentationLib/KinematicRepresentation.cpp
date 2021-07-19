@@ -8,10 +8,13 @@
 #include <kdl/utilities/utility.h>
 
 #include <yarp/os/Log.h>
+#include <yarp/os/LogComponent.h>
 
 namespace
 {
     using namespace roboticslab::KinRepresentation;
+
+    YARP_LOG_COMPONENT(KINR, "rl.KinRepresentation")
 
     inline double degToRadHelper(angular_units angle, double val)
     {
@@ -80,7 +83,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
 
     if (!checkVectorSize(x_in, coord, orient, &expectedSize))
     {
-        yError("Size error; expected: %d, was: %zu", expectedSize, x_in.size());
+        yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, x_in.size());
         return false;
     }
 
@@ -119,7 +122,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
     {
         if (coord == coordinate_system::NONE)
         {
-            yError("Mandatory coordinate system missing for orientation EULER_YZ");
+            yCError(KINR, "Mandatory coordinate system missing for orientation EULER_YZ");
             return false;
         }
 
@@ -153,7 +156,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out[3] = x_out[4] = x_out[5] = 0.0;
         break;
     default:
-        yWarning("Unsupported orientation system");
+        yCWarning(KINR, "Unsupported orientation system");
         return false;
     }
 
@@ -168,16 +171,16 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out[2] = x_in[2];
         break;
     case coordinate_system::CYLINDRICAL:
-        yError("Not implemented: cylindrical");
+        yCError(KINR, "Not implemented: cylindrical");
         return false;
     case coordinate_system::SPHERICAL:
-        yError("Not implemented: spherical");
+        yCError(KINR, "Not implemented: spherical");
         return false;
     case coordinate_system::NONE:
         x_out[0] = x_out[1] = x_out[2] = 0.0;
         break;
     default:
-        yWarning("Unsupported coordinate system");
+        yCWarning(KINR, "Unsupported coordinate system");
         return false;
     }
 
@@ -193,7 +196,7 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
 
     if (!checkVectorSize(x_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
     {
-        yError("Size error; expected: %d, was: %zu", expectedSize, x_in.size());
+        yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, x_in.size());
         return false;
     }
 
@@ -264,7 +267,7 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
     {
         if (std::abs(x_in[5]) > KDL::epsilon)
         {
-            yError("Non-null axis Z rotation component: %f", x_in[5]);
+            yCError(KINR, "Non-null axis Z rotation component: %f", x_in[5]);
             return false;
         }
 
@@ -279,7 +282,7 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out.resize(off);
         break;
     default:
-        yWarning("Unsupported orientation system");
+        yCWarning(KINR, "Unsupported orientation system");
         return false;
     }
 
@@ -291,15 +294,15 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
         x_out[2] = x_in[2];
         break;
     case coordinate_system::CYLINDRICAL:
-        yError("Not implemented: cylindrical");
+        yCError(KINR, "Not implemented: cylindrical");
         return false;
     case coordinate_system::SPHERICAL:
-        yError("Not implemented: spherical");
+        yCError(KINR, "Not implemented: spherical");
         return false;
     case coordinate_system::NONE:
         break;
     default:
-        yWarning("Unsupported coordinate system");
+        yCWarning(KINR, "Unsupported coordinate system");
         return false;
     }
 
@@ -315,7 +318,7 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
 
     if (!checkVectorSize(xdot_in, coord, orient, &expectedSize))
     {
-        yError("Size error; expected: %d, was: %zu", expectedSize, xdot_in.size());
+        yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, xdot_in.size());
         return false;
     }
 
@@ -361,19 +364,19 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         break;
     }
     case orientation_system::EULER_YZ:
-        yError("Not implemented: Euler YZ");
+        yCError(KINR, "Not implemented: Euler YZ");
         return false;
     case orientation_system::EULER_ZYZ:
-        yError("Not implemented: Euler ZYZ");
+        yCError(KINR, "Not implemented: Euler ZYZ");
         return false;
     case orientation_system::POLAR_AZIMUTH:
-        yError("Not implemented: polar azimuth");
+        yCError(KINR, "Not implemented: polar azimuth");
         return false;
     case orientation_system::NONE:
         xdot_out[3] = xdot_out[4] = xdot_out[5] = 0.0;
         break;
     default:
-        yWarning("Unsupported orientation system");
+        yCWarning(KINR, "Unsupported orientation system");
         return false;
     }
 
@@ -388,16 +391,16 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         xdot_out[2] = xdot_in[2];
         break;
     case coordinate_system::CYLINDRICAL:
-        yError("Not implemented: cylindrical");
+        yCError(KINR, "Not implemented: cylindrical");
         return false;
     case coordinate_system::SPHERICAL:
-        yError("Not implemented: spherical");
+        yCError(KINR, "Not implemented: spherical");
         return false;
     case coordinate_system::NONE:
         xdot_out[0] = xdot_out[1] = xdot_out[2] = 0.0;
         break;
     default:
-        yWarning("Unsupported coordinate system");
+        yCWarning(KINR, "Unsupported coordinate system");
         return false;
     }
 
@@ -413,7 +416,7 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
 
     if (!checkVectorSize(xdot_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
     {
-        yError("Size error; expected: %d, was: %zu", expectedSize, xdot_in.size());
+        yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, xdot_in.size());
         return false;
     }
 
@@ -460,19 +463,19 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         break;
     }
     case orientation_system::EULER_YZ:
-        yError("Not implemented: Euler YZ");
+        yCError(KINR, "Not implemented: Euler YZ");
         return false;
     case orientation_system::EULER_ZYZ:
-        yError("Not implemented: Euler ZYZ");
+        yCError(KINR, "Not implemented: Euler ZYZ");
         return false;
     case orientation_system::POLAR_AZIMUTH:
-        yError("Not implemented: polar azimuth");
+        yCError(KINR, "Not implemented: polar azimuth");
         return false;
     case orientation_system::NONE:
         xdot_out.resize(off);
         break;
     default:
-        yWarning("Unsupported orientation system");
+        yCWarning(KINR, "Unsupported orientation system");
         return false;
     }
 
@@ -484,15 +487,15 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
         xdot_out[2] = xdot_in[2];
         break;
     case coordinate_system::CYLINDRICAL:
-        yError("Not implemented: cylindrical");
+        yCError(KINR, "Not implemented: cylindrical");
         return false;
     case coordinate_system::SPHERICAL:
-        yError("Not implemented: spherical");
+        yCError(KINR, "Not implemented: spherical");
         return false;
     case coordinate_system::NONE:
         break;
     default:
-        yWarning("Unsupported coordinate system");
+        yCWarning(KINR, "Unsupported coordinate system");
         return false;
     }
 
@@ -505,7 +508,7 @@ bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<doub
         const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    yError("encodeAcceleration() not implemented");
+    yCError(KINR, "encodeAcceleration() not implemented");
     return false;
 }
 
@@ -515,7 +518,7 @@ bool decodeAcceleration(const std::vector<double> & x_in, const std::vector<doub
         const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
         coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    yError("decodeAcceleration() not implemented");
+    yCError(KINR, "decodeAcceleration() not implemented");
     return false;
 }
 
