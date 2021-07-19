@@ -9,6 +9,8 @@
 
 #include <yarp/os/Log.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
@@ -81,7 +83,7 @@ bool PoeExpression::evaluate(const KDL::JntArray & q, KDL::Frame & H) const
 {
     if (exps.size() != q.rows())
     {
-        yWarning("Size mismatch: %zu (terms of PoE) != %d (joint array)", exps.size(), q.rows());
+        yCWarning(ST, "Size mismatch: %zu (terms of PoE) != %d (joint array)", exps.size(), q.rows());
         return false;
     }
 

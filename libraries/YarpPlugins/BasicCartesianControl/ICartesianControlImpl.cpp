@@ -20,6 +20,7 @@
 #include <kdl/velocityprofile_trap.hpp>
 
 #include "KdlVectorConverter.hpp"
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -41,7 +42,7 @@ bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * 
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return false;
     }
 
@@ -52,7 +53,7 @@ bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * 
 
     if (!iCartesianSolver->fwdKin(currentQ, x))
     {
-        yError() << "fwdKin() failed";
+        yCError(BCC) << "fwdKin() failed";
         return false;
     }
 
@@ -72,13 +73,13 @@ bool BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<doubl
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return false;
     }
 
     if (!iCartesianSolver->invKin(xd, currentQ, q, referenceFrame))
     {
-        yError() << "invKin() failed";
+        yCError(BCC) << "invKin() failed";
         return false;
     }
 
@@ -93,13 +94,13 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return false;
     }
 
     if (!iCartesianSolver->invKin(xd, currentQ, qd, referenceFrame))
     {
-        yError() << "invKin() failed";
+        yCError(BCC) << "invKin() failed";
         return false;
     }
 
@@ -110,32 +111,32 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
 
     if (!iPositionControl->getRefSpeeds(vmoStored.data()))
     {
-         yError() << "getRefSpeeds() (for storing) failed";
+         yCError(BCC) << "getRefSpeeds() (for storing) failed";
          return false;
     }
 
     if (!iPositionControl->setRefSpeeds(vmo.data()))
     {
-         yError() << "setRefSpeeds() failed";
+         yCError(BCC) << "setRefSpeeds() failed";
          return false;
     }
 
     //-- Enter position mode and perform movement
     if (!setControlModes(VOCAB_CM_POSITION))
     {
-        yError() << "Unable to set position mode";
+        yCError(BCC) << "Unable to set position mode";
         return false;
     }
 
     if (!iPositionControl->positionMove(qd.data()))
     {
-        yError() << "positionMove() failed";
+        yCError(BCC) << "positionMove() failed";
         return false;
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
     cmcSuccess = true;
-    yInfo() << "Performing MOVJ";
+    yCInfo(BCC) << "Performing MOVJ";
 
     setCurrentState(VOCAB_CC_MOVJ_CONTROLLING);
 
@@ -155,7 +156,7 @@ bool BasicCartesianControl::relj(const std::vector<double> &xd)
 
     if (!stat(x))
     {
-        yError() << "stat() failed";
+        yCError(BCC) << "stat() failed";
         return false;
     }
 
@@ -171,13 +172,13 @@ bool BasicCartesianControl::relj(const std::vector<double> &xd)
 
 bool BasicCartesianControl::movl(const std::vector<double> &xd)
 {
-    yWarning() << "MOVL mode still experimental";
+    yCWarning(BCC) << "MOVL mode still experimental";
 
     std::vector<double> currentQ(numRobotJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return false;
     }
 
@@ -185,7 +186,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
-        yError() << "fwdKin() failed";
+        yCError(BCC) << "fwdKin() failed";
         return false;
     }
 
@@ -195,7 +196,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
     {
         if (!iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj))
         {
-            yError() << "changeOrigin() failed";
+            yCError(BCC) << "changeOrigin() failed";
             return false;
         }
     }
@@ -225,14 +226,14 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
     //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
-        yError() << "Unable to set velocity mode";
+        yCError(BCC) << "Unable to set velocity mode";
         return false;
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
     movementStartTime = yarp::os::Time::now();
     cmcSuccess = true;
-    yInfo() << "Performing MOVL";
+    yCInfo(BCC) << "Performing MOVL";
 
     setCurrentState(VOCAB_CC_MOVL_CONTROLLING);
 
@@ -247,7 +248,7 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return false;
     }
 
@@ -255,7 +256,7 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
-        yError() << "fwdKin() failed";
+        yCError(BCC) << "fwdKin() failed";
         return false;
     }
 
@@ -280,14 +281,14 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
     //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
-        yError() << "Unable to set velocity mode";
+        yCError(BCC) << "Unable to set velocity mode";
         return false;
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
     movementStartTime = yarp::os::Time::now();
     cmcSuccess = true;
-    yInfo() << "Performing MOVV";
+    yCInfo(BCC) << "Performing MOVV";
 
     setCurrentState(VOCAB_CC_MOVV_CONTROLLING);
 
@@ -301,7 +302,7 @@ bool BasicCartesianControl::gcmp()
     //-- Set torque mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
-        yError() << "Unable to set torque mode";
+        yCError(BCC) << "Unable to set torque mode";
         return false;
     }
 
@@ -313,11 +314,11 @@ bool BasicCartesianControl::gcmp()
 
 bool BasicCartesianControl::forc(const std::vector<double> &td)
 {
-    yWarning() << "FORC mode still experimental";
+    yCWarning(BCC) << "FORC mode still experimental";
 
     if (referenceFrame == ICartesianSolver::TCP_FRAME)
     {
-        yWarning() << "TCP frame not supported yet in forc command";
+        yCWarning(BCC) << "TCP frame not supported yet in forc command";
         return false;
     }
 
@@ -326,7 +327,7 @@ bool BasicCartesianControl::forc(const std::vector<double> &td)
 
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
-        yError() << "Unable to set torque mode";
+        yCError(BCC) << "Unable to set torque mode";
         return false;
     }
 
@@ -343,13 +344,13 @@ bool BasicCartesianControl::stopControl()
     // first switch control so that manipulators don't fall due to e.g. gravity
     if (!setControlModes(VOCAB_CM_POSITION))
     {
-        yWarning() << "setControlModes(VOCAB_CM_POSITION) failed";
+        yCWarning(BCC) << "setControlModes(VOCAB_CM_POSITION) failed";
     }
 
     // stop joints if already controlling position
     if (!iPositionControl->stop())
     {
-        yWarning() << "stop() failed";
+        yCWarning(BCC) << "stop() failed";
     }
 
     trajectories.clear();
@@ -374,7 +375,7 @@ bool BasicCartesianControl::wait(double timeout)
     {
         if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
         {
-            yWarning("Timeout reached (%f seconds), stopping control", timeout);
+            yCWarning(BCC, "Timeout reached (%f seconds), stopping control", timeout);
             stopControl();
             break;
         }
@@ -392,13 +393,13 @@ bool BasicCartesianControl::tool(const std::vector<double> &x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
     {
-        yError() << "restoreOriginalChain() failed";
+        yCError(BCC) << "restoreOriginalChain() failed";
         return false;
     }
 
     if (!iCartesianSolver->appendLink(x))
     {
-        yError() << "appendLink() failed";
+        yCError(BCC) << "appendLink() failed";
         return false;
     }
 
@@ -409,7 +410,7 @@ bool BasicCartesianControl::tool(const std::vector<double> &x)
 
 bool BasicCartesianControl::act(int command)
 {
-    yError() << "act() not implemented";
+    yCError(BCC) << "act() not implemented";
     return false;
 }
 
@@ -418,7 +419,7 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
             || !checkControlModes(VOCAB_CM_VELOCITY))
     {
-        yError() << "Streaming command not preset";
+        yCError(BCC) << "Streaming command not preset";
         return;
     }
 
@@ -426,19 +427,19 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return;
     }
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
-        yError() << "diffInvKin() failed";
+        yCError(BCC) << "diffInvKin() failed";
         return;
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
-        yError() << "Joint position or velocity limits exceeded, stopping";
+        yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
         std::fill(qdot.begin(), qdot.end(), 0.0);
         iVelocityControl->velocityMove(qdot.data());
         return;
@@ -446,7 +447,7 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
-        yError() << "velocityMove() failed";
+        yCError(BCC) << "velocityMove() failed";
         return;
     }
 }
@@ -458,7 +459,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE
             || !checkControlModes(VOCAB_CM_VELOCITY))
     {
-        yError() << "Streaming command not preset";
+        yCError(BCC) << "Streaming command not preset";
         return;
     }
 
@@ -466,7 +467,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return;
     }
 
@@ -474,7 +475,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
-        yError() << "fwdKin() failed";
+        yCError(BCC) << "fwdKin() failed";
         return;
     }
 
@@ -484,7 +485,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     {
         if (!iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj))
         {
-            yError() << "changeOrigin() failed";
+            yCError(BCC) << "changeOrigin() failed";
             return;
         }
     }
@@ -497,7 +498,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 
     if (!iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd))
     {
-        yError() << "fwdKinError() failed";
+        yCError(BCC) << "fwdKinError() failed";
         return;
     }
 
@@ -509,13 +510,13 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
-        yError() << "diffInvKin() failed";
+        yCError(BCC) << "diffInvKin() failed";
         return;
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
-        yError() << "Joint position or velocity limits exceeded, stopping";
+        yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
         std::fill(qdot.begin(), qdot.end(), 0.0);
         iVelocityControl->velocityMove(qdot.data());
         return;
@@ -523,7 +524,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
-        yError() << "velocityMove() failed";
+        yCError(BCC) << "velocityMove() failed";
         return;
     }
 }
@@ -535,7 +536,7 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI
             || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
-        yError() << "Streaming command not preset";
+        yCError(BCC) << "Streaming command not preset";
         return;
     }
 
@@ -543,13 +544,13 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yError() << "getEncoders() failed";
+        yCError(BCC) << "getEncoders() failed";
         return;
     }
 
     if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
     {
-        yError() << "invKin() failed";
+        yCError(BCC) << "invKin() failed";
         return;
     }
 
@@ -562,13 +563,13 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
 
     if (!checkJointLimits(currentQ, qdiff))
     {
-        yError() << "Joint position or velocity limits exceeded, not moving";
+        yCError(BCC) << "Joint position or velocity limits exceeded, not moving";
         return;
     }
 
     if (!iPositionDirect->setPositions(q.data()))
     {
-        yError() << "setPositions() failed";
+        yCError(BCC) << "setPositions() failed";
     }
 }
 
@@ -578,7 +579,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
     {
-        yError() << "Unable to set config parameter while controlling";
+        yCError(BCC) << "Unable to set config parameter while controlling";
         return false;
     }
 
@@ -587,7 +588,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_GAIN:
         if (value < 0.0)
         {
-            yError() << "Controller gain cannot be negative";
+            yCError(BCC) << "Controller gain cannot be negative";
             return false;
         }
         gain = value;
@@ -595,7 +596,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         if (value <= 0.0)
         {
-            yError() << "Trajectory duration cannot be negative nor zero";
+            yCError(BCC) << "Trajectory duration cannot be negative nor zero";
             return false;
         }
         duration = value;
@@ -603,7 +604,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_CMC_PERIOD:
         if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
-            yError() << "Cannot set new CMC period";
+            yCError(BCC) << "Cannot set new CMC period";
             return false;
         }
         cmcPeriodMs = value;
@@ -611,7 +612,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_WAIT_PERIOD:
         if (value <= 0.0)
         {
-            yError() << "Wait period cannot be negative nor zero";
+            yCError(BCC) << "Wait period cannot be negative nor zero";
             return false;
         }
         waitPeriodMs = value;
@@ -619,7 +620,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_FRAME:
         if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
         {
-            yError() << "Unrecognized or unsupported reference frame vocab";
+            yCError(BCC) << "Unrecognized or unsupported reference frame vocab";
             return false;
         }
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
@@ -627,16 +628,16 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
     case VOCAB_CC_CONFIG_STREAMING_CMD:
         if (!presetStreamingCommand(value))
         {
-            yError() << "Unable to preset streaming command";
+            yCError(BCC) << "Unable to preset streaming command";
             return false;
         }
         streamingCommand = value;
         break;
     default:
 #if YARP_VERSION_MINOR >= 5
-        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
+        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
 #else
-        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
+        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
 #endif
         return false;
     }
@@ -670,9 +671,9 @@ bool BasicCartesianControl::getParameter(int vocab, double * value)
         break;
     default:
 #if YARP_VERSION_MINOR >= 5
-        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
+        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
 #else
-        yError() << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
+        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
 #endif
         return false;
     }
@@ -686,7 +687,7 @@ bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
     {
-        yError() << "Unable to set config parameters while controlling";
+        yCError(BCC) << "Unable to set config parameters while controlling";
         return false;
     }
 

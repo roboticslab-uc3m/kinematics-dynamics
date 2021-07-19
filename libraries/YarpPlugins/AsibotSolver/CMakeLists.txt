@@ -17,7 +17,9 @@ if(NOT SKIP_AsibotSolver)
                                  ICartesianSolverImpl.cpp
                                  AsibotConfiguration.hpp
                                  AsibotConfiguration.cpp
-                                 AsibotConfigurationLeastOverallAngularDisplacement.cpp)
+                                 AsibotConfigurationLeastOverallAngularDisplacement.cpp
+                                 LogComponent.hpp
+                                 LogComponent.cpp)
 
     target_link_libraries(AsibotSolver YARP::YARP_os
                                        YARP::YARP_dev

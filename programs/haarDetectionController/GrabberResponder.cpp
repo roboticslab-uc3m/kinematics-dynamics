@@ -7,26 +7,25 @@
 
 #include <yarp/os/LogStream.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
-namespace
-{
-    constexpr double STEP_X = 0.0001;
-    constexpr double STEP_Y = 0.0001;
-    constexpr double STEP_Z = 0.01;
+constexpr double STEP_X = 0.0001;
+constexpr double STEP_Y = 0.0001;
+constexpr double STEP_Z = 0.01;
 
-    // just in case, not used by now
-    constexpr double DEADBAND_X_PX = 0.0;
-    constexpr double DEADBAND_Y_PX = 0.0;
-}
+// just in case, not used by now
+constexpr double DEADBAND_X_PX = 0.0;
+constexpr double DEADBAND_Y_PX = 0.0;
 
 void GrabberResponder::onRead(yarp::os::Bottle &b)
 {
-    yDebug() << "Got:" << b.toString();
+    yCDebug(HDC) << "Got:" << b.toString();
 
     if (b.size() != 2)
     {
-        yWarning() << "Wrong data size:" << b.size() << "(expected: 2)";
+        yCWarning(HDC) << "Wrong data size:" << b.size() << "(expected: 2)";
         return;
     }
 

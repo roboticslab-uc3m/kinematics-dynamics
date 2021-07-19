@@ -18,7 +18,9 @@ if(NOT SKIP_CartesianControlServer)
                                            DeviceDriverImpl.cpp
                                            PeriodicThreadImpl.cpp
                                            RpcResponder.cpp
-                                           StreamResponder.cpp)
+                                           StreamResponder.cpp
+                                           LogComponent.hpp
+                                           LogComponent.cpp)
 
     target_link_libraries(CartesianControlServer YARP::YARP_os
                                                  YARP::YARP_dev

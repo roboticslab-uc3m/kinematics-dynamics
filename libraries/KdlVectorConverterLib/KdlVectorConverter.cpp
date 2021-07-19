@@ -3,6 +3,12 @@
 #include "KdlVectorConverter.hpp"
 
 #include <yarp/os/Log.h>
+#include <yarp/os/LogComponent.h>
+
+namespace
+{
+    YARP_LOG_COMPONENT(KDLVC, "rl.KdlVectorConverter")
+}
 
 namespace roboticslab
 {
@@ -16,7 +22,7 @@ KDL::Frame vectorToFrame(const std::vector<double> &x)
 {
     if (x.size() != 6)
     {
-        yWarning("Size mismatch; expected: 6, was: %zu", x.size());
+        yCWarning(KDLVC, "Size mismatch; expected: 6, was: %zu", x.size());
         return KDL::Frame::Identity();
     }
 
@@ -58,7 +64,7 @@ KDL::Twist vectorToTwist(const std::vector<double> &xdot)
 {
     if (xdot.size() != 6)
     {
-        yWarning("Size mismatch; expected: 6, was: %zu", xdot.size());
+        yCWarning(KDLVC, "Size mismatch; expected: 6, was: %zu", xdot.size());
         return KDL::Twist::Zero();
     }
 

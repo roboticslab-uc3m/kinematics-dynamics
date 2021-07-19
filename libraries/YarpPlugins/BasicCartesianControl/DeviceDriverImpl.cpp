@@ -4,6 +4,8 @@
 
 #include <yarp/os/LogStream.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 constexpr auto DEFAULT_SOLVER = "KdlSolver";
@@ -18,7 +20,7 @@ constexpr auto DEFAULT_REFERENCE_FRAME = "base";
 
 bool BasicCartesianControl::open(yarp::os::Searchable& config)
 {
-    yDebug() << "BasicCartesianControl config:" << config.toString();
+    yCDebug(BCC) << "Config:" << config.toString();
 
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asFloat64();
@@ -45,7 +47,7 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     }
     else
     {
-        yError() << "Unsupported reference frame:" << referenceFrameStr;
+        yCError(BCC) << "Unsupported reference frame:" << referenceFrameStr;
         return false;
     }
 
@@ -59,59 +61,59 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (!robotDevice.open(robotOptions))
     {
-        yError() << "Robot device not valid:" << robotStr;
+        yCError(BCC) << "Robot device not valid:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iEncoders))
     {
-        yError() << "Could not view iEncoders in:" << robotStr;
+        yCError(BCC) << "Could not view iEncoders in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iPositionControl))
     {
-        yError() << "Could not view iPositionControl in:" << robotStr;
+        yCError(BCC) << "Could not view iPositionControl in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iPositionDirect))
     {
-        yError() << "Could not view iPositionDirect in:" << robotStr;
+        yCError(BCC) << "Could not view iPositionDirect in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iVelocityControl))
     {
-        yError() << "Could not view iVelocityControl in:" << robotStr;
+        yCError(BCC) << "Could not view iVelocityControl in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iTorqueControl))
     {
-        yError() << "Could not view iTorqueControl in:" << robotStr;
+        yCError(BCC) << "Could not view iTorqueControl in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iControlMode))
     {
-        yError() << "Could not view iControlMode in:" << robotStr;
+        yCError(BCC) << "Could not view iControlMode in:" << robotStr;
         return false;
     }
 
     if (!robotDevice.view(iPreciselyTimed))
     {
-        yWarning("Could not view iPreciselyTimed in: %s, using local timestamps", robotStr.c_str());
+        yCWarning(BCC, "Could not view iPreciselyTimed in: %s, using local timestamps", robotStr.c_str());
     }
 
     iEncoders->getAxes(&numRobotJoints);
-    yInfo() << "Number of robot joints:" << numRobotJoints;
+    yCInfo(BCC) << "Number of robot joints:" << numRobotJoints;
 
     qRefSpeeds.resize(numRobotJoints);
 
     if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
     {
-        yError() << "Could not retrieve reference speeds";
+        yCError(BCC) << "Could not retrieve reference speeds";
         return false;
     }
 
@@ -121,13 +123,13 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (!config.check("mins") || !config.check("maxs") || !config.check("maxvels"))
     {
-        yInfo() << "Using joint limits provided by robot";
+        yCInfo(BCC) << "Using joint limits provided by robot";
 
         yarp::dev::IControlLimits * iControlLimits;
 
         if (!robotDevice.view(iControlLimits))
         {
-            yError() << "Could not view iControlLimits in:" << robotStr;
+            yCError(BCC) << "Could not view iControlLimits in:" << robotStr;
             return false;
         }
 
@@ -145,7 +147,7 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
             if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
             {
-                yError() << "Unable to retrieve position limits for joint" << joint;
+                yCError(BCC) << "Unable to retrieve position limits for joint" << joint;
                 return false;
             }
 
@@ -156,14 +158,14 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
             if (!iControlLimits->getVelLimits(joint, &_qdotMin, &_qdotMax))
             {
-                yError() << "Unable to retrieve speed limits for joint" << joint;
+                yCError(BCC) << "Unable to retrieve speed limits for joint" << joint;
                 return false;
             }
 
             qdotMin[joint] = _qdotMin;
             qdotMax[joint] = _qdotMax;
 
-            yInfo("Joint %d limits: [%f,%f] [%f,%f]", joint, _qMin, _qMax, _qdotMin, _qdotMax);
+            yCInfo(BCC, "Joint %d limits: [%f,%f] [%f,%f]", joint, _qMin, _qMax, _qdotMin, _qdotMax);
 
             bMin.addFloat64(_qMin);
             bMax.addFloat64(_qMax);
@@ -176,32 +178,32 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     }
     else
     {
-        yInfo() << "Using joint limits provided via user configuration";
+        yCInfo(BCC) << "Using joint limits provided via user configuration";
     }
 
     solverOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     if (!solverDevice.open(solverOptions))
     {
-        yError() << "Solver device not valid:" << solverStr;
+        yCError(BCC) << "Solver device not valid:" << solverStr;
         return false;
     }
 
     if (!solverDevice.view(iCartesianSolver))
     {
-        yError() << "Could not view iCartesianSolver in:" << solverStr;
+        yCError(BCC) << "Could not view iCartesianSolver in:" << solverStr;
         return false;
     }
 
     numSolverJoints = iCartesianSolver->getNumJoints();
-    yInfo() << "Number of solver joints:" << numSolverJoints;
+    yCInfo(BCC) << "Number of solver joints:" << numSolverJoints;
 
     if (numRobotJoints != numSolverJoints)
     {
-        yWarning("numRobotJoints(%d) != numSolverJoints(%d)", numRobotJoints, numSolverJoints);
+        yCWarning(BCC, "numRobotJoints(%d) != numSolverJoints(%d)", numRobotJoints, numSolverJoints);
     }
 
-    yInfo() << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
+    yCInfo(BCC) << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
 
     yarp::os::PeriodicThread::setPeriod(cmcPeriodMs * 0.001);
 

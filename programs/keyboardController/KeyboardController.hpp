@@ -35,7 +35,7 @@ namespace roboticslab
 class KeyboardController : public yarp::os::RFModule
 {
 public:
-    ~KeyboardController()
+    ~KeyboardController() override
     { close(); }
 
     // used for array indexes and size checks

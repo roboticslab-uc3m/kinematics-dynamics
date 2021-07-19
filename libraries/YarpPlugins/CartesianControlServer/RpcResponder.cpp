@@ -10,6 +10,8 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
@@ -329,7 +331,7 @@ bool RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& ou
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -395,7 +397,7 @@ bool RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bo
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -437,7 +439,7 @@ bool RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bo
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -479,7 +481,7 @@ bool RpcResponder::handleParameterSetter(const yarp::os::Bottle& in, yarp::os::B
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -517,7 +519,7 @@ bool RpcResponder::handleParameterGetter(const yarp::os::Bottle& in, yarp::os::B
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -539,7 +541,7 @@ bool RpcResponder::handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::
         {
             if (!in.get(i).isList() || in.get(i).asList()->size() != 2)
             {
-                yError() << "Bottle format error";
+                yCError(CCS) << "Bottle format error";
 #if YARP_VERSION_MINOR >= 5
                 out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -577,7 +579,7 @@ bool RpcResponder::handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else
@@ -620,7 +622,7 @@ bool RpcResponder::handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::
     }
     else
     {
-        yError() << "Size error:" << in.size();
+        yCError(CCS) << "Size error:" << in.size();
 #if YARP_VERSION_MINOR >= 5
         out.addVocab32(VOCAB_CC_FAILED);
 #else

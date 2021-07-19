@@ -11,7 +11,9 @@ if(ENABLE_keyboardController)
                                       KeyboardController.hpp
                                       KeyboardController.cpp
                                       LinearTrajectoryThread.hpp
-                                      LinearTrajectoryThread.cpp)
+                                      LinearTrajectoryThread.cpp
+                                      LogComponent.hpp
+                                      LogComponent.cpp)
 
     target_link_libraries(keyboardController ${orocos_kdl_LIBRARIES}
                                              YARP::YARP_os

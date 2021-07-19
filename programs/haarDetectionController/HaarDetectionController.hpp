@@ -25,7 +25,7 @@ namespace roboticslab
 class HaarDetectionController : public yarp::os::RFModule
 {
 public:
-    ~HaarDetectionController()
+    ~HaarDetectionController() override
     { close(); }
 
     bool configure(yarp::os::ResourceFinder & rf) override;

@@ -22,6 +22,8 @@
 #include <yarp/os/Value.h>
 #include <yarp/os/Vocab.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 constexpr auto DEFAULT_ROBOT_LOCAL = "/KeyboardControllerClient";
@@ -107,14 +109,14 @@ constexpr auto CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01; // [deg]
 
 bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 {
-    yDebug() << "KeyboardController config:" << rf.toString();
+    yCDebug(KC) << "Config:" << rf.toString();
 
     bool skipControlboardController = rf.check("skipRCB", "don't load remote control board client");
     bool skipCartesianController = rf.check("skipCC", "don't load cartesian control client");
 
     if (skipControlboardController && skipCartesianController)
     {
-        yError() << "You cannot skip both controllers";
+        yCError(KC) << "You cannot skip both controllers";
         return false;
     }
 
@@ -133,31 +135,31 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         if (!controlboardDevice.open(controlboardClientOptions))
         {
-            yError() << "Unable to open control board client device";
+            yCError(KC) << "Unable to open control board client device";
             return false;
         }
 
         if (!controlboardDevice.view(iEncoders))
         {
-            yError() << "Could not view iEncoders";
+            yCError(KC) << "Could not view iEncoders";
             return false;
         }
 
         if (!controlboardDevice.view(iControlMode))
         {
-            yError() << "Could not view iControlMode";
+            yCError(KC) << "Could not view iControlMode";
             return false;
         }
 
         if (!controlboardDevice.view(iControlLimits))
         {
-            yError() << "Could not view iControlLimits";
+            yCError(KC) << "Could not view iControlLimits";
             return false;
         }
 
         if (!controlboardDevice.view(iVelocityControl))
         {
-            yError() << "Could not view iVelocityControl";
+            yCError(KC) << "Could not view iVelocityControl";
             return false;
         }
 
@@ -165,7 +167,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         if (axes > MAX_JOINTS)
         {
-            yError("Number of joints (%d) exceeds supported limit (%d)", axes, MAX_JOINTS);
+            yCError(KC, "Number of joints (%d) exceeds supported limit (%d)", axes, MAX_JOINTS);
             return false;
         }
 
@@ -196,13 +198,13 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         if (!cartesianControlDevice.open(cartesianControlClientOptions))
         {
-            yError() << "Unable to open cartesian control client device";
+            yCError(KC) << "Unable to open cartesian control client device";
             return false;
         }
 
         if (!cartesianControlDevice.view(iCartesianControl))
         {
-            yError() << "Could not view iCartesianControl";
+            yCError(KC) << "Could not view iCartesianControl";
             return false;
         }
 
@@ -210,13 +212,13 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
         {
-            yError() << "Could not retrieve current frame";
+            yCError(KC) << "Could not retrieve current frame";
             return false;
         }
 
         if (frameDouble != ICartesianSolver::BASE_FRAME && frameDouble != ICartesianSolver::TCP_FRAME)
         {
-            yError() << "Unrecognized or unsupported frame";
+            yCError(KC) << "Unrecognized or unsupported frame";
             return false;
         }
 
@@ -226,7 +228,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         if (!KinRepresentation::parseEnumerator(angleRepr, &orient, KinRepresentation::orientation_system::AXIS_ANGLE))
         {
-            yWarning("Unable to parse \"angleRepr\" option (%s), defaulting to %s", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
+            yCWarning(KC, "Unable to parse \"angleRepr\" option (%s), defaulting to %s", angleRepr.c_str(), DEFAULT_ANGLE_REPR);
             angleRepr = DEFAULT_ANGLE_REPR;
         }
 
@@ -242,7 +244,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
             if (!linTrajThread->checkStreamingConfig())
             {
-                yError() << "Unable to check streaming configuration";
+                yCError(KC) << "Unable to check streaming configuration";
                 return false;
             }
 
@@ -251,7 +253,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
             if (!linTrajThread->start())
             {
-                yError() << "Unable to start MOVI thread";
+                yCError(KC) << "Unable to start MOVI thread";
                 return false;
             }
         }
@@ -443,7 +445,7 @@ void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 {
     if (!controlboardDevice.isValid())
     {
-        yWarning() << "Unrecognized command (you chose not to launch remote control board client)";
+        yCWarning(KC) << "Unrecognized command (you chose not to launch remote control board client)";
         issueStop();
         return;
     }
@@ -455,7 +457,7 @@ void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 
     if (axes <= q)
     {
-        yWarning() << "Unrecognized key, only" << axes << "joints available";
+        yCWarning(KC) << "Unrecognized key, only" << axes << "joints available";
         issueStop();
         return;
     }
@@ -464,7 +466,7 @@ void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 
     if (!iControlMode->setControlModes(velModes.data()))
     {
-        yError() << "setVelocityModes failed";
+        yCError(KC) << "setVelocityModes failed";
         issueStop();
         return;
     }
@@ -473,7 +475,7 @@ void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 
     if (std::abs(currentJointVels[q]) > maxVelocityLimits[q])
     {
-        yWarning("Absolute joint velocity limit exceeded: maxVel[%d] = %f", q, maxVelocityLimits[q]);
+        yCWarning(KC, "Absolute joint velocity limit exceeded: maxVel[%d] = %f", q, maxVelocityLimits[q]);
         currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
     }
 
@@ -481,7 +483,7 @@ void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 
     if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
     {
-        yError() << "velocityMove failed";
+        yCError(KC) << "velocityMove failed";
         issueStop();
     }
     else
@@ -495,7 +497,7 @@ void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func 
 {
     if (!cartesianControlDevice.isValid())
     {
-        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
+        yCWarning(KC) << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -531,7 +533,7 @@ void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func 
         {
             if (!linTrajThread->configure(currentCartVels))
             {
-                yError() << "Unable to configure cartesian command";
+                yCError(KC) << "Unable to configure cartesian command";
                 return;
             }
 
@@ -550,7 +552,7 @@ void KeyboardController::toggleReferenceFrame()
 {
     if (!cartesianControlDevice.isValid())
     {
-        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
+        yCWarning(KC) << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -579,7 +581,7 @@ void KeyboardController::toggleReferenceFrame()
     {
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, newFrame))
         {
-            yError() << "Unable to set reference frame:" << str;
+            yCError(KC) << "Unable to set reference frame:" << str;
             return;
         }
 
@@ -598,7 +600,7 @@ void KeyboardController::actuateTool(int command)
 {
     if (!cartesianControlDevice.isValid())
     {
-        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
+        yCWarning(KC) << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -606,9 +608,9 @@ void KeyboardController::actuateTool(int command)
     if (!iCartesianControl->act(command))
     {
 #if YARP_VERSION_MINOR >= 5
-        yError() << "Unable to send" << yarp::os::Vocab32::decode(command) << "command to actuator";
+        yCError(KC) << "Unable to send" << yarp::os::Vocab32::decode(command) << "command to actuator";
 #else
-        yError() << "Unable to send" << yarp::os::Vocab::decode(command) << "command to actuator";
+        yCError(KC) << "Unable to send" << yarp::os::Vocab::decode(command) << "command to actuator";
 #endif
     }
     else
@@ -621,7 +623,7 @@ void KeyboardController::printJointPositions()
 {
     if (!controlboardDevice.isValid())
     {
-        yWarning() << "Unrecognized command (you chose not to launch remote control board client)";
+        yCWarning(KC) << "Unrecognized command (you chose not to launch remote control board client)";
         issueStop();
         return;
     }
@@ -637,7 +639,7 @@ void KeyboardController::printCartesianPositions()
 {
     if (!cartesianControlDevice.isValid())
     {
-        yWarning() << "Unrecognized command (you chose not to launch cartesian controller client)";
+        yCWarning(KC) << "Unrecognized command (you chose not to launch cartesian controller client)";
         issueStop();
         return;
     }
@@ -658,7 +660,7 @@ void KeyboardController::issueStop()
         {
             if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER))
             {
-                yWarning() << "Unable to stop actuator";
+                yCWarning(KC) << "Unable to stop actuator";
             }
             else
             {

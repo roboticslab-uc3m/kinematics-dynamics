@@ -18,7 +18,9 @@ if(NOT SKIP_AmorCartesianControl)
     yarp_add_plugin(AmorCartesianControl AmorCartesianControl.hpp
                                          AmorCartesianControl.cpp
                                          DeviceDriverImpl.cpp
-                                         ICartesianControlImpl.cpp)
+                                         ICartesianControlImpl.cpp
+                                         LogComponent.hpp
+                                         LogComponent.cpp)
 
     target_link_libraries(AmorCartesianControl YARP::YARP_os
                                                YARP::YARP_dev

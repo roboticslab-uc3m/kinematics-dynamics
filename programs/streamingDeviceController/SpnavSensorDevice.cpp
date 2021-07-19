@@ -3,6 +3,8 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain)
@@ -20,7 +22,7 @@ bool SpnavSensorDevice::acquireInterfaces()
 
     if (!yarp::dev::PolyDriver::view(iAnalogSensor))
     {
-        yWarning() << "Could not view iAnalogSensor";
+        yCWarning(SDC) << "Could not view iAnalogSensor";
         ok = false;
     }
 
@@ -31,7 +33,7 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingMovi && gain <= 0.0)
     {
-        yWarning() << "Invalid gain for movi command:" << gain;
+        yCWarning(SDC) << "Invalid gain for movi command:" << gain;
         return false;
     }
 
@@ -41,20 +43,20 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
-            yWarning() << "Unable to preset streaming command";
+            yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
     if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
     {
-        yWarning() << "Unable to set inertial reference frame";
+        yCWarning(SDC) << "Unable to set inertial reference frame";
         return false;
     }
 
     if (usingMovi && !iCartesianControl->stat(currentX))
     {
-        yWarning() << "Unable to stat initial position, assuming zero";
+        yCWarning(SDC) << "Unable to stat initial position, assuming zero";
         currentX.resize(6, 0.0);
     }
 
@@ -66,11 +68,11 @@ bool SpnavSensorDevice::acquireData()
     yarp::sig::Vector data;
     iAnalogSensor->read(data);
 
-    yDebug() << data.toString(4, 1);
+    yCDebug(SDC) << data.toString(4, 1);
 
     if (data.size() != 6 && data.size() != 8)
     {
-        yWarning() << "Invalid data size:" << data.size();
+        yCWarning(SDC) << "Invalid data size:" << data.size();
         return false;
     }
 

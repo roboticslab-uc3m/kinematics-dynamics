@@ -9,6 +9,8 @@
 #include <yarp/os/Time.h>
 #include <yarp/os/Value.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 constexpr auto DEFAULT_LOCAL_PORT = "/HaarDetectionControl";
@@ -17,14 +19,13 @@ constexpr auto DEFAULT_REMOTE_CARTESIAN = "/CartesianControl";
 constexpr auto DEFAULT_PROXIMITY_SENSORS = "/sensor_reader";
 constexpr auto DEFAULT_PERIOD = 0.01; // [s]
 
-namespace
-{
-    const int INITIAL_ACT_DELAY = 3;
-    const int FINAL_ACT_DELAY = 5;
-}
+constexpr auto INITIAL_ACT_DELAY = 3;
+constexpr auto FINAL_ACT_DELAY = 5;
 
 bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 {
+    yCDebug(HDC) << "Config:" << rf.toString();
+
     std::string localPort = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PORT),
             "local cartesian port").asString();
     std::string remoteVision = rf.check("remoteVision", yarp::os::Value(DEFAULT_REMOTE_VISION),
@@ -42,13 +43,13 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
     if (!cartesianControlDevice.open(cartesianControlClientOptions))
     {
-        yError() << "Cartesian control client device not valid";
+        yCError(HDC) << "Cartesian control client device not valid";
         return false;
     }
 
     if (!cartesianControlDevice.view(iCartesianControl))
     {
-        yError() << "Could not view iCartesianControl";
+        yCError(HDC) << "Could not view iCartesianControl";
         return false;
     }
 
@@ -67,20 +68,20 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
         if (!sensorsClientDevice.isValid())
         {
-            yError() << "Proximity sensors device not valid";
+            yCError(HDC) << "Proximity sensors device not valid";
             return false;
         }
 
         if (!sensorsClientDevice.view(iProximitySensors))
         {
-            yError() << "Could not view iProximitySensors";
+            yCError(HDC) << "Could not view iProximitySensors";
             return false;
         }
     }
 
     if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER))
     {
-        yError() << "Unable to actuate tool";
+        yCError(HDC) << "Unable to actuate tool";
         return false;
     }
 
@@ -90,7 +91,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
         {
-            yError() << "Unable to set TCP reference frame";
+            yCError(HDC) << "Unable to set TCP reference frame";
             return false;
         }
 
@@ -101,12 +102,12 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
         if (!yarp::os::Network::connect(remoteVision + "/state:o", localPort + "/state:i"))
         {
-            yError() << "Unable to connect to remote vision port with prefix:" << remoteVision;
+            yCError(HDC) << "Unable to connect to remote vision port with prefix:" << remoteVision;
             return false;
         }
     }
 
-    yInfo() << "Delaying" << INITIAL_ACT_DELAY << "seconds...";
+    yCInfo(HDC) << "Delaying" << INITIAL_ACT_DELAY << "seconds...";
     yarp::os::Time::delay(INITIAL_ACT_DELAY);
 
     return true;
@@ -116,7 +117,7 @@ bool HaarDetectionController::updateModule()
 {
     if (sensorsClientDevice.isValid() && iProximitySensors->hasTarget())
     {
-        yInfo() << "Target detected";
+        yCInfo(HDC) << "Target detected";
 
         // disable servo control, stop motors and close stream of sensor data
         grabberPort.interrupt();

@@ -11,7 +11,9 @@ if(ENABLE_haarDetectionController)
                                            HaarDetectionController.hpp
                                            HaarDetectionController.cpp
                                            GrabberResponder.hpp
-                                           GrabberResponder.cpp)
+                                           GrabberResponder.cpp
+                                           LogComponent.hpp
+                                           LogComponent.cpp)
 
     target_link_libraries(haarDetectionController YARP::YARP_os
                                                   YARP::YARP_init

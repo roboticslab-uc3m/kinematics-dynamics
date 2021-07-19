@@ -13,7 +13,9 @@ if(NOT SKIP_KdlTreeSolver)
 
     yarp_add_plugin(KdlTreeSolver KdlTreeSolver.hpp
                                   DeviceDriverImpl.cpp
-                                  ICartesianSolverImpl.cpp)
+                                  ICartesianSolverImpl.cpp
+                                  LogComponent.hpp
+                                  LogComponent.cpp)
 
     target_link_libraries(KdlTreeSolver YARP::YARP_os
                                         YARP::YARP_dev

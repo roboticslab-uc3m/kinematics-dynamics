@@ -16,6 +16,7 @@
 #include <kdl/velocityprofile_rect.hpp>
 
 #include "KdlVectorConverter.hpp"
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -45,7 +46,7 @@ bool LinearTrajectoryThread::checkStreamingConfig()
 
     if (!iCartesianControl->getParameters(params))
     {
-        yWarning() << "getParameters failed";
+        yCWarning(KC) << "getParameters failed";
         return false;
     }
 
@@ -58,7 +59,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
     if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
     {
-        yWarning() << "Unable to preset streaming command";
+        yCWarning(KC) << "Unable to preset streaming command";
         return false;
     }
 
@@ -78,7 +79,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 
     if (!iCartesianControl->stat(x))
     {
-        yError() << "stat failed";
+        yCError(KC) << "stat failed";
         return false;
     }
 

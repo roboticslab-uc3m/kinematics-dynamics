@@ -14,6 +14,7 @@
 
 #include <yarp/sig/Vector.h>
 
+#include "LogComponent.hpp"
 #include "SpnavSensorDevice.hpp" // for typeid() check
 
 using namespace roboticslab;
@@ -33,7 +34,7 @@ constexpr auto SCALING_FACTOR_ON_ALERT = 2.0;
 
 bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 {
-    yDebug() << "streamingDeviceController config:" << rf.toString();
+    yCDebug(SDC) << "Config:" << rf.toString();
 
     auto localPrefix = rf.check("prefix", yarp::os::Value(DEFAULT_LOCAL_PREFIX), "local port name prefix").asString();
     auto deviceName = rf.check("streamingDevice", yarp::os::Value(DEFAULT_DEVICE_NAME), "device name").asString();
@@ -46,13 +47,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!streamingDevice->isValid())
     {
-        yError() << "Streaming device not valid";
+        yCError(SDC) << "Streaming device not valid";
         return false;
     }
 
     if (!streamingDevice->acquireInterfaces())
     {
-        yError() << "Unable to acquire plugin interfaces from streaming device";
+        yCError(SDC) << "Unable to acquire plugin interfaces from streaming device";
         return false;
     }
 
@@ -64,13 +65,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!cartesianControlClientDevice.open(cartesianControlClientOptions))
     {
-        yError() << "Cartesian control client device not valid";
+        yCError(SDC) << "Cartesian control client device not valid";
         return false;
     }
 
     if (!cartesianControlClientDevice.view(iCartesianControl))
     {
-        yError() << "Could not view iCartesianControl";
+        yCError(SDC) << "Could not view iCartesianControl";
         return false;
     }
 
@@ -78,7 +79,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!iCartesianControl->getParameters(params))
     {
-        yError() << "Unable to retrieve configuration parameters";
+        yCError(SDC) << "Unable to retrieve configuration parameters";
         return false;
     }
 
@@ -88,7 +89,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (!streamingDevice->initialize(usingStreamingPreset))
     {
-        yError() << "Device initialization failed";
+        yCError(SDC) << "Device initialization failed";
         return false;
     }
 
@@ -106,7 +107,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
             oss << "tcp+recv.portmonitor+type." << pmType << "+context." << pmContext << "+file." << pmFile;
 
             carrier = oss.str();
-            yInfo() << "Using carrier:" << carrier;
+            yCInfo(SDC) << "Using carrier:" << carrier;
         }
 
         thresholdAlertHigh = rf.check("thresholdAlertHigh", yarp::os::Value(DEFAULT_THRESHOLD_ALERT_HIGH),
@@ -120,13 +121,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!proximityPort.open(localPrefix + "/proximity:i"))
         {
-            yError() << "Unable to open local proximity port";
+            yCError(SDC) << "Unable to open local proximity port";
             return false;
         }
 
         if (!yarp::os::Network::connect(sensorsPort, proximityPort.getName(), carrier))
         {
-            yError() << "Unable to connect to" << sensorsPort;
+            yCError(SDC) << "Unable to connect to" << sensorsPort;
             return false;
         }
     }
@@ -137,7 +138,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (typeid(*streamingDevice) != spnavType)
         {
-            yError() << "Centroid transform extension only available with" << spnavType.name();
+            yCError(SDC) << "Centroid transform extension only available with" << spnavType.name();
             return false;
         }
 
@@ -147,13 +148,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!vCentroidRPY.isNull() && vCentroidRPY.isList() && !centroidTransform.setTcpToCameraRotation(vCentroidRPY.asList()))
         {
-            yError() << "Illegal argument: malformed bottle --centroidRPY:" << vCentroidRPY.toString();
+            yCError(SDC) << "Illegal argument: malformed bottle --centroidRPY:" << vCentroidRPY.toString();
             return false;
         }
 
         if (permanenceTime < 0.0)
         {
-            yError() << "Illegal argument: --centroidPermTime cannot be less than zero:" << permanenceTime;
+            yCError(SDC) << "Illegal argument: --centroidPermTime cannot be less than zero:" << permanenceTime;
             return false;
         }
         else
@@ -163,13 +164,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!centroidPort.open(localPrefix + "/centroid/state:i"))
         {
-            yError() << "Unable to open local centroid port";
+            yCError(SDC) << "Unable to open local centroid port";
             return false;
         }
 
         if (!yarp::os::Network::connect(remoteCentroid, centroidPort.getName(), "udp"))
         {
-            yError() << "Unable to connect to" << remoteCentroid;
+            yCError(SDC) << "Unable to connect to" << remoteCentroid;
             return false;
         }
 
@@ -184,13 +185,13 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
         if (!syncPort.open(localPrefix + "/sync:i"))
         {
-            yError() << "Unable to open local sync port";
+            yCError(SDC) << "Unable to open local sync port";
             return false;
         }
 
         if (!yarp::os::Network::connect(remoteSync, syncPort.getName(), "fast_tcp"))
         {
-            yError() << "Unable to connect to remote sync port" << remoteSync;
+            yCError(SDC) << "Unable to connect to remote sync port" << remoteSync;
             return false;
         }
 
@@ -220,7 +221,7 @@ void StreamingDeviceController::onRead(yarp::os::Bottle & bot)
     }
     else
     {
-        yWarning() << "Illegal bottle size";
+        yCWarning(SDC) << "Illegal bottle size";
     }
 }
 
@@ -228,7 +229,7 @@ bool StreamingDeviceController::update(double timestamp)
 {
     if (!streamingDevice->acquireData())
     {
-        yError() << "Failed to acquire data from streaming device";
+        yCError(SDC) << "Failed to acquire data from streaming device";
         return true;
     }
 
@@ -252,7 +253,7 @@ bool StreamingDeviceController::update(double timestamp)
 
             if (alertLevel > thresholdAlertHigh)
             {
-                yWarning() << "Obstacle (high level) - command stop";
+                yCWarning(SDC) << "Obstacle (high level) - command stop";
 
                 if (!isStopped)
                 {
@@ -265,7 +266,7 @@ bool StreamingDeviceController::update(double timestamp)
             else if (!disableSensorsLowLevel && alertLevel > thresholdAlertLow)
             {
                 localScaling *= SCALING_FACTOR_ON_ALERT;
-                yWarning() << "Obstacle (low level) - decrease speed, factor" << SCALING_FACTOR_ON_ALERT;
+                yCWarning(SDC) << "Obstacle (low level) - decrease speed, factor" << SCALING_FACTOR_ON_ALERT;
             }
         }
     }
@@ -279,7 +280,7 @@ bool StreamingDeviceController::update(double timestamp)
 
     if (!streamingDevice->transformData(localScaling))
     {
-        yError() << "Failed to transform acquired data from streaming device";
+        yCError(SDC) << "Failed to transform acquired data from streaming device";
         return true;
     }
 
@@ -289,7 +290,7 @@ bool StreamingDeviceController::update(double timestamp)
 
         if (centroidTransform.acceptBottle(centroidBottle) && centroidTransform.processStoredBottle())
         {
-            yWarning() << "Centroid transform handler takes control";
+            yCWarning(SDC) << "Centroid transform handler takes control";
         }
     }
 

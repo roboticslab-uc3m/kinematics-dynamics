@@ -14,6 +14,8 @@
 
 #include <yarp/math/Math.h>
 
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 constexpr auto NUM_MOTORS = 5;
@@ -27,18 +29,18 @@ constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
 bool AsibotSolver::open(yarp::os::Searchable& config)
 {
-    yDebug() << "AsibotSolver config:" << config.toString();
+    yCDebug(ASIBOT) << "Config:" << config.toString();
 
     A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asFloat64();
     A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asFloat64();
     A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3 (meters)").asFloat64();
     A3 = config.check("A3", yarp::os::Value(DEFAULT_A3), "length of link 4 (meters)").asFloat64();
 
-    yInfo("AsibotSolver using A0: %f, A1: %f, A2: %f, A3: %f", A0, A1, A2, A3);
+    yCInfo(ASIBOT, "Using A0: %f, A1: %f, A2: %f, A3: %f", A0, A1, A2, A3);
 
     if (!config.check("mins") || !config.check("maxs"))
     {
-        yError() << "Missing 'mins' and/or 'maxs' option(s)";
+        yCError(ASIBOT) << "Missing 'mins' and/or 'maxs' option(s)";
         return false;
     }
 
@@ -47,13 +49,13 @@ bool AsibotSolver::open(yarp::os::Searchable& config)
 
     if (!mins || !maxs)
     {
-        yError() << "Empty 'mins' and/or 'maxs' option(s)";
+        yCError(ASIBOT) << "Empty 'mins' and/or 'maxs' option(s)";
         return false;
     }
 
     if (mins->size() != NUM_MOTORS || maxs->size() != NUM_MOTORS)
     {
-        yError("mins.size(), maxs.size() (%zu, %zu) != NUM_MOTORS (%d)", mins->size(), maxs->size(), NUM_MOTORS);
+        yCError(ASIBOT, "mins.size(), maxs.size() (%zu, %zu) != NUM_MOTORS (%d)", mins->size(), maxs->size(), NUM_MOTORS);
         return false;
     }
 
@@ -67,11 +69,11 @@ bool AsibotSolver::open(yarp::os::Searchable& config)
 
         if (qMin[i] == qMax[i])
         {
-            yWarning("qMin[%1$d] == qMax[%1$d] (%2$f)", i, qMin[i]);
+            yCWarning(ASIBOT, "qMin[%1$d] == qMax[%1$d] (%2$f)", i, qMin[i]);
         }
         if (qMin[i] > qMax[i])
         {
-            yError("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", i, qMin[i], qMax[i]);
+            yCError(ASIBOT, "qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", i, qMin[i], qMax[i]);
             return false;
         }
     }
@@ -84,7 +86,7 @@ bool AsibotSolver::open(yarp::os::Searchable& config)
     }
     else
     {
-        yError() << "Unsupported IK configuration strategy:" << strategy;
+        yCError(ASIBOT) << "Unsupported IK configuration strategy:" << strategy;
         return false;
     }
 

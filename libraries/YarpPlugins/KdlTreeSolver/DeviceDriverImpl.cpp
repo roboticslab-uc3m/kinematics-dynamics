@@ -27,6 +27,7 @@
 #include <kdl/treeiksolvervel_wdls.hpp>
 
 #include "KinematicRepresentation.hpp"
+#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -48,7 +49,7 @@ namespace
 
         if (!bot)
         {
-            yWarning() << "Unable to find tag" << tag.c_str();
+            yCWarning(KDLS) << "Unable to find tag" << tag.c_str();
             return false;
         }
 
@@ -77,7 +78,7 @@ namespace
 
         if (!options.check("mins") || !options.check("maxs") || !options.check("maxvels"))
         {
-            yError() << "Missing 'mins' and/or 'maxs' and/or 'maxvels' option(s)";
+            yCError(KDLS) << "Missing 'mins' and/or 'maxs' and/or 'maxvels' option(s)";
             return false;
         }
 
@@ -87,20 +88,20 @@ namespace
 
         if (!maxs || maxs->isNull() || !mins || mins->isNull() || !maxvels || maxvels->isNull())
         {
-            yError() << "Empty 'mins' and/or 'maxs' and/or 'maxvels' option(s)";
+            yCError(KDLS) << "Empty 'mins' and/or 'maxs' and/or 'maxvels' option(s)";
             return false;
         }
 
         if (maxs->size() < nrOfJoints || mins->size() < nrOfJoints || maxvels->size() < nrOfJoints)
         {
-            yError("chain.getNrOfJoints (%d) > maxs.size() or mins.size() or maxvels.size() (%zu, %zu, %zu)",
-                nrOfJoints, maxs->size(), mins->size(), maxvels->size());
+            yCError(KDLS, "chain.getNrOfJoints (%d) > maxs.size() or mins.size() or maxvels.size() (%zu, %zu, %zu)",
+                    nrOfJoints, maxs->size(), mins->size(), maxvels->size());
             return false;
         }
 
-        yDebug() << "qMax:" << maxs->toString();
-        yDebug() << "qMin:" << mins->toString();
-        yDebug() << "qMaxVel:" << maxvels->toString();
+        yCDebug(KDLS) << "qMax:" << maxs->toString();
+        yCDebug(KDLS) << "qMin:" << mins->toString();
+        yCDebug(KDLS) << "qMaxVel:" << maxvels->toString();
 
         for (int motor = 0; motor < nrOfJoints; motor++)
         {
@@ -110,11 +111,11 @@ namespace
 
             if (qMin(motor) == qMax(motor))
             {
-                yWarning("qMin[%1$d] == qMax[%1$d] (%2$f)", motor, qMin(motor));
+                yCWarning(KDLS, "qMin[%1$d] == qMax[%1$d] (%2$f)", motor, qMin(motor));
             }
             else if (qMin(motor) > qMax(motor))
             {
-                yError("qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", motor, qMin(motor), qMax(motor));
+                yCError(KDLS, "qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", motor, qMin(motor), qMax(motor));
                 return false;
             }
         }
@@ -127,13 +128,13 @@ namespace
 
 bool KdlTreeSolver::open(yarp::os::Searchable & config)
 {
-    yDebug() << "config:" << config.toString();
+    yCDebug(KDLS) << "config:" << config.toString();
 
     //-- kinematics
     std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
         "path to file with description of robot kinematics").asString();
 
-    yInfo() << "kinematics:" << kinematics;
+    yCInfo(KDLS) << "kinematics:" << kinematics;
 
     yarp::os::ResourceFinder rf;
     rf.setVerbose(false);
@@ -145,13 +146,13 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
     fullConfig.fromString(config.toString(), false);
     fullConfig.setMonitor(config.getMonitor(), "KdlTreeSolver");
 
-    yDebug() << "fullConfig:" << fullConfig.toString();
+    yCDebug(KDLS) << "fullConfig:" << fullConfig.toString();
 
     yarp::os::Bottle chains = fullConfig.findGroup("chain", "kinematic chains").tail();
 
     if (chains.isNull() || chains.size() == 0)
     {
-        yError() << "Missing or empty \"chain\" section collection";
+        yCError(KDLS) << "Missing or empty \"chain\" section collection";
         return false;
     }
 
@@ -166,7 +167,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
     yarp::os::Value gravityValue = fullConfig.check("gravity", defaultGravityValue, "gravity vector (SI units)");
     yarp::os::Bottle * gravityBottle = gravityValue.asList();
     KDL::Vector gravity(gravityBottle->get(0).asFloat64(), gravityBottle->get(1).asFloat64(), gravityBottle->get(2).asFloat64());
-    yInfo() << "gravity:" << gravityBottle->toString();
+    yCInfo(KDLS) << "gravity:" << gravityBottle->toString();
 
     //-- H0 (default)
     yarp::sig::Matrix defaultYmH0(4, 4);
@@ -181,18 +182,18 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
         KDL::Chain chain;
 
         auto chainName = chains.get(i).asString();
-        yInfo() << "chain:" << chainName;
+        yCInfo(KDLS) << "chain:" << chainName;
 
         const yarp::os::Bottle & chainConfig = fullConfig.findGroup(chainName);
-        yDebug() << "config:" << chainConfig.toString();
+        yCDebug(KDLS) << "config:" << chainConfig.toString();
 
         //-- hook
         auto hook = chainConfig.check("hook", yarp::os::Value("root"), "segment to hook to at its end").asString();
-        yInfo() << "hook:" << hook;
+        yCInfo(KDLS) << "hook:" << hook;
 
         //-- numlinks
         int numLinks = chainConfig.check("numLinks", yarp::os::Value(0), "chain number of segments").asInt32();
-        yInfo() << "numLinks:" << numLinks;
+        yCInfo(KDLS) << "numLinks:" << numLinks;
 
         //-- H0
         yarp::sig::Matrix ymH0(4, 4);
@@ -206,7 +207,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
         KDL::Vector kdlVec0(ymH0(0, 3), ymH0(1, 3), ymH0(2, 3));
         KDL::Rotation kdlRot0(ymH0(0, 0), ymH0(0, 1), ymH0(0, 2), ymH0(1, 0), ymH0(1, 1), ymH0(1, 2), ymH0(2, 0), ymH0(2, 1), ymH0(2, 2));
         chain.addSegment(KDL::Segment(H0name, KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0, kdlVec0)));
-        yInfo() << "H0:\n" << ymH0.toString();
+        yCInfo(KDLS) << "H0:\n" << ymH0.toString();
 
         //-- links
         for (int linkIndex = 0; linkIndex < numLinks; linkIndex++)
@@ -239,28 +240,28 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
                     chain.addSegment(KDL::Segment(segmentName, axis, H, KDL::RigidBodyInertia(linkMass, cog, inertia)));
 
-                    yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)",
-                          link.c_str(), linkOffset, linkD, linkA, linkAlpha, linkMass,
-                          linkCog.get(0).asFloat64(), linkCog.get(1).asFloat64(), linkCog.get(2).asFloat64(),
-                          linkInertia.get(0).asFloat64(), linkInertia.get(1).asFloat64(), linkInertia.get(2).asFloat64());
+                    yCInfo(KDLS, "Added: %s (offset %f) (D %f) (A %f) (alpha %f) (mass %f) (cog %f %f %f) (inertia %f %f %f)",
+                           link.c_str(), linkOffset, linkD, linkA, linkAlpha, linkMass,
+                           linkCog.get(0).asFloat64(), linkCog.get(1).asFloat64(), linkCog.get(2).asFloat64(),
+                           linkInertia.get(0).asFloat64(), linkInertia.get(1).asFloat64(), linkInertia.get(2).asFloat64());
                 }
                 else
                 {
                     chain.addSegment(KDL::Segment(segmentName, axis, H));
-                    yInfo("Added: %s (offset %f) (D %f) (A %f) (alpha %f)", link.c_str(), linkOffset, linkD, linkA, linkAlpha);
+                    yCInfo(KDLS, "Added: %s (offset %f) (D %f) (A %f) (alpha %f)", link.c_str(), linkOffset, linkD, linkA, linkAlpha);
                 }
             }
             else
             {
                 std::string xyzLink = "xyzLink_" + std::to_string(linkIndex);
-                yWarning("Not found: \"%s\", looking for \"%s\" instead.", link.c_str(), xyzLink.c_str());
+                yCWarning(KDLS, "Not found: \"%s\", looking for \"%s\" instead.", link.c_str(), xyzLink.c_str());
 
                 std::string segmentName = chainName + "_" + xyzLink;
                 yarp::os::Bottle & bXyzLink = chainConfig.findGroup(xyzLink);
 
                 if (bXyzLink.isNull())
                 {
-                    yError("Not found: \"%s\" either.", xyzLink.c_str());
+                    yCError(KDLS, "Not found: \"%s\" either.", xyzLink.c_str());
                     return false;
                 }
 
@@ -298,10 +299,10 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
                 } else if (linkType == "InvTransZ") {
                     chain.addSegment(KDL::Segment(segmentName, KDL::Joint(KDL::Joint::TransZ, -1.0), H));
                 } else {
-                    yWarning("Link joint type \"%s\" unrecognized!", linkType.c_str());
+                    yCWarning(KDLS, "Link joint type \"%s\" unrecognized!", linkType.c_str());
                 }
 
-                yInfo("Added: %s (Type %s) (x %f) (y %f) (z %f)", xyzLink.c_str(), linkType.c_str(), linkX, linkY, linkZ);
+                yCInfo(KDLS, "Added: %s (Type %s) (x %f) (y %f) (z %f)", xyzLink.c_str(), linkType.c_str(), linkX, linkY, linkZ);
             }
         }
 
@@ -316,14 +317,14 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
         KDL::Vector kdlVecN(ymHN(0, 3), ymHN(1, 3), ymHN(2, 3));
         KDL::Rotation kdlRotN(ymHN(0, 0), ymHN(0, 1), ymHN(0, 2), ymHN(1, 0), ymHN(1, 1), ymHN(1, 2), ymHN(2, 0), ymHN(2, 1), ymHN(2, 2));
         chain.addSegment(KDL::Segment(chainName, KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN, kdlVecN)));
-        yInfo() << "HN:\n" << ymHN.toString();
+        yCInfo(KDLS) << "HN:\n" << ymHN.toString();
 
-        yInfo() << "Chain number of segments:" << chain.getNrOfSegments();
-        yInfo() << "Chain number of joints:" << chain.getNrOfJoints();
+        yCInfo(KDLS) << "Chain number of segments:" << chain.getNrOfSegments();
+        yCInfo(KDLS) << "Chain number of joints:" << chain.getNrOfJoints();
 
         if (!tree.addChain(chain, hook))
         {
-            yError() << "Unable to add chain to tree, hook name" << hook << "not found";
+            yCError(KDLS) << "Unable to add chain to tree, hook name" << hook << "not found";
             return false;
         }
 
@@ -337,19 +338,19 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
 
                 if (std::find(endpoints.cbegin(), endpoints.cend(), mergeWith) == endpoints.cend())
                 {
-                    yError() << "Unable to find TCP" << mergeWith << "to be merged with" << chainName;
+                    yCError(KDLS) << "Unable to find TCP" << mergeWith << "to be merged with" << chainName;
                     return false;
                 }
 
                 mergedEndpoints.emplace(std::make_pair(chainName, mergeWith));
-                yInfo() << "TCP" << chainName << "merged with" << mergeWith;
+                yCInfo(KDLS) << "TCP" << chainName << "merged with" << mergeWith;
             }
         }
     }
 
-    yInfo() << "Tree number of segments:" << tree.getNrOfSegments();
-    yInfo() << "Tree number of joints:" << tree.getNrOfJoints();
-    yInfo() << "Tree endpoints:" << endpoints;
+    yCInfo(KDLS) << "Tree number of segments:" << tree.getNrOfSegments();
+    yCInfo(KDLS) << "Tree number of joints:" << tree.getNrOfJoints();
+    yCInfo(KDLS) << "Tree endpoints:" << endpoints;
 
     fkSolverPos = new KDL::TreeFkSolverPos_recursive(tree);
     ikSolverVel = new KDL::TreeIkSolverVel_wdls(tree, endpoints);
@@ -407,7 +408,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
     //-- Joint limits.
     if (!retrieveJointLimits(fullConfig, qMin, qMax, qMaxVels))
     {
-        yError() << "Unable to retrieve joint limits";
+        yCError(KDLS) << "Unable to retrieve joint limits";
         return false;
     }
 
@@ -433,7 +434,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
     }
     else
     {
-        yError() << "Unsupported IK solver algorithm:" << ik.c_str();
+        yCError(KDLS) << "Unsupported IK solver algorithm:" << ik.c_str();
         return false;
     }
 

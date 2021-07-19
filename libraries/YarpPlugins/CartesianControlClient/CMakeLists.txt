@@ -15,7 +15,9 @@ if(NOT SKIP_CartesianControlClient)
     yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
                                            DeviceDriverImpl.cpp
                                            ICartesianControlImpl.cpp
-                                           FkStreamResponder.cpp)
+                                           FkStreamResponder.cpp
+                                           LogComponent.hpp
+                                           LogComponent.cpp)
 
     target_link_libraries(CartesianControlClient YARP::YARP_os
                                                  YARP::YARP_dev

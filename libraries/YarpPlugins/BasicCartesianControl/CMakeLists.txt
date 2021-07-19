@@ -18,7 +18,9 @@ if(NOT SKIP_BasicCartesianControl)
                                           BasicCartesianControl.cpp
                                           DeviceDriverImpl.cpp
                                           ICartesianControlImpl.cpp
-                                          PeriodicThreadImpl.cpp)
+                                          PeriodicThreadImpl.cpp
+                                          LogComponent.hpp
+                                          LogComponent.cpp)
 
     target_link_libraries(BasicCartesianControl YARP::YARP_os
                                                 YARP::YARP_dev

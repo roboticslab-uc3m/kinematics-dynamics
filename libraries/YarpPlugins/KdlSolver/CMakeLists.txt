@@ -25,7 +25,9 @@ if(NOT SKIP_KdlSolver)
                               ChainIkSolverPos_ST.hpp
                               ChainIkSolverPos_ST.cpp
                               ChainIkSolverPos_ID.hpp
-                              ChainIkSolverPos_ID.cpp)
+                              ChainIkSolverPos_ID.cpp
+                              LogComponent.hpp
+                              LogComponent.cpp)
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
