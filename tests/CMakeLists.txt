@@ -7,9 +7,7 @@ cmake_dependent_option(ENABLE_tests "Enable/disable unit tests" ON
 
 if(ENABLE_tests)
 
-    enable_testing()
-
-    add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/gtest)
+    add_subdirectory(${GTestSources_SOURCE_DIR} ${CMAKE_BINARY_DIR}/googletest)
 
     include_directories(${GTestSources_INCLUDE_DIR})
 

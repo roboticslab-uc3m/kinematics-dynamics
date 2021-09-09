@@ -133,7 +133,7 @@ jobs:
         sudo ldconfig
 
     - name: Test kinematics-dynamics
-      working-directory: ${{github.workspace}}/build/tests
+      working-directory: ${{github.workspace}}/build
       run: ctest -V
 
     - name: Uninstall kinematics-dynamics
