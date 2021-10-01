@@ -70,7 +70,7 @@ namespace
 
     struct compare_vectors : public std::binary_function<const KDL::Vector &, const KDL::Vector &, bool>
     {
-        result_type operator()(first_argument_type lhs, second_argument_type rhs)
+        result_type operator()(first_argument_type lhs, second_argument_type rhs) const
         {
             if (KDL::Equal(lhs.x(), rhs.x()))
             {
