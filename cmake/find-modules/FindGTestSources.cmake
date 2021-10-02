@@ -17,8 +17,8 @@
 #
 # Also, this module adds the following macros:
 #
-# * gtest_add_tests (as in GTest.cmake)
-# * gtest_discover_tests (as in GTest.cmake)
+# * gtest_add_tests (as in FindGTest.cmake)
+# * gtest_discover_tests (as in FindGTest.cmake)
 
 find_package(GTest QUIET)
 
@@ -56,7 +56,7 @@ if(GTestSources_FOUND)
     # should be non-cache variables, but CMP0077 strikes in
     set(BUILD_GMOCK OFF CACHE BOOL "")
     set(BUILD_GTEST ON CACHE BOOL "")
-    set(INSTALL_GTEST OF CACHE BOOL "")
+    set(INSTALL_GTEST OFF CACHE BOOL "")
     mark_as_advanced(BUILD_GMOCK BUILD_GTEST INSTALL_GTEST)
 endif()
 
