@@ -3,21 +3,34 @@ set_source_files_properties(${SWIG_BINDINGS_SOURCE_FILE} PROPERTIES CPLUSPLUS ON
 
 set(CMAKE_SWIG_FLAGS "-module;roboticslab_kinematics_dynamics;-threads;${SWIG_COMMON_FLAGS}")
 
-find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+# https://github.com/pybind/pybind11/pull/2689
+if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
+  set(RL_Python_Development_Component "Development")
+else()
+  set(RL_Python_Development_Component "Development.Module")
+endif()
+
+find_package(Python3 COMPONENTS Interpreter ${RL_Python_Development_Component} REQUIRED)
 
 set(CMAKE_SWIG_OUTDIR "${CMAKE_BINARY_DIR}/lib/python")
 set(SWIG_OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
+if(${CMAKE_VERSION} VERSION_LESS "3.15.0")
+  set(RL_Python_Module_Target "Python3::Python")
+else()
+  set(RL_Python_Module_Target "Python3::Module")
+endif()
+
 swig_add_library(roboticslab_kinematics_dynamics_python
                  LANGUAGE python
                  SOURCES ${SWIG_BINDINGS_SOURCE_FILE})
-swig_link_libraries(roboticslab_kinematics_dynamics_python Python3::Python ${SWIG_RL_LIBRARIES})
+swig_link_libraries(roboticslab_kinematics_dynamics_python ${RL_Python_Module_Target} ${SWIG_RL_LIBRARIES})
 
 set_target_properties(${SWIG_MODULE_roboticslab_kinematics_dynamics_python_REAL_NAME} PROPERTIES OUTPUT_NAME "_roboticslab_kinematics_dynamics"
                                                                                                  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/python")
 
 # installation path is determined reliably on most platforms using distutils
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils import sysconfig; print(sysconfig.get_python_lib(plat_specific=True,standard_lib=False,prefix=''))"
+execute_process(COMMAND ${Python3_EXECUTABLE} -c "from distutils import sysconfig; print(sysconfig.get_python_lib(plat_specific=True,standard_lib=False,prefix=''))"
                 OUTPUT_VARIABLE Python_INSTDIR
                 OUTPUT_STRIP_TRAILING_WHITESPACE )
 
