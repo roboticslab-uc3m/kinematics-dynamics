@@ -5,6 +5,9 @@
 
 #include <yarp/os/RFModule.h>
 
+#include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
+#include <yarp/dev/PolyDriver.h>
+
 namespace roboticslab
 {
 
@@ -26,6 +29,9 @@ public:
     bool close() override;
 
 private:
+    int sensorIndex;
+    yarp::dev::PolyDriver sensorDevice;
+    yarp::dev::ISixAxisForceTorqueSensors * sensor;
 };
 
 } // namespace roboticslab
