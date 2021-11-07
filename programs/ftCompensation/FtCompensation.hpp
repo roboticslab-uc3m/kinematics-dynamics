@@ -65,8 +65,10 @@ private:
 
     bool dryRun;
     bool usingTool;
-    double linGain, rotGain;
-    double linDeadband, rotDeadband;
+    double linGain;
+    double rotGain;
+    double forceDeadband;
+    double torqueDeadband;
 };
 
 } // namespace roboticslab

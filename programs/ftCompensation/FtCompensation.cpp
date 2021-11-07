@@ -16,8 +16,8 @@ constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_PERIOD = 0.02;
 constexpr auto DEFAULT_LIN_GAIN = "1.0";
 constexpr auto DEFAULT_ROT_GAIN = "1.0";
-constexpr auto DEFAULT_LIN_DEADBAND = "1.0";
-constexpr auto DEFAULT_ROT_DEADBAND = "1.0";
+constexpr auto DEFAULT_FORCE_DEADBAND = "1.0";
+constexpr auto DEFAULT_TORQUE_DEADBAND = "1.0";
 
 bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 {
@@ -26,8 +26,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     dryRun = rf.check("dryRun", "process sensor loops, but don't send motion command");
     linGain = rf.check("linGain", yarp::os::Value(DEFAULT_LIN_GAIN), "linear gain").asFloat64();
     rotGain = rf.check("rotGain", yarp::os::Value(DEFAULT_ROT_GAIN), "rotational gain").asFloat64();
-    linDeadband = rf.check("linDeadband", yarp::os::Value(DEFAULT_LIN_DEADBAND), "linear deadband [N]").asFloat64();
-    rotDeadband = rf.check("rotDeadband", yarp::os::Value(DEFAULT_ROT_DEADBAND), "rotational deadband [Nm]").asFloat64();
+    forceDeadband = rf.check("forceDeadband", yarp::os::Value(DEFAULT_FORCE_DEADBAND), "force deadband [N]").asFloat64();
+    torqueDeadband = rf.check("torqueDeadband", yarp::os::Value(DEFAULT_TORQUE_DEADBAND), "torque deadband [Nm]").asFloat64();
 
     auto sensorFrameRPY = rf.check("sensorFrameRPY", yarp::os::Value::getNullValue(), "sensor frame RPY rotation regarding TCP frame [deg]");
 
@@ -216,19 +216,19 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     if (!usingTool)
     {
-        auto linNorm = initialOffset.force.Norm();
+        auto forceNorm = initialOffset.force.Norm();
 
-        if (linNorm > linDeadband)
+        if (forceNorm > forceDeadband)
         {
-            yCError(FTC) << "Initial sensor values exceed linear deadband, motion would be generated:" << linNorm << ">" << linDeadband;
+            yCError(FTC) << "Initial sensor values exceed force deadband, motion would be generated:" << forceNorm << ">" << forceDeadband;
             return false;
         }
 
-        auto rotNorm = initialOffset.torque.Norm();
+        auto torqueNorm = initialOffset.torque.Norm();
 
-        if (rotNorm > rotDeadband)
+        if (torqueNorm > torqueDeadband)
         {
-            yCError(FTC) << "Initial sensor values exceed rotational deadband, motion would be generated:" << rotNorm << ">" << rotDeadband;
+            yCError(FTC) << "Initial sensor values exceed torque deadband, motion would be generated:" << torqueNorm << ">" << torqueDeadband;
             return false;
         }
     }
@@ -293,14 +293,20 @@ void FtCompensation::run()
 
     wrench -= initialOffset;
 
-    if (wrench.force.Norm() <= linDeadband || wrench.torque.Norm() <= rotDeadband)
+    auto forceNorm = wrench.force.Norm();
+    auto torqueNorm = wrench.torque.Norm();
+
+    if (forceNorm <= forceDeadband && torqueNorm <= torqueDeadband)
     {
         if (!dryRun) iCartesianControl->twist(std::vector<double>(6, 0.0));
         return;
     }
 
-    wrench.force = wrench.force * linGain;
-    wrench.torque = wrench.torque * rotGain;
+    auto forceThreshold = (wrench.force / forceNorm) * forceDeadband;
+    auto torqueThreshold = (wrench.torque / torqueNorm) * torqueDeadband;
+
+    wrench.force = (wrench.force - forceThreshold) * linGain;
+    wrench.torque = (wrench.torque - torqueThreshold) * rotGain;
 
     auto v = KdlVectorConverter::wrenchToVector(wrench);
     yCDebug(FTC) << v;
