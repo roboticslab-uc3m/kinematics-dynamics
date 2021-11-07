@@ -33,6 +33,8 @@ public:
     bool close() override;
 
 private:
+    bool compensateTool(KDL::Wrench & sensorWrench) const;
+
     yarp::dev::PolyDriver cartesianDevice;
     roboticslab::ICartesianControl * iCartesianControl;
 
@@ -40,9 +42,12 @@ private:
     yarp::dev::PolyDriver sensorDevice;
     yarp::dev::ISixAxisForceTorqueSensors * sensor;
 
-    KDL::Vector toolCoM;
-    KDL::Vector gravity;
+    KDL::Rotation R_N_sensor;
+    KDL::Vector toolCoM_N;
+    KDL::Wrench toolWeight_0;
+    KDL::Wrench initialOffset;
 
+    bool usingTool;
     double linGain, rotGain;
     double linDeadband, rotDeadband;
 };

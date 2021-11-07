@@ -5,7 +5,10 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
+#include <kdl/utilities/utility.h> // KDL::deg2rad
+
 #include "LogComponent.hpp"
+#include "KdlVectorConverter.hpp"
 
 using namespace roboticslab;
 
@@ -24,43 +27,34 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     linDeadband = rf.check("linDeadband", yarp::os::Value(DEFAULT_LIN_DEADBAND), "linear deadband [N]").asFloat64();
     rotDeadband = rf.check("rotDeadband", yarp::os::Value(DEFAULT_ROT_DEADBAND), "rotational deadband [Nm]").asFloat64();
 
-    auto vToolCoM = rf.check("toolCoM", yarp::os::Value::getNullValue(), "tool CoM regarding to TCP frame");
-    auto vGravity = rf.check("gravity", yarp::os::Value::getNullValue(), "gravity vector regarding to inertial frame");
+    auto sensorFrameRPY = rf.check("sensorFrameRPY", yarp::os::Value::getNullValue(), "sensor frame RPY rotation regarding TCP frame [deg]");
 
-    if (!vToolCoM.isNull() && !vGravity.isNull())
+    if (!sensorFrameRPY.isNull())
     {
-        if (!vToolCoM.isList() || vToolCoM.asList()->size() != 3)
+        if (!sensorFrameRPY.isList() || sensorFrameRPY.asList()->size() != 3)
         {
-            yCError(FTC) << "toolCoM must be a list of 3 doubles";
+            yCError(FTC) << "sensorFrameRPY must be a list of 3 doubles";
             return false;
         }
 
-        if (!vGravity.isList() || vGravity.asList()->size() != 3)
-        {
-            yCError(FTC) << "gravity must be a list of 3 doubles";
-            return false;
-        }
+        yCInfo(FTC) << "Sensor frame RPY [deg]:" << sensorFrameRPY.toString();
 
-        toolCoM.x(vToolCoM.asList()->get(0).asFloat64());
-        toolCoM.y(vToolCoM.asList()->get(1).asFloat64());
-        toolCoM.z(vToolCoM.asList()->get(2).asFloat64());
+        auto roll = sensorFrameRPY.asList()->get(0).asFloat64() * KDL::deg2rad;
+        auto pitch = sensorFrameRPY.asList()->get(1).asFloat64() * KDL::deg2rad;
+        auto yaw = sensorFrameRPY.asList()->get(2).asFloat64() * KDL::deg2rad;
 
-        yCInfo(FTC) << "Tool CoM:" << vToolCoM.toString();
-
-        gravity.x(vGravity.asList()->get(0).asFloat64());
-        gravity.y(vGravity.asList()->get(1).asFloat64());
-        gravity.z(vGravity.asList()->get(2).asFloat64());
-
-        yCInfo(FTC) << "Gravity:" << vGravity.toString();
+        // sequence (old axes): 1. R_x(roll), 2. R_y(pitch), 3. R_z(yaw)
+        R_N_sensor = KDL::Rotation::RPY(roll, pitch, yaw);
     }
     else
     {
-        yCInfo(FTC) << "Using no tool";
+        yCInfo(FTC) << "Using no sensor frame";
+        R_N_sensor = KDL::Rotation::Identity();
     }
 
     auto localPrefix = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PREFIX), "local port prefix").asString();
 
-    // cartesian device
+    // ----- cartesian device -----
 
     if (!rf.check("cartesianRemote", "remote cartesian port to connect to"))
     {
@@ -111,7 +105,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    // sensor device
+    // ----- sensor device -----
 
     if (!rf.check("sensorName", "remote FT sensor name to connect to via MAS client"))
     {
@@ -167,6 +161,105 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
+    // ----- tool compensation -----
+
+    auto vToolCoM = rf.check("toolCoM", yarp::os::Value::getNullValue(), "tool CoM regarding to TCP frame");
+    auto vToolWeight = rf.check("toolWeight", yarp::os::Value::getNullValue(), "tool weight vector regarding to inertial frame");
+
+    toolCoM_N = KDL::Vector::Zero();
+    toolWeight_0 = KDL::Wrench::Zero();
+
+    if (!vToolCoM.isNull() && !vToolWeight.isNull())
+    {
+        if (!vToolCoM.isList() || vToolCoM.asList()->size() != 3)
+        {
+            yCError(FTC) << "toolCoM must be a list of 3 doubles";
+            return false;
+        }
+
+        if (!vToolWeight.isList() || vToolWeight.asList()->size() != 3)
+        {
+            yCError(FTC) << "toolWeight must be a list of 3 doubles";
+            return false;
+        }
+
+        yCInfo(FTC) << "Tool CoM:" << vToolCoM.toString();
+
+        toolCoM_N.x(vToolCoM.asList()->get(0).asFloat64());
+        toolCoM_N.y(vToolCoM.asList()->get(1).asFloat64());
+        toolCoM_N.z(vToolCoM.asList()->get(2).asFloat64());
+
+        yCInfo(FTC) << "Tool weight:" << vToolWeight.toString();
+
+        toolWeight_0.force.x(vToolWeight.asList()->get(0).asFloat64());
+        toolWeight_0.force.y(vToolWeight.asList()->get(1).asFloat64());
+        toolWeight_0.force.z(vToolWeight.asList()->get(2).asFloat64());
+
+        usingTool = true;
+    }
+    else
+    {
+        yCInfo(FTC) << "Using no tool";
+        usingTool = false;
+    }
+
+    yarp::sig::Vector outSensor;
+    double timestamp;
+
+    if (!sensor->getSixAxisForceTorqueSensorMeasure(sensorIndex, outSensor, timestamp))
+    {
+        yCError(FTC) << "Failed to retrieve current sensor measurements";
+        return false;
+    }
+
+    KDL::Wrench currentWrench_sensor;
+    currentWrench_sensor.force = KDL::Vector(outSensor[0], outSensor[1], outSensor[2]);
+    currentWrench_sensor.torque = KDL::Vector(outSensor[3], outSensor[4], outSensor[5]);
+
+    initialOffset = R_N_sensor * currentWrench_sensor;
+
+    if (!usingTool)
+    {
+        auto linNorm = initialOffset.force.Norm();
+
+        if (linNorm > linDeadband)
+        {
+            yCError(FTC) << "Initial sensor values exceed linear deadband, motion would be generated:" << linNorm << ">" << linDeadband;
+            return false;
+        }
+
+        auto rotNorm = initialOffset.torque.Norm();
+
+        if (rotNorm > rotDeadband)
+        {
+            yCError(FTC) << "Initial sensor values exceed rotational deadband, motion would be generated:" << rotNorm << ">" << rotDeadband;
+            return false;
+        }
+    }
+    else if (!compensateTool(initialOffset))
+    {
+        yCError(FTC) << "Failed to compensate tool";
+        return false;
+    }
+
+    return true;
+}
+
+bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
+{
+    std::vector<double> currentX;
+
+    if (!iCartesianControl->stat(currentX))
+    {
+        yCError(FTC) << "Failed to retrieve current position";
+        return false;
+    }
+
+    auto H_0_N = KdlVectorConverter::vectorToFrame(currentX);
+    auto toolWrench = H_0_N.M.Inverse() * toolWeight_0;
+    auto toolWrench_N = toolWrench.RefPoint(-toolCoM_N);
+
+    wrench -= toolWrench_N;
     return true;
 }
 
