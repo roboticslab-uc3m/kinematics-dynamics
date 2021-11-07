@@ -9,9 +9,7 @@ if(ENABLE_ftCompensation)
 
     add_executable(ftCompensation main.cpp
                                   FtCompensation.hpp
-                                  FtCompensation.cpp
-                                  LogComponent.hpp
-                                  LogComponent.cpp)
+                                  FtCompensation.cpp)
 
     target_link_libraries(ftCompensation ${orocos_kdl_LIBRARIES}
                                          YARP::YARP_os

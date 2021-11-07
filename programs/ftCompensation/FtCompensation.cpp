@@ -2,15 +2,20 @@
 
 #include "FtCompensation.hpp"
 
+#include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
 #include <kdl/utilities/utility.h> // KDL::deg2rad
 
-#include "LogComponent.hpp"
 #include "KdlVectorConverter.hpp"
 
 using namespace roboticslab;
+
+namespace
+{
+    YARP_LOG_COMPONENT(FTC, "rl.FtCompensation")
+}
 
 constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_PERIOD = 0.02;
