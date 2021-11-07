@@ -10,6 +10,8 @@
 
 #include <kdl/frames.hpp>
 
+#include "ICartesianControl.h"
+
 namespace roboticslab
 {
 
@@ -31,6 +33,9 @@ public:
     bool close() override;
 
 private:
+    yarp::dev::PolyDriver cartesianDevice;
+    roboticslab::ICartesianControl * iCartesianControl;
+
     int sensorIndex;
     yarp::dev::PolyDriver sensorDevice;
     yarp::dev::ISixAxisForceTorqueSensors * sensor;

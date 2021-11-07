@@ -9,7 +9,7 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_SENSOR_LOCAL_PORT = "/ftCompensation";
+constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_LIN_GAIN = "1.0";
 constexpr auto DEFAULT_ROT_GAIN = "1.0";
 constexpr auto DEFAULT_LIN_DEADBAND = "1.0";
@@ -58,6 +58,61 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         yCInfo(FTC) << "Using no tool";
     }
 
+    auto localPrefix = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PREFIX), "local port prefix").asString();
+
+    // cartesian device
+
+    if (!rf.check("cartesianRemote", "remote cartesian port to connect to"))
+    {
+        yCError(FTC) << "Missing parameter: cartesianRemote";
+        return false;
+    }
+
+    auto cartesianRemote = rf.find("cartesianRemote").asString();
+    auto cartesianLocal = localPrefix + "/" + cartesianRemote;
+
+    yarp::os::Property cartesianOptions {
+        {"device", yarp::os::Value("CartesianControlClient")},
+        {"cartesianRemote", yarp::os::Value(cartesianRemote)},
+        {"cartesianLocal", yarp::os::Value(cartesianLocal)}
+    };
+
+    if (!cartesianDevice.open(cartesianOptions))
+    {
+        yCError(FTC) << "Failed to open cartesian device";
+        return false;
+    }
+
+    if (!cartesianDevice.view(iCartesianControl))
+    {
+        yCError(FTC) << "Failed to view cartesian control interface";
+        return false;
+    }
+
+    std::map<int, double> params;
+
+    if (!iCartesianControl->getParameters(params))
+    {
+        yCError(FTC) << "Unable to retrieve cartesian configuration parameters";
+        return false;
+    }
+
+    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+
+    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
+    {
+        yCWarning(FTC) << "Unable to preset streaming command";
+        return false;
+    }
+
+    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
+    {
+        yCWarning(FTC) << "Unable to set TCP frame";
+        return false;
+    }
+
+    // sensor device
+
     if (!rf.check("sensorName", "remote FT sensor name to connect to via MAS client"))
     {
         yCError(FTC) << "Missing parameter: sensorName";
@@ -73,7 +128,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     }
 
     auto sensorRemote = rf.find("sensorRemote").asString();
-    auto sensorLocal = rf.check("sensorLocal", yarp::os::Value(DEFAULT_SENSOR_LOCAL_PORT), "local FT sensor port").asString();
+    auto sensorLocal = localPrefix + "/" + sensorRemote;
 
     yarp::os::Property sensorOptions {
         {"device", yarp::os::Value("multipleanalogsensorsclient")},
@@ -132,6 +187,7 @@ double FtCompensation::getPeriod()
 
 bool FtCompensation::close()
 {
+    cartesianDevice.close();
     sensorDevice.close();
     return true;
 }

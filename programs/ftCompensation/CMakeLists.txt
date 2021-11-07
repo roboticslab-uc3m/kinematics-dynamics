@@ -16,7 +16,8 @@ if(ENABLE_ftCompensation)
     target_link_libraries(ftCompensation ${orocos_kdl_LIBRARIES}
                                          YARP::YARP_os
                                          YARP::YARP_init
-                                         YARP::YARP_dev)
+                                         YARP::YARP_dev
+                                         ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     target_include_directories(ftCompensation PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
