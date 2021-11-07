@@ -68,6 +68,26 @@ KDL::Twist vectorToTwist(const std::vector<double> & xdot);
  */
 std::vector<double> twistToVector(const KDL::Twist & t);
 
+/**
+ * @brief Convert from std::vector<double> to KDL::Wrench
+ *
+ * @param xdot 6-element vector describing a wrench in cartesian space; first
+ * three elements denote force (N), last three denote torque (Nm).
+ *
+ * @return Resulting KDL::Wrench object.
+ */
+KDL::Wrench vectorToWrench(const std::vector<double> & f);
+
+/**
+ * @brief Convert from KDL::Wrench to std::vector<double>
+ *
+ * @param t Input KDL::Wrench object
+ *
+ * @return Resulting 6-element vector describing a wrench in cartesian space; first
+ * three elements denote force (N), last three denote torque (Nm).
+ */
+std::vector<double> wrenchToVector(const KDL::Wrench & w);
+
 } // namespace KdlVectorConverter
 } // namespace roboticslab
 

@@ -13,6 +13,7 @@
 using namespace roboticslab;
 
 constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
+constexpr auto DEFAULT_PERIOD = 0.02;
 constexpr auto DEFAULT_LIN_GAIN = "1.0";
 constexpr auto DEFAULT_ROT_GAIN = "1.0";
 constexpr auto DEFAULT_LIN_DEADBAND = "1.0";
@@ -203,20 +204,11 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         usingTool = false;
     }
 
-    yarp::sig::Vector outSensor;
-    double timestamp;
-
-    if (!sensor->getSixAxisForceTorqueSensorMeasure(sensorIndex, outSensor, timestamp))
+    if (!readSensor(initialOffset))
     {
-        yCError(FTC) << "Failed to retrieve current sensor measurements";
+        yCError(FTC) << "Failed to read sensor";
         return false;
     }
-
-    KDL::Wrench currentWrench_sensor;
-    currentWrench_sensor.force = KDL::Vector(outSensor[0], outSensor[1], outSensor[2]);
-    currentWrench_sensor.torque = KDL::Vector(outSensor[3], outSensor[4], outSensor[5]);
-
-    initialOffset = R_N_sensor * currentWrench_sensor;
 
     if (!usingTool)
     {
@@ -242,6 +234,28 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
+    auto period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
+    yarp::os::PeriodicThread::setPeriod(period);
+
+    return yarp::os::PeriodicThread::start();
+}
+
+bool FtCompensation::readSensor(KDL::Wrench & wrench) const
+{
+    yarp::sig::Vector outSensor;
+    double timestamp;
+
+    if (!sensor->getSixAxisForceTorqueSensorMeasure(sensorIndex, outSensor, timestamp))
+    {
+        yCWarning(FTC) << "Failed to retrieve current sensor measurements";
+        return false;
+    }
+
+    KDL::Wrench currentWrench_sensor;
+    currentWrench_sensor.force = KDL::Vector(outSensor[0], outSensor[1], outSensor[2]);
+    currentWrench_sensor.torque = KDL::Vector(outSensor[3], outSensor[4], outSensor[5]);
+
+    wrench = R_N_sensor * currentWrench_sensor;
     return true;
 }
 
@@ -251,7 +265,7 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 
     if (!iCartesianControl->stat(currentX))
     {
-        yCError(FTC) << "Failed to retrieve current position";
+        yCWarning(FTC) << "Failed to retrieve current position";
         return false;
     }
 
@@ -263,6 +277,32 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
     return true;
 }
 
+void FtCompensation::run()
+{
+    KDL::Wrench wrench;
+
+    if (!readSensor(wrench) || (usingTool && !compensateTool(wrench)))
+    {
+        yarp::os::PeriodicThread::askToStop();
+        return;
+    }
+
+    wrench -= initialOffset;
+
+    if (wrench.force.Norm() <= linDeadband || wrench.torque.Norm() <= rotDeadband)
+    {
+        iCartesianControl->twist(std::vector<double>(6, 0.0));
+        return;
+    }
+
+    wrench.force = wrench.force * linGain;
+    wrench.torque = wrench.torque * rotGain;
+
+    auto v = KdlVectorConverter::wrenchToVector(wrench);
+    yCDebug(FTC) << v;
+    iCartesianControl->twist(v);
+}
+
 bool FtCompensation::updateModule()
 {
     return true;
@@ -270,12 +310,13 @@ bool FtCompensation::updateModule()
 
 bool FtCompensation::interruptModule()
 {
-    return true;
+    yarp::os::PeriodicThread::stop();
+    return iCartesianControl->stopControl();
 }
 
 double FtCompensation::getPeriod()
 {
-    return 0.01; // [s]
+    return 1.0; // [s]
 }
 
 bool FtCompensation::close()

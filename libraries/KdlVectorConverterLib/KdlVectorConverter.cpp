@@ -100,5 +100,45 @@ std::vector<double> twistToVector(const KDL::Twist& t)
 
 // -----------------------------------------------------------------------------
 
+KDL::Wrench vectorToWrench(const std::vector<double> & f)
+{
+    if (f.size() != 6)
+    {
+        yCWarning(KDLVC, "Size mismatch; expected: 6, was: %zu", f.size());
+        return KDL::Wrench::Zero();
+    }
+
+    KDL::Wrench w;
+
+    w.force.x(f[0]);
+    w.force.y(f[1]);
+    w.force.z(f[2]);
+
+    w.torque.x(f[3]);
+    w.torque.y(f[4]);
+    w.torque.z(f[5]);
+
+    return w;
+}
+
+// -----------------------------------------------------------------------------
+
+std::vector<double> wrenchToVector(const KDL::Wrench & w)
+{
+    std::vector<double> f(6);
+
+    f[0] = w.force.x();
+    f[1] = w.force.y();
+    f[2] = w.force.z();
+
+    f[3] = w.torque.x();
+    f[4] = w.torque.y();
+    f[5] = w.torque.z();
+
+    return f;
+}
+
+// -----------------------------------------------------------------------------
+
 } // namespace KdlVectorConverter
 } // namespace roboticslab
