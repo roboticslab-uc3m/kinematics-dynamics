@@ -8,6 +8,8 @@
 #include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include <kdl/frames.hpp>
+
 namespace roboticslab
 {
 
@@ -32,6 +34,12 @@ private:
     int sensorIndex;
     yarp::dev::PolyDriver sensorDevice;
     yarp::dev::ISixAxisForceTorqueSensors * sensor;
+
+    KDL::Vector toolCoM;
+    KDL::Vector gravity;
+
+    double linGain, rotGain;
+    double linDeadband, rotDeadband;
 };
 
 } // namespace roboticslab
