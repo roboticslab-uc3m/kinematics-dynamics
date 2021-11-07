@@ -63,6 +63,7 @@ private:
     KDL::Wrench toolWeight_0;
     KDL::Wrench initialOffset;
 
+    bool dryRun;
     bool usingTool;
     double linGain, rotGain;
     double linDeadband, rotDeadband;

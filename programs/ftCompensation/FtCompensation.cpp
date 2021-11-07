@@ -23,6 +23,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(FTC) << "Config:" << rf.toString();
 
+    dryRun = rf.check("dryRun", "process sensor loops, but don't send motion command");
     linGain = rf.check("linGain", yarp::os::Value(DEFAULT_LIN_GAIN), "linear gain").asFloat64();
     rotGain = rf.check("rotGain", yarp::os::Value(DEFAULT_ROT_GAIN), "rotational gain").asFloat64();
     linDeadband = rf.check("linDeadband", yarp::os::Value(DEFAULT_LIN_DEADBAND), "linear deadband [N]").asFloat64();
@@ -84,26 +85,29 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    std::map<int, double> params;
-
-    if (!iCartesianControl->getParameters(params))
+    if (!dryRun)
     {
-        yCError(FTC) << "Unable to retrieve cartesian configuration parameters";
-        return false;
-    }
+        std::map<int, double> params;
 
-    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+        if (!iCartesianControl->getParameters(params))
+        {
+            yCError(FTC) << "Unable to retrieve cartesian configuration parameters";
+            return false;
+        }
 
-    if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
-    {
-        yCWarning(FTC) << "Unable to preset streaming command";
-        return false;
-    }
+        bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
-    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
-    {
-        yCWarning(FTC) << "Unable to set TCP frame";
-        return false;
+        if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
+        {
+            yCWarning(FTC) << "Unable to preset streaming command";
+            return false;
+        }
+
+        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
+        {
+            yCWarning(FTC) << "Unable to set TCP frame";
+            return false;
+        }
     }
 
     // ----- sensor device -----
@@ -291,7 +295,7 @@ void FtCompensation::run()
 
     if (wrench.force.Norm() <= linDeadband || wrench.torque.Norm() <= rotDeadband)
     {
-        iCartesianControl->twist(std::vector<double>(6, 0.0));
+        if (!dryRun) iCartesianControl->twist(std::vector<double>(6, 0.0));
         return;
     }
 
@@ -300,7 +304,7 @@ void FtCompensation::run()
 
     auto v = KdlVectorConverter::wrenchToVector(wrench);
     yCDebug(FTC) << v;
-    iCartesianControl->twist(v);
+    if (!dryRun) iCartesianControl->twist(v);
 }
 
 bool FtCompensation::updateModule()
@@ -311,7 +315,7 @@ bool FtCompensation::updateModule()
 bool FtCompensation::interruptModule()
 {
     yarp::os::PeriodicThread::stop();
-    return iCartesianControl->stopControl();
+    return dryRun || iCartesianControl->stopControl();
 }
 
 double FtCompensation::getPeriod()
