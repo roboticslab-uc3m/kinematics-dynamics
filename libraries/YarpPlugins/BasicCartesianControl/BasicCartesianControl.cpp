@@ -60,7 +60,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
         // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/161#issuecomment-428133287
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
-            yCWarning(BCC, "Joint near or out of limits: q[%d] = %f not in [%f,%f] (def)",
+            yCWarning(BCC, "Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg)",
                      joint, value, qMin[joint], qMax[joint]);
             return false;
         }
@@ -102,10 +102,19 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
     {
         double value = qdot[joint];
 
-        if (value < qdotMin[joint] || value > qdotMax[joint])
+        if (qdotMin[joint] == 0.0)
+        {
+            if (std::abs(value) > qdotMax[joint])
+            {
+                yCWarning(BCC, "Maximum angular velocity hit: |qdot[%d]| = %f exceeds %f (deg/s)",
+                          joint, std::abs(value), qdotMax[joint]);
+                return false;
+            }
+        }
+        else if (value < qdotMin[joint] || value > qdotMax[joint])
         {
             yCWarning(BCC, "Maximum angular velocity hit: qdot[%d] = %f not in [%f,%f] (deg/s)",
-                     joint, value, qdotMin[joint], qdotMax[joint]);
+                      joint, value, qdotMin[joint], qdotMax[joint]);
             return false;
         }
     }
