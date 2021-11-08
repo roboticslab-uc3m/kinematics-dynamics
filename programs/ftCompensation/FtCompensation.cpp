@@ -307,11 +307,25 @@ void FtCompensation::run()
         return;
     }
 
-    auto forceThreshold = (wrench.force / forceNorm) * forceDeadband;
-    auto torqueThreshold = (wrench.torque / torqueNorm) * torqueDeadband;
+    if (forceNorm > forceDeadband)
+    {
+        auto forceThreshold = (wrench.force / forceNorm) * forceDeadband;
+        wrench.force = (wrench.force - forceThreshold) * linGain;
+    }
+    else
+    {
+        wrench.force = KDL::Vector::Zero();
+    }
 
-    wrench.force = (wrench.force - forceThreshold) * linGain;
-    wrench.torque = (wrench.torque - torqueThreshold) * rotGain;
+    if (torqueNorm > torqueDeadband)
+    {
+        auto torqueThreshold = (wrench.torque / torqueNorm) * torqueDeadband;
+        wrench.torque = (wrench.torque - torqueThreshold) * rotGain;
+    }
+    else
+    {
+        wrench.torque = KDL::Vector::Zero();
+    }
 
     auto v = KdlVectorConverter::wrenchToVector(wrench);
     yCDebug(FTC) << v;
