@@ -171,13 +171,16 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
+    if (!readSensor(initialOffset))
+    {
+        yCError(FTC) << "Failed to read sensor";
+        return false;
+    }
+
     // ----- tool compensation -----
 
     auto vToolCoM = rf.check("toolCoM", yarp::os::Value::getNullValue(), "tool CoM regarding to TCP frame");
     auto vToolWeight = rf.check("toolWeight", yarp::os::Value::getNullValue(), "tool weight vector regarding to inertial frame");
-
-    toolCoM_N = KDL::Vector::Zero();
-    toolWeight_0 = KDL::Wrench::Zero();
 
     if (!vToolCoM.isNull() && !vToolWeight.isNull())
     {
@@ -204,43 +207,20 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         toolWeight_0.force.x(vToolWeight.asList()->get(0).asFloat64());
         toolWeight_0.force.y(vToolWeight.asList()->get(1).asFloat64());
         toolWeight_0.force.z(vToolWeight.asList()->get(2).asFloat64());
+        toolWeight_0.torque = KDL::Vector::Zero();
 
         usingTool = true;
+
+        if (!compensateTool(initialOffset))
+        {
+            yCError(FTC) << "Failed to compensate tool";
+            return false;
+        }
     }
     else
     {
         yCInfo(FTC) << "Using no tool";
         usingTool = false;
-    }
-
-    if (!readSensor(initialOffset))
-    {
-        yCError(FTC) << "Failed to read sensor";
-        return false;
-    }
-
-    if (!usingTool)
-    {
-        auto forceNorm = initialOffset.force.Norm();
-
-        if (forceNorm > forceDeadband)
-        {
-            yCError(FTC) << "Initial sensor values exceed force deadband, motion would be generated:" << forceNorm << ">" << forceDeadband;
-            return false;
-        }
-
-        auto torqueNorm = initialOffset.torque.Norm();
-
-        if (torqueNorm > torqueDeadband)
-        {
-            yCError(FTC) << "Initial sensor values exceed torque deadband, motion would be generated:" << torqueNorm << ">" << torqueDeadband;
-            return false;
-        }
-    }
-    else if (!compensateTool(initialOffset))
-    {
-        yCError(FTC) << "Failed to compensate tool";
-        return false;
     }
 
     auto period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
