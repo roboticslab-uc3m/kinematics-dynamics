@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
@@ -151,7 +153,9 @@ namespace
 
 bool KdlSolver::open(yarp::os::Searchable & config)
 {
+#if !defined(YARP_VERSION_COMPARE) // < 3.6.0
     yCDebug(KDLS) << "Config:" << config.toString();
+#endif
 
     //-- kinematics
     std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
