@@ -563,7 +563,7 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
 
     if (!checkJointLimits(currentQ, qdiff))
     {
-        yCError(BCC) << "Joint position or velocity limits exceeded, not moving";
+        yCError(BCC) << "Joint position limits exceeded, not moving";
         return;
     }
 
