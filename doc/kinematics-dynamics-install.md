@@ -7,7 +7,7 @@ First install the dependencies:
 - [Install YARP 3.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
 - [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
 
-We optionally use the `ProximitySensorsClient` device from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices) in the `streamingDeviceController` app. Refer to its installation guide for instructions.
+We optionally use the `ProximitySensorsClient` device from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices) in the `haarDetectionController` app. Refer to its installation guide for instructions.
 
 For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-googletest.md/).
 
