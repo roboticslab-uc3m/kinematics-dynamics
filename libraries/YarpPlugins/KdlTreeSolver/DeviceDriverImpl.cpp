@@ -346,7 +346,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
                     return false;
                 }
 
-                mergedEndpoints.emplace(std::make_pair(chainName, mergeWith));
+                mergedEndpoints.emplace(chainName, mergeWith);
                 yCInfo(KDLS) << "TCP" << chainName << "merged with" << mergeWith;
             }
         }

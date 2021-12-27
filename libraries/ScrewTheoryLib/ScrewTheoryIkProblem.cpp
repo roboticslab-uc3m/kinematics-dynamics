@@ -69,7 +69,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
 
     // Reserve space in memory to avoid additional allocations on runtime.
     solutions.reserve(soln);
-    solutions.push_back(KDL::JntArray(poe.size()));
+    solutions.emplace_back(poe.size());
 
     PoeTerms poeTerms(poe.size(), EXP_UNKNOWN);
 

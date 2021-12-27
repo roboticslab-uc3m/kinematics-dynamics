@@ -133,12 +133,12 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
     {
         if (!mergedEndpoints.empty() && mergedEndpoints.find(endpoint) != mergedEndpoints.end())
         {
-            frames.emplace(std::make_pair(endpoint, frames[mergedEndpoints[endpoint]]));
+            frames.emplace(endpoint, frames[mergedEndpoints[endpoint]]);
         }
         else
         {
             std::vector<double> sub(xd.cbegin() + i * 6, xd.cbegin() + (i + 1) * 6);
-            frames.emplace(std::make_pair(endpoint, KdlVectorConverter::vectorToFrame(sub)));
+            frames.emplace(endpoint, KdlVectorConverter::vectorToFrame(sub));
             i++;
         }
     }
@@ -199,12 +199,12 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
     {
         if (!mergedEndpoints.empty() && mergedEndpoints.find(endpoint) != mergedEndpoints.end())
         {
-            twists.emplace(std::make_pair(endpoint, twists[mergedEndpoints[endpoint]]));
+            twists.emplace(endpoint, twists[mergedEndpoints[endpoint]]);
         }
         else
         {
             std::vector<double> sub(xdot.cbegin() + i * 6, xdot.cbegin() + (i + 1) * 6);
-            twists.emplace(std::make_pair(endpoint, KdlVectorConverter::vectorToTwist(sub)));
+            twists.emplace(endpoint, KdlVectorConverter::vectorToTwist(sub));
             i++;
         }
     }

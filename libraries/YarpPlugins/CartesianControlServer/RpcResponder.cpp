@@ -557,7 +557,7 @@ bool RpcResponder::handleParameterSetterGroup(const yarp::os::Bottle& in, yarp::
             int vocab = b->get(0).asVocab();
 #endif
             double value = asValue(vocab, b->get(1));
-            params.emplace(std::make_pair(vocab, value));
+            params.emplace(vocab, value);
         }
 
         if (!iCartesianControl->setParameters(params))

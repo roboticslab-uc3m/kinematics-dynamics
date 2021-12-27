@@ -596,9 +596,9 @@ bool AmorCartesianControl::setParameters(const std::map<int, double> & params)
 
 bool AmorCartesianControl::getParameters(std::map<int, double> & params)
 {
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
+    params.emplace(VOCAB_CC_CONFIG_GAIN, gain);
+    params.emplace(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs);
+    params.emplace(VOCAB_CC_CONFIG_FRAME, referenceFrame);
     return true;
 }
 
