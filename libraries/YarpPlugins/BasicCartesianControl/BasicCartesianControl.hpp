@@ -6,8 +6,6 @@
 #include <mutex>
 #include <vector>
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/DeviceDriver.h>
@@ -107,12 +105,7 @@ class BasicCartesianControl : public yarp::dev::DeviceDriver,
                               public ICartesianControl
 {
 public:
-    BasicCartesianControl() :
-#if YARP_VERSION_MINOR >= 5
-        yarp::os::PeriodicThread(1.0, yarp::os::PeriodicThreadClock::Absolute)
-#else
-        yarp::os::PeriodicThread(1.0)
-#endif
+    BasicCartesianControl() : yarp::os::PeriodicThread(1.0, yarp::os::PeriodicThreadClock::Absolute)
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--

@@ -5,6 +5,8 @@
 #include <algorithm> // std::find
 #include <string>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
@@ -128,7 +130,9 @@ namespace
 
 bool KdlTreeSolver::open(yarp::os::Searchable & config)
 {
+#if !defined(YARP_VERSION_COMPARE) // < 3.6.0
     yCDebug(KDLS) << "config:" << config.toString();
+#endif
 
     //-- kinematics
     std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
@@ -342,7 +346,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
                     return false;
                 }
 
-                mergedEndpoints.emplace(std::make_pair(chainName, mergeWith));
+                mergedEndpoints.emplace(chainName, mergeWith);
                 yCInfo(KDLS) << "TCP" << chainName << "merged with" << mergeWith;
             }
         }

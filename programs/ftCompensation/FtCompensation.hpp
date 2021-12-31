@@ -3,8 +3,6 @@
 #ifndef __FT_COMPENSATION_HPP__
 #define __FT_COMPENSATION_HPP__
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/PeriodicThread.h>
 #include <yarp/os/RFModule.h>
 
@@ -28,11 +26,7 @@ class FtCompensation : public yarp::os::RFModule,
 {
 public:
     FtCompensation()
-#if YARP_VERSION_MINOR >= 5
         : yarp::os::PeriodicThread(1.0, yarp::os::ShouldUseSystemClock::Yes, yarp::os::PeriodicThreadClock::Absolute)
-#else
-        : yarp::os::PeriodicThread(1.0, yarp::os::ShouldUseSystemClock::Yes)
-#endif
     {}
 
     ~FtCompensation() override

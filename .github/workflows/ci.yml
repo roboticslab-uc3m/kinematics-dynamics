@@ -35,8 +35,8 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         robotology:
-        - { yarp: yarp-3.4, ycm: ycm-0.13, cmake: 3.12.x }
         - { yarp: yarp-3.5, ycm: ycm-0.13, cmake: 3.12.x }
+        - { yarp: yarp-3.6, ycm: ycm-0.13, cmake: 3.16.x }
         - { yarp: master, ycm: master, cmake: 3.16.x }
         compiler:
         - { cc: gcc, cxx: g++ }

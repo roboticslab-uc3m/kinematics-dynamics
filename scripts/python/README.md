@@ -2,8 +2,8 @@
 
 ## kdl-from-csv
 
-### Install dependecies
-- Requires Python [KDL](http://robots.uc3m.es/gitbook-installation-guides/install-kdl.html) (PyKDL)
+### Install dependencies
+- Requires Python [KDL](https://robots.uc3m.es/installation-guides/install-kdl.html) (PyKDL)
 - Defaults hard-coded from https://github.com/roboticslab-uc3m/teo-developer-manual
 
 ### Help
@@ -22,7 +22,7 @@ Provides a kinematic chain description for [roboview](https://github.com/arcosla
 ### Install dependecies
 - [roboview](https://github.com/arcoslab/roboview)
    - At time of writing, best use `vtk6` branch of <https://github.com/jgvictores/roboview> fork
-   - Requires [Python YARP](http://robots.uc3m.es/gitbook-installation-guides/install-yarp.html#install-bindings) and Python [KDL](http://robots.uc3m.es/gitbook-installation-guides/install-kdl.html) (PyKDL)
+   - Requires [Python YARP](https://robots.uc3m.es/installation-guides/install-yarp.html#install-bindings) and Python [KDL](https://robots.uc3m.es/installation-guides/install-kdl.html) (PyKDL)
 - Examples hard-coded from https://github.com/roboticslab-uc3m/teo-developer-manual
 
 ### Run

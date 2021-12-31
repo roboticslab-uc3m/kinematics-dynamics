@@ -7,8 +7,6 @@
 #include <functional>
 #include <vector>
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
@@ -220,7 +218,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         auto * path = new KDL::Path_Line(H_base_start, H_base_end, interpolator, 1.0);
         auto * profile = new KDL::VelocityProfile_Trap(10.0, 10.0);
 
-        trajectories.emplace_back(std::make_unique<KDL::Trajectory_Segment>(path, profile, duration));
+        trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, duration));
     }
 
     //-- Set velocity mode and set state which makes periodic thread implement control.
@@ -275,7 +273,7 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
         auto * profile = new KDL::VelocityProfile_Rectangular(10.0);
         profile->SetProfileDuration(0, 10.0, 10.0 / path->PathLength());
 
-        trajectories.emplace_back(std::make_unique<KDL::Trajectory_Segment>(path, profile));
+        trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
     //-- Set velocity mode and set state which makes periodic thread implement control.
@@ -563,7 +561,7 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
 
     if (!checkJointLimits(currentQ, qdiff))
     {
-        yCError(BCC) << "Joint position or velocity limits exceeded, not moving";
+        yCError(BCC) << "Joint position limits exceeded, not moving";
         return;
     }
 
@@ -634,11 +632,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         streamingCommand = value;
         break;
     default:
-#if YARP_VERSION_MINOR >= 5
         yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
-#else
-        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
-#endif
         return false;
     }
 
@@ -670,11 +664,7 @@ bool BasicCartesianControl::getParameter(int vocab, double * value)
         *value = streamingCommand;
         break;
     default:
-#if YARP_VERSION_MINOR >= 5
         yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
-#else
-        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
-#endif
         return false;
     }
 
@@ -705,12 +695,12 @@ bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 
 bool BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_GAIN, gain));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_TRAJ_DURATION, duration));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_FRAME, referenceFrame));
-    params.emplace(std::make_pair(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand));
+    params.emplace(VOCAB_CC_CONFIG_GAIN, gain);
+    params.emplace(VOCAB_CC_CONFIG_TRAJ_DURATION, duration);
+    params.emplace(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs);
+    params.emplace(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs);
+    params.emplace(VOCAB_CC_CONFIG_FRAME, referenceFrame);
+    params.emplace(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand);
     return true;
 }
 

@@ -284,8 +284,7 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q)
 
     for (int i = 0; i < numRobotJoints - 1; i++)  //-- "numRobotJoints-1" is important
     {
-        std::vector<double> fext(6, 0);
-        fexts.push_back(fext);
+        fexts.emplace_back(6, 0);
     }
 
     fexts.push_back(td);
