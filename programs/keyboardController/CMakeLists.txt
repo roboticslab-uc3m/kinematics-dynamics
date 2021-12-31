@@ -25,7 +25,15 @@ if(ENABLE_keyboardController)
 
     target_include_directories(keyboardController PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    install(TARGETS keyboardController
-            DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
+        install(TARGETS keyboardController)
+    else()
+        install(TARGETS keyboardController
+                DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
+
+else()
+
+    set(ENABLE_keyboardController OFF CACHE BOOL "Enable/disable keyboardController program" FORCE)
 
 endif()

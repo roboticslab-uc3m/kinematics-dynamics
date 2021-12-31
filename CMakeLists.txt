@@ -1,16 +1,6 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2017;
-# Authors: Juan G. Victores & Raul de Santos Rico
-# CopyPolicy: Released under the terms of the GNU GPL v2.0.
-
 cmake_minimum_required(VERSION 3.12)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
-
-# Add suffix for debug libraries.
-if(MSVC)
-    message(STATUS "Running on windows")
-    set(CMAKE_DEBUG_POSTFIX "d")
-endif()
 
 # Let the user specify a configuration (only single-config generators).
 if(NOT CMAKE_CONFIGURATION_TYPES)
@@ -33,8 +23,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Pick up our cmake modules.
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
-                              ${CMAKE_SOURCE_DIR}/cmake/find-modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
