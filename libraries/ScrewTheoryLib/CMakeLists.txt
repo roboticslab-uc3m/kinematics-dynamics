@@ -37,12 +37,17 @@ if(ENABLE_ScrewTheoryLib)
                                                      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-    install(TARGETS ScrewTheoryLib
-            EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
+        install(TARGETS ScrewTheoryLib
+                EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
+    else()
+        install(TARGETS ScrewTheoryLib
+                EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
+                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    endif()
 
     set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
 

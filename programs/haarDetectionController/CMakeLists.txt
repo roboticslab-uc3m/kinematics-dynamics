@@ -21,8 +21,12 @@ if(ENABLE_haarDetectionController)
                                                   ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                   ROBOTICSLAB::YarpDevicesInterfaces)
 
-    install(TARGETS haarDetectionController
-            DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
+        install(TARGETS haarDetectionController)
+    else()
+        install(TARGETS haarDetectionController
+                DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
 
 else()
 

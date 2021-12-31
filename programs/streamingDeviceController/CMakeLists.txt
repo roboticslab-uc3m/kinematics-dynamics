@@ -35,8 +35,12 @@ if(ENABLE_streamingDeviceController)
                                                     ROBOTICSLAB::KdlVectorConverterLib
                                                     ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
-    install(TARGETS streamingDeviceController
-            DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
+        install(TARGETS streamingDeviceController)
+    else()
+        install(TARGETS streamingDeviceController
+                DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
 
 else()
 

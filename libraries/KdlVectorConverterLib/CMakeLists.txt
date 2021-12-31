@@ -22,12 +22,17 @@ if(ENABLE_KdlVectorConverterLib)
 
     target_compile_features(KdlVectorConverterLib PUBLIC cxx_std_11)
 
-    install(TARGETS KdlVectorConverterLib
-            EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
+        install(TARGETS KdlVectorConverterLib
+                EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
+    else()
+        install(TARGETS KdlVectorConverterLib
+                EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
+                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    endif()
 
     set_property(GLOBAL APPEND PROPERTY _exported_dependencies orocos_kdl)
 
