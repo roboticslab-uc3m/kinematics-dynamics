@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include <yarp/conf/version.h>
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
@@ -17,11 +16,7 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
 {
     yCDebug(CCS, "Got: %s", b.toString().c_str());
 
-#if YARP_VERSION_MINOR >= 5
     switch (b.get(0).asVocab32())
-#else
-    switch (b.get(0).asVocab())
-#endif
     {
     case VOCAB_CC_TWIST:
         handleConsumerCmdMsg(b, &ICartesianControl::twist);

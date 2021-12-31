@@ -3,8 +3,6 @@
 #ifndef __TRAJECTORY_THREAD_HPP__
 #define __TRAJECTORY_THREAD_HPP__
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/IEncoders.h>
@@ -18,16 +16,13 @@
 class TrajectoryThread : public yarp::os::PeriodicThread
 {
 public:
-    TrajectoryThread(yarp::dev::IEncoders * iEncoders, yarp::dev::IPositionDirect * iPosDirect,
+    TrajectoryThread(yarp::dev::IEncoders * iEncoders,
+                     yarp::dev::IPositionDirect * iPosDirect,
                      roboticslab::ScrewTheoryIkProblem * ikProblem,
                      roboticslab::ConfigurationSelector * ikConfig,
                      KDL::Trajectory * trajectory,
                      int period)
-#if YARP_VERSION_MINOR >= 5
         : yarp::os::PeriodicThread(period * 0.001, yarp::os::PeriodicThreadClock::Absolute),
-#else
-        : yarp::os::PeriodicThread(period * 0.001),
-#endif
           iEncoders(iEncoders),
           iPosDirect(iPosDirect),
           ikProblem(ikProblem),

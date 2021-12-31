@@ -4,8 +4,6 @@
 
 #include <vector>
 
-#include <yarp/conf/version.h>
-
 using namespace roboticslab;
 
 // ------------------- PeriodicThread related ------------------------------------
@@ -23,11 +21,7 @@ void CartesianControlServer::run()
 
     yarp::os::Bottle & out = fkOutPort.prepare();
     out.clear();
-#if YARP_VERSION_MINOR >= 5
     out.addVocab32(state);
-#else
-    out.addVocab(state);
-#endif
 
     for (size_t i = 0; i < x.size(); i++)
     {

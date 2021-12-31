@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <functional>
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
@@ -21,11 +19,7 @@
 using namespace roboticslab;
 
 LinearTrajectoryThread::LinearTrajectoryThread(int _period, ICartesianControl * _iCartesianControl)
-#if YARP_VERSION_MINOR >= 5
     : yarp::os::PeriodicThread(_period * 0.001, yarp::os::PeriodicThreadClock::Absolute),
-#else
-    : yarp::os::PeriodicThread(_period * 0.001),
-#endif
       period(_period),
       iCartesianControl(_iCartesianControl),
       trajectory(nullptr),

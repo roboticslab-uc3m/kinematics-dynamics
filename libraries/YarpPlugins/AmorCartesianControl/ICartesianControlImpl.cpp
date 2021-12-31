@@ -2,8 +2,6 @@
 
 #include "AmorCartesianControl.hpp"
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
@@ -341,11 +339,7 @@ bool AmorCartesianControl::act(int command)
         amor_command = amor_stop_hand;
         break;
     default:
-#if YARP_VERSION_MINOR >= 5
         yCError(AMOR, "Unrecognized act() command with code %d (%s)", command, yarp::os::Vocab32::decode(command).c_str());
-#else
-        yCError(AMOR, "Unrecognized act() command with code %d (%s)", command, yarp::os::Vocab::decode(command).c_str());
-#endif
         return false;
     }
 
@@ -534,11 +528,7 @@ bool AmorCartesianControl::setParameter(int vocab, double value)
         referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
         break;
     default:
-#if YARP_VERSION_MINOR >= 5
         yCError(AMOR) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
-#else
-        yCError(AMOR) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
-#endif
         return false;
     }
 
@@ -561,11 +551,7 @@ bool AmorCartesianControl::getParameter(int vocab, double * value)
         *value = referenceFrame;
         break;
     default:
-#if YARP_VERSION_MINOR >= 5
         yCError(AMOR) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
-#else
-        yCError(AMOR) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab::decode(vocab);
-#endif
         return false;
     }
 
