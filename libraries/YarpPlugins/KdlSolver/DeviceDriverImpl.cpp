@@ -40,9 +40,12 @@ using namespace roboticslab;
 
 constexpr auto DEFAULT_KINEMATICS = "none.ini";
 constexpr auto DEFAULT_NUM_LINKS = 1;
-constexpr auto DEFAULT_EPS = 1e-9;
-constexpr auto DEFAULT_MAXITER = 1000;
+constexpr auto DEFAULT_EPS_POS = 1e-5;
+constexpr auto DEFAULT_EPS_VEL = 1e-5;
+constexpr auto DEFAULT_MAXITER_POS = 1000;
+constexpr auto DEFAULT_MAXITER_VEL = 150;
 constexpr auto DEFAULT_IK_POS_SOLVER = "st";
+constexpr auto DEFAULT_IK_VEL_SOLVER = "pinv";
 constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
 constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
@@ -50,7 +53,7 @@ constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
 namespace
 {
-    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & H)
+    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & mat)
     {
         const auto * bH = options.find(tag).asList();
 
@@ -63,13 +66,13 @@ namespace
         int i = 0;
         int j = 0;
 
-        H.zero();
+        mat.zero();
 
-        for (int cnt = 0; cnt < bH->size() && cnt < H.rows() * H.cols(); cnt++)
+        for (int cnt = 0; cnt < bH->size() && cnt < mat.rows() * mat.cols(); cnt++)
         {
-            H(i, j) = bH->get(cnt).asFloat64();
+            mat(i, j) = bH->get(cnt).asFloat64();
 
-            if (++j >= H.cols())
+            if (++j >= mat.cols())
             {
                 i++;
                 j = 0;
@@ -317,8 +320,23 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     yCInfo(KDLS) << "Chain number of joints:" << chain.getNrOfJoints();
 
     fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
-    ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain);
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
+
+    //-- IK vel solver algorithm.
+    auto ikVel = fullConfig.check("ikVel", yarp::os::Value(DEFAULT_IK_VEL_SOLVER), "IK velocity solver algorithm (pinv)").asString();
+
+    if (ikVel == "pinv")
+    {
+        double eps = fullConfig.check("epsVel", yarp::os::Value(DEFAULT_EPS_VEL), "IK velocity solver precision (meters)").asFloat64();
+        double maxIter = fullConfig.check("maxIterVel", yarp::os::Value(DEFAULT_MAXITER_VEL), "IK velocity solver max iterations").asInt32();
+
+        ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain, eps, maxIter);
+    }
+    else
+    {
+        yCError(KDLS) << "Unsupported IK velocity solver algorithm:" << ikVel.c_str();
+        return false;
+    }
 
     //-- IK pos solver algorithm.
     auto ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_POS_SOLVER), "IK solver algorithm (lma, nrjl, st, id)"); // back-compat
@@ -336,23 +354,24 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             return false;
         }
 
-        ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L);
+        double eps = fullConfig.check("epsPos", yarp::os::Value(DEFAULT_EPS_POS), "IK position solver precision (meters)").asFloat64();
+        double maxIter = fullConfig.check("maxIterPos", yarp::os::Value(DEFAULT_MAXITER_POS), "IK position solver max iterations").asInt32();
+
+        ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L, eps, maxIter);
     }
     else if (ikPos == "nrjl")
     {
         KDL::JntArray qMax(chain.getNrOfJoints());
         KDL::JntArray qMin(chain.getNrOfJoints());
 
-        //-- Joint limits.
         if (!retrieveJointLimits(fullConfig, qMin, qMax))
         {
             yCError(KDLS) << "Unable to retrieve joint limits";
             return false;
         }
 
-        //-- Precision and max iterations.
-        double eps = fullConfig.check("eps", yarp::os::Value(DEFAULT_EPS), "IK solver precision (meters)").asFloat64();
-        double maxIter = fullConfig.check("maxIter", yarp::os::Value(DEFAULT_MAXITER), "maximum number of iterations").asInt32();
+        double eps = fullConfig.check("epsPos", yarp::os::Value(DEFAULT_EPS_POS), "IK position solver precision (meters)").asFloat64();
+        double maxIter = fullConfig.check("maxIterPos", yarp::os::Value(DEFAULT_MAXITER_POS), "IK position solver max iterations").asInt32();
 
         ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, maxIter, eps);
     }
