@@ -40,12 +40,6 @@ using namespace roboticslab;
 
 constexpr auto DEFAULT_KINEMATICS = "none.ini";
 constexpr auto DEFAULT_NUM_LINKS = 1;
-
-constexpr auto DEFAULT_EPSILON = 0.005; // Precision tolerance
-constexpr auto DEFAULT_DURATION = 20; // For Trajectory
-constexpr auto DEFAULT_MAXVEL = 7.5; // unit/s
-constexpr auto DEFAULT_MAXACC = 0.2; // unit/s^2
-
 constexpr auto DEFAULT_EPS = 1e-9;
 constexpr auto DEFAULT_MAXITER = 1000;
 constexpr auto DEFAULT_IK_SOLVER = "st";
@@ -58,7 +52,7 @@ namespace
 {
     bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & H)
     {
-        yarp::os::Bottle * bH = options.find(tag).asList();
+        const auto * bH = options.find(tag).asList();
 
         if (!bH)
         {
@@ -111,8 +105,8 @@ namespace
             return false;
         }
 
-        auto * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
-        auto * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
+        const auto * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
+        const auto * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
 
         if (!maxs || maxs->isNull() || !mins || mins->isNull())
         {
@@ -164,7 +158,6 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     yCInfo(KDLS) << "kinematics:" << kinematics;
 
     yarp::os::ResourceFinder rf;
-    rf.setVerbose(false);
     rf.setDefaultContext("kinematics");
     std::string kinematicsFullPath = rf.findFileByName(kinematics);
 
@@ -176,7 +169,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     yCDebug(KDLS) << "fullConfig:" << fullConfig.toString();
 
     //-- numlinks
-    int numLinks = fullConfig.check("numLinks",yarp::os::Value(DEFAULT_NUM_LINKS),"chain number of segments").asInt32();
+    int numLinks = fullConfig.check("numLinks", yarp::os::Value(DEFAULT_NUM_LINKS), "chain number of segments").asInt32();
     yCInfo(KDLS) << "numLinks:" << numLinks;
 
     //-- gravity (default)
@@ -429,9 +422,16 @@ bool KdlSolver::open(yarp::os::Searchable & config)
 bool KdlSolver::close()
 {
     delete fkSolverPos;
+    fkSolverPos = nullptr;
+
     delete ikSolverPos;
+    ikSolverPos = nullptr;
+
     delete ikSolverVel;
+    ikSolverVel = nullptr;
+
     delete idSolver;
+    idSolver = nullptr;
 
     return true;
 }
