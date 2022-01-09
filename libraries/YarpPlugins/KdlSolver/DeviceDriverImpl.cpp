@@ -25,6 +25,7 @@
 #include <kdl/chainiksolverpos_lma.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainiksolvervel_wdls.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
 
 #include <Eigen/Core> // Eigen::Matrix
@@ -47,6 +48,7 @@ constexpr auto DEFAULT_MAXITER_VEL = 150;
 constexpr auto DEFAULT_IK_POS_SOLVER = "st";
 constexpr auto DEFAULT_IK_VEL_SOLVER = "pinv";
 constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
+constexpr auto DEFAULT_LAMBDA = 0.01;
 constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
 // ------------------- DeviceDriver Related ------------------------------------
@@ -323,7 +325,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
     //-- IK vel solver algorithm.
-    auto ikVel = fullConfig.check("ikVel", yarp::os::Value(DEFAULT_IK_VEL_SOLVER), "IK velocity solver algorithm (pinv)").asString();
+    auto ikVel = fullConfig.check("ikVel", yarp::os::Value(DEFAULT_IK_VEL_SOLVER), "IK velocity solver algorithm (pinv, wdls)").asString();
 
     if (ikVel == "pinv")
     {
@@ -331,6 +333,55 @@ bool KdlSolver::open(yarp::os::Searchable & config)
         double maxIter = fullConfig.check("maxIterVel", yarp::os::Value(DEFAULT_MAXITER_VEL), "IK velocity solver max iterations").asInt32();
 
         ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain, eps, maxIter);
+    }
+    else if (ikVel == "wdls")
+    {
+        double lambda = fullConfig.check("lambda", yarp::os::Value(DEFAULT_LAMBDA), "lambda parameter for diff IK").asFloat64();
+        double eps = fullConfig.check("epsVel", yarp::os::Value(DEFAULT_EPS_VEL), "IK velocity solver precision (meters)").asFloat64();
+        double maxIter = fullConfig.check("maxIterVel", yarp::os::Value(DEFAULT_MAXITER_VEL), "IK velocity solver max iterations").asInt32();
+
+        ikSolverVel = new KDL::ChainIkSolverVel_wdls(chain, eps, maxIter);
+
+        auto * temp = dynamic_cast<KDL::ChainIkSolverVel_wdls *>(ikSolverVel);
+        temp->setLambda(lambda);
+
+        yarp::sig::Matrix wJS(chain.getNrOfJoints(), chain.getNrOfJoints());
+
+        if (!getMatrixFromProperties(fullConfig, "weightJS", wJS))
+        {
+            wJS.eye();
+        }
+
+        Eigen::MatrixXd _wJS(wJS.rows(), wJS.cols());
+
+        for (auto i = 0; i < wJS.rows(); i++)
+        {
+            for (auto j = 0; j < wJS.cols(); j++)
+            {
+                _wJS(i, j) = wJS(i, j);
+            }
+        }
+
+        temp->setWeightJS(_wJS);
+
+        yarp::sig::Matrix wTS(6, 6);
+
+        if (!getMatrixFromProperties(fullConfig, "weightTS", wTS))
+        {
+            wTS.eye();
+        }
+
+        Eigen::MatrixXd _wTS(wTS.rows(), wTS.cols());
+
+        for (auto i = 0; i < wTS.rows(); i++)
+        {
+            for (auto j = 0; j < wTS.cols(); j++)
+            {
+                _wTS(i, j) = wTS(i, j);
+            }
+        }
+
+        temp->setWeightTS(_wTS);
     }
     else
     {
