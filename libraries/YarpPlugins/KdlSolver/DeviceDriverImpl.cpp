@@ -42,7 +42,7 @@ constexpr auto DEFAULT_KINEMATICS = "none.ini";
 constexpr auto DEFAULT_NUM_LINKS = 1;
 constexpr auto DEFAULT_EPS = 1e-9;
 constexpr auto DEFAULT_MAXITER = 1000;
-constexpr auto DEFAULT_IK_SOLVER = "st";
+constexpr auto DEFAULT_IK_POS_SOLVER = "st";
 constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
 constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
@@ -320,10 +320,11 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain);
     idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
 
-    //-- IK solver algorithm.
-    auto ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_SOLVER), "IK solver algorithm (lma, nrjl, st, id)").asString();
+    //-- IK pos solver algorithm.
+    auto ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_POS_SOLVER), "IK solver algorithm (lma, nrjl, st, id)"); // back-compat
+    auto ikPos = fullConfig.check("ikPos", ik, "IK position solver algorithm (lma, nrjl, st, id)").asString();
 
-    if (ik == "lma")
+    if (ikPos == "lma")
     {
         std::string weightsStr = fullConfig.check("weights", yarp::os::Value(DEFAULT_LMA_WEIGHTS), "LMA algorithm weights (bottle of 6 doubles)").asString();
         yarp::os::Bottle weights(weightsStr);
@@ -337,7 +338,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
 
         ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L);
     }
-    else if (ik == "nrjl")
+    else if (ikPos == "nrjl")
     {
         KDL::JntArray qMax(chain.getNrOfJoints());
         KDL::JntArray qMin(chain.getNrOfJoints());
@@ -355,7 +356,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
 
         ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, maxIter, eps);
     }
-    else if (ik == "st")
+    else if (ikPos == "st")
     {
         KDL::JntArray qMax(chain.getNrOfJoints());
         KDL::JntArray qMin(chain.getNrOfJoints());
@@ -392,7 +393,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             return false;
         }
     }
-    else if (ik == "id")
+    else if (ikPos == "id")
     {
         KDL::JntArray qMax(chain.getNrOfJoints());
         KDL::JntArray qMin(chain.getNrOfJoints());
@@ -408,7 +409,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     }
     else
     {
-        yCError(KDLS) << "Unsupported IK solver algorithm:" << ik.c_str();
+        yCError(KDLS) << "Unsupported IK position solver algorithm:" << ikPos.c_str();
         return false;
     }
 
