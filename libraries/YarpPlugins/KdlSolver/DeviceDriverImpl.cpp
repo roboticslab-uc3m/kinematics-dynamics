@@ -48,7 +48,7 @@ constexpr auto DEFAULT_MAXACC = 0.2; // unit/s^2
 
 constexpr auto DEFAULT_EPS = 1e-9;
 constexpr auto DEFAULT_MAXITER = 1000;
-constexpr auto DEFAULT_IK_SOLVER = "lma";
+constexpr auto DEFAULT_IK_SOLVER = "st";
 constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
 constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
