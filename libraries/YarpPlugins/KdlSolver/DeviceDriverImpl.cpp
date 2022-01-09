@@ -2,6 +2,7 @@
 
 #include "KdlSolver.hpp"
 
+#include <sstream>
 #include <string>
 
 #include <yarp/conf/version.h>
@@ -11,8 +12,6 @@
 #include <yarp/os/Property.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Value.h>
-
-#include <yarp/sig/Matrix.h>
 
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
@@ -27,8 +26,6 @@
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainiksolvervel_wdls.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
-
-#include <Eigen/Core> // Eigen::Matrix
 
 #include "KinematicRepresentation.hpp"
 #include "ConfigurationSelector.hpp"
@@ -55,20 +52,17 @@ constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
 namespace
 {
-    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, yarp::sig::Matrix & mat)
+    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, Eigen::MatrixXd & mat)
     {
         const auto * bH = options.find(tag).asList();
 
         if (!bH)
         {
-            yCWarning(KDLS) << "Unable to find tag" << tag;
             return false;
         }
 
         int i = 0;
         int j = 0;
-
-        mat.zero();
 
         for (int cnt = 0; cnt < bH->size() && cnt < mat.rows() * mat.cols(); cnt++)
         {
@@ -80,6 +74,10 @@ namespace
                 j = 0;
             }
         }
+
+        std::stringstream ss;
+        ss << "Matrix " << tag << ":\n" << mat;
+        yCInfo(KDLS) << ss.str();
 
         return true;
     }
@@ -190,22 +188,17 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     KDL::Vector gravity(gravityBottle->get(0).asFloat64(), gravityBottle->get(1).asFloat64(), gravityBottle->get(2).asFloat64());
     yCInfo(KDLS) << "gravity:" << gravityBottle->toString();
 
-    //-- H0 (default)
-    yarp::sig::Matrix defaultYmH0(4, 4);
-    defaultYmH0.eye();
-
     //-- H0
-    yarp::sig::Matrix ymH0(4, 4);
+    Eigen::MatrixXd H0 = Eigen::MatrixXd::Identity(4, 4);
 
-    if (!getMatrixFromProperties(fullConfig, "H0", ymH0))
+    if (!getMatrixFromProperties(fullConfig, "H0", H0))
     {
-        ymH0 = defaultYmH0;
+        yCWarning(KDLS) << "Failed to parse H0, using default identity matrix";
     }
 
-    KDL::Vector kdlVec0(ymH0(0, 3), ymH0(1, 3), ymH0(2, 3));
-    KDL::Rotation kdlRot0(ymH0(0, 0), ymH0(0, 1), ymH0(0, 2), ymH0(1, 0), ymH0(1, 1), ymH0(1, 2), ymH0(2, 0), ymH0(2, 1), ymH0(2, 2));
+    KDL::Vector kdlVec0(H0(0, 3), H0(1, 3), H0(2, 3));
+    KDL::Rotation kdlRot0(H0(0, 0), H0(0, 1), H0(0, 2), H0(1, 0), H0(1, 1), H0(1, 2), H0(2, 0), H0(2, 1), H0(2, 2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0, kdlVec0)));
-    yCInfo(KDLS) << "H0:\n" << ymH0.toString();
 
     //-- links
     for (int linkIndex = 0; linkIndex < numLinks; linkIndex++)
@@ -301,22 +294,17 @@ bool KdlSolver::open(yarp::os::Searchable & config)
         }
     }
 
-    //-- HN (default)
-    yarp::sig::Matrix defaultYmHN(4, 4);
-    defaultYmHN.eye();
-
     //-- HN
-    yarp::sig::Matrix ymHN(4, 4);
+    Eigen::MatrixXd HN = Eigen::MatrixXd::Identity(4, 4);
 
-    if (!getMatrixFromProperties(fullConfig, "HN", ymHN))
+    if (!getMatrixFromProperties(fullConfig, "HN", HN))
     {
-        ymHN = defaultYmHN;
+        yCWarning(KDLS) << "Failed to parse HN, using default identity matrix";
     }
 
-    KDL::Vector kdlVecN(ymHN(0, 3), ymHN(1, 3), ymHN(2, 3));
-    KDL::Rotation kdlRotN(ymHN(0, 0), ymHN(0, 1), ymHN(0, 2), ymHN(1, 0), ymHN(1, 1), ymHN(1, 2), ymHN(2, 0), ymHN(2, 1), ymHN(2, 2));
+    KDL::Vector kdlVecN(HN(0, 3), HN(1, 3), HN(2, 3));
+    KDL::Rotation kdlRotN(HN(0, 0), HN(0, 1), HN(0, 2), HN(1, 0), HN(1, 1), HN(1, 2), HN(2, 0), HN(2, 1), HN(2, 2));
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN, kdlVecN)));
-    yCInfo(KDLS) << "HN:\n" << ymHN.toString();
 
     yCInfo(KDLS) << "Chain number of segments:" << chain.getNrOfSegments();
     yCInfo(KDLS) << "Chain number of joints:" << chain.getNrOfJoints();
@@ -345,43 +333,23 @@ bool KdlSolver::open(yarp::os::Searchable & config)
         auto * temp = dynamic_cast<KDL::ChainIkSolverVel_wdls *>(ikSolverVel);
         temp->setLambda(lambda);
 
-        yarp::sig::Matrix wJS(chain.getNrOfJoints(), chain.getNrOfJoints());
+        Eigen::MatrixXd wJS = Eigen::MatrixXd::Identity(chain.getNrOfJoints(), chain.getNrOfJoints());
 
         if (!getMatrixFromProperties(fullConfig, "weightJS", wJS))
         {
-            wJS.eye();
+            yCWarning(KDLS) << "Failed to parse weightJS, using default identity matrix";
         }
 
-        Eigen::MatrixXd _wJS(wJS.rows(), wJS.cols());
+        temp->setWeightJS(wJS);
 
-        for (auto i = 0; i < wJS.rows(); i++)
-        {
-            for (auto j = 0; j < wJS.cols(); j++)
-            {
-                _wJS(i, j) = wJS(i, j);
-            }
-        }
-
-        temp->setWeightJS(_wJS);
-
-        yarp::sig::Matrix wTS(6, 6);
+        Eigen::MatrixXd wTS = Eigen::MatrixXd::Identity(6, 6);
 
         if (!getMatrixFromProperties(fullConfig, "weightTS", wTS))
         {
-            wTS.eye();
+            yCWarning(KDLS) << "Failed to parse weightTS, using default identity matrix";
         }
 
-        Eigen::MatrixXd _wTS(wTS.rows(), wTS.cols());
-
-        for (auto i = 0; i < wTS.rows(); i++)
-        {
-            for (auto j = 0; j < wTS.cols(); j++)
-            {
-                _wTS(i, j) = wTS(i, j);
-            }
-        }
-
-        temp->setWeightTS(_wTS);
+        temp->setWeightTS(wTS);
     }
     else
     {
