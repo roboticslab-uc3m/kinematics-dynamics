@@ -17,7 +17,7 @@ bool AmorCartesianControl::stat(std::vector<double> & x, int * state, double * t
 {
     AMOR_VECTOR7 positions;
 
-    if (amor_get_cartesian_position(handle, positions) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_cartesian_position(handle, positions) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_get_cartesian_position() failed:" << amor_error();
         return false;
@@ -54,7 +54,7 @@ bool AmorCartesianControl::inv(const std::vector<double> &xd, std::vector<double
 {
     AMOR_VECTOR7 positions;
 
-    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_get_actual_positions() failed:" << amor_error();
         return false;
@@ -95,7 +95,7 @@ bool AmorCartesianControl::movj(const std::vector<double> &xd)
         positions[i] = KinRepresentation::degToRad(qd[i]);
     }
 
-    if (amor_set_positions(handle, positions) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_positions(handle, positions) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_set_positions() failed:" << amor_error();
         return false;
@@ -141,7 +141,7 @@ bool AmorCartesianControl::movl(const std::vector<double> &xd)
     {
         AMOR_VECTOR7 positions;
 
-        if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+        if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
         {
             yCError(AMOR) << "amor_get_actual_positions() failed:" << amor_error();
             return false;
@@ -187,7 +187,7 @@ bool AmorCartesianControl::movl(const std::vector<double> &xd)
     positions[4] = xd_rpy[4];
     positions[5] = xd_rpy[5];
 
-    if (amor_set_cartesian_positions(handle, positions) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_cartesian_positions(handle, positions) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_set_cartesian_positions() failed:" << amor_error();
         return false;
@@ -231,7 +231,7 @@ bool AmorCartesianControl::movv(const std::vector<double> &xdotd)
     velocities[4] = -xdotd_rpy[5];
     velocities[5] = xdotd_rpy[3];
 
-    if (amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_cartesian_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_set_cartesian_velocities() failed:" << amor_error();
         return false;
@@ -264,7 +264,7 @@ bool AmorCartesianControl::stopControl()
 {
     currentState = VOCAB_CC_NOT_CONTROLLING;
 
-    if (amor_controlled_stop(handle) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_controlled_stop(handle) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_controlled_stop() failed:" << amor_error();
         return false;
@@ -296,7 +296,10 @@ bool AmorCartesianControl::wait(double timeout)
             break;
         }
 
-        res = amor_get_movement_status(handle, &status);
+        {
+            std::lock_guard<std::mutex> lock(*handleMutex);
+            res = amor_get_movement_status(handle, &status);
+        }
 
         if (res == AMOR_FAILED)
         {
@@ -343,7 +346,7 @@ bool AmorCartesianControl::act(int command)
         return false;
     }
 
-    if (amor_command(handle) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_command(handle) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_command() failed:" << amor_error();
         return false;
@@ -358,7 +361,7 @@ void AmorCartesianControl::twist(const std::vector<double> &xdot)
 {
     AMOR_VECTOR7 positions;
 
-    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_get_actual_positions() failed:" << amor_error();
         return;
@@ -379,6 +382,7 @@ void AmorCartesianControl::twist(const std::vector<double> &xdot)
 
     if (!checkJointVelocities(qdot))
     {
+        std::lock_guard<std::mutex> lock(*handleMutex);
         amor_controlled_stop(handle);
         return;
     }
@@ -390,7 +394,7 @@ void AmorCartesianControl::twist(const std::vector<double> &xdot)
         velocities[i] = KinRepresentation::degToRad(qdot[i]);
     }
 
-    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_set_velocities() failed:" << amor_error();
         return;
@@ -403,7 +407,7 @@ void AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     AMOR_VECTOR7 positions;
 
-    if (amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_get_actual_positions() failed:" << amor_error();
         return;
@@ -465,6 +469,7 @@ void AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 
     if (!checkJointVelocities(qdot))
     {
+        std::lock_guard<std::mutex> lock(*handleMutex);
         amor_controlled_stop(handle);
         return;
     }
@@ -476,7 +481,7 @@ void AmorCartesianControl::pose(const std::vector<double> &x, double interval)
         velocities[i] = KinRepresentation::degToRad(qdot[i]);
     }
 
-    if (amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
     {
         yCError(AMOR) << "amor_set_velocities() failed:" << amor_error();
         return;
