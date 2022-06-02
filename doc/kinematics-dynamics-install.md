@@ -18,18 +18,13 @@ Our software integrates the previous dependencies. Note that you will be prompte
 ```bash
 cd  # go home
 mkdir -p repos; cd repos  # create $HOME/repos if it does not exist; then, enter it
-git clone https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # Download kinematics-dynamics software from the repository
-cd kinematics-dynamics; mkdir build; cd build; cmake ..  # Configure the kinematics-dynamics software
-make -j$(nproc) # Compile
-sudo make install; sudo ldconfig  # Install :-)
+git clone https://github.com/roboticslab-uc3m/kinematics-dynamics.git  # download kinematics-dynamics sources from GitHub
+cd kinematics-dynamics; mkdir build; cd build; cmake ..  # configure the project
+make -j  # compile
+sudo make install; sudo ldconfig  # install
 ```
 
-For CMake `find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)`, you may also be interested in adding the following to your `~/.bashrc` or `~/.profile`:
-```bash
-export ROBOTICSLAB_KINEMATICS_DYNAMICS_DIR=$HOME/repos/kinematics-dynamics/build  # Points to where TEOConfig.cmake is generated upon running CMake
-```
-
-For additional options use `ccmake` instead of `cmake`.
+Use `ccmake` instead of `cmake` for additional options.
 
 ## Install Bindings
 
@@ -41,47 +36,32 @@ First, install Python development packages.
 
 ```bash
 sudo apt update
-sudo apt install libpython-dev  # not installed by default on clean distros
+sudo apt install libpython3-dev  # not installed by default on clean distros
 ```
 
-Make sure you have previously installed `kinematics-dynamics`.
+You can follow these steps after installing kinematics-dynamics, or just activate the correct CMake options during the initial build.
 
 ```bash
 cd  # go home
-cd repos/kinematics-dynamics/bindings
-mkdir -p build && cd build
-cmake .. -DCREATE_PYTHON=ON
-make -j$(nproc)  # compile
-sudo make install; sudo ldconfig; cd # install and go home
+cd repos/kinematics-dynamics/build  # this should already exist, see previous section
+cmake .. -DCREATE_PYTHON=ON -DCREATE_BINDINGS_PYTHON=ON  # enable Python bindings
+make -j  # compile
+sudo make install; sudo ldconfig; cd  # install and go home
 ```
 
-Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)) too.
+Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)), too.
 
 #### Install Python bindings (checking)
 
-Check your installation via (should output nothing; if bad you will see a `ModuleNotFoundError`):
+Check your installation via (should output nothing; if bad, you will see a `ModuleNotFoundError`):
 
 ```bash
-python -c "import kinematics_dynamics"
+python3 -c "import kinematics_dynamics"
 ```
 
 #### Install Python bindings (troubleshooting)
 
-Extra care should be taken with Python 2 vs 3, and with Python paths in general. Toggle `t` in `ccmake ..` to see paths. `python -c "import site; print(site.getsitepackages())"` is your friend, most probably the first element `python -c "import site; print(site.getsitepackages()[0])"` is good for you.
-
-For many Python 3.x you may have to:
-
-```bash
-sudo ln -s /usr/local/lib/python3/dist-packages/_kinematics_dynamics.so `python -c "import site; print(site.getsitepackages()[0])"`
-sudo ln -s /usr/local/lib/python3/dist-packages/kinematics_dynamics.py `python -c "import site; print(site.getsitepackages()[0])"`
-```
-
-Specifically for Python 3.5m this will expand to:
-
-```bash
-sudo ln -s /usr/local/lib/python3/dist-packages/_kinematics_dynamics.so /usr/local/lib/python3.5/dist-packages/
-sudo ln -s /usr/local/lib/python3/dist-packages/kinematics_dynamics.py /usr/local/lib/python3.5/dist-packages/
-```
+CMake may not detect the correct Python3 installation directory. Toggle `t` in `ccmake` to see additional configuration. The `CMAKE_INSTALL_PYTHONDIR` variable may point to a wrong path such as `lib/python3/dist-packages` (relative to `CMAKE_INSTALL_PREFIX`, which usually resolves to `/usr/local`). You must pick the python3.x directory instead (check via `python3 -V`); on Ubuntu 20.04 and Python 3.8, this configuration variable should be changed to `lib/python3.8/dist-packages`.
 
 ## Even more!
 

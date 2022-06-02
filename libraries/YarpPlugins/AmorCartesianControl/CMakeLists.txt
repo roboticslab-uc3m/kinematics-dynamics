@@ -28,6 +28,8 @@ if(NOT SKIP_AmorCartesianControl)
                                                ROBOTICSLAB::KinematicRepresentationLib
                                                ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
+    target_compile_features(AmorCartesianControl PRIVATE cxx_std_17)
+
     yarp_install(TARGETS AmorCartesianControl
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
                  ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR}

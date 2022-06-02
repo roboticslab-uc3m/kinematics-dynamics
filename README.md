@@ -36,13 +36,16 @@ Installation instructions for installing from source can be found [here](doc/kin
 ## Similar and Related Projects
 
 ### Quaternions
+
 - [pyquaternion](http://kieranwynn.github.io/pyquaternion/) ([KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion))
 
 ### Fast Solvers
+
 - [ocra-recipes/eigen_lgsm](https://github.com/ocra-recipes/eigen_lgsm): used by [robotology/codyco-superbuild](https://github.com/robotology/codyco-superbuild)
 - [cuSolver](https://docs.nvidia.com/cuda/cusolver/index.html)
 
 ### Fast IK-Solvers
+
 - [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [NUKE](https://vanadiumlabs.github.io/pypose/nuke-intro.html#NUKE): The Nearly Universal Kinematic Engine
 - [ESROCOS/kin-gen](https://github.com/ESROCOS/kin-gen): Kinematics code generator by KUL
@@ -52,11 +55,14 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [uts-magic-lab/Magiks](https://github.com/uts-magic-lab/Magiks)
 
 ### Kinematics and Dynamics
+
 - [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics) ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)): A dependency of this repository
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
+- [RBDL](https://rbdl.github.io/) ([rbdl/rbdl](https://github.com/rbdl/rbdl)): Rigid Body Dynamics Library. The code tightly follows the notation used in Roy Featherstone's book "Rigid Body Dynamics Algorithm".
 - [adityadua24/robopy](https://github.com/adityadua24/robopy)
 
 ### Path-Planning, Trajectory generation and optimization
+
 - All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
 - [PythonRobotics](https://atsushisakai.github.io/PythonRobotics/) ([AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics))
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS (uses http://rll.berkeley.edu/trajopt)
@@ -67,6 +73,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [googlecartographer (org)](https://github.com/googlecartographer): Cartographer is a system that provides real-time simultaneous localization and mapping (SLAM) in 2D and 3D across multiple platforms and sensor configuration
 
 ### Humanoid-oriented
+
 - [roboticslab-uc3m/gait](https://github.com/roboticslab-uc3m/gait)
 - [roboticslab-uc3m/gaitcontrol](https://github.com/roboticslab-uc3m/gaitcontrol)
 - [roboticslab-uc3m/TEOTraGen](https://github.com/roboticslab-uc3m/TEOTraGen)

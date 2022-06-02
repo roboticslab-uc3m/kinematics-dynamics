@@ -31,7 +31,6 @@ if(NOT SKIP_KdlSolver)
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
-                                    YARP::YARP_sig
                                     ${orocos_kdl_LIBRARIES}
                                     ROBOTICSLAB::ScrewTheoryLib
                                     ROBOTICSLAB::KdlVectorConverterLib

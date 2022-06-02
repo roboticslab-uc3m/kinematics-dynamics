@@ -19,7 +19,6 @@ if(NOT SKIP_KdlTreeSolver)
 
     target_link_libraries(KdlTreeSolver YARP::YARP_os
                                         YARP::YARP_dev
-                                        YARP::YARP_sig
                                         ${orocos_kdl_LIBRARIES}
                                         ROBOTICSLAB::KdlVectorConverterLib
                                         ROBOTICSLAB::KinematicRepresentationLib

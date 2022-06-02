@@ -3,6 +3,7 @@
 #ifndef __AMOR_CARTESIAN_CONTROL_HPP__
 #define __AMOR_CARTESIAN_CONTROL_HPP__
 
+#include <mutex>
 #include <vector>
 
 #include <amor.h>
@@ -60,8 +61,9 @@ public:
 private:
     bool checkJointVelocities(const std::vector<double> & qdot);
 
-    AMOR_HANDLE handle;
-    bool ownsHandle;
+    AMOR_HANDLE handle {AMOR_INVALID_HANDLE};
+    bool ownsHandle {true};
+    mutable std::mutex * handleMutex {nullptr};
 
     yarp::dev::PolyDriver cartesianDevice;
     ICartesianSolver * iCartesianSolver;
