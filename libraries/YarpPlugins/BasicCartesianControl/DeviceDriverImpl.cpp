@@ -38,6 +38,8 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt32();
 
+    enableFailFast = config.check("enableFailFast", "enable fail-fast mode for MOVL commands");
+
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
             "reference frame (base|tcp)").asString();
 

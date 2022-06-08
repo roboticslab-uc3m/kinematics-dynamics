@@ -10,6 +10,7 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
 
+#include "KdlVectorConverter.hpp"
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
@@ -59,7 +60,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
             yCWarning(BCC, "Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg)",
-                     joint, value, qMin[joint], qMax[joint]);
+                      joint, value, qMin[joint], qMax[joint]);
             return false;
         }
     }
@@ -78,7 +79,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const
         if (value < qMin[joint] + epsilon || value > qMax[joint] - epsilon)
         {
             yCWarning(BCC, "Joint near or out of limits: q[%d] = %f not in [%f,%f] (deg)",
-                     joint, value, qMin[joint], qMax[joint]);
+                      joint, value, qMin[joint], qMax[joint]);
             double midRange = (qMax[joint] + qMin[joint]) / 2;
 
             // Let the joint get away from its nearest limit.
@@ -115,6 +116,63 @@ bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot
                       joint, value, qdotMin[joint], qdotMax[joint]);
             return false;
         }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initialQ)
+{
+    if (trajectories.empty())
+    {
+        yCWarning(BCC, "Fail-fast check requested, but no trajectories are stored");
+        return false;
+    }
+
+    const double timestep = yarp::os::PeriodicThread::getPeriod() * 0.5;
+
+    std::vector<double> x;
+    x.reserve(iCartesianSolver->getNumTcps() * 6);
+
+    std::vector<double> oldQ = initialQ;
+    std::vector<double> newQ;
+    std::vector<double> qdot(iCartesianSolver->getNumTcps() * 6);
+
+    double maxDuration = 0.0;
+
+    for (const auto & trajectory : trajectories)
+    {
+        maxDuration = std::max(maxDuration, trajectory->Duration());
+    }
+
+    for (double interval = 0.0; interval <= maxDuration; interval += timestep)
+    {
+        x.clear(); // leaves the capacity of the vector unchanged
+
+        for (const auto & trajectory : trajectories)
+        {
+            const KDL::Frame & H = trajectory->Pos(interval);
+            const std::vector<double> & x_tcp = KdlVectorConverter::frameToVector(H);
+            x.insert(x.end(), x_tcp.cbegin(), x_tcp.cend());
+        }
+
+        if (!iCartesianSolver->invKin(x, oldQ, newQ))
+        {
+            yCWarning(BCC) << "IK failed at interval" << interval << "out of" << maxDuration << "seconds";
+            return false;
+        }
+
+        std::transform(newQ.cbegin(), newQ.cend(), oldQ.cbegin(), qdot.begin(), std::minus<double>());
+
+        if (!checkJointLimits(newQ) || !checkJointVelocities(qdot))
+        {
+            yCWarning(BCC) << "Limits hit at interval" << interval << "out of" << maxDuration << "seconds";
+            return false;
+        }
+
+        oldQ = newQ;
     }
 
     return true;

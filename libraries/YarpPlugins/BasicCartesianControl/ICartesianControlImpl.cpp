@@ -221,6 +221,12 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, duration));
     }
 
+    if (enableFailFast && !doFailFastChecks(currentQ))
+    {
+        yCError(BCC) << "Fail-fast checks failed";
+        return false;
+    }
+
     //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
