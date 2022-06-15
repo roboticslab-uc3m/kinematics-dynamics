@@ -117,9 +117,9 @@ namespace
             return false;
         }
 
-        if (maxs->size() < nrOfJoints || mins->size() < nrOfJoints)
+        if (maxs->size() != nrOfJoints || mins->size() != nrOfJoints)
         {
-            yCError(KDLS, "chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%zu, %zu)", nrOfJoints, maxs->size(), mins->size());
+            yCError(KDLS, "chain.getNrOfJoints (%d) != maxs.size() or mins.size() (%zu, %zu)", nrOfJoints, maxs->size(), mins->size());
             return false;
         }
 
