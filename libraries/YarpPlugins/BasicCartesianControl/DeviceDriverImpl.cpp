@@ -112,10 +112,10 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         yCWarning(BCC, "Could not view iPreciselyTimed in: %s, using local timestamps", robotStr.c_str());
     }
 
-    iEncoders->getAxes(&numRobotJoints);
-    yCInfo(BCC) << "Number of robot joints:" << numRobotJoints;
+    iEncoders->getAxes(&numJoints);
+    yCInfo(BCC) << "Number of robot joints:" << numJoints;
 
-    qRefSpeeds.resize(numRobotJoints);
+    qRefSpeeds.resize(numJoints);
 
     if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
     {
@@ -139,15 +139,15 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
             return false;
         }
 
-        qMin.resize(numRobotJoints);
-        qMax.resize(numRobotJoints);
+        qMin.resize(numJoints);
+        qMax.resize(numJoints);
 
-        qdotMin.resize(numRobotJoints);
-        qdotMax.resize(numRobotJoints);
+        qdotMin.resize(numJoints);
+        qdotMax.resize(numJoints);
 
         yarp::os::Bottle bMin, bMax, bMaxVel;
 
-        for (int joint = 0; joint < numRobotJoints; joint++)
+        for (int joint = 0; joint < numJoints; joint++)
         {
             double _qMin, _qMax;
 
@@ -201,12 +201,12 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    numSolverJoints = iCartesianSolver->getNumJoints();
-    yCInfo(BCC) << "Number of solver joints:" << numSolverJoints;
+    int numSolverJoints = iCartesianSolver->getNumJoints();
 
-    if (numRobotJoints != numSolverJoints)
+    if (numSolverJoints != numJoints)
     {
-        yCWarning(BCC, "numRobotJoints(%d) != numSolverJoints(%d)", numRobotJoints, numSolverJoints);
+        yCError(BCC, "numSolverJoints(%d) != numRobotJoints(%d)", numSolverJoints, numJoints);
+        return false;
     }
 
     yCInfo(BCC) << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();

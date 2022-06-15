@@ -51,7 +51,7 @@ void BasicCartesianControl::setCurrentState(int value)
 
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 {
-    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
+    for (unsigned int joint = 0; joint < numJoints; joint++)
     {
         double value = q[joint];
 
@@ -72,7 +72,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const std::vector<double> &qdot)
 {
-    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
+    for (unsigned int joint = 0; joint < numJoints; joint++)
     {
         double value = q[joint];
 
@@ -97,7 +97,7 @@ bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q, const
 
 bool BasicCartesianControl::checkJointVelocities(const std::vector<double> &qdot)
 {
-    for (unsigned int joint = 0; joint < numSolverJoints; joint++)
+    for (unsigned int joint = 0; joint < numJoints; joint++)
     {
         double value = qdot[joint];
 
@@ -182,7 +182,7 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
 
 bool BasicCartesianControl::checkControlModes(int mode)
 {
-    std::vector<int> modes(numRobotJoints);
+    std::vector<int> modes(numJoints);
 
     if (!iControlMode->getControlModes(modes.data()))
     {
@@ -197,7 +197,7 @@ bool BasicCartesianControl::checkControlModes(int mode)
 
 bool BasicCartesianControl::setControlModes(int mode)
 {
-    std::vector<int> modes(numRobotJoints);
+    std::vector<int> modes(numJoints);
 
     if (!iControlMode->getControlModes(modes.data()))
     {
@@ -258,7 +258,7 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
 
     //-- Find out the maximum time to move
 
-    for (int joint = 0; joint < numSolverJoints; joint++)
+    for (int joint = 0; joint < numJoints; joint++)
     {
         if (qRefSpeeds[joint] <= 0.0)
         {
@@ -281,9 +281,9 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
 
     //-- Compute, store old and set joint velocities given this time
 
-    for (int joint = 0; joint < numRobotJoints; joint++)
+    for (int joint = 0; joint < numJoints; joint++)
     {
-        if (joint >= numSolverJoints || maxTime == 0.0)
+        if (maxTime == 0.0)
         {
             yCInfo(BCC, "qdot[%d] = 0.0 (forced)", joint);
         }

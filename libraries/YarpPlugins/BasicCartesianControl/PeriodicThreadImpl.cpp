@@ -21,7 +21,7 @@ void BasicCartesianControl::run()
         return;
     }
 
-    std::vector<double> q(numRobotJoints);
+    std::vector<double> q(numJoints);
 
     if (!iEncoders->getEncoders(q.data()))
     {
@@ -254,7 +254,7 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
         return;
     }
 
-    std::vector<double> t(numRobotJoints);
+    std::vector<double> t(numJoints);
 
     if (!iCartesianSolver->invDyn(q, t))
     {
@@ -279,17 +279,17 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q)
         return;
     }
 
-    std::vector<double> qdot(numRobotJoints, 0), qdotdot(numRobotJoints, 0);
+    std::vector<double> qdot(numJoints), qdotdot(numJoints);
     std::vector< std::vector<double> > fexts;
 
-    for (int i = 0; i < numRobotJoints - 1; i++)  //-- "numRobotJoints-1" is important
+    for (int i = 0; i < numJoints - 1; i++)  //-- "numJoints - 1" is important
     {
         fexts.emplace_back(6, 0);
     }
 
     fexts.push_back(td);
 
-    std::vector<double> t(numRobotJoints);
+    std::vector<double> t(numJoints);
 
     if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fexts, t))
     {

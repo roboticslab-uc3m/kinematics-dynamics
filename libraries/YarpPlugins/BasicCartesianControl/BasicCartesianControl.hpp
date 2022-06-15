@@ -174,7 +174,7 @@ protected:
 
     int cmcPeriodMs;
     int waitPeriodMs;
-    int numRobotJoints, numSolverJoints;
+    int numJoints;
     int currentState;
     int streamingCommand;
 
