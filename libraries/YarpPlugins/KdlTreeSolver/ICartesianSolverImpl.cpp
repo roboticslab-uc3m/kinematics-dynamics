@@ -275,7 +275,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
 
     for (const auto & endpoint : endpoints)
     {
-        wrenches.insert(std::make_pair(endpoint, KDL::Wrench::Zero()));
+        wrenches.emplace(endpoint, KDL::Wrench::Zero());
     }
 
     if (idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt) < 0)
