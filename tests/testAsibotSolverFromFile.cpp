@@ -13,6 +13,9 @@
 namespace roboticslab
 {
 
+namespace test
+{
+
 using namespace KinRepresentation;
 
 /**
@@ -22,7 +25,7 @@ using namespace KinRepresentation;
 class AsibotSolverTestFromFile : public testing::Test
 {
 public:
-    virtual void SetUp()
+    void SetUp() override
     {
         yarp::os::ResourceFinder rf;
         rf.setVerbose(false);
@@ -55,7 +58,7 @@ public:
         }
     }
 
-    virtual void TearDown()
+    void TearDown() override
     {
         solverDevice.close();
     }
@@ -64,8 +67,8 @@ protected:
     yarp::dev::PolyDriver solverDevice;
     roboticslab::ICartesianSolver *iCartesianSolver;
 
-    static const double EPS_CART;  //-- cartesian space
-    static const double EPS_JOINT;  //-- joint space
+    static const double EPS_CART; //-- cartesian space
+    static const double EPS_JOINT; //-- joint space
 };
 
 const double AsibotSolverTestFromFile::EPS_CART = 1e-6;
@@ -524,5 +527,5 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinTool)
     ASSERT_NEAR(qdot[4], 0.0, EPS_JOINT);
 }
 
-}  // namespace roboticslab
-
+} // namespace test
+} // namespace roboticslab

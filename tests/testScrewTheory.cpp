@@ -21,6 +21,9 @@
 namespace roboticslab
 {
 
+namespace test
+{
+
 /**
  * @ingroup kinematics-dynamics-tests
  * @brief Tests classes related to Screw Theory.
@@ -28,14 +31,11 @@ namespace roboticslab
 class ScrewTheoryTest : public testing::Test
 {
 public:
+    void SetUp() override
+    {}
 
-    virtual void SetUp()
-    {
-    }
-
-    virtual void TearDown()
-    {
-    }
+    void TearDown() override
+    {}
 
     static KDL::JntArray fillJointValues(int size, double value)
     {
@@ -996,4 +996,5 @@ TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
     delete config;
 }
 
-}  // namespace roboticslab
+} // namespace test
+} // namespace roboticslab

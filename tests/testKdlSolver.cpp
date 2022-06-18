@@ -12,43 +12,46 @@
 namespace roboticslab
 {
 
+namespace test
+{
+
 /**
  * @ingroup kinematics-dynamics-tests
  * @brief Tests \ref KdlSolver ikin and idyn on a simple mechanism.
  */
 class KdlSolverTest : public testing::Test
 {
+public:
+    void SetUp() override
+    {
+        yarp::os::Property solverOptions("(device KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
 
-    public:
-        virtual void SetUp() {
-            yarp::os::Property solverOptions("(device KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
+        solverDevice.open(solverOptions);
 
-            solverDevice.open(solverOptions);
-
-            if (!solverDevice.isValid())
-            {
-                yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
-                return;
-            }
-
-            if (!solverDevice.view(iCartesianSolver))
-            {
-                yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
-                return;
-            }
-        }
-
-        virtual void TearDown()
+        if (!solverDevice.isValid())
         {
-            solverDevice.close();
+            yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
+            return;
         }
 
-    protected:
-        yarp::dev::PolyDriver solverDevice;
-        roboticslab::ICartesianSolver *iCartesianSolver;
+        if (!solverDevice.view(iCartesianSolver))
+        {
+            yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
+            return;
+        }
+    }
+
+    void TearDown() override
+    {
+        solverDevice.close();
+    }
+
+protected:
+    yarp::dev::PolyDriver solverDevice;
+    roboticslab::ICartesianSolver *iCartesianSolver;
 };
 
-TEST_F( KdlSolverTest, KdlSolverFwdKin1)
+TEST_F(KdlSolverTest, KdlSolverFwdKin1)
 {
     std::vector<double> q(1),x;
     q[0]=0.0;
@@ -58,7 +61,7 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin1)
     ASSERT_NEAR(x[2], 0, 1e-9);
 }
 
-TEST_F( KdlSolverTest, KdlSolverFwdKin2)
+TEST_F(KdlSolverTest, KdlSolverFwdKin2)
 {
     std::vector<double> q(1),x;
     q[0]=90.0;
@@ -68,7 +71,7 @@ TEST_F( KdlSolverTest, KdlSolverFwdKin2)
     ASSERT_NEAR(x[2], 0, 1e-9);
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvKin1)
+TEST_F(KdlSolverTest, KdlSolverInvKin1)
 {
     std::vector<double> xd(6),qGuess(1),q;
     xd[0] = 1;  // x
@@ -83,7 +86,7 @@ TEST_F( KdlSolverTest, KdlSolverInvKin1)
     ASSERT_NEAR(q[0], 0, 1e-3);
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvKin2)
+TEST_F(KdlSolverTest, KdlSolverInvKin2)
 {
     std::vector<double> xd(6),qGuess(1),q;
     xd[0] = 0;  // x
@@ -98,7 +101,7 @@ TEST_F( KdlSolverTest, KdlSolverInvKin2)
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvDyn1)
+TEST_F(KdlSolverTest, KdlSolverInvDyn1)
 {
     std::vector<double> q(1),t;
     q[0] = -90.0;
@@ -107,7 +110,7 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn1)
     ASSERT_NEAR(t[0], 0, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0m = 0 N*m
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvDyn2)
+TEST_F(KdlSolverTest, KdlSolverInvDyn2)
 {
     std::vector<double> q(1),t;
     q[0] = 0.0;
@@ -116,7 +119,7 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn2)
     ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
 
-TEST_F( KdlSolverTest, KdlSolverInvDyn3)
+TEST_F(KdlSolverTest, KdlSolverInvDyn3)
 {
     std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),fext(6,0.0),t;
     q[0] = 0.0;
@@ -127,5 +130,5 @@ TEST_F( KdlSolverTest, KdlSolverInvDyn3)
     ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
 
-}  // namespace roboticslab
-
+} // namespace test
+} // namespace roboticslab

@@ -13,55 +13,58 @@
 namespace roboticslab
 {
 
+namespace test
+{
+
 /**
  * @ingroup kinematics-dynamics-tests
  * @brief Tests \ref BasicCartesianControl ikin and idyn on a simple mechanism.
  */
 class BasicCartesianControlTest : public testing::Test
 {
+public:
+    void SetUp() override
+    {
+        yarp::os::Property cartesianControlOptions {
+            {"device", yarp::os::Value("BasicCartesianControl")},
+            {"robot", yarp::os::Value("fakeMotionControl")},
+            {"solver", yarp::os::Value("KdlSolver")},
+            {"numLinks", yarp::os::Value(1)}
+        };
 
-    public:
-        virtual void SetUp() {
-            yarp::os::Property cartesianControlOptions {
-                {"device", yarp::os::Value("BasicCartesianControl")},
-                {"robot", yarp::os::Value("fakeMotionControl")},
-                {"solver", yarp::os::Value("KdlSolver")},
-                {"numLinks", yarp::os::Value(1)}
-            };
+        cartesianControlOptions.addGroup("link_0").put("A", yarp::os::Value(1));
+        cartesianControlOptions.put("mins", yarp::os::Value::makeList("-100.0"));
+        cartesianControlOptions.put("maxs", yarp::os::Value::makeList("100.0"));
+        cartesianControlOptions.put("maxvels", yarp::os::Value::makeList("100.0"));
 
-            cartesianControlOptions.addGroup("link_0").put("A", yarp::os::Value(1));
-            cartesianControlOptions.put("mins", yarp::os::Value::makeList("-100.0"));
-            cartesianControlOptions.put("maxs", yarp::os::Value::makeList("100.0"));
-            cartesianControlOptions.put("maxvels", yarp::os::Value::makeList("100.0"));
+        cartesianControlDevice.open(cartesianControlOptions);
 
-            cartesianControlDevice.open(cartesianControlOptions);
-
-            if (!cartesianControlDevice.isValid())
-            {
-                yError() << "CartesianControl device not valid:" << cartesianControlOptions.find("device").asString();
-                return;
-            }
-
-            if (!cartesianControlDevice.view(iCartesianControl))
-            {
-                yError() << "Could not view iCartesianControl in:" << cartesianControlOptions.find("device").asString();
-                return;
-            }
-
-            yarp::os::Time::delay(1);
-        }
-
-        virtual void TearDown()
+        if (!cartesianControlDevice.isValid())
         {
-            cartesianControlDevice.close();
+            yError() << "CartesianControl device not valid:" << cartesianControlOptions.find("device").asString();
+            return;
         }
 
-    protected:
-        yarp::dev::PolyDriver cartesianControlDevice;
-        roboticslab::ICartesianControl *iCartesianControl;
+        if (!cartesianControlDevice.view(iCartesianControl))
+        {
+            yError() << "Could not view iCartesianControl in:" << cartesianControlOptions.find("device").asString();
+            return;
+        }
+
+        yarp::os::Time::delay(1.0);
+    }
+
+    void TearDown() override
+    {
+        cartesianControlDevice.close();
+    }
+
+protected:
+    yarp::dev::PolyDriver cartesianControlDevice;
+    roboticslab::ICartesianControl *iCartesianControl;
 };
 
-TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
+TEST_F(BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
     int state;
@@ -72,7 +75,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlStat)
     ASSERT_NEAR(x[2], 0, 1e-9);
 }
 
-TEST_F( BasicCartesianControlTest, BasicCartesianControlInv1)
+TEST_F(BasicCartesianControlTest, BasicCartesianControlInv1)
 {
     std::vector<double> xd(6),q;
     xd[0] = 1;  // x
@@ -86,7 +89,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlInv1)
     ASSERT_NEAR(q[0], 0, 1e-3);
 }
 
-TEST_F( BasicCartesianControlTest, BasicCartesianControlInv2)
+TEST_F(BasicCartesianControlTest, BasicCartesianControlInv2)
 {
     std::vector<double> xd(6),q;
     xd[0] = 0;  // x
@@ -100,7 +103,7 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlInv2)
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
 
-TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
+TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
 {
     std::vector<double> x(6),xToolA,xToolB,xNoTool;
 
@@ -145,4 +148,5 @@ TEST_F( BasicCartesianControlTest, BasicCartesianControlTool)
     ASSERT_NEAR(xNoTool[5], 0, 1e-9);
 }
 
-}  // namespace roboticslab
+} // namespace test
+} // namespace roboticslab
