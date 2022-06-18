@@ -493,7 +493,7 @@ bool AsibotSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
 // -----------------------------------------------------------------------------
 
-bool AsibotSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
+bool AsibotSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector<double> &ftip, std::vector<double> &t)
 {
     yCWarning(ASIBOT) << "invDyn() not implemented";
     return false;

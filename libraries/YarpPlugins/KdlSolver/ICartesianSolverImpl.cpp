@@ -222,7 +222,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
+bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -265,7 +265,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t)
+bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot, const std::vector<double> &ftip, std::vector<double> &t)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -290,13 +290,11 @@ bool KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &q
 
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
 
-    for (int i = 0; i < fexts.size(); i++)
-    {
-        wrenches[i] = KDL::Wrench(
-            KDL::Vector(fexts[i][0], fexts[i][1], fexts[i][2]),
-            KDL::Vector(fexts[i][3], fexts[i][4], fexts[i][5])
-        );
-    }
+    // FIXME: review this per https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/162
+    wrenches[chain.getNrOfJoints() - 1] = KDL::Wrench(
+        KDL::Vector(ftip[0], ftip[1], ftip[2]),
+        KDL::Vector(ftip[3], ftip[4], ftip[5])
+    );
 
     KDL::JntArray kdlt(chain.getNrOfJoints());
     int ret;

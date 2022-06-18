@@ -66,7 +66,7 @@ public:
     bool invDyn(const std::vector<double> &q, std::vector<double> &t) override;
 
     // Perform inverse dynamics.
-    bool invDyn(const std::vector<double> &q,const std::vector<double> &qdot,const std::vector<double> &qdotdot, const std::vector< std::vector<double> > &fexts, std::vector<double> &t) override;
+    bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot, const std::vector<double> &ftip, std::vector<double> &t) override;
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable& config) override;
