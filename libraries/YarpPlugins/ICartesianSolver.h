@@ -32,21 +32,6 @@ public:
     //! Destructor
     virtual ~ICartesianSolver() = default;
 
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-    /**
-     * @brief Get number of joints for which the solver has been configured
-     * @param numJoints Number of joints.
-     * @return true on success, false otherwise
-     * @deprecated
-     */
-    [[deprecated("use `int getNumJoints()` instead")]]
-    virtual bool getNumJoints(int* numJoints)
-    {
-        *numJoints = getNumJoints();
-        return true;
-    }
-#endif
-
     /**
      * @brief Get number of joints for which the solver has been configured
      *
