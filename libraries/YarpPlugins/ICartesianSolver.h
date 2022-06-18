@@ -30,7 +30,7 @@ public:
     };
 
     //! Destructor
-    virtual ~ICartesianSolver() {}
+    virtual ~ICartesianSolver() = default;
 
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
     /**

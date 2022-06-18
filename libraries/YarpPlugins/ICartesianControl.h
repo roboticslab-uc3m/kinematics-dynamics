@@ -140,7 +140,7 @@ class ICartesianControl
 {
 public:
     //! Destructor
-    virtual ~ICartesianControl() {}
+    virtual ~ICartesianControl() = default;
 
     //--------------------- RPC commands ---------------------
 
