@@ -19,19 +19,8 @@ if(ENABLE_KinematicRepresentationLib)
                                                                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
                                                           PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    target_compile_features(KinematicRepresentationLib PUBLIC cxx_std_11)
-
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
-        install(TARGETS KinematicRepresentationLib
-                EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
-    else()
-        install(TARGETS KinematicRepresentationLib
-                EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS
-                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-    endif()
+    install(TARGETS KinematicRepresentationLib
+            EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
 
     add_library(ROBOTICSLAB::KinematicRepresentationLib ALIAS KinematicRepresentationLib)
 

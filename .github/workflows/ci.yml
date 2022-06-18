@@ -19,7 +19,7 @@ jobs:
     outputs:
       should_skip: ${{steps.skip_check.outputs.should_skip}}
     steps:
-    - uses: fkirc/skip-duplicate-actions@master
+    - uses: fkirc/skip-duplicate-actions@v4
       id: skip_check
       with:
         cancel_others: 'true'
@@ -35,8 +35,8 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         robotology:
-        - { yarp: yarp-3.5, ycm: ycm-0.13, cmake: 3.12.x }
-        - { yarp: yarp-3.6, ycm: ycm-0.13, cmake: 3.16.x }
+        - { yarp: yarp-3.6, ycm: ycm-0.14, cmake: 3.16.x }
+        - { yarp: yarp-3.7, ycm: ycm-0.14, cmake: 3.16.x }
         - { yarp: master, ycm: master, cmake: 3.16.x }
         compiler:
         - { cc: gcc, cxx: g++ }
@@ -48,30 +48,30 @@ jobs:
 
     steps:
     - name: Check out kinematics-dynamics
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Check out YCM
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: robotology/ycm
         ref: ${{matrix.robotology.ycm}}
         path: .deps/ycm
 
     - name: Check out YARP
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: robotology/yarp
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
     - name: Check out Orocos KDL
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
 
     - name: Check out amor-api
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: roboticslab-uc3m/amor-api
         token: ${{secrets.AMOR_API}}
@@ -80,62 +80,55 @@ jobs:
     - name: Install dependencies via apt
       run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev swig googletest
 
-    - name: Set up CMake 3.12
-      uses: jwlawson/actions-setup-cmake@v1.7
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v1
       with:
         cmake-version: ${{matrix.robotology.cmake}}
 
     - name: Set up Ccache
-      uses: hendrikmuhs/ccache-action@v1
+      uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{matrix.os}}-${{matrix.robotology.yarp}}-${{matrix.compiler.cc}}
-
-    - name: Create build trees
-      run: cmake -E make_directory build .deps/ycm/build .deps/yarp/build .deps/kdl/orocos_kdl/build .deps/amor-api/build
 
     - name: Set environment variables
       run: echo "CMAKE_COMPILER=-DCMAKE_C_COMPILER=${{matrix.compiler.cc}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
 
     - name: Build YCM
-      working-directory: ${{github.workspace}}/.deps/ycm/build
       run: |
-        cmake ..
-        cmake --build .
-        sudo cmake --build . --target install
+        cmake -S .deps/ycm -B .deps/ycm/build
+        cmake --build .deps/ycm/build
+        sudo cmake --install .deps/ycm/build
 
     - name: Build YARP
-      working-directory: ${{github.workspace}}/.deps/yarp/build
       run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
-        cmake --build . --parallel
-        sudo cmake --build . --target install
+        cmake -S .deps/yarp -B .deps/yarp/build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
+        cmake --build .deps/yarp/build --parallel
+        sudo cmake --install .deps/yarp/build
 
     - name: Build Orocos KDL
-      working-directory: ${{github.workspace}}/.deps/kdl/orocos_kdl/build
       run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
-        cmake --build . --parallel
-        sudo cmake --build . --target install
+        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
+        cmake --build .deps/kdl/orocos_kdl/build --parallel
+        sudo cmake --install .deps/kdl/orocos_kdl/build
 
     - name: Build amor-api
-      working-directory: ${{github.workspace}}/.deps/amor-api/build
       run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
-        cmake --build . --parallel
-        sudo cmake --build . --target install
+        cmake -S .deps/amor-api -B .deps/amor-api/build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
+        cmake --build .deps/amor-api/build --parallel
+        sudo cmake --install .deps/amor-api/build
 
-    - name: Build kinematics-dynamics
-      working-directory: ${{github.workspace}}/build
-      run: |
-        cmake .. $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
-        cmake --build .
-        sudo cmake --build . --target install
-        sudo ldconfig
+    - name: Configure kinematics-dynamics
+      run: cmake -S . -B ./build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
+
+    - name: Compile kinematics-dynamics
+      run: cmake --build ./build
+
+    - name: Install kinematics-dynamics
+      run: sudo cmake --install ./build && sudo ldconfig
 
     - name: Test kinematics-dynamics
-      working-directory: ${{github.workspace}}/build
+      working-directory: build
       run: ctest -V
 
     - name: Uninstall kinematics-dynamics
-      working-directory: ${{github.workspace}}/build
-      run: sudo cmake --build . --target uninstall
+      run: sudo cmake --build ./build --target uninstall
