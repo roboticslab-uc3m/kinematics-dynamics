@@ -5,10 +5,7 @@
 
 #include "KinematicRepresentation.hpp"
 
-namespace roboticslab
-{
-
-namespace test
+namespace roboticslab::test
 {
 
 using namespace KinRepresentation;
@@ -353,5 +350,4 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseRadians)
     ASSERT_NEAR(x_out[5], M_PI / 4, EPS);
 }
 
-} // namespace test
-} // namespace roboticslab
+} // namespace roboticslab::test

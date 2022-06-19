@@ -10,10 +10,7 @@
 
 #include "ICartesianControl.h"
 
-namespace roboticslab
-{
-
-namespace test
+namespace roboticslab::test
 {
 
 /**
@@ -148,5 +145,4 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
     ASSERT_NEAR(xNoTool[5], 0, 1e-9);
 }
 
-} // namespace test
-} // namespace roboticslab
+} // namespace roboticslab::test

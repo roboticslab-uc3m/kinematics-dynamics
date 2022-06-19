@@ -26,8 +26,8 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
         }
     }
 
-    typedef std::pair<double, int> SumToId;
-    typedef std::set<SumToId> SetType;
+    using SumToId = std::pair<double, int>;
+    using SetType = std::set<SumToId>;
     SetType displacementPerConfiguration; // best for all revolute/prismatic joints
 
     for (int i = 0; i < configs.size(); i++)
@@ -47,7 +47,7 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
     }
 
     // std::map keys are sorted, pick std::pair with lowest key (angle sum)
-    SetType::iterator it = displacementPerConfiguration.begin();
+    auto it = displacementPerConfiguration.begin();
 
     lastValid = it->second;
     optimalConfig = configs[lastValid];

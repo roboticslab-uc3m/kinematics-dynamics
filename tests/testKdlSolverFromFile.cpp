@@ -9,10 +9,7 @@
 
 #include "ICartesianSolver.h"
 
-namespace roboticslab
-{
-
-namespace test
+namespace roboticslab::test
 {
 
 /**
@@ -100,5 +97,4 @@ TEST_F(KdlSolverTestFromFile, KdlSolverFwdKin2)
     //-- Not checking orientation for now
 }
 
-} // namespace test
-} // namespace roboticslab
+} // namespace roboticslab::test

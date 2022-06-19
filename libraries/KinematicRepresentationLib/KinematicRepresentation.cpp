@@ -68,20 +68,15 @@ namespace
     }
 }
 
-namespace roboticslab
-{
-
-namespace KinRepresentation
+namespace roboticslab::KinRepresentation
 {
 
 // -----------------------------------------------------------------------------
 
 bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
-        coordinate_system coord, orientation_system orient, angular_units angle)
+                coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    int expectedSize;
-
-    if (!checkVectorSize(x_in, coord, orient, &expectedSize))
+    if (int expectedSize; !checkVectorSize(x_in, coord, orient, &expectedSize))
     {
         yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, x_in.size());
         return false;
@@ -190,11 +185,9 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
 // -----------------------------------------------------------------------------
 
 bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
-        coordinate_system coord, orientation_system orient, angular_units angle)
+                coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    int expectedSize;
-
-    if (!checkVectorSize(x_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
+    if (int expectedSize; !checkVectorSize(x_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
     {
         yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, x_in.size());
         return false;
@@ -312,11 +305,9 @@ bool decodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
 // -----------------------------------------------------------------------------
 
 bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
-        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+                    std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    int expectedSize;
-
-    if (!checkVectorSize(xdot_in, coord, orient, &expectedSize))
+    if (int expectedSize; !checkVectorSize(xdot_in, coord, orient, &expectedSize))
     {
         yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, xdot_in.size());
         return false;
@@ -410,11 +401,9 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
 // -----------------------------------------------------------------------------
 
 bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
-        std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
+                    std::vector<double> & xdot_out, coordinate_system coord, orientation_system orient, angular_units angle)
 {
-    int expectedSize;
-
-    if (!checkVectorSize(xdot_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
+    if (int expectedSize; !checkVectorSize(xdot_in, coordinate_system::CARTESIAN, orientation_system::AXIS_ANGLE_SCALED, &expectedSize))
     {
         yCError(KINR, "Size error; expected: %d, was: %zu", expectedSize, xdot_in.size());
         return false;
@@ -505,8 +494,8 @@ bool decodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
 // -----------------------------------------------------------------------------
 
 bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
-        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
-        coordinate_system coord, orientation_system orient, angular_units angle)
+                        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
+                        coordinate_system coord, orientation_system orient, angular_units angle)
 {
     yCError(KINR, "encodeAcceleration() not implemented");
     return false;
@@ -515,8 +504,8 @@ bool encodeAcceleration(const std::vector<double> & x_in, const std::vector<doub
 // -----------------------------------------------------------------------------
 
 bool decodeAcceleration(const std::vector<double> & x_in, const std::vector<double> & xdot_in,
-        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
-        coordinate_system coord, orientation_system orient, angular_units angle)
+                        const std::vector<double> & xdotdot_in, std::vector<double> & xdotdot_out,
+                        coordinate_system coord, orientation_system orient, angular_units angle)
 {
     yCError(KINR, "decodeAcceleration() not implemented");
     return false;
@@ -629,5 +618,4 @@ bool parseEnumerator(const std::string & str, angular_units * units, angular_uni
 
 // -----------------------------------------------------------------------------
 
-} // namespace KinRepresentation
-} // namespace roboticslab
+} // namespace roboticslab::KinRepresentation
