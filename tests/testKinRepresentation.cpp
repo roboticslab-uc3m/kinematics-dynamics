@@ -5,7 +5,7 @@
 
 #include "KinematicRepresentation.hpp"
 
-namespace roboticslab
+namespace roboticslab::test
 {
 
 using namespace KinRepresentation;
@@ -17,13 +17,11 @@ using namespace KinRepresentation;
 class KinRepresentationTest : public testing::Test
 {
 public:
-    virtual void SetUp()
-    {
-    }
+    void SetUp() override
+    {}
 
-    virtual void TearDown()
-    {
-    }
+    void TearDown() override
+    {}
 
 protected:
     static const double EPS;
@@ -352,4 +350,4 @@ TEST_F(KinRepresentationTest, KinRepresentationDecodePoseRadians)
     ASSERT_NEAR(x_out[5], M_PI / 4, EPS);
 }
 
-}  // namespace roboticslab
+} // namespace roboticslab::test

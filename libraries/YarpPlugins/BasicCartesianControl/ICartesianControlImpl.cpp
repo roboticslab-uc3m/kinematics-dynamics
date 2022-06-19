@@ -36,7 +36,7 @@ namespace
 
 bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * timestamp)
 {
-    std::vector<double> currentQ(numRobotJoints);
+    std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -67,7 +67,7 @@ bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * 
 
 bool BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
-    std::vector<double> currentQ(numRobotJoints);
+    std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -88,7 +88,7 @@ bool BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<doubl
 
 bool BasicCartesianControl::movj(const std::vector<double> &xd)
 {
-    std::vector<double> currentQ(numRobotJoints), qd;
+    std::vector<double> currentQ(numJoints), qd;
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -102,10 +102,10 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    std::vector<double> vmo(numRobotJoints);
+    std::vector<double> vmo(numJoints);
 
     computeIsocronousSpeeds(currentQ, qd, vmo);
-    vmoStored.resize(numRobotJoints);
+    vmoStored.resize(numJoints);
 
     if (!iPositionControl->getRefSpeeds(vmoStored.data()))
     {
@@ -172,7 +172,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     yCWarning(BCC) << "MOVL mode still experimental";
 
-    std::vector<double> currentQ(numRobotJoints);
+    std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -221,6 +221,12 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, duration));
     }
 
+    if (enableFailFast && !doFailFastChecks(currentQ))
+    {
+        yCError(BCC) << "Fail-fast checks failed";
+        return false;
+    }
+
     //-- Set velocity mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
@@ -242,7 +248,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 
 bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
-    std::vector<double> currentQ(numRobotJoints);
+    std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -421,7 +427,7 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    std::vector<double> currentQ(numRobotJoints), qdot;
+    std::vector<double> currentQ(numJoints), qdot;
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -461,7 +467,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
         return;
     }
 
-    std::vector<double> currentQ(numRobotJoints);
+    std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -538,7 +544,7 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> currentQ(numRobotJoints), q;
+    std::vector<double> currentQ(numJoints), q;
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
@@ -552,9 +558,9 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
         return;
     }
 
-    std::vector<double> qdiff(numRobotJoints);
+    std::vector<double> qdiff(numJoints);
 
-    for (int i = 0; i < numRobotJoints; i++)
+    for (int i = 0; i < numJoints; i++)
     {
         qdiff[i] = q[i] - currentQ[i];
     }
@@ -683,9 +689,9 @@ bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 
     bool ok = true;
 
-    for (const auto & it : params)
+    for (auto [vocab, value] : params)
     {
-        ok &= setParameter(it.first, it.second);
+        ok &= setParameter(vocab, value);
     }
 
     return ok;

@@ -33,8 +33,8 @@ public:
     {}
 
 protected:
-    virtual bool threadInit();
-    virtual void run();
+    bool threadInit() override;
+    void run() override;
 
 private:
     yarp::dev::IEncoders * iEncoders;
@@ -46,4 +46,4 @@ private:
     double startTime;
 };
 
-#endif  // __TRAJECTORY_THREAD_HPP__
+#endif // __TRAJECTORY_THREAD_HPP__

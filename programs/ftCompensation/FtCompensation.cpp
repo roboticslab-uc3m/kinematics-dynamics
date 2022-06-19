@@ -232,9 +232,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 bool FtCompensation::readSensor(KDL::Wrench & wrench) const
 {
     yarp::sig::Vector outSensor;
-    double timestamp;
 
-    if (!sensor->getSixAxisForceTorqueSensorMeasure(sensorIndex, outSensor, timestamp))
+    if (double timestamp; !sensor->getSixAxisForceTorqueSensorMeasure(sensorIndex, outSensor, timestamp))
     {
         yCWarning(FTC) << "Failed to retrieve current sensor measurements";
         return false;
@@ -283,7 +282,7 @@ void FtCompensation::run()
 
     if (forceNorm <= forceDeadband && torqueNorm <= torqueDeadband)
     {
-        if (!dryRun) iCartesianControl->twist(std::vector<double>(6, 0.0));
+        if (!dryRun) iCartesianControl->twist(std::vector(6, 0.0));
         return;
     }
 

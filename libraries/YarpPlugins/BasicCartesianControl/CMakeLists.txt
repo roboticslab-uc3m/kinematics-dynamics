@@ -30,8 +30,6 @@ if(NOT SKIP_BasicCartesianControl)
 
     target_include_directories(BasicCartesianControl PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    target_compile_features(BasicCartesianControl PUBLIC cxx_std_11)
-
     yarp_install(TARGETS BasicCartesianControl
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}
                  ARCHIVE DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_STATIC_PLUGINS_INSTALL_DIR}

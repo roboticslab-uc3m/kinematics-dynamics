@@ -143,7 +143,7 @@ protected:
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
     bool checkJointVelocities(const std::vector<double> & qdot);
-
+    bool doFailFastChecks(const std::vector<double> & initialQ);
     bool checkControlModes(int mode);
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
@@ -174,9 +174,11 @@ protected:
 
     int cmcPeriodMs;
     int waitPeriodMs;
-    int numRobotJoints, numSolverJoints;
+    int numJoints;
     int currentState;
     int streamingCommand;
+
+    bool enableFailFast;
 
     mutable std::mutex stateMutex;
 

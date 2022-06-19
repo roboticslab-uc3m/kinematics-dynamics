@@ -130,9 +130,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
                 for (int l = 0; l < jointIdsToSolutions.size(); l++)
                 {
                     const ScrewTheoryIkSubproblem::JointIdToSolution & jointIdToSolution = jointIdsToSolutions[l];
-
-                    int id = jointIdToSolution.first;
-                    double theta = jointIdToSolution.second;
+                    auto [id, theta] = jointIdToSolution;
 
                     // Preserve mapping of ids (associated to `poe`).
                     poeTerms[id] = EXP_KNOWN;

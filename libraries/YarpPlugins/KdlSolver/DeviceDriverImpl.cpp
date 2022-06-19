@@ -117,9 +117,9 @@ namespace
             return false;
         }
 
-        if (maxs->size() < nrOfJoints || mins->size() < nrOfJoints)
+        if (maxs->size() != nrOfJoints || mins->size() != nrOfJoints)
         {
-            yCError(KDLS, "chain.getNrOfJoints (%d) > maxs.size() or mins.size() (%zu, %zu)", nrOfJoints, maxs->size(), mins->size());
+            yCError(KDLS, "chain.getNrOfJoints (%d) != maxs.size() or mins.size() (%zu, %zu)", nrOfJoints, maxs->size(), mins->size());
             return false;
         }
 
@@ -150,10 +150,6 @@ namespace
 
 bool KdlSolver::open(yarp::os::Searchable & config)
 {
-#if !defined(YARP_VERSION_COMPARE) // < 3.6.0
-    yCDebug(KDLS) << "Config:" << config.toString();
-#endif
-
     //-- kinematics
     std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
         "path to file with description of robot kinematics").asString();

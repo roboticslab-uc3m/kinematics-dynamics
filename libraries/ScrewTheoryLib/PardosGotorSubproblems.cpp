@@ -40,7 +40,7 @@ bool PardosGotorOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTrans
     KDL::Vector diff = k - f;
     double theta = KDL::dot(exp.getAxis(), diff);
 
-    jointIdsToSolutions[0] = std::make_pair(id, theta);
+    jointIdsToSolutions[0] = {id, theta};
     solutions[0] = jointIdsToSolutions;
 
     return true;
@@ -85,8 +85,8 @@ bool PardosGotorTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTrans
     double theta1 = KDL::dot(exp1.getAxis(), k - c);
     double theta2 = KDL::dot(exp2.getAxis(), c - f);
 
-    jointIdsToSolutions[0] = std::make_pair(id1, theta1);
-    jointIdsToSolutions[1] = std::make_pair(id2, theta2);
+    jointIdsToSolutions[0] = {id1, theta1};
+    jointIdsToSolutions[1] = {id2, theta2};
 
     solutions[0] = jointIdsToSolutions;
 

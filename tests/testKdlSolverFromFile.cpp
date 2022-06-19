@@ -9,7 +9,7 @@
 
 #include "ICartesianSolver.h"
 
-namespace roboticslab
+namespace roboticslab::test
 {
 
 /**
@@ -18,52 +18,52 @@ namespace roboticslab
  */
 class KdlSolverTestFromFile : public testing::Test
 {
+public:
+    void SetUp() override
+    {
+        yarp::os::ResourceFinder rf;
+        rf.setVerbose(false);
+        rf.setDefaultContext("testKdlSolverFromFile");
+        rf.setDefaultConfigFile("testKdlSolverFromFile.ini");
+        std::string kinematicsFileFullPath = rf.findFileByName( "testKdlSolverFromFile.ini" );
 
-    public:
-        virtual void SetUp() {
-            yarp::os::ResourceFinder rf;
-            rf.setVerbose(false);
-            rf.setDefaultContext("testKdlSolverFromFile");
-            rf.setDefaultConfigFile("testKdlSolverFromFile.ini");
-            std::string kinematicsFileFullPath = rf.findFileByName( "testKdlSolverFromFile.ini" );
+        yarp::os::Property solverOptions;
 
-            yarp::os::Property solverOptions;
-
-            if (!solverOptions.fromConfigFile(kinematicsFileFullPath)) //-- Put first because defaults to wiping out.
-            {
-                yError() << "Could not configure from" << kinematicsFileFullPath;
-                return;
-            }
-
-            solverOptions.put("device","KdlSolver");
-            solverOptions.fromString("(mins (-70 -15 -10 -100 -90 -100)) (maxs (45 70 75 10 90 10))", false);
-
-            solverDevice.open(solverOptions);
-
-            if (!solverDevice.isValid())
-            {
-                yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
-                return;
-            }
-
-            if (!solverDevice.view(iCartesianSolver))
-            {
-                yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
-                return;
-            }
-        }
-
-        virtual void TearDown()
+        if (!solverOptions.fromConfigFile(kinematicsFileFullPath)) //-- Put first because defaults to wiping out.
         {
-            solverDevice.close();
+            yError() << "Could not configure from" << kinematicsFileFullPath;
+            return;
         }
 
-    protected:
-        yarp::dev::PolyDriver solverDevice;
-        roboticslab::ICartesianSolver *iCartesianSolver;
+        solverOptions.put("device","KdlSolver");
+        solverOptions.fromString("(mins (-70 -15 -10 -100 -90 -100)) (maxs (45 70 75 10 90 10))", false);
+
+        solverDevice.open(solverOptions);
+
+        if (!solverDevice.isValid())
+        {
+            yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
+            return;
+        }
+
+        if (!solverDevice.view(iCartesianSolver))
+        {
+            yError() << "Could not view ICartesianSolver in" << solverOptions.find("device").asString();
+            return;
+        }
+    }
+
+    void TearDown() override
+    {
+        solverDevice.close();
+    }
+
+protected:
+    yarp::dev::PolyDriver solverDevice;
+    roboticslab::ICartesianSolver *iCartesianSolver;
 };
 
-TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin1)
+TEST_F(KdlSolverTestFromFile, KdlSolverFwdKin1)
 {
     std::vector<double> q(6),x;
     q[0]=0.0;
@@ -80,7 +80,7 @@ TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin1)
     //-- Not checking orientation for now
 }
 
-TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin2)
+TEST_F(KdlSolverTestFromFile, KdlSolverFwdKin2)
 {
     std::vector<double> q(6),x;
     q[0]=-90.0;
@@ -97,5 +97,4 @@ TEST_F( KdlSolverTestFromFile, KdlSolverFwdKin2)
     //-- Not checking orientation for now
 }
 
-}  // namespace roboticslab
-
+} // namespace roboticslab::test

@@ -2,7 +2,13 @@
 /**
 @brief The main, catch-all namespace for Robotics Lab UC3M.
  */
-namespace roboticslab {}
+namespace roboticslab
+{
+    /**
+     * @brief Contains classes related to unit testing.
+     */
+    namespace test {}
+}
 
 /**
  * \defgroup kinematics-dynamics-applications kinematics-dynamics Applications (Collections of Programs)

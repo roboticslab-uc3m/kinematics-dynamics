@@ -7,9 +7,6 @@
 
 #include <kdl/frames.hpp>
 
-namespace roboticslab
-{
-
 /**
  * @ingroup kinematics-dynamics-libraries
  * \defgroup KdlVectorConverterLib
@@ -21,7 +18,7 @@ namespace roboticslab
  * @ingroup KdlVectorConverterLib
  * @brief Collection of utilities related to KDL and std::vector classes.
  */
-namespace KdlVectorConverter
+namespace roboticslab::KdlVectorConverter
 {
 
 /**
@@ -88,7 +85,6 @@ KDL::Wrench vectorToWrench(const std::vector<double> & f);
  */
 std::vector<double> wrenchToVector(const KDL::Wrench & w);
 
-} // namespace KdlVectorConverter
-} // namespace roboticslab
+} // namespace roboticslab::KdlVectorConverter
 
 #endif // __KDL_VECTOR_CONVERTER_HPP__

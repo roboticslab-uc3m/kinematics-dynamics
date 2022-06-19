@@ -31,10 +31,6 @@ constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
 
 bool AsibotSolver::open(yarp::os::Searchable& config)
 {
-#if !defined(YARP_VERSION_COMPARE) // < 3.6.0
-    yCDebug(ASIBOT) << "Config:" << config.toString();
-#endif
-
     A0 = config.check("A0", yarp::os::Value(DEFAULT_A0), "length of link 1 (meters)").asFloat64();
     A1 = config.check("A1", yarp::os::Value(DEFAULT_A1), "length of link 2 (meters)").asFloat64();
     A2 = config.check("A2", yarp::os::Value(DEFAULT_A2), "length of link 3 (meters)").asFloat64();

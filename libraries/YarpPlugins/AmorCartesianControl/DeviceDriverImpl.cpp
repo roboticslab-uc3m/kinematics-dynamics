@@ -26,10 +26,6 @@ constexpr auto DEFAULT_REFERENCE_FRAME = "base";
 
 bool AmorCartesianControl::open(yarp::os::Searchable& config)
 {
-#if !defined(YARP_VERSION_COMPARE) // < 3.6.0
-    yCDebug(AMOR) << "Config:" << config.toString();
-#endif
-
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asFloat64();
 

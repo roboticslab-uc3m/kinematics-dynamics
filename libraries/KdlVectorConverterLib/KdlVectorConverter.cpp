@@ -10,10 +10,7 @@ namespace
     YARP_LOG_COMPONENT(KDLVC, "rl.KdlVectorConverter")
 }
 
-namespace roboticslab
-{
-
-namespace KdlVectorConverter
+namespace roboticslab::KdlVectorConverter
 {
 
 // -----------------------------------------------------------------------------
@@ -140,5 +137,4 @@ std::vector<double> wrenchToVector(const KDL::Wrench & w)
 
 // -----------------------------------------------------------------------------
 
-} // namespace KdlVectorConverter
-} // namespace roboticslab
+} // namespace roboticslab::KdlVectorConverter

@@ -18,7 +18,7 @@
 #include "ScrewTheoryIkProblem.hpp"
 #include "ScrewTheoryIkSubproblems.hpp"
 
-namespace roboticslab
+namespace roboticslab::test
 {
 
 /**
@@ -28,14 +28,11 @@ namespace roboticslab
 class ScrewTheoryTest : public testing::Test
 {
 public:
+    void SetUp() override
+    {}
 
-    virtual void SetUp()
-    {
-    }
-
-    virtual void TearDown()
-    {
-    }
+    void TearDown() override
+    {}
 
     static KDL::JntArray fillJointValues(int size, double value)
     {
@@ -580,7 +577,7 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     ScrewTheoryIkSubproblem::Solutions expected(1);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sol(1);
 
-    sol[0] = std::make_pair(0, KDL::PI / 2);
+    sol[0] = {0, KDL::PI / 2};
     expected[0] = sol;
 
     checkSolutions(actual, expected);
@@ -621,11 +618,11 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     ScrewTheoryIkSubproblem::Solutions expected(2);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sols1(2), sols2(2);
 
-    sols1[0] = std::make_pair(0, KDL::PI / 2);
-    sols1[1] = std::make_pair(1, KDL::PI / 2);
+    sols1[0] = {0, KDL::PI / 2};
+    sols1[1] = {1, KDL::PI / 2};
 
-    sols2[0] = std::make_pair(0, KDL::PI);
-    sols2[1] = std::make_pair(1, -KDL::PI / 2);
+    sols2[0] = {0, KDL::PI};
+    sols2[1] = {1, -KDL::PI / 2};
 
     expected[0] = sols1;
     expected[1] = sols2;
@@ -674,8 +671,8 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     ScrewTheoryIkSubproblem::Solutions expected(2);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sol1(1), sol2(1);
 
-    sol1[0] = std::make_pair(0, KDL::PI / 2);
-    sol2[0] = std::make_pair(0, KDL::PI);
+    sol1[0] = {0, KDL::PI / 2};
+    sol2[0] = {0, KDL::PI};
 
     expected[0] = sol1;
     expected[1] = sol2;
@@ -688,7 +685,7 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
 
     ASSERT_FALSE(pk3b.solve(rhs2, KDL::Frame::Identity(), actual));
 
-    sol1[0] = sol2[0] = std::make_pair(0, 3 * KDL::PI / 4);
+    sol1[0] = sol2[0] = {0, 3 * KDL::PI / 4};
 
     expected[0] = sol1;
     expected[1] = sol2;
@@ -716,7 +713,7 @@ TEST_F(ScrewTheoryTest, PardosOne)
     ScrewTheoryIkSubproblem::Solutions expected(1);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sol(1);
 
-    sol[0] = std::make_pair(0, 1.0);
+    sol[0] = {0, 1.0};
     expected[0] = sol;
 
     checkSolutions(actual, expected);
@@ -743,8 +740,8 @@ TEST_F(ScrewTheoryTest, PardosTwo)
     ScrewTheoryIkSubproblem::Solutions expected(1);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sols(2);
 
-    sols[0] = std::make_pair(0, k.y() - p.y());
-    sols[1] = std::make_pair(1, k.x() - p.x());
+    sols[0] = {0, k.y() - p.y()};
+    sols[1] = {1, k.x() - p.x()};
 
     expected[0] = sols;
 
@@ -773,8 +770,8 @@ TEST_F(ScrewTheoryTest, PardosThree)
     ScrewTheoryIkSubproblem::Solutions expected(2);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sol1(1), sol2(1);
 
-    sol1[0] = std::make_pair(0, k.y() - p.y() - delta.y());
-    sol2[0] = std::make_pair(0, k.y() - p.y() + delta.y());
+    sol1[0] = {0, k.y() - p.y() - delta.y()};
+    sol2[0] = {0, k.y() - p.y() + delta.y()};
 
     expected[0] = sol1;
     expected[1] = sol2;
@@ -787,7 +784,7 @@ TEST_F(ScrewTheoryTest, PardosThree)
 
     ASSERT_FALSE(pg3b.solve(rhs2, KDL::Frame::Identity(), actual));
 
-    sol1[0] = sol2[0] = std::make_pair(0, 2);
+    sol1[0] = sol2[0] = {0, 2};
 
     expected[0] = sol1;
     expected[1] = sol2;
@@ -817,11 +814,11 @@ TEST_F(ScrewTheoryTest, PardosFour)
     ScrewTheoryIkSubproblem::Solutions expected(2);
     ScrewTheoryIkSubproblem::JointIdsToSolutions sols1(2), sols2(2);
 
-    sols1[0] = std::make_pair(0, KDL::PI / 2);
-    sols1[1] = std::make_pair(1, KDL::PI / 2);
+    sols1[0] = {0, KDL::PI / 2};
+    sols1[1] = {1, KDL::PI / 2};
 
-    sols2[0] = std::make_pair(0, KDL::PI);
-    sols2[1] = std::make_pair(1, -KDL::PI / 2);
+    sols2[0] = {0, KDL::PI};
+    sols2[1] = {1, -KDL::PI / 2};
 
     expected[0] = sols1;
     expected[1] = sols2;
@@ -996,4 +993,4 @@ TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
     delete config;
 }
 
-}  // namespace roboticslab
+} // namespace roboticslab::test

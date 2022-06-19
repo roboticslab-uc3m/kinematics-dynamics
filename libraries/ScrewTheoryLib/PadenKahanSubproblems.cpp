@@ -38,7 +38,7 @@ bool PadenKahanOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransf
 
     double theta = std::atan2(KDL::dot(exp.getAxis(), u_p * v_p), KDL::dot(u_p, v_p));
 
-    jointIdsToSolutions[0] = std::make_pair(id, normalizeAngle(theta));
+    jointIdsToSolutions[0] = {id, normalizeAngle(theta)};
     solutions[0] = jointIdsToSolutions;
 
     return KDL::Equal(u_w, v_w) && KDL::Equal(u_p.Norm(), v_p.Norm());

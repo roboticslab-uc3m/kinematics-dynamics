@@ -20,12 +20,7 @@ if(ENABLE_ftCompensation)
 
     target_include_directories(ftCompensation PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
-        install(TARGETS ftCompensation)
-    else()
-        install(TARGETS ftCompensation
-                DESTINATION ${CMAKE_INSTALL_BINDIR})
-    endif()
+    install(TARGETS ftCompensation)
 
 else()
 
