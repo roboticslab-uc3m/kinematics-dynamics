@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 
 project(exampleScrewTheoryTrajectory LANGUAGES CXX)
 
 if(NOT YARP_FOUND)
-    find_package(YARP 3.5 REQUIRED COMPONENTS os dev)
+    find_package(YARP 3.6 REQUIRED COMPONENTS os dev)
 endif()
 
 if(NOT TARGET ROBOTICSLAB::ScrewTheoryLib)
