@@ -689,9 +689,9 @@ bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 
     bool ok = true;
 
-    for (const auto & it : params)
+    for (auto [vocab, value] : params)
     {
-        ok &= setParameter(it.first, it.second);
+        ok &= setParameter(vocab, value);
     }
 
     return ok;

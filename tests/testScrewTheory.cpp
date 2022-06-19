@@ -18,10 +18,7 @@
 #include "ScrewTheoryIkProblem.hpp"
 #include "ScrewTheoryIkSubproblems.hpp"
 
-namespace roboticslab
-{
-
-namespace test
+namespace roboticslab::test
 {
 
 /**
@@ -996,5 +993,4 @@ TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
     delete config;
 }
 
-} // namespace test
-} // namespace roboticslab
+} // namespace roboticslab::test

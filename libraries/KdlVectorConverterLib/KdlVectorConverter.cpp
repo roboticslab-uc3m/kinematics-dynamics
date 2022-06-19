@@ -10,10 +10,7 @@ namespace
     YARP_LOG_COMPONENT(KDLVC, "rl.KdlVectorConverter")
 }
 
-namespace roboticslab
-{
-
-namespace KdlVectorConverter
+namespace roboticslab::KdlVectorConverter
 {
 
 // -----------------------------------------------------------------------------
@@ -100,5 +97,4 @@ std::vector<double> twistToVector(const KDL::Twist& t)
 
 // -----------------------------------------------------------------------------
 
-} // namespace KdlVectorConverter
-} // namespace roboticslab
+} // namespace roboticslab::KdlVectorConverter

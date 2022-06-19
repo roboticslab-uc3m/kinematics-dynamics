@@ -10,10 +10,7 @@
 #include "ICartesianSolver.h"
 #include "KinematicRepresentation.hpp"
 
-namespace roboticslab
-{
-
-namespace test
+namespace roboticslab::test
 {
 
 using namespace KinRepresentation;
@@ -527,5 +524,4 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinTool)
     ASSERT_NEAR(qdot[4], 0.0, EPS_JOINT);
 }
 
-} // namespace test
-} // namespace roboticslab
+} // namespace roboticslab::test

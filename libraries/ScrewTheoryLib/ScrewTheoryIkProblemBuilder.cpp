@@ -130,7 +130,7 @@ namespace
 
     void clearSteps(ScrewTheoryIkProblem::Steps & steps)
     {
-        for (ScrewTheoryIkProblem::Steps::iterator it = steps.begin(); it != steps.end(); ++it)
+        for (auto it = steps.begin(); it != steps.end(); ++it)
         {
             delete (*it);
         }
@@ -231,7 +231,7 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
 ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 {
     // Reset state, mark all PoE terms as unknown.
-    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
         it->known = false;
     }
@@ -253,7 +253,7 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
     // No solution found, try with reversed PoE.
     poe.reverseSelf();
 
-    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
         it->known = false;
     }
@@ -285,7 +285,7 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 
     // Vector of iterators (for iterating more than once over the same collection).
     // Size is number of characteristic points being considered at once.
-    std::vector< std::vector<KDL::Vector>::const_iterator > iterators(MAX_SIMPLIFICATION_DEPTH, points.begin());
+    std::vector<std::vector<KDL::Vector>::const_iterator> iterators(MAX_SIMPLIFICATION_DEPTH, points.begin());
 
     // 0: try one point, 1: try two points simultaneously, and so on...
     int depth = 0;
@@ -299,9 +299,7 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
         simplify(depth);
 
         // Find a solution if available.
-        ScrewTheoryIkSubproblem * subproblem = trySolve(depth);
-
-        if (subproblem)
+        if (auto * subproblem = trySolve(depth))
         {
             // Solution found, reset and start again. We'll iterate over the same points, taking
             // into account that some terms are already known.
@@ -349,13 +347,13 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 void ScrewTheoryIkProblemBuilder::refreshSimplificationState()
 {
     // Reset simplification mark on all terms.
-    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
         it->simplified = false;
     }
 
     // Leading known terms can be simplified (pre-multiply).
-    for (std::vector<PoeTerm>::iterator it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
     {
         if (it->known)
         {
@@ -368,7 +366,7 @@ void ScrewTheoryIkProblemBuilder::refreshSimplificationState()
     }
 
     // Trailing known terms can be simplified as well (post-multiply).
-    for (std::vector<PoeTerm>::reverse_iterator rit = poeTerms.rbegin(); rit != poeTerms.rend(); ++rit)
+    for (auto rit = poeTerms.rbegin(); rit != poeTerms.rend(); ++rit)
     {
         if (rit->known)
         {
@@ -394,7 +392,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
     }
 
     // Find rightmost unknown and not simplified PoE term.
-    std::vector<PoeTerm>::reverse_iterator lastUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
+    auto lastUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
     int lastExpId = std::distance(poeTerms.begin(), lastUnknown.base()) - 1;
     const MatrixExponential & lastExp = poe.exponentialAtJoint(lastExpId);
 
@@ -443,7 +441,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
     else if (unknownsCount == 2 && lastUnknown != poeTerms.rend())
     {
         // Pick the previous PoE term.
-        std::vector<PoeTerm>::reverse_iterator nextToLastUnknown = lastUnknown;
+        auto nextToLastUnknown = lastUnknown;
         std::advance(nextToLastUnknown, 1);
 
         if (!unknownNotSimplifiedTerm(*nextToLastUnknown))
@@ -517,9 +515,9 @@ void ScrewTheoryIkProblemBuilder::simplify(int depth)
 void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanOne(const KDL::Vector & point)
 {
     // Pick first rightmost unknown PoE term.
-    std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownTerm);
+    auto ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownTerm);
 
-    for (std::vector<PoeTerm>::reverse_iterator rit = ritUnknown; rit != poeTerms.rend(); ++rit)
+    for (auto rit = ritUnknown; rit != poeTerms.rend(); ++rit)
     {
         int i = std::distance(rit, poeTerms.rend()) - 1;
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
@@ -540,9 +538,9 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanOne(const KDL::Vector & 
 void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanThree(const KDL::Vector & point)
 {
     // Pick first leftmost unknown PoE term.
-    std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownTerm);
+    auto itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownTerm);
 
-    for (std::vector<PoeTerm>::iterator it = itUnknown; it != poeTerms.end(); ++it)
+    for (auto it = itUnknown; it != poeTerms.end(); ++it)
     {
         int i = std::distance(poeTerms.begin(), it);
         const MatrixExponential & exp = poe.exponentialAtJoint(i);
@@ -563,8 +561,8 @@ void ScrewTheoryIkProblemBuilder::simplifyWithPadenKahanThree(const KDL::Vector 
 void ScrewTheoryIkProblemBuilder::simplifyWithPardosOne()
 {
     // Pick first leftmost and rightmost unknown PoE terms.
-    std::vector<PoeTerm>::iterator itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
-    std::vector<PoeTerm>::reverse_iterator ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
+    auto itUnknown = std::find_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
+    auto ritUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
 
     int idStart = std::distance(poeTerms.begin(), itUnknown);
     int idEnd = std::distance(ritUnknown, poeTerms.rend()) - 1;

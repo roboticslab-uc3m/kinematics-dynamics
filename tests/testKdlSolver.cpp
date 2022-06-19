@@ -9,10 +9,7 @@
 
 #include "ICartesianSolver.h"
 
-namespace roboticslab
-{
-
-namespace test
+namespace roboticslab::test
 {
 
 /**
@@ -130,5 +127,4 @@ TEST_F(KdlSolverTest, KdlSolverInvDyn3)
     ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
 
-} // namespace test
-} // namespace roboticslab
+} // namespace roboticslab::test

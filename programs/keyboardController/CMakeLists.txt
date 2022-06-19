@@ -25,12 +25,7 @@ if(ENABLE_keyboardController)
 
     target_include_directories(keyboardController PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
-        install(TARGETS keyboardController)
-    else()
-        install(TARGETS keyboardController
-                DESTINATION ${CMAKE_INSTALL_BINDIR})
-    endif()
+    install(TARGETS keyboardController)
 
 else()
 

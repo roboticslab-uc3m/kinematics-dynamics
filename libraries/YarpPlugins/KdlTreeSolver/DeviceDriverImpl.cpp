@@ -130,10 +130,6 @@ namespace
 
 bool KdlTreeSolver::open(yarp::os::Searchable & config)
 {
-#if !defined(YARP_VERSION_COMPARE) // < 3.6.0
-    yCDebug(KDLS) << "config:" << config.toString();
-#endif
-
     //-- kinematics
     std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
         "path to file with description of robot kinematics").asString();
