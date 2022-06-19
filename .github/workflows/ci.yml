@@ -91,7 +91,9 @@ jobs:
         key: ${{matrix.os}}-${{matrix.robotology.yarp}}-${{matrix.compiler.cc}}
 
     - name: Set environment variables
-      run: echo "CMAKE_COMPILER=-DCMAKE_C_COMPILER=${{matrix.compiler.cc}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
+      run: |
+        echo "CC=${{matrix.compiler.cc}}" >> $GITHUB_ENV
+        echo "CXX=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
 
     - name: Build YCM
       run: |
@@ -101,24 +103,24 @@ jobs:
 
     - name: Build YARP
       run: |
-        cmake -S .deps/yarp -B .deps/yarp/build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
+        cmake -S .deps/yarp -B .deps/yarp/build $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
         cmake --build .deps/yarp/build --parallel
         sudo cmake --install .deps/yarp/build
 
     - name: Build Orocos KDL
       run: |
-        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER
+        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_CCACHE_LAUNCHER
         cmake --build .deps/kdl/orocos_kdl/build --parallel
         sudo cmake --install .deps/kdl/orocos_kdl/build
 
     - name: Build amor-api
       run: |
-        cmake -S .deps/amor-api -B .deps/amor-api/build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
+        cmake -S .deps/amor-api -B .deps/amor-api/build $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
         cmake --build .deps/amor-api/build --parallel
         sudo cmake --install .deps/amor-api/build
 
     - name: Configure kinematics-dynamics
-      run: cmake -S . -B ./build $CMAKE_COMPILER $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
+      run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
 
     - name: Compile kinematics-dynamics
       run: cmake --build ./build
