@@ -575,7 +575,7 @@ bool AmorCartesianControl::setParameters(const std::map<int, double> & params)
 
     bool ok = true;
 
-    for (auto [vocab, value] : params)
+    for (const auto & [vocab, value] : params)
     {
         ok &= setParameter(vocab, value);
     }

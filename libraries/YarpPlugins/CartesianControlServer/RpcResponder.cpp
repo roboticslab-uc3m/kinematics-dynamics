@@ -469,7 +469,7 @@ bool RpcResponder::handleParameterGetterGroup(const yarp::os::Bottle& in, yarp::
             return false;
         }
 
-        for (auto [vocab, value] : params)
+        for (const auto & [vocab, value] : params)
         {
             yarp::os::Bottle & b = out.addList();
             b.addVocab32(vocab);
