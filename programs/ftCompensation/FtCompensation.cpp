@@ -5,6 +5,7 @@
 #include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/SystemClock.h>
 
 #include <kdl/utilities/utility.h> // KDL::deg2rad
 
@@ -70,12 +71,11 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     }
 
     auto cartesianRemote = rf.find("cartesianRemote").asString();
-    auto cartesianLocal = localPrefix + "/" + cartesianRemote;
 
     yarp::os::Property cartesianOptions {
         {"device", yarp::os::Value("CartesianControlClient")},
         {"cartesianRemote", yarp::os::Value(cartesianRemote)},
-        {"cartesianLocal", yarp::os::Value(cartesianLocal)}
+        {"cartesianLocal", yarp::os::Value(localPrefix + cartesianRemote)}
     };
 
     if (!cartesianDevice.open(cartesianOptions))
@@ -132,12 +132,11 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     }
 
     auto sensorRemote = rf.find("sensorRemote").asString();
-    auto sensorLocal = localPrefix + "/" + sensorRemote;
 
     yarp::os::Property sensorOptions {
         {"device", yarp::os::Value("multipleanalogsensorsclient")},
         {"remote", yarp::os::Value(sensorRemote)},
-        {"local", yarp::os::Value(sensorLocal)}
+        {"local", yarp::os::Value(localPrefix + sensorRemote)}
     };
 
     if (!sensorDevice.open(sensorOptions))
@@ -168,6 +167,20 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     if (sensorIndex == -1)
     {
         yCError(FTC) << "Failed to find sensor with name" << sensorName;
+        return false;
+    }
+
+    int retry = 0;
+
+    while (sensor->getSixAxisForceTorqueSensorStatus(sensorIndex) != yarp::dev::MAS_OK && retry++ < 10)
+    {
+        yCDebug(FTC) << "Waiting for sensor to be ready... retry" << retry;
+        yarp::os::SystemClock::delaySystem(0.1);
+    }
+
+    if (retry == 10)
+    {
+        yCError(FTC) << "Failed to get first read, max number of retries exceeded";
         return false;
     }
 
@@ -313,7 +326,7 @@ void FtCompensation::run()
 
 bool FtCompensation::updateModule()
 {
-    return true;
+    return yarp::os::PeriodicThread::isRunning();
 }
 
 bool FtCompensation::interruptModule()
