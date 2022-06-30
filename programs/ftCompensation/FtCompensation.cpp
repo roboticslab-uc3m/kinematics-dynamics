@@ -29,6 +29,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(FTC) << "Config:" << rf.toString();
 
+    auto period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
+
     dryRun = rf.check("dryRun", "process sensor loops, but don't send motion command");
     linGain = rf.check("linGain", yarp::os::Value(DEFAULT_LIN_GAIN), "linear gain").asFloat64();
     rotGain = rf.check("rotGain", yarp::os::Value(DEFAULT_ROT_GAIN), "rotational gain").asFloat64();
@@ -136,7 +138,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     yarp::os::Property sensorOptions {
         {"device", yarp::os::Value("multipleanalogsensorsclient")},
         {"remote", yarp::os::Value(sensorRemote)},
-        {"local", yarp::os::Value(localPrefix + sensorRemote)}
+        {"local", yarp::os::Value(localPrefix + sensorRemote)},
+        {"timeout", yarp::os::Value(period * 0.5)}
     };
 
     if (!sensorDevice.open(sensorOptions))
@@ -236,7 +239,6 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         usingTool = false;
     }
 
-    auto period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
     yarp::os::PeriodicThread::setPeriod(period);
 
     return yarp::os::PeriodicThread::start();
