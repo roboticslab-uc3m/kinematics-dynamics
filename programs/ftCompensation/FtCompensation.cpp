@@ -64,63 +64,6 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     auto localPrefix = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PREFIX), "local port prefix").asString();
 
-    // ----- cartesian device -----
-
-    if (!rf.check("cartesianRemote", "remote cartesian port to connect to"))
-    {
-        yCError(FTC) << "Missing parameter: cartesianRemote";
-        return false;
-    }
-
-    auto cartesianRemote = rf.find("cartesianRemote").asString();
-
-    yarp::os::Property cartesianOptions {
-        {"device", yarp::os::Value("CartesianControlClient")},
-        {"cartesianRemote", yarp::os::Value(cartesianRemote)},
-        {"cartesianLocal", yarp::os::Value(localPrefix + cartesianRemote)}
-    };
-
-    if (!cartesianDevice.open(cartesianOptions))
-    {
-        yCError(FTC) << "Failed to open cartesian device";
-        return false;
-    }
-
-    if (!cartesianDevice.view(iCartesianControl))
-    {
-        yCError(FTC) << "Failed to view cartesian control interface";
-        return false;
-    }
-
-    if (!dryRun)
-    {
-        std::map<int, double> params;
-
-        if (!iCartesianControl->getParameters(params))
-        {
-            yCError(FTC) << "Unable to retrieve cartesian configuration parameters";
-            return false;
-        }
-
-        bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
-
-        if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
-        {
-            yCWarning(FTC) << "Unable to preset streaming command";
-            return false;
-        }
-
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
-        {
-            yCWarning(FTC) << "Unable to set TCP frame";
-            return false;
-        }
-    }
-    else
-    {
-        yCInfo(FTC) << "Dry run mode enabled, robot will perform no motion";
-    }
-
     // ----- sensor device -----
 
     if (!rf.check("sensorName", "remote FT sensor name to connect to via MAS client"))
@@ -230,17 +173,77 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         toolWeight_0.torque = KDL::Vector::Zero();
 
         usingTool = true;
-
-        if (!compensateTool(initialOffset))
-        {
-            yCError(FTC) << "Failed to compensate tool";
-            return false;
-        }
     }
     else
     {
         yCInfo(FTC) << "Using no tool";
         usingTool = false;
+    }
+
+    // ----- cartesian device -----
+
+    if (!dryRun || usingTool)
+    {
+        if (!rf.check("cartesianRemote", "remote cartesian port to connect to"))
+        {
+            yCError(FTC) << "Missing parameter: cartesianRemote";
+            return false;
+        }
+
+        auto cartesianRemote = rf.find("cartesianRemote").asString();
+
+        yarp::os::Property cartesianOptions {
+            {"device", yarp::os::Value("CartesianControlClient")},
+            {"cartesianRemote", yarp::os::Value(cartesianRemote)},
+            {"cartesianLocal", yarp::os::Value(localPrefix + cartesianRemote)}
+        };
+
+        if (!cartesianDevice.open(cartesianOptions))
+        {
+            yCError(FTC) << "Failed to open cartesian device";
+            return false;
+        }
+
+        if (!cartesianDevice.view(iCartesianControl))
+        {
+            yCError(FTC) << "Failed to view cartesian control interface";
+            return false;
+        }
+
+        if (!dryRun)
+        {
+            std::map<int, double> params;
+
+            if (!iCartesianControl->getParameters(params))
+            {
+                yCError(FTC) << "Unable to retrieve cartesian configuration parameters";
+                return false;
+            }
+
+            bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+
+            if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
+            {
+                yCWarning(FTC) << "Unable to preset streaming command";
+                return false;
+            }
+
+            if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
+            {
+                yCWarning(FTC) << "Unable to set TCP frame";
+                return false;
+            }
+        }
+
+        if (usingTool && !compensateTool(initialOffset))
+        {
+            yCError(FTC) << "Failed to compensate tool";
+            return false;
+        }
+    }
+    else if (dryRun)
+    {
+        yCInfo(FTC) << "Dry run mode enabled, robot will perform no motion";
     }
 
     yarp::os::PeriodicThread::setPeriod(period);
