@@ -20,10 +20,10 @@ namespace
 
 constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_PERIOD = 0.02;
-constexpr auto DEFAULT_LIN_GAIN = "1.0";
-constexpr auto DEFAULT_ROT_GAIN = "1.0";
-constexpr auto DEFAULT_FORCE_DEADBAND = "1.0";
-constexpr auto DEFAULT_TORQUE_DEADBAND = "1.0";
+constexpr auto DEFAULT_LIN_GAIN = 1.0;
+constexpr auto DEFAULT_ROT_GAIN = 1.0;
+constexpr auto DEFAULT_FORCE_DEADBAND = 1.0;
+constexpr auto DEFAULT_TORQUE_DEADBAND = 1.0;
 
 bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 {
@@ -115,6 +115,10 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
             yCWarning(FTC) << "Unable to set TCP frame";
             return false;
         }
+    }
+    else
+    {
+        yCInfo(FTC) << "Dry run mode enabled, robot will perform no motion";
     }
 
     // ----- sensor device -----
