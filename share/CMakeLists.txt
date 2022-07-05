@@ -1,11 +1,20 @@
-# Copyright: 2014 UC3M
-# Author: Juan G Victores
-# CopyPolicy: Released under the terms of the GNU GPL v2.0.
+if(ENABLE_streamingDeviceController)
+    yarp_install(FILES applications/streamingSharedControl.xml
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_APPLICATIONS_INSTALL_DIR}/streamingDeviceController)
 
-yarp_install(FILES ymanager.ini
-             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DATA_INSTALL_DIR})
+    yarp_install(FILES contexts/streamingDeviceController.ini
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/streamingDeviceController)
+endif()
 
-### Go through single applications
-add_subdirectory(streamingDeviceController)
-add_subdirectory(testAsibotSolverFromFile)
-add_subdirectory(testKdlSolverFromFile)
+if(ENABLE_tests AND ENABLE_AsibotSolver)
+    yarp_install(FILES contexts/testAsibotSolverFromFile.ini
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/testAsibotSolverFromFile)
+endif()
+
+if(ENABLE_tests AND ENABLE_KdlSolver)
+    yarp_install(FILES contexts/testKdlSolverFromFile.ini
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/testKdlSolverFromFile)
+endif()
+
+yarp_install(FILES applications/ymanager.ini
+             DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_APPLICATIONS_INSTALL_DIR})

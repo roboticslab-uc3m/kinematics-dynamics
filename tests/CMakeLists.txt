@@ -61,7 +61,7 @@ if(ENABLE_tests)
 
     # testAsibotSolverFromFile
 
-    if(ENABLE_KinematicRepresentationLib)
+    if(ENABLE_AsibotSolver AND ENABLE_KinematicRepresentationLib)
         add_executable(testAsibotSolverFromFile testAsibotSolverFromFile.cpp)
 
         target_link_libraries(testAsibotSolverFromFile YARP::YARP_os
