@@ -1,0 +1,35 @@
+<application>
+    <name>ftCompensation app (left arm stump)</name>
+
+    <module>
+        <name>multipleanalogsensorsserver</name>
+        <parameters>--subdevice Jr3 --name /jr3 --period 5 --filter 2 --dextrorotary</parameters>
+        <node>2.2.2.105</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>launchCanBus</name>
+        <parameters>--from manipulation-leftArm.ini</parameters>
+        <node>manipulation</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /teo/leftArm/rpc:i"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>BasicCartesianControl</name>
+        <parameters>--name /teo/leftArm/CartesianControl --kinematics teo-fixedTrunk-leftArm-fetch.ini --local /teo/leftArm/local --remote /teo/leftArm</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>ftCompensation</name>
+        <parameters>--from ftCompensation-stump.ini --sensorName ch0 --sensorRemote /jr3 --cartesianRemote /teo/leftArm/CartesianControl</parameters>
+        <node>localhost</node>
+    </module>
+</application>

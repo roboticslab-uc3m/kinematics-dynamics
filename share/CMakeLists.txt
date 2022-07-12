@@ -1,3 +1,12 @@
+if(ENABLE_ftCompensation)
+    yarp_install(FILES applications/ftCompensation.xml
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_APPLICATIONS_INSTALL_DIR}/ftCompensation)
+
+    yarp_install(FILES contexts/ftCompensation-lacquey.ini
+                       contexts/ftCompensation-stump.ini
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/ftCompensation)
+endif()
+
 if(ENABLE_streamingDeviceController)
     yarp_install(FILES applications/streamingSharedControl.xml
                  DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_APPLICATIONS_INSTALL_DIR}/streamingDeviceController)
