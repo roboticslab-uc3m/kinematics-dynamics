@@ -1,3 +1,4 @@
+import argparse
 import math
 import yarp
 import roboticslab_kinematics_dynamics as kd
@@ -23,36 +24,57 @@ def stderr_redirected(to=os.devnull):
         finally:
             _redirect_stderr(to=old_stderr)
 
-STEP = 0.01 # [m]
+parser = argparse.ArgumentParser(description='Obtain the largest cuboid-shaped reachable space of a manipulator around an initial pose')
+parser.add_argument('--step', default=0.01, type=float, help='IK step [m]')
+parser.add_argument('--minX', default=-math.inf, type=float, help='lower X axis bound [m]')
+parser.add_argument('--maxX', default=math.inf, type=float, help='upper X axis bound [m]')
+parser.add_argument('--minY', default=-math.inf, type=float, help='lower Y axis bound [m]')
+parser.add_argument('--maxY', default=math.inf, type=float, help='upper Y axis bound [m]')
+parser.add_argument('--minZ', default=-math.inf, type=float, help='lower Z axis bound [m]')
+parser.add_argument('--maxZ', default=math.inf, type=float, help='upper Z axis bound [m]')
+parser.add_argument('--kinematics', required=True, type=str, help='kinematics.ini file')
+parser.add_argument('--eps', default=10e-3, type=float, help='epsilon value for IK float operations')
+parser.add_argument('--limitsMin', required=True, nargs='+', type=float, help='lower joint limits [deg]')
+parser.add_argument('--limitsMax', required=True, nargs='+', type=float, help='upper joint limits [deg]')
+parser.add_argument('--initialJointPose', required=True, nargs='+', type=float, help='initial joint pose [deg]')
+args = parser.parse_args()
 
-MIN_X = 0.2 # [m]
-MAX_X = math.inf
+if not args.minX < args.maxX:
+    raise ValueError('--minX must be less than --maxX')
 
-MIN_Y = 0.0 # [m]
-MAX_Y = math.inf
+if not args.minY < args.maxY:
+    raise ValueError('--minY must be less than --maxY')
 
-MIN_Z = -math.inf
-MAX_Z = math.inf
+if not args.minZ < args.maxZ:
+    raise ValueError('--minZ must be less than --maxZ')
 
-MINS = [-96.8, -23.9, -51.6, -101.1, -101.3, -113.3]
-MAXS = [113.2, 76.5, 84.1, 96.8, 76.4, 61.3]
+if len(args.limitsMin) != len(args.limitsMax) or len(args.initialJointPose) != len(args.limitsMin):
+    raise ValueError('--limitsMin, --limitsMax and --initialJoinPose must have the same length')
+
+for i in range(len(args.limitsMin)):
+    if args.limitsMin[i] > args.limitsMax[i]:
+        raise ValueError('--limitsMin[%d] must not be greater than --limitsMax[%d]: %f > %f' % (i, i, args.limitsMin[i], args.limitsMax[i]))
+
+# reference limits for TEO's left arm
+# args.limitsMin = [-96.8, -23.9, -51.6, -101.1, -101.3, -113.3]
+# args.limitsMax = [113.2, 76.5, 84.1, 96.8, 76.4, 61.3]
 
 def check_limits(values):
     for i, value in enumerate(values):
-        if not MINS[i] <= value <= MAXS[i]:
+        if not args.limitsMin[i] <= value <= args.limitsMax[i]:
             return False
 
     return True
 
-initial_joint_pose = yarp.DVector([-45, 0, 0, -30, 0, -15])
+# reference initial joint pose for TEO's left (or right) arm
+# args.initialJointPose = [-45, 0, 0, -30, 0, -15]
 
 options = yarp.Property()
 options.put('device', 'KdlSolver')
-options.put('kinematics', 'teo-fixedTrunk-leftArm-fetch.ini')
+options.put('kinematics', args.kinematics)
 options.put('ikPos', 'lma')
-options.put('weights', '1 1 1 0 0 0')
-options.put('epsPos', 10e-3)
-options.fromString('(mins (-96.8 -23.9 -51.6 -101.1 -101.3 -113.3)) (maxs (113.2 76.5 84.1 96.8 76.4 61.3))', False)
+options.put('weights', '1 1 1 0 0 0') # dismiss orientation
+options.put('epsPos', args.eps)
 
 device = yarp.PolyDriver(options)
 
@@ -62,7 +84,8 @@ if not device.isValid():
 
 solver = kd.viewICartesianSolver(device)
 
-print('Initial joint pose:', list(initial_joint_pose))
+print('Initial joint pose:', args.initialJointPose)
+initial_joint_pose = yarp.DVector(args.initialJointPose)
 
 initial_cart_pose = yarp.DVector()
 solver.fwdKin(initial_joint_pose, initial_cart_pose)
@@ -72,32 +95,38 @@ print('Initial cartesian pose:', list(initial_cart_pose))
 desired_cart_pose = yarp.DVector(initial_cart_pose)
 desired_joint_pose = yarp.DVector(6)
 
+# algorithm:
+# 1. find the cuboid that encapsulates the reachable space around an initial pose
+# 2. perform IK for all points in said cuboid
+# 3. find the largest inner cuboid containing points with a valid IK
+
 # [[minX, maxX], [minY, maxY], [minZ, maxZ]]
 outer_bounding_box = [[value, value] for value in initial_cart_pose][:3]
 
-for axis in range(3): # [X, Y, Z]
-    for direction in range(2): # [MIN, MAX]
-        while True:
-            diff = STEP * (1 if direction == 1 else -1)
-            desired_cart_pose[axis] += diff
+with stderr_redirected(): # dismiss a few irrelevant KDL errors
+    for axis in range(3): # [X, Y, Z]
+        for direction in range(2): # [MIN, MAX]
+            while True:
+                diff = args.step * (1 if direction == 1 else -1)
+                desired_cart_pose[axis] += diff
 
-            if (
-                    axis == 0 and not (MIN_X < desired_cart_pose[axis] < MAX_X) or
-                    axis == 1 and not (MIN_Y < desired_cart_pose[axis] < MAX_Y) or
-                    axis == 2 and not (MIN_Z < desired_cart_pose[axis] < MAX_Z) or
-                    not solver.invKin(desired_cart_pose, initial_joint_pose, desired_joint_pose) or
-                    not check_limits(desired_joint_pose)
-                ):
-                outer_bounding_box[axis][direction] = desired_cart_pose[axis] - diff
-                desired_cart_pose = yarp.DVector(initial_cart_pose)
-                break
+                if (
+                        axis == 0 and not (args.minX < desired_cart_pose[axis] < args.maxX) or
+                        axis == 1 and not (args.minY < desired_cart_pose[axis] < args.maxY) or
+                        axis == 2 and not (args.minZ < desired_cart_pose[axis] < args.maxZ) or
+                        not solver.invKin(desired_cart_pose, initial_joint_pose, desired_joint_pose) or
+                        not check_limits(desired_joint_pose)
+                    ):
+                    outer_bounding_box[axis][direction] = desired_cart_pose[axis] - diff
+                    desired_cart_pose = yarp.DVector(initial_cart_pose)
+                    break
 
 print('Outer boundaries (X, Y, Z) [m]:', list(outer_bounding_box))
 
 dims = [boundary[1] - boundary[0] for boundary in outer_bounding_box]
 print('Dimensions [m]:', dims)
 
-dims_n = [int(dim / STEP) for dim in dims]
+dims_n = [int(dim / args.step) for dim in dims]
 print('Dimensions [#]:', dims_n)
 
 ik_solutions = [[[False for z in range(dims_n[2])] for y in range(dims_n[1])] for x in range(dims_n[0])]
@@ -109,11 +138,11 @@ input('Press enter to start solving IK...')
 progress = 0
 successes = 0
 
-with stderr_redirected(): # KDL errors are way too verbose
+with stderr_redirected(): # KDL errors are way too verbose here
     for x in range(dims_n[0]):
         for y in range(dims_n[1]):
             for z in range(dims_n[2]):
-                desired_cart_pose[:3] = [outer_bounding_box[axis][0] + STEP * value for axis, value in enumerate([x, y, z])]
+                desired_cart_pose[:3] = [outer_bounding_box[axis][0] + args.step * value for axis, value in enumerate([x, y, z])]
 
                 if (
                     solver.invKin(desired_cart_pose, initial_joint_pose, desired_joint_pose) and
@@ -129,7 +158,7 @@ with stderr_redirected(): # KDL errors are way too verbose
 
 print('Successful IK solutions: %d out of %d' % (successes, total_problems))
 
-initial_cart_indices = [int((value - outer_bounding_box[axis][0]) / STEP) for axis, value in enumerate(initial_cart_pose[:3])]
+initial_cart_indices = [int((value - outer_bounding_box[axis][0]) / args.step) for axis, value in enumerate(initial_cart_pose[:3])]
 print('Initial cartesian pose indices:', initial_cart_indices)
 
 input('Press enter to start finding largest inner cuboid...')
@@ -210,6 +239,6 @@ for x0 in range(0, initial_cart_indices[0]):
 
 print('Largest cuboid indices:', largest_cuboid_indices)
 
-inner_bounding_box = [[outer_bounding_box[axis][0] + value * STEP for value in range] for axis, range in enumerate(largest_cuboid_indices)]
+inner_bounding_box = [[outer_bounding_box[axis][0] + value * args.step for value in range] for axis, range in enumerate(largest_cuboid_indices)]
 print('Inner boundaries:', inner_bounding_box)
 print('Dimensions [m]:', [boundary[1] - boundary[0] for boundary in inner_bounding_box])
