@@ -19,7 +19,9 @@ namespace roboticslab
 /**
  * @ingroup ftCompensation
  *
- * @brief ...
+ * @brief Produces motion in the direction of an externally applied force
+ * measured by a force-torque sensor (pretty much mimicking a classical
+ * gravity compensation app).
  */
 class FtCompensation : public yarp::os::RFModule,
                        public yarp::os::PeriodicThread

@@ -37,6 +37,11 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     forceDeadband = rf.check("forceDeadband", yarp::os::Value(DEFAULT_FORCE_DEADBAND), "force deadband [N]").asFloat64();
     torqueDeadband = rf.check("torqueDeadband", yarp::os::Value(DEFAULT_TORQUE_DEADBAND), "torque deadband [Nm]").asFloat64();
 
+    yCInfo(FTC) << "Using linear gain:" << linGain;
+    yCInfo(FTC) << "Using rotational gain:" << rotGain;
+    yCInfo(FTC) << "Using force deadband [N]:" << forceDeadband;
+    yCInfo(FTC) << "Using torque deadband [Nm]:" << torqueDeadband;
+
     auto sensorFrameRPY = rf.check("sensorFrameRPY", yarp::os::Value::getNullValue(), "sensor frame RPY rotation regarding TCP frame [deg]");
 
     if (!sensorFrameRPY.isNull())
@@ -142,8 +147,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     // ----- tool compensation -----
 
-    auto vToolCoM = rf.check("toolCoM", yarp::os::Value::getNullValue(), "tool CoM regarding to TCP frame");
-    auto vToolWeight = rf.check("toolWeight", yarp::os::Value::getNullValue(), "tool weight vector regarding to inertial frame");
+    auto vToolCoM = rf.check("toolCoM", yarp::os::Value::getNullValue(), "tool CoM regarding TCP frame");
+    auto vToolWeight = rf.check("toolWeight", yarp::os::Value::getNullValue(), "tool weight vector regarding inertial frame");
 
     if (!vToolCoM.isNull() && !vToolWeight.isNull())
     {
@@ -159,13 +164,13 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        yCInfo(FTC) << "Tool CoM:" << vToolCoM.toString();
+        yCInfo(FTC) << "Tool CoM regarding TCP frame:" << vToolCoM.toString();
 
         toolCoM_N.x(vToolCoM.asList()->get(0).asFloat64());
         toolCoM_N.y(vToolCoM.asList()->get(1).asFloat64());
         toolCoM_N.z(vToolCoM.asList()->get(2).asFloat64());
 
-        yCInfo(FTC) << "Tool weight:" << vToolWeight.toString();
+        yCInfo(FTC) << "Tool weight regarding inertial frame:" << vToolWeight.toString();
 
         toolWeight_0.force.x(vToolWeight.asList()->get(0).asFloat64());
         toolWeight_0.force.y(vToolWeight.asList()->get(1).asFloat64());

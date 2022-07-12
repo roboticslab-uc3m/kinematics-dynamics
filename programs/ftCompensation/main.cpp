@@ -1,7 +1,5 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include <cstdio>
-
 #include <yarp/os/LogStream.h>
 #include <yarp/os/ResourceFinder.h>
 #include <yarp/os/Network.h>
@@ -11,12 +9,12 @@
 /**
  * @ingroup kinematics-dynamics-programs
  *
- * \defgroup ftCompensation ftCompensation
+ * @defgroup ftCompensation ftCompensation
  *
  * @brief Creates an instance of roboticslab::FtCompensation.
  */
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     yarp::os::ResourceFinder rf;
     rf.setDefaultContext("ftCompensation");
@@ -25,21 +23,13 @@ int main(int argc, char *argv[])
 
     roboticslab::FtCompensation mod;
 
-    yInfo() << "ftCompensation checking for yarp network...";
-    std::fflush(stdout);
+    yInfo() << "ftCompensation checking for YARP network...";
 
     if (!yarp::os::Network::checkNetwork())
     {
-        yError() << "ftCompensation found no yarp network (try running \"yarpserver &\"), bye!";
+        yError() << "ftCompensation found no YARP network (try running \"yarpserver &\")";
         return 1;
     }
 
-    if (mod.configure(rf))
-    {
-        return mod.runModule();
-    }
-    else
-    {
-        return mod.close() ? 0 : 1;
-    }
+    return mod.runModule(rf);
 }
