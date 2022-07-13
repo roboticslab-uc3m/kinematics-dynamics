@@ -24,6 +24,7 @@ void BasicCartesianControl::run()
         return;
     }
 
+    StateWatcher watcher([this] { cmcSuccess = false; stopControl(); });
     std::vector<double> q(numJoints);
 
     if (!iEncoders->getEncoders(q.data()))
@@ -34,8 +35,10 @@ void BasicCartesianControl::run()
         if (encoderErrors > MAX_ENCODER_ERRORS)
         {
             yCError(BCC) << "Exceeded maximum number of consecutive encoder read errors, aborting";
-            cmcSuccess = false;
-            stopControl();
+        }
+        else
+        {
+            watcher.suppress();
         }
 
         return;
@@ -46,27 +49,25 @@ void BasicCartesianControl::run()
     if (!checkJointLimits(q))
     {
         yCError(BCC) << "checkJointLimits() failed, stopping control";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
 
     switch (currentState)
     {
     case VOCAB_CC_MOVJ_CONTROLLING:
-        handleMovj(q);
+        handleMovj(q, watcher);
         break;
     case VOCAB_CC_MOVL_CONTROLLING:
-        handleMovl(q);
+        handleMovl(q, watcher);
         break;
     case VOCAB_CC_MOVV_CONTROLLING:
-        handleMovv(q);
+        handleMovv(q, watcher);
         break;
     case VOCAB_CC_GCMP_CONTROLLING:
-        handleGcmp(q);
+        handleGcmp(q, watcher);
         break;
     case VOCAB_CC_FORC_CONTROLLING:
-        handleForc(q);
+        handleForc(q, watcher);
         break;
     default:
         break;
@@ -75,13 +76,11 @@ void BasicCartesianControl::run()
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovj(const std::vector<double> &q)
+void BasicCartesianControl::handleMovj(const std::vector<double> &q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_POSITION))
     {
         yCError(BCC) << "Not in position control mode";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
 
@@ -90,10 +89,10 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q)
     if (!iPositionControl->checkMotionDone(&done))
     {
         yCError(BCC) << "Unable to query current robot state";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
+
+    watcher.suppress();
 
     if (done)
     {
@@ -108,13 +107,11 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovl(const std::vector<double> &q)
+void BasicCartesianControl::handleMovl(const std::vector<double> &q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Not in velocity control mode";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
 
@@ -126,6 +123,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
     {
         if (movementTime > trajectory->Duration())
         {
+            watcher.suppress();
             stopControl();
             return;
         }
@@ -145,7 +143,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 
     if (!iCartesianSolver->fwdKin(q, currentX))
     {
-        yCWarning(BCC) << "fwdKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "fwdKin() failed";
         return;
     }
 
@@ -164,7 +162,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 
     if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot))
     {
-        yCWarning(BCC) << "diffInvKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "diffInvKin() failed";
         return;
     }
 
@@ -172,27 +170,25 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q)
 
     if (!checkJointVelocities(commandQdot))
     {
-        yCError(BCC) << "diffInvKin() too dangerous, stopping";
-        cmcSuccess = false;
-        stopControl();
+        yCError(BCC) << "diffInvKin() too dangerous";
         return;
     }
 
+    watcher.suppress();
+
     if (!iVelocityControl->velocityMove(commandQdot.data()))
     {
-        yCWarning(BCC) << "velocityMove() failed, not updating control this iteration";
+        yCWarning(BCC) << "velocityMove() failed";
     }
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovv(const std::vector<double> &q)
+void BasicCartesianControl::handleMovv(const std::vector<double> &q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Not in velocity control mode";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
 
@@ -202,7 +198,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 
     if (!iCartesianSolver->fwdKin(q, currentX))
     {
-        yCWarning(BCC) << "fwdKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "fwdKin() failed";
         return;
     }
 
@@ -237,7 +233,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 
     if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, referenceFrame))
     {
-        yCWarning(BCC) << "diffInvKin() failed, not updating control this iteration";
+        yCWarning(BCC) << "diffInvKin() failed";
         return;
     }
 
@@ -245,27 +241,25 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q)
 
     if (!checkJointVelocities(commandQdot))
     {
-        yCError(BCC) << "diffInvKin() too dangerous, stopping";
-        cmcSuccess = false;
-        stopControl();
+        yCError(BCC) << "diffInvKin() too dangerous";
         return;
     }
 
+    watcher.suppress();
+
     if (!iVelocityControl->velocityMove(commandQdot.data()))
     {
-        yCWarning(BCC) << "velocityMove() failed, not updating control this iteration";
+        yCWarning(BCC) << "velocityMove() failed";
     }
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
+void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Not in torque control mode";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
 
@@ -273,32 +267,32 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
 
     if (!iCartesianSolver->invDyn(q, t))
     {
-        yCWarning(BCC) << "invDyn() failed, not updating control this iteration";
+        yCWarning(BCC) << "invDyn() failed";
         return;
     }
 
+    watcher.suppress();
+
     if (!iTorqueControl->setRefTorques(t.data()))
     {
-        yCWarning(BCC) << "setRefTorques() failed, not updating control this iteration";
+        yCWarning(BCC) << "setRefTorques() failed";
     }
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleForc(const std::vector<double> &q)
+void BasicCartesianControl::handleForc(const std::vector<double> &q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Not in torque control mode";
-        cmcSuccess = false;
-        stopControl();
         return;
     }
 
     std::vector<double> qdot(numJoints), qdotdot(numJoints);
     std::vector< std::vector<double> > fexts;
 
-    for (int i = 0; i < numJoints - 1; i++)  //-- "numJoints - 1" is important
+    for (int i = 0; i < numJoints - 1; i++) //-- "numJoints - 1" is important
     {
         fexts.emplace_back(6, 0);
     }
@@ -309,13 +303,15 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q)
 
     if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fexts, t))
     {
-        yCWarning(BCC) << "invDyn() failed, not updating control this iteration";
+        yCWarning(BCC) << "invDyn() failed";
         return;
     }
 
+    watcher.suppress();
+
     if (!iTorqueControl->setRefTorques(t.data()))
     {
-        yCWarning(BCC) << "setRefTorques() failed, not updating control this iteration";
+        yCWarning(BCC) << "setRefTorques() failed";
     }
 }
 

@@ -427,28 +427,28 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
+    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
     std::vector<double> currentQ(numJoints), qdot;
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         yCError(BCC) << "diffInvKin() failed";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
-        yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
+        yCError(BCC) << "Joint position or velocity limits exceeded";
         return;
     }
+
+    watcher.suppress();
 
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
@@ -467,12 +467,12 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
         return;
     }
 
+    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
 
@@ -481,7 +481,6 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
         yCError(BCC) << "fwdKin() failed";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
 
@@ -492,7 +491,6 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
         if (!iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj))
         {
             yCError(BCC) << "changeOrigin() failed";
-            iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
             return;
         }
     }
@@ -506,7 +504,6 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     if (!iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd))
     {
         yCError(BCC) << "fwdKinError() failed";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
 
@@ -519,16 +516,16 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         yCError(BCC) << "diffInvKin() failed";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
         yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
-        iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data());
         return;
     }
+
+    watcher.suppress();
 
     if (!iVelocityControl->velocityMove(qdot.data()))
     {

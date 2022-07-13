@@ -4,7 +4,9 @@
 #define __BASIC_CARTESIAN_CONTROL_HPP__
 
 #include <atomic>
+#include <functional>
 #include <mutex>
+#include <utility>
 #include <vector>
 
 #include <yarp/os/PeriodicThread.h>
@@ -137,7 +139,24 @@ public:
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
 
-protected:
+private:
+    class StateWatcher
+    {
+    public:
+        template <typename Fn>
+        StateWatcher(Fn && fn) : handler(std::move(fn))
+        {}
+
+        ~StateWatcher()
+        { if (handler) handler(); }
+
+        void suppress() const
+        { handler = nullptr; }
+
+    private:
+        mutable std::function<void()> handler;
+    };
+
     int getCurrentState() const;
     void setCurrentState(int value);
 
@@ -150,11 +169,11 @@ protected:
     bool presetStreamingCommand(int command);
     void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
-    void handleMovj(const std::vector<double> & q);
-    void handleMovl(const std::vector<double> & q);
-    void handleMovv(const std::vector<double> & q);
-    void handleGcmp(const std::vector<double> & q);
-    void handleForc(const std::vector<double> & q);
+    void handleMovj(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleMovl(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleMovv(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleGcmp(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleForc(const std::vector<double> & q, const StateWatcher & watcher);
 
     yarp::dev::PolyDriver solverDevice;
     ICartesianSolver * iCartesianSolver {nullptr};
