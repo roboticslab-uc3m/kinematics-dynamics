@@ -8,6 +8,7 @@
 
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
+#include <yarp/os/SystemClock.h>
 #include <yarp/os/Vocab.h>
 
 #include "KdlVectorConverter.hpp"
@@ -226,7 +227,20 @@ bool BasicCartesianControl::setControlModes(int mode)
         }
     }
 
-    return true;
+    int retry = 0;
+
+    do
+    {
+        yarp::os::SystemClock::delaySystem(0.1);
+
+        if (checkControlModes(mode))
+        {
+            return true;
+        }
+    } while (retry++ < 10);
+
+    yCWarning(BCC) << "Max retries exceeded for mode change:" << yarp::os::Vocab32::decode(mode);
+    return false;
 }
 
 // -----------------------------------------------------------------------------
