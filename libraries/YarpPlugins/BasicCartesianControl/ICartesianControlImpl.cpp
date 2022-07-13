@@ -2,9 +2,9 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <cmath>  //-- std::abs
-#include <algorithm>
-#include <functional>
+#include <cmath> //-- std::abs
+
+#include <algorithm> // std::transform
 #include <vector>
 
 #include <yarp/os/LogStream.h>
@@ -509,7 +509,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
 
     std::vector<double> xdot(xd.size());
     const double factor = gain / interval;
-    std::transform(xd.begin(), xd.end(), xdot.begin(), std::bind1st(std::multiplies<double>(), factor));
+    std::transform(xd.begin(), xd.end(), xdot.begin(), [factor](double val) { return val * factor; });
 
     std::vector<double> qdot;
 
