@@ -14,6 +14,9 @@ using namespace roboticslab;
 
 void BasicCartesianControl::run()
 {
+    static constexpr int MAX_ENCODER_ERRORS = 20;
+    static constexpr double ERROR_THROTTLE = 0.5; // [s]
+
     const int currentState = getCurrentState();
 
     if (currentState == VOCAB_CC_NOT_CONTROLLING)
@@ -25,9 +28,20 @@ void BasicCartesianControl::run()
 
     if (!iEncoders->getEncoders(q.data()))
     {
-        yCError(BCC) << "getEncoders() failed, unable to check joint limits";
+        yCErrorThrottle(BCC, ERROR_THROTTLE) << "getEncoders() failed, unable to check joint limits";
+        encoderErrors++;
+
+        if (encoderErrors > MAX_ENCODER_ERRORS)
+        {
+            yCError(BCC) << "Exceeded maximum number of consecutive encoder read errors, aborting";
+            cmcSuccess = false;
+            stopControl();
+        }
+
         return;
     }
+
+    encoderErrors = 0; // reset error counter
 
     if (!checkJointLimits(q))
     {
@@ -250,6 +264,7 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q)
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Not in torque control mode";
+        cmcSuccess = false;
         stopControl();
         return;
     }
@@ -275,6 +290,7 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q)
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Not in torque control mode";
+        cmcSuccess = false;
         stopControl();
         return;
     }

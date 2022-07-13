@@ -3,6 +3,7 @@
 #ifndef __BASIC_CARTESIAN_CONTROL_HPP__
 #define __BASIC_CARTESIAN_CONTROL_HPP__
 
+#include <atomic>
 #include <mutex>
 #include <vector>
 
@@ -194,7 +195,8 @@ protected:
     /** FORC desired Cartesian force */
     std::vector<double> td;
 
-    bool cmcSuccess;
+    int encoderErrors {0};
+    std::atomic_bool cmcSuccess;
 
     std::vector<double> qMin, qMax;
     std::vector<double> qdotMin, qdotMax;
