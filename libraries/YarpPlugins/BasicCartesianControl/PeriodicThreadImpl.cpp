@@ -166,7 +166,7 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q, const State
         return;
     }
 
-    yCDebug(BCC) << "[MOVL]" << movementTime << "||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVL]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
@@ -237,7 +237,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
         return;
     }
 
-    yCDebug(BCC) << "[MOVV]" << movementTime << "||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVV]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {

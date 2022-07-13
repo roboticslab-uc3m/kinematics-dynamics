@@ -40,7 +40,7 @@ bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * 
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
-        yCError(BCC) << "getEncoders() failed";
+        yCErrorThreadThrottle(BCC, 1.0) << "getEncoders() failed";
         return false;
     }
 
@@ -343,6 +343,8 @@ bool BasicCartesianControl::forc(const std::vector<double> &td)
 
 bool BasicCartesianControl::stopControl()
 {
+    yCDebug(BCC) << "Stopping control";
+
     setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
     // first switch control so that manipulators don't fall due to e.g. gravity
