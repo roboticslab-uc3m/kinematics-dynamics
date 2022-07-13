@@ -427,6 +427,7 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
+    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
     std::vector<double> currentQ(numJoints), qdot;
 
     if (!iEncoders->getEncoders(currentQ.data()))
@@ -443,16 +444,15 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
-        yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
-        std::fill(qdot.begin(), qdot.end(), 0.0);
-        iVelocityControl->velocityMove(qdot.data());
+        yCError(BCC) << "Joint position or velocity limits exceeded";
         return;
     }
+
+    watcher.suppress();
 
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
         yCError(BCC) << "velocityMove() failed";
-        return;
     }
 }
 
@@ -467,6 +467,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
         return;
     }
 
+    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
@@ -521,15 +522,14 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
         yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
-        std::fill(qdot.begin(), qdot.end(), 0.0);
-        iVelocityControl->velocityMove(qdot.data());
         return;
     }
+
+    watcher.suppress();
 
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
         yCError(BCC) << "velocityMove() failed";
-        return;
     }
 }
 
