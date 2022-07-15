@@ -19,6 +19,9 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 
     yCDebug(SDC) << "Device configuration:" << deviceConfig.toString();
 
+    // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/186
+    yCWarning(SDC) << "Using MOVI commands, beware NOT TO EXCEED JOINT LIMITS";
+
     if (deviceName == "SpaceNavigator")
     {
         double gain = config.check("gain", yarp::os::Value(0.0)).asFloat64();
