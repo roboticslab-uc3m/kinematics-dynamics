@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04]
+        os: [ubuntu-20.04, ubuntu-22.04]
         robotology:
         - { yarp: yarp-3.6, ycm: ycm-0.14, cmake: 3.16.x }
         - { yarp: yarp-3.7, ycm: ycm-0.14, cmake: 3.16.x }
@@ -104,7 +104,7 @@ jobs:
     - name: Build YARP
       run: |
         cmake -S .deps/yarp -B .deps/yarp/build $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
-        cmake --build .deps/yarp/build --parallel
+        cmake --build .deps/yarp/build
         sudo cmake --install .deps/yarp/build
 
     - name: Build Orocos KDL
