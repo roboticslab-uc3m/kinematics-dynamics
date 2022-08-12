@@ -166,7 +166,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) = 0;
+    virtual bool stat(std::vector<double> &x, int * state = nullptr, double * timestamp = nullptr) = 0;
 
     /**
      * @brief Inverse kinematics

@@ -54,7 +54,7 @@ class CartesianControlClient : public yarp::dev::DeviceDriver,
 {
 public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-    bool stat(std::vector<double> &x, int * state = 0, double * timestamp = 0) override;
+    bool stat(std::vector<double> &x, int * state = nullptr, double * timestamp = nullptr) override;
     bool inv(const std::vector<double> &xd, std::vector<double> &q) override;
     bool movj(const std::vector<double> &xd) override;
     bool relj(const std::vector<double> &xd) override;
