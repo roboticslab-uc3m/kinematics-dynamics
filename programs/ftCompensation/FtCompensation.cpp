@@ -21,7 +21,7 @@ namespace
 constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_PERIOD = 0.02;
 constexpr auto DEFAULT_LIN_GAIN = 0.01;
-constexpr auto DEFAULT_ROT_GAIN = 0.02;
+constexpr auto DEFAULT_ROT_GAIN = 0.2;
 constexpr auto DEFAULT_FORCE_DEADBAND = 1.0;
 constexpr auto DEFAULT_TORQUE_DEADBAND = 1.0;
 
