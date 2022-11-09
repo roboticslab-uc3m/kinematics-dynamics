@@ -24,11 +24,7 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_ROBOT_LOCAL = "/KeyboardControllerClient";
-constexpr auto DEFAULT_ROBOT_REMOTE = "/asibot/asibotManipulator";
-
-constexpr auto DEFAULT_CARTESIAN_LOCAL = "/KeyboardCartesianControlClient";
-constexpr auto DEFAULT_CARTESIAN_REMOTE = "/asibotSim/BasicCartesianControl";
+constexpr auto DEFAULT_LOCAL_PREFIX = "/keyboardController";
 
 constexpr auto DEFAULT_ANGLE_REPR = "axisAngle"; // keep in sync with KinRepresentation::parseEnumerator's
                                                  // fallback in ::open()
@@ -109,26 +105,23 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(KC) << "Config:" << rf.toString();
 
-    bool skipControlboardController = rf.check("skipRCB", "don't load remote control board client");
-    bool skipCartesianController = rf.check("skipCC", "don't load cartesian control client");
+    auto usingRemoteRobot = rf.check("remoteRobot", "remote robot port");
+    auto usingRemoteCartesian = rf.check("remoteCartesian", "remote cartesian port");
 
-    if (skipControlboardController && skipCartesianController)
+    if (!usingRemoteRobot && !usingRemoteCartesian)
     {
         yCError(KC) << "You cannot skip both controllers";
         return false;
     }
 
-    if (!skipControlboardController)
-    {
-        std::string localRobot = rf.check("localRobot", yarp::os::Value(DEFAULT_ROBOT_LOCAL),
-                "local robot port").asString();
-        std::string remoteRobot = rf.check("remoteRobot", yarp::os::Value(DEFAULT_ROBOT_REMOTE),
-                "remote robot port").asString();
+    auto localPrefix = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PREFIX), "local port prefix").asString();
 
+    if (usingRemoteRobot)
+    {
         yarp::os::Property controlboardClientOptions {
             {"device", yarp::os::Value("remote_controlboard")},
-            {"local", yarp::os::Value(localRobot)},
-            {"remote", yarp::os::Value(remoteRobot)}
+            {"local", yarp::os::Value(localPrefix + "/joint")},
+            {"remote", yarp::os::Value(rf.find("remoteRobot"))}
         };
 
         if (!controlboardDevice.open(controlboardClientOptions))
@@ -181,17 +174,12 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
         currentJointVels.resize(axes, 0.0);
     }
 
-    if (!skipCartesianController)
+    if (usingRemoteCartesian)
     {
-        std::string localCartesian = rf.check("localCartesian", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
-                "local cartesian port").asString();
-        std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
-                "remote cartesian port").asString();
-
         yarp::os::Property cartesianControlClientOptions {
             {"device", yarp::os::Value("CartesianControlClient")},
-            {"cartesianLocal", yarp::os::Value(localCartesian)},
-            {"cartesianRemote", yarp::os::Value(remoteCartesian)},
+            {"cartesianLocal", yarp::os::Value(localPrefix + "/cartesian")},
+            {"cartesianRemote", yarp::os::Value(rf.find("remoteCartesian"))},
         };
 
         if (!cartesianControlDevice.open(cartesianControlClientOptions))
