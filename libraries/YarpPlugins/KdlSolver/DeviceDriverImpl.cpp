@@ -19,6 +19,7 @@
 #include <kdl/rigidbodyinertia.hpp>
 #include <kdl/rotationalinertia.hpp>
 #include <kdl/segment.hpp>
+#include <kdl/utilities/utility.h> // KDL::deg2rad
 
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_lma.hpp>
@@ -27,7 +28,6 @@
 #include <kdl/chainiksolvervel_wdls.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
 
-#include "KinematicRepresentation.hpp"
 #include "ConfigurationSelector.hpp"
 
 #include "ChainIkSolverPos_ST.hpp"
@@ -128,8 +128,8 @@ namespace
 
         for (int motor = 0; motor < nrOfJoints; motor++)
         {
-            qMax(motor) = KinRepresentation::degToRad(maxs->get(motor).asFloat64());
-            qMin(motor) = KinRepresentation::degToRad(mins->get(motor).asFloat64());
+            qMax(motor) = maxs->get(motor).asFloat64() * KDL::deg2rad;
+            qMin(motor) = mins->get(motor).asFloat64() * KDL::deg2rad;
 
             if (qMin(motor) == qMax(motor))
             {
@@ -211,7 +211,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             double linkAlpha = bLink.check("alpha", yarp::os::Value(0.0), "DH link twist (degrees)").asFloat64();
 
             KDL::Joint axis(KDL::Joint::RotZ);
-            KDL::Frame H = KDL::Frame::DH(linkA, KinRepresentation::degToRad(linkAlpha), linkD, KinRepresentation::degToRad(linkOffset));
+            KDL::Frame H = KDL::Frame::DH(linkA, linkAlpha * KDL::deg2rad, linkD, linkOffset * KDL::deg2rad);
 
             //-- Dynamic
             if (bLink.check("mass") && bLink.check("cog") && bLink.check("inertia"))

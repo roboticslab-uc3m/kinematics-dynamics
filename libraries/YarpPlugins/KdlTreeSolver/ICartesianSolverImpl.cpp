@@ -8,9 +8,9 @@
 #include <kdl/jntarray.hpp>
 #include <kdl/joint.hpp>
 #include <kdl/segment.hpp>
+#include <kdl/utilities/utility.h> // KDL::deg2rad, KDL::rad2deg
 
 #include "KdlVectorConverter.hpp"
-#include "KinematicRepresentation.hpp"
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
@@ -76,7 +76,7 @@ bool KdlTreeSolver::fwdKin(const std::vector<double> & q, std::vector<double> & 
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     x.clear();
@@ -147,7 +147,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qGuessInRad(motor) = KinRepresentation::degToRad(qGuess[motor]);
+        qGuessInRad(motor) = qGuess[motor] * KDL::deg2rad;
     }
 
     if (frame == TCP_FRAME)
@@ -182,7 +182,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        q[motor] = KinRepresentation::radToDeg(kdlq(motor));
+        q[motor] = kdlq(motor) * KDL::rad2deg;
     }
 
     return true;
@@ -213,7 +213,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     if (frame == TCP_FRAME)
@@ -251,7 +251,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qdot[motor] = KinRepresentation::radToDeg(qDotOutRadS(motor));
+        qdot[motor] = qDotOutRadS(motor) * KDL::rad2deg;
     }
 
     return true;
@@ -265,7 +265,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray qdotInRad(tree.getNrOfJoints());
@@ -301,21 +301,21 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray qdotInRad(tree.getNrOfJoints());
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qdotInRad(motor) = KinRepresentation::degToRad(qdot[motor]);
+        qdotInRad(motor) = qdot[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray qdotdotInRad(tree.getNrOfJoints());
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
     {
-        qdotdotInRad(motor) = KinRepresentation::degToRad(qdotdot[motor]);
+        qdotdotInRad(motor) = qdotdot[motor] * KDL::deg2rad;
     }
 
     KDL::WrenchMap wrenches;

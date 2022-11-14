@@ -7,7 +7,7 @@ yarp_prepare_plugin(KdlTreeSolver
                     TYPE roboticslab::KdlTreeSolver
                     INCLUDE KdlTreeSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
+                    DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND")
 
 if(NOT SKIP_KdlTreeSolver)
 
@@ -21,7 +21,6 @@ if(NOT SKIP_KdlTreeSolver)
                                         YARP::YARP_dev
                                         ${orocos_kdl_LIBRARIES}
                                         ROBOTICSLAB::KdlVectorConverterLib
-                                        ROBOTICSLAB::KinematicRepresentationLib
                                         ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     target_include_directories(KdlTreeSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})

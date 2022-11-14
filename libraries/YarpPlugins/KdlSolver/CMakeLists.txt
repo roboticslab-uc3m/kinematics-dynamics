@@ -13,7 +13,7 @@ yarp_prepare_plugin(KdlSolver
                     TYPE roboticslab::KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;ENABLE_KinematicRepresentationLib;orocos_kdl_FOUND")
+                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND")
 
 if(NOT SKIP_KdlSolver)
 
@@ -34,7 +34,6 @@ if(NOT SKIP_KdlSolver)
                                     ${orocos_kdl_LIBRARIES}
                                     ROBOTICSLAB::ScrewTheoryLib
                                     ROBOTICSLAB::KdlVectorConverterLib
-                                    ROBOTICSLAB::KinematicRepresentationLib
                                     ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
     target_include_directories(KdlSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})

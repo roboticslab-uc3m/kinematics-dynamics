@@ -20,6 +20,7 @@
 #include <kdl/rigidbodyinertia.hpp>
 #include <kdl/rotationalinertia.hpp>
 #include <kdl/segment.hpp>
+#include <kdl/utilities/utility.h> // KDL::deg2rad
 
 #include <kdl/treefksolverpos_recursive.hpp>
 #include <kdl/treeidsolver_recursive_newton_euler.hpp>
@@ -27,7 +28,6 @@
 #include <kdl/treeiksolverpos_online.hpp>
 #include <kdl/treeiksolvervel_wdls.hpp>
 
-#include "KinematicRepresentation.hpp"
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
@@ -107,9 +107,9 @@ namespace
 
         for (int motor = 0; motor < nrOfJoints; motor++)
         {
-            qMax(motor) = KinRepresentation::degToRad(maxs->get(motor).asFloat64());
-            qMin(motor) = KinRepresentation::degToRad(mins->get(motor).asFloat64());
-            qMaxVel(motor) = KinRepresentation::degToRad(maxvels->get(motor).asFloat64());
+            qMax(motor) = maxs->get(motor).asFloat64() * KDL::deg2rad;
+            qMin(motor) = mins->get(motor).asFloat64() * KDL::deg2rad;
+            qMaxVel(motor) = maxvels->get(motor).asFloat64() * KDL::deg2rad;
 
             if (qMin(motor) == qMax(motor))
             {
@@ -217,7 +217,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
                 double linkAlpha = bLink.check("alpha", yarp::os::Value(0.0), "DH link twist (degrees)").asFloat64();
 
                 KDL::Joint axis(KDL::Joint::RotZ);
-                KDL::Frame H = KDL::Frame::DH(linkA, KinRepresentation::degToRad(linkAlpha), linkD, KinRepresentation::degToRad(linkOffset));
+                KDL::Frame H = KDL::Frame::DH(linkA, linkAlpha * KDL::deg2rad, linkD, linkOffset * KDL::deg2rad);
 
                 //-- Dynamic
                 if (bLink.check("mass") && bLink.check("cog") && bLink.check("inertia"))
@@ -399,7 +399,7 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
         double vTranslMax = fullConfig.check("vTranslMax", yarp::os::Value(DEFAULT_V_TRANSL_MAX), "maximum translation speed (meters/second)").asFloat64();
         double vRotMax = fullConfig.check("vRotMax", yarp::os::Value(DEFAULT_V_ROT_MAX), "maximum rotation speed (degrees/second)").asFloat64();
 
-        vRotMax = KinRepresentation::degToRad(vRotMax);
+        vRotMax = vRotMax * KDL::deg2rad;
         ikSolverPos = new KDL::TreeIkSolverPos_Online(tree.getNrOfJoints(), endpoints, qMin, qMax, qMaxVels, vTranslMax, vRotMax, *fkSolverPos, *ikSolverVel);
     }
     else

@@ -6,11 +6,11 @@
 #include <kdl/jntarray.hpp>
 #include <kdl/joint.hpp>
 #include <kdl/segment.hpp>
+#include <kdl/utilities/utility.h> // KDL::deg2rad, KDL::rad2deg
 
 #include <yarp/os/Log.h>
 
 #include "KdlVectorConverter.hpp"
-#include "KinematicRepresentation.hpp"
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
@@ -84,7 +84,7 @@ bool KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     KDL::Frame fOutCart;
@@ -121,7 +121,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qGuessInRad(motor) = KinRepresentation::degToRad(qGuess[motor]);
+        qGuessInRad(motor) = qGuess[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray kdlq(chain.getNrOfJoints());
@@ -159,7 +159,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        q[motor] = KinRepresentation::radToDeg(kdlq(motor));
+        q[motor] = kdlq(motor) * KDL::rad2deg;
     }
 
     return true;
@@ -173,7 +173,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     KDL::Twist kdlxdot = KdlVectorConverter::vectorToTwist(xdot);
@@ -215,7 +215,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qdot[motor] = KinRepresentation::radToDeg(qDotOutRadS(motor));
+        qdot[motor] = qDotOutRadS(motor) * KDL::rad2deg;
     }
 
     return true;
@@ -229,7 +229,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray qdotInRad(chain.getNrOfJoints());
@@ -272,21 +272,21 @@ bool KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &q
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qInRad(motor) = KinRepresentation::degToRad(q[motor]);
+        qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray qdotInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qdotInRad(motor) = KinRepresentation::degToRad(qdot[motor]);
+        qdotInRad(motor) = qdot[motor] * KDL::deg2rad;
     }
 
     KDL::JntArray qdotdotInRad(chain.getNrOfJoints());
 
     for (int motor = 0; motor < chain.getNrOfJoints(); motor++)
     {
-        qdotdotInRad(motor) = KinRepresentation::degToRad(qdotdot[motor]);
+        qdotdotInRad(motor) = qdotdot[motor] * KDL::deg2rad;
     }
 
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
