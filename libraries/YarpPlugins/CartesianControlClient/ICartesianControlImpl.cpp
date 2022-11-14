@@ -59,7 +59,7 @@ bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const 
 
     cmd.addVocab32(vocab);
 
-    for (size_t i = 0; i < in.size(); i++)
+    for (auto i = 0; i < in.size(); i++)
     {
         cmd.addFloat64(in[i]);
     }
@@ -77,7 +77,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
     cmd.addVocab32(vocab);
 
-    for (size_t i = 0; i < in.size(); i++)
+    for (auto i = 0; i < in.size(); i++)
     {
         cmd.addFloat64(in[i]);
     }
@@ -89,9 +89,11 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
         return false;
     }
 
-    for (size_t i = 0; i < response.size(); i++)
+    out.resize(response.size());
+
+    for (auto i = 0; i < response.size(); i++)
     {
-        out.push_back(response.get(i).asFloat64());
+        out[i] = response.get(i).asFloat64();
     }
 
     return true;
@@ -106,7 +108,7 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
     cmd.clear();
     cmd.addVocab32(vocab);
 
-    for (size_t i = 0; i < in.size(); i++)
+    for (auto i = 0; i < in.size(); i++)
     {
         cmd.addFloat64(in[i]);
     }
@@ -124,7 +126,7 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
     cmd.addVocab32(vocab);
     cmd.addFloat64(in2);
 
-    for (size_t i = 0; i < in1.size(); i++)
+    for (auto i = 0; i < in1.size(); i++)
     {
         cmd.addFloat64(in1[i]);
     }
@@ -166,7 +168,7 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
 
     x.resize(response.size() - 2);
 
-    for (size_t i = 0; i < x.size(); i++)
+    for (auto i = 0; i < x.size(); i++)
     {
         x[i] = response.get(i + 1).asFloat64();
     }
