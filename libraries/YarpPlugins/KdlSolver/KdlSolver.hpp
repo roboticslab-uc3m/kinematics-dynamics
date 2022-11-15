@@ -13,6 +13,7 @@
 #include <kdl/chainidsolver.hpp>
 
 #include "ICartesianSolver.h"
+#include "LogComponent.hpp"
 
 namespace roboticslab
 {
@@ -74,7 +75,10 @@ public:
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
 
-protected:
+private:
+    inline const yarp::os::LogComponent & logc() const
+    { return !isQuiet ? KDLS() : KDLS_QUIET(); }
+
     mutable std::mutex mtx;
 
     /** The chain. **/
@@ -87,6 +91,8 @@ protected:
     KDL::ChainIkSolverPos * ikSolverPos {nullptr};
     KDL::ChainIkSolverVel * ikSolverVel {nullptr};
     KDL::ChainIdSolver * idSolver {nullptr};
+
+    bool isQuiet;
 };
 
 } // namespace roboticslab

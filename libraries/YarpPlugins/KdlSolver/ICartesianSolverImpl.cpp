@@ -11,7 +11,6 @@
 #include <yarp/os/Log.h>
 
 #include "KdlVectorConverter.hpp"
-#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -138,7 +137,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
         }
         else if (frame != BASE_FRAME)
         {
-            yCWarning(KDLS, "Unsupported frame");
+            yCWarning(logc, "Unsupported frame");
             return false;
         }
 
@@ -147,12 +146,12 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
 
     if (ret < 0)
     {
-        yCError(KDLS, "invKin(): %s", ikSolverPos->strError(ret));
+        yCError(logc, "invKin(): %s", ikSolverPos->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        yCWarning(KDLS, "invKin(): %s", ikSolverPos->strError(ret));
+        yCWarning(logc, "invKin(): %s", ikSolverPos->strError(ret));
     }
 
     q.resize(chain.getNrOfJoints());
@@ -194,7 +193,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
         }
         else if (frame != BASE_FRAME)
         {
-            yCWarning(KDLS, "Unsupported frame");
+            yCWarning(logc, "Unsupported frame");
             return false;
         }
 
@@ -203,12 +202,12 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
 
     if (ret < 0)
     {
-        yCError(KDLS, "diffInvKin(): %s", ikSolverVel->strError(ret));
+        yCError(logc, "diffInvKin(): %s", ikSolverVel->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        yCWarning(KDLS, "diffInvKin(): %s", ikSolverVel->strError(ret));
+        yCWarning(logc, "diffInvKin(): %s", ikSolverVel->strError(ret));
     }
 
     qdot.resize(chain.getNrOfJoints());
@@ -246,12 +245,12 @@ bool KdlSolver::invDyn(const std::vector<double> &q,std::vector<double> &t)
 
     if (ret < 0)
     {
-        yCError(KDLS, "invDyn(): %s", idSolver->strError(ret));
+        yCError(logc, "invDyn(): %s", idSolver->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        yCWarning(KDLS, "invDyn(): %s", idSolver->strError(ret));
+        yCWarning(logc, "invDyn(): %s", idSolver->strError(ret));
     }
 
     t.resize(chain.getNrOfJoints());
@@ -309,12 +308,12 @@ bool KdlSolver::invDyn(const std::vector<double> &q,const std::vector<double> &q
 
     if (ret < 0)
     {
-        yCError(KDLS, "invDyn(): %s", idSolver->strError(ret));
+        yCError(logc, "invDyn(): %s", idSolver->strError(ret));
         return false;
     }
     else if (ret > 0)
     {
-        yCWarning(KDLS, "invDyn(): %s", idSolver->strError(ret));
+        yCWarning(logc, "invDyn(): %s", idSolver->strError(ret));
     }
 
     t.resize(chain.getNrOfJoints());

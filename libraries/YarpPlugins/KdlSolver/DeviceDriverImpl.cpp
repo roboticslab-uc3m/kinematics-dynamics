@@ -32,7 +32,6 @@
 
 #include "ChainIkSolverPos_ST.hpp"
 #include "ChainIkSolverPos_ID.hpp"
-#include "LogComponent.hpp"
 
 using namespace roboticslab;
 
@@ -150,6 +149,8 @@ namespace
 
 bool KdlSolver::open(yarp::os::Searchable & config)
 {
+    isQuiet = config.check("quiet", "disable logging");
+
     //-- kinematics
     std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
         "path to file with description of robot kinematics").asString();
