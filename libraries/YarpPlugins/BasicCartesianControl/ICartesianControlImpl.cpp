@@ -227,14 +227,12 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         return false;
     }
 
-    //-- Set velocity mode and set state which makes periodic thread implement control.
-    if (!setControlModes(VOCAB_CM_VELOCITY))
+    if (!setControlModes(usePosdMovl ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Unable to set velocity mode";
         return false;
     }
 
-    //-- Set state, enable CMC thread and wait for movement to be done
     movementStartTime = yarp::os::Time::now();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVL";

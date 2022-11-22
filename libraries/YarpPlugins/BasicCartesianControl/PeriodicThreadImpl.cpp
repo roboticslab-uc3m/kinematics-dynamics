@@ -58,7 +58,7 @@ void BasicCartesianControl::run()
         handleMovj(q, watcher);
         break;
     case VOCAB_CC_MOVL_CONTROLLING:
-        handleMovl(q, watcher);
+        usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
         break;
     case VOCAB_CC_MOVV_CONTROLLING:
         handleMovv(q, watcher);
@@ -107,7 +107,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovl(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
@@ -179,6 +179,54 @@ void BasicCartesianControl::handleMovl(const std::vector<double> &q, const State
     if (!iVelocityControl->velocityMove(commandQdot.data()))
     {
         yCWarning(BCC) << "velocityMove() failed";
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const StateWatcher & watcher)
+{
+    if (!checkControlModes(VOCAB_CM_POSITION_DIRECT))
+    {
+        yCError(BCC) << "Not in position direct control mode";
+        return;
+    }
+
+    double movementTime = yarp::os::Time::now() - movementStartTime;
+
+    std::vector<double> desiredX;
+
+    for (const auto & trajectory : trajectories)
+    {
+        if (movementTime > trajectory->Duration())
+        {
+            watcher.suppress();
+            stopControl();
+            return;
+        }
+
+        //-- Obtain desired Cartesian position.
+        KDL::Frame H = trajectory->Pos(movementTime);
+        std::vector<double> desiredX_sub = KdlVectorConverter::frameToVector(H);
+        desiredX.insert(desiredX.end(), desiredX_sub.cbegin(), desiredX_sub.cend());
+    }
+
+    //-- Compute joint position commands and send to robot.
+    std::vector<double> commandQ;
+
+    if (!iCartesianSolver->invKin(desiredX, q, commandQ))
+    {
+        yCWarning(BCC) << "invKin() failed";
+        return;
+    }
+
+    yCDebug(BCC) << "[MOVL]" << movementTime << "[s] ||" << desiredX << "->" << commandQ << "[deg]";
+
+    watcher.suppress();
+
+    if (!iPositionDirect->setPositions(commandQ.data()))
+    {
+        yCWarning(BCC) << "setPositions() failed";
     }
 }
 

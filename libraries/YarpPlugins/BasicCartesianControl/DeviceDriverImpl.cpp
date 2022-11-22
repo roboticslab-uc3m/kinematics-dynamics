@@ -34,7 +34,14 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
             "wait command period (milliseconds)").asInt32();
 
+    usePosdMovl = config.check("usePosdMovl", "execute MOVL commands in POSD mode using IK");
     enableFailFast = config.check("enableFailFast", "enable fail-fast mode for MOVL commands");
+
+    if (enableFailFast && !usePosdMovl)
+    {
+        yCError(BCC) << "Cannot use --enableFailFast without --usePosdMovl";
+        return false;
+    }
 
     std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
             "reference frame (base|tcp)").asString();
