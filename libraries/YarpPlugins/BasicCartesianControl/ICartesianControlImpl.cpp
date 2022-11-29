@@ -229,7 +229,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 
     if (!setControlModes(usePosdMovl ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
     {
-        yCError(BCC) << "Unable to set velocity mode";
+        yCError(BCC) << "Unable to set" << (usePosdMovl ? "position direct" : "velocity") << "control mode";
         return false;
     }
 
