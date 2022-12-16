@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
 
-#include <algorithm>
-#include <functional>
-#include <vector>
-#include <utility>
+#include <algorithm> // std::sort
+#include <utility> // std::pair
 
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -371,9 +369,8 @@ public:
 private:
 
     static struct compare_solutions
-        : public std::binary_function<const std::pair<int, double> &, const std::pair<int, double> &, bool>
     {
-        result_type operator()(first_argument_type lhs, second_argument_type rhs)
+        bool operator()(const std::pair<int, double> & lhs, const std::pair<int, double> & rhs)
         {
             return !(lhs.first > rhs.first) && (lhs.first < rhs.first || lhs.second < rhs.second);
         }

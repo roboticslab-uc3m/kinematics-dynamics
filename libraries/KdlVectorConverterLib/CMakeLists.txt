@@ -20,6 +20,8 @@ if(ENABLE_KdlVectorConverterLib)
                                                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
+    target_compile_features(KdlVectorConverterLib PUBLIC cxx_std_17) # nested namespace definition
+
     install(TARGETS KdlVectorConverterLib
             EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
 

@@ -37,6 +37,8 @@ if(ENABLE_ScrewTheoryLib)
                                                      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
+    target_compile_features(ScrewTheoryLib PUBLIC cxx_std_17) # nested namespace definition
+
     install(TARGETS ScrewTheoryLib
             EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
 

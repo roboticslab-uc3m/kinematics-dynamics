@@ -19,6 +19,8 @@ if(ENABLE_KinematicRepresentationLib)
                                                                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
                                                           PRIVATE ${orocos_kdl_INCLUDE_DIRS})
 
+    target_compile_features(KinematicRepresentationLib PUBLIC cxx_std_17) # nested namespace definition
+
     install(TARGETS KinematicRepresentationLib
             EXPORT ROBOTICSLAB_KINEMATICS_DYNAMICS)
 

@@ -2,9 +2,8 @@
 
 #include "ScrewTheoryIkProblem.hpp"
 
-#include <algorithm>
-#include <functional>
-#include <numeric>
+#include <numeric> // std::accumulate
+#include <vector>
 
 using namespace roboticslab;
 
@@ -17,9 +16,9 @@ namespace
         return reversed ? -q(q.rows() - 1 - i) : q(i);
     }
 
-    struct solution_accumulator : std::binary_function<int, const ScrewTheoryIkSubproblem *, int>
+    struct solution_accumulator
     {
-        result_type operator()(first_argument_type count, const second_argument_type & subproblem)
+        int operator()(int count, const ScrewTheoryIkSubproblem * subproblem)
         {
             return count * subproblem->solutions();
         }

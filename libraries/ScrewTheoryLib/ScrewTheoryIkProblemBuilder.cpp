@@ -2,10 +2,10 @@
 
 #include "ScrewTheoryIkProblem.hpp"
 
-#include <algorithm>
-#include <functional>
-#include <iterator>
+#include <algorithm> // std::copy, std::count_if, std::find_if
+#include <iterator> // std::advance, std::distance
 #include <set>
+#include <vector>
 
 #include "ScrewTheoryIkSubproblems.hpp"
 
@@ -68,9 +68,9 @@ namespace
         return sameMotionType ? perpendicularAxes(exp1, exp2) : parallelAxes(exp1, exp2);
     }
 
-    struct compare_vectors : public std::binary_function<const KDL::Vector &, const KDL::Vector &, bool>
+    struct compare_vectors
     {
-        result_type operator()(first_argument_type lhs, second_argument_type rhs) const
+        bool operator()(const KDL::Vector & lhs, const KDL::Vector & rhs) const
         {
             if (KDL::Equal(lhs.x(), rhs.x()))
             {
@@ -101,28 +101,28 @@ namespace
         }
     };
 
-    class poe_term_candidate : public std::unary_function<const ScrewTheoryIkProblemBuilder::PoeTerm &, bool>
+    class poe_term_candidate
     {
     public:
-        poe_term_candidate(result_type _expectedKnown)
+        poe_term_candidate(bool _expectedKnown)
             : expectedKnown(_expectedKnown),
               expectedSimplified(false),
               ignoreSimplifiedState(true)
         {}
 
-        poe_term_candidate(result_type _expectedKnown, result_type _expectedSimplified)
+        poe_term_candidate(bool _expectedKnown, bool _expectedSimplified)
             : expectedKnown(_expectedKnown),
               expectedSimplified(_expectedSimplified),
               ignoreSimplifiedState(false)
         {}
 
-        result_type operator()(argument_type poeTerm)
+        bool operator()(const ScrewTheoryIkProblemBuilder::PoeTerm & poeTerm)
         {
             return poeTerm.known == expectedKnown && (ignoreSimplifiedState || poeTerm.simplified == expectedSimplified);
         }
 
     private:
-        result_type expectedKnown, expectedSimplified, ignoreSimplifiedState;
+        bool expectedKnown, expectedSimplified, ignoreSimplifiedState;
     };
 
     // Can't inline into previous definition, Doxygen output is messed up by the first variable.
