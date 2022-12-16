@@ -19,7 +19,7 @@ jobs:
     outputs:
       should_skip: ${{steps.skip_check.outputs.should_skip}}
     steps:
-    - uses: fkirc/skip-duplicate-actions@v4
+    - uses: fkirc/skip-duplicate-actions@v5
       id: skip_check
       with:
         cancel_others: 'true'
