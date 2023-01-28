@@ -34,7 +34,7 @@ bool KdlSolver::appendLink(const std::vector<double>& x)
 {
     KDL::Frame frameX = KdlVectorConverter::vectorToFrame(x);
 
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard lock(mtx);
 
     chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), frameX));
 
@@ -50,7 +50,7 @@ bool KdlSolver::appendLink(const std::vector<double>& x)
 
 bool KdlSolver::restoreOriginalChain()
 {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard lock(mtx);
 
     chain = originalChain;
 
@@ -89,7 +89,7 @@ bool KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
     KDL::Frame fOutCart;
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard lock(mtx);
         fkSolverPos->JntToCart(qInRad, fOutCart);
     }
 
@@ -127,7 +127,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
     int ret;
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard lock(mtx);
 
         if (frame == TCP_FRAME)
         {
@@ -180,7 +180,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
     int ret;
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard lock(mtx);
 
         if (frame == TCP_FRAME)
         {
@@ -239,7 +239,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
     int ret;
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard lock(mtx);
         ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
     }
 
@@ -265,7 +265,8 @@ bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot, const std::vector<double> &ftip, std::vector<double> &t)
+bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
+                       const std::vector<double> &ftip, std::vector<double> &t)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -300,7 +301,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
     int ret;
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::lock_guard lock(mtx);
         ret = idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt);
     }
 

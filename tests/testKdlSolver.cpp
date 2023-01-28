@@ -3,8 +3,9 @@
 #include <cmath>
 #include <vector>
 
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
+#include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
+
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianSolver.h"
@@ -21,11 +22,16 @@ class KdlSolverTest : public testing::Test
 public:
     void SetUp() override
     {
-        yarp::os::Property solverOptions("(device KdlSolver) (gravity (0 -10 0)) (numLinks 1) (link_0 (A 1) (mass 1) (cog -0.5 0 0) (inertia 1 1 1)) (mins (-180)) (maxs (180))");
+        yarp::os::Bottle solverOptions;
+        solverOptions.add(yarp::os::Value::makeList("device KdlSolver"));
+        solverOptions.add(yarp::os::Value::makeList("gravity (0.0 -10.0 0.0)")); // note gravity is applied on the Y axis
+        solverOptions.add(yarp::os::Value::makeList("numLinks 1"));
+        // the CoG is referred to the segment's tip frame: https://github.com/orocos/orocos_kinematics_dynamics/issues/170
+        solverOptions.add(yarp::os::Value::makeList("link_0 (A 1.0) (mass 1.0) (cog -0.5 0.0 0.0) (inertia 1.0 1.0 1.0)"));
+        solverOptions.add(yarp::os::Value::makeList("mins (-180.0)"));
+        solverOptions.add(yarp::os::Value::makeList("maxs (180.0)"));
 
-        solverDevice.open(solverOptions);
-
-        if (!solverDevice.isValid())
+        if (!solverDevice.open(solverOptions))
         {
             yError() << "solverDevice not valid:" << solverOptions.find("device").asString();
             return;
@@ -45,84 +51,84 @@ public:
 
 protected:
     yarp::dev::PolyDriver solverDevice;
-    roboticslab::ICartesianSolver *iCartesianSolver;
+    roboticslab::ICartesianSolver * iCartesianSolver;
 };
 
 TEST_F(KdlSolverTest, KdlSolverFwdKin1)
 {
-    std::vector<double> q(1),x;
-    q[0]=0.0;
-    iCartesianSolver->fwdKin(q,x);
-    ASSERT_NEAR(x[0], 1, 1e-9);
-    ASSERT_NEAR(x[1], 0, 1e-9);
-    ASSERT_NEAR(x[2], 0, 1e-9);
+    std::vector<double> q(1), x;
+    q[0] = 0.0;
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+    ASSERT_NEAR(x[0], 1.0, 1e-9);
+    ASSERT_NEAR(x[1], 0.0, 1e-9);
+    ASSERT_NEAR(x[2], 0.0, 1e-9);
 }
 
 TEST_F(KdlSolverTest, KdlSolverFwdKin2)
 {
-    std::vector<double> q(1),x;
-    q[0]=90.0;
-    iCartesianSolver->fwdKin(q,x);
-    ASSERT_NEAR(x[0], 0, 1e-9);
-    ASSERT_NEAR(x[1], 1, 1e-9);
-    ASSERT_NEAR(x[2], 0, 1e-9);
+    std::vector<double> q(1), x;
+    q[0] = 90.0;
+    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+    ASSERT_NEAR(x[0], 0.0, 1e-9);
+    ASSERT_NEAR(x[1], 1.0, 1e-9);
+    ASSERT_NEAR(x[2], 0.0, 1e-9);
 }
 
 TEST_F(KdlSolverTest, KdlSolverInvKin1)
 {
-    std::vector<double> xd(6),qGuess(1),q;
-    xd[0] = 1;  // x
-    xd[1] = 0;  // y
-    xd[2] = 0;  // z
-    xd[3] = 0;  // o(x)
-    xd[4] = 0;  // o(y)
-    xd[5] = 0;  // o(z)
-    qGuess[0] = 0;
-    iCartesianSolver->invKin(xd,qGuess,q);
-    ASSERT_EQ(q.size(), 1 );
-    ASSERT_NEAR(q[0], 0, 1e-3);
+    std::vector<double> xd(6), qGuess(1), q;
+    xd[0] = 1.0; // x
+    xd[1] = 0.0; // y
+    xd[2] = 0.0; // z
+    xd[3] = 0.0; // o(x)
+    xd[4] = 0.0; // o(y)
+    xd[5] = 0.0; // o(z)
+    qGuess[0] = 0.0;
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_EQ(q.size(), 1);
+    ASSERT_NEAR(q[0], 0.0, 1e-3);
 }
 
 TEST_F(KdlSolverTest, KdlSolverInvKin2)
 {
-    std::vector<double> xd(6),qGuess(1),q;
-    xd[0] = 0;  // x
-    xd[1] = 1;  // y
-    xd[2] = 0;  // z
-    xd[3] = 0;  // o(x)
-    xd[4] = 0;  // o(y)
+    std::vector<double> xd(6), qGuess(1), q;
+    xd[0] = 0.0; // x
+    xd[1] = 1.0; // y
+    xd[2] = 0.0; // z
+    xd[3] = 0.0; // o(x)
+    xd[4] = 0.0; // o(y)
     xd[5] = M_PI / 2;  // o(z)
-    qGuess[0] = 90;
-    iCartesianSolver->invKin(xd,qGuess,q);
-    ASSERT_EQ(q.size(), 1 );
-    ASSERT_NEAR(q[0], 90, 1e-3);
+    qGuess[0] = 90.0;
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_EQ(q.size(), 1);
+    ASSERT_NEAR(q[0], 90.0, 1e-3);
 }
 
 TEST_F(KdlSolverTest, KdlSolverInvDyn1)
 {
-    std::vector<double> q(1),t;
+    std::vector<double> q(1), t;
     q[0] = -90.0;
-    iCartesianSolver->invDyn(q,t);
-    ASSERT_EQ(t.size(), 1 );
-    ASSERT_NEAR(t[0], 0, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0m = 0 N*m
+    ASSERT_TRUE(iCartesianSolver->invDyn(q, t));
+    ASSERT_EQ(t.size(), 1);
+    ASSERT_NEAR(t[0], 0.0, 1e-9); //-- T = F*d = 1kg * 10m/s^2 * 0m = 0 N*m
 }
 
 TEST_F(KdlSolverTest, KdlSolverInvDyn2)
 {
-    std::vector<double> q(1),t;
+    std::vector<double> q(1), t;
     q[0] = 0.0;
-    iCartesianSolver->invDyn(q,t);
-    ASSERT_EQ(t.size(), 1 );
-    ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
+    ASSERT_TRUE(iCartesianSolver->invDyn(q, t));
+    ASSERT_EQ(t.size(), 1);
+    ASSERT_NEAR(t[0], 5.0, 1e-9); //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
 
 TEST_F(KdlSolverTest, KdlSolverInvDyn3)
 {
-    std::vector<double> q(1),qdot(1,0.0),qdotdot(1,0.0),ftip(6,0.0),t;
+    std::vector<double> q(1), qdot(1, 0.0), qdotdot(1, 0.0), ftip(3, 0.0), t;
     q[0] = 0.0;
-    iCartesianSolver->invDyn(q,qdot,qdotdot,ftip,t);
-    ASSERT_EQ(t.size(), 1 );
-    ASSERT_NEAR(t[0], 5, 1e-9);  //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
+    ASSERT_TRUE(iCartesianSolver->invDyn(q, qdot, qdotdot, ftip, t));
+    ASSERT_EQ(t.size(), 1);
+    ASSERT_NEAR(t[0], 5.0, 1e-9); //-- T = F*d = 1kg * 10m/s^2 * 0.5m = 5 N*m
 }
 
 } // namespace roboticslab::test

@@ -295,7 +295,8 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const std::vector<double> & ftip, std::vector<double> & t)
+bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                           const std::vector<double> & ftip, std::vector<double> & t)
 {
     KDL::JntArray qInRad(tree.getNrOfJoints());
 
