@@ -113,7 +113,7 @@ bool KdlSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, const reference_frame frame)
+bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame)
 {
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
     KDL::JntArray qGuessInRad(chain.getNrOfJoints());
@@ -166,7 +166,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, const reference_frame frame)
+bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -188,7 +188,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
             fkSolverPos->JntToCart(qInRad, fOutCart);
 
             //-- Transform the basis to which the twist is expressed, but leave the reference point intact
-            //-- "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
+            //-- "Twist and Wrench transformations" @ http://docs.ros.org/indigo/api/orocos_kdl/html/geomprim.html
             kdlxdot = fOutCart.M * kdlxdot;
         }
         else if (frame != BASE_FRAME)
@@ -266,7 +266,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
 // -----------------------------------------------------------------------------
 
 bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                       const std::vector<double> &ftip, std::vector<double> &t)
+                       const std::vector<double> &ftip, std::vector<double> &t, reference_frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -290,12 +290,24 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
     }
 
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
+    KDL::Wrench kdlftip = KdlVectorConverter::vectorToWrench(ftip);
 
-    // FIXME: review this per https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/162
-    wrenches.back() = KDL::Wrench(
-        KDL::Vector(ftip[0], ftip[1], ftip[2]),
-        KDL::Vector(ftip[3], ftip[4], ftip[5])
-    );
+    if (frame == BASE_FRAME)
+    {
+        KDL::Frame fOutCart;
+        fkSolverPos->JntToCart(qInRad, fOutCart);
+
+        //-- Transform the basis to which the wrench is expressed, but leave the reference point intact
+        //-- "Twist and Wrench transformations" @ http://docs.ros.org/indigo/api/orocos_kdl/html/geomprim.html
+        kdlftip = fOutCart.M.Inverse() * kdlftip;
+    }
+    else if (frame != TCP_FRAME)
+    {
+        yCWarning(logc, "Unsupported frame");
+        return false;
+    }
+
+    wrenches.back() = kdlftip; // must be expressed in the HN frame
 
     KDL::JntArray kdlt(chain.getNrOfJoints());
     int ret;

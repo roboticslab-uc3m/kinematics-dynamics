@@ -55,7 +55,9 @@ public:
     bool restoreOriginalChain() override;
 
     // Change reference frame.
-    bool changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj) override;
+    bool changeOrigin(const std::vector<double> & x_old_obj,
+                      const std::vector<double> & x_new_old,
+                      std::vector<double> & x_new_obj) override;
 
     // Perform forward kinematics.
     bool fwdKin(const std::vector<double> & q, std::vector<double> & x) override;
@@ -64,16 +66,19 @@ public:
     bool poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut) override;
 
     // Perform inverse kinematics.
-    bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, const reference_frame frame) override;
+    bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q,
+                reference_frame frame) override;
 
     // Perform differential inverse kinematics.
-    bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, const reference_frame frame) override;
+    bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot,
+                    reference_frame frame) override;
 
     // Perform inverse dynamics.
     bool invDyn(const std::vector<double> & q, std::vector<double> & t) override;
 
     // Perform inverse dynamics.
-    bool invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const std::vector<double> & ftip, std::vector<double> & t) override;
+    bool invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                const std::vector<double> & ftip, std::vector<double> & t, reference_frame frame) override;
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

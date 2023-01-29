@@ -128,7 +128,7 @@ public:
      * @return true on success, false otherwise
      */
     virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-                        const reference_frame frame = BASE_FRAME) = 0;
+                        reference_frame frame = BASE_FRAME) = 0;
 
     /**
      * @brief Perform differential inverse kinematics
@@ -143,7 +143,7 @@ public:
      * @return true on success, false otherwise
      */
     virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-                            const reference_frame frame = BASE_FRAME) = 0;
+                            reference_frame frame = BASE_FRAME) = 0;
 
     /**
      * @brief Perform inverse dynamics
@@ -195,11 +195,12 @@ public:
      * @param t 6-element vector describing desired forces in cartesian space; first
      * three elements denote translational acceleration (meters/second²), last three denote
      * angular acceleration (radians/second²).
+     * @param frame Points at the @ref reference_frame @p ftip is expressed in.
      *
      * @return true on success, false otherwise
      */
     virtual bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                        const std::vector<double> &ftip, std::vector<double> &t) = 0;
+                        const std::vector<double> &ftip, std::vector<double> &t, reference_frame frame = BASE_FRAME) = 0;
 };
 
 } // namespace roboticslab
