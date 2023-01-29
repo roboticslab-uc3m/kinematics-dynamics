@@ -292,7 +292,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
 
     // FIXME: review this per https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/162
-    wrenches[chain.getNrOfJoints() - 1] = KDL::Wrench(
+    wrenches.back() = KDL::Wrench(
         KDL::Vector(ftip[0], ftip[1], ftip[2]),
         KDL::Vector(ftip[3], ftip[4], ftip[5])
     );
