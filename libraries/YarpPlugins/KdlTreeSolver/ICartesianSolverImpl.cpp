@@ -124,7 +124,7 @@ bool KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, const reference_frame frame)
+bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame)
 {
     KDL::Frames frames;
     int i = 0;
@@ -190,7 +190,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, const reference_frame frame)
+bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, reference_frame frame)
 {
     KDL::Twists twists;
     int i = 0;
@@ -230,7 +230,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
             auto it = twists.find(endpoint);
 
             //-- Transform the basis to which the twist is expressed, but leave the reference point intact
-            //-- "Twist and Wrench transformations" @ http://docs.ros.org/latest/api/orocos_kdl/html/geomprim.html
+            //-- "Twist and Wrench transformations" @ http://docs.ros.org/indigo/api/orocos_kdl/html/geomprim.html
             it->second = fOutCart.M * it->second;
         }
     }
@@ -261,6 +261,13 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
 
 bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & t)
 {
+    KDL::WrenchMap wrenches;
+
+    for (const auto & endpoint : endpoints)
+    {
+        wrenches.emplace(endpoint, KDL::Wrench::Zero());
+    }
+
     KDL::JntArray qInRad(tree.getNrOfJoints());
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
@@ -271,12 +278,6 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
     KDL::JntArray qdotInRad(tree.getNrOfJoints());
     KDL::JntArray qdotdotInRad(tree.getNrOfJoints());
     KDL::JntArray kdlt(tree.getNrOfJoints());
-    KDL::WrenchMap wrenches;
-
-    for (const auto & endpoint : endpoints)
-    {
-        wrenches.emplace(endpoint, KDL::Wrench::Zero());
-    }
 
     if (idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt) < 0)
     {
@@ -295,8 +296,26 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const std::vector<std::vector<double>> & fexts, std::vector<double> & t)
+bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                           const std::vector<double> & ftip, std::vector<double> & t, reference_frame frame)
 {
+    KDL::WrenchMap wrenches;
+    int i = 0;
+
+    for (const auto & endpoint : endpoints)
+    {
+        if (!mergedEndpoints.empty() && mergedEndpoints.find(endpoint) != mergedEndpoints.end())
+        {
+            wrenches.emplace(endpoint, wrenches[mergedEndpoints[endpoint]]);
+        }
+        else
+        {
+            std::vector<double> sub(ftip.cbegin() + i * 6, ftip.cbegin() + (i + 1) * 6);
+            wrenches.emplace(endpoint, KdlVectorConverter::vectorToWrench(sub));
+            i++;
+        }
+    }
+
     KDL::JntArray qInRad(tree.getNrOfJoints());
 
     for (int motor = 0; motor < tree.getNrOfJoints(); motor++)
@@ -318,11 +337,27 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
         qdotdotInRad(motor) = qdotdot[motor] * KDL::deg2rad;
     }
 
-    KDL::WrenchMap wrenches;
-
-    for (const auto & endpoint : endpoints)
+    if (frame == BASE_FRAME)
     {
-        // FIXME: not trivial, see https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/162
+        for (const auto & endpoint : endpoints)
+        {
+            KDL::Frame fOutCart;
+
+            if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
+            {
+                return false;
+            }
+
+            auto it = wrenches.find(endpoint);
+
+            //-- Transform the basis to which the twist is expressed, but leave the reference point intact
+            //-- "Twist and Wrench transformations" @ http://docs.ros.org/indigo/api/orocos_kdl/html/geomprim.html
+            it->second = fOutCart.M.Inverse() * it->second;
+        }
+    }
+    else if (frame != TCP_FRAME)
+    {
+        yCWarning(KDLS) << "Unsupported frame";
         return false;
     }
 
