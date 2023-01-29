@@ -175,7 +175,7 @@ private:
     void handleMovlPosd(const std::vector<double> & q, const StateWatcher & watcher);
     void handleMovv(const std::vector<double> & q, const StateWatcher & watcher);
     void handleGcmp(const std::vector<double> & q, const StateWatcher & watcher);
-    void handleForc(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleForc(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const StateWatcher & watcher);
 
     yarp::dev::PolyDriver solverDevice;
     ICartesianSolver * iCartesianSolver {nullptr};

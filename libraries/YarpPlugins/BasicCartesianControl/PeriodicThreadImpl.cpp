@@ -10,13 +10,16 @@
 
 using namespace roboticslab;
 
+namespace
+{
+    static constexpr int MAX_ENCODER_ERRORS = 20;
+    static constexpr double ERROR_THROTTLE = 0.5; // [s]
+}
+
 // ------------------- PeriodicThread Related ------------------------------------
 
 void BasicCartesianControl::run()
 {
-    static constexpr int MAX_ENCODER_ERRORS = 20;
-    static constexpr double ERROR_THROTTLE = 0.5; // [s]
-
     const int currentState = getCurrentState();
 
     if (currentState == VOCAB_CC_NOT_CONTROLLING)
@@ -25,9 +28,12 @@ void BasicCartesianControl::run()
     }
 
     StateWatcher watcher([this] { cmcSuccess = false; stopControl(); });
-    std::vector<double> q(numJoints);
 
-    if (!iEncoders->getEncoders(q.data()))
+    std::vector<double> q(numJoints);
+    std::vector<double> qdot(numJoints);
+    std::vector<double> qdotdot(numJoints);
+
+    if (!iEncoders->getEncoders(q.data()) || !iEncoders->getEncoderSpeeds(qdot.data()) || !iEncoders->getEncoderAccelerations(qdotdot.data()))
     {
         yCErrorThrottle(BCC, ERROR_THROTTLE) << "getEncoders() failed, unable to check joint limits";
         encoderErrors++;
@@ -67,7 +73,7 @@ void BasicCartesianControl::run()
         handleGcmp(q, watcher);
         break;
     case VOCAB_CC_FORC_CONTROLLING:
-        handleForc(q, watcher);
+        handleForc(q, qdot, qdotdot, watcher);
         break;
     default:
         break;
@@ -329,7 +335,8 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleForc(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleForc(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
+                                       const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
@@ -337,7 +344,6 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q, const State
         return;
     }
 
-    std::vector<double> qdot(numJoints), qdotdot(numJoints);
     std::vector<double> t(numJoints);
 
     if (!iCartesianSolver->invDyn(q, qdot, qdotdot, td, t, referenceFrame))
