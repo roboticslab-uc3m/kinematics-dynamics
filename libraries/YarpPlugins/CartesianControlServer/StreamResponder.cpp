@@ -27,6 +27,9 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
     case VOCAB_CC_MOVI:
         handleConsumerCmdMsg(b, &ICartesianControl::movi);
         break;
+    case VOCAB_CC_WRENCH:
+        handleConsumerCmdMsg(b, &ICartesianControl::wrench);
+        break;
     default:
         yCError(CCS) << "Command not recognized:" << b.get(0).toString();
         break;

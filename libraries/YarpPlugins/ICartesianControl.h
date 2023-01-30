@@ -71,9 +71,10 @@ constexpr int VOCAB_CC_ACT = yarp::os::createVocab32('a','c','t');      ///< Act
  */
 
 // Streaming commands
-constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t'); ///< Instantaneous velocity steps
-constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');  ///< Achieve pose (velocity control)
-constexpr int VOCAB_CC_MOVI = yarp::os::createVocab32('m','o','v','i');  ///< Achieve pose (position control)
+constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t');  ///< Instantaneous velocity steps
+constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');   ///< Achieve pose (velocity control)
+constexpr int VOCAB_CC_MOVI = yarp::os::createVocab32('m','o','v','i');   ///< Achieve pose (position control)
+constexpr int VOCAB_CC_WRENCH = yarp::os::createVocab32('w','r','n','c'); ///< Exert force
 
 /** @} */
 
@@ -355,6 +356,16 @@ public:
      * first three elements denote translation (meters), last three denote rotation (radians).
      */
     virtual void movi(const std::vector<double> &x) = 0;
+
+    /**
+     * @brief Exert force
+     *
+     * Make the TCP exert the desired force instantaneously.
+     *
+     * @param w 6-element vector describing desired force exerted by the TCP in cartesian space;
+     * first three elements denote linear force (Newton), last three denote torque (Newton*meters).
+     */
+    virtual void wrench(const std::vector<double> &w) = 0;
 
     /** @} */
 

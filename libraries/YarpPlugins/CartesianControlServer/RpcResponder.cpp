@@ -190,6 +190,7 @@ void RpcResponder::makeUsage()
     ss_cmd << " [" << Vocab::decode(VOCAB_CC_TWIST) << "]";
     ss_cmd << " [" << Vocab::decode(VOCAB_CC_POSE) << "]";
     ss_cmd << " [" << Vocab::decode(VOCAB_CC_MOVI) << "]";
+    ss_cmd << " [" << Vocab::decode(VOCAB_CC_WRENCH) << "]";
 
     ss << "... [" << Vocab::decode(VOCAB_CC_CONFIG_STREAMING_CMD) << "] vocab";
     addUsage(ss.str().c_str(), ss_cmd.str().c_str());
