@@ -120,7 +120,7 @@ public:
     bool movl(const std::vector<double> & xd) override;
     bool movv(const std::vector<double> & xdotd) override;
     bool gcmp() override;
-    bool forc(const std::vector<double> & td) override;
+    bool forc(const std::vector<double> & fd) override;
     bool stopControl() override;
     bool wait(double timeout) override;
     bool tool(const std::vector<double> & x) override;
@@ -215,7 +215,7 @@ private:
     std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
 
     /** FORC desired Cartesian force */
-    std::vector<double> td;
+    std::vector<double> fd;
 
     int encoderErrors {0};
     std::atomic_bool cmcSuccess;

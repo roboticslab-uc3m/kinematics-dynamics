@@ -346,7 +346,7 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q, const std::
 
     std::vector<double> t(numJoints);
 
-    if (!iCartesianSolver->invDyn(q, qdot, qdotdot, td, t, referenceFrame))
+    if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fd, t, referenceFrame))
     {
         yCWarning(BCC) << "invDyn() failed";
         return;

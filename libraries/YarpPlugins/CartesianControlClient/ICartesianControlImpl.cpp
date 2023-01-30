@@ -225,9 +225,9 @@ bool roboticslab::CartesianControlClient::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::forc(const std::vector<double> &td)
+bool roboticslab::CartesianControlClient::forc(const std::vector<double> &fd)
 {
-    return handleRpcConsumerCmd(VOCAB_CC_FORC, td);
+    return handleRpcConsumerCmd(VOCAB_CC_FORC, fd);
 }
 
 // -----------------------------------------------------------------------------

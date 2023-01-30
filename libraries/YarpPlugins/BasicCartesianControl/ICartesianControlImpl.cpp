@@ -5,6 +5,8 @@
 #include <cmath> //-- std::abs
 
 #include <algorithm> // std::transform
+#include <functional> // std::negate
+#include <iterator> // std::back_inserter
 #include <vector>
 
 #include <yarp/os/LogStream.h>
@@ -301,7 +303,6 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
 bool BasicCartesianControl::gcmp()
 {
-    //-- Set torque mode and set state which makes periodic thread implement control.
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Unable to set torque mode";
@@ -314,7 +315,7 @@ bool BasicCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::forc(const std::vector<double> &td)
+bool BasicCartesianControl::forc(const std::vector<double> &fd)
 {
     yCWarning(BCC) << "FORC mode still experimental";
 
@@ -324,8 +325,11 @@ bool BasicCartesianControl::forc(const std::vector<double> &td)
         return false;
     }
 
-    //-- Set torque mode and set state which makes periodic thread implement control.
-    this->td = td;
+    this->fd.clear();
+
+    // negate since the solver contract interprets the wrench as an external force applied on the
+    // end-effector, whereas the controller's contract interprets it as a force exerted by us
+    std::transform(fd.cbegin(), fd.cend(), std::back_inserter(this->fd), std::negate<>());
 
     if (!setControlModes(VOCAB_CM_TORQUE))
     {

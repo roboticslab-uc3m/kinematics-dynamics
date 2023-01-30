@@ -252,7 +252,7 @@ bool AmorCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
-bool AmorCartesianControl::forc(const std::vector<double> &td)
+bool AmorCartesianControl::forc(const std::vector<double> &fd)
 {
     yCWarning(AMOR) << "forc() not implemented";
     return false;

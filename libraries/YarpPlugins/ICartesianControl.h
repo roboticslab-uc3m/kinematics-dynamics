@@ -254,13 +254,13 @@ public:
      *
      * Apply desired forces in task space.
      *
-     * @param td 6-element vector describing desired forces in cartesian space; first
-     * three elements denote translational acceleration (meters/second²), last three
-     * denote angular acceleration (radians/second²).
+     * @param fd 6-element vector describing desired force exerted by the TCP in
+     * cartesian space; first three elements denote linear force (Newton), last
+     * three denote torque (Newton*meters).
      *
      * @return true on success, false otherwise
      */
-    virtual bool forc(const std::vector<double> &td) = 0;
+    virtual bool forc(const std::vector<double> &fd) = 0;
 
     /**
      * @brief Stop control
