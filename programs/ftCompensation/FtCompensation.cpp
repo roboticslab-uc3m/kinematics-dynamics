@@ -29,6 +29,26 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(FTC) << "Config:" << rf.toString();
 
+    auto modeStr = rf.check("mode", yarp::os::Value(""), "command mode (twist or wrench)").asString();
+
+    int modeVocab;
+
+    if (modeStr == "twist")
+    {
+        mode = TWIST;
+        modeVocab = VOCAB_CC_TWIST;
+    }
+    else if (modeStr == "wrench")
+    {
+        mode = WRENCH;
+        modeVocab = VOCAB_CC_WRENCH;
+    }
+    else
+    {
+        yCError(FTC) << "Invalid mode:" << modeStr << "(must be 'twist' or 'wrench')";
+        return false;
+    }
+
     auto period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
 
     dryRun = rf.check("dryRun", "process sensor loops, but don't send motion command");
@@ -227,7 +247,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
             bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
 
-            if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
+            if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, modeVocab))
             {
                 yCWarning(FTC) << "Unable to preset streaming command";
                 return false;
@@ -335,7 +355,19 @@ void FtCompensation::run()
 
     auto v = KdlVectorConverter::wrenchToVector(wrench);
     yCDebug(FTC) << v;
-    if (!dryRun) iCartesianControl->twist(v);
+
+    if (!dryRun)
+    {
+        switch (mode)
+        {
+        case TWIST:
+            iCartesianControl->twist(v);
+            break;
+        case WRENCH:
+            iCartesianControl->wrench(v);
+            break;
+        }
+    }
 }
 
 bool FtCompensation::updateModule()
