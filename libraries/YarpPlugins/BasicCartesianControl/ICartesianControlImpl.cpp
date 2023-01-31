@@ -592,6 +592,7 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
         return;
     }
 
+    StateWatcher watcher([this] { iTorqueControl->setRefTorques(std::vector(numJoints, 0.0).data()); });
     std::vector<double> currentQ(numJoints), currentQdot(numJoints), currentQdotdot(numJoints), ftip;
 
     if (!iEncoders->getEncoders(currentQ.data()))
@@ -629,6 +630,8 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
         yCError(BCC) << "invDyn() failed";
         return;
     }
+
+    watcher.suppress();
 
     if (!iTorqueControl->setRefTorques(t.data()))
     {
