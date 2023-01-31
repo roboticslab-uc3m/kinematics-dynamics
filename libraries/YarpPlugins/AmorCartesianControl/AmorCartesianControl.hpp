@@ -49,6 +49,7 @@ public:
     void twist(const std::vector<double> & xdot) override;
     void pose(const std::vector<double> & x, double interval) override;
     void movi(const std::vector<double> & x) override;
+    void wrench(const std::vector<double> &w) override;
     bool setParameter(int vocab, double value) override;
     bool getParameter(int vocab, double * value) override;
     bool setParameters(const std::map<int, double> & params) override;

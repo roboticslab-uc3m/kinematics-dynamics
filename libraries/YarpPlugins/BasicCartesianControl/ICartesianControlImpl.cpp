@@ -327,8 +327,8 @@ bool BasicCartesianControl::forc(const std::vector<double> &fd)
 
     this->fd.clear();
 
-    // negate since the solver contract interprets the wrench as an external force applied on the
-    // end-effector, whereas the controller's contract interprets it as a force exerted by us
+    // negate since the solver's contract interprets the wrench as an external force applied on
+    // the end-effector, while the controller's contract interprets it as a force exerted by us
     std::transform(fd.cbegin(), fd.cend(), std::back_inserter(this->fd), std::negate<>());
 
     if (!setControlModes(VOCAB_CM_TORQUE))
@@ -578,6 +578,64 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
     if (!iPositionDirect->setPositions(q.data()))
     {
         yCError(BCC) << "setPositions() failed";
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void BasicCartesianControl::wrench(const std::vector<double> &w)
+{
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_WRENCH
+            || !checkControlModes(VOCAB_CM_TORQUE))
+    {
+        yCError(BCC) << "Streaming command not preset";
+        return;
+    }
+
+    StateWatcher watcher([this] { iTorqueControl->setRefTorques(std::vector(numJoints, 0.0).data()); });
+    std::vector<double> currentQ(numJoints), currentQdot(numJoints), currentQdotdot(numJoints), ftip;
+
+    if (!iEncoders->getEncoders(currentQ.data()))
+    {
+        yCError(BCC) << "getEncoders() failed";
+        return;
+    }
+
+    if (!iEncoders->getEncoderSpeeds(currentQdot.data()))
+    {
+        yCError(BCC) << "getEncoderSpeeds() failed";
+        return;
+    }
+
+    if (!iEncoders->getEncoderAccelerations(currentQdotdot.data()))
+    {
+        yCError(BCC) << "getEncoderAccelerations() failed";
+        return;
+    }
+
+    if (!checkJointLimits(currentQ))
+    {
+        yCError(BCC) << "Joint position limits exceeded, not moving";
+        return;
+    }
+
+    // negate since the solver's contract interprets the wrench as an external force applied on
+    // the end-effector, while the controller's contract interprets it as a force exerted by us
+    std::transform(w.cbegin(), w.cend(), std::back_inserter(ftip), std::negate<>());
+
+    std::vector<double> t;
+
+    if (!iCartesianSolver->invDyn(currentQ, currentQdot, currentQdotdot, ftip, t, referenceFrame))
+    {
+        yCError(BCC) << "invDyn() failed";
+        return;
+    }
+
+    watcher.suppress();
+
+    if (!iTorqueControl->setRefTorques(t.data()))
+    {
+        yCError(BCC) << "setRefTorques() failed";
     }
 }
 

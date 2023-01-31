@@ -7,6 +7,8 @@
 
 #include "LogComponent.hpp"
 
+using namespace roboticslab;
+
 // -----------------------------------------------------------------------------
 
 namespace
@@ -43,7 +45,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
+bool CartesianControlClient::handleRpcRunnableCmd(int vocab)
 {
     yarp::os::Bottle cmd, response;
     cmd.addVocab32(vocab);
@@ -53,7 +55,7 @@ bool roboticslab::CartesianControlClient::handleRpcRunnableCmd(int vocab)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const std::vector<double>& in)
+bool CartesianControlClient::handleRpcConsumerCmd(int vocab, const std::vector<double>& in)
 {
     yarp::os::Bottle cmd, response;
 
@@ -71,7 +73,7 @@ bool roboticslab::CartesianControlClient::handleRpcConsumerCmd(int vocab, const 
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const std::vector<double>& in, std::vector<double>& out)
+bool CartesianControlClient::handleRpcFunctionCmd(int vocab, const std::vector<double>& in, std::vector<double>& out)
 {
     yarp::os::Bottle cmd, response;
 
@@ -101,7 +103,7 @@ bool roboticslab::CartesianControlClient::handleRpcFunctionCmd(int vocab, const 
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::vector<double>& in)
+void CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::vector<double>& in)
 {
     yarp::os::Bottle& cmd = commandPort.prepare();
 
@@ -118,7 +120,7 @@ void roboticslab::CartesianControlClient::handleStreamingConsumerCmd(int vocab, 
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2)
+void CartesianControlClient::handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2)
 {
     yarp::os::Bottle& cmd = commandPort.prepare();
 
@@ -136,7 +138,7 @@ void roboticslab::CartesianControlClient::handleStreamingBiConsumerCmd(int vocab
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * state, double * timestamp)
+bool CartesianControlClient::stat(std::vector<double> &x, int * state, double * timestamp)
 {
     if (!fkInPort.isClosed())
     {
@@ -183,63 +185,63 @@ bool roboticslab::CartesianControlClient::stat(std::vector<double> &x, int * sta
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
+bool CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     return handleRpcFunctionCmd(VOCAB_CC_INV, xd, q);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::movj(const std::vector<double> &xd)
+bool CartesianControlClient::movj(const std::vector<double> &xd)
 {
     return handleRpcConsumerCmd(VOCAB_CC_MOVJ, xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::relj(const std::vector<double> &xd)
+bool CartesianControlClient::relj(const std::vector<double> &xd)
 {
     return handleRpcConsumerCmd(VOCAB_CC_RELJ, xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::movl(const std::vector<double> &xd)
+bool CartesianControlClient::movl(const std::vector<double> &xd)
 {
     return handleRpcConsumerCmd(VOCAB_CC_MOVL, xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::movv(const std::vector<double> &xdotd)
+bool CartesianControlClient::movv(const std::vector<double> &xdotd)
 {
     return handleRpcConsumerCmd(VOCAB_CC_MOVV, xdotd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::gcmp()
+bool CartesianControlClient::gcmp()
 {
     return handleRpcRunnableCmd(VOCAB_CC_GCMP);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::forc(const std::vector<double> &fd)
+bool CartesianControlClient::forc(const std::vector<double> &fd)
 {
     return handleRpcConsumerCmd(VOCAB_CC_FORC, fd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::stopControl()
+bool CartesianControlClient::stopControl()
 {
     return handleRpcRunnableCmd(VOCAB_CC_STOP);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::wait(double timeout)
+bool CartesianControlClient::wait(double timeout)
 {
     yarp::os::Bottle cmd, response;
 
@@ -253,14 +255,14 @@ bool roboticslab::CartesianControlClient::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::tool(const std::vector<double> &x)
+bool CartesianControlClient::tool(const std::vector<double> &x)
 {
     return handleRpcConsumerCmd(VOCAB_CC_TOOL, x);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::act(int command)
+bool CartesianControlClient::act(int command)
 {
     yarp::os::Bottle cmd, response;
 
@@ -274,28 +276,35 @@ bool roboticslab::CartesianControlClient::act(int command)
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::twist(const std::vector<double> &xdot)
+void CartesianControlClient::twist(const std::vector<double> &xdot)
 {
     handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::pose(const std::vector<double> &x, double interval)
+void CartesianControlClient::pose(const std::vector<double> &x, double interval)
 {
     handleStreamingBiConsumerCmd(VOCAB_CC_POSE, x, interval);
 }
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::CartesianControlClient::movi(const std::vector<double> &x)
+void CartesianControlClient::movi(const std::vector<double> &x)
 {
     handleStreamingConsumerCmd(VOCAB_CC_MOVI, x);
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
+void CartesianControlClient::wrench(const std::vector<double> &w)
+{
+    handleStreamingConsumerCmd(VOCAB_CC_WRENCH, w);
+}
+
+// -----------------------------------------------------------------------------
+
+bool CartesianControlClient::setParameter(int vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
@@ -310,7 +319,7 @@ bool roboticslab::CartesianControlClient::setParameter(int vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value)
+bool CartesianControlClient::getParameter(int vocab, double * value)
 {
     yarp::os::Bottle cmd, response;
 
@@ -331,7 +340,7 @@ bool roboticslab::CartesianControlClient::getParameter(int vocab, double * value
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::setParameters(const std::map<int, double> & params)
+bool CartesianControlClient::setParameters(const std::map<int, double> & params)
 {
     yarp::os::Bottle cmd, response;
 
@@ -352,7 +361,7 @@ bool roboticslab::CartesianControlClient::setParameters(const std::map<int, doub
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::CartesianControlClient::getParameters(std::map<int, double> & params)
+bool CartesianControlClient::getParameters(std::map<int, double> & params)
 {
     yarp::os::Bottle cmd, response;
 

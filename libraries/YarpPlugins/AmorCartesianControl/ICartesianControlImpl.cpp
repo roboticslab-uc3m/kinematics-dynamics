@@ -498,6 +498,13 @@ void AmorCartesianControl::movi(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
+void AmorCartesianControl::wrench(const std::vector<double> &w)
+{
+    yCWarning(AMOR) << "wrench() not supported";
+}
+
+// -----------------------------------------------------------------------------
+
 bool AmorCartesianControl::setParameter(int vocab, double value)
 {
     if (currentState != VOCAB_CC_NOT_CONTROLLING)
