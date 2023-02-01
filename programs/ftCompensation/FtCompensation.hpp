@@ -27,8 +27,6 @@ class FtCompensation : public yarp::os::RFModule,
                        public yarp::os::PeriodicThread
 {
 public:
-    enum command_mode { TWIST, WRENCH };
-
     FtCompensation()
         : yarp::os::PeriodicThread(1.0, yarp::os::ShouldUseSystemClock::Yes, yarp::os::PeriodicThreadClock::Absolute)
     {}
@@ -50,7 +48,7 @@ private:
     bool compensateTool(KDL::Wrench & wrench) const;
 
     yarp::dev::PolyDriver cartesianDevice;
-    roboticslab::ICartesianControl * iCartesianControl;
+    ICartesianControl * iCartesianControl;
 
     int sensorIndex;
     yarp::dev::PolyDriver sensorDevice;
@@ -61,7 +59,9 @@ private:
     KDL::Wrench toolWeight_0;
     KDL::Wrench initialOffset;
 
-    command_mode mode;
+    using cartesian_cmd = void (ICartesianControl::*)(const std::vector<double> &);
+    cartesian_cmd command;
+
     bool dryRun;
     bool usingTool;
     double linGain;

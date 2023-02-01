@@ -35,13 +35,13 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     if (modeStr == "twist")
     {
-        mode = TWIST;
         modeVocab = VOCAB_CC_TWIST;
+        command = &ICartesianControl::twist;
     }
     else if (modeStr == "wrench")
     {
-        mode = WRENCH;
         modeVocab = VOCAB_CC_WRENCH;
+        command = &ICartesianControl::wrench;
     }
     else
     {
@@ -329,7 +329,11 @@ void FtCompensation::run()
 
     if (forceNorm <= forceDeadband && torqueNorm <= torqueDeadband)
     {
-        if (!dryRun) iCartesianControl->twist(std::vector(6, 0.0));
+        if (!dryRun)
+        {
+            (iCartesianControl->*command)(std::vector(6, 0.0));
+        }
+
         return;
     }
 
@@ -358,15 +362,7 @@ void FtCompensation::run()
 
     if (!dryRun)
     {
-        switch (mode)
-        {
-        case TWIST:
-            iCartesianControl->twist(v);
-            break;
-        case WRENCH:
-            iCartesianControl->wrench(v);
-            break;
-        }
+        (iCartesianControl->*command)(v);
     }
 }
 
