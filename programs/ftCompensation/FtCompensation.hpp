@@ -46,6 +46,7 @@ protected:
 private:
     bool readSensor(KDL::Wrench & wrench) const;
     bool compensateTool(KDL::Wrench & wrench) const;
+    bool applyImpedance(KDL::Wrench & wrench);
 
     yarp::dev::PolyDriver cartesianDevice;
     ICartesianControl * iCartesianControl;
@@ -58,14 +59,25 @@ private:
     KDL::Vector toolCoM_N;
     KDL::Wrench toolWeight_0;
     KDL::Wrench initialOffset;
+    KDL::Frame initialPose;
+    KDL::Frame previousPose;
 
     using cartesian_cmd = void (ICartesianControl::*)(const std::vector<double> &);
     cartesian_cmd command;
 
     bool dryRun;
     bool usingTool;
+    bool enableImpedance;
+
     double linGain;
     double rotGain;
+
+    double linStiffness;
+    double rotStiffness;
+
+    double linDamping;
+    double rotDamping;
+
     double forceDeadband;
     double torqueDeadband;
 };
