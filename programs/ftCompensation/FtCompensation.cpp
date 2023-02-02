@@ -370,8 +370,8 @@ bool FtCompensation::applyImpedance(KDL::Wrench & wrench)
     }
 
     KDL::Frame currentPose = KdlVectorConverter::vectorToFrame(x);
-    KDL::Twist displacement = KDL::diff(currentPose, initialPose);
-    KDL::Twist twist = KDL::diff(currentPose, previousPose, yarp::os::PeriodicThread::getPeriod());
+    KDL::Twist displacement = KDL::diff(initialPose, currentPose);
+    KDL::Twist twist = KDL::diff(previousPose, currentPose, yarp::os::PeriodicThread::getPeriod());
 
     wrench.force -= displacement.vel * linStiffness + twist.vel * linDamping;
     wrench.torque -= displacement.rot * rotStiffness + twist.rot * rotDamping;
