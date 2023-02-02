@@ -24,6 +24,10 @@ constexpr auto DEFAULT_LIN_GAIN = 0.01;
 constexpr auto DEFAULT_ROT_GAIN = 0.2;
 constexpr auto DEFAULT_FORCE_DEADBAND = 1.0;
 constexpr auto DEFAULT_TORQUE_DEADBAND = 1.0;
+constexpr auto DEFAULT_LIN_STIFFNESS = 0.1;
+constexpr auto DEFAULT_ROT_STIFFNESS = 0.1;
+constexpr auto DEFAULT_LIN_DAMPING = 0.1;
+constexpr auto DEFAULT_ROT_DAMPING = 0.1;
 
 bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 {
@@ -52,13 +56,45 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
     auto period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
 
     dryRun = rf.check("dryRun", "process sensor loops, but don't send motion command");
+
     linGain = rf.check("linGain", yarp::os::Value(DEFAULT_LIN_GAIN), "linear gain").asFloat64();
     rotGain = rf.check("rotGain", yarp::os::Value(DEFAULT_ROT_GAIN), "rotational gain").asFloat64();
+
+    linStiffness = rf.check("linStiffness", yarp::os::Value(DEFAULT_LIN_STIFFNESS), "linear stiffness [N/m]").asFloat64();
+    rotStiffness = rf.check("rotStiffness", yarp::os::Value(DEFAULT_ROT_STIFFNESS), "rotational stiffness [Nm/rad]").asFloat64();
+
+    linDamping = rf.check("linDamping", yarp::os::Value(DEFAULT_LIN_DAMPING), "linear damping [Ns/m]").asFloat64();
+    rotDamping = rf.check("rotDamping", yarp::os::Value(DEFAULT_ROT_DAMPING), "rotational damping [Nms/rad]").asFloat64();
+
     forceDeadband = rf.check("forceDeadband", yarp::os::Value(DEFAULT_FORCE_DEADBAND), "force deadband [N]").asFloat64();
     torqueDeadband = rf.check("torqueDeadband", yarp::os::Value(DEFAULT_TORQUE_DEADBAND), "torque deadband [Nm]").asFloat64();
 
+    if (rf.check("linStiffness") || rf.check("rotStiffness") || rf.check("linDamping") || rf.check("rotDamping"))
+    {
+        if (modeVocab != VOCAB_CC_WRENCH)
+        {
+            yCError(FTC) << "Impedance control can only be enabled in wrench mode";
+            return false;
+        }
+
+        enableImpedance = true;
+    }
+    else
+    {
+        enableImpedance = false;
+    }
+
     yCInfo(FTC) << "Using linear gain:" << linGain;
     yCInfo(FTC) << "Using rotational gain:" << rotGain;
+
+    if (enableImpedance)
+    {
+        yCInfo(FTC) << "Using linear stiffness [N/m]:" << linStiffness;
+        yCInfo(FTC) << "Using rotational stiffness [Nm/rad]:" << rotStiffness;
+        yCInfo(FTC) << "Using linear damping [Ns/m]:" << linDamping;
+        yCInfo(FTC) << "Using rotational damping [Nms/rad]:" << rotDamping;
+    }
+
     yCInfo(FTC) << "Using force deadband [N]:" << forceDeadband;
     yCInfo(FTC) << "Using torque deadband [Nm]:" << torqueDeadband;
 
@@ -207,7 +243,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     // ----- cartesian device -----
 
-    if (!dryRun || usingTool)
+    if (!dryRun || usingTool || enableImpedance)
     {
         if (!rf.check("cartesianRemote", "remote cartesian port to connect to"))
         {
@@ -265,6 +301,17 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
             yCError(FTC) << "Failed to compensate tool";
             return false;
         }
+
+        std::vector<double> x;
+
+        if (enableImpedance && !iCartesianControl->stat(x))
+        {
+            yCError(FTC) << "Failed to retrieve initial pose";
+            return false;
+        }
+
+        initialPose = KdlVectorConverter::vectorToFrame(x);
+        previousPose = initialPose;
     }
     else if (dryRun)
     {
@@ -312,6 +359,27 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
     return true;
 }
 
+bool FtCompensation::applyImpedance(KDL::Wrench & wrench)
+{
+    std::vector<double> x;
+
+    if (!iCartesianControl->stat(x))
+    {
+        yCWarning(FTC) << "Failed to retrieve current position";
+        return false;
+    }
+
+    KDL::Frame currentPose = KdlVectorConverter::vectorToFrame(x);
+    KDL::Twist displacement = KDL::diff(initialPose, currentPose);
+    KDL::Twist twist = KDL::diff(previousPose, currentPose, yarp::os::PeriodicThread::getPeriod());
+
+    wrench.force -= displacement.vel * linStiffness + twist.vel * linDamping;
+    wrench.torque -= displacement.rot * rotStiffness + twist.rot * rotDamping;
+
+    previousPose = currentPose;
+    return true;
+}
+
 void FtCompensation::run()
 {
     KDL::Wrench wrench;
@@ -326,16 +394,6 @@ void FtCompensation::run()
 
     auto forceNorm = wrench.force.Norm();
     auto torqueNorm = wrench.torque.Norm();
-
-    if (forceNorm <= forceDeadband && torqueNorm <= torqueDeadband)
-    {
-        if (!dryRun)
-        {
-            (iCartesianControl->*command)(std::vector(6, 0.0));
-        }
-
-        return;
-    }
 
     if (forceNorm > forceDeadband)
     {
@@ -355,6 +413,12 @@ void FtCompensation::run()
     else
     {
         wrench.torque = KDL::Vector::Zero();
+    }
+
+    if (enableImpedance && !applyImpedance(wrench))
+    {
+        yarp::os::PeriodicThread::askToStop();
+        return;
     }
 
     auto v = KdlVectorConverter::wrenchToVector(wrench);
