@@ -18,14 +18,14 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
 
     switch (b.get(0).asVocab32())
     {
-    case VOCAB_CC_TWIST:
-        handleConsumerCmdMsg(b, &ICartesianControl::twist);
+    case VOCAB_CC_MOVI:
+        handleConsumerCmdMsg(b, &ICartesianControl::movi);
         break;
     case VOCAB_CC_POSE:
         handleBiConsumerCmdMsg(b, &ICartesianControl::pose);
         break;
-    case VOCAB_CC_MOVI:
-        handleConsumerCmdMsg(b, &ICartesianControl::movi);
+    case VOCAB_CC_TWIST:
+        handleConsumerCmdMsg(b, &ICartesianControl::twist);
         break;
     case VOCAB_CC_WRENCH:
         handleConsumerCmdMsg(b, &ICartesianControl::wrench);

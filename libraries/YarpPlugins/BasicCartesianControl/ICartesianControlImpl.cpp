@@ -422,6 +422,52 @@ bool BasicCartesianControl::act(int command)
     return false;
 }
 
+// -----------------------------------------------------------------------------
+
+void BasicCartesianControl::movi(const std::vector<double> &x)
+{
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI
+            || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
+    {
+        yCError(BCC) << "Streaming command not preset";
+        return;
+    }
+
+    std::vector<double> currentQ(numJoints), q;
+
+    if (!iEncoders->getEncoders(currentQ.data()))
+    {
+        yCError(BCC) << "getEncoders() failed";
+        return;
+    }
+
+    if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
+    {
+        yCError(BCC) << "invKin() failed";
+        return;
+    }
+
+    std::vector<double> qdiff(numJoints);
+
+    for (int i = 0; i < numJoints; i++)
+    {
+        qdiff[i] = q[i] - currentQ[i];
+    }
+
+    if (!checkJointLimits(currentQ, qdiff))
+    {
+        yCError(BCC) << "Joint position limits exceeded, not moving";
+        return;
+    }
+
+    if (!iPositionDirect->setPositions(q.data()))
+    {
+        yCError(BCC) << "setPositions() failed";
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 void BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
@@ -534,50 +580,6 @@ void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
         yCError(BCC) << "velocityMove() failed";
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-void BasicCartesianControl::movi(const std::vector<double> &x)
-{
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_MOVI
-            || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
-    {
-        yCError(BCC) << "Streaming command not preset";
-        return;
-    }
-
-    std::vector<double> currentQ(numJoints), q;
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        yCError(BCC) << "getEncoders() failed";
-        return;
-    }
-
-    if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
-    {
-        yCError(BCC) << "invKin() failed";
-        return;
-    }
-
-    std::vector<double> qdiff(numJoints);
-
-    for (int i = 0; i < numJoints; i++)
-    {
-        qdiff[i] = q[i] - currentQ[i];
-    }
-
-    if (!checkJointLimits(currentQ, qdiff))
-    {
-        yCError(BCC) << "Joint position limits exceeded, not moving";
-        return;
-    }
-
-    if (!iPositionDirect->setPositions(q.data()))
-    {
-        yCError(BCC) << "setPositions() failed";
     }
 }
 

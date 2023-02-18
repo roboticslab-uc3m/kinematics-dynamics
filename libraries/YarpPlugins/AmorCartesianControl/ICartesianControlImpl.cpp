@@ -357,52 +357,6 @@ bool AmorCartesianControl::act(int command)
 
 // -----------------------------------------------------------------------------
 
-void AmorCartesianControl::twist(const std::vector<double> &xdot)
-{
-    AMOR_VECTOR7 positions;
-
-    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
-    {
-        yCError(AMOR) << "amor_get_actual_positions() failed:" << amor_error();
-        return;
-    }
-
-    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
-
-    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
-    {
-        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
-    }
-
-    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
-    {
-        yCError(AMOR) << "diffInvKin() failed";
-        return;
-    }
-
-    if (!checkJointVelocities(qdot))
-    {
-        std::lock_guard<std::mutex> lock(*handleMutex);
-        amor_controlled_stop(handle);
-        return;
-    }
-
-    AMOR_VECTOR7 velocities;
-
-    for (int i = 0; i < qdot.size(); i++)
-    {
-        velocities[i] = KinRepresentation::degToRad(qdot[i]);
-    }
-
-    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
-    {
-        yCError(AMOR) << "amor_set_velocities() failed:" << amor_error();
-        return;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
 void AmorCartesianControl::pose(const std::vector<double> &x, double interval)
 {
     AMOR_VECTOR7 positions;
@@ -494,6 +448,52 @@ void AmorCartesianControl::movi(const std::vector<double> &x)
 {
     yCWarning(AMOR) << "movi() not supported, falling back to movj()";
     movj(x);
+}
+
+// -----------------------------------------------------------------------------
+
+void AmorCartesianControl::twist(const std::vector<double> &xdot)
+{
+    AMOR_VECTOR7 positions;
+
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_actual_positions(handle, &positions) != AMOR_SUCCESS)
+    {
+        yCError(AMOR) << "amor_get_actual_positions() failed:" << amor_error();
+        return;
+    }
+
+    std::vector<double> currentQ(AMOR_NUM_JOINTS), qdot;
+
+    for (int i = 0; i < AMOR_NUM_JOINTS; i++)
+    {
+        currentQ[i] = KinRepresentation::radToDeg(positions[i]);
+    }
+
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
+    {
+        yCError(AMOR) << "diffInvKin() failed";
+        return;
+    }
+
+    if (!checkJointVelocities(qdot))
+    {
+        std::lock_guard<std::mutex> lock(*handleMutex);
+        amor_controlled_stop(handle);
+        return;
+    }
+
+    AMOR_VECTOR7 velocities;
+
+    for (int i = 0; i < qdot.size(); i++)
+    {
+        velocities[i] = KinRepresentation::degToRad(qdot[i]);
+    }
+
+    if (std::lock_guard<std::mutex> lock(*handleMutex); amor_set_velocities(handle, velocities) != AMOR_SUCCESS)
+    {
+        yCError(AMOR) << "amor_set_velocities() failed:" << amor_error();
+        return;
+    }
 }
 
 // -----------------------------------------------------------------------------

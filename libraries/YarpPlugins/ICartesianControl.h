@@ -3,6 +3,7 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
+#include <algorithm> // TODO: remove this along with `pose`
 #include <map>
 #include <vector>
 #include <yarp/os/Vocab.h>
@@ -71,9 +72,9 @@ constexpr int VOCAB_CC_ACT = yarp::os::createVocab32('a','c','t');      ///< Act
  */
 
 // Streaming commands
-constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t');  ///< Instantaneous velocity steps
-constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');   ///< Achieve pose (velocity control)
 constexpr int VOCAB_CC_MOVI = yarp::os::createVocab32('m','o','v','i');   ///< Achieve pose (position control)
+constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');   ///< Achieve pose (velocity control)
+constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t');  ///< Instantaneous velocity steps
 constexpr int VOCAB_CC_WRENCH = yarp::os::createVocab32('w','r','n','c'); ///< Exert force
 
 /** @} */
@@ -323,16 +324,17 @@ public:
      */
 
     /**
-     * @brief Instantaneous velocity steps
+     * @brief Achieve pose
      *
-     * Move in instantaneous velocity increments.
+     * Move to desired position instantaneously, no further intermediate calculations are
+     * expected other than computing the inverse kinematics.
      *
-     * @param xdot 6-element vector describing velocity increments in cartesian space;
-     * first three elements denote translational velocity (meters/second), last three
-     * denote angular velocity (radians/second).
+     * @param x 6-element vector describing desired instantaneous pose in cartesian space;
+     * first three elements denote translation (meters), last three denote rotation (radians).
      */
-    virtual void twist(const std::vector<double> &xdot) = 0;
+    virtual void movi(const std::vector<double> &x) = 0;
 
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
     /**
      * @brief Achieve pose (velocity control)
      *
@@ -344,18 +346,27 @@ public:
      * @param interval Time interval between successive command invocations, expressed in seconds
      * and used for numerical differentiation with desired/current poses.
      */
-    virtual void pose(const std::vector<double> &x, double interval) = 0;
+    [[deprecated("use either `movi` (position commands) or `twist` (velocity commands) instead")]]
+    virtual void pose(const std::vector<double> &x, double interval)
+    {
+        if (std::vector<double> currentX, xdot; stat(currentX))
+        {
+            std::transform(x.cbegin(), x.cend(), currentX.cbegin(), xdot.begin(), [interval](auto a, auto b) { return (a - b) * interval; });
+            twist(xdot);
+        }
+    }
+#endif
 
     /**
-     * @brief Achieve pose (position control)
+     * @brief Instantaneous velocity steps
      *
-     * Move to desired position instantaneously, no further intermediate calculations are
-     * expected other than computing the inverse kinematics.
+     * Move in instantaneous velocity increments.
      *
-     * @param x 6-element vector describing desired instantaneous pose in cartesian space;
-     * first three elements denote translation (meters), last three denote rotation (radians).
+     * @param xdot 6-element vector describing velocity increments in cartesian space;
+     * first three elements denote translational velocity (meters/second), last three
+     * denote angular velocity (radians/second).
      */
-    virtual void movi(const std::vector<double> &x) = 0;
+    virtual void twist(const std::vector<double> &xdot) = 0;
 
     /**
      * @brief Exert force

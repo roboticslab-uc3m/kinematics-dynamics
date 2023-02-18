@@ -59,7 +59,7 @@ bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingStreamingPreset)
     {
-        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_POSE;
+        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
