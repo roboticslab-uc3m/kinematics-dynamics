@@ -19,6 +19,7 @@ LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bo
     : StreamingDevice(config),
       iAnalogSensor(nullptr),
       usingMovi(usingMovi),
+      previousTimestamp(0.0),
       hasActuator(false),
       grab(false), pinch(false)
 {
@@ -59,7 +60,7 @@ bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingStreamingPreset)
     {
-        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_POSE;
+        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
@@ -216,14 +217,15 @@ void LeapMotionSensorDevice::sendMovementCommand(double timestamp)
     }
     else
     {
-        static double lastTimestamp = 0.0;
+        KDL::Frame currentPose = KdlVectorConverter::vectorToFrame(data);
 
-        if (lastTimestamp != 0.0) // skip motion for the very first time
+        if (previousTimestamp != 0.0) // skip motion for the very first time
         {
-            double period = timestamp - lastTimestamp;
-            iCartesianControl->pose(data, timestamp - lastTimestamp);
+            KDL::Twist xdot = KDL::diff(previousPose, currentPose, timestamp - previousTimestamp);
+            iCartesianControl->twist(KdlVectorConverter::twistToVector(xdot));
         }
 
-        lastTimestamp = timestamp;
+        previousPose = currentPose;
+        previousTimestamp = timestamp;
     }
 }

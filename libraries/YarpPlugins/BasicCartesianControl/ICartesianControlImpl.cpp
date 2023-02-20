@@ -2,8 +2,6 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <cmath> //-- std::abs
-
 #include <algorithm> // std::transform
 #include <functional> // std::negate
 #include <iterator> // std::back_inserter
@@ -422,121 +420,6 @@ bool BasicCartesianControl::act(int command)
     return false;
 }
 
-void BasicCartesianControl::twist(const std::vector<double> &xdot)
-{
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
-            || !checkControlModes(VOCAB_CM_VELOCITY))
-    {
-        yCError(BCC) << "Streaming command not preset";
-        return;
-    }
-
-    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
-    std::vector<double> currentQ(numJoints), qdot;
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        yCError(BCC) << "getEncoders() failed";
-        return;
-    }
-
-    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
-    {
-        yCError(BCC) << "diffInvKin() failed";
-        return;
-    }
-
-    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
-    {
-        yCError(BCC) << "Joint position or velocity limits exceeded";
-        return;
-    }
-
-    watcher.suppress();
-
-    if (!iVelocityControl->velocityMove(qdot.data()))
-    {
-        yCError(BCC) << "velocityMove() failed";
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-void BasicCartesianControl::pose(const std::vector<double> &x, double interval)
-{
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE
-            || !checkControlModes(VOCAB_CM_VELOCITY))
-    {
-        yCError(BCC) << "Streaming command not preset";
-        return;
-    }
-
-    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
-    std::vector<double> currentQ(numJoints);
-
-    if (!iEncoders->getEncoders(currentQ.data()))
-    {
-        yCError(BCC) << "getEncoders() failed";
-        return;
-    }
-
-    std::vector<double> x_base_tcp;
-
-    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
-    {
-        yCError(BCC) << "fwdKin() failed";
-        return;
-    }
-
-    std::vector<double> xd_obj;
-
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
-    {
-        if (!iCartesianSolver->changeOrigin(x, x_base_tcp, xd_obj))
-        {
-            yCError(BCC) << "changeOrigin() failed";
-            return;
-        }
-    }
-    else
-    {
-        xd_obj = x;
-    }
-
-    std::vector<double> xd;
-
-    if (!iCartesianSolver->poseDiff(xd_obj, x_base_tcp, xd))
-    {
-        yCError(BCC) << "fwdKinError() failed";
-        return;
-    }
-
-    std::vector<double> xdot(xd.size());
-    const double factor = gain / interval;
-    std::transform(xd.begin(), xd.end(), xdot.begin(), [factor](double val) { return val * factor; });
-
-    std::vector<double> qdot;
-
-    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
-    {
-        yCError(BCC) << "diffInvKin() failed";
-        return;
-    }
-
-    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
-    {
-        yCError(BCC) << "Joint position or velocity limits exceeded, stopping";
-        return;
-    }
-
-    watcher.suppress();
-
-    if (!iVelocityControl->velocityMove(qdot.data()))
-    {
-        yCError(BCC) << "velocityMove() failed";
-    }
-}
-
 // -----------------------------------------------------------------------------
 
 void BasicCartesianControl::movi(const std::vector<double> &x)
@@ -578,6 +461,46 @@ void BasicCartesianControl::movi(const std::vector<double> &x)
     if (!iPositionDirect->setPositions(q.data()))
     {
         yCError(BCC) << "setPositions() failed";
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+void BasicCartesianControl::twist(const std::vector<double> &xdot)
+{
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
+            || !checkControlModes(VOCAB_CM_VELOCITY))
+    {
+        yCError(BCC) << "Streaming command not preset";
+        return;
+    }
+
+    StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
+    std::vector<double> currentQ(numJoints), qdot;
+
+    if (!iEncoders->getEncoders(currentQ.data()))
+    {
+        yCError(BCC) << "getEncoders() failed";
+        return;
+    }
+
+    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
+    {
+        yCError(BCC) << "diffInvKin() failed";
+        return;
+    }
+
+    if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
+    {
+        yCError(BCC) << "Joint position or velocity limits exceeded";
+        return;
+    }
+
+    watcher.suppress();
+
+    if (!iVelocityControl->velocityMove(qdot.data()))
+    {
+        yCError(BCC) << "velocityMove() failed";
     }
 }
 

@@ -187,9 +187,8 @@ void RpcResponder::makeUsage()
 
     std::stringstream ss_cmd;
     ss_cmd << "(config param) preset streaming command, available:";
-    ss_cmd << " [" << Vocab::decode(VOCAB_CC_TWIST) << "]";
-    ss_cmd << " [" << Vocab::decode(VOCAB_CC_POSE) << "]";
     ss_cmd << " [" << Vocab::decode(VOCAB_CC_MOVI) << "]";
+    ss_cmd << " [" << Vocab::decode(VOCAB_CC_TWIST) << "]";
     ss_cmd << " [" << Vocab::decode(VOCAB_CC_WRENCH) << "]";
 
     ss << "... [" << Vocab::decode(VOCAB_CC_CONFIG_STREAMING_CMD) << "] vocab";

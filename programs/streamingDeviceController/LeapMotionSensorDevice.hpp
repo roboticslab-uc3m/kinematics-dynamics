@@ -49,6 +49,9 @@ private:
 
     KDL::Frame frame_base_leap, frame_ee_leap, frame_leap_ee;
 
+    KDL::Frame previousPose;
+    double previousTimestamp;
+
     bool hasActuator;
     bool grab, pinch;
 };

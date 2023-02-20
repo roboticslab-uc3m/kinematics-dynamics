@@ -283,13 +283,6 @@ void CartesianControlClient::twist(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::pose(const std::vector<double> &x, double interval)
-{
-    handleStreamingBiConsumerCmd(VOCAB_CC_POSE, x, interval);
-}
-
-// -----------------------------------------------------------------------------
-
 void CartesianControlClient::movi(const std::vector<double> &x)
 {
     handleStreamingConsumerCmd(VOCAB_CC_MOVI, x);
