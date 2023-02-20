@@ -3,10 +3,11 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
-#include <algorithm> // TODO: remove this along with `pose`
 #include <map>
 #include <vector>
+
 #include <yarp/os/Vocab.h>
+
 #include <ICartesianSolver.h>
 
 /**
@@ -73,7 +74,6 @@ constexpr int VOCAB_CC_ACT = yarp::os::createVocab32('a','c','t');      ///< Act
 
 // Streaming commands
 constexpr int VOCAB_CC_MOVI = yarp::os::createVocab32('m','o','v','i');   ///< Achieve pose (position control)
-constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');   ///< Achieve pose (velocity control)
 constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t');  ///< Instantaneous velocity steps
 constexpr int VOCAB_CC_WRENCH = yarp::os::createVocab32('w','r','n','c'); ///< Exert force
 
@@ -333,29 +333,6 @@ public:
      * first three elements denote translation (meters), last three denote rotation (radians).
      */
     virtual void movi(const std::vector<double> &x) = 0;
-
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-    /**
-     * @brief Achieve pose (velocity control)
-     *
-     * Move to desired position, computing the error with respect to the current pose. Then,
-     * perform numerical differentiation and obtain the final velocity increment (as in @ref twist).
-     *
-     * @param x 6-element vector describing desired instantaneous pose in cartesian space;
-     * first three elements denote translation (meters), last three denote rotation (radians).
-     * @param interval Time interval between successive command invocations, expressed in seconds
-     * and used for numerical differentiation with desired/current poses.
-     */
-    [[deprecated("use either `movi` (position commands) or `twist` (velocity commands) instead")]]
-    virtual void pose(const std::vector<double> &x, double interval)
-    {
-        if (std::vector<double> currentX, xdot; stat(currentX))
-        {
-            std::transform(x.cbegin(), x.cend(), currentX.cbegin(), xdot.begin(), [interval](auto a, auto b) { return (a - b) * interval; });
-            twist(xdot);
-        }
-    }
-#endif
 
     /**
      * @brief Instantaneous velocity steps

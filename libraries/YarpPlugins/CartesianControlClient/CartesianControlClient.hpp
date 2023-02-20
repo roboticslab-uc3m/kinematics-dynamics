@@ -67,7 +67,6 @@ public:
     bool tool(const std::vector<double> &x) override;
     bool act(int command) override;
     void movi(const std::vector<double> &x) override;
-    void pose(const std::vector<double> &x, double interval) override;
     void twist(const std::vector<double> &xdot) override;
     void wrench(const std::vector<double> &w) override;
     bool setParameter(int vocab, double value) override;

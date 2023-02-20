@@ -21,9 +21,6 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
     case VOCAB_CC_MOVI:
         handleConsumerCmdMsg(b, &ICartesianControl::movi);
         break;
-    case VOCAB_CC_POSE:
-        handleBiConsumerCmdMsg(b, &ICartesianControl::pose);
-        break;
     case VOCAB_CC_TWIST:
         handleConsumerCmdMsg(b, &ICartesianControl::twist);
         break;

@@ -253,7 +253,6 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
     {
     case VOCAB_CC_MOVI:
         return setControlModes(VOCAB_CM_POSITION_DIRECT);
-    case VOCAB_CC_POSE:
     case VOCAB_CC_TWIST:
         return setControlModes(VOCAB_CM_VELOCITY);
     case VOCAB_CC_WRENCH:
