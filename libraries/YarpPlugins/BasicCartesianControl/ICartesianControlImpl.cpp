@@ -218,7 +218,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         auto * path = new KDL::Path_Line(H_base_start, H_base_end, interpolator, 1.0);
         auto * profile = new KDL::VelocityProfile_Trap(10.0, 10.0);
 
-        trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, duration));
+        trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, trajDuration));
     }
 
     if (enableFailFast && !doFailFastChecks(currentQ))
@@ -588,7 +588,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
             yCError(BCC) << "Trajectory duration cannot be negative nor zero";
             return false;
         }
-        duration = value;
+        trajDuration = value;
         break;
     case VOCAB_CC_CONFIG_CMC_PERIOD:
         if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
@@ -640,7 +640,7 @@ bool BasicCartesianControl::getParameter(int vocab, double * value)
         *value = gain;
         break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
-        *value = duration;
+        *value = trajDuration;
         break;
     case VOCAB_CC_CONFIG_CMC_PERIOD:
         *value = cmcPeriodMs;
@@ -687,7 +687,7 @@ bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 bool BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
     params.emplace(VOCAB_CC_CONFIG_GAIN, gain);
-    params.emplace(VOCAB_CC_CONFIG_TRAJ_DURATION, duration);
+    params.emplace(VOCAB_CC_CONFIG_TRAJ_DURATION, trajDuration);
     params.emplace(VOCAB_CC_CONFIG_CMC_PERIOD, cmcPeriodMs);
     params.emplace(VOCAB_CC_CONFIG_WAIT_PERIOD, waitPeriodMs);
     params.emplace(VOCAB_CC_CONFIG_FRAME, referenceFrame);

@@ -124,7 +124,8 @@ constexpr int VOCAB_CC_ACTUATOR_GENERIC = yarp::os::createVocab32('a','c','g'); 
 // Controller configuration (parameter keys)
 constexpr int VOCAB_CC_CONFIG_PARAMS = yarp::os::createVocab32('p','r','m','s');        ///< Parameter group
 constexpr int VOCAB_CC_CONFIG_GAIN = yarp::os::createVocab32('c','p','c','g');          ///< Controller gain
-constexpr int VOCAB_CC_CONFIG_TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'); ///< Trajectory duration
+constexpr int VOCAB_CC_CONFIG_TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'); ///< Trajectory duration [s]
+constexpr int VOCAB_CC_CONFIG_TRAJ_VELOCITY = yarp::os::createVocab32('c','p','t','v'); ///< Trajectory linear velocity [m/s]
 constexpr int VOCAB_CC_CONFIG_CMC_PERIOD = yarp::os::createVocab32('c','p','c','p');    ///< CMC period [ms]
 constexpr int VOCAB_CC_CONFIG_WAIT_PERIOD = yarp::os::createVocab32('c','p','w','p');   ///< Check period of 'wait' command [ms]
 constexpr int VOCAB_CC_CONFIG_FRAME = yarp::os::createVocab32('c','p','f');             ///< Reference frame

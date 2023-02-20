@@ -13,7 +13,8 @@ using namespace roboticslab;
 constexpr auto DEFAULT_SOLVER = "KdlSolver";
 constexpr auto DEFAULT_ROBOT = "remote_controlboard";
 constexpr auto DEFAULT_GAIN = 0.05;
-constexpr auto DEFAULT_DURATION = 10.0;
+constexpr auto DEFAULT_DURATION = 10.0; // [s]
+constexpr auto DEFAULT_VELOCITY = 0.05; // [m/s]
 constexpr auto DEFAULT_CMC_PERIOD_MS = 50;
 constexpr auto DEFAULT_WAIT_PERIOD_MS = 30;
 constexpr auto DEFAULT_REFERENCE_FRAME = "base";
@@ -25,8 +26,11 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
             "controller gain").asFloat64();
 
-    duration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
+    trajDuration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
             "trajectory duration (seconds)").asFloat64();
+
+    trajVelocity = config.check("trajectoryVelocity", yarp::os::Value(DEFAULT_VELOCITY),
+            "trajectory linear velocity (meters/second)").asFloat64();
 
     cmcPeriodMs = config.check("cmcPeriodMs", yarp::os::Value(DEFAULT_CMC_PERIOD_MS),
             "CMC rate (milliseconds)").asInt32();

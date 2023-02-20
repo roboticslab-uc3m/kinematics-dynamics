@@ -192,7 +192,8 @@ private:
     ICartesianSolver::reference_frame referenceFrame;
 
     double gain;
-    double duration; // [s]
+    double trajDuration; // [s]
+    double trajVelocity; // [m/s]
 
     int cmcPeriodMs;
     int waitPeriodMs;
