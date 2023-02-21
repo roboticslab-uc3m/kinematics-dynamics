@@ -15,7 +15,7 @@ AsibotConfiguration * AsibotSolver::getConfiguration() const
 
 AsibotSolver::AsibotTcpFrame AsibotSolver::getTcpFrame() const
 {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard lock(mtx);
     return tcpFrameStruct;
 }
 
@@ -23,7 +23,7 @@ AsibotSolver::AsibotTcpFrame AsibotSolver::getTcpFrame() const
 
 void AsibotSolver::setTcpFrame(const AsibotTcpFrame & tcpFrameStruct)
 {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard lock(mtx);
     this->tcpFrameStruct = tcpFrameStruct;
 }
 

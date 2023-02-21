@@ -35,7 +35,7 @@ constexpr double epsilon = 1e-5;
 
 int BasicCartesianControl::getCurrentState() const
 {
-    std::lock_guard<std::mutex> lock(stateMutex);
+    std::lock_guard lock(stateMutex);
     return currentState;
 }
 
@@ -43,7 +43,7 @@ int BasicCartesianControl::getCurrentState() const
 
 void BasicCartesianControl::setCurrentState(int value)
 {
-    std::lock_guard<std::mutex> lock(stateMutex);
+    std::lock_guard lock(stateMutex);
     currentState = value;
     streamingCommand = VOCAB_CC_NOT_SET;
 }

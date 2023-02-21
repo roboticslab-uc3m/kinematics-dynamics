@@ -73,7 +73,7 @@ bool AmorCartesianControl::open(yarp::os::Searchable& config)
         handleMutex = reinterpret_cast<std::mutex *>(const_cast<char *>(vHandleMutex.asBlob()));
     }
 
-    if (std::lock_guard<std::mutex> lock(*handleMutex); handle == AMOR_INVALID_HANDLE)
+    if (std::lock_guard lock(*handleMutex); handle == AMOR_INVALID_HANDLE)
     {
         yCError(AMOR) << "Could not get AMOR handle:" << amor_error();
         return false;
@@ -87,7 +87,7 @@ bool AmorCartesianControl::open(yarp::os::Searchable& config)
     {
         AMOR_JOINT_INFO jointInfo;
 
-        if (std::lock_guard<std::mutex> lock(*handleMutex); amor_get_joint_info(handle, i, &jointInfo) != AMOR_SUCCESS)
+        if (std::lock_guard lock(*handleMutex); amor_get_joint_info(handle, i, &jointInfo) != AMOR_SUCCESS)
         {
             yCError(AMOR) << "amor_get_joint_info() failed:" << amor_error();
             return false;
@@ -138,7 +138,7 @@ bool AmorCartesianControl::close()
 {
     if (handle != AMOR_INVALID_HANDLE)
     {
-        std::unique_lock<std::mutex> lock(*handleMutex);
+        std::unique_lock lock(*handleMutex);
         amor_emergency_stop(handle);
 
         if (ownsHandle)
