@@ -37,6 +37,9 @@ public:
     int solutions() const override
     { return 1; }
 
+    const char * describe() const override
+    { return "PK1"; }
+
 private:
     const int id;
     const MatrixExponential exp;
@@ -73,6 +76,9 @@ public:
     int solutions() const override
     { return 2; }
 
+    const char * describe() const override
+    { return "PK2"; }
+
 private:
     const int id1, id2;
     const MatrixExponential exp1, exp2;
@@ -108,6 +114,9 @@ public:
     int solutions() const override
     { return 2; }
 
+    const char * describe() const override
+    { return "PK3"; }
+
 private:
     const int id;
     const MatrixExponential exp;
@@ -140,6 +149,9 @@ public:
 
     int solutions() const override
     { return 1; }
+
+    const char * describe() const override
+    { return "PG1"; }
 
 private:
     const int id;
@@ -174,6 +186,9 @@ public:
 
     int solutions() const override
     { return 1; }
+
+    const char * describe() const override
+    { return "PG2"; }
 
 private:
     const int id1, id2;
@@ -210,6 +225,9 @@ public:
     int solutions() const override
     { return 2; }
 
+    const char * describe() const override
+    { return "PG3"; }
+
 private:
     const int id;
     const MatrixExponential exp;
@@ -244,6 +262,9 @@ public:
 
     int solutions() const override
     { return 2; }
+
+    const char * describe() const override
+    { return "PG4"; }
 
 private:
     const int id1, id2;

@@ -2,6 +2,13 @@
 
 #include "ChainIkSolverPos_ST.hpp"
 
+#include <algorithm> // std::transform
+#include <iterator> // std::back_inserter
+
+#include <yarp/os/LogStream.h>
+
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
@@ -82,6 +89,12 @@ KDL::ChainIkSolverPos * ChainIkSolverPos_ST::create(const KDL::Chain & chain, co
     {
         return nullptr;
     }
+
+    const auto & steps = problem->getSteps();
+
+    std::vector<const char *> descriptions;
+    std::transform(steps.cbegin(), steps.cend(), std::back_inserter(descriptions), [](const auto * step) { return step->describe(); });
+    yCInfo(KDLS) << "Found" << problem->solutions() << "solutions:" << descriptions << (problem->isReversed() ? "(reversed)" : "");
 
     ConfigurationSelector * config = configFactory.create();
 

@@ -77,6 +77,9 @@ public:
 
     //! Number of local IK solutions
     virtual int solutions() const = 0;
+
+    //! Return a human-readable description of this IK subproblem
+    virtual const char * describe() const = 0;
 };
 
 /**
@@ -117,6 +120,14 @@ public:
     //! Number of global IK solutions
     int solutions() const
     { return soln; }
+
+    //! Solution of the IK problem (if available)
+    const Steps & getSteps() const
+    { return steps; }
+
+    //! Whether the computed solution is reversed
+    bool isReversed() const
+    { return reversed; }
 
     /**
      * @brief Creates an IK solver instance given a sequence of known subproblems
