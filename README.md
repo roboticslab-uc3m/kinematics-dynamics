@@ -60,6 +60,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
 - [RBDL](https://rbdl.github.io/) ([rbdl/rbdl](https://github.com/rbdl/rbdl)): Rigid Body Dynamics Library. The code tightly follows the notation used in Roy Featherstone's book "Rigid Body Dynamics Algorithm".
 - [adityadua24/robopy](https://github.com/adityadua24/robopy)
+- [tasts-robots/pink](https://github.com/tasts-robots/pink): Based on Pinocchio
 
 ### Path-Planning, Trajectory generation and optimization
 
@@ -79,12 +80,14 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [roboticslab-uc3m/TEOTraGen](https://github.com/roboticslab-uc3m/TEOTraGen)
 - [roboticslab-uc3m/footsteps](https://github.com/roboticslab-uc3m/footsteps): Includes interesting links
 - [munozyanez/spgait](https://github.com/munozyanez/spgait)
-- [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
-- [robotology/whole-body-controllers](https://github.com/robotology/whole-body-controllers)
+- [robotology](https://github.com/robotology)
+  - [robotology/walking-controllers](https://github.com/robotology/walking-controllers)
+  - [robotology/whole-body-controllers](https://github.com/robotology/whole-body-controllers)
 - [epfl-lasa/icub-ds-walking](https://github.com/epfl-lasa/icub-ds-walking)
 - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros): Contains interesting walking motion in [./src/nimbro/motion](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
+   - [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [nav74neet/ddpg_biped](https://github.com/nav74neet/ddpg_biped)
 - https://github.com/adamlukomski/iva
 - https://github.com/pal-robotics
