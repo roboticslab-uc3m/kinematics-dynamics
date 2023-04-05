@@ -86,6 +86,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros): Contains interesting walking motion in [./src/nimbro/motion](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
 - [nav74neet/ddpg_biped](https://github.com/nav74neet/ddpg_biped)
+- https://github.com/adamlukomski/iva
 - https://github.com/pal-robotics
 - https://github.com/loco-3d
 - https://discourse.ros.org/t/humanoids-sig/1949/12
