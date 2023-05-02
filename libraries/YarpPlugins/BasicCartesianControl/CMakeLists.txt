@@ -1,6 +1,6 @@
-# Copyright: (C) 2017 Universidad Carlos III de Madrid
+# Copyright: (C) 2023 Universidad Carlos III de Madrid
 # Copyright: (C) 2009 RobotCub Consortium
-# Author: Juan G. Victores & Raul de Santos Rico
+# Author: Juan G. Victores
 # Contrib: Ugo; Paul Fitzpatrick (YARP device examples and tutorials)
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 

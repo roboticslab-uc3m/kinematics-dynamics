@@ -2,22 +2,8 @@
 
 /**
  * @ingroup kinematics-dynamics-examples
- * \defgroup cartesianControlExample cartesianControlExample
+ * @defgroup cartesianControlExample cartesianControlExample
  *
- * <b>Legal</b>
- *
- * Copyright: (C) 2017 Universidad Carlos III de Madrid;
- *
- * Authors: Raul de Santos Rico
- *
- * CopyPolicy: Released under the terms of the LGPLv2.1 or later, see license/LGPL.TXT
- *
- * <b>Building</b>
-\verbatim
-cd examples/cpp/cartesianControlExample/
-mkdir build; cd build; cmake ..
-make -j$(nproc)
-\endverbatim
  * <b>Running example with teoSim</b>
  * First we must run a YARP name server if it is not running in our current namespace:
 \verbatim
