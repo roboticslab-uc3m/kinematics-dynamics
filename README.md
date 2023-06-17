@@ -96,4 +96,6 @@ Installation instructions for installing from source can be found [here](doc/kin
 - https://discourse.ros.org/t/humanoids-sig/1949/12
 - [isri-aist/BaselineWalkingController](https://github.com/isri-aist/BaselineWalkingController)
 - via learning
+  - [DLR-RM/rl-baselines3-zoo](https://github.com/DLR-RM/rl-baselines3-zoo) includes humanoid (also see pretrained at <https://huggingface.co/sb3/tqc-Humanoid-v3>)
+  - <https://es.mathworks.com/help/sm/ug/humanoid_walker.html>
   - [nav74neet/ddpg_biped](https://github.com/nav74neet/ddpg_biped)
