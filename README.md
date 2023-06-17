@@ -44,7 +44,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ocra-recipes/eigen_lgsm](https://github.com/ocra-recipes/eigen_lgsm): used by [robotology/codyco-superbuild](https://github.com/robotology/codyco-superbuild)
 - [cuSolver](https://docs.nvidia.com/cuda/cusolver/index.html)
 
-### Fast IK-Solvers
+### IK-Solvers
 
 - [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [NUKE](https://vanadiumlabs.github.io/pypose/nuke-intro.html#NUKE): The Nearly Universal Kinematic Engine
@@ -53,14 +53,15 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [ros-industrial-consortium/descartes](https://github.com/ros-industrial-consortium/descartes)
 - [IKPy](https://phylliade.github.io/ikpy) ([Phylliade/ikpy](https://github.com/Phylliade/ikpy))
 - [uts-magic-lab/Magiks](https://github.com/uts-magic-lab/Magiks)
+- [tasts-robots/pink](https://github.com/tasts-robots/pink): Based on Pinocchio
 
 ### Kinematics and Dynamics
 
 - [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics) ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)): A dependency of this repository
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
+- [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [RBDL](https://rbdl.github.io/) ([rbdl/rbdl](https://github.com/rbdl/rbdl)): Rigid Body Dynamics Library. The code tightly follows the notation used in Roy Featherstone's book "Rigid Body Dynamics Algorithm".
 - [adityadua24/robopy](https://github.com/adityadua24/robopy)
-- [tasts-robots/pink](https://github.com/tasts-robots/pink): Based on Pinocchio
 
 ### Path-Planning, Trajectory generation and optimization
 
@@ -88,7 +89,6 @@ Installation instructions for installing from source can be found [here](doc/kin
   - [stephane-caron/lipm_walking_controller](https://github.com/stephane-caron/lipm_walking_controller) ([wiki](https://github.com/stephane-caron/lipm_walking_controller/wiki/How-to-use-the-graphical-user-interface%3F), [docker](https://hub.docker.com/r/stephanecaron/lipm_walking_controller))
   - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
-   - [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros): Contains interesting walking motion in [./src/nimbro/motion](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [adamlukomski/iva](https://github.com/adamlukomski/iva)
 - [pal-robotics](https://github.com/pal-robotics)
