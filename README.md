@@ -89,9 +89,9 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
    - [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [nav74neet/ddpg_biped](https://github.com/nav74neet/ddpg_biped)
-- https://github.com/adamlukomski/iva
-- https://github.com/pal-robotics
-- https://github.com/loco-3d
+- [adamlukomski/iva](https://github.com/adamlukomski/iva)
+- [pal-robotics](https://github.com/pal-robotics)
+- [loco-3d](https://github.com/loco-3d)
 - https://discourse.ros.org/t/humanoids-sig/1949/12
-- https://github.com/isri-aist/BaselineWalkingController
-- https://github.com/stephane-caron/lipm_walking_controller ([wiki](https://github.com/stephane-caron/lipm_walking_controller/wiki/How-to-use-the-graphical-user-interface%3F), [docker](https://hub.docker.com/r/stephanecaron/lipm_walking_controller))
+- [isri-aist/BaselineWalkingController](https://github.com/isri-aist/BaselineWalkingController)
+- [stephane-caron/lipm_walking_controller](https://github.com/stephane-caron/lipm_walking_controller) ([wiki](https://github.com/stephane-caron/lipm_walking_controller/wiki/How-to-use-the-graphical-user-interface%3F), [docker](https://hub.docker.com/r/stephanecaron/lipm_walking_controller))
