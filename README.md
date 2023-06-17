@@ -93,3 +93,5 @@ Installation instructions for installing from source can be found [here](doc/kin
 - https://github.com/pal-robotics
 - https://github.com/loco-3d
 - https://discourse.ros.org/t/humanoids-sig/1949/12
+- https://github.com/isri-aist/BaselineWalkingController
+- https://github.com/stephane-caron/lipm_walking_controller ([wiki](https://github.com/stephane-caron/lipm_walking_controller/wiki/How-to-use-the-graphical-user-interface%3F), [docker](https://hub.docker.com/r/stephanecaron/lipm_walking_controller))
