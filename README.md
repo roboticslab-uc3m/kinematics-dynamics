@@ -94,7 +94,9 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [pal-robotics](https://github.com/pal-robotics)
 - [loco-3d](https://github.com/loco-3d)
 - https://discourse.ros.org/t/humanoids-sig/1949/12
-- [isri-aist/BaselineWalkingController](https://github.com/isri-aist/BaselineWalkingController) ([docker](https://github.com/orgs/isri-aist/packages?repo_name=BaselineWalkingController))
+- [isri-aist](https://github.com/isri-aist)
+  - [isri-aist/BaselineWalkingController](https://github.com/isri-aist/BaselineWalkingController) ([docker](https://github.com/orgs/isri-aist/packages?repo_name=BaselineWalkingController))
+  - [isri-aist/CentroidalControlCollection](https://github.com/isri-aist/CentroidalControlCollection)
 - via learning
   - [DLR-RM/rl-baselines3-zoo](https://github.com/DLR-RM/rl-baselines3-zoo) includes humanoid (also see pretrained at <https://huggingface.co/sb3/tqc-Humanoid-v3>)
   - <https://es.mathworks.com/help/sm/ug/humanoid_walker.html>
