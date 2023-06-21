@@ -89,6 +89,7 @@ Installation instructions for installing from source can be found [here](doc/kin
   - [stephane-caron/lipm_walking_controller](https://github.com/stephane-caron/lipm_walking_controller) ([wiki](https://github.com/stephane-caron/lipm_walking_controller/wiki/How-to-use-the-graphical-user-interface%3F), [docker](https://hub.docker.com/r/stephanecaron/lipm_walking_controller))
   - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
+- [Humanoid Path Planner](https://humanoid-path-planner.github.io/hpp-doc) ([humanoid-path-planner (org)](https://github.com/humanoid-path-planner))
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros): Contains interesting walking motion in [./src/nimbro/motion](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)
 - [adamlukomski/iva](https://github.com/adamlukomski/iva)
 - [pal-robotics](https://github.com/pal-robotics)
