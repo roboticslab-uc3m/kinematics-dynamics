@@ -2,6 +2,8 @@
 
 #include "FtCompensation.hpp"
 
+#include <functional> // std::invoke
+
 #include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
@@ -426,7 +428,7 @@ void FtCompensation::run()
 
     if (!dryRun)
     {
-        (iCartesianControl->*command)(v);
+        std::invoke(command, iCartesianControl, v);
     }
 }
 

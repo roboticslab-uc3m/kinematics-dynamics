@@ -2,6 +2,7 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <functional> // std::invoke
 #include <vector>
 
 #include <yarp/os/LogStream.h>
@@ -46,7 +47,7 @@ void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerF
             v.push_back(in.get(i).asFloat64());
         }
 
-        (iCartesianControl->*cmd)(v);
+        std::invoke(cmd, iCartesianControl, v);
     }
     else
     {
@@ -68,7 +69,7 @@ void StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsu
             v.push_back(in.get(i).asFloat64());
         }
 
-        (iCartesianControl->*cmd)(v, d);
+        std::invoke(cmd, iCartesianControl, v, d);
     }
     else
     {

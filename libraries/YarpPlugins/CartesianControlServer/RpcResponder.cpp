@@ -2,6 +2,7 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <functional> // std::invoke
 #include <sstream>
 
 #include <yarp/os/Bottle.h>
@@ -287,7 +288,7 @@ bool RpcResponder::handleActMsg(const yarp::os::Bottle& in, yarp::os::Bottle& ou
 
 bool RpcResponder::handleRunnableCmdMsg(const yarp::os::Bottle& in, yarp::os::Bottle& out, RunnableFun cmd)
 {
-    if ((iCartesianControl->*cmd)())
+    if (std::invoke(cmd, iCartesianControl))
     {
         out.addVocab32(VOCAB_CC_OK);
         return true;
@@ -312,7 +313,7 @@ bool RpcResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, yarp::os::Bo
             vin.push_back(in.get(i).asFloat64());
         }
 
-        if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin))
+        if (!transformIncomingData(vin) || !std::invoke(cmd, iCartesianControl, vin))
         {
             out.addVocab32(VOCAB_CC_FAILED);
             return false;
@@ -342,7 +343,7 @@ bool RpcResponder::handleFunctionCmdMsg(const yarp::os::Bottle& in, yarp::os::Bo
             vin.push_back(in.get(i).asFloat64());
         }
 
-        if (!transformIncomingData(vin) || !(iCartesianControl->*cmd)(vin, vout))
+        if (!transformIncomingData(vin) || !std::invoke(cmd, iCartesianControl, vin, vout))
         {
             out.addVocab32(VOCAB_CC_FAILED);
             return false;
