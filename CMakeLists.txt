@@ -32,7 +32,6 @@ find_package(YARP 3.7 REQUIRED COMPONENTS os dev sig
 
 # Soft dependencies.
 find_package(orocos_kdl 1.4 QUIET)
-find_package(ROBOTICSLAB_YARP_DEVICES QUIET)
 find_package(AMOR_API QUIET)
 find_package(GTestSources 1.8 QUIET)
 find_package(SWIG 3.0.12 QUIET)
@@ -51,16 +50,6 @@ include(GNUInstallDirs)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-
-# Enabling coverage.
-option(ENABLE_coverage "Choose if you want to enable coverage collection" OFF)
-
-if(ENABLE_coverage)
-    # List supported compilers.
-    if(CMAKE_COMPILER_IS_GNUCXX)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-    endif()
-endif()
 
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
