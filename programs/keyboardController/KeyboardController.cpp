@@ -118,37 +118,37 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
     if (usingRemoteRobot)
     {
-        yarp::os::Property controlboardClientOptions {
+        yarp::os::Property controlBoardClientOptions {
             {"device", yarp::os::Value("remote_controlboard")},
             {"local", yarp::os::Value(localPrefix + "/joint")},
             {"remote", yarp::os::Value(rf.find("remoteRobot"))}
         };
 
-        if (!controlboardDevice.open(controlboardClientOptions))
+        if (!controlBoardDevice.open(controlBoardClientOptions))
         {
             yCError(KC) << "Unable to open control board client device";
             return false;
         }
 
-        if (!controlboardDevice.view(iEncoders))
+        if (!controlBoardDevice.view(iEncoders))
         {
             yCError(KC) << "Could not view iEncoders";
             return false;
         }
 
-        if (!controlboardDevice.view(iControlMode))
+        if (!controlBoardDevice.view(iControlMode))
         {
             yCError(KC) << "Could not view iControlMode";
             return false;
         }
 
-        if (!controlboardDevice.view(iControlLimits))
+        if (!controlBoardDevice.view(iControlLimits))
         {
             yCError(KC) << "Could not view iControlLimits";
             return false;
         }
 
-        if (!controlboardDevice.view(iVelocityControl))
+        if (!controlBoardDevice.view(iVelocityControl))
         {
             yCError(KC) << "Could not view iVelocityControl";
             return false;
@@ -420,7 +420,7 @@ bool KeyboardController::close()
         linTrajThread = nullptr;
     }
 
-    controlboardDevice.close();
+    controlBoardDevice.close();
     cartesianControlDevice.close();
 
     return true;
@@ -429,7 +429,7 @@ bool KeyboardController::close()
 template <typename func>
 void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
 {
-    if (!controlboardDevice.isValid())
+    if (!controlBoardDevice.isValid())
     {
         yCWarning(KC) << "Unrecognized command (you chose not to launch remote control board client)";
         issueStop();
@@ -603,7 +603,7 @@ void KeyboardController::actuateTool(int command)
 
 void KeyboardController::printJointPositions()
 {
-    if (!controlboardDevice.isValid())
+    if (!controlBoardDevice.isValid())
     {
         yCWarning(KC) << "Unrecognized command (you chose not to launch remote control board client)";
         issueStop();
@@ -657,12 +657,12 @@ void KeyboardController::issueStop()
 
         iCartesianControl->stopControl();
     }
-    else if (controlboardDevice.isValid())
+    else if (controlBoardDevice.isValid())
     {
         iVelocityControl->stop();
     }
 
-    if (controlboardDevice.isValid())
+    if (controlBoardDevice.isValid())
     {
         std::fill(currentJointVels.begin(), currentJointVels.end(), 0.0);
     }
@@ -685,7 +685,7 @@ void KeyboardController::printHelp()
     std::cout << " [Esc] - close the application" << std::endl;
     std::cout << " '?' - print this help guide" << std::endl;
 
-    if (controlboardDevice.isValid())
+    if (controlBoardDevice.isValid())
     {
         std::cout << " 'j' - query current joint positions" << std::endl;
     }
@@ -695,7 +695,7 @@ void KeyboardController::printHelp()
         std::cout << " 'p' - query current cartesian positions (angleRepr: " << angleRepr << ")" << std::endl;
     }
 
-    if (controlboardDevice.isValid())
+    if (controlBoardDevice.isValid())
     {
         static const char jointPos[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         static const char jointNeg[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'};

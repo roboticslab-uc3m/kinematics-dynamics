@@ -82,7 +82,7 @@ private:
     bool usingThread;
     LinearTrajectoryThread * linTrajThread;
 
-    yarp::dev::PolyDriver controlboardDevice;
+    yarp::dev::PolyDriver controlBoardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;
 
     yarp::dev::IEncoders * iEncoders;
