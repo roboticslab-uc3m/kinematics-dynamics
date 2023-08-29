@@ -10,11 +10,8 @@
 
 using namespace roboticslab;
 
-namespace
-{
-    static constexpr int MAX_ENCODER_ERRORS = 20;
-    static constexpr double ERROR_THROTTLE = 0.5; // [s]
-}
+constexpr int MAX_ENCODER_ERRORS = 20;
+constexpr double ERROR_THROTTLE = 0.5; // [s]
 
 // ------------------- PeriodicThread Related ------------------------------------
 
@@ -35,7 +32,7 @@ void BasicCartesianControl::run()
 
     if (!iEncoders->getEncoders(q.data()) || !iEncoders->getEncoderSpeeds(qdot.data()) || !iEncoders->getEncoderAccelerations(qdotdot.data()))
     {
-        yCErrorThrottle(BCC, ERROR_THROTTLE) << "getEncoders() failed, unable to check joint limits";
+        yCErrorThrottle(BCC, ERROR_THROTTLE) << "Unable to query encoders";
         encoderErrors++;
 
         if (encoderErrors > MAX_ENCODER_ERRORS)
