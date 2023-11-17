@@ -62,6 +62,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [RBDL](https://rbdl.github.io/) ([rbdl/rbdl](https://github.com/rbdl/rbdl)): Rigid Body Dynamics Library. The code tightly follows the notation used in Roy Featherstone's book "Rigid Body Dynamics Algorithm".
 - [adityadua24/robopy](https://github.com/adityadua24/robopy)
+- [jdj2261/pykin](https://github.com/jdj2261/pykin)
 
 ### Path-Planning, Trajectory generation and optimization
 
