@@ -70,7 +70,7 @@ jobs:
         path: .deps/kdl
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache swig googletest
+      run: sudo apt-get install -qq ccache libeigen3-dev swig googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v1
