@@ -69,15 +69,8 @@ jobs:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
 
-    - name: Check out amor-api
-      uses: actions/checkout@v3
-      with:
-        repository: roboticslab-uc3m/amor-api
-        token: ${{secrets.AMOR_API}}
-        path: .deps/amor-api
-
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache libboost-thread-dev libeigen3-dev swig googletest
+      run: sudo apt-get install -qq ccache swig googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v1
@@ -111,12 +104,6 @@ jobs:
         cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_CCACHE_LAUNCHER
         cmake --build .deps/kdl/orocos_kdl/build
         sudo cmake --install .deps/kdl/orocos_kdl/build
-
-    - name: Build amor-api
-      run: |
-        cmake -S .deps/amor-api -B .deps/amor-api/build $CMAKE_CCACHE_LAUNCHER -DENABLE_udev_rules=OFF
-        cmake --build .deps/amor-api/build
-        sudo cmake --install .deps/amor-api/build
 
     - name: Configure kinematics-dynamics
       run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON

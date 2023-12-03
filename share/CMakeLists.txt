@@ -8,9 +8,6 @@ if(ENABLE_ftCompensation)
 endif()
 
 if(ENABLE_streamingDeviceController)
-    yarp_install(FILES applications/streamingSharedControl.xml
-                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_APPLICATIONS_INSTALL_DIR}/streamingDeviceController)
-
     yarp_install(FILES contexts/streamingDeviceController.ini
                  DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/streamingDeviceController)
 endif()

@@ -19,7 +19,6 @@ install(TARGETS KinematicsDynamicsInterfaces
 add_library(ROBOTICSLAB::KinematicsDynamicsInterfaces ALIAS KinematicsDynamicsInterfaces)
 
 # Create devices.
-add_subdirectory(AmorCartesianControl)
 add_subdirectory(AsibotSolver)
 add_subdirectory(BasicCartesianControl)
 add_subdirectory(CartesianControlClient)

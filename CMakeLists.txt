@@ -32,7 +32,6 @@ find_package(YARP 3.7 REQUIRED COMPONENTS os dev sig
 
 # Soft dependencies.
 find_package(orocos_kdl 1.4 QUIET)
-find_package(AMOR_API QUIET)
 find_package(GTestSources 1.8 QUIET)
 find_package(SWIG 3.0.12 QUIET)
 find_package(Doxygen QUIET)
