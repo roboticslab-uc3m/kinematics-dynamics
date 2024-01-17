@@ -168,7 +168,7 @@ private:
     bool checkControlModes(int mode);
     bool setControlModes(int mode);
     bool presetStreamingCommand(int command);
-    void computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
+    bool computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> & q, const StateWatcher & watcher);
     void handleMovlVel(const std::vector<double> & q, const StateWatcher & watcher);

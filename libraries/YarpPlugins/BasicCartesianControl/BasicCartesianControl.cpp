@@ -266,9 +266,9 @@ bool BasicCartesianControl::presetStreamingCommand(int command)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd,
-        std::vector<double> & qdot)
+bool BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot)
 {
+    std::vector<double> deltas(numJoints);
     double maxTime = 0.0;
 
     //-- Find out the maximum time to move
@@ -278,14 +278,14 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
         if (qRefSpeeds[joint] <= 0.0)
         {
             yCWarning(BCC, "Zero or negative velocities sent at joint %d, not moving: %f", joint, qRefSpeeds[joint]);
-            return;
+            continue;
         }
 
-        double distance = std::abs(qd[joint] - q[joint]);
+        deltas[joint] = std::abs(qd[joint] - q[joint]);
 
-        yCInfo(BCC, "Distance (joint %d): %f", joint, distance);
+        yCInfo(BCC, "Distance (joint %d): %f", joint, deltas[joint]);
 
-        double targetTime = distance / qRefSpeeds[joint];
+        double targetTime = deltas[joint] / qRefSpeeds[joint];
 
         if (targetTime > maxTime)
         {
@@ -300,14 +300,17 @@ void BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
     {
         if (maxTime == 0.0)
         {
+            qdot[joint] = 0.0;
             yCInfo(BCC, "qdot[%d] = 0.0 (forced)", joint);
         }
         else
         {
-            qdot[joint] = std::abs(qd[joint] - q[joint]) / maxTime;
+            qdot[joint] = deltas[joint] / maxTime;
             yCInfo(BCC, "qdot[%d] = %f", joint, qdot[joint]);
         }
     }
+
+    return maxTime != 0.0; // true: will move
 }
 
 // -----------------------------------------------------------------------------

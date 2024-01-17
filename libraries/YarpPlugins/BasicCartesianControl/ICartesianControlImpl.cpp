@@ -102,41 +102,45 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
         return false;
     }
 
-    std::vector<double> vmo(numJoints);
-
-    computeIsocronousSpeeds(currentQ, qd, vmo);
-    vmoStored.resize(numJoints);
-
-    if (!iPositionControl->getRefSpeeds(vmoStored.data()))
+    if (std::vector<double> vmo(numJoints); computeIsocronousSpeeds(currentQ, qd, vmo))
     {
-         yCError(BCC) << "getRefSpeeds() (for storing) failed";
-         return false;
-    }
+        vmoStored.resize(numJoints);
 
-    if (!iPositionControl->setRefSpeeds(vmo.data()))
+        if (!iPositionControl->getRefSpeeds(vmoStored.data()))
+        {
+            yCError(BCC) << "getRefSpeeds() (for storing) failed";
+            return false;
+        }
+
+        if (!iPositionControl->setRefSpeeds(vmo.data()))
+        {
+            yCError(BCC) << "setRefSpeeds() failed";
+            return false;
+        }
+
+        //-- Enter position mode and perform movement
+        if (!setControlModes(VOCAB_CM_POSITION))
+        {
+            yCError(BCC) << "Unable to set position mode";
+            return false;
+        }
+
+        if (!iPositionControl->positionMove(qd.data()))
+        {
+            yCError(BCC) << "positionMove() failed";
+            return false;
+        }
+
+        //-- Set state, enable CMC thread and wait for movement to be done
+        cmcSuccess = true;
+        yCInfo(BCC) << "Performing MOVJ";
+
+        setCurrentState(VOCAB_CC_MOVJ_CONTROLLING);
+    }
+    else
     {
-         yCError(BCC) << "setRefSpeeds() failed";
-         return false;
+        yCWarning(BCC) << "No motion planned";
     }
-
-    //-- Enter position mode and perform movement
-    if (!setControlModes(VOCAB_CM_POSITION))
-    {
-        yCError(BCC) << "Unable to set position mode";
-        return false;
-    }
-
-    if (!iPositionControl->positionMove(qd.data()))
-    {
-        yCError(BCC) << "positionMove() failed";
-        return false;
-    }
-
-    //-- Set state, enable CMC thread and wait for movement to be done
-    cmcSuccess = true;
-    yCInfo(BCC) << "Performing MOVJ";
-
-    setCurrentState(VOCAB_CC_MOVJ_CONTROLLING);
 
     return true;
 }
