@@ -46,7 +46,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ### IK-Solvers
 
-- [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
+- [IKFast](http://openrave.org/docs/0.8.2/ikfast/): Part of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-openrave.md))
 - [NUKE](https://vanadiumlabs.github.io/pypose/nuke-intro.html#NUKE): The Nearly Universal Kinematic Engine
 - [ESROCOS/kin-gen](https://github.com/ESROCOS/kin-gen): Kinematics code generator by KUL
 - [AversivePlusPlus/ik](https://github.com/AversivePlusPlus/ik)
@@ -57,7 +57,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ### Kinematics and Dynamics
 
-- [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics) ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md)): A dependency of this repository
+- [orocos/orocos_kinematics_dynamics](https://github.com/orocos/orocos_kinematics_dynamics) ([roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-kdl.md)): A dependency of this repository
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
 - [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [RBDL](https://rbdl.github.io/) ([rbdl/rbdl](https://github.com/rbdl/rbdl)): Rigid Body Dynamics Library. The code tightly follows the notation used in Roy Featherstone's book "Rigid Body Dynamics Algorithm".
@@ -66,7 +66,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 ### Path-Planning, Trajectory generation and optimization
 
-- All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md)) we do not use
+- All the parts of [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-openrave.md)) we do not use
 - [PythonRobotics](https://atsushisakai.github.io/PythonRobotics/) ([AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics))
 - [ros-industrial-consortium/trajopt\_ros](https://github.com/ros-industrial-consortium/trajopt_ros): Trajectory Optimization Motion Planner for ROS (uses http://rll.berkeley.edu/trajopt)
 - [pantor/ruckig](https://github.com/pantor/ruckig): Online Trajectory Generation. Real-time. Time-optimal. Jerk-constrained.
@@ -88,7 +88,7 @@ Installation instructions for installing from source can be found [here](doc/kin
 - [epfl-lasa/icub-ds-walking](https://github.com/epfl-lasa/icub-ds-walking)
 - [stephane-caron](https://github.com/stephane-caron)
   - [stephane-caron/lipm_walking_controller](https://github.com/stephane-caron/lipm_walking_controller) ([wiki](https://github.com/stephane-caron/lipm_walking_controller/wiki/How-to-use-the-graphical-user-interface%3F), [docker](https://hub.docker.com/r/stephanecaron/lipm_walking_controller))
-  - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-openrave.md))
+  - [stephane-caron/pymanoid](https://github.com/stephane-caron/pymanoid): Humanoid robotics prototyping environment based on [OpenRAVE](http://openrave.org/) ([rdiankov/openrave](https://github.com/rdiankov/openrave), [roboticslab-uc3m/installation-guides](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-openrave.md))
 - [Stack of Tasks](https://stack-of-tasks.github.io/) ([stack-of-tasks (org)](https://github.com/stack-of-tasks))
 - [Humanoid Path Planner](https://humanoid-path-planner.github.io/hpp-doc) ([humanoid-path-planner (org)](https://github.com/humanoid-path-planner))
 - [AIS-Bonn/humanoid_op_ros](https://github.com/AIS-Bonn/humanoid_op_ros): Contains interesting walking motion in [./src/nimbro/motion](https://github.com/AIS-Bonn/humanoid_op_ros/tree/master/src/nimbro/motion)

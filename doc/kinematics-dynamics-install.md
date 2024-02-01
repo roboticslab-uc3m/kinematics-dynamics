@@ -2,14 +2,14 @@
 
 First install the dependencies:
 
-- [Install CMake 3.16+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md/)
-- [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
-- [Install YARP 3.7+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
-- [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
+- [Install CMake 3.16+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-cmake.md/)
+- [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-ycm.md/)
+- [Install YARP 3.7+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-yarp.md/)
+- [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-kdl.md/)
 
 We optionally use the `ProximitySensorsClient` device from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices) in the `haarDetectionController` app. Refer to its installation guide for instructions.
 
-For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-googletest.md/).
+For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-googletest.md/).
 
 ## Install kinematics-dynamics on Ubuntu (working on all tested versions)
 
@@ -28,7 +28,7 @@ Use `ccmake` instead of `cmake` for additional options.
 
 ## Install Bindings
 
-Swig is needed in order to build all language bindings. Refer to [Install SWIG](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-swig.md/).
+Swig is needed in order to build all language bindings. Refer to [Install SWIG](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-swig.md/).
 
 ### Install Python Bindings
 
@@ -49,7 +49,7 @@ make -j  # compile
 sudo make install; sudo ldconfig; cd  # install and go home
 ```
 
-Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)), too.
+Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)), too.
 
 #### Install Python bindings (checking)
 
