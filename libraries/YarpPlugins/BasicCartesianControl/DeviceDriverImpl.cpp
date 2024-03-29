@@ -66,7 +66,6 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     yarp::os::Property robotOptions;
     robotOptions.fromString(config.toString());
     robotOptions.put("device", robotStr);
-    robotOptions.setMonitor(config.getMonitor(), robotStr.c_str());
 
     if (!robotDevice.open(robotOptions))
     {
@@ -189,8 +188,6 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     {
         yCInfo(BCC) << "Using joint limits provided via user configuration";
     }
-
-    solverOptions.setMonitor(config.getMonitor(), solverStr.c_str());
 
     if (!solverDevice.open(solverOptions))
     {

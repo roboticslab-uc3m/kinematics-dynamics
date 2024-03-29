@@ -164,7 +164,6 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     yarp::os::Property fullConfig;
     fullConfig.fromConfigFile(kinematicsFullPath.c_str());
     fullConfig.fromString(config.toString(), false);
-    fullConfig.setMonitor(config.getMonitor(), "KdlSolver");
 
     yCDebug(KDLS) << "fullConfig:" << fullConfig.toString();
 

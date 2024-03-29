@@ -35,9 +35,9 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
         robotology:
-        - { yarp: yarp-3.7, cmake: 3.16.x }
         - { yarp: yarp-3.8, cmake: 3.16.x }
-        - { yarp: master, cmake: 3.16.x }
+        - { yarp: yarp-3.9, cmake: 3.16.x }
+        - { yarp: master, cmake: 3.19.x }
         compiler:
         - { cc: gcc, cxx: g++ }
         - { cc: clang, cxx: clang++ }
@@ -48,23 +48,23 @@ jobs:
 
     steps:
     - name: Check out kinematics-dynamics
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Check out YCM
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: robotology/ycm
         path: .deps/ycm
 
     - name: Check out YARP
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: robotology/yarp
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
     - name: Check out Orocos KDL
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
@@ -73,7 +73,7 @@ jobs:
       run: sudo apt-get install -qq ccache libeigen3-dev swig googletest
 
     - name: Set up CMake
-      uses: jwlawson/actions-setup-cmake@v1
+      uses: jwlawson/actions-setup-cmake@v2
       with:
         cmake-version: ${{matrix.robotology.cmake}}
 

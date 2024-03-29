@@ -144,7 +144,6 @@ bool KdlTreeSolver::open(yarp::os::Searchable & config)
     yarp::os::Property fullConfig;
     fullConfig.fromConfigFile(kinematicsFullPath.c_str());
     fullConfig.fromString(config.toString(), false);
-    fullConfig.setMonitor(config.getMonitor(), "KdlTreeSolver");
 
     yCDebug(KDLS) << "fullConfig:" << fullConfig.toString();
 
