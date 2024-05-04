@@ -149,7 +149,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         {"device", yarp::os::Value("multipleanalogsensorsclient")},
         {"remote", yarp::os::Value(sensorRemote)},
         {"local", yarp::os::Value(localPrefix + sensorRemote)},
-        {"timeout", yarp::os::Value(period * 0.5)}
+        {"timeout", yarp::os::Value(period)}
     };
 
     if (!sensorDevice.open(sensorOptions))
