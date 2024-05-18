@@ -15,25 +15,26 @@ using namespace roboticslab;
 StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceName, yarp::os::Searchable & config)
 {
     auto & deviceConfig = config.findGroup(deviceName.c_str());
-    bool usingMovi = config.check("movi", "enable movi command");
+    bool usingPose = config.check("pose", "enable pose command");
+    usingPose = usingPose || config.check("movi", "enable pose command"); // deprecated
 
     yCDebug(SDC) << "Device configuration:" << deviceConfig.toString();
 
     // https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/186
-    yCWarning(SDC) << "Using MOVI commands, beware NOT TO EXCEED JOINT LIMITS";
+    yCWarning(SDC) << "Using POSE commands, beware NOT TO EXCEED JOINT LIMITS";
 
     if (deviceName == "SpaceNavigator")
     {
         double gain = config.check("gain", yarp::os::Value(0.0)).asFloat64();
-        return new SpnavSensorDevice(deviceConfig, usingMovi, gain);
+        return new SpnavSensorDevice(deviceConfig, usingPose, gain);
     }
     else if (deviceName == "LeapMotionSensor")
     {
-        return new LeapMotionSensorDevice(deviceConfig, usingMovi);
+        return new LeapMotionSensorDevice(deviceConfig, usingPose);
     }
     else if (deviceName == "WiimoteSensor")
     {
-        return new WiimoteSensorDevice(deviceConfig, usingMovi);
+        return new WiimoteSensorDevice(deviceConfig, usingPose);
     }
     else
     {

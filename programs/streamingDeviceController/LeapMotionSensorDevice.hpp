@@ -22,7 +22,7 @@ class LeapMotionSensorDevice : public StreamingDevice
 {
 public:
     //! Constructor
-    LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi);
+    LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingPose);
 
     bool acquireInterfaces() override;
 
@@ -42,7 +42,7 @@ public:
 private:
     yarp::dev::IAnalogSensor * iAnalogSensor;
 
-    bool usingMovi;
+    bool usingPose;
 
     std::vector<double> initialTcpOffset;
     std::vector<double> initialLeapOffset;

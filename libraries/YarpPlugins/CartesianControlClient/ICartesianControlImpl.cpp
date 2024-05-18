@@ -276,16 +276,16 @@ bool CartesianControlClient::act(int command)
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::twist(const std::vector<double> &xdot)
+void CartesianControlClient::pose(const std::vector<double> &x)
 {
-    handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);
+    handleStreamingConsumerCmd(VOCAB_CC_POSE, x);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::movi(const std::vector<double> &x)
+void CartesianControlClient::twist(const std::vector<double> &xdot)
 {
-    handleStreamingConsumerCmd(VOCAB_CC_MOVI, x);
+    handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------

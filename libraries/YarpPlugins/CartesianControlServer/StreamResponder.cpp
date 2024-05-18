@@ -19,8 +19,9 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
 
     switch (b.get(0).asVocab32())
     {
-    case VOCAB_CC_MOVI:
-        handleConsumerCmdMsg(b, &ICartesianControl::movi);
+    case VOCAB_CC_POSE:
+    case VOCAB_CC_MOVI: // deprecated
+        handleConsumerCmdMsg(b, &ICartesianControl::pose);
         break;
     case VOCAB_CC_TWIST:
         handleConsumerCmdMsg(b, &ICartesianControl::twist);

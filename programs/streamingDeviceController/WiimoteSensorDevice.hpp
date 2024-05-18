@@ -23,7 +23,7 @@ class WiimoteSensorDevice : public StreamingDevice
 {
 public:
     //! Constructor
-    WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi);
+    WiimoteSensorDevice(yarp::os::Searchable & config, bool usingPose);
 
     bool acquireInterfaces() override;
 
@@ -48,7 +48,7 @@ private:
 
     std::vector<double> buffer;
 
-    bool usingMovi;
+    bool usingPose;
     double step;
 };
 

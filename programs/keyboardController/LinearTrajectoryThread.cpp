@@ -51,7 +51,7 @@ bool LinearTrajectoryThread::checkStreamingConfig()
 
 bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
-    if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_MOVI))
+    if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_POSE))
     {
         yCWarning(KC) << "Unable to preset streaming command";
         return false;
@@ -110,7 +110,7 @@ void LinearTrajectoryThread::run()
         deltaX = this->deltaX;
         mtx.unlock();
 
-        iCartesianControl->movi(deltaX);
+        iCartesianControl->pose(deltaX);
     }
     else
     {
@@ -119,6 +119,6 @@ void LinearTrajectoryThread::run()
         mtx.unlock();
 
         std::vector<double> position = KdlVectorConverter::frameToVector(H);
-        iCartesianControl->movi(position);
+        iCartesianControl->pose(position);
     }
 }

@@ -7,10 +7,10 @@
 
 using namespace roboticslab;
 
-SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain)
+SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain)
     : StreamingDevice(config),
       iAnalogSensor(nullptr),
-      usingMovi(usingMovi),
+      usingPose(usingPose),
       gain(gain),
       buttonClose(false),
       buttonOpen(false)
@@ -31,15 +31,15 @@ bool SpnavSensorDevice::acquireInterfaces()
 
 bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (usingMovi && gain <= 0.0)
+    if (usingPose && gain <= 0.0)
     {
-        yCWarning(SDC) << "Invalid gain for movi command:" << gain;
+        yCWarning(SDC) << "Invalid gain for pose command:" << gain;
         return false;
     }
 
     if (usingStreamingPreset)
     {
-        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
+        int cmd = usingPose ? VOCAB_CC_POSE : VOCAB_CC_TWIST;
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
@@ -54,7 +54,7 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    if (usingMovi && !iCartesianControl->stat(currentX))
+    if (usingPose && !iCartesianControl->stat(currentX))
     {
         yCWarning(SDC) << "Unable to stat initial position, assuming zero";
         currentX.resize(6, 0.0);
@@ -92,7 +92,7 @@ bool SpnavSensorDevice::acquireData()
 
 bool SpnavSensorDevice::transformData(double scaling)
 {
-    if (usingMovi)
+    if (usingPose)
     {
         for (int i = 0; i < 6; i++)
         {
@@ -145,7 +145,7 @@ int SpnavSensorDevice::getActuatorState()
 
 bool SpnavSensorDevice::hasValidMovementData() const
 {
-    if (usingMovi)
+    if (usingPose)
     {
         for (int i = 0; i < 6; i++)
         {
@@ -165,9 +165,9 @@ bool SpnavSensorDevice::hasValidMovementData() const
 
 void SpnavSensorDevice::sendMovementCommand(double timestamp)
 {
-    if (usingMovi)
+    if (usingPose)
     {
-        iCartesianControl->movi(data);
+        iCartesianControl->pose(data);
 
         for (int i = 0; i < 6; i++)
         {
@@ -182,7 +182,7 @@ void SpnavSensorDevice::sendMovementCommand(double timestamp)
 
 void SpnavSensorDevice::stopMotion()
 {
-    if (!usingMovi)
+    if (!usingPose)
     {
         std::vector<double> zeros(6, 0.0);
         iCartesianControl->twist(zeros);

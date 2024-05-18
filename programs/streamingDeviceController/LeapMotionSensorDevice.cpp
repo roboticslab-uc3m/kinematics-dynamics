@@ -15,10 +15,10 @@
 
 using namespace roboticslab;
 
-LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingMovi)
+LeapMotionSensorDevice::LeapMotionSensorDevice(yarp::os::Searchable & config, bool usingPose)
     : StreamingDevice(config),
       iAnalogSensor(nullptr),
-      usingMovi(usingMovi),
+      usingPose(usingPose),
       previousTimestamp(0.0),
       hasActuator(false),
       grab(false), pinch(false)
@@ -60,7 +60,7 @@ bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
 {
     if (usingStreamingPreset)
     {
-        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
+        int cmd = usingPose ? VOCAB_CC_POSE : VOCAB_CC_TWIST;
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
@@ -211,9 +211,9 @@ int LeapMotionSensorDevice::getActuatorState()
 
 void LeapMotionSensorDevice::sendMovementCommand(double timestamp)
 {
-    if (usingMovi)
+    if (usingPose)
     {
-        iCartesianControl->movi(data);
+        iCartesianControl->pose(data);
     }
     else
     {

@@ -220,9 +220,11 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
 
-        usingThread = rf.check("movi", "use MOVI command");
+        usingThread = rf.check("pose", "use POSE command");
+        usingThread = usingThread || rf.check("movi", "use POSE command"); // deprecated
 
-        int threadMs = rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "MOVI thread period [ms]").asInt32();
+        // `moviPeriodMs` is deprecated
+        int threadMs = rf.check("posePeriodMs", rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS)), "POSE thread period [ms]").asInt32();
 
         if (usingThread)
         {
@@ -239,7 +241,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
             if (!linTrajThread->start())
             {
-                yCError(KC) << "Unable to start MOVI thread";
+                yCError(KC) << "Unable to start POSE thread";
                 return false;
             }
         }

@@ -10,11 +10,11 @@
 
 using namespace roboticslab;
 
-WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingMovi)
+WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingPose)
     : StreamingDevice(config),
       iAnalogSensor(nullptr),
       mode(NONE),
-      usingMovi(usingMovi),
+      usingPose(usingPose),
       step(0.0)
 {
     data.resize(3);  // already called by base constructor
@@ -37,7 +37,7 @@ bool WiimoteSensorDevice::acquireInterfaces()
 
 bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 {
-    if (usingMovi && step <= 0.0)
+    if (usingPose && step <= 0.0)
     {
         yCWarning(SDC) << "Invalid step:" << step;
         return false;
@@ -45,7 +45,7 @@ bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 
     if (usingStreamingPreset)
     {
-        int cmd = usingMovi ? VOCAB_CC_MOVI : VOCAB_CC_TWIST;
+        int cmd = usingPose ? VOCAB_CC_POSE : VOCAB_CC_TWIST;
 
         if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
         {
@@ -149,9 +149,9 @@ void WiimoteSensorDevice::sendMovementCommand(double timestamp)
         return;
     }
 
-    if (usingMovi)
+    if (usingPose)
     {
-        iCartesianControl->movi(xdot);
+        iCartesianControl->pose(xdot);
     }
     else
     {
@@ -161,7 +161,7 @@ void WiimoteSensorDevice::sendMovementCommand(double timestamp)
 
 void WiimoteSensorDevice::stopMotion()
 {
-    if (!usingMovi)
+    if (!usingPose)
     {
         std::vector<double> zeros(6, 0.0);
         iCartesianControl->twist(zeros);

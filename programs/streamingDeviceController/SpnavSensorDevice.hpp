@@ -41,7 +41,7 @@ private:
 
     std::vector<double> currentX;
 
-    bool usingMovi;
+    bool usingPose;
     double gain;
     bool buttonClose;
     bool buttonOpen;
