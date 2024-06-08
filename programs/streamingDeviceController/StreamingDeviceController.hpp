@@ -23,6 +23,8 @@ namespace roboticslab
  *
  * @brief Sends streaming commands to the cartesian controller from
  * a streaming input device like the 3Dconnexion Space Navigator.
+ *
+ * @see @cite lukawski2023jjaa
  */
 class StreamingDeviceController : public yarp::os::RFModule,
                                   public yarp::os::TypedReaderCallback<yarp::os::Bottle>

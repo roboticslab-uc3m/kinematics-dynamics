@@ -33,6 +33,55 @@ Installation instructions for installing from source can be found [here](doc/kin
 
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/kinematics-dynamics.svg?label=Issues)](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 
+## Citation
+
+If you found this project useful, please consider citing the following works:
+
+- [ScrewTheoryLib](libraries/ScrewTheoryLib/)
+
+Łukawski, B., et al, "An inverse kinematics problem solver based on screw theory for manipulator arms," in XLIII Jornadas de Automática, 2022, pp. 864–869.
+
+```bibtex
+@inproceedings{lukawski2022jjaa,
+    author    = {{\L}ukawski, Bartek and Montesino Valle, Ignacio and Victores, Juan G. and Jardón, Alberto and Balaguer, Carlos},
+    title     = {An inverse kinematics problem solver based on screw theory for manipulator arms},
+    booktitle = {XLIII Jornadas de Automática},
+    year      = {2022},
+    pages     = {864--869},
+    publisher = {Universidade da Coruña},
+    doi       = {10.17979/spudc.9788497498418.0864},
+}
+```
+
+- [streamingDeviceController](programs/streamingDeviceController/)
+
+Oña, E., et al, "A modular framework to facilitate the control of an assistive robotic arm using visual servoing and proximity sensing," in IEEE Int. Conf. on Autonomous Robot Systems and Competitions (ICARSC), 2020, pp. 28–33.
+
+```bibtex
+@inproceedings{eona2020icarsc,
+    author    = {{O\~na}, Edwin Daniel and {\L}ukawski, Bartek and Jardón, Alberto and Balaguer, Carlos},
+    title     = {A modular framework to facilitate the control of an assistive robotic arm using visual servoing and proximity sensing},
+    booktitle = {IEEE Int. Conf. on Autonomous Robot Systems and Competitions (ICARSC)},
+    year      = {2020},
+    pages     = {28--33},
+    doi       = {10.1109/ICARSC49921.2020.9096146},
+}
+```
+
+B. Łukawski, J. Victores, C. Balaguer, "A generic controller for teleoperation on robotic manipulators using low-cost devices," in XLIV Jornadas de Automática, 2023, pp. 785–788.
+
+```bibtex
+@inproceedings{lukawski2023jjaa,
+    author    = {{\L}ukawski, Bartek and Victores, Juan G. and Balaguer, Carlos},
+    title     = {A generic controller for teleoperation on robotic manipulators using low-cost devices},
+    booktitle = {XLIV Jornadas de Automática},
+    year      = {2023},
+    pages     = {785--788},
+    publisher = {Universidade da Coruña},
+    doi       = {10.17979/spudc.9788497498609.785},
+}
+```
+
 ## Similar and Related Projects
 
 ### Quaternions

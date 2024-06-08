@@ -16,7 +16,7 @@ class StreamingDevice;
 /**
  * @ingroup streamingDeviceController
  *
- * @brief ...
+ * @see @cite eona2020icarsc
  */
 class CentroidTransform
 {

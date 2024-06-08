@@ -27,6 +27,8 @@ namespace roboticslab
  *   - faster solutions, since there are no iterations involved;
  *   - exact solutions, since the direct formulation guarantees convergence;
  *   - multiple solutions and the possibility to choose the better ones.
+ *
+ * @see @cite lukawski2022jjaa
  */
 
 /**
