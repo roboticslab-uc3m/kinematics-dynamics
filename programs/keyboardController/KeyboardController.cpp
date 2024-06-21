@@ -35,13 +35,13 @@ namespace
 {
     struct termios ots;
 
-    bool readKey(char * key)
+    inline bool readKey(char * key)
     {
         return read(STDIN_FILENO, key, 1) > 0;
     }
 
     // https://stackoverflow.com/a/23397700
-    std::ostream& operator<<(std::ostream& out, const std::vector<double>& v)
+    std::ostream & operator<<(std::ostream & out, const std::vector<double> & v)
     {
         if (!v.empty())
         {
@@ -53,13 +53,13 @@ namespace
         return out;
     }
 
-    std::vector<double> roundZeroes(const std::vector<double>& v_in)
+    std::vector<double> roundZeroes(const std::vector<double> & v_in)
     {
-        static const double precision = 1e-6;
+        static constexpr double precision = 1e-6;
 
-        std::vector<double> v_out(v_in);
+        auto v_out(v_in);
 
-        for (std::vector<double>::iterator it = v_out.begin(); it != v_out.end(); ++it)
+        for (auto it = v_out.begin(); it != v_out.end(); ++it)
         {
             if (std::abs(*it) < precision)
             {
@@ -71,7 +71,7 @@ namespace
     }
 
     // reset the TTY configurations that was changed in the ttyset function (UNIX)
-    void ttyreset(int signal)
+    inline void ttyreset(int signal)
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &ots);
         tcsetattr(STDOUT_FILENO, TCSANOW, &ots);
@@ -154,9 +154,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        iEncoders->getAxes(&axes);
-
-        if (axes > MAX_JOINTS)
+        if (!iEncoders->getAxes(&axes) || axes > MAX_JOINTS)
         {
             yCError(KC, "Number of joints (%d) exceeds supported limit (%d)", axes, MAX_JOINTS);
             return false;
@@ -247,12 +245,8 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
         }
     }
 
-    currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
-
     issueStop(); // just in case
-
     ttyset();
-
     printHelp();
 
     return true;

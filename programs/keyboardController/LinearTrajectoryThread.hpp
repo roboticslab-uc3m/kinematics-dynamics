@@ -24,7 +24,8 @@ class LinearTrajectoryThread : public yarp::os::PeriodicThread
 {
 public:
     LinearTrajectoryThread(int period, ICartesianControl * iCartesianControl);
-    ~LinearTrajectoryThread();
+    ~LinearTrajectoryThread() override;
+
     bool checkStreamingConfig();
     bool configure(const std::vector<double> & vels);
     void useTcpFrame(bool enableTcpFrame) { usingTcpFrame = enableTcpFrame; }
@@ -33,12 +34,12 @@ protected:
     void run() override;
 
 private:
-    double period;
-    ICartesianControl * iCartesianControl;
-    KDL::Trajectory * trajectory;
-    double startTime;
-    bool usingStreamingCommandConfig;
-    bool usingTcpFrame;
+    double period {0.0};
+    ICartesianControl * iCartesianControl {nullptr};
+    KDL::Trajectory * trajectory {nullptr};
+    double startTime {0.0};
+    bool usingStreamingCommandConfig {false};
+    bool usingTcpFrame {false};
     std::vector<double> deltaX;
     mutable std::mutex mtx;
 };

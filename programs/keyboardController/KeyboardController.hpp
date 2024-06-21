@@ -71,26 +71,26 @@ private:
 
     void printHelp();
 
-    int axes;
-    int currentActuatorCommand;
+    int axes {0};
+    int currentActuatorCommand {VOCAB_CC_ACTUATOR_NONE};
 
-    ICartesianSolver::reference_frame cartFrame;
+    ICartesianSolver::reference_frame cartFrame {ICartesianSolver::BASE_FRAME};
     std::string angleRepr;
-    KinRepresentation::orientation_system orient;
-    control_modes controlMode;
+    KinRepresentation::orientation_system orient {KinRepresentation::orientation_system::AXIS_ANGLE};
+    control_modes controlMode {NOT_CONTROLLING};
 
-    bool usingThread;
-    LinearTrajectoryThread * linTrajThread;
+    bool usingThread {false};
+    LinearTrajectoryThread * linTrajThread {nullptr};
 
     yarp::dev::PolyDriver controlBoardDevice;
     yarp::dev::PolyDriver cartesianControlDevice;
 
-    yarp::dev::IEncoders * iEncoders;
-    yarp::dev::IControlMode * iControlMode;
-    yarp::dev::IControlLimits * iControlLimits;
-    yarp::dev::IVelocityControl * iVelocityControl;
+    yarp::dev::IEncoders * iEncoders {nullptr};
+    yarp::dev::IControlMode * iControlMode {nullptr};
+    yarp::dev::IControlLimits * iControlLimits {nullptr};
+    yarp::dev::IVelocityControl * iVelocityControl {nullptr};
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
     std::vector<double> maxVelocityLimits;
     std::vector<double> currentJointVels;

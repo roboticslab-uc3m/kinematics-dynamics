@@ -2,8 +2,8 @@
 
 #include "LinearTrajectoryThread.hpp"
 
-#include <algorithm>
-#include <functional>
+#include <algorithm> // std::transform
+#include <functional> // std::bind
 
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
@@ -21,11 +21,7 @@ using namespace roboticslab;
 LinearTrajectoryThread::LinearTrajectoryThread(int _period, ICartesianControl * _iCartesianControl)
     : yarp::os::PeriodicThread(_period * 0.001, yarp::os::PeriodicThreadClock::Absolute),
       period(_period),
-      iCartesianControl(_iCartesianControl),
-      trajectory(nullptr),
-      startTime(0.0),
-      usingStreamingCommandConfig(false),
-      usingTcpFrame(false)
+      iCartesianControl(_iCartesianControl)
 {}
 
 LinearTrajectoryThread::~LinearTrajectoryThread()
@@ -59,13 +55,12 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 
     if (usingTcpFrame)
     {
+        using namespace std::placeholders;
         std::vector<double> deltaX(vels.size());
-        std::transform(vels.begin(), vels.end(), deltaX.begin(), std::bind1st(std::multiplies<double>(), period / 1000.0));
+        std::transform(vels.begin(), vels.end(), deltaX.begin(), std::bind(std::multiplies<double>(), period / 1000.0, _1));
 
-        mtx.lock();
+        std::lock_guard lock(mtx);
         this->deltaX = deltaX;
-        mtx.unlock();
-
         return true;
     }
 
@@ -77,10 +72,10 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
         return false;
     }
 
-    KDL::Frame H = KdlVectorConverter::vectorToFrame(x);
-    KDL::Twist tw = KdlVectorConverter::vectorToTwist(vels);
+    auto H = KdlVectorConverter::vectorToFrame(x);
+    auto tw = KdlVectorConverter::vectorToTwist(vels);
 
-    mtx.lock();
+    std::lock_guard lock(mtx);
 
     if (trajectory)
     {
@@ -89,13 +84,11 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
         trajectory = nullptr;
     }
 
-    KDL::Path * path = new KDL::Path_Line(H, tw, new KDL::RotationalInterpolation_SingleAxis(), 1.0);
-    KDL::VelocityProfile * profile = new KDL::VelocityProfile_Rectangular(10.0);
+    auto * path = new KDL::Path_Line(H, tw, new KDL::RotationalInterpolation_SingleAxis(), 1.0);
+    auto * profile = new KDL::VelocityProfile_Rectangular(10.0);
     profile->SetProfileDuration(0.0, 10.0, 10.0 / path->PathLength());
     trajectory = new KDL::Trajectory_Segment(path, profile);
     startTime = yarp::os::Time::now();
-
-    mtx.unlock();
 
     return true;
 }
@@ -115,10 +108,10 @@ void LinearTrajectoryThread::run()
     else
     {
         mtx.lock();
-        KDL::Frame H = trajectory->Pos(yarp::os::Time::now() - startTime);
+        auto H = trajectory->Pos(yarp::os::Time::now() - startTime);
         mtx.unlock();
 
-        std::vector<double> position = KdlVectorConverter::frameToVector(H);
+        auto position = KdlVectorConverter::frameToVector(H);
         iCartesianControl->pose(position);
     }
 }
