@@ -14,6 +14,7 @@
 #include <yarp/dev/IControlLimits.h>
 #include <yarp/dev/IControlMode.h>
 #include <yarp/dev/IEncoders.h>
+#include <yarp/dev/IPositionControl.h>
 #include <yarp/dev/IVelocityControl.h>
 
 #include "LinearTrajectoryThread.hpp"
@@ -50,16 +51,18 @@ public:
 
 private:
     enum control_modes { NOT_CONTROLLING, JOINT_MODE, CARTESIAN_MODE };
+    enum joint_mode { POSITION, VELOCITY };
 
     static const std::plus<double> increment_functor;
     static const std::minus<double> decrement_functor;
 
     template <typename func>
-    void incrementOrDecrementJointVelocity(joint q, func op);
+    void incrementOrDecrementJointCommand(joint j, func op);
 
     template <typename func>
-    void incrementOrDecrementCartesianVelocity(cart coord, func op);
+    void incrementOrDecrementCartesianCommand(cart coord, func op);
 
+    void toggleJointMode();
     void toggleReferenceFrame();
 
     void actuateTool(int command);
@@ -74,10 +77,14 @@ private:
     int axes {0};
     int currentActuatorCommand {VOCAB_CC_ACTUATOR_NONE};
 
+    double jointPosStep {0.0};
+    double jointVelStep {0.0};
+
     ICartesianSolver::reference_frame cartFrame {ICartesianSolver::BASE_FRAME};
     std::string angleRepr;
     KinRepresentation::orientation_system orient {KinRepresentation::orientation_system::AXIS_ANGLE};
     control_modes controlMode {NOT_CONTROLLING};
+    joint_mode jointMode {VELOCITY};
 
     bool usingThread {false};
     LinearTrajectoryThread * linTrajThread {nullptr};
@@ -88,10 +95,13 @@ private:
     yarp::dev::IEncoders * iEncoders {nullptr};
     yarp::dev::IControlMode * iControlMode {nullptr};
     yarp::dev::IControlLimits * iControlLimits {nullptr};
+    yarp::dev::IPositionControl * iPositionControl {nullptr};
     yarp::dev::IVelocityControl * iVelocityControl {nullptr};
 
     roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
+    std::vector<double> minPositionLimits;
+    std::vector<double> maxPositionLimits;
     std::vector<double> maxVelocityLimits;
     std::vector<double> currentJointVels;
     std::vector<double> currentCartVels;

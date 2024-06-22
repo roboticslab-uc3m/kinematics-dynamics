@@ -31,6 +31,16 @@ constexpr auto DEFAULT_ANGLE_REPR = "axisAngle"; // keep in sync with KinReprese
 
 constexpr auto DEFAULT_THREAD_MS = 50;
 
+constexpr auto DEFAULT_JOINT_MODE = "vel";
+
+constexpr auto DEFAULT_JOINT_POSITION_STEP = 1.0; // [deg]
+constexpr auto DEFAULT_JOINT_VELOCITY_STEP = 0.5; // [deg/s]
+
+constexpr auto CARTESIAN_LINEAR_VELOCITY_STEP = 0.005; // [m]
+constexpr auto CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01; // [deg]
+
+const std::vector<double> ZERO_CARTESIAN_VELOCITY(KeyboardController::NUM_CART_COORDS);
+
 namespace
 {
     struct termios ots;
@@ -40,16 +50,21 @@ namespace
         return read(STDIN_FILENO, key, 1) > 0;
     }
 
-    // https://stackoverflow.com/a/23397700
     std::ostream & operator<<(std::ostream & out, const std::vector<double> & v)
     {
-        if (!v.empty())
+        out << '[';
+
+        for (auto it = v.begin(); it != v.end(); ++it)
         {
-            out << '[';
-            std::copy(v.begin(), v.end(), std::ostream_iterator<double>(out, ", "));
-            out << "\b\b]";
+            out << *it;
+
+            if (std::next(it) != v.end())
+            {
+                out << ", ";
+            }
         }
 
+        out << "]";
         return out;
     }
 
@@ -94,12 +109,6 @@ namespace
         fcntl(STDOUT_FILENO, F_SETFL, fcntl(STDOUT_FILENO, F_GETFL, 0) | O_NONBLOCK);  // make stdout non blocking
     }
 }
-
-const std::vector<double> ZERO_CARTESIAN_VELOCITY(KeyboardController::NUM_CART_COORDS);
-
-constexpr auto JOINT_VELOCITY_STEP = 0.5; // [deg]
-constexpr auto CARTESIAN_LINEAR_VELOCITY_STEP = 0.005; // [m]
-constexpr auto CARTESIAN_ANGULAR_VELOCITY_STEP = 0.01; // [deg]
 
 bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 {
@@ -148,6 +157,12 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
+        if (!controlBoardDevice.view(iPositionControl))
+        {
+            yCError(KC) << "Could not view iPositionControl";
+            return false;
+        }
+
         if (!controlBoardDevice.view(iVelocityControl))
         {
             yCError(KC) << "Could not view iVelocityControl";
@@ -160,16 +175,54 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
+        minPositionLimits.resize(axes);
+        maxPositionLimits.resize(axes);
         maxVelocityLimits.resize(axes);
 
         for (int i = 0; i < axes; i++)
         {
-            double min, max;
-            iControlLimits->getVelLimits(i, &min, &max);
-            maxVelocityLimits[i] = max;
+            double minPos, maxPos;
+
+            if (!iControlLimits->getLimits(i, &minPos, &maxPos))
+            {
+                yCError(KC) << "Unable to retrieve joint limits";
+                return false;
+            }
+
+            minPositionLimits[i] = minPos;
+            maxPositionLimits[i] = maxPos;
+
+            double minVel, maxVel;
+
+            if (!iControlLimits->getVelLimits(i, &minVel, &maxVel))
+            {
+                yCError(KC) << "Unable to retrieve joint velocity limits";
+                return false;
+            }
+
+            maxVelocityLimits[i] = maxVel;
         }
 
         currentJointVels.resize(axes, 0.0);
+
+        auto jointModeStr = rf.check("jointMode", yarp::os::Value(DEFAULT_JOINT_MODE), "joint mode ('pos': position, 'vel': velocity)").asString();
+
+        if (jointModeStr == "pos")
+        {
+            jointMode = POSITION;
+        }
+        else if (jointModeStr == "vel")
+        {
+            jointMode = VELOCITY;
+        }
+        else
+        {
+            yCError(KC) << "Unrecognized \"jointMode\" option:" << jointModeStr << "(available: 'pos', 'vel')";
+            return false;
+        }
+
+        jointPosStep = rf.check("jointPosStep", yarp::os::Value(DEFAULT_JOINT_POSITION_STEP), "joint position step [deg]").asFloat32();
+        jointVelStep = rf.check("jointVelStep", yarp::os::Value(DEFAULT_JOINT_VELOCITY_STEP), "joint velocity step [deg/s]").asFloat32();
     }
 
     if (usingRemoteCartesian)
@@ -281,95 +334,98 @@ bool KeyboardController::updateModule()
         break;
     // joint velocity commands
     case '1':
-        incrementOrDecrementJointVelocity(Q1, increment_functor);
+        incrementOrDecrementJointCommand(Q1, increment_functor);
         break;
     case 'q':
-        incrementOrDecrementJointVelocity(Q1, decrement_functor);
+        incrementOrDecrementJointCommand(Q1, decrement_functor);
         break;
     case '2':
-        incrementOrDecrementJointVelocity(Q2, increment_functor);
+        incrementOrDecrementJointCommand(Q2, increment_functor);
         break;
     case 'w':
-        incrementOrDecrementJointVelocity(Q2, decrement_functor);
+        incrementOrDecrementJointCommand(Q2, decrement_functor);
         break;
     case '3':
-        incrementOrDecrementJointVelocity(Q3, increment_functor);
+        incrementOrDecrementJointCommand(Q3, increment_functor);
         break;
     case 'e':
-        incrementOrDecrementJointVelocity(Q3, decrement_functor);
+        incrementOrDecrementJointCommand(Q3, decrement_functor);
         break;
     case '4':
-        incrementOrDecrementJointVelocity(Q4, increment_functor);
+        incrementOrDecrementJointCommand(Q4, increment_functor);
         break;
     case 'r':
-        incrementOrDecrementJointVelocity(Q4, decrement_functor);
+        incrementOrDecrementJointCommand(Q4, decrement_functor);
         break;
     case '5':
-        incrementOrDecrementJointVelocity(Q5, increment_functor);
+        incrementOrDecrementJointCommand(Q5, increment_functor);
         break;
     case 't':
-        incrementOrDecrementJointVelocity(Q5, decrement_functor);
+        incrementOrDecrementJointCommand(Q5, decrement_functor);
         break;
     case '6':
-        incrementOrDecrementJointVelocity(Q6, increment_functor);
+        incrementOrDecrementJointCommand(Q6, increment_functor);
         break;
     case 'y':
-        incrementOrDecrementJointVelocity(Q6, decrement_functor);
+        incrementOrDecrementJointCommand(Q6, decrement_functor);
         break;
     case '7':
-        incrementOrDecrementJointVelocity(Q7, increment_functor);
+        incrementOrDecrementJointCommand(Q7, increment_functor);
         break;
     case 'u':
-        incrementOrDecrementJointVelocity(Q7, decrement_functor);
+        incrementOrDecrementJointCommand(Q7, decrement_functor);
         break;
     case '8':
-        incrementOrDecrementJointVelocity(Q8, increment_functor);
+        incrementOrDecrementJointCommand(Q8, increment_functor);
         break;
     case 'i':
-        incrementOrDecrementJointVelocity(Q8, decrement_functor);
+        incrementOrDecrementJointCommand(Q8, decrement_functor);
         break;
     case '9':
-        incrementOrDecrementJointVelocity(Q9, increment_functor);
+        incrementOrDecrementJointCommand(Q9, increment_functor);
         break;
     case 'o':
-        incrementOrDecrementJointVelocity(Q9, decrement_functor);
+        incrementOrDecrementJointCommand(Q9, decrement_functor);
         break;
     // cartesian velocity commands
     case 'a':
-        incrementOrDecrementCartesianVelocity(X, increment_functor);
+        incrementOrDecrementCartesianCommand(X, increment_functor);
         break;
     case 'z':
-        incrementOrDecrementCartesianVelocity(X, decrement_functor);
+        incrementOrDecrementCartesianCommand(X, decrement_functor);
         break;
     case 's':
-        incrementOrDecrementCartesianVelocity(Y, increment_functor);
+        incrementOrDecrementCartesianCommand(Y, increment_functor);
         break;
     case 'x':
-        incrementOrDecrementCartesianVelocity(Y, decrement_functor);
+        incrementOrDecrementCartesianCommand(Y, decrement_functor);
         break;
     case 'd':
-        incrementOrDecrementCartesianVelocity(Z, increment_functor);
+        incrementOrDecrementCartesianCommand(Z, increment_functor);
         break;
     case 'c':
-        incrementOrDecrementCartesianVelocity(Z, decrement_functor);
+        incrementOrDecrementCartesianCommand(Z, decrement_functor);
         break;
     case 'f':
-        incrementOrDecrementCartesianVelocity(ROTX, increment_functor);
+        incrementOrDecrementCartesianCommand(ROTX, increment_functor);
         break;
     case 'v':
-        incrementOrDecrementCartesianVelocity(ROTX, decrement_functor);
+        incrementOrDecrementCartesianCommand(ROTX, decrement_functor);
         break;
     case 'g':
-        incrementOrDecrementCartesianVelocity(ROTY, increment_functor);
+        incrementOrDecrementCartesianCommand(ROTY, increment_functor);
         break;
     case 'b':
-        incrementOrDecrementCartesianVelocity(ROTY, decrement_functor);
+        incrementOrDecrementCartesianCommand(ROTY, decrement_functor);
         break;
     case 'h':
-        incrementOrDecrementCartesianVelocity(ROTZ, increment_functor);
+        incrementOrDecrementCartesianCommand(ROTZ, increment_functor);
         break;
     case 'n':
-        incrementOrDecrementCartesianVelocity(ROTZ, decrement_functor);
+        incrementOrDecrementCartesianCommand(ROTZ, decrement_functor);
+        break;
+    case '0':
+        toggleJointMode();
         break;
     // toggle reference frame for cartesian commands
     case 'm':
@@ -423,7 +479,7 @@ bool KeyboardController::close()
 }
 
 template <typename func>
-void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
+void KeyboardController::incrementOrDecrementJointCommand(joint j, func op)
 {
     if (!controlBoardDevice.isValid())
     {
@@ -432,50 +488,93 @@ void KeyboardController::incrementOrDecrementJointVelocity(joint q, func op)
         return;
     }
 
-    if (controlMode == CARTESIAN_MODE)
+    if (controlMode != JOINT_MODE)
     {
         issueStop();
     }
 
-    if (axes <= q)
+    if (axes <= j)
     {
         yCWarning(KC) << "Unrecognized key, only" << axes << "joints available";
         issueStop();
         return;
     }
 
-    std::vector<int> velModes(axes, VOCAB_CM_VELOCITY);
-
-    if (!iControlMode->setControlModes(velModes.data()))
+    if (jointMode == POSITION)
     {
-        yCError(KC) << "setVelocityModes failed";
-        issueStop();
-        return;
+        if (!iControlMode->setControlModes(std::vector(axes, VOCAB_CM_POSITION).data()))
+        {
+            yCError(KC) << "setPositionModes failed";
+            issueStop();
+            return;
+        }
+
+        std::vector<double> q(axes);
+
+        if (!iEncoders->getEncoders(q.data()))
+        {
+            yCError(KC) << "getEncoders failed";
+            issueStop();
+            return;
+        }
+
+        q[j] = op(q[j], jointPosStep);
+
+        if (q[j] < minPositionLimits[j] || q[j] > maxPositionLimits[j])
+        {
+            yCWarning(KC, "Joint position limit exceeded: minPos[%d] = %f, maxPos[%d] = %f", j, minPositionLimits[j], j, maxPositionLimits[j]);
+            q[j] = std::clamp(q[j], minPositionLimits[j], maxPositionLimits[j]);
+        }
+
+        std::cout << "New joint position: " << roundZeroes(q) << std::endl;
+
+        if (!iPositionControl->positionMove(j, q[j]))
+        {
+            yCError(KC) << "positionMove failed";
+            issueStop();
+            return;
+        }
+
+        controlMode = JOINT_MODE;
     }
-
-    currentJointVels[q] = op(currentJointVels[q], JOINT_VELOCITY_STEP);
-
-    if (std::abs(currentJointVels[q]) > maxVelocityLimits[q])
+    else if (jointMode == VELOCITY)
     {
-        yCWarning(KC, "Absolute joint velocity limit exceeded: maxVel[%d] = %f", q, maxVelocityLimits[q]);
-        currentJointVels[q] = op(0, 1) * maxVelocityLimits[q];
-    }
+        if (!iControlMode->setControlModes(std::vector(axes, VOCAB_CM_VELOCITY).data()))
+        {
+            yCError(KC) << "setVelocityModes failed";
+            issueStop();
+            return;
+        }
 
-    std::cout << "New joint velocity: " << roundZeroes(currentJointVels) << std::endl;
+        currentJointVels[j] = op(currentJointVels[j], jointVelStep);
 
-    if (!iVelocityControl->velocityMove(q, currentJointVels[q]))
-    {
-        yCError(KC) << "velocityMove failed";
-        issueStop();
+        if (std::abs(currentJointVels[j]) > maxVelocityLimits[j])
+        {
+            yCWarning(KC, "Absolute joint velocity limit exceeded: maxVel[%d] = %f", j, maxVelocityLimits[j]);
+            currentJointVels[j] = op(0, 1) * maxVelocityLimits[j];
+        }
+
+        std::cout << "New joint velocity: " << roundZeroes(currentJointVels) << std::endl;
+
+        if (!iVelocityControl->velocityMove(j, currentJointVels[j]))
+        {
+            yCError(KC) << "velocityMove failed";
+            issueStop();
+            return;
+        }
+
+        controlMode = JOINT_MODE;
     }
     else
     {
-        controlMode = JOINT_MODE;
+        yCError(KC) << "Unrecognized joint mode";
+        issueStop();
+        return;
     }
 }
 
 template <typename func>
-void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func op)
+void KeyboardController::incrementOrDecrementCartesianCommand(cart coord, func op)
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -484,7 +583,7 @@ void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func 
         return;
     }
 
-    if (controlMode == JOINT_MODE)
+    if (controlMode != CARTESIAN_MODE)
     {
         issueStop();
     }
@@ -528,6 +627,31 @@ void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func 
     }
 
     controlMode = CARTESIAN_MODE;
+}
+
+void KeyboardController::toggleJointMode()
+{
+    if (!controlBoardDevice.isValid())
+    {
+        yCWarning(KC) << "Unrecognized command (you chose not to launch remote control board client)";
+        issueStop();
+        return;
+    }
+
+    issueStop();
+
+    if (jointMode == POSITION)
+    {
+        jointMode = VELOCITY;
+    }
+    else if (jointMode == VELOCITY)
+    {
+        jointMode = POSITION;
+    }
+
+    std::cout << "Toggled joint control mode: " << (jointMode == POSITION ? "position" : "velocity");
+    std::cout << " (step: " << (jointMode == POSITION ? jointPosStep : jointVelStep);
+    std::cout << " " << (jointMode == POSITION ? "[degrees]" : "[degrees/s]") << ")" << std::endl;
 }
 
 void KeyboardController::toggleReferenceFrame()
@@ -651,11 +775,21 @@ void KeyboardController::issueStop()
             linTrajThread->suspend();
         }
 
-        iCartesianControl->stopControl();
+        if (!iCartesianControl->stopControl())
+        {
+            yCWarning(KC) << "Unable to stop cartesian control";
+        }
     }
     else if (controlBoardDevice.isValid())
     {
-        iVelocityControl->stop();
+        if (jointMode == POSITION && !iPositionControl->stop())
+        {
+            yCWarning(KC) << "Unable to stop position control";
+        }
+        else if (jointMode == VELOCITY && !iVelocityControl->stop())
+        {
+            yCWarning(KC) << "Unable to stop velocity control";
+        }
     }
 
     if (controlBoardDevice.isValid())
@@ -683,12 +817,12 @@ void KeyboardController::printHelp()
 
     if (controlBoardDevice.isValid())
     {
-        std::cout << " 'j' - query current joint positions" << std::endl;
+        std::cout << " 'j' - print current joint positions" << std::endl;
     }
 
     if (cartesianControlDevice.isValid())
     {
-        std::cout << " 'p' - query current cartesian positions (angleRepr: " << angleRepr << ")" << std::endl;
+        std::cout << " 'p' - print current cartesian positions (angleRepr: " << angleRepr << ")" << std::endl;
     }
 
     if (controlBoardDevice.isValid())
@@ -715,6 +849,19 @@ void KeyboardController::printHelp()
         }
 
         std::cout << " - issue joint movements (+/-)" << std::endl;
+
+        std::cout << " '0' - toggle joint mode (current: ";
+
+        if (jointMode == POSITION)
+        {
+            std::cout << "position, step: " << jointPosStep << " [degrees])";
+        }
+        else
+        {
+            std::cout << "velocity, step: " << jointVelStep << " [degrees/s])";
+        }
+
+        std::cout << std::endl;
     }
 
     if (cartesianControlDevice.isValid())
@@ -727,7 +874,6 @@ void KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-
         std::cout << (cartFrame == ICartesianSolver::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
 
         std::cout << " 'k'/'l' - open/close gripper" << std::endl;
