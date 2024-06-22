@@ -506,7 +506,7 @@ void KeyboardController::incrementOrDecrementCartesianVelocity(cart coord, func 
         }
         else
         {
-            iCartesianControl->twist(currentCartVels); // disable CMC
+            iCartesianControl->movv(currentCartVels);
         }
     }
     else
