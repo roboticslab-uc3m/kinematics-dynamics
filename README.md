@@ -76,9 +76,7 @@ Bartek Lukawski, Juan G. Victores, and Carlos Balaguer. A generic controller for
 
 ## Status
 
-[![CI (Linux)](https://github.com/roboticslab-uc3m/kinematics-dynamics/workflows/Continuous%20Integration/badge.svg)](https://github.com/roboticslab-uc3m/kinematics-dynamics/actions)
-
-[![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/kinematics-dynamics/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/kinematics-dynamics)
+[![Continuous Integration](https://github.com/roboticslab-uc3m/kinematics-dynamics/actions/workflows/ci.yml/badge.svg)](https://github.com/roboticslab-uc3m/kinematics-dynamics/actions/workflows/ci.yml)
 
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/kinematics-dynamics.svg?label=Issues)](https://github.com/roboticslab-uc3m/kinematics-dynamics/issues)
 

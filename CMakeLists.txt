@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16...3.22)
+cmake_minimum_required(VERSION 3.16...3.28)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
 
