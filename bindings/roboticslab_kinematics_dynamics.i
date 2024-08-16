@@ -1,7 +1,3 @@
-// Copyright:
-// Author:
-// CopyPolicy:
-
 //////////////////////////////////////////////////////////////////////////
 //
 // This is a configuration file to explain kinematics_dynamics to SWIG

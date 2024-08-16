@@ -2,8 +2,6 @@
 
 #include "BasicCartesianControl.hpp"
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
