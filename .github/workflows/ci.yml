@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
         robotology:
         - { yarp: yarp-3.8, cmake: 3.16.x }
         - { yarp: yarp-3.9, cmake: 3.16.x }
