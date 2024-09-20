@@ -69,8 +69,14 @@ jobs:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
 
+    - name: Check out SWIG
+      uses: actions/checkout@v4
+      with:
+        repository: swig/swig
+        path: .deps/swig
+
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache libeigen3-dev swig googletest
+      run: sudo apt-get install -qq ccache libeigen3-dev bison googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -104,6 +110,12 @@ jobs:
         cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_CCACHE_LAUNCHER
         cmake --build .deps/kdl/orocos_kdl/build
         sudo cmake --install .deps/kdl/orocos_kdl/build
+
+    - name: Build SWIG
+      run: |
+        cmake -S .deps/swig -B .deps/swig/build $CMAKE_CCACHE_LAUNCHER
+        cmake --build .deps/swig/build
+        sudo cmake --install .deps/swig/build
 
     - name: Configure kinematics-dynamics
       run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
