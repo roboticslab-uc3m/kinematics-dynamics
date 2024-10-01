@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
         robotology:
         - { yarp: yarp-3.8, cmake: 3.16.x }
         - { yarp: yarp-3.9, cmake: 3.16.x }
@@ -69,8 +69,23 @@ jobs:
         repository: orocos/orocos_kinematics_dynamics
         path: .deps/kdl
 
+    - name: Check out SWIG
+      if: ${{matrix.os == 'ubuntu-24.04'}}
+      uses: actions/checkout@v4
+      with:
+        repository: swig/swig
+        ref: v4.2.1
+        path: .deps/swig
+
     - name: Install dependencies via apt
+      if: ${{matrix.os != 'ubuntu-24.04'}}
       run: sudo apt-get install -qq ccache libeigen3-dev swig googletest
+
+    - name: Install dependencies via apt (Ubuntu-24.04-specific)
+      if: ${{matrix.os == 'ubuntu-24.04'}}
+      run: |
+        sudo apt-get install -qq ccache libeigen3-dev bison googletest
+        sudo apt-get remove -y -qq swig
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -104,6 +119,13 @@ jobs:
         cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_CCACHE_LAUNCHER
         cmake --build .deps/kdl/orocos_kdl/build
         sudo cmake --install .deps/kdl/orocos_kdl/build
+
+    - name: Build SWIG
+      if: ${{matrix.os == 'ubuntu-24.04'}}
+      run: |
+        cmake -S .deps/swig -B .deps/swig/build $CMAKE_CCACHE_LAUNCHER
+        cmake --build .deps/swig/build
+        sudo cmake --install .deps/swig/build
 
     - name: Configure kinematics-dynamics
       run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
