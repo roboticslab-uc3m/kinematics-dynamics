@@ -119,7 +119,7 @@ jobs:
         cmake -S .deps/swig -B .deps/swig/build $CMAKE_CCACHE_LAUNCHER
         cmake --build .deps/swig/build
         sudo cmake --install .deps/swig/build
-        echo "SWIG_ROOT=/usr/local/bin" >> $GITHUB_ENV
+        sudo ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
 
     - name: Configure kinematics-dynamics
       run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
