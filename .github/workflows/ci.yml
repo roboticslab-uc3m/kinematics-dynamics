@@ -78,14 +78,7 @@ jobs:
         path: .deps/swig
 
     - name: Install dependencies via apt
-      if: ${{matrix.os != 'ubuntu-24.04'}}
-      run: sudo apt-get install -qq ccache libeigen3-dev swig googletest
-
-    - name: Install dependencies via apt (Ubuntu-24.04-specific)
-      if: ${{matrix.os == 'ubuntu-24.04'}}
-      run: |
-        sudo apt-get install -qq ccache libeigen3-dev bison googletest
-        sudo apt-get remove -y -qq swig
+      run: sudo apt-get install -qq ccache libeigen3-dev googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -126,6 +119,7 @@ jobs:
         cmake -S .deps/swig -B .deps/swig/build $CMAKE_CCACHE_LAUNCHER
         cmake --build .deps/swig/build
         sudo cmake --install .deps/swig/build
+        sudo ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
 
     - name: Configure kinematics-dynamics
       run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
