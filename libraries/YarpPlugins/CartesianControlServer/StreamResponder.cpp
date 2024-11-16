@@ -3,7 +3,6 @@
 #include "CartesianControlServer.hpp"
 
 #include <functional> // std::invoke
-#include <vector>
 
 #include <yarp/os/LogStream.h>
 
@@ -16,6 +15,12 @@ using namespace roboticslab;
 void StreamResponder::onRead(yarp::os::Bottle& b)
 {
     yCDebug(CCS, "Got: %s", b.toString().c_str());
+
+    if (!iCartesianControl)
+    {
+        yCError(CCS) << "Invalid ICartesianControl interface";
+        return;
+    }
 
     switch (b.get(0).asVocab32())
     {

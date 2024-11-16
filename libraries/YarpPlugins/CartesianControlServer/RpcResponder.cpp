@@ -51,6 +51,13 @@ namespace
 
 bool RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
+    if (!iCartesianControl)
+    {
+        yCError(CCS) << "Invalid ICartesianControl interface";
+        out.addVocab32(VOCAB_CC_FAILED);
+        return false;
+    }
+
     switch (in.get(0).asVocab32())
     {
     case VOCAB_CC_STAT:

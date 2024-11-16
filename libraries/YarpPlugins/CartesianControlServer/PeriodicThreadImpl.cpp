@@ -2,37 +2,35 @@
 
 #include "CartesianControlServer.hpp"
 
-#include <vector>
-
 using namespace roboticslab;
 
 // ------------------- PeriodicThread related ------------------------------------
 
 void CartesianControlServer::run()
 {
-    std::vector<double> x;
-    int state;
-    double timestamp;
-
-    if (!iCartesianControl->stat(x, &state, &timestamp))
+    if (iCartesianControl)
     {
-        return;
+        std::vector<double> x;
+        int state;
+        double timestamp;
+
+        if (!iCartesianControl->stat(x, &state, &timestamp))
+        {
+            return;
+        }
+
+        yarp::os::Bottle & out = fkOutPort.prepare();
+        out.clear();
+        out.addVocab32(state);
+
+        for (auto i = 0; i < x.size(); i++)
+        {
+            out.addFloat64(x[i]);
+        }
+
+        out.addFloat64(timestamp);
+        fkOutPort.write();
     }
-
-    yarp::os::Bottle & out = fkOutPort.prepare();
-    out.clear();
-    out.addVocab32(state);
-
-    for (size_t i = 0; i < x.size(); i++)
-    {
-        out.addFloat64(x[i]);
-    }
-
-    out.addFloat64(timestamp);
-
-    fkOutPort.write();
-
-    return;
 }
 
 // -----------------------------------------------------------------------------

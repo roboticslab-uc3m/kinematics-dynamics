@@ -40,36 +40,37 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
 
         if (!cartesianControlDevice.isValid())
         {
-            yCError(CCS) << "Cannot make" << name->toString();
+            yCError(CCS) << "Cartesian control device not valid";
+            return false;
+        }
+
+        if (!cartesianControlDevice.view(iCartesianControl))
+        {
+            yCError(CCS) << "iCartesianControl view failed";
+            return false;
         }
     }
     else
     {
-        yCError(CCS) << "Subdevice option not set in CartesianControlServer";
-        return false;
+        yCInfo(CCS) << "Subdevice option not set, will use attach() later";
     }
-
-    if (!cartesianControlDevice.isValid())
-    {
-        yCError(CCS) << "Cartesian control device not valid";
-        return false;
-    }
-
-    if (!cartesianControlDevice.view(iCartesianControl))
-    {
-        yCError(CCS) << "iCartesianControl view failed";
-        return false;
-    }
-
-    rpcResponder = new RpcResponder(iCartesianControl);
-    streamResponder = new StreamResponder(iCartesianControl);
 
     auto prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
 
-    bool ok = true;
+    if (!rpcServer.open(prefix + "/rpc:s"))
+    {
+        yCError(CCS) << "Failed to open RPC port";
+        return false;
+    }
 
-    ok &= rpcServer.open(prefix + "/rpc:s");
-    ok &= commandPort.open(prefix + "/command:i");
+    if (!commandPort.open(prefix + "/command:i"))
+    {
+        yCError(CCS) << "Failed to open command port";
+        return false;
+    }
+
+    rpcResponder = new RpcResponder();
+    streamResponder = new StreamResponder();
 
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
@@ -78,15 +79,13 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (periodInMs > 0)
     {
-        fkStreamEnabled = true;
-        ok &= fkOutPort.open(prefix + "/state:o");
-
         yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);
-        yarp::os::PeriodicThread::start();
-    }
-    else
-    {
-        fkStreamEnabled = false;
+
+        if (!fkOutPort.open(prefix + "/state:o"))
+        {
+            yCError(CCS) << "Failed to open FK stream port";
+            return false;
+        }
     }
 
     yarp::os::Value * angleRepr, * coordRepr, * angularUnits;
@@ -143,22 +142,26 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
 
     if (openTransformPort)
     {
-        rpcTransformResponder = new RpcTransformResponder(iCartesianControl, coord, orient, units);
-        ok &= rpcTransformServer.open(prefix + "/rpc_transform:s");
+        rpcTransformResponder = new RpcTransformResponder(coord, orient, units);
         rpcTransformServer.setReader(*rpcTransformResponder);
+
+        if (!rpcTransformServer.open(prefix + "/rpc_transform:s"))
+        {
+            yCError(CCS) << "Failed to open transform RPC port";
+            return false;
+        }
     }
 
-    return ok;
+    return !cartesianControlDevice.isValid() || configureHandle();
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlServer::close()
 {
-    if (fkStreamEnabled)
+    if (!fkOutPort.isClosed())
     {
         yarp::os::PeriodicThread::stop();
-
         fkOutPort.interrupt();
         fkOutPort.close();
     }
@@ -181,7 +184,7 @@ bool CartesianControlServer::close()
     delete streamResponder;
     streamResponder = nullptr;
 
-    return cartesianControlDevice.close();
+    return !cartesianControlDevice.isValid() || cartesianControlDevice.close();
 }
 
 // -----------------------------------------------------------------------------

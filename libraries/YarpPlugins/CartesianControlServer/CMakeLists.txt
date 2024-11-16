@@ -10,6 +10,7 @@ if(NOT SKIP_CartesianControlServer)
 
     yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
                                            DeviceDriverImpl.cpp
+                                           IWrapperImpl.cpp
                                            PeriodicThreadImpl.cpp
                                            RpcResponder.cpp
                                            StreamResponder.cpp

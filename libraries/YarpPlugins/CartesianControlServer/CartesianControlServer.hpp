@@ -12,6 +12,7 @@
 
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/WrapperSingle.h>
 
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
@@ -35,6 +36,7 @@ class StreamResponder;
  * @brief The CartesianControlServer class implements ICartesianControl server side.
  */
 class CartesianControlServer : public yarp::dev::DeviceDriver,
+                               public yarp::dev::WrapperSingle,
                                public yarp::os::PeriodicThread
 {
 public:
@@ -42,26 +44,29 @@ public:
     {}
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
-
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
+
+    // -------- IWrapper declarations. Implementation in IWrapperImpl.cpp --------
+    bool attach(yarp::dev::PolyDriver * poly) override;
+    bool detach() override;
 
     // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
     void run() override;
 
 protected:
+    bool configureHandle();
+
     yarp::dev::PolyDriver cartesianControlDevice;
 
     yarp::os::RpcServer rpcServer, rpcTransformServer;
     yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
-    roboticslab::ICartesianControl * iCartesianControl {nullptr};
+    ICartesianControl * iCartesianControl {nullptr};
 
     RpcResponder * rpcResponder {nullptr};
     RpcResponder * rpcTransformResponder {nullptr};
     StreamResponder * streamResponder {nullptr};
-
-    bool fkStreamEnabled;
 };
 
 /**
@@ -71,24 +76,16 @@ protected:
 class RpcResponder : public yarp::dev::DeviceResponder
 {
 public:
-    RpcResponder(roboticslab::ICartesianControl * _iCartesianControl)
-        : iCartesianControl(_iCartesianControl)
+    RpcResponder()
     {
         // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
         makeUsage();
     }
 
-    /**
-     * Respond to a message.
-     * @param in the message
-     * @param out the response
-     * @return true if there was no critical failure
-     */
-    bool respond(const yarp::os::Bottle & in, yarp::os::Bottle & out) override;
+    void setHandle(ICartesianControl * _iCartesianControl)
+    { iCartesianControl = _iCartesianControl; }
 
-    /**
-     * Generate command usage information.
-     */
+    bool respond(const yarp::os::Bottle & in, yarp::os::Bottle & out) override;
     void makeUsage();
 
 protected:
@@ -117,7 +114,7 @@ private:
     bool handleParameterSetterGroup(const yarp::os::Bottle & in, yarp::os::Bottle & out);
     bool handleParameterGetterGroup(const yarp::os::Bottle & in, yarp::os::Bottle & out);
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    ICartesianControl * iCartesianControl;
 };
 
 /**
@@ -127,12 +124,10 @@ private:
 class RpcTransformResponder : public RpcResponder
 {
 public:
-    RpcTransformResponder(roboticslab::ICartesianControl * iCartesianControl,
-                          KinRepresentation::coordinate_system coord,
+    RpcTransformResponder(KinRepresentation::coordinate_system coord,
                           KinRepresentation::orientation_system orient,
                           KinRepresentation::angular_units units)
-        : RpcResponder(iCartesianControl),
-          coord(coord),
+        : coord(coord),
           orient(orient),
           units(units)
     {}
@@ -153,9 +148,8 @@ private:
 class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
-    StreamResponder(roboticslab::ICartesianControl * _iCartesianControl)
-        : iCartesianControl(_iCartesianControl)
-    {}
+    void setHandle(ICartesianControl * _iCartesianControl)
+    { iCartesianControl = _iCartesianControl;}
 
     void onRead(yarp::os::Bottle & b) override;
 
@@ -166,7 +160,7 @@ private:
     void handleConsumerCmdMsg(const yarp::os::Bottle & in, ConsumerFun cmd);
     void handleBiConsumerCmdMsg(const yarp::os::Bottle & in, BiConsumerFun cmd);
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    ICartesianControl * iCartesianControl {nullptr};
 };
 
 } // namespace roboticslab
