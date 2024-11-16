@@ -5,6 +5,7 @@
 
 #include <mutex>
 
+#include <yarp/conf/version.h>
 #include <yarp/dev/DeviceDriver.h>
 
 #include <kdl/chain.hpp>
@@ -14,15 +15,15 @@
 
 #include "ICartesianSolver.h"
 #include "LogComponent.hpp"
-
-namespace roboticslab
-{
+#if YARP_VERSION_COMPARE(>=, 3, 10, 0)
+#include "KdlSolver_ParamsParser.h"
+#endif
 
 /**
  * @ingroup YarpPlugins
  * @defgroup KdlSolver
  *
- * @brief Contains roboticslab::KdlSolver.
+ * @brief Contains KdlSolver.
  */
 
 /**
@@ -30,10 +31,13 @@ namespace roboticslab
  * @brief The KdlSolver class implements ICartesianSolver.
  */
 class KdlSolver : public yarp::dev::DeviceDriver,
-                  public ICartesianSolver
+#if YARP_VERSION_COMPARE(>=, 3, 10, 0)
+                  public KdlSolver_ParamsParser,
+#endif
+                  public roboticslab::ICartesianSolver
 {
 public:
-    // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp--
+    // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --
 
     // Get number of joints for which the solver has been configured.
     int getNumJoints() override;
@@ -48,9 +52,7 @@ public:
     bool restoreOriginalChain() override;
 
     // Change reference frame.
-    bool changeOrigin(const std::vector<double> &x_old_obj,
-                      const std::vector<double> &x_new_old,
-                      std::vector<double> &x_new_obj) override;
+    bool changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old, std::vector<double> &x_new_obj) override;
 
     // Perform forward kinematics.
     bool fwdKin(const std::vector<double> &q, std::vector<double> &x) override;
@@ -59,12 +61,10 @@ public:
     bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) override;
 
     // Perform inverse kinematics.
-    bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-                reference_frame frame) override;
+    bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame) override;
 
     // Perform differential inverse kinematics.
-    bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-                    reference_frame frame) override;
+    bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame) override;
 
     // Perform inverse dynamics.
     bool invDyn(const std::vector<double> &q, std::vector<double> &t) override;
@@ -84,10 +84,7 @@ private:
 
     mutable std::mutex mtx;
 
-    /** The chain. **/
     KDL::Chain chain;
-
-    /** To store a copy of the original chain. **/
     KDL::Chain originalChain;
 
     KDL::ChainFkSolverPos * fkSolverPos {nullptr};
@@ -97,7 +94,5 @@ private:
 
     bool isQuiet;
 };
-
-} // namespace roboticslab
 
 #endif // __KDL_SOLVER_HPP__

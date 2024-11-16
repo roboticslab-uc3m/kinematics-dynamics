@@ -4,10 +4,11 @@ endif()
 
 yarp_prepare_plugin(KdlSolver
                     CATEGORY device
-                    TYPE roboticslab::KdlSolver
+                    TYPE KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND")
+                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
+                    GENERATE_PARSER)
 
 if(NOT SKIP_KdlSolver)
 
@@ -22,6 +23,11 @@ if(NOT SKIP_KdlSolver)
                               ChainIkSolverPos_ID.cpp
                               LogComponent.hpp
                               LogComponent.cpp)
+
+    if(YARP_VERSION VERSION_GREATER_EQUAL 3.10)
+        target_sources(KdlSolver PRIVATE KdlSolver_ParamsParser.h
+                                         KdlSolver_ParamsParser.cpp)
+    endif()
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev

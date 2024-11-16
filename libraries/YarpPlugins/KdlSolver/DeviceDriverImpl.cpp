@@ -147,6 +147,12 @@ namespace
 
 bool KdlSolver::open(yarp::os::Searchable & config)
 {
+    if (!parseParams(config))
+    {
+        yCError(KDLS) << "Failed to parse parameters";
+        return false;
+    }
+
     isQuiet = config.check("quiet", "disable logging");
 
     //-- kinematics
