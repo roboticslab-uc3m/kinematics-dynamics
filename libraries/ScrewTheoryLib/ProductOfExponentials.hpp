@@ -45,7 +45,7 @@ public:
      * base frame of the input POE term.
      */
     void append(const MatrixExponential & exp, const KDL::Frame & H_new_old = KDL::Frame::Identity())
-    { exps.push_back(exp.cloneWithBase(H_new_old)); }
+    { exps.emplace_back(exp.cloneWithBase(H_new_old)); }
 
     /**
      * @brief Appends a POE to this formula

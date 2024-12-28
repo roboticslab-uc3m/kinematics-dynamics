@@ -18,7 +18,7 @@ namespace
 
     struct solution_accumulator
     {
-        int operator()(int count, const ScrewTheoryIkSubproblem * subproblem)
+        inline int operator()(int count, const ScrewTheoryIkSubproblem * subproblem)
         {
             return count * subproblem->solutions();
         }
@@ -27,14 +27,7 @@ namespace
 
     inline int computeSolutions(const ScrewTheoryIkProblem::Steps & steps)
     {
-        if (!steps.empty())
-        {
-            return std::accumulate(steps.begin(), steps.end(), 1, solutionAccumulator);
-        }
-        else
-        {
-            return 0;
-        }
+        return !steps.empty() ? std::accumulate(steps.begin(), steps.end(), 1, solutionAccumulator) : 0;
     }
 }
 
@@ -51,9 +44,9 @@ ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const Ste
 
 ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 {
-    for (int i = 0; i < steps.size(); i++)
+    for (auto & step : steps)
     {
-        delete steps[i];
+        delete step;
     }
 }
 
@@ -61,10 +54,7 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 
 bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions)
 {
-    if (!solutions.empty())
-    {
-        solutions.clear();
-    }
+    solutions.clear();
 
     // Reserve space in memory to avoid additional allocations on runtime.
     solutions.reserve(soln);
@@ -79,6 +69,8 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
 
     bool firstIteration = true;
     bool reachable = true;
+
+    ScrewTheoryIkSubproblem::Solutions partialSolutions;
 
     for (int i = 0; i < steps.size(); i++)
     {
@@ -96,8 +88,6 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
         {
             // Apply known frames to the first characteristic point for each subproblem.
             const KDL::Frame & H = transformPoint(solutions[j], poeTerms);
-
-            ScrewTheoryIkSubproblem::Solutions partialSolutions;
 
             // Actually solve each subproblem, use current right-hand side of PoE to obtain
             // the right-hand side of said subproblem.
@@ -123,13 +113,12 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
             // For each local solution of this subproblem...
             for (int k = 0; k < partialSolutions.size(); k++)
             {
-                const ScrewTheoryIkSubproblem::JointIdsToSolutions & jointIdsToSolutions = partialSolutions[k];
+                const auto & jointIdsToSolutions = partialSolutions[k];
 
                 // For each joint-id-to-value pair of this local solution...
                 for (int l = 0; l < jointIdsToSolutions.size(); l++)
                 {
-                    const ScrewTheoryIkSubproblem::JointIdToSolution & jointIdToSolution = jointIdsToSolutions[l];
-                    auto [id, theta] = jointIdToSolution;
+                    auto [id, theta] = jointIdsToSolutions[l];
 
                     // Preserve mapping of ids (associated to `poe`).
                     poeTerms[id] = EXP_KNOWN;
@@ -196,7 +185,7 @@ bool ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
         {
             for (int j = 0; j < solutions.size(); j++)
             {
-                const MatrixExponential & exp = poe.exponentialAtJoint(i);
+                const auto & exp = poe.exponentialAtJoint(i);
                 frames[j] = frames[j] * exp.asFrame(getTheta(solutions[j], i, reversed));
             }
 
@@ -232,7 +221,7 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
     {
         if (poeTerms[i] == EXP_KNOWN)
         {
-            const MatrixExponential & exp = poe.exponentialAtJoint(i);
+            const auto & exp = poe.exponentialAtJoint(i);
             H = exp.asFrame(getTheta(jointValues, i, reversed)) * H;
             foundKnown = true;
         }

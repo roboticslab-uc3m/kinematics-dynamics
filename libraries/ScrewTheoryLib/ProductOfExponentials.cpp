@@ -69,9 +69,9 @@ void PoeExpression::append(const PoeExpression & poe, const KDL::Frame & H_new_o
 
 void PoeExpression::changeBaseFrame(const KDL::Frame & H_new_old)
 {
-    for (int i = 0; i < exps.size(); i++)
+    for (auto & exp : exps)
     {
-        exps[i].changeBase(H_new_old);
+        exp.changeBase(H_new_old);
     }
 
     H_S_T = H_new_old * H_S_T;
@@ -105,9 +105,9 @@ void PoeExpression::reverseSelf()
 {
     H_S_T = H_S_T.Inverse();
 
-    for (int i = 0; i < exps.size(); i++)
+    for (auto & exp : exps)
     {
-        exps[i].changeBase(H_S_T);
+        exp.changeBase(H_S_T);
     }
 
     std::reverse(exps.begin(), exps.end());
@@ -122,9 +122,8 @@ PoeExpression PoeExpression::makeReverse() const
     poeReversed.exps.reserve(exps.size());
     poeReversed.H_S_T = H_S_T.Inverse();
 
-    for (int i = 0; i < exps.size(); i++)
+    for (const auto & exp : exps)
     {
-        const MatrixExponential & exp = exps[i];
         poeReversed.append(exp, poeReversed.H_S_T);
     }
 
@@ -140,10 +139,8 @@ KDL::Chain PoeExpression::toChain() const
     KDL::Chain chain;
     KDL::Frame H_S_prev;
 
-    for (int i = 0; i < exps.size(); i++)
+    for (const auto & exp : exps)
     {
-        const MatrixExponential & exp = exps[i];
-
         KDL::Joint::JointType jointType = motionToJointType(exp.getMotionType());
         KDL::Joint joint(H_S_prev.Inverse() * exp.getOrigin(), exp.getAxis(), jointType);
 
@@ -179,7 +176,7 @@ PoeExpression PoeExpression::fromChain(const KDL::Chain & chain)
 
         if (motionTypeId != UNKNOWN_OR_STATIC_JOINT)
         {
-            MatrixExponential::motion motionType = static_cast<MatrixExponential::motion>(motionTypeId);
+            auto motionType = static_cast<MatrixExponential::motion>(motionTypeId);
             MatrixExponential exp(motionType, H_S_prev.M * joint.JointAxis(), H_S_prev * joint.JointOrigin());
             poe.append(exp);
         }

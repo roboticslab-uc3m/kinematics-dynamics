@@ -130,9 +130,9 @@ namespace
 
     void clearSteps(ScrewTheoryIkProblem::Steps & steps)
     {
-        for (auto it = steps.begin(); it != steps.end(); ++it)
+        for (auto & step : steps)
         {
-            delete (*it);
+            delete step;
         }
 
         steps.clear();
@@ -231,9 +231,9 @@ std::vector<KDL::Vector> ScrewTheoryIkProblemBuilder::searchPoints(const PoeExpr
 ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
 {
     // Reset state, mark all PoE terms as unknown.
-    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto & poeTerm : poeTerms)
     {
-        it->known = false;
+        poeTerm.known = false;
     }
 
     // Find solutions, if available.
@@ -253,9 +253,9 @@ ScrewTheoryIkProblem * ScrewTheoryIkProblemBuilder::build()
     // No solution found, try with reversed PoE.
     poe.reverseSelf();
 
-    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto & poeTerm : poeTerms)
     {
-        it->known = false;
+        poeTerm.known = false;
     }
 
     steps = searchSolutions();
@@ -347,9 +347,9 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
 void ScrewTheoryIkProblemBuilder::refreshSimplificationState()
 {
     // Reset simplification mark on all terms.
-    for (auto it = poeTerms.begin(); it != poeTerms.end(); ++it)
+    for (auto & poeTerm : poeTerms)
     {
-        it->simplified = false;
+        poeTerm.simplified = false;
     }
 
     // Leading known terms can be simplified (pre-multiply).
