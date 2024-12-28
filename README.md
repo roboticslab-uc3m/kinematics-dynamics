@@ -31,7 +31,7 @@ If you found this project useful, please consider citing the following works:
 
 - [ScrewTheoryLib](libraries/ScrewTheoryLib/)
 
-Bartek Lukawski, Ignacio Montesino Valle, Juan G. Victores, Alberto Jardón, and Carlos Balaguer. An inverse kinematics problem solver based on screw theory for manipulator arms. In *XLIII Jornadas de Automática*, pages 864–869. Universidade da Coruña, 2022.
+Bartek Łukawski, Ignacio Montesino Valle, Juan G. Victores, Alberto Jardón, and Carlos Balaguer. An inverse kinematics problem solver based on screw theory for manipulator arms. In *XLIII Jornadas de Automática*, pages 864–869. Universidade da Coruña, 2022.
 
 ```bibtex
 @inproceedings{lukawski2022jjaa,
@@ -47,7 +47,7 @@ Bartek Lukawski, Ignacio Montesino Valle, Juan G. Victores, Alberto Jardón, and
 
 - [streamingDeviceController](programs/streamingDeviceController/)
 
-Edwin Daniel Oña, Bartek Lukawski, Alberto Jardón, and Carlos Balaguer. A modular framework to facilitate the control of an assistive robotic arm using visual servoing and proximity sensing. In *IEEE Int. Conf. on Autonomous Robot Systems and Competitions (ICARSC)*, pages 28–33, 2020.
+Edwin Daniel Oña, Bartek Łukawski, Alberto Jardón, and Carlos Balaguer. A modular framework to facilitate the control of an assistive robotic arm using visual servoing and proximity sensing. In *IEEE Int. Conf. on Autonomous Robot Systems and Competitions (ICARSC)*, pages 28–33, 2020.
 
 ```bibtex
 @inproceedings{eona2020icarsc,
@@ -60,7 +60,7 @@ Edwin Daniel Oña, Bartek Lukawski, Alberto Jardón, and Carlos Balaguer. A modu
 }
 ```
 
-Bartek Lukawski, Juan G. Victores, and Carlos Balaguer. A generic controller for teleoperation on robotic manipulators using low-cost devices. In *XLIV Jornadas de Automática*, pages 785–788. Universidade da Coruña, 2023.
+Bartek Łukawski, Juan G. Victores, and Carlos Balaguer. A generic controller for teleoperation on robotic manipulators using low-cost devices. In *XLIV Jornadas de Automática*, pages 785–788. Universidade da Coruña, 2023.
 
 ```bibtex
 @inproceedings{lukawski2023jjaa,
