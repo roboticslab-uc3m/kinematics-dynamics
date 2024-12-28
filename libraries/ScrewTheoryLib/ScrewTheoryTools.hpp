@@ -23,7 +23,7 @@ namespace roboticslab
  * on solving inverse kinematics problems in an efficient and effective
  * manner via closed-form geometric solutions. Comparing this approach
  * with a tradicional numeric-based approach yields
- * (@cite pardosgotor2018str_handbook):
+ * (@cite pardosgotor2018str @cite pardosgotor2022str):
  *   - faster solutions, since there are no iterations involved;
  *   - exact solutions, since the direct formulation guarantees convergence;
  *   - multiple solutions and the possibility to choose the better ones.

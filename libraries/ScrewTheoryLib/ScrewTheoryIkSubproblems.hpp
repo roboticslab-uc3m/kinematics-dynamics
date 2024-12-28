@@ -131,7 +131,8 @@ private:
  *
  * Single solution, single prismatic joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi}\,{\theta}} \cdot p = k @f$
- * (translation screw applied to a point, see @cite pardosgotor2018str_handbook).
+ * (translation screw applied to a point, see @cite pardosgotor2018str
+ * @cite pardosgotor2022str).
  */
 class PardosGotorOne : public ScrewTheoryIkSubproblem
 {
@@ -166,7 +167,8 @@ private:
  *
  * Single solution, double prismatic joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
- * (consecutive translation screws to a point, see @cite pardosgotor2018str_handbook).
+ * (consecutive translation screws to a point, see @cite pardosgotor2018str
+ * @cite pardosgotor2022str).
  */
 class PardosGotorTwo : public ScrewTheoryIkSubproblem
 {
@@ -205,7 +207,7 @@ private:
  * Dual solution, single prismatic joint geometric IK subproblem given by
  * @f$ \left \| e\,^{\hat{\xi}\,{\theta}} \cdot p - k \right \| = \delta @f$
  * (translation screw for moving @f$ p @f$ to a distance @f$ \delta @f$ from @f$ k @f$,
- * see @cite pardosgotor2018str_handbook).
+ * see @cite pardosgotor2018str @cite pardosgotor2022str).
  */
 class PardosGotorThree : public ScrewTheoryIkSubproblem
 {
@@ -242,7 +244,7 @@ private:
  * Dual solution, double revolute joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
  * (two consecutive parallel rotation screws applied to a point,
- * see @cite pardosgotor2018str_handbook).
+ * see @cite pardosgotor2018str @cite pardosgotor2022str).
  */
 class PardosGotorFour : public ScrewTheoryIkSubproblem
 {
