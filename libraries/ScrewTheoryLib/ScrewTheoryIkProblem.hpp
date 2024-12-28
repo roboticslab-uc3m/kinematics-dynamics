@@ -41,8 +41,8 @@ public:
      * @brief Finds a closed geometric solution for this IK subproblem
      *
      * Given the product of exponentials (POE) formula
-     * @f$ \prod_i e\,^{\hat{\xi}_i\,{\theta_i}} \cdot H_{ST}(0) = H_{ST}(\theta) @f$ ,
-     * , invariant and known terms are rearranged to the right side (\p rhs) as follows:
+     * @f$ \prod_i e\,^{\hat{\xi}_i\,{\theta_i}} \cdot H_{ST}(0) = H_{ST}(\theta) @f$,
+     * invariant and known terms are rearranged to the right side (\p rhs) as follows:
      *
      * @f[
      * \prod_{i=j}^{j+k} e\,^{\hat{\xi}_i\,{\theta_i}} =
@@ -51,7 +51,7 @@ public:
      * \left [ \prod_{i=j+k+1}^{N} e\,^{\hat{\xi}_i\,{\theta_i}} \right ]^{-1}
      * @f]
      *
-     * where @f$ j = \{1, 2, ..., N\}, k = \{1, 2, ..., N-1\}, 1 <= j+k <= N @f$ .
+     * where @f$ j = \{1, 2, ..., N\} @f$, @f$ k = \{1, 2, ..., N-1\} @f$, @f$ 1 <= j+k <= N @f$.
      *
      * Given @f$ N @f$ terms in the POE formula, @f$ j @f$ of which are unknowns, any
      * characteristic point @f$ p @f$ postmultiplying this expression could be rewritten
@@ -63,7 +63,7 @@ public:
      * @f]
      *
      * where \p pointTransform is the transformation matrix that produces @f$ p' @f$
-     * from @f$ p @f$ .
+     * from @f$ p @f$.
      *
      * @param rhs Right-hand side of the POE formula prior to being applied to the
      * right-hand side of this subproblem.
