@@ -394,15 +394,14 @@ ScrewTheoryIkProblem::JointIdsToSubproblem ScrewTheoryIkProblemBuilder::trySolve
     // Find rightmost unknown and not simplified PoE term.
     auto lastUnknown = std::find_if(poeTerms.rbegin(), poeTerms.rend(), unknownNotSimplifiedTerm);
     int lastExpId = std::distance(poeTerms.begin(), lastUnknown.base()) - 1;
-    const MatrixExponential & lastExp = poe.exponentialAtJoint(lastExpId);
+    const auto & lastExp = poe.exponentialAtJoint(lastExpId);
 
     // Select the most adequate subproblem, if available.
     if (unknownsCount == 1)
     {
         if (depth == 0)
         {
-            if (lastExp.getMotionType() == MatrixExponential::ROTATION
-                    && !liesOnAxis(lastExp, testPoints[0]))
+            if (lastExp.getMotionType() == MatrixExponential::ROTATION && !liesOnAxis(lastExp, testPoints[0]))
             {
                 poeTerms[lastExpId].known = true;
                 return {{lastExpId}, new PadenKahanOne(lastExp, testPoints[0])};
@@ -450,19 +449,30 @@ ScrewTheoryIkProblem::JointIdsToSubproblem ScrewTheoryIkProblemBuilder::trySolve
         }
 
         int nextToLastExpId = lastExpId - 1;
-        const MatrixExponential & nextToLastExp = poe.exponentialAtJoint(nextToLastExpId);
+        const auto & nextToLastExp = poe.exponentialAtJoint(nextToLastExpId);
 
         if (depth == 0)
         {
-            KDL::Vector r;
-
-            if (lastExp.getMotionType() == MatrixExponential::ROTATION
-                    && nextToLastExp.getMotionType() == MatrixExponential::ROTATION
-                    && !parallelAxes(lastExp, nextToLastExp)
-                    && intersectingAxes(lastExp, nextToLastExp, r))
+            if (lastExp.getMotionType() == MatrixExponential::ROTATION && nextToLastExp.getMotionType() == MatrixExponential::ROTATION)
             {
-                poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return {{nextToLastExpId, lastExpId}, new PadenKahanTwo(nextToLastExp, lastExp, testPoints[0], r)};
+                if (!parallelAxes(lastExp, nextToLastExp))
+                {
+                    poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
+
+                    if (KDL::Vector r; intersectingAxes(lastExp, nextToLastExp, r))
+                    {
+                        return {{nextToLastExpId, lastExpId}, new PadenKahanTwo(nextToLastExp, lastExp, testPoints[0], r)};
+                    }
+                    else
+                    {
+                        return {{nextToLastExpId, lastExpId}, new PardosGotorSix(nextToLastExp, lastExp, testPoints[0])};
+                    }
+                }
+                else if (!colinearAxes(lastExp, nextToLastExp))
+                {
+                    poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
+                    return {{nextToLastExpId, lastExpId}, new PardosGotorFour(nextToLastExp, lastExp, testPoints[0])};
+                }
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION
@@ -471,15 +481,6 @@ ScrewTheoryIkProblem::JointIdsToSubproblem ScrewTheoryIkProblemBuilder::trySolve
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
                 return {{nextToLastExpId, lastExpId}, new PardosGotorTwo(nextToLastExp, lastExp, testPoints[0])};
-            }
-
-            if (lastExp.getMotionType() == MatrixExponential::ROTATION
-                    && nextToLastExp.getMotionType() == MatrixExponential::ROTATION
-                    && parallelAxes(lastExp, nextToLastExp)
-                    && !colinearAxes(lastExp, nextToLastExp))
-            {
-                poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return {{nextToLastExpId, lastExpId}, new PardosGotorFour(nextToLastExp, lastExp, testPoints[0])};
             }
         }
     }
