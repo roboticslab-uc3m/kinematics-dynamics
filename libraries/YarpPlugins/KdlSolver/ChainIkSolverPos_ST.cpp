@@ -93,7 +93,7 @@ KDL::ChainIkSolverPos * ChainIkSolverPos_ST::create(const KDL::Chain & chain, co
     const auto & steps = problem->getSteps();
 
     std::vector<const char *> descriptions;
-    std::transform(steps.cbegin(), steps.cend(), std::back_inserter(descriptions), [](const auto * step) { return step->describe(); });
+    std::transform(steps.cbegin(), steps.cend(), std::back_inserter(descriptions), [](const auto & step) { return step.second->describe(); });
     yCInfo(KDLS) << "Found" << problem->solutions() << "solutions:" << descriptions << (problem->isReversed() ? "(reversed)" : "");
 
     ConfigurationSelector * config = configFactory.create();

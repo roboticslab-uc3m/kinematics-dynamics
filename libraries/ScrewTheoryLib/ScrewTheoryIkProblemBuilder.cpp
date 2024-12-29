@@ -132,7 +132,7 @@ namespace
     {
         for (auto & step : steps)
         {
-            delete step;
+            delete step.second;
         }
 
         steps.clear();
@@ -299,11 +299,11 @@ ScrewTheoryIkProblem::Steps ScrewTheoryIkProblemBuilder::searchSolutions()
         simplify(depth);
 
         // Find a solution if available.
-        if (auto * subproblem = trySolve(depth))
+        if (auto [ids, subproblem] = trySolve(depth); subproblem != nullptr)
         {
             // Solution found, reset and start again. We'll iterate over the same points, taking
             // into account that some terms are already known.
-            steps.push_back(subproblem);
+            steps.emplace_back(ids, subproblem);
             iterators.assign(iterators.size(), points.begin());
             testPoints[0] = points[0];
             depth = 0;
@@ -381,14 +381,14 @@ void ScrewTheoryIkProblemBuilder::refreshSimplificationState()
 
 // -----------------------------------------------------------------------------
 
-ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
+ScrewTheoryIkProblem::JointIdsToSubproblem ScrewTheoryIkProblemBuilder::trySolve(int depth)
 {
     int unknownsCount = std::count_if(poeTerms.begin(), poeTerms.end(), unknownNotSimplifiedTerm);
 
     if (unknownsCount == 0 || unknownsCount > 2) // TODO: hardcoded
     {
         // Can't solve yet, too many unknowns or oversimplified.
-        return nullptr;
+        return {{}, nullptr};
     }
 
     // Find rightmost unknown and not simplified PoE term.
@@ -405,13 +405,13 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && !liesOnAxis(lastExp, testPoints[0]))
             {
                 poeTerms[lastExpId].known = true;
-                return new PadenKahanOne(lastExpId, lastExp, testPoints[0]);
+                return {{lastExpId}, new PadenKahanOne(lastExp, testPoints[0])};
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
                 poeTerms[lastExpId].known = true;
-                return new PardosGotorOne(lastExpId, lastExp, testPoints[0]);
+                return {{lastExpId}, new PardosGotorOne(lastExp, testPoints[0])};
             }
         }
 
@@ -420,7 +420,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
             // There can be no other non-simplified terms to the left of our unknown.
             if (std::find_if(poeTerms.begin(), poeTerms.end(), knownNotSimplifiedTerm) != poeTerms.end())
             {
-                return nullptr;
+                return {{}, nullptr};
             }
 
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
@@ -428,13 +428,13 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && !liesOnAxis(lastExp, testPoints[1]))
             {
                 poeTerms[lastExpId].known = true;
-                return new PadenKahanThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
+                return {{lastExpId}, new PadenKahanThree(lastExp, testPoints[0], testPoints[1])};
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION)
             {
                 poeTerms[lastExpId].known = true;
-                return new PardosGotorThree(lastExpId, lastExp, testPoints[0], testPoints[1]);
+                return {{lastExpId}, new PardosGotorThree(lastExp, testPoints[0], testPoints[1])};
             }
         }
     }
@@ -446,7 +446,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
 
         if (!unknownNotSimplifiedTerm(*nextToLastUnknown))
         {
-            return nullptr;
+            return {{}, nullptr};
         }
 
         int nextToLastExpId = lastExpId - 1;
@@ -462,7 +462,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && intersectingAxes(lastExp, nextToLastExp, r))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return new PadenKahanTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0], r);
+                return {{nextToLastExpId, lastExpId}, new PadenKahanTwo(nextToLastExp, lastExp, testPoints[0], r)};
             }
 
             if (lastExp.getMotionType() == MatrixExponential::TRANSLATION
@@ -470,7 +470,7 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && !parallelAxes(lastExp, nextToLastExp))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return new PardosGotorTwo(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+                return {{nextToLastExpId, lastExpId}, new PardosGotorTwo(nextToLastExp, lastExp, testPoints[0])};
             }
 
             if (lastExp.getMotionType() == MatrixExponential::ROTATION
@@ -479,12 +479,12 @@ ScrewTheoryIkSubproblem * ScrewTheoryIkProblemBuilder::trySolve(int depth)
                     && !colinearAxes(lastExp, nextToLastExp))
             {
                 poeTerms[lastExpId].known = poeTerms[nextToLastExpId].known = true;
-                return new PardosGotorFour(nextToLastExpId, lastExpId, nextToLastExp, lastExp, testPoints[0]);
+                return {{nextToLastExpId, lastExpId}, new PardosGotorFour(nextToLastExp, lastExp, testPoints[0])};
             }
         }
     }
 
-    return nullptr;
+    return {{}, nullptr};
 }
 
 // -----------------------------------------------------------------------------

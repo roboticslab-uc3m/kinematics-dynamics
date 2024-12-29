@@ -25,14 +25,8 @@ namespace roboticslab
 class ScrewTheoryIkSubproblem
 {
 public:
-    //! Maps a joint id to a screw magnitude
-    using JointIdToSolution = std::pair<int, double>;
-
-    //! At least one joint-id+value pair per solution
-    using JointIdsToSolutions = std::vector<JointIdToSolution>;
-
     //! Collection of local IK solutions
-    using Solutions = std::vector<JointIdsToSolutions>;
+    using Solutions = std::vector<std::vector<double>>;
 
     //! Destructor
     virtual ~ScrewTheoryIkSubproblem() = default;
@@ -91,11 +85,14 @@ public:
  *
  * @see ScrewTheoryIkProblemBuilder
  */
-class ScrewTheoryIkProblem
+class ScrewTheoryIkProblem final
 {
 public:
-    //! Ordered sequence of IK subproblems needed to solve a IK problem
-    using Steps = std::vector<const ScrewTheoryIkSubproblem *>;
+    //! Pair of joint ids and an their associated local IK subproblem
+    using JointIdsToSubproblem = std::pair<std::vector<int>, const ScrewTheoryIkSubproblem *>;
+
+    //! Ordered sequence of IK subproblems that solve a global IK problem
+    using Steps = std::vector<JointIdsToSubproblem>;
 
     //! Collection of global IK solutions
     using Solutions = std::vector<KDL::JntArray>;
@@ -215,7 +212,7 @@ private:
     void simplifyWithPadenKahanThree(const KDL::Vector & point);
     void simplifyWithPardosOne();
 
-    ScrewTheoryIkSubproblem * trySolve(int depth);
+    ScrewTheoryIkProblem::JointIdsToSubproblem trySolve(int depth);
 
     PoeExpression poe;
 

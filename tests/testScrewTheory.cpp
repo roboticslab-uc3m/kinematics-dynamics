@@ -1,8 +1,5 @@
 #include "gtest/gtest.h"
 
-#include <algorithm> // std::sort
-#include <utility> // std::pair
-
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames.hpp>
@@ -276,33 +273,16 @@ public:
 
     static void checkSolutions(const ScrewTheoryIkSubproblem::Solutions & actual, const ScrewTheoryIkSubproblem::Solutions & expected)
     {
-        ScrewTheoryIkSubproblem::JointIdsToSolutions actualSorted, expectedSorted;
+        ASSERT_EQ(actual.size(), expected.size());
 
         for (int i = 0; i < actual.size(); i++)
         {
+            ASSERT_EQ(actual[i].size(), expected[i].size());
+
             for (int j = 0; j < actual[i].size(); j++)
             {
-                actualSorted.push_back(actual[i][j]);
+                ASSERT_NEAR(actual[i][j], expected[i][j], KDL::epsilon);
             }
-        }
-
-        for (int i = 0; i < expected.size(); i++)
-        {
-            for (int j = 0; j < expected[i].size(); j++)
-            {
-                expectedSorted.push_back(expected[i][j]);
-            }
-        }
-
-        ASSERT_EQ(actualSorted.size(), expectedSorted.size());
-
-        std::sort(actualSorted.begin(), actualSorted.end(), solutionComparator);
-        std::sort(expectedSorted.begin(), expectedSorted.end(), solutionComparator);
-
-        for (int i = 0; i < actualSorted.size(); i++)
-        {
-            ASSERT_EQ(actualSorted[i].first, expectedSorted[i].first);
-            ASSERT_NEAR(actualSorted[i].second, expectedSorted[i].second, KDL::epsilon);
         }
     }
 
@@ -334,10 +314,10 @@ public:
         ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, solutions));
         delete ikProblem;
 
-        for (int i = 0; i < solutions.size(); i++)
+        for (const auto & solution : solutions)
         {
             KDL::Frame H_S_T_q_ST_validate;
-            ASSERT_TRUE(poe.evaluate(solutions[i], H_S_T_q_ST_validate));
+            ASSERT_TRUE(poe.evaluate(solution, H_S_T_q_ST_validate));
             ASSERT_EQ(H_S_T_q_ST_validate, H_S_T_q_ST);
         }
     }
@@ -365,17 +345,6 @@ public:
 
         return -1;
     }
-
-private:
-
-    static struct compare_solutions
-    {
-        bool operator()(const std::pair<int, double> & lhs, const std::pair<int, double> & rhs)
-        {
-            return !(lhs.first > rhs.first) && (lhs.first < rhs.first || lhs.second < rhs.second);
-        }
-    }
-    solutionComparator;
 };
 
 TEST_F(ScrewTheoryTest, MatrixExponentialInit)
@@ -560,7 +529,7 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     KDL::Vector k(1, 1, 1);
 
     MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
-    PadenKahanOne pk1(0, exp, p);
+    PadenKahanOne pk1(exp, p);
 
     ASSERT_EQ(pk1.solutions(), 1);
 
@@ -571,11 +540,7 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 1);
 
-    ScrewTheoryIkSubproblem::Solutions expected(1);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sol(1);
-
-    sol[0] = {0, KDL::PI / 2};
-    expected[0] = sol;
+    ScrewTheoryIkSubproblem::Solutions expected = {{KDL::PI / 2}};
 
     checkSolutions(actual, expected);
 
@@ -600,7 +565,7 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
 
     MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), r);
     MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), r);
-    PadenKahanTwo pk2(0, 1, exp1, exp2, p, r);
+    PadenKahanTwo pk2(exp1, exp2, p, r);
 
     ASSERT_EQ(pk2.solutions(), 2);
 
@@ -612,17 +577,10 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     ASSERT_EQ(actual[0].size(), 2);
     ASSERT_EQ(actual[1].size(), 2);
 
-    ScrewTheoryIkSubproblem::Solutions expected(2);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sols1(2), sols2(2);
-
-    sols1[0] = {0, KDL::PI / 2};
-    sols1[1] = {1, KDL::PI / 2};
-
-    sols2[0] = {0, KDL::PI};
-    sols2[1] = {1, -KDL::PI / 2};
-
-    expected[0] = sols1;
-    expected[1] = sols2;
+    ScrewTheoryIkSubproblem::Solutions expected = {
+        {KDL::PI, -KDL::PI / 2},
+        {KDL::PI / 2, KDL::PI / 2}
+    };
 
     checkSolutions(actual, expected);
 
@@ -630,16 +588,15 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     KDL::Frame rhs2(k2 - p);
     ASSERT_FALSE(pk2.solve(rhs2, KDL::Frame::Identity(), actual));
 
-    sols1[0].second = sols2[0].second = 3 * KDL::PI / 4;
-    sols1[1].second = sols2[1].second = KDL::PI;
-
-    expected[0] = sols1;
-    expected[1] = sols2;
+    expected = {
+        {3 * KDL::PI / 4, KDL::PI},
+        {3 * KDL::PI / 4, KDL::PI}
+    };
 
     checkSolutions(actual, expected);
 
     KDL::Vector p3 = p + KDL::Vector(0.5, 0, 0);
-    PadenKahanTwo pk2c(0, 1, exp1, exp2, p3, r);
+    PadenKahanTwo pk2c(exp1, exp2, p3, r);
     KDL::Frame rhs3(k2 - p3);
     ASSERT_FALSE(pk2c.solve(rhs3, KDL::Frame::Identity(), actual));
 
@@ -653,7 +610,7 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     KDL::Vector delta(-1, 0, 0);
 
     MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
-    PadenKahanThree pk3(0, exp, p, k);
+    PadenKahanThree pk3(exp, p, k);
 
     ASSERT_EQ(pk3.solutions(), 2);
 
@@ -665,27 +622,23 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     ASSERT_EQ(actual[0].size(), 1);
     ASSERT_EQ(actual[1].size(), 1);
 
-    ScrewTheoryIkSubproblem::Solutions expected(2);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sol1(1), sol2(1);
-
-    sol1[0] = {0, KDL::PI / 2};
-    sol2[0] = {0, KDL::PI};
-
-    expected[0] = sol1;
-    expected[1] = sol2;
+    ScrewTheoryIkSubproblem::Solutions expected = {
+        {KDL::PI},
+        {KDL::PI / 2}
+    };
 
     checkSolutions(actual, expected);
 
     KDL::Vector k2 = k + KDL::Vector(1, 0, 1);
-    PadenKahanThree pk3b(0, exp, p, k2);
+    PadenKahanThree pk3b(exp, p, k2);
     KDL::Frame rhs2(delta - (p - k2));
 
     ASSERT_FALSE(pk3b.solve(rhs2, KDL::Frame::Identity(), actual));
 
-    sol1[0] = sol2[0] = {0, 3 * KDL::PI / 4};
-
-    expected[0] = sol1;
-    expected[1] = sol2;
+    expected = {
+        {3 * KDL::PI / 4},
+        {3 * KDL::PI / 4}
+    };
 
     checkSolutions(actual, expected);
 }
@@ -696,7 +649,7 @@ TEST_F(ScrewTheoryTest, PardosOne)
     KDL::Vector k(1, 1, 0);
 
     MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
-    PardosGotorOne pg1(0, exp, p);
+    PardosGotorOne pg1(exp, p);
 
     ASSERT_EQ(pg1.solutions(), 1);
 
@@ -707,11 +660,7 @@ TEST_F(ScrewTheoryTest, PardosOne)
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 1);
 
-    ScrewTheoryIkSubproblem::Solutions expected(1);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sol(1);
-
-    sol[0] = {0, 1.0};
-    expected[0] = sol;
+    ScrewTheoryIkSubproblem::Solutions expected = {{1.0}};
 
     checkSolutions(actual, expected);
 }
@@ -723,7 +672,7 @@ TEST_F(ScrewTheoryTest, PardosTwo)
 
     MatrixExponential exp1(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
     MatrixExponential exp2(MatrixExponential::TRANSLATION, KDL::Vector(1, 0, 0));
-    PardosGotorTwo pg2(0, 1, exp1, exp2, p);
+    PardosGotorTwo pg2(exp1, exp2, p);
 
     ASSERT_EQ(pg2.solutions(), 1);
 
@@ -734,13 +683,7 @@ TEST_F(ScrewTheoryTest, PardosTwo)
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 2);
 
-    ScrewTheoryIkSubproblem::Solutions expected(1);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sols(2);
-
-    sols[0] = {0, k.y() - p.y()};
-    sols[1] = {1, k.x() - p.x()};
-
-    expected[0] = sols;
+    ScrewTheoryIkSubproblem::Solutions expected = {{k.y() - p.y(), k.x() - p.x()}};
 
     checkSolutions(actual, expected);
 }
@@ -752,7 +695,7 @@ TEST_F(ScrewTheoryTest, PardosThree)
     KDL::Vector delta(0, 1, 0);
 
     MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
-    PardosGotorThree pg3(0, exp, p, k);
+    PardosGotorThree pg3(exp, p, k);
 
     ASSERT_EQ(pg3.solutions(), 2);
 
@@ -764,27 +707,20 @@ TEST_F(ScrewTheoryTest, PardosThree)
     ASSERT_EQ(actual[0].size(), 1);
     ASSERT_EQ(actual[1].size(), 1);
 
-    ScrewTheoryIkSubproblem::Solutions expected(2);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sol1(1), sol2(1);
-
-    sol1[0] = {0, k.y() - p.y() - delta.y()};
-    sol2[0] = {0, k.y() - p.y() + delta.y()};
-
-    expected[0] = sol1;
-    expected[1] = sol2;
+    ScrewTheoryIkSubproblem::Solutions expected = {
+        {k.y() - p.y() + delta.y()},
+        {k.y() - p.y() - delta.y()}
+    };
 
     checkSolutions(actual, expected);
 
     KDL::Vector k2 = k + KDL::Vector(2, 0, 0);
-    PardosGotorThree pg3b(0, exp, p, k2);
+    PardosGotorThree pg3b(exp, p, k2);
     KDL::Frame rhs2(delta - (p - k2));
 
     ASSERT_FALSE(pg3b.solve(rhs2, KDL::Frame::Identity(), actual));
 
-    sol1[0] = sol2[0] = {0, 2};
-
-    expected[0] = sol1;
-    expected[1] = sol2;
+    expected = {{2.0}, {2.0}};
 
     checkSolutions(actual, expected);
 }
@@ -796,7 +732,7 @@ TEST_F(ScrewTheoryTest, PardosFour)
 
     MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(2, 0, 0));
     MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
-    PardosGotorFour pg4(0, 1, exp1, exp2, p);
+    PardosGotorFour pg4(exp1, exp2, p);
 
     ASSERT_EQ(pg4.solutions(), 2);
 
@@ -808,17 +744,10 @@ TEST_F(ScrewTheoryTest, PardosFour)
     ASSERT_EQ(actual[0].size(), 2);
     ASSERT_EQ(actual[1].size(), 2);
 
-    ScrewTheoryIkSubproblem::Solutions expected(2);
-    ScrewTheoryIkSubproblem::JointIdsToSolutions sols1(2), sols2(2);
-
-    sols1[0] = {0, KDL::PI / 2};
-    sols1[1] = {1, KDL::PI / 2};
-
-    sols2[0] = {0, KDL::PI};
-    sols2[1] = {1, -KDL::PI / 2};
-
-    expected[0] = sols1;
-    expected[1] = sols2;
+    ScrewTheoryIkSubproblem::Solutions expected = {
+        {KDL::PI / 2, KDL::PI / 2},
+        {KDL::PI, -KDL::PI / 2}
+    };
 
     checkSolutions(actual, expected);
 
@@ -830,15 +759,14 @@ TEST_F(ScrewTheoryTest, PardosFour)
 
     KDL::Vector p3 = p + KDL::Vector(0.75, 0, 0);
     KDL::Vector k3 = k + KDL::Vector(-0.75, 0, -0.75);
-    PardosGotorFour pg4c(0, 1, exp1, exp2, p3);
+    PardosGotorFour pg4c(exp1, exp2, p3);
     KDL::Frame rhs3(k3 - p3);
     ASSERT_FALSE(pg4c.solve(rhs3, KDL::Frame::Identity(), actual));
 
-    sols1[0].second = sols2[0].second = 3 * KDL::PI / 4;
-    sols1[1].second = sols2[1].second = KDL::PI;
-
-    expected[0] = sols1;
-    expected[1] = sols2;
+    expected = {
+        {3 * KDL::PI / 4, KDL::PI},
+        {3 * KDL::PI / 4, KDL::PI}
+    };
 
     checkSolutions(actual, expected);
 }

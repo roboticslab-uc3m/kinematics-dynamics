@@ -26,11 +26,10 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id Zero-based joint id of the product of exponentials (POE) term.
      * @param exp POE term.
      * @param p Characteristic point.
      */
-    PadenKahanOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
+    PadenKahanOne(const MatrixExponential & exp, const KDL::Vector & p);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -41,7 +40,6 @@ public:
     { return "PK1"; }
 
 private:
-    const int id;
     const MatrixExponential exp;
     const KDL::Vector p;
     const KDL::Rotation axisPow;
@@ -62,14 +60,12 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id1 Zero-based joint id of the first product of exponentials (POE) term.
-     * @param id2 Zero-based joint id of the second POE term.
      * @param exp1 First POE term.
      * @param exp2 Second POE term.
      * @param p Characteristic point.
      * @param r Point of intersection between both screw axes.
      */
-    PadenKahanTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p, const KDL::Vector & r);
+    PadenKahanTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p, const KDL::Vector & r);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -80,7 +76,6 @@ public:
     { return "PK2"; }
 
 private:
-    const int id1, id2;
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, r, axesCross;
     const KDL::Rotation axisPow1, axisPow2;
@@ -102,12 +97,11 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id Zero-based joint id of the product of exponentials (POE) term.
      * @param exp POE term.
      * @param p First characteristic point.
      * @param k Second characteristic point.
      */
-    PadenKahanThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+    PadenKahanThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -118,7 +112,6 @@ public:
     { return "PK3"; }
 
 private:
-    const int id;
     const MatrixExponential exp;
     const KDL::Vector p, k;
     const KDL::Rotation axisPow;
@@ -140,11 +133,10 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id Zero-based joint id of the product of exponentials (POE) term.
      * @param exp POE term.
      * @param p Characteristic point.
      */
-    PardosGotorOne(int id, const MatrixExponential & exp, const KDL::Vector & p);
+    PardosGotorOne(const MatrixExponential & exp, const KDL::Vector & p);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -155,7 +147,6 @@ public:
     { return "PG1"; }
 
 private:
-    const int id;
     const MatrixExponential exp;
     const KDL::Vector p;
 };
@@ -176,13 +167,11 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id1 Zero-based joint id of the first product of exponentials (POE) term.
-     * @param id2 Zero-based joint id of the second POE term.
      * @param exp1 First POE term.
      * @param exp2 Second POE term.
      * @param p Characteristic point.
      */
-    PardosGotorTwo(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosGotorTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -193,7 +182,6 @@ public:
     { return "PG2"; }
 
 private:
-    const int id1, id2;
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, crossPr2;
     const double crossPr2Norm;
@@ -215,12 +203,11 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id Zero-based joint id of the product of exponentials (POE) term.
      * @param exp POE term.
      * @param p First characteristic point.
      * @param k Second characteristic point.
      */
-    PardosGotorThree(int id, const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
+    PardosGotorThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -231,7 +218,6 @@ public:
     { return "PG3"; }
 
 private:
-    const int id;
     const MatrixExponential exp;
     const KDL::Vector p, k;
 };
@@ -243,7 +229,7 @@ private:
  *
  * Dual solution, double revolute joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
- * (two consecutive parallel rotation screws applied to a point,
+ * (consecutive parallel rotation screws applied to a point,
  * see @cite pardosgotor2018str @cite pardosgotor2022str).
  */
 class PardosGotorFour : public ScrewTheoryIkSubproblem
@@ -252,13 +238,11 @@ public:
     /**
      * @brief Constructor
      *
-     * @param id1 Zero-based joint id of the first product of exponentials (POE) term.
-     * @param id2 Zero-based joint id of the second POE term.
      * @param exp1 First POE term.
      * @param exp2 Second POE term.
      * @param p Characteristic point.
      */
-    PardosGotorFour(int id1, int id2, const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+    PardosGotorFour(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
     bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
 
@@ -269,7 +253,6 @@ public:
     { return "PG4"; }
 
 private:
-    const int id1, id2;
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, n;
     const KDL::Rotation axisPow;

@@ -18,9 +18,9 @@ namespace
 
     struct solution_accumulator
     {
-        inline int operator()(int count, const ScrewTheoryIkSubproblem * subproblem)
+        inline int operator()(int count, const ScrewTheoryIkProblem::JointIdsToSubproblem & idToSubproblem)
         {
-            return count * subproblem->solutions();
+            return count * idToSubproblem.second->solutions();
         }
     }
     solutionAccumulator;
@@ -46,7 +46,7 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 {
     for (auto & step : steps)
     {
-        delete step;
+        delete step.second;
     }
 }
 
@@ -72,7 +72,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
 
     ScrewTheoryIkSubproblem::Solutions partialSolutions;
 
-    for (int i = 0; i < steps.size(); i++)
+    for (const auto [ids, subproblem] : steps)
     {
         if (!firstIteration)
         {
@@ -84,14 +84,14 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
         // on demand for improved efficiency (instead of allocating everything from the start).
         int previousSize = solutions.size();
 
-        for (int j = 0; j < previousSize; j++)
+        for (int i = 0; i < previousSize; i++)
         {
             // Apply known frames to the first characteristic point for each subproblem.
-            const KDL::Frame & H = transformPoint(solutions[j], poeTerms);
+            const KDL::Frame & H = transformPoint(solutions[i], poeTerms);
 
             // Actually solve each subproblem, use current right-hand side of PoE to obtain
             // the right-hand side of said subproblem.
-            reachable = reachable & steps[i]->solve(rhsFrames[j], H, partialSolutions);
+            reachable = reachable & subproblem->solve(rhsFrames[i], H, partialSolutions);
 
             // The global number of solutions is increased by this step.
             if (partialSolutions.size() > 1)
@@ -100,25 +100,24 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
                 solutions.resize(previousSize * partialSolutions.size());
                 rhsFrames.resize(previousSize * partialSolutions.size());
 
-                for (int k = 1; k < partialSolutions.size(); k++)
+                for (int j = 1; j < partialSolutions.size(); j++)
                 {
                     // Replicate known solutions, these won't change further on.
-                    solutions[j + previousSize * k] = solutions[j];
+                    solutions[i + previousSize * j] = solutions[i];
 
                     // Replicate right-hand side frames for the next iteration, these might change.
-                    rhsFrames[j + previousSize * k] = rhsFrames[j];
+                    rhsFrames[i + previousSize * j] = rhsFrames[i];
                 }
             }
 
             // For each local solution of this subproblem...
-            for (int k = 0; k < partialSolutions.size(); k++)
+            for (int j = 0; j < partialSolutions.size(); j++)
             {
-                const auto & jointIdsToSolutions = partialSolutions[k];
-
                 // For each joint-id-to-value pair of this local solution...
-                for (int l = 0; l < jointIdsToSolutions.size(); l++)
+                for (int k = 0; k < ids.size(); k++)
                 {
-                    auto [id, theta] = jointIdsToSolutions[l];
+                    auto id = ids[k];
+                    auto theta = partialSolutions[j][k];
 
                     // Preserve mapping of ids (associated to `poe`).
                     poeTerms[id] = EXP_KNOWN;
@@ -130,7 +129,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
                     }
 
                     // Store the final value in the desired index, don't shuffle it after this point.
-                    solutions[j + previousSize * k](id) = theta;
+                    solutions[i + previousSize * j](id) = theta;
                 }
             }
         }
