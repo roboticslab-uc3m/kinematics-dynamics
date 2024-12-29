@@ -10,9 +10,8 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-PadenKahanOne::PadenKahanOne(int _id, const MatrixExponential & _exp, const KDL::Vector & _p)
-    : id(_id),
-      exp(_exp),
+PadenKahanOne::PadenKahanOne(const MatrixExponential & _exp, const KDL::Vector & _p)
+    : exp(_exp),
       p(_p),
       axisPow(vectorPow2(exp.getAxis()))
 {}
@@ -21,9 +20,6 @@ PadenKahanOne::PadenKahanOne(int _id, const MatrixExponential & _exp, const KDL:
 
 bool PadenKahanOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PadenKahanOne::solutions());
-    JointIdsToSolutions jointIdsToSolutions(1);
-
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
 
@@ -37,19 +33,15 @@ bool PadenKahanOne::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransf
     KDL::Vector v_p = v - v_w;
 
     double theta = std::atan2(KDL::dot(exp.getAxis(), u_p * v_p), KDL::dot(u_p, v_p));
-
-    jointIdsToSolutions[0] = {id, normalizeAngle(theta)};
-    solutions[0] = jointIdsToSolutions;
+    solutions = {{normalizeAngle(theta)}};
 
     return KDL::Equal(u_w, v_w) && KDL::Equal(u_p.Norm(), v_p.Norm());
 }
 
 // -----------------------------------------------------------------------------
 
-PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p, const KDL::Vector & _r)
-  : id1(_id1),
-    id2(_id2),
-    exp1(_exp1),
+PadenKahanTwo::PadenKahanTwo(const MatrixExponential & _exp1, const MatrixExponential & _exp2, const KDL::Vector & _p, const KDL::Vector & _r)
+  : exp1(_exp1),
     exp2(_exp2),
     p(_p),
     r(_r),
@@ -63,9 +55,6 @@ PadenKahanTwo::PadenKahanTwo(int _id1, int _id2, const MatrixExponential & _exp1
 
 bool PadenKahanTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PadenKahanTwo::solutions());
-    JointIdsToSolutions jointIdsToSolution1(2), jointIdsToSolution2(2);
-
     KDL::Vector f = pointTransform * p;
     KDL::Vector k = rhs * p;
 
@@ -84,13 +73,9 @@ bool PadenKahanTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransf
 
     KDL::Vector term1 = r + alpha * exp1.getAxis() + beta * exp2.getAxis();
 
-    double gamma2 = (std::pow(u.Norm(), 2) - std::pow(alpha, 2) - std::pow(beta, 2) - 2 * alpha * beta * axesDot) /
-            std::pow(axesCross.Norm(), 2);
+    double gamma2 = (std::pow(u.Norm(), 2) - std::pow(alpha, 2) - std::pow(beta, 2) - 2 * alpha * beta * axesDot) / std::pow(axesCross.Norm(), 2);
 
     bool gamma2_zero = KDL::Equal(gamma2, 0.0);
-
-    jointIdsToSolution1[0].first = jointIdsToSolution2[0].first = id1;
-    jointIdsToSolution1[1].first = jointIdsToSolution2[1].first = id2;
 
     bool ret;
 
@@ -117,11 +102,10 @@ bool PadenKahanTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransf
         double theta1_2 = std::atan2(KDL::dot(exp1.getAxis(), n1_p * v_p), KDL::dot(n1_p, v_p));
         double theta2_2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * n2_p), KDL::dot(u_p, n2_p));
 
-        jointIdsToSolution1[0].second = normalizeAngle(theta1_1);
-        jointIdsToSolution1[1].second = normalizeAngle(theta2_1);
-
-        jointIdsToSolution2[0].second = normalizeAngle(theta1_2);
-        jointIdsToSolution2[1].second = normalizeAngle(theta2_2);
+        solutions = {
+            {normalizeAngle(theta1_1), normalizeAngle(theta2_1)},
+            {normalizeAngle(theta1_2), normalizeAngle(theta2_2)}
+        };
 
         ret = KDL::Equal(m1_p.Norm(), v_p.Norm());
     }
@@ -134,23 +118,24 @@ bool PadenKahanTwo::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransf
         double theta1 = std::atan2(KDL::dot(exp1.getAxis(), n1_p * v_p), KDL::dot(n1_p, v_p));
         double theta2 = std::atan2(KDL::dot(exp2.getAxis(), u_p * n2_p), KDL::dot(u_p, n2_p));
 
-        jointIdsToSolution1[0].second = jointIdsToSolution2[0].second = normalizeAngle(theta1);
-        jointIdsToSolution1[1].second = jointIdsToSolution2[1].second = normalizeAngle(theta2);
+        double normalized1 = normalizeAngle(theta1);
+        double normalized2 = normalizeAngle(theta2);
+
+        solutions = {
+            {normalized1, normalized2},
+            {normalized1, normalized2}
+        };
 
         ret = gamma2_zero && KDL::Equal(n1_p.Norm(), v_p.Norm());
     }
-
-    solutions[0] = jointIdsToSolution1;
-    solutions[1] = jointIdsToSolution2;
 
     return ret;
 }
 
 // -----------------------------------------------------------------------------
 
-PadenKahanThree::PadenKahanThree(int _id, const MatrixExponential & _exp, const KDL::Vector & _p, const KDL::Vector & _k)
-    : id(_id),
-      exp(_exp),
+PadenKahanThree::PadenKahanThree(const MatrixExponential & _exp, const KDL::Vector & _p, const KDL::Vector & _k)
+    : exp(_exp),
       p(_p),
       k(_k),
       axisPow(vectorPow2(exp.getAxis()))
@@ -160,9 +145,6 @@ PadenKahanThree::PadenKahanThree(int _id, const MatrixExponential & _exp, const 
 
 bool PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const
 {
-    solutions.resize(PadenKahanThree::solutions());
-    JointIdsToSolutions jointIdsToSolution1(1), jointIdsToSolution2(1);
-
     KDL::Vector f = pointTransform * p;
     KDL::Vector rhsAsVector = rhs * p - k;
     double delta = rhsAsVector.Norm();
@@ -183,8 +165,6 @@ bool PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTran
     double betaCosAbs = std::abs(betaCos);
     bool beta_zero = KDL::Equal(betaCosAbs, 1.0);
 
-    jointIdsToSolution1[0].first = jointIdsToSolution2[0].first = id;
-
     bool ret;
 
     if (!beta_zero && betaCosAbs < 1.0)
@@ -195,19 +175,15 @@ bool PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTran
         double theta1 = alpha + beta;
         double theta2 = alpha - beta;
 
-        jointIdsToSolution1[0].second = normalizeAngle(theta1);
-        jointIdsToSolution2[0].second = normalizeAngle(theta2);
-
+        solutions = {{normalizeAngle(theta1)}, {normalizeAngle(theta2)}};
         ret = true;
     }
     else
     {
-        jointIdsToSolution1[0].second = jointIdsToSolution2[0].second = normalizeAngle(alpha);
+        double normalized = normalizeAngle(alpha);
+        solutions = {{normalized}, {normalized}};
         ret = beta_zero;
     }
-
-    solutions[0] = jointIdsToSolution1;
-    solutions[1] = jointIdsToSolution2;
 
     return ret;
 }
