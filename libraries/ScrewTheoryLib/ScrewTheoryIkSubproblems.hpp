@@ -229,7 +229,7 @@ private:
  *
  * Dual solution, double revolute joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
- * (two consecutive parallel rotation screws applied to a point,
+ * (consecutive parallel rotation screws applied to a point,
  * see @cite pardosgotor2018str @cite pardosgotor2022str).
  */
 class PardosGotorFour : public ScrewTheoryIkSubproblem
@@ -256,6 +256,43 @@ private:
     const MatrixExponential exp1, exp2;
     const KDL::Vector p, n;
     const KDL::Rotation axisPow;
+};
+
+/**
+ * @ingroup ScrewTheoryLib
+ *
+ * @brief Sixth Pardos-Gotor subproblem
+ *
+ * Dual solution, double revolute joint geometric IK subproblem given by
+ * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
+ * (consecutive skew rotation screws applied to a point,
+ * see @cite pardosgotor2022str).
+ */
+class PardosGotorSix : public ScrewTheoryIkSubproblem
+{
+public:
+    /**
+     * @brief Constructor
+     *
+     * @param exp1 First POE term.
+     * @param exp2 Second POE term.
+     * @param p Characteristic point.
+     */
+    PardosGotorSix(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
+
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+
+    int solutions() const override
+    { return 1; }
+
+    const char * describe() const override
+    { return "PG6"; }
+
+private:
+    const MatrixExponential exp1, exp2;
+    const KDL::Vector p, axesCross;
+    const KDL::Rotation axisPow1, axisPow2;
+    const double axesDot;
 };
 
 } // namespace roboticslab
