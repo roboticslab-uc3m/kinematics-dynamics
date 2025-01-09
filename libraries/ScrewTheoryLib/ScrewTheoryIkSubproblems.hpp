@@ -263,7 +263,7 @@ private:
  *
  * @brief Sixth Pardos-Gotor subproblem
  *
- * Dual solution, double revolute joint geometric IK subproblem given by
+ * Single solution, double revolute joint geometric IK subproblem given by
  * @f$ e\,^{\hat{\xi_1}\,{\theta_1}} \cdot e\,^{\hat{\xi_2}\,{\theta_2}} \cdot p = k @f$
  * (consecutive skew rotation screws applied to a point,
  * see @cite pardosgotor2022str).
