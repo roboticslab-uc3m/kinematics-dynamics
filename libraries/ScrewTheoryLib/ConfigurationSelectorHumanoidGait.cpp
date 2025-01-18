@@ -2,7 +2,7 @@
 
 #include "ConfigurationSelector.hpp"
 
-#include <cmath>
+#include <cmath> // std::abs
 
 #include <kdl/utilities/utility.h>
 
@@ -28,7 +28,7 @@ bool ConfigurationSelectorHumanoidGait::findOptimalConfiguration(const KDL::JntA
 
 bool ConfigurationSelectorHumanoidGait::applyConstraints(const Configuration & config)
 {
-    const KDL::JntArray & q = *config.retrievePose();
+    const auto & q = *config.retrievePose();
 
     if (std::abs(q(0)) > KDL::PI / 2)
     {

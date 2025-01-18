@@ -2,7 +2,7 @@
 
 #include "ConfigurationSelector.hpp"
 
-#include <cmath>
+#include <cmath> // std::abs
 #include <numeric> // std::accumulate
 #include <set>
 #include <utility> // std::pair
@@ -16,7 +16,7 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
         if (configs[lastValid].isValid())
         {
             // keep last valid configuration
-            optimalConfig = configs[lastValid];
+            optimalConfig = &configs[lastValid];
             return true;
         }
         else
@@ -34,7 +34,7 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
     {
         if (configs[i].isValid())
         {
-            std::vector<double> diffs = getDiffs(qGuess, configs[i]);
+            const auto diffs = getDiffs(qGuess, configs[i]);
             double sum = std::accumulate(diffs.begin(), diffs.end(), 0.0);
             displacementPerConfiguration.insert(SumToId(sum, i));
         }
@@ -50,22 +50,20 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
     auto it = displacementPerConfiguration.begin();
 
     lastValid = it->second;
-    optimalConfig = configs[lastValid];
+    optimalConfig = &configs[lastValid];
 
     return true;
 }
 
-std::vector<double> ConfigurationSelectorLeastOverallAngularDisplacement::getDiffs(const KDL::JntArray & qGuess,
-        const Configuration & config)
+std::vector<double> ConfigurationSelectorLeastOverallAngularDisplacement::getDiffs(const KDL::JntArray & qGuess, const Configuration & config)
 {
     std::vector<double> diffs;
     diffs.reserve(qGuess.rows());
 
     for (int i = 0; i < qGuess.rows(); i++)
     {
-        const KDL::JntArray & q = *config.retrievePose();
-        double diff = std::abs(qGuess(i) - q(i));
-        diffs.push_back(diff);
+        const auto & q = *config.retrievePose();
+        diffs.push_back(std::abs(qGuess(i) - q(i)));
     }
 
     return diffs;

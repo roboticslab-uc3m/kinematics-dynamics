@@ -7,6 +7,7 @@
 
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
+#include <kdl/utilities/utility.h>
 
 namespace roboticslab
 {
@@ -59,7 +60,7 @@ public:
      */
     virtual void retrievePose(KDL::JntArray & q) const
     {
-        q = *optimalConfig.retrievePose();
+        q = *optimalConfig->retrievePose();
     }
 
 protected:
@@ -69,18 +70,9 @@ protected:
     class Configuration
     {
     public:
-        //! @brief Constructor
-        Configuration()
-            : q(nullptr),
-              valid(false)
-        {}
-
         //! @brief Initializes joint values.
         void store(const KDL::JntArray * q)
         { this->q = q; }
-
-        //! @brief Checks reachability against provided joint limits.
-        void validate(const KDL::JntArray & qMin, const KDL::JntArray & qMax);
 
         //! @brief Retrieves stored joint values.
         const KDL::JntArray * retrievePose() const
@@ -95,13 +87,36 @@ protected:
         { valid = false; }
 
     private:
-        const KDL::JntArray * q;
-        bool valid;
+        const KDL::JntArray * q {nullptr};
+        bool valid {true};
     };
+
+    /**
+     * @brief Validates a specific robot configuration.
+     *
+     * @param config Configuration to validate.
+     *
+     * @return True/false on valid/invalid.
+     */
+    virtual bool validate(Configuration & config);
+
+    /**
+     * @brief Checks if a joint value is within its limits.
+     *
+     * @param q Joint value.
+     * @param qMin Minimum joint limit.
+     * @param qMax Maximum joint limit.
+     *
+     * @return True/false on within/without limits.
+     */
+    static bool checkJointInLimits(double q, double qMin, double qMax)
+    {
+        return q >= (qMin - KDL::epsilon) && q <= (qMax + KDL::epsilon);
+    }
 
     KDL::JntArray _qMin, _qMax;
 
-    Configuration optimalConfig;
+    Configuration * optimalConfig {nullptr};
 
     std::vector<Configuration> configs;
 };
@@ -128,8 +143,7 @@ public:
      * @param qMax Joint array of maximum joint limits.
      */
     ConfigurationSelectorLeastOverallAngularDisplacement(const KDL::JntArray & qMin, const KDL::JntArray & qMax)
-        : ConfigurationSelector(qMin, qMax),
-          lastValid(INVALID_CONFIG)
+        : ConfigurationSelector(qMin, qMax)
     {}
 
     bool findOptimalConfiguration(const KDL::JntArray & qGuess) override;
@@ -138,7 +152,7 @@ protected:
     //! @brief Obtains vector of differences between current and desired joint values.
     std::vector<double> getDiffs(const KDL::JntArray & qGuess, const Configuration & config);
 
-    int lastValid;
+    int lastValid {INVALID_CONFIG};
 
     static const int INVALID_CONFIG = -1;
 };
