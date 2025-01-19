@@ -13,22 +13,12 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
 {
     if (lastValid != INVALID_CONFIG)
     {
-        if (configs[lastValid].isValid())
-        {
-            // keep last valid configuration
-            optimalConfig = &configs[lastValid];
-            return true;
-        }
-        else
-        {
-            // out of reach, skip looking for another valid configuration
-            return false;
-        }
+        // either keep last valid configuration or skip looking (out of reach)
+        return configs[lastValid].isValid();
     }
 
-    using SumToId = std::pair<double, int>;
-    using SetType = std::set<SumToId>;
-    SetType displacementPerConfiguration; // best for all revolute/prismatic joints
+    // best for all revolute/prismatic joints
+    std::set<std::pair<double, int>> displacementPerConfiguration;
 
     for (int i = 0; i < configs.size(); i++)
     {
@@ -36,7 +26,7 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
         {
             const auto diffs = getDiffs(qGuess, configs[i]);
             double sum = std::accumulate(diffs.begin(), diffs.end(), 0.0);
-            displacementPerConfiguration.insert(SumToId(sum, i));
+            displacementPerConfiguration.emplace(sum, i);
         }
     }
 
@@ -48,9 +38,7 @@ bool ConfigurationSelectorLeastOverallAngularDisplacement::findOptimalConfigurat
 
     // std::map keys are sorted, pick std::pair with lowest key (angle sum)
     auto it = displacementPerConfiguration.begin();
-
     lastValid = it->second;
-    optimalConfig = &configs[lastValid];
 
     return true;
 }

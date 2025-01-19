@@ -60,8 +60,18 @@ public:
      */
     virtual void retrievePose(KDL::JntArray & q) const
     {
-        q = *optimalConfig->retrievePose();
+        q = *configs[lastValid].retrievePose();
     }
+
+    /**
+     * @brief Retrieves the index of the last valid solution.
+     *
+     * @return Index of the last valid solution.
+     */
+    int getValidSolutionIndex() const
+    { return lastValid; }
+
+    static constexpr int INVALID_CONFIG = -1;
 
 protected:
     /**
@@ -70,11 +80,11 @@ protected:
     class Configuration
     {
     public:
-        //! @brief Initializes joint values.
+        //! @brief Initialize joint values.
         void store(const KDL::JntArray * q)
         { this->q = q; }
 
-        //! @brief Retrieves stored joint values.
+        //! @brief Retrieve stored joint values.
         const KDL::JntArray * retrievePose() const
         { return q; }
 
@@ -116,9 +126,8 @@ protected:
 
     KDL::JntArray _qMin, _qMax;
 
-    Configuration * optimalConfig {nullptr};
-
     std::vector<Configuration> configs;
+    int lastValid {INVALID_CONFIG};
 };
 
 /**
@@ -151,10 +160,6 @@ public:
 protected:
     //! @brief Obtains vector of differences between current and desired joint values.
     std::vector<double> getDiffs(const KDL::JntArray & qGuess, const Configuration & config);
-
-    int lastValid {INVALID_CONFIG};
-
-    static const int INVALID_CONFIG = -1;
 };
 
 /**
