@@ -90,7 +90,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
     {
     case orientation_system::AXIS_ANGLE:
     {
-        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(x_in[0 + off], x_in[1 + off], x_in[2 + off]), degToRadHelper(angle, x_in[3 + off]));
+        KDL::Rotation rot = KDL::Rotation::Rot({x_in[0 + off], x_in[1 + off], x_in[2 + off]}, degToRadHelper(angle, x_in[3 + off]));
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
         x_out[4] = axis.y();
@@ -140,7 +140,7 @@ bool encodePose(const std::vector<double> & x_in, std::vector<double> & x_out,
     }
     case orientation_system::POLAR_AZIMUTH:
     {
-        KDL::Rotation rot = KDL::Rotation::Rot2(KDL::Vector(-std::sin(degToRadHelper(angle, x_in[1 + off])), std::cos(degToRadHelper(angle, x_in[1 + off])), 0.0), degToRadHelper(angle, x_in[0 + off]));
+        KDL::Rotation rot = KDL::Rotation::Rot2({-std::sin(degToRadHelper(angle, x_in[1 + off])), std::cos(degToRadHelper(angle, x_in[1 + off])), 0.0}, degToRadHelper(angle, x_in[0 + off]));
         KDL::Vector axis = rot.GetRot();
         x_out[3] = axis.x();
         x_out[4] = axis.y();
@@ -321,7 +321,7 @@ bool encodeVelocity(const std::vector<double> & x_in, const std::vector<double> 
     {
     case orientation_system::AXIS_ANGLE:
     {
-        KDL::Rotation rot = KDL::Rotation::Rot(KDL::Vector(xdot_in[0 + off], xdot_in[1 + off], xdot_in[2 + off]), degToRadHelper(angle, xdot_in[3 + off]));
+        KDL::Rotation rot = KDL::Rotation::Rot({xdot_in[0 + off], xdot_in[1 + off], xdot_in[2 + off]}, degToRadHelper(angle, xdot_in[3 + off]));
         KDL::Vector axis = rot.GetRot();
         xdot_out[3] = axis.x();
         xdot_out[4] = axis.y();

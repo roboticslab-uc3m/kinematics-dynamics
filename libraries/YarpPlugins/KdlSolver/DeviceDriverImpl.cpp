@@ -254,7 +254,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             std::string linkTypes = "joint type (Rot[XYZ]|InvRot[XYZ]|Trans[XYZ]|InvTrans[XYZ]), e.g. 'RotZ'";
             std::string linkType = bXyzLink.check("Type", yarp::os::Value("NULL"), linkTypes.c_str()).asString();
 
-            KDL::Frame H(KDL::Vector(linkX, linkY, linkZ));
+            KDL::Frame H({linkX, linkY, linkZ});
 
             if (linkType == "RotX") {
                 chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotX), H));

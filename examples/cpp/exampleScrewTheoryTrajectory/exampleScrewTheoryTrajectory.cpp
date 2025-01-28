@@ -60,10 +60,10 @@ make -j$(nproc)
 
 #include "TrajectoryThread.hpp"
 
-#define DEFAULT_REMOTE_PORT "/teoSim/leftArm"
-#define DEFAULT_TRAJ_DURATION 10.0
-#define DEFAULT_TRAJ_MAX_VEL 0.05
-#define DEFAULT_PERIOD_MS 50.0
+constexpr auto DEFAULT_REMOTE_PORT = "/teoSim/leftArm";
+constexpr auto DEFAULT_TRAJ_DURATION = 10.0;
+constexpr auto DEFAULT_TRAJ_MAX_VEL = 0.05;
+constexpr auto DEFAULT_PERIOD_MS = 50.0;
 
 namespace rl = roboticslab;
 
@@ -71,17 +71,17 @@ namespace
 {
     rl::PoeExpression makeTeoLeftArmKinematics()
     {
-        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), KDL::Vector(0, 0.34692, 0.1932 + 0.305));
-        KDL::Frame H_0_T(KDL::Vector(-0.63401, 0, 0));
+        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), {0, 0.34692, 0.1932 + 0.305});
+        KDL::Frame H_0_T({-0.63401, 0, 0});
 
         rl::PoeExpression poe(H_0_T);
 
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.54401, 0, 0)));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 0, 1}, KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 1, 0}, KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {1, 0, 0}, KDL::Vector::Zero()));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 0, 1}, {-0.32901, 0, 0}));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {1, 0, 0}, {-0.32901, 0, 0}));
+        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 0, 1}, {-0.54401, 0, 0}));
 
         poe.changeBaseFrame(H_S_0);
 
@@ -107,10 +107,11 @@ int main(int argc, char *argv[])
     double trajMaxVel = rf.check("trajMaxVel", yarp::os::Value(DEFAULT_TRAJ_MAX_VEL), "trajectory max velocity (m/s)").asFloat64();
     int periodMs = rf.check("periodMs", yarp::os::Value(DEFAULT_PERIOD_MS), "command send period (ms)").asInt32();
 
-    yarp::os::Property jointDeviceOptions;
-    jointDeviceOptions.put("device", "remote_controlboard");
-    jointDeviceOptions.put("remote", remote);
-    jointDeviceOptions.put("local", "/screwTheoryTrajectoryExample" + remote);
+    yarp::os::Property jointDeviceOptions {
+        {"device", yarp::os::Value("remote_controlboard")},
+        {"remote", yarp::os::Value(remote)},
+        {"local", yarp::os::Value("/screwTheoryTrajectoryExample" + remote)}
+    };
 
     yarp::dev::PolyDriver jointDevice(jointDeviceOptions);
 
@@ -191,7 +192,7 @@ int main(int argc, char *argv[])
     std::unique_ptr<rl::ConfigurationSelector> ikConfig(confFactory.create());
 
     KDL::Frame H_base_end = H_base_start;
-    H_base_end.p += KDL::Vector(0.15, 0.1, 0.1);
+    H_base_end.p += {0.15, 0.1, 0.1};
 
     KDL::RotationalInterpolation_SingleAxis interp;
     KDL::Path_Line path(H_base_start, H_base_end, &interp, 0.1, false);

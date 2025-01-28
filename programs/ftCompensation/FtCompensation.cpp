@@ -336,8 +336,8 @@ bool FtCompensation::readSensor(KDL::Wrench & wrench) const
     }
 
     KDL::Wrench currentWrench_sensor;
-    currentWrench_sensor.force = KDL::Vector(outSensor[0], outSensor[1], outSensor[2]);
-    currentWrench_sensor.torque = KDL::Vector(outSensor[3], outSensor[4], outSensor[5]);
+    currentWrench_sensor.force = {outSensor[0], outSensor[1], outSensor[2]};
+    currentWrench_sensor.torque = {outSensor[3], outSensor[4], outSensor[5]};
 
     wrench = R_N_sensor * currentWrench_sensor;
     return true;

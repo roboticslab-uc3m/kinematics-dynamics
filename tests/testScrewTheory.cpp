@@ -58,15 +58,15 @@ public:
 
     static PoeExpression makeTeoRightArmKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Vector(-0.63401, 0, 0));
+        KDL::Frame H_S_T({-0.63401, 0, 0});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(-0.32901, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(-0.54401, 0, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 0, 1}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 1, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1, 0, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 0, 1}, {-0.32901, 0, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1, 0, 0}, {-0.32901, 0, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 0, 1}, {-0.54401, 0, 0}));
 
         return poe;
     }
@@ -88,15 +88,15 @@ public:
 
     static PoeExpression makeTeoRightLegKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.0175, 0, -0.753005));
+        KDL::Frame H_S_T(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), {0.0175, 0, -0.753005});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(     0, 0, -0.33)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.0175, 0, -0.63)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.0175, 0, -0.63)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  0, 1}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, -1, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1,  0, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1,  0, 0}, {     0, 0, -0.33}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1,  0, 0}, {0.0175, 0, -0.63}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, -1, 0}, {0.0175, 0, -0.63}));
 
         return poe;
     }
@@ -122,15 +122,15 @@ public:
 
     static PoeExpression makeAbbIrb120KinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI / 2), KDL::Vector(0.302, 0.47, 0));
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI / 2), {0.302, 0.47, 0});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(    0, 0.29, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(    0, 0.56, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(0.302, 0.63, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(0.302, 0.63, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.302, 0.63, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  1, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  0, 1}, {    0, 0.29, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  0, 1}, {    0, 0.56, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1,  0, 0}, {0.302, 0.63, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  0, 1}, {0.302, 0.63, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, -1, 0}, {0.302, 0.63, 0}));
 
         return poe;
     }
@@ -156,15 +156,15 @@ public:
 
     static PoeExpression makePumaKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Vector(0, 5, 1));
+        KDL::Frame H_S_T({0, 5, 1});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 2, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 3, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(0, 3, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 5, 0)));
-        poe.append(MatrixExponential(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(0, 5, 0)));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 1, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1, 0, 0}, {0, 2, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1, 0, 0}, {0, 3, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 1, 0}, {0, 3, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {1, 0, 0}, {0, 5, 0}));
+        poe.append(MatrixExponential(MatrixExponential::ROTATION, {0, 0, 1}, {0, 5, 0}));
 
         return poe;
     }
@@ -192,15 +192,15 @@ public:
 
     static PoeExpression makeStanfordKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Vector(0, 5, 1));
+        KDL::Frame H_S_T({0, 5, 1});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 2, 0)));
-        poe.append(MatrixExponential(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(0, 2, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(0, 5, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(0, 5, 0)));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0, 1, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {1, 0, 0}, {0, 2, 0}));
+        poe.append(MatrixExponential(MatrixExponential::TRANSLATION, {0, 1, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0, 1, 0}, {0, 2, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {1, 0, 0}, {0, 5, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0, 0, 1}, {0, 5, 0}));
 
         return poe;
     }
@@ -224,13 +224,13 @@ public:
 
     static PoeExpression makeAbbIrb910scKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0.65, 0.125, 0));
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2), {0.65, 0.125, 0});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  1, 0), KDL::Vector::Zero()));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  1, 0), KDL::Vector(0.4, 0, 0)));
-        poe.append(MatrixExponential(MatrixExponential::TRANSLATION, KDL::Vector(0, -1, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(0.65, 0, 0)));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0,  1, 0}, KDL::Vector::Zero()));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0,  1, 0}, {0.4, 0, 0}));
+        poe.append(MatrixExponential(MatrixExponential::TRANSLATION, {0, -1, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0, -1, 0}, {0.65, 0, 0}));
 
         return poe;
     }
@@ -242,7 +242,7 @@ public:
 
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Vector(1.088, 2.5, 0))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame({1.088, 2.5, 0})));
 
         chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH( 0.38,            0,     0,           0)));
         chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0.975,            0,     0,           0)));
@@ -258,15 +258,15 @@ public:
 
     static PoeExpression makeAbbIrb6620lxFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotY(KDL::PI / 2), KDL::Vector(3, 1.613, 0));
+        KDL::Frame H_S_T(KDL::Rotation::RotY(KDL::PI / 2), {3, 1.613, 0});
         PoeExpression poe(H_S_T);
 
-        poe.append(MatrixExponential(MatrixExponential::TRANSLATION, KDL::Vector(0,  0, 1)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(1.468,   2.5, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(2.443,   2.5, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0, -1, 0), KDL::Vector(2.643, 1.613, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(0,  0, 1), KDL::Vector(2.643, 1.613, 0)));
-        poe.append(MatrixExponential(   MatrixExponential::ROTATION, KDL::Vector(1,  0, 0), KDL::Vector(2.643, 1.613, 0)));
+        poe.append(MatrixExponential(MatrixExponential::TRANSLATION, {0,  0, 1}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0,  0, 1}, {1.468,   2.5, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0,  0, 1}, {2.443,   2.5, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0, -1, 0}, {2.643, 1.613, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0,  0, 1}, {2.643, 1.613, 0}));
+        poe.append(MatrixExponential(   MatrixExponential::ROTATION, {1,  0, 0}, {2.643, 1.613, 0}));
 
         return poe;
     }
@@ -359,7 +359,7 @@ TEST_F(ScrewTheoryTest, MatrixExponentialInit)
     ASSERT_EQ(exp.getAxis(), axis);
     ASSERT_EQ(exp.getOrigin(), origin);
 
-    KDL::Frame H_new_old(KDL::Rotation::RotZ(KDL::PI / 2), KDL::Vector(-1, 0, 0));
+    KDL::Frame H_new_old(KDL::Rotation::RotZ(KDL::PI / 2), {-1, 0, 0});
     MatrixExponential newExp = exp.cloneWithBase(H_new_old);
 
     ASSERT_EQ(newExp.getMotionType(), exp.getMotionType());
@@ -376,10 +376,10 @@ TEST_F(ScrewTheoryTest, MatrixExponentialInit)
 TEST_F(ScrewTheoryTest, MatrixExponentialRotation)
 {
     double theta = KDL::PI / 2;
-    MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 0, 1), KDL::Vector(1, 0, 0));
+    MatrixExponential exp(MatrixExponential::ROTATION, {0, 0, 1}, {1, 0, 0});
 
     KDL::Frame actual = exp.asFrame(theta);
-    KDL::Frame expected(KDL::Rotation::RotZ(theta), KDL::Vector(1, -1, 0));
+    KDL::Frame expected(KDL::Rotation::RotZ(theta), {1, -1, 0});
     ASSERT_EQ(actual, expected);
 }
 
@@ -402,37 +402,37 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsInit)
     ASSERT_EQ(poe.size(), 0);
     ASSERT_EQ(poe.getTransform(), KDL::Frame::Identity());
 
-    MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), KDL::Vector(1, 1, 1));
+    MatrixExponential exp(MatrixExponential::ROTATION, {1, 0, 0}, {1, 1, 1});
     poe.append(exp);
 
     ASSERT_EQ(poe.size(), 1);
 
-    poe.changeBaseFrame(KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), KDL::Vector(-1, 0, 0)));
-    poe.changeToolFrame(KDL::Frame(KDL::Vector(0, 0, 1)));
+    poe.changeBaseFrame(KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), {-1, 0, 0}));
+    poe.changeToolFrame(KDL::Frame({0, 0, 1}));
 
-    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), KDL::Vector(-1, 0, 1)));
+    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), {-1, 0, 1}));
 
     KDL::Frame H;
     KDL::JntArray q(1);
     q(0) = KDL::PI / 2;
 
     ASSERT_TRUE(poe.evaluate(q, H));
-    ASSERT_EQ(H, KDL::Frame(KDL::Rotation(KDL::Rotation::RotZ(KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2)), KDL::Vector(-2, 0, 0)));
+    ASSERT_EQ(H, KDL::Frame(KDL::Rotation(KDL::Rotation::RotZ(KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2)), {-2, 0, 0}));
 
-    PoeExpression poe2(KDL::Frame(KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(0, 1, 0)));
-    MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
+    PoeExpression poe2(KDL::Frame(KDL::Rotation::RotX(KDL::PI / 2), {0, 1, 0}));
+    MatrixExponential exp2(MatrixExponential::ROTATION, {0, 1, 0}, {1, 0, 0});
 
     poe2.append(exp2);
-    poe.append(poe2, KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), KDL::Vector(0, 0, 1)));
+    poe.append(poe2, KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), {0, 0, 1}));
 
     ASSERT_EQ(poe.size(), 2);
-    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), KDL::Vector(-1, 0, 1)));
+    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), {-1, 0, 1}));
 
     q.resize(2);
     q(1) = -KDL::PI / 2;
 
     ASSERT_TRUE(poe.evaluate(q, H));
-    ASSERT_EQ(H, KDL::Frame(KDL::Rotation::RotX(KDL::PI), KDL::Vector(-3, 1, 0)));
+    ASSERT_EQ(H, KDL::Frame(KDL::Rotation::RotX(KDL::PI), {-3, 1, 0}));
 }
 
 TEST_F(ScrewTheoryTest, ProductOfExponentialsFromChain)
@@ -528,7 +528,7 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     KDL::Vector p(0, 1, 0);
     KDL::Vector k(1, 1, 1);
 
-    MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
+    MatrixExponential exp(MatrixExponential::ROTATION, {0, 1, 0}, {1, 0, 0});
     PadenKahanOne pk1(exp, p);
 
     ASSERT_EQ(pk1.solutions(), 1);
@@ -563,8 +563,8 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     KDL::Vector k(1, -1, 1);
     KDL::Vector r(1, 0, 0);
 
-    MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(1, 0, 0), r);
-    MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), r);
+    MatrixExponential exp1(MatrixExponential::ROTATION, {1, 0, 0}, r);
+    MatrixExponential exp2(MatrixExponential::ROTATION, {0, 1, 0}, r);
     PadenKahanTwo pk2(exp1, exp2, p, r);
 
     ASSERT_EQ(pk2.solutions(), 2);
@@ -609,7 +609,7 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     KDL::Vector k(2, 1, 1);
     KDL::Vector delta(-1, 0, 0);
 
-    MatrixExponential exp(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
+    MatrixExponential exp(MatrixExponential::ROTATION, {0, 1, 0}, {1, 0, 0});
     PadenKahanThree pk3(exp, p, k);
 
     ASSERT_EQ(pk3.solutions(), 2);
@@ -648,7 +648,7 @@ TEST_F(ScrewTheoryTest, PardosOne)
     KDL::Vector p(1, 0, 0);
     KDL::Vector k(1, 1, 0);
 
-    MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
+    MatrixExponential exp(MatrixExponential::TRANSLATION, {0, 1, 0});
     PardosGotorOne pg1(exp, p);
 
     ASSERT_EQ(pg1.solutions(), 1);
@@ -670,8 +670,8 @@ TEST_F(ScrewTheoryTest, PardosTwo)
     KDL::Vector p(1, 1, 0);
     KDL::Vector k(2, 3, 0);
 
-    MatrixExponential exp1(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
-    MatrixExponential exp2(MatrixExponential::TRANSLATION, KDL::Vector(1, 0, 0));
+    MatrixExponential exp1(MatrixExponential::TRANSLATION, {0, 1, 0});
+    MatrixExponential exp2(MatrixExponential::TRANSLATION, {1, 0, 0});
     PardosGotorTwo pg2(exp1, exp2, p);
 
     ASSERT_EQ(pg2.solutions(), 1);
@@ -694,7 +694,7 @@ TEST_F(ScrewTheoryTest, PardosThree)
     KDL::Vector k(1, 2, 0);
     KDL::Vector delta(0, 1, 0);
 
-    MatrixExponential exp(MatrixExponential::TRANSLATION, KDL::Vector(0, 1, 0));
+    MatrixExponential exp(MatrixExponential::TRANSLATION, {0, 1, 0});
     PardosGotorThree pg3(exp, p, k);
 
     ASSERT_EQ(pg3.solutions(), 2);
@@ -730,8 +730,8 @@ TEST_F(ScrewTheoryTest, PardosFour)
     KDL::Vector p(0, 1, 0);
     KDL::Vector k(3, 1, 1);
 
-    MatrixExponential exp1(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(2, 0, 0));
-    MatrixExponential exp2(MatrixExponential::ROTATION, KDL::Vector(0, 1, 0), KDL::Vector(1, 0, 0));
+    MatrixExponential exp1(MatrixExponential::ROTATION, {0, 1, 0}, {2, 0, 0});
+    MatrixExponential exp2(MatrixExponential::ROTATION, {0, 1, 0}, {1, 0, 0});
     PardosGotorFour pg4(exp1, exp2, p);
 
     ASSERT_EQ(pg4.solutions(), 2);
@@ -862,7 +862,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
 
     ASSERT_NE(n1, -1);
 
-    H.p += KDL::Vector(0.01, 0, 0); // add a tiny displacement
+    H.p += {0.01, 0, 0}; // add a tiny displacement
 
     ASSERT_TRUE(ikProblem->solve(H, solutions));
     delete ikProblem;
