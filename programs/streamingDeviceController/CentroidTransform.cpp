@@ -90,7 +90,7 @@ bool CentroidTransform::processStoredBottle() const
 
     // find axis along which to rotate (in TCP frame) given pixel coords
     KDL::Vector coords(cx, cy, 0);
-    KDL::Vector tcp_axis = KDL::Rotation::RotZ(KDL::PI / 2) * coords;
+    KDL::Vector tcp_axis = KDL::Rotation::RotZ(KDL::PI_2) * coords;
     KDL::Vector base_axis = H_base_tcp.M * rot_tcp_camera * tcp_axis;
 
     // rotate towards the target in base frame

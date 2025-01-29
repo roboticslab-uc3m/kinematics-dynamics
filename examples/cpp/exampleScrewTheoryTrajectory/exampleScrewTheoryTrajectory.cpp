@@ -71,7 +71,7 @@ namespace
 {
     rl::PoeExpression makeTeoLeftArmKinematics()
     {
-        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(-KDL::PI / 2), {0, 0.34692, 0.1932 + 0.305});
+        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI_2) * KDL::Rotation::RotX(-KDL::PI_2), {0, 0.34692, 0.1932 + 0.305});
         KDL::Frame H_0_T({-0.63401, 0, 0});
 
         rl::PoeExpression poe(H_0_T);

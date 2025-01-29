@@ -46,12 +46,12 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,        0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,        0, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2, -0.32901, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0,  KDL::PI / 2,        0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI / 2,   -0.215,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.09,            0,        0, -KDL::PI / 2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI_2,        0,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI_2,        0, -KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI_2, -0.32901, -KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0,  KDL::PI_2,        0,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    0, -KDL::PI_2,   -0.215,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.09,          0,        0, -KDL::PI_2)));
 
         return chain;
     }
@@ -76,19 +76,19 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI / 2,      0,           0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI / 2,      0, KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    -0.33,            0,      0,           0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     -0.3,            0, 0.0175,           0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0, -KDL::PI / 2,      0,           0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.123005,            0,      0,           0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI_2,      0,         0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0,  KDL::PI_2,      0, KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(    -0.33,          0,      0,         0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(     -0.3,          0, 0.0175,         0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(        0, -KDL::PI_2,      0,         0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(-0.123005,          0,      0,         0)));
 
         return chain;
     }
 
     static PoeExpression makeTeoRightLegKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotY(-KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), {0.0175, 0, -0.753005});
+        KDL::Frame H_S_T(KDL::Rotation::RotY(-KDL::PI_2) * KDL::Rotation::RotX(KDL::PI_2), {0.0175, 0, -0.753005});
         PoeExpression poe(H_S_T);
 
         poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  0, 1}, KDL::Vector::Zero()));
@@ -106,23 +106,23 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI_2))));
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,  KDL::PI / 2,  0.29,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.27,            0,     0,  KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.07,  KDL::PI / 2,     0,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0, -KDL::PI / 2, 0.302,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,  KDL::PI / 2,     0, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,            0,  0.16,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,  KDL::PI_2,  0.29,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.27,          0,     0,  KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.07,  KDL::PI_2,     0,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0, -KDL::PI_2, 0.302,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,  KDL::PI_2,     0, -KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(   0,          0,  0.16,          0)));
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(KDL::PI_2))));
 
         return chain;
     }
 
     static PoeExpression makeAbbIrb120KinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2) * KDL::Rotation::RotZ(KDL::PI / 2), {0.302, 0.47, 0});
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI_2) * KDL::Rotation::RotZ(KDL::PI_2), {0.302, 0.47, 0});
         PoeExpression poe(H_S_T);
 
         poe.append(MatrixExponential(MatrixExponential::ROTATION, {0,  1, 0}, KDL::Vector::Zero()));
@@ -140,16 +140,16 @@ public:
         const KDL::Joint rotZ(KDL::Joint::RotZ);
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI_2))));
 
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 2,  KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(1,            0, 0,  KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0, -KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 2,            0)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0,  KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,            0, 1,            0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,  KDL::PI_2, 2,  KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(1,          0, 0,  KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0, -KDL::PI_2, 0, -KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,  KDL::PI_2, 2,          0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0, -KDL::PI_2, 0,  KDL::PI_2)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0,          0, 1,          0)));
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI_2))));
 
         return chain;
     }
@@ -176,16 +176,16 @@ public:
 
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI_2))));
 
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 2,  KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0,            0)));
-        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH(0,            0, 0,            0)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,  KDL::PI / 2, 3,            0)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0, -KDL::PI / 2, 0,  KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,            0, 1,            0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,  KDL::PI_2, 2,  KDL::PI_2)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0, -KDL::PI_2, 0,          0)));
+        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH(0,          0, 0,          0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,  KDL::PI_2, 3,          0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0, -KDL::PI_2, 0,  KDL::PI_2)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0,          0, 1,          0)));
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI_2))));
 
         return chain;
     }
@@ -212,7 +212,7 @@ public:
 
         KDL::Chain chain;
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(-KDL::PI_2))));
 
         chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH( 0.4,       0,      0, 0)));
         chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0.25, KDL::PI,      0, 0)));
@@ -224,7 +224,7 @@ public:
 
     static PoeExpression makeAbbIrb910scKinematicsFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI / 2), {0.65, 0.125, 0});
+        KDL::Frame H_S_T(KDL::Rotation::RotX(KDL::PI_2), {0.65, 0.125, 0});
         PoeExpression poe(H_S_T);
 
         poe.append(MatrixExponential(   MatrixExponential::ROTATION, {0,  1, 0}, KDL::Vector::Zero()));
@@ -244,21 +244,21 @@ public:
 
         chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame({1.088, 2.5, 0})));
 
-        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH( 0.38,            0,     0,           0)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0.975,            0,     0,           0)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(  0.2,  KDL::PI / 2,     0,           0)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0, -KDL::PI / 2, 0.887,           0)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0,  KDL::PI / 2,     0, KDL::PI / 2)));
-        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0,            0, 0.357,           0)));
+        chain.addSegment(KDL::Segment(translZ, KDL::Frame::DH( 0.38,          0,     0,         0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(0.975,          0,     0,         0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(  0.2,  KDL::PI_2,     0,         0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0, -KDL::PI_2, 0.887,         0)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0,  KDL::PI_2,     0, KDL::PI_2)));
+        chain.addSegment(KDL::Segment(   rotZ, KDL::Frame::DH(    0,          0, 0.357,         0)));
 
-        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI / 2))));
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(-KDL::PI_2))));
 
         return chain;
     }
 
     static PoeExpression makeAbbIrb6620lxFromPoE()
     {
-        KDL::Frame H_S_T(KDL::Rotation::RotY(KDL::PI / 2), {3, 1.613, 0});
+        KDL::Frame H_S_T(KDL::Rotation::RotY(KDL::PI_2), {3, 1.613, 0});
         PoeExpression poe(H_S_T);
 
         poe.append(MatrixExponential(MatrixExponential::TRANSLATION, {0,  0, 1}));
@@ -297,7 +297,7 @@ public:
         ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0_ST));
         ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
 
-        KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI / 2);
+        KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI_2);
         KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
 
         ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
@@ -359,7 +359,7 @@ TEST_F(ScrewTheoryTest, MatrixExponentialInit)
     ASSERT_EQ(exp.getAxis(), axis);
     ASSERT_EQ(exp.getOrigin(), origin);
 
-    KDL::Frame H_new_old(KDL::Rotation::RotZ(KDL::PI / 2), {-1, 0, 0});
+    KDL::Frame H_new_old(KDL::Rotation::RotZ(KDL::PI_2), {-1, 0, 0});
     MatrixExponential newExp = exp.cloneWithBase(H_new_old);
 
     ASSERT_EQ(newExp.getMotionType(), exp.getMotionType());
@@ -375,7 +375,7 @@ TEST_F(ScrewTheoryTest, MatrixExponentialInit)
 
 TEST_F(ScrewTheoryTest, MatrixExponentialRotation)
 {
-    double theta = KDL::PI / 2;
+    double theta = KDL::PI_2;
     MatrixExponential exp(MatrixExponential::ROTATION, {0, 0, 1}, {1, 0, 0});
 
     KDL::Frame actual = exp.asFrame(theta);
@@ -407,29 +407,29 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsInit)
 
     ASSERT_EQ(poe.size(), 1);
 
-    poe.changeBaseFrame(KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), {-1, 0, 0}));
+    poe.changeBaseFrame(KDL::Frame(KDL::Rotation::RotZ(KDL::PI_2), {-1, 0, 0}));
     poe.changeToolFrame(KDL::Frame({0, 0, 1}));
 
-    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), {-1, 0, 1}));
+    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI_2), {-1, 0, 1}));
 
     KDL::Frame H;
     KDL::JntArray q(1);
-    q(0) = KDL::PI / 2;
+    q(0) = KDL::PI_2;
 
     ASSERT_TRUE(poe.evaluate(q, H));
-    ASSERT_EQ(H, KDL::Frame(KDL::Rotation(KDL::Rotation::RotZ(KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2)), {-2, 0, 0}));
+    ASSERT_EQ(H, KDL::Frame(KDL::Rotation(KDL::Rotation::RotZ(KDL::PI_2) * KDL::Rotation::RotX(KDL::PI_2)), {-2, 0, 0}));
 
-    PoeExpression poe2(KDL::Frame(KDL::Rotation::RotX(KDL::PI / 2), {0, 1, 0}));
+    PoeExpression poe2(KDL::Frame(KDL::Rotation::RotX(KDL::PI_2), {0, 1, 0}));
     MatrixExponential exp2(MatrixExponential::ROTATION, {0, 1, 0}, {1, 0, 0});
 
     poe2.append(exp2);
-    poe.append(poe2, KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2), {0, 0, 1}));
+    poe.append(poe2, KDL::Frame(KDL::Rotation::RotZ(KDL::PI_2), {0, 0, 1}));
 
     ASSERT_EQ(poe.size(), 2);
-    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI / 2) * KDL::Rotation::RotX(KDL::PI / 2), {-1, 0, 1}));
+    ASSERT_EQ(poe.getTransform(), KDL::Frame(KDL::Rotation::RotZ(KDL::PI_2) * KDL::Rotation::RotX(KDL::PI_2), {-1, 0, 1}));
 
     q.resize(2);
-    q(1) = -KDL::PI / 2;
+    q(1) = -KDL::PI_2;
 
     ASSERT_TRUE(poe.evaluate(q, H));
     ASSERT_EQ(H, KDL::Frame(KDL::Rotation::RotX(KDL::PI), {-3, 1, 0}));
@@ -447,7 +447,7 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsFromChain)
     ASSERT_EQ(fkSolver.JntToCart(KDL::JntArray(chain.getNrOfJoints()), H_S_T_0), KDL::SolverI::E_NOERROR);
     ASSERT_EQ(poe.getTransform(), H_S_T_0);
 
-    KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI / 2);;
+    KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI_2);;
     KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
 
     ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
@@ -465,7 +465,7 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsToChain)
     KDL::ChainFkSolverPos_recursive fkSolverDH(chainDH);
     KDL::ChainFkSolverPos_recursive fkSolverST(chainST);
 
-    KDL::JntArray q = fillJointValues(poe.size(), KDL::PI / 2);;
+    KDL::JntArray q = fillJointValues(poe.size(), KDL::PI_2);;
     KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
 
     ASSERT_EQ(fkSolverDH.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
@@ -480,7 +480,7 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsIntegrity)
     KDL::Chain chain = poe.toChain();
     KDL::ChainFkSolverPos_recursive fkSolver(chain);
 
-    KDL::JntArray q = fillJointValues(poe.size(), KDL::PI / 2);;
+    KDL::JntArray q = fillJointValues(poe.size(), KDL::PI_2);;
     KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
 
     ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
@@ -505,12 +505,12 @@ TEST_F(ScrewTheoryTest, ProductOfExponentialsReverse)
     ASSERT_TRUE(poeReversed.evaluate(KDL::JntArray(poeReversed.size()), H_S_T_0_reversed));
     ASSERT_EQ(H_S_T_0_reversed, H_S_T_0.Inverse());
 
-    KDL::JntArray q = fillJointValues(poe.size(), KDL::PI / 2);;
+    KDL::JntArray q = fillJointValues(poe.size(), KDL::PI_2);;
     KDL::Frame H_S_T_q;
 
     ASSERT_TRUE(poe.evaluate(q, H_S_T_q));
 
-    q = fillJointValues(poe.size(), -KDL::PI / 2);
+    q = fillJointValues(poe.size(), -KDL::PI_2);
 
     KDL::Frame H_S_T_q_reversed;
 
@@ -540,7 +540,7 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     ASSERT_EQ(actual.size(), 1);
     ASSERT_EQ(actual[0].size(), 1);
 
-    ScrewTheoryIkSubproblem::Solutions expected = {{KDL::PI / 2}};
+    ScrewTheoryIkSubproblem::Solutions expected = {{KDL::PI_2}};
 
     checkSolutions(actual, expected);
 
@@ -578,8 +578,8 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     ASSERT_EQ(actual[1].size(), 2);
 
     ScrewTheoryIkSubproblem::Solutions expected = {
-        {KDL::PI, -KDL::PI / 2},
-        {KDL::PI / 2, KDL::PI / 2}
+        {KDL::PI, -KDL::PI_2},
+        {KDL::PI_2, KDL::PI_2}
     };
 
     checkSolutions(actual, expected);
@@ -589,8 +589,8 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     ASSERT_FALSE(pk2.solve(rhs2, KDL::Frame::Identity(), actual));
 
     expected = {
-        {3 * KDL::PI / 4, KDL::PI},
-        {3 * KDL::PI / 4, KDL::PI}
+        {3 * KDL::PI_4, KDL::PI},
+        {3 * KDL::PI_4, KDL::PI}
     };
 
     checkSolutions(actual, expected);
@@ -624,7 +624,7 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
 
     ScrewTheoryIkSubproblem::Solutions expected = {
         {KDL::PI},
-        {KDL::PI / 2}
+        {KDL::PI_2}
     };
 
     checkSolutions(actual, expected);
@@ -636,8 +636,8 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     ASSERT_FALSE(pk3b.solve(rhs2, KDL::Frame::Identity(), actual));
 
     expected = {
-        {3 * KDL::PI / 4},
-        {3 * KDL::PI / 4}
+        {3 * KDL::PI_4},
+        {3 * KDL::PI_4}
     };
 
     checkSolutions(actual, expected);
@@ -745,8 +745,8 @@ TEST_F(ScrewTheoryTest, PardosFour)
     ASSERT_EQ(actual[1].size(), 2);
 
     ScrewTheoryIkSubproblem::Solutions expected = {
-        {KDL::PI / 2, KDL::PI / 2},
-        {KDL::PI, -KDL::PI / 2}
+        {KDL::PI_2, KDL::PI_2},
+        {KDL::PI, -KDL::PI_2}
     };
 
     checkSolutions(actual, expected);
@@ -764,8 +764,8 @@ TEST_F(ScrewTheoryTest, PardosFour)
     ASSERT_FALSE(pg4c.solve(rhs3, KDL::Frame::Identity(), actual));
 
     expected = {
-        {3 * KDL::PI / 4, KDL::PI},
-        {3 * KDL::PI / 4, KDL::PI}
+        {3 * KDL::PI_4, KDL::PI},
+        {3 * KDL::PI_4, KDL::PI}
     };
 
     checkSolutions(actual, expected);
@@ -832,7 +832,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     PoeExpression poe = makeTeoRightArmKinematicsFromPoE();
 
     KDL::JntArray q(poe.size());
-    q(3) = KDL::PI / 2; // elbow
+    q(3) = KDL::PI_2; // elbow
 
     KDL::Frame H;
     ASSERT_TRUE(poe.evaluate(q, H));

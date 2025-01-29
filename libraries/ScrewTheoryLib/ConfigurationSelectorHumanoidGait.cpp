@@ -30,17 +30,17 @@ bool ConfigurationSelectorHumanoidGait::applyConstraints(const Configuration & c
 {
     const auto & q = *config.retrievePose();
 
-    if (std::abs(q(0)) > KDL::PI / 2)
+    if (std::abs(q(0)) > KDL::PI_2)
     {
         return false;
     }
 
-    if (std::abs(q(1)) > KDL::PI / 2)
+    if (std::abs(q(1)) > KDL::PI_2)
     {
         return false;
     }
 
-    if (std::abs(q(2)) > KDL::PI / 2)
+    if (std::abs(q(2)) > KDL::PI_2)
     {
         return false;
     }
@@ -50,12 +50,12 @@ bool ConfigurationSelectorHumanoidGait::applyConstraints(const Configuration & c
         return false;
     }
 
-    if (std::abs(q(4)) > KDL::PI / 2)
+    if (std::abs(q(4)) > KDL::PI_2)
     {
         return false;
     }
 
-    if (std::abs(q(5)) > KDL::PI / 2)
+    if (std::abs(q(5)) > KDL::PI_2)
     {
         return false;
     }
