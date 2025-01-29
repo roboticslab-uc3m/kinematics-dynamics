@@ -643,7 +643,7 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
     checkSolutions(actual, expected);
 }
 
-TEST_F(ScrewTheoryTest, PardosOne)
+TEST_F(ScrewTheoryTest, PardosGotorOne)
 {
     KDL::Vector p(1, 0, 0);
     KDL::Vector k(1, 1, 0);
@@ -665,7 +665,7 @@ TEST_F(ScrewTheoryTest, PardosOne)
     checkSolutions(actual, expected);
 }
 
-TEST_F(ScrewTheoryTest, PardosTwo)
+TEST_F(ScrewTheoryTest, PardosGotorTwo)
 {
     KDL::Vector p(1, 1, 0);
     KDL::Vector k(2, 3, 0);
@@ -688,7 +688,7 @@ TEST_F(ScrewTheoryTest, PardosTwo)
     checkSolutions(actual, expected);
 }
 
-TEST_F(ScrewTheoryTest, PardosThree)
+TEST_F(ScrewTheoryTest, PardosGotorThree)
 {
     KDL::Vector p(1, 0, 0);
     KDL::Vector k(1, 2, 0);
@@ -725,7 +725,7 @@ TEST_F(ScrewTheoryTest, PardosThree)
     checkSolutions(actual, expected);
 }
 
-TEST_F(ScrewTheoryTest, PardosFour)
+TEST_F(ScrewTheoryTest, PardosGotorFour)
 {
     KDL::Vector p(0, 1, 0);
     KDL::Vector k(3, 1, 1);
