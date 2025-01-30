@@ -2,10 +2,9 @@
 
 #include <cmath>
 #include <vector>
-#include <algorithm>
+#include <algorithm> // std::fill
 
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
+#include <yarp/os/LogStream.h>
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianControl.h"
@@ -47,8 +46,6 @@ public:
             yError() << "Could not view iCartesianControl in:" << cartesianControlOptions.find("device").asString();
             return;
         }
-
-        yarp::os::Time::delay(1.0);
     }
 
     void TearDown() override
@@ -58,15 +55,15 @@ public:
 
 protected:
     yarp::dev::PolyDriver cartesianControlDevice;
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 };
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
     int state;
-    iCartesianControl->stat(x,&state);
-    ASSERT_EQ(state,VOCAB_CC_NOT_CONTROLLING);
+    iCartesianControl->stat(x, &state);
+    ASSERT_EQ(state, VOCAB_CC_NOT_CONTROLLING);
     ASSERT_NEAR(x[0], 1, 1e-9);
     ASSERT_NEAR(x[1], 0, 1e-9);
     ASSERT_NEAR(x[2], 0, 1e-9);
@@ -74,43 +71,29 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlStat)
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlInv1)
 {
-    std::vector<double> xd(6),q;
-    xd[0] = 1;  // x
-    xd[1] = 0;  // y
-    xd[2] = 0;  // z
-    xd[3] = 0;  // o(x)
-    xd[4] = 0;  // o(y)
-    xd[5] = 0;  // o(z)
-    iCartesianControl->inv(xd,q);
-    ASSERT_EQ(q.size(), 1 );
+    std::vector<double> xd = {1, 0, 0, 0, 0, 0};
+    std::vector<double> q;
+    ASSERT_TRUE(iCartesianControl->inv(xd, q));
+    ASSERT_EQ(q.size(), 1);
     ASSERT_NEAR(q[0], 0, 1e-3);
 }
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlInv2)
 {
-    std::vector<double> xd(6),q;
-    xd[0] = 0;  // x
-    xd[1] = 1;  // y
-    xd[2] = 0;  // z
-    xd[3] = 0;  // o(x)
-    xd[4] = 0;  // o(y)
-    xd[5] = M_PI / 2;  // o(z)
-    iCartesianControl->inv(xd,q);
-    ASSERT_EQ(q.size(), 1 );
+    std::vector<double> xd = {0, 1, 0, 0, 0, M_PI / 2};
+    std::vector<double> q;
+    ASSERT_TRUE(iCartesianControl->inv(xd, q));
+    ASSERT_EQ(q.size(), 1);
     ASSERT_NEAR(q[0], 90, 1e-3);
 }
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
 {
-    std::vector<double> x(6),xToolA,xToolB,xNoTool;
+    std::vector<double> xToolA, xToolB, xNoTool;
+
+    std::vector<double> x = {0, 0, 1, M_PI / 4, 0, 0};
 
     // add tool ('A')
-    x[0] = 0;  // x
-    x[1] = 0;  // y
-    x[2] = 1;  // z
-    x[3] = M_PI / 4;  // o(x)
-    x[4] = 0;  // o(y)
-    x[5] = 0;  // o(z)
     ASSERT_TRUE(iCartesianControl->tool(x));
     ASSERT_TRUE(iCartesianControl->stat(xToolA));
     ASSERT_NEAR(xToolA[0], 1, 1e-9);
@@ -121,9 +104,7 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
     ASSERT_NEAR(xToolA[5], 0, 1e-9);
 
     // change tool ('b')
-    std::fill(x.begin(), x.end(), 0);
-    x[0] = 1;
-    x[4] = M_PI / 4;
+    x = {1, 0, 0, 0, M_PI / 4, 0};
     ASSERT_TRUE(iCartesianControl->tool(x));
     ASSERT_TRUE(iCartesianControl->stat(xToolB));
     ASSERT_NEAR(xToolB[0], 2, 1e-9);
