@@ -42,7 +42,7 @@ int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Fram
 
     std::vector<KDL::JntArray> solutions;
 
-    bool ret = problem->solve(p_in, solutions);
+    bool ret = problem->solve(p_in, q_init, solutions);
 
     if (!config->configure(solutions))
     {

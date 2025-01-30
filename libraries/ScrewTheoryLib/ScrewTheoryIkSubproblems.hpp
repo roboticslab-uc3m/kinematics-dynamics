@@ -23,6 +23,8 @@ namespace roboticslab
 class PadenKahanOne : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -31,7 +33,7 @@ public:
      */
     PadenKahanOne(const MatrixExponential & exp, const KDL::Vector & p);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 1; }
@@ -57,6 +59,8 @@ private:
 class PadenKahanTwo : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -67,7 +71,7 @@ public:
      */
     PadenKahanTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p, const KDL::Vector & r);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 2; }
@@ -94,6 +98,8 @@ private:
 class PadenKahanThree : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -103,7 +109,7 @@ public:
      */
     PadenKahanThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 2; }
@@ -130,6 +136,8 @@ private:
 class PardosGotorOne : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -138,7 +146,7 @@ public:
      */
     PardosGotorOne(const MatrixExponential & exp, const KDL::Vector & p);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 1; }
@@ -164,6 +172,8 @@ private:
 class PardosGotorTwo : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -173,7 +183,7 @@ public:
      */
     PardosGotorTwo(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 1; }
@@ -200,6 +210,8 @@ private:
 class PardosGotorThree : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -209,7 +221,7 @@ public:
      */
     PardosGotorThree(const MatrixExponential & exp, const KDL::Vector & p, const KDL::Vector & k);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 2; }
@@ -235,6 +247,8 @@ private:
 class PardosGotorFour : public ScrewTheoryIkSubproblem
 {
 public:
+    using ScrewTheoryIkSubproblem::solve;
+
     /**
      * @brief Constructor
      *
@@ -244,7 +258,7 @@ public:
      */
     PardosGotorFour(const MatrixExponential & exp1, const MatrixExponential & exp2, const KDL::Vector & p);
 
-    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, Solutions & solutions) const override;
+    bool solve(const KDL::Frame & rhs, const KDL::Frame & pointTransform, const JointConfig & reference, Solutions & solutions) const override;
 
     int solutions() const override
     { return 2; }
