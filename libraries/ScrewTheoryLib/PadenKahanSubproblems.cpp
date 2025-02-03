@@ -163,11 +163,11 @@ bool PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTran
 
     double betaCos = (std::pow(u_p_norm, 2) + std::pow(v_p_norm, 2) - delta_p_2) / (2 * u_p_norm * v_p_norm);
     double betaCosAbs = std::abs(betaCos);
-    bool beta_zero = KDL::Equal(betaCosAbs, 1.0);
+    bool beta_zero_or_pi = KDL::Equal(betaCosAbs, 1.0);
 
     bool ret;
 
-    if (!beta_zero && betaCosAbs < 1.0)
+    if (!beta_zero_or_pi && betaCosAbs < 1.0)
     {
         double betaCosCapped = std::max(-1.0, std::min(1.0, betaCos));
         double beta = std::acos(betaCosCapped);
@@ -180,9 +180,14 @@ bool PadenKahanThree::solve(const KDL::Frame & rhs, const KDL::Frame & pointTran
     }
     else
     {
+        if (KDL::Equal(betaCos, -1.0))
+        {
+            alpha += KDL::PI;
+        }
+
         double normalized = normalizeAngle(alpha);
         solutions = {{normalized}, {normalized}};
-        ret = beta_zero;
+        ret = beta_zero_or_pi;
     }
 
     return ret;
