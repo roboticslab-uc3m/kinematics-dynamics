@@ -26,6 +26,7 @@ public:
 
         yarp::os::Bottle opts;
         opts.add(Value::makeList("device KdlSolver"));
+        opts.add(Value::makeList("ikPos st"));
         opts.add(Value::makeList("gravity (0.0 -10.0 0.0)")); // note gravity is applied on the Y axis
         opts.add(Value::makeList("numLinks 2"));
         // the CoG is referred to the segment's tip frame: https://github.com/orocos/orocos_kinematics_dynamics/issues/170
@@ -99,7 +100,7 @@ TEST_F(KdlSolverTest, InvKin1)
     std::vector<double> q;
     ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
     ASSERT_EQ(q.size(), 2);
-    ASSERT_NEAR(q[0], 90.0, eps);
+    ASSERT_NEAR(q[0], 0.0, eps);
     ASSERT_NEAR(q[1], 0.0, eps);
 }
 
