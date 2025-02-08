@@ -1,5 +1,6 @@
-FROM ubuntu:bionic
+FROM ubuntu:xenial
 # https://askubuntu.com/questions/1235271/pygtk-not-available-on-focal-fossa-20-04
+# bionic: reduce() of empty sequence with no initial value
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
@@ -11,8 +12,9 @@ ARG DEBIAN_FRONTEND="noninteractive"
 #sed -i "s/raw.githubusercontent.com\/eigenteam\/eigen-git-mirror/gitlab.com\/libeigen\/eigen/g" 3rdparty/eigen3.cmake
 #sed -i "s/github.com\/eigenteam\/eigen-git-mirror/gitlab.com\/libeigen\/eigen/g" 3rdparty/eigen3.cmake
 ARG YCM="0.10.4"
-
-ARG YARP="3.2.1"
+#ARG YARP="3.2.2" -> cmake 3.11 (not cmake 3.10)
+#ARG YARP="3.2.1" -> rosmsg errors in xenial
+ARG YARP="3.2.0"
 
 # Pybind11 "stable" atow forces python3
 ##ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
@@ -38,7 +40,7 @@ RUN apt update \
     && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
     && tar -xzf v$YARP.tar.gz \
     && mkdir yarp-$YARP/build && cd yarp-$YARP/build \
-    && cmake .. -DSKIP_ACE=ON \
+    && cmake .. -DSKIP_ACE=ON -DYARP_COMPILE_libYARP_math=OFF -DENABLE_yarpcar_rossrv=OFF -DENABLE_yarpcar_tcpros=OFF -DENABLE_yarpcar_xmlrpc=OFF \
         -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python2.7/dist-packages \
     && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
     \
