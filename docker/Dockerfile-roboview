@@ -1,20 +1,13 @@
-FROM ubuntu:xenial
+FROM ubuntu:trusty
 # https://askubuntu.com/questions/1235271/pygtk-not-available-on-focal-fossa-20-04
 # bionic: reduce() of empty sequence with no initial value
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
-# eigen expected hash: [5ad2b8e1ddbd9f0468b21e9d5343d05eda6b9dd1]
-# eigen actual hash: [da39a3ee5e6b4b0d3255bfef95601890afd80709]
-#ARG YCM="0.11.1" -> cmake 3.12 (not cmake 3.10)
-#cd ycm-cmake-modules-0.11.1
-#sed -i "s/5ad2b8e1ddbd9f0468b21e9d5343d05eda6b9dd1/a12b8a8c75ebef312509da643424951725519348/g" 3rdparty/eigen3.cmake
-#sed -i "s/raw.githubusercontent.com\/eigenteam\/eigen-git-mirror/gitlab.com\/libeigen\/eigen/g" 3rdparty/eigen3.cmake
-#sed -i "s/github.com\/eigenteam\/eigen-git-mirror/gitlab.com\/libeigen\/eigen/g" 3rdparty/eigen3.cmake
-ARG YCM="0.10.4"
 #ARG YARP="3.2.2" -> cmake 3.11 (not cmake 3.10)
 #ARG YARP="3.2.1" -> rosmsg errors in xenial
-ARG YARP="3.2.0"
+#ARG YARP="3.2.0"
+ARG YARP="2.3.66"
 
 # Pybind11 "stable" atow forces python3
 ##ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
@@ -27,32 +20,25 @@ ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 RUN apt update \
     && apt install -y --no-install-recommends \
         wget unzip swig cmake build-essential \
-        qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
-        qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
         libedit-dev python python-dev libvtk6-dev python-gtk2 python-gtkglext1 \
-    \
-    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
-    && tar -xzf v$YCM.tar.gz && cd ycm-cmake-modules-$YCM \
-    && sed -i "s/include(\"\${CMAKE_CURRENT_LIST_DIR}\/eigen3\.cmake\")/# Removed eigen3/g" 3rdparty/CMakeLists.txt \
-    && mkdir build && cd build && cmake .. \
-    && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
     \
     && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
     && tar -xzf v$YARP.tar.gz \
     && mkdir yarp-$YARP/build && cd yarp-$YARP/build \
-    && cmake .. -DSKIP_ACE=ON -DYARP_COMPILE_libYARP_math=OFF -DENABLE_yarpcar_rossrv=OFF -DENABLE_yarpcar_tcpros=OFF -DENABLE_yarpcar_xmlrpc=OFF \
-        -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python2.7/dist-packages \
+    && cmake .. -DSKIP_ACE=ON -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON \
+    # -DYARP_COMPILE_libYARP_math=OFF -DENABLE_yarpcar_rossrv=OFF -DENABLE_yarpcar_tcpros=OFF -DENABLE_yarpcar_xmlrpc=OFF \
+    #    -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python2.7/dist-packages \
     && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
-    \
+    #\
     # PYBIND11 would be via git submodules, but download directly
-    && wget -q --no-check-certificate https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    && tar -xzf v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    && mkdir orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cd orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cmake .. \
-    && make -j$(nproc) && make install && cd ../../python_orocos_kdl \
-    && wget -q --no-check-certificate https://github.com/pybind/pybind11/archive/$PYBIND11_COMMIT.zip \
-    && unzip $PYBIND11_COMMIT.zip && rmdir pybind11 && mv pybind11-$PYBIND11_COMMIT pybind11 && rm $PYBIND11_COMMIT.zip \
-    && mkdir build && cd build && cmake .. \
-    && make -j$(nproc) && make install \
-    && cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    \
-    && ldconfig
+    #&& wget -q --no-check-certificate https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    #&& tar -xzf v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    #&& mkdir orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cd orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cmake .. \
+    #&& make -j$(nproc) && make install && cd ../../python_orocos_kdl \
+    #&& wget -q --no-check-certificate https://github.com/pybind/pybind11/archive/$PYBIND11_COMMIT.zip \
+    #&& unzip $PYBIND11_COMMIT.zip && rmdir pybind11 && mv pybind11-$PYBIND11_COMMIT pybind11 && rm $PYBIND11_COMMIT.zip \
+    #&& mkdir build && cd build && cmake .. \
+    #&& make -j$(nproc) && make install \
+    #&& cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    #\
+    #&& ldconfig
