@@ -7,6 +7,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 #ARG TOOLS_COMMIT="cc18a5f47ff26809f83f35485712ea6d86afb460"
 ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 #ARG KINEMATICS_DYNAMICS_COMMIT="f4bc01f1325efc64317be58e4eeb3fc44f27f496"
+ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
 
 RUN apt update \
     && apt install -y --no-install-recommends \
@@ -38,10 +39,16 @@ RUN apt update \
 #    && mkdir -p tools-$TOOLS_COMMIT/build && cd tools-$TOOLS_COMMIT/build && cmake .. \
 #    && make -j$(nproc) && make install && cd ../.. && rm $TOOLS_COMMIT.zip \
 #    \
+    # PYBIND11 would be via git submodules, but download directly
     && wget -q --no-check-certificate https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
     && tar -xzf v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    && mkdir -p orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cd orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cmake .. \
-    && make -j$(nproc) && make install && cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    && mkdir orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cd orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cmake .. \
+    && make -j$(nproc) && make install && cd ../../python_orocos_kdl \
+    && wget -q --no-check-certificate https://github.com/pybind/pybind11/archive/$PYBIND11_COMMIT.zip \
+    && unzip $PYBIND11_COMMIT.zip && rmdir pybind11 && mv pybind11-$PYBIND11_COMMIT pybind11 && rm $PYBIND11_COMMIT.zip \
+    && mkdir build && cd build && cmake .. \
+    && make -j$(nproc) && make install \
+    && cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
 #    \
 #    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/kinematics-dynamics/archive/$KINEMATICS_DYNAMICS_COMMIT.zip \
 #    && unzip $KINEMATICS_DYNAMICS_COMMIT.zip \
