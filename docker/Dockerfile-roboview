@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:precise
 # https://askubuntu.com/questions/1235271/pygtk-not-available-on-focal-fossa-20-04
 # bionic: reduce() of empty sequence with no initial value
 
@@ -9,19 +9,12 @@ ARG DEBIAN_FRONTEND="noninteractive"
 #ARG YARP="3.2.0"
 ARG YARP="2.3.66"
 
-# Pybind11 "stable" atow forces python3
-#ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
-#ARG PYBIND11_COMMIT="f1abf5d9159b805674197f6bc443592e631c9130" # Pybind11 2.6.2, cmake 3.0.2
-# v2.1.1 (2017)
-ARG PYBIND11_COMMIT="1df91d36cfa997c8987889234304ea5e37cc3e68"
-
 ENV ROS_PYTHON_VERSION=2
-
 #ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 ARG OROCOS_KINEMATICS_DYNAMICS="1.3.2"
 
-RUN apt update \
-    && apt install -y --no-install-recommends \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
         wget unzip swig cmake build-essential \
         libedit-dev python python-dev libvtk6-dev python-gtk2 python-gtkglext1 libeigen3-dev python-sip python-sip-dev sip-dev \
     \
