@@ -7,14 +7,19 @@ ARG DEBIAN_FRONTEND="noninteractive"
 #ARG TOOLS_COMMIT="cc18a5f47ff26809f83f35485712ea6d86afb460"
 ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 #ARG KINEMATICS_DYNAMICS_COMMIT="f4bc01f1325efc64317be58e4eeb3fc44f27f496"
-ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
+# Pybind11 "stable" atow forces python3
+##ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
+# Pybind11 2.6.2
+ARG PYBIND11_COMMIT="f1abf5d9159b805674197f6bc443592e631c9130"
+ENV ROS_PYTHON_VERSION=2
 
 RUN apt update \
     && apt install -y --no-install-recommends \
         wget unzip swig cmake build-essential \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
-        libedit-dev python3-dev libvtk6-dev\
+        libedit-dev python2 python-dev libvtk6-dev\
+#wget --no-check-certificate https://bootstrap.pypa.io/pip/2.7/get-pip.py
 #    \
 #    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
 #    && tar -xzf v$YCM.tar.gz \
