@@ -1,4 +1,4 @@
-FROM ubuntu:precise
+FROM ubuntu:lucid
 # https://askubuntu.com/questions/1235271/pygtk-not-available-on-focal-fossa-20-04
 # bionic: reduce() of empty sequence with no initial value
 
@@ -21,18 +21,18 @@ RUN sed -i "s/archive/old-releases/g" /etc/apt/sources.list \
         libedit-dev python python-dev python-vtk python-pyvtk python-gtk2-dev python-gtkglext1 \
         #libvtk6-dev python-gtk2 python-gtkglext1 libeigen3-dev python-sip python-sip-dev sip-dev \
     \
-    && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
-    && tar -xzf v$YARP.tar.gz \
-    && mkdir yarp-$YARP/build && cd yarp-$YARP/build \
-    && cmake .. -DSKIP_ACE=ON -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON \
-    && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
+    #&& wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
+    #&& tar -xzf v$YARP.tar.gz \
+    #&& mkdir yarp-$YARP/build && cd yarp-$YARP/build \
+    #&& cmake .. -DSKIP_ACE=ON -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON \
+    #&& make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
     \
-    && wget -q --no-check-certificate https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    && tar -xzf $OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    && mkdir orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cd orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cmake .. \
-    && make -j$(nproc) && make install && cd ../../python_orocos_kdl \
-    && mkdir build && cd build && cmake .. \
-    && make -j$(nproc) && make install \
-    && cd ../../.. && rm $OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    #&& wget -q --no-check-certificate https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    #&& tar -xzf $OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    #&& mkdir orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cd orocos_kinematics_dynamics-$OROCOS_KINEMATICS_DYNAMICS/orocos_kdl/build && cmake .. \
+    #&& make -j$(nproc) && make install && cd ../../python_orocos_kdl \
+    #&& mkdir build && cd build && cmake .. \
+    #&& make -j$(nproc) && make install \
+    #&& cd ../../.. && rm $OROCOS_KINEMATICS_DYNAMICS.tar.gz \
     \
-    && ldconfig
+    #&& ldconfig
