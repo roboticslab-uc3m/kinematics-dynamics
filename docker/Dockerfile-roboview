@@ -12,8 +12,8 @@ RUN apt update \
     && apt install -y --no-install-recommends \
         wget unzip swig \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
-#        qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
-#        libedit-dev \
+        qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
+        libedit-dev \
 #    \
 #    && wget -q https://github.com/robotology/ycm/archive/refs/tags/v$YCM.tar.gz \
 #    && tar -xzf v$YCM.tar.gz \
