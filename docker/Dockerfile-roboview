@@ -10,14 +10,14 @@ ARG KINEMATICS_DYNAMICS_COMMIT="f4bc01f1325efc64317be58e4eeb3fc44f27f496"
 
 RUN apt update \
     && apt install -y --no-install-recommends \
-        wget unzip swig \
+        wget unzip swig cmake build-essential \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
         libedit-dev libvtk6-dev\
-#    \
-#    && wget -q https://github.com/robotology/ycm/archive/refs/tags/v$YCM.tar.gz \
-#    && tar -xzf v$YCM.tar.gz \
-#    && mkdir -p ycm-$YCM/build && cd ycm-$YCM/build && cmake .. \
+    \
+    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
+    && tar -xzf v$YCM.tar.gz \
+#    && mkdir -p ycm-cmake-modules-$YCM/build && cd ycm-cmake-modules-$YCM/build && cmake .. \
 #    && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
 #    \
 #    && wget -q https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
