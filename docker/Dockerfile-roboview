@@ -7,16 +7,19 @@ ARG DEBIAN_FRONTEND="noninteractive"
 #ARG YARP="3.2.2" -> cmake 3.11 (not cmake 3.10)
 #ARG YARP="3.2.1" -> rosmsg errors in xenial
 #ARG YARP="3.2.0"
-ARG YARP="2.3.66"
+#ARG YARP="2.3.66"
+ARG YARP="2.3.36"
 
 ENV ROS_PYTHON_VERSION=2
 #ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 ARG OROCOS_KINEMATICS_DYNAMICS="1.3.2"
 
-RUN apt-get update \
+RUN sed -i "s/archive/old-releases/g" /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         wget unzip swig cmake build-essential \
-        libedit-dev python python-dev libvtk6-dev python-gtk2 python-gtkglext1 libeigen3-dev python-sip python-sip-dev sip-dev \
+        libedit-dev python python-dev python-vtk python-pyvtk python-gtk2-dev python-gtkglext1 \
+        #libvtk6-dev python-gtk2 python-gtkglext1 libeigen3-dev python-sip python-sip-dev sip-dev \
     \
     && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
     && tar -xzf v$YARP.tar.gz \
