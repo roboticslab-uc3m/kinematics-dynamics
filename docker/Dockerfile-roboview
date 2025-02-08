@@ -6,10 +6,9 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 #ARG YARP="3.2.2" -> cmake 3.11 (not cmake 3.10)
 #ARG YARP="3.2.1" -> rosmsg errors in xenial
-#ARG YARP="3.2.0"
-#ARG YARP="2.3.66"
-# recompile with -fPIC
-ARG YARP="2.3.4"
+#ARG YARP="2.3.21" -> cmake
+#ARG YARP="2.3.20" -> recompile with -fPIC, better bindings path
+#ARG YARP="2.3.4" -> recompile with -fPIC
 
 ENV ROS_PYTHON_VERSION=2
 #ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
