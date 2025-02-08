@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:focal
 
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG YCM="0.15.3"
@@ -13,7 +13,7 @@ RUN apt update \
         wget unzip swig \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
-        libedit-dev \
+        libedit-dev libvtk6-dev\
 #    \
 #    && wget -q https://github.com/robotology/ycm/archive/refs/tags/v$YCM.tar.gz \
 #    && tar -xzf v$YCM.tar.gz \
