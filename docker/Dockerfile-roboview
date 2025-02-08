@@ -13,7 +13,7 @@ RUN apt update \
         wget unzip swig cmake build-essential \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
-        libedit-dev libvtk6-dev\
+        libedit-dev python3-dev libvtk6-dev\
 #    \
 #    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
 #    && tar -xzf v$YCM.tar.gz \
