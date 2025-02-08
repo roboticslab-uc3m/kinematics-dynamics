@@ -1,4 +1,5 @@
-FROM ubuntu:focal
+FROM ubuntu:bionic
+# https://askubuntu.com/questions/1235271/pygtk-not-available-on-focal-fossa-20-04
 
 ARG DEBIAN_FRONTEND="noninteractive"
 #ARG YCM="0.15.3"
@@ -18,8 +19,8 @@ RUN apt update \
         wget unzip swig cmake build-essential \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
-        libedit-dev python2 python-dev libvtk6-dev\
-#wget --no-check-certificate https://bootstrap.pypa.io/pip/2.7/get-pip.py
+        libedit-dev python python-dev libvtk6-dev python-gtk2 python-gtkglext1 \
+#    && wget --no-check-certificate https://bootstrap.pypa.io/pip/2.7/get-pip.py && python get-pip.py
 #    \
 #    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
 #    && tar -xzf v$YCM.tar.gz \
