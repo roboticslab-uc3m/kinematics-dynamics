@@ -49,6 +49,7 @@ RUN apt update \
     && mkdir build && cd build && cmake .. \
     && make -j$(nproc) && make install \
     && cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
+    && ldconfig \
 #    \
 #    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/kinematics-dynamics/archive/$KINEMATICS_DYNAMICS_COMMIT.zip \
 #    && unzip $KINEMATICS_DYNAMICS_COMMIT.zip \
