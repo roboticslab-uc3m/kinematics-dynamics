@@ -33,14 +33,14 @@ RUN apt update \
     && tar -xzf v$YCM.tar.gz && cd ycm-cmake-modules-$YCM \
     && sed -i "s/include(\"\${CMAKE_CURRENT_LIST_DIR}\/eigen3\.cmake\")/# Removed eigen3/g" 3rdparty/CMakeLists.txt \
     && mkdir build && cd build && cmake .. \
-    && make && make install && cd ../.. && rm v$YCM.tar.gz \
-#    \
-#    && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
-#    && tar -xzf v$YARP.tar.gz \
-#    && mkdir yarp-$YARP/build && cd yarp-$YARP/build \
-#    && cmake .. -DSKIP_ACE=ON \
-#        -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHON3DIR=/usr/local/lib/python3.10/dist-packages \
-#    && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
+    && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
+    \
+    && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
+    && tar -xzf v$YARP.tar.gz \
+    && mkdir yarp-$YARP/build && cd yarp-$YARP/build \
+    && cmake .. -DSKIP_ACE=ON \
+        -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python2.7/dist-packages \
+    && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
 #    \
 #    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/teo-configuration-files/archive/$TEO_CONFIGURATION_FILES_COMMIT.zip \
 #    && unzip $TEO_CONFIGURATION_FILES_COMMIT.zip \
