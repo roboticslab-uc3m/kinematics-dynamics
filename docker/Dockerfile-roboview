@@ -17,10 +17,10 @@ RUN apt update \
     \
     && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
     && tar -xzf v$YCM.tar.gz \
-#    && mkdir -p ycm-cmake-modules-$YCM/build && cd ycm-cmake-modules-$YCM/build && cmake .. \
-#    && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
+    && mkdir ycm-cmake-modules-$YCM/build && cd ycm-cmake-modules-$YCM/build && cmake .. \
+    && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
 #    \
-#    && wget -q https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
+#    && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
 #    && tar -xzf v$YARP.tar.gz \
 #    && mkdir -p yarp-$YARP/build && cd yarp-$YARP/build \
 #    && cmake .. -DSKIP_ACE=ON \
