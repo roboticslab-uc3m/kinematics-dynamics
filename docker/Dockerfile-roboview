@@ -2,17 +2,25 @@ FROM ubuntu:bionic
 # https://askubuntu.com/questions/1235271/pygtk-not-available-on-focal-fossa-20-04
 
 ARG DEBIAN_FRONTEND="noninteractive"
-#ARG YCM="0.15.3"
-#ARG YARP="3.7.2"
-#ARG TEO_CONFIGURATION_FILES_COMMIT="69228d5d6706eaa2d9a6ca81d380577bb5dc9ae0"
-#ARG TOOLS_COMMIT="cc18a5f47ff26809f83f35485712ea6d86afb460"
-ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
-#ARG KINEMATICS_DYNAMICS_COMMIT="f4bc01f1325efc64317be58e4eeb3fc44f27f496"
+
+# eigen expected hash: [5ad2b8e1ddbd9f0468b21e9d5343d05eda6b9dd1]
+# eigen actual hash: [da39a3ee5e6b4b0d3255bfef95601890afd80709]
+#ARG YCM="0.11.1" -> cmake 3.12 (not cmake 3.10)
+#cd ycm-cmake-modules-0.11.1
+#sed -i "s/5ad2b8e1ddbd9f0468b21e9d5343d05eda6b9dd1/a12b8a8c75ebef312509da643424951725519348/g" 3rdparty/eigen3.cmake
+#sed -i "s/raw.githubusercontent.com\/eigenteam\/eigen-git-mirror/gitlab.com\/libeigen\/eigen/g" 3rdparty/eigen3.cmake
+#sed -i "s/github.com\/eigenteam\/eigen-git-mirror/gitlab.com\/libeigen\/eigen/g" 3rdparty/eigen3.cmake
+ARG YCM="0.10.4"
+
+ARG YARP="3.2.1"
+
 # Pybind11 "stable" atow forces python3
 ##ARG PYBIND11_COMMIT="58c382a8e3d7081364d2f5c62e7f429f0412743b"
 # Pybind11 2.6.2
 ARG PYBIND11_COMMIT="f1abf5d9159b805674197f6bc443592e631c9130"
 ENV ROS_PYTHON_VERSION=2
+
+ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 
 RUN apt update \
     && apt install -y --no-install-recommends \
@@ -20,18 +28,18 @@ RUN apt update \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
         libedit-dev python python-dev libvtk6-dev python-gtk2 python-gtkglext1 \
-#    \
-#    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
-#    && tar -xzf v$YCM.tar.gz \
-#    && mkdir ycm-cmake-modules-$YCM/build && cd ycm-cmake-modules-$YCM/build && cmake .. \
-#    && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
+    \
+    && wget -q --no-check-certificate https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
+    && tar -xzf v$YCM.tar.gz && cd ycm-cmake-modules-$YCM \
+    && sed -i "s/include(\"\${CMAKE_CURRENT_LIST_DIR}\/eigen3\.cmake\")/# Removed eigen3/g" 3rdparty/CMakeLists.txt \
+    && mkdir build && cd build && cmake .. \
+    && make && make install && cd ../.. && rm v$YCM.tar.gz \
 #    \
 #    && wget -q --no-check-certificate https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
 #    && tar -xzf v$YARP.tar.gz \
-#    && mkdir -p yarp-$YARP/build && cd yarp-$YARP/build \
+#    && mkdir yarp-$YARP/build && cd yarp-$YARP/build \
 #    && cmake .. -DSKIP_ACE=ON \
-#        -DCREATE_GUIS=ON -DENABLE_yarpcar_mjpeg=ON -DENABLE_yarppm_depthimage_to_mono=ON -DENABLE_yarppm_depthimage_to_rgb=ON \
-#        -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHON3DIR=/usr/local/lib/python3.10/dist-packages \
+#        -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHON3DIR=/usr/local/lib/python3.10/dist-packages \
 #    && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
 #    \
 #    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/teo-configuration-files/archive/$TEO_CONFIGURATION_FILES_COMMIT.zip \
