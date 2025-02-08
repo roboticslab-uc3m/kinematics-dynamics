@@ -41,17 +41,7 @@ RUN apt update \
     && cmake .. -DSKIP_ACE=ON \
         -DCREATE_GUIS=OFF -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python2.7/dist-packages \
     && make -j$(nproc) && make install && cd ../.. && rm v$YARP.tar.gz \
-#    \
-#    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/teo-configuration-files/archive/$TEO_CONFIGURATION_FILES_COMMIT.zip \
-#    && unzip $TEO_CONFIGURATION_FILES_COMMIT.zip \
-#    && mkdir -p teo-configuration-files-$TEO_CONFIGURATION_FILES_COMMIT/build && cd teo-configuration-files-$TEO_CONFIGURATION_FILES_COMMIT/build && cmake .. \
-#    && make -j$(nproc) && make install && cd ../.. && rm $TEO_CONFIGURATION_FILES_COMMIT.zip \
-#    \
-#    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/tools/archive/$TOOLS_COMMIT.zip \
-#    && unzip $TOOLS_COMMIT.zip \
-#    && mkdir -p tools-$TOOLS_COMMIT/build && cd tools-$TOOLS_COMMIT/build && cmake .. \
-#    && make -j$(nproc) && make install && cd ../.. && rm $TOOLS_COMMIT.zip \
-#    \
+    \
     # PYBIND11 would be via git submodules, but download directly
     && wget -q --no-check-certificate https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
     && tar -xzf v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
@@ -62,10 +52,5 @@ RUN apt update \
     && mkdir build && cd build && cmake .. \
     && make -j$(nproc) && make install \
     && cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
-    && ldconfig \
-#    \
-#    && wget -q --no-check-certificate https://github.com/roboticslab-uc3m/kinematics-dynamics/archive/$KINEMATICS_DYNAMICS_COMMIT.zip \
-#    && unzip $KINEMATICS_DYNAMICS_COMMIT.zip \
-#    && mkdir -p kinematics-dynamics-$KINEMATICS_DYNAMICS_COMMIT/build && cd kinematics-dynamics-$KINEMATICS_DYNAMICS_COMMIT/build \
-#    && cmake .. -DCREATE_PYTHON=ON -DCREATE_BINDINGS_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python3.10/dist-packages \
-#    && make -j$(nproc) && make install && cd ../.. && rm $KINEMATICS_DYNAMICS_COMMIT.zip
+    \
+    && ldconfig
