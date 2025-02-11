@@ -30,13 +30,20 @@ namespace
         return !steps.empty() ? std::accumulate(steps.begin(), steps.end(), 1, solutionAccumulator) : 0;
     }
 
-    std::vector<double> extractValues(const std::vector<int> indices, const KDL::JntArray & q)
+    std::vector<double> extractValues(const std::vector<int> indices, const KDL::JntArray & q, bool reversed)
     {
         std::vector<double> values(indices.size());
 
         for (auto i = 0; i < indices.size(); i++)
         {
-            values[i] = q(indices[i]);
+            if (!reversed)
+            {
+                values[i] = q(indices[i]);
+            }
+            else
+            {
+                values[i] = -q(q.rows() - 1 - indices[i]);
+            }
         }
 
         return values;
@@ -86,7 +93,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
 
     for (const auto [ids, subproblem] : steps)
     {
-        const auto referenceValues = extractValues(ids, reference);
+        const auto referenceValues = extractValues(ids, reference, reversed);
 
         if (!firstIteration)
         {

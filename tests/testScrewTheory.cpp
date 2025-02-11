@@ -297,8 +297,9 @@ public:
         ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0_ST));
         ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
 
-        // KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI_2);
-        KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), 0);
+        KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI_2);
+        // KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), 0.1);
+        // KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), 0);
         KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
 
         ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
@@ -310,6 +311,8 @@ public:
 
         ASSERT_TRUE(ikProblem);
         ASSERT_EQ(ikProblem->solutions(), soln);
+
+        std::printf("reversed: %d\n", ikProblem->isReversed());
 
         const auto & steps = ikProblem->getSteps();
 
@@ -349,7 +352,7 @@ public:
 
             for (auto i = 0; i < solution.rows(); i++)
             {
-                std::cout << solution(i) << (i < solution.rows() - 1 ? ", " : "");
+                std::printf("%0.5f%s", solution(i), i < solution.rows() - 1 ? ",\t" : "");
             }
 
             std::cout << "]" << std::endl;
