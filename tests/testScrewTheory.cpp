@@ -311,15 +311,26 @@ public:
         ASSERT_EQ(ikProblem->solutions(), soln);
 
         ScrewTheoryIkProblem::Solutions solutions;
-        ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, solutions));
+        ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, q, solutions));
         delete ikProblem;
 
-        for (const auto & solution : solutions)
+        bool match = false;
+
+        for (auto j = 0; j < solutions.size(); j++)
         {
+            const auto & solution = solutions[j];
+
             KDL::Frame H_S_T_q_ST_validate;
             ASSERT_TRUE(poe.evaluate(solution, H_S_T_q_ST_validate));
             ASSERT_EQ(H_S_T_q_ST_validate, H_S_T_q_ST);
+
+            if (solution == q)
+            {
+                match = true;
+            }
         }
+
+        ASSERT_TRUE(match);
     }
 
     static int findTargetConfiguration(const ScrewTheoryIkProblem::Solutions & solutions, const KDL::JntArray & target)
@@ -555,6 +566,54 @@ TEST_F(ScrewTheoryTest, PadenKahanOne)
     ASSERT_FALSE(pk1.solve(rhs3, KDL::Frame::Identity(), actual));
 
     checkSolutions(actual, expected);
+
+    KDL::Vector k4 = k + KDL::Vector(0, 0, -1);
+    KDL::Frame rhs4(k4 - p);
+    ASSERT_FALSE(pk1.solve(rhs4, KDL::Frame::Identity(), actual));
+
+    expected = {{0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}};
+    ASSERT_FALSE(pk1.solve(rhs4, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p2 = p + KDL::Vector(1, 0, 0);
+    PadenKahanOne pk1b(exp, p2);
+    KDL::Frame rhs5(k - p2);
+    ASSERT_FALSE(pk1b.solve(rhs5, KDL::Frame::Identity(), actual));
+
+    expected = {{0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}};
+    ASSERT_FALSE(pk1b.solve(rhs5, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Frame rhs6(k4 - p2);
+    ASSERT_TRUE(pk1b.solve(rhs6, KDL::Frame::Identity(), actual));
+
+    expected = {{0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}};
+    ASSERT_TRUE(pk1b.solve(rhs6, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k7 = k4 + KDL::Vector(0, 1, 0);
+    KDL::Frame rhs7(k7 - p2);
+    ASSERT_FALSE(pk1b.solve(rhs7, KDL::Frame::Identity(), actual));
+
+    expected = {{0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}};
+    ASSERT_FALSE(pk1b.solve(rhs7, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
 }
 
 TEST_F(ScrewTheoryTest, PadenKahanTwo)
@@ -601,6 +660,134 @@ TEST_F(ScrewTheoryTest, PadenKahanTwo)
     ASSERT_FALSE(pk2c.solve(rhs3, KDL::Frame::Identity(), actual));
 
     checkSolutions(actual, expected);
+
+    KDL::Vector p4 = p + KDL::Vector(1, std::sqrt(2) - 1, 0);
+    PadenKahanTwo pk2d(exp1, exp2, p4, r);
+    KDL::Frame rhs4(k - p4);
+    ASSERT_TRUE(pk2d.solve(rhs4, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {3 * KDL::PI_4, 0},
+        {3 * KDL::PI_4, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {3 * KDL::PI_4, KDL::PI},
+        {3 * KDL::PI_4, KDL::PI}
+    };
+
+    ASSERT_TRUE(pk2d.solve(rhs4, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p5 = p + KDL::Vector(1, 0, 0);
+    PadenKahanTwo pk2e(exp1, exp2, p5, r);
+    KDL::Frame rhs5(k - p5);
+    ASSERT_FALSE(pk2e.solve(rhs5, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {3 * KDL::PI_4, 0},
+        {3 * KDL::PI_4, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {3 * KDL::PI_4, KDL::PI},
+        {3 * KDL::PI_4, KDL::PI}
+    };
+
+    ASSERT_FALSE(pk2e.solve(rhs5, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p6 = p + KDL::Vector(0, -1, 0);
+    KDL::Vector k6 = k + KDL::Vector(1, 1, -1);
+    PadenKahanTwo pk2f(exp1, exp2, p6, r);
+    KDL::Frame rhs6(k6 - p6);
+    ASSERT_TRUE(pk2f.solve(rhs6, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, KDL::PI},
+        {0, KDL::PI}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_TRUE(pk2f.solve(rhs6, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k7 = k + KDL::Vector(2, 1, -1);
+    KDL::Frame rhs7(k7 - p6);
+    ASSERT_FALSE(pk2f.solve(rhs7, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, KDL::PI},
+        {0, KDL::PI}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_FALSE(pk2f.solve(rhs7, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p8 = r;
+    KDL::Vector k8 = r;
+    PadenKahanTwo pk2g(exp1, exp2, p8, r);
+    KDL::Frame rhs8(k8 - p8);
+    ASSERT_TRUE(pk2g.solve(rhs8, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, 0},
+        {0, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_TRUE(pk2g.solve(rhs8, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p9 = p + KDL::Vector(1, 0, 0);
+    KDL::Vector k9 = k + KDL::Vector(1, 1, -1);
+    PadenKahanTwo pk2h(exp1, exp2, p9, r);
+    KDL::Frame rhs9(k9 - p9);
+    ASSERT_FALSE(pk2h.solve(rhs9, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, 0},
+        {0, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_FALSE(pk2h.solve(rhs9, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
 }
 
 TEST_F(ScrewTheoryTest, PadenKahanThree)
@@ -639,6 +826,130 @@ TEST_F(ScrewTheoryTest, PadenKahanThree)
         {3 * KDL::PI_4},
         {3 * KDL::PI_4}
     };
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k3 = k + KDL::Vector(-1, 0, -1);
+    PadenKahanThree pk3c(exp, p, k3);
+    KDL::Frame rhs3(delta - (p - k3));
+
+    ASSERT_TRUE(pk3c.solve(rhs3, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_TRUE(pk3c.solve(rhs3, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector delta4(-1, -1, 0);
+    KDL::Frame rhs4(delta4 - (p - k3));
+
+    ASSERT_FALSE(pk3c.solve(rhs4, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_FALSE(pk3c.solve(rhs4, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p5 = p + KDL::Vector(1, 0, 0);
+    PadenKahanThree pk3d(exp, p5, k);
+    KDL::Frame rhs5(delta4 - (p5 - k));
+
+    ASSERT_TRUE(pk3d.solve(rhs5, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_TRUE(pk3d.solve(rhs5, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Frame rhs6(delta - (p5 - k));
+    ASSERT_FALSE(pk3d.solve(rhs6, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_FALSE(pk3d.solve(rhs6, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    PadenKahanThree pk3e(exp, p5, k3);
+    KDL::Frame rhs7(KDL::Vector::Zero() - (p5 - k3));
+
+    ASSERT_TRUE(pk3e.solve(rhs7, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_TRUE(pk3e.solve(rhs7, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Frame rhs8(delta - (p5 - k3));
+    ASSERT_FALSE(pk3e.solve(rhs8, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_FALSE(pk3e.solve(rhs8, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k9 = k3 + KDL::Vector(0, 1, 0);
+    KDL::Vector delta9(0, -1, 0);
+    KDL::Frame rhs9(delta9 - (p5 - k9));
+
+    ASSERT_TRUE(pk3e.solve(rhs9, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_TRUE(pk3e.solve(rhs9, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Frame rhs10(delta - (p5 - k9));
+
+    ASSERT_FALSE(pk3e.solve(rhs10, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+    checkSolutions(actual, expected);
+
+    expected = {{KDL::PI}, {KDL::PI}};
+    ASSERT_FALSE(pk3e.solve(rhs10, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p11 = p + KDL::Vector(-1, 0, 0);
+    KDL::Vector k11 = k + KDL::Vector(0, 0, -1);
+    KDL::Vector delta11(3, 0, 0);
+    PadenKahanThree pk3f(exp, p11, k11);
+    KDL::Frame rhs11(delta11 - (p11 - k11));
+
+    ASSERT_TRUE(pk3f.solve(rhs11, KDL::Frame::Identity(), actual));
+
+    expected = {{0}, {0}};
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k12 = k + KDL::Vector(1, 0, -1);
+    PadenKahanThree pk3g(exp, p, k12);
+    KDL::Frame rhs12(delta - (p - k12));
+
+    ASSERT_TRUE(pk3g.solve(rhs12, KDL::Frame::Identity(), actual));
+
+    expected = {{KDL::PI}, {KDL::PI}};
 
     checkSolutions(actual, expected);
 }
@@ -769,6 +1080,106 @@ TEST_F(ScrewTheoryTest, PardosGotorFour)
     };
 
     checkSolutions(actual, expected);
+
+    KDL::Vector k4 = k + KDL::Vector(-1, 0, -1);
+    KDL::Frame rhs4(k4 - p);
+    ASSERT_TRUE(pg4.solve(rhs4, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, KDL::PI},
+        {0, KDL::PI}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_TRUE(pg4.solve(rhs4, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector k5 = k4 + KDL::Vector(0, 1, 0);
+    KDL::Frame rhs5(k5 - p);
+    ASSERT_FALSE(pg4.solve(rhs5, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, KDL::PI},
+        {0, KDL::PI}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_FALSE(pg4.solve(rhs5, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Vector p6 = p + KDL::Vector(1, 0, 0);
+    KDL::Vector k6 = k + KDL::Vector(-1, 0, 0);
+    PardosGotorFour pg4d(exp1, exp2, p6);
+    KDL::Frame rhs6(k6 - p6);
+    ASSERT_TRUE(pg4d.solve(rhs6, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {KDL::PI_2, 0},
+        {KDL::PI_2, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI_2, KDL::PI},
+        {KDL::PI_2, KDL::PI}
+    };
+
+    ASSERT_TRUE(pg4d.solve(rhs6, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Frame rhs7(k - p6);
+    ASSERT_FALSE(pg4d.solve(rhs7, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {3 * KDL::PI_4, 0},
+        {3 * KDL::PI_4, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {3 * KDL::PI_4, KDL::PI},
+        {3 * KDL::PI_4, KDL::PI}
+    };
+
+    ASSERT_FALSE(pg4d.solve(rhs7, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
+
+    KDL::Frame rhs8(k4 - p6);
+    ASSERT_FALSE(pg4d.solve(rhs8, KDL::Frame::Identity(), actual));
+
+    expected = {
+        {0, 0},
+        {0, 0}
+    };
+
+    checkSolutions(actual, expected);
+
+    expected = {
+        {KDL::PI, KDL::PI},
+        {KDL::PI, KDL::PI}
+    };
+
+    ASSERT_FALSE(pg4d.solve(rhs8, KDL::Frame::Identity(), expected[0], actual));
+
+    checkSolutions(actual, expected);
 }
 
 TEST_F(ScrewTheoryTest, AbbIrb120Kinematics)
@@ -844,7 +1255,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     ASSERT_EQ(ikProblem->solutions(), 8);
 
     ScrewTheoryIkProblem::Solutions solutions;
-    ASSERT_TRUE(ikProblem->solve(H, solutions));
+    ASSERT_TRUE(ikProblem->solve(H, q, solutions));
 
     KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
     KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);
@@ -864,7 +1275,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
 
     H.p += {0.01, 0, 0}; // add a tiny displacement
 
-    ASSERT_TRUE(ikProblem->solve(H, solutions));
+    ASSERT_TRUE(ikProblem->solve(H, q, solutions));
     delete ikProblem;
 
     ASSERT_TRUE(config->configure(solutions));
@@ -896,7 +1307,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
     ASSERT_EQ(ikProblem->solutions(), 8);
 
     ScrewTheoryIkProblem::Solutions solutions;
-    ASSERT_TRUE(ikProblem->solve(H, solutions));
+    ASSERT_TRUE(ikProblem->solve(H, q, solutions));
 
     KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
     KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);

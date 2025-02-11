@@ -29,6 +29,25 @@ namespace
     {
         return !steps.empty() ? std::accumulate(steps.begin(), steps.end(), 1, solutionAccumulator) : 0;
     }
+
+    std::vector<double> extractValues(const std::vector<int> indices, const KDL::JntArray & q, bool reversed)
+    {
+        std::vector<double> values(indices.size());
+
+        for (auto i = 0; i < indices.size(); i++)
+        {
+            if (!reversed)
+            {
+                values[i] = q(indices[i]);
+            }
+            else
+            {
+                values[i] = -q(q.rows() - 1 - indices[i]);
+            }
+        }
+
+        return values;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -52,7 +71,7 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 
 // -----------------------------------------------------------------------------
 
-bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions)
+bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray & reference, Solutions & solutions)
 {
     solutions.clear();
 
@@ -74,6 +93,8 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
 
     for (const auto [ids, subproblem] : steps)
     {
+        const auto referenceValues = extractValues(ids, reference, reversed);
+
         if (!firstIteration)
         {
             // Re-compute right-hand side of PoE equation, i.e. prod(e_i) = H_S_T_q * H_S_T_0^(-1)
@@ -91,7 +112,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, Solutions & solutions
 
             // Actually solve each subproblem, use current right-hand side of PoE to obtain
             // the right-hand side of said subproblem.
-            reachable = reachable & subproblem->solve(rhsFrames[i], H, partialSolutions);
+            reachable = reachable & subproblem->solve(rhsFrames[i], H, referenceValues, partialSolutions);
 
             // The global number of solutions is increased by this step.
             if (partialSolutions.size() > 1)
