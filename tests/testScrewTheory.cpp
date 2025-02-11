@@ -298,8 +298,6 @@ public:
         ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
 
         KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI_2);
-        // KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), 0.1);
-        // KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), 0);
         KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
 
         ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
@@ -312,32 +310,6 @@ public:
         ASSERT_TRUE(ikProblem);
         ASSERT_EQ(ikProblem->solutions(), soln);
 
-        std::printf("reversed: %d\n", ikProblem->isReversed());
-
-        const auto & steps = ikProblem->getSteps();
-
-        for (auto i = 0; i < steps.size(); i++)
-        {
-            const auto & step = steps[i];
-            std::printf("[%d] %s [", i, step.second->describe());
-
-            for (auto j = 0; j < step.first.size(); j++)
-            {
-                std::printf("%d%s", step.first[j], j < step.first.size() - 1 ? ", " : "");
-            }
-
-            std::printf("]\n");
-        }
-
-        std::cout << "qd: [";
-
-        for (auto i = 0; i < q.rows(); i++)
-        {
-            std::cout << q(i) << (i < q.rows() - 1 ? ", " : "");
-        }
-
-        std::cout << "]" << std::endl;
-
         ScrewTheoryIkProblem::Solutions solutions;
         ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, q, solutions));
         delete ikProblem;
@@ -347,15 +319,6 @@ public:
         for (auto j = 0; j < solutions.size(); j++)
         {
             const auto & solution = solutions[j];
-
-            std::cout << "[" << j << "] [";
-
-            for (auto i = 0; i < solution.rows(); i++)
-            {
-                std::printf("%0.5f%s", solution(i), i < solution.rows() - 1 ? ",\t" : "");
-            }
-
-            std::cout << "]" << std::endl;
 
             KDL::Frame H_S_T_q_ST_validate;
             ASSERT_TRUE(poe.evaluate(solution, H_S_T_q_ST_validate));
