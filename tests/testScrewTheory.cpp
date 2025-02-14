@@ -286,20 +286,12 @@ public:
         }
     }
 
-    static void checkRobotKinematics(const KDL::Chain & chain, const PoeExpression & poe, int soln)
+    static void checkRobotKinematicsInternal(const KDL::Chain & chain, const PoeExpression & poe, const KDL::JntArray & q, int soln)
     {
         ASSERT_EQ(poe.size(), chain.getNrOfJoints());
 
         KDL::ChainFkSolverPos_recursive fkSolver(chain);
-        KDL::Frame H_S_T_0_DH, H_S_T_0_ST;
-
-        ASSERT_EQ(fkSolver.JntToCart(KDL::JntArray(chain.getNrOfJoints()), H_S_T_0_DH), KDL::SolverI::E_NOERROR);
-        ASSERT_TRUE(poe.evaluate(KDL::JntArray(poe.size()), H_S_T_0_ST));
-        ASSERT_EQ(H_S_T_0_ST, H_S_T_0_DH);
-
-        KDL::JntArray q = fillJointValues(chain.getNrOfJoints(), KDL::PI_2);
         KDL::Frame H_S_T_q_DH, H_S_T_q_ST;
-
         ASSERT_EQ(fkSolver.JntToCart(q, H_S_T_q_DH), KDL::SolverI::E_NOERROR);
         ASSERT_TRUE(poe.evaluate(q, H_S_T_q_ST));
         ASSERT_EQ(H_S_T_q_ST, H_S_T_q_DH);
@@ -331,6 +323,16 @@ public:
         }
 
         ASSERT_TRUE(match);
+    }
+
+    static void checkRobotKinematics(const KDL::Chain & chain, const PoeExpression & poe, int soln)
+    {
+        const int numJoints = chain.getNrOfJoints();
+
+        checkRobotKinematicsInternal(chain, poe, fillJointValues(numJoints, 0.0), soln);
+        checkRobotKinematicsInternal(chain, poe, fillJointValues(numJoints, 0.1), soln);
+        checkRobotKinematicsInternal(chain, poe, fillJointValues(numJoints, KDL::PI_2), soln);
+        checkRobotKinematicsInternal(chain, poe, fillJointValues(numJoints, KDL::PI), soln);
     }
 
     static int findTargetConfiguration(const ScrewTheoryIkProblem::Solutions & solutions, const KDL::JntArray & target)
