@@ -5,6 +5,8 @@
 #include <numeric> // std::accumulate
 #include <vector>
 
+#include "ScrewTheoryTools.hpp"
+
 using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
@@ -146,7 +148,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
                     if (reversed)
                     {
                         id = poe.size() - 1 - id;
-                        theta = -theta;
+                        theta = normalizeAngle(-theta);
                     }
 
                     // Store the final value in the desired index, don't shuffle it after this point.
