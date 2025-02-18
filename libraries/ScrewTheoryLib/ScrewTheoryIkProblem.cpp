@@ -59,7 +59,10 @@ ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const Ste
       steps(_steps),
       reversed(_reversed),
       soln(computeSolutions(steps))
-{}
+{
+    poeTerms.reserve(soln);
+    rhsFrames.reserve(soln);
+}
 
 // -----------------------------------------------------------------------------
 
@@ -79,14 +82,12 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
 
     // Reserve space in memory to avoid additional allocations on runtime.
     solutions.reserve(soln);
-    solutions.emplace_back(poe.size());
+    solutions.emplace_back(poe.size()); // dummy value
 
-    PoeTerms poeTerms(poe.size(), EXP_UNKNOWN);
+    poeTerms.assign(poe.size(), EXP_UNKNOWN);
 
-    Frames rhsFrames;
-
-    rhsFrames.reserve(soln);
-    rhsFrames.push_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
+    rhsFrames.clear();
+    rhsFrames.emplace_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
 
     bool firstIteration = true;
     bool reachable = true;
@@ -114,22 +115,26 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
 
             // Actually solve each subproblem, use current right-hand side of PoE to obtain
             // the right-hand side of said subproblem.
-            reachable = reachable & subproblem->solve(rhsFrames[i], H, referenceValues, partialSolutions);
+            reachable &= subproblem->solve(rhsFrames[i], H, referenceValues, partialSolutions);
 
             // The global number of solutions is increased by this step.
             if (partialSolutions.size() > 1)
             {
+                const int partialSize = previousSize * partialSolutions.size();
+
                 // Noop if current size is not less than requested.
-                solutions.resize(previousSize * partialSolutions.size());
-                rhsFrames.resize(previousSize * partialSolutions.size());
+                solutions.resize(partialSize);
+                rhsFrames.resize(partialSize);
 
                 for (int j = 1; j < partialSolutions.size(); j++)
                 {
+                    const int index = i + previousSize * j;
+
                     // Replicate known solutions, these won't change further on.
-                    solutions[i + previousSize * j] = solutions[i];
+                    solutions[index] = solutions[i];
 
                     // Replicate right-hand side frames for the next iteration, these might change.
-                    rhsFrames[i + previousSize * j] = rhsFrames[i];
+                    rhsFrames[index] = rhsFrames[i];
                 }
             }
 
@@ -167,10 +172,8 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
 
 void ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames & frames, PoeTerms & poeTerms)
 {
-    std::vector<KDL::Frame> pre, post;
-
     // Leftmost known terms of the PoE.
-    if (recalculateFrames(solutions, pre, poeTerms, false))
+    if (std::vector<KDL::Frame> pre; recalculateFrames(solutions, pre, poeTerms, false))
     {
         for (int i = 0; i < solutions.size(); i++)
         {
@@ -179,7 +182,7 @@ void ScrewTheoryIkProblem::recalculateFrames(const Solutions & solutions, Frames
     }
 
     // Rightmost known terms of the PoE.
-    if (recalculateFrames(solutions, post, poeTerms, true))
+    if (std::vector<KDL::Frame> post; recalculateFrames(solutions, post, poeTerms, true))
     {
         for (int i = 0; i < solutions.size(); i++)
         {
@@ -261,7 +264,7 @@ KDL::Frame ScrewTheoryIkProblem::transformPoint(const KDL::JntArray & jointValue
         {
             if (foundKnown || foundUnknown)
             {
-                // Only skip this if we have a sequence of aldeady-computed terms in the
+                // Only skip this if we have a sequence of already-computed terms in the
                 // rightmost end of the PoE.
                 break;
             }

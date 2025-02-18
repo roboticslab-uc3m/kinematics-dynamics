@@ -178,8 +178,10 @@ private:
     // we own these, resources freed in destructor
     const Steps steps;
 
-    const bool reversed;
+    PoeTerms poeTerms;
+    Frames rhsFrames;
 
+    const bool reversed;
     const int soln;
 };
 
