@@ -6,7 +6,7 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-bool ConfigurationSelector::configure(const std::vector<KDL::JntArray> & solutions)
+bool ConfigurationSelector::configure(const std::vector<KDL::JntArray> & solutions, const std::vector<bool> & reachability)
 {
     configs.resize(solutions.size());
 
@@ -15,7 +15,7 @@ bool ConfigurationSelector::configure(const std::vector<KDL::JntArray> & solutio
     for (int i = 0; i < solutions.size(); i++)
     {
         configs[i].store(&solutions[i]);
-        anyValid |= validate(configs[i]);
+        anyValid |= reachability[i] && validate(configs[i]);
     }
 
     return anyValid;

@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include <algorithm> // std::all_of
+
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames.hpp>
@@ -303,7 +305,8 @@ public:
         ASSERT_EQ(ikProblem->solutions(), soln);
 
         ScrewTheoryIkProblem::Solutions solutions;
-        ASSERT_TRUE(ikProblem->solve(H_S_T_q_ST, q, solutions));
+        auto reachability = ikProblem->solve(H_S_T_q_ST, q, solutions);
+        ASSERT_TRUE(std::all_of(reachability.begin(), reachability.end(), [](bool r) { return r; }));
         delete ikProblem;
 
         bool match = false;
@@ -1257,7 +1260,8 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     ASSERT_EQ(ikProblem->solutions(), 8);
 
     ScrewTheoryIkProblem::Solutions solutions;
-    ASSERT_TRUE(ikProblem->solve(H, q, solutions));
+    auto reachability = ikProblem->solve(H, q, solutions);
+    ASSERT_TRUE(std::all_of(reachability.begin(), reachability.end(), [](bool b) { return b; }));
 
     KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
     KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);
@@ -1266,7 +1270,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
     ConfigurationSelector * config = confFactory.create();
 
     ASSERT_TRUE(config);
-    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->configure(solutions, reachability));
     ASSERT_TRUE(config->findOptimalConfiguration(q));
 
     KDL::JntArray qSolved;
@@ -1277,10 +1281,11 @@ TEST_F(ScrewTheoryTest, ConfigurationSelector)
 
     H.p += {0.01, 0, 0}; // add a tiny displacement
 
-    ASSERT_TRUE(ikProblem->solve(H, q, solutions));
+    reachability = ikProblem->solve(H, q, solutions);
+    ASSERT_TRUE(std::all_of(reachability.begin(), reachability.end(), [](bool b) { return b; }));
     delete ikProblem;
 
-    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->configure(solutions, reachability));
     ASSERT_TRUE(config->findOptimalConfiguration(q));
 
     config->retrievePose(qSolved);
@@ -1309,7 +1314,8 @@ TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
     ASSERT_EQ(ikProblem->solutions(), 8);
 
     ScrewTheoryIkProblem::Solutions solutions;
-    ASSERT_TRUE(ikProblem->solve(H, q, solutions));
+    auto reachability = ikProblem->solve(H, q, solutions);
+    ASSERT_TRUE(std::all_of(reachability.begin(), reachability.end(), [](bool b) { return b; }));
 
     KDL::JntArray qMin = fillJointValues(poe.size(), -KDL::PI);
     KDL::JntArray qMax = fillJointValues(poe.size(), KDL::PI);
@@ -1320,7 +1326,7 @@ TEST_F(ScrewTheoryTest, ConfigurationSelectorGait)
     KDL::JntArray qInitial(poe.size());
 
     ASSERT_TRUE(config);
-    ASSERT_TRUE(config->configure(solutions));
+    ASSERT_TRUE(config->configure(solutions, reachability));
     ASSERT_TRUE(config->findOptimalConfiguration(qInitial));
 
     KDL::JntArray qSolved;

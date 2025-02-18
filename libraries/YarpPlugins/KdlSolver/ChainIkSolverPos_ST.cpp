@@ -2,7 +2,7 @@
 
 #include "ChainIkSolverPos_ST.hpp"
 
-#include <algorithm> // std::transform
+#include <algorithm> // std::none_of, std::transform
 #include <iterator> // std::back_inserter
 
 #include <yarp/os/LogStream.h>
@@ -42,9 +42,14 @@ int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Fram
 
     std::vector<KDL::JntArray> solutions;
 
-    bool ret = problem->solve(p_in, q_init, solutions);
+    auto reachability = problem->solve(p_in, q_init, solutions);
 
-    if (!config->configure(solutions))
+    if (std::none_of(reachability.begin(), reachability.end(), [](bool r) { return r; }))
+    {
+        return (error = E_NOT_REACHABLE);
+    }
+
+    if (!config->configure(solutions, reachability))
     {
         return (error = E_OUT_OF_LIMITS);
     }
@@ -56,7 +61,7 @@ int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Fram
 
     config->retrievePose(q_out);
 
-    return (error = ret ? E_NOERROR : E_NOT_REACHABLE);
+    return (error = E_NOERROR);
 }
 
 // -----------------------------------------------------------------------------

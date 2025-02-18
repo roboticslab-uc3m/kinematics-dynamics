@@ -42,7 +42,7 @@ public:
      *
      * @return True/false on success/failure.
      */
-    virtual bool configure(const std::vector<KDL::JntArray> & solutions);
+    virtual bool configure(const std::vector<KDL::JntArray> & solutions, const std::vector<bool> & reachability);
 
     /**
      * @brief Analyzes available configurations and selects the optimal one.

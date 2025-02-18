@@ -122,11 +122,11 @@ public:
      * a singularity is found.
      * @param solutions Output vector of solutions stored as joint arrays.
      *
-     * @return True if all solutions are reachable, false otherwise.
+     * @return Vector of Booleans indicating whether the associated solution is reachable.
      */
-    bool solve(const KDL::Frame & H_S_T, const KDL::JntArray & reference, Solutions & solutions);
+    std::vector<bool> solve(const KDL::Frame & H_S_T, const KDL::JntArray & reference, Solutions & solutions);
 
-    bool solve(const KDL::Frame & H_S_T, Solutions & solutions)
+    std::vector<bool> solve(const KDL::Frame & H_S_T, Solutions & solutions)
     {
         return solve(H_S_T, KDL::JntArray(poe.size()), solutions);
     }
@@ -180,6 +180,7 @@ private:
 
     PoeTerms poeTerms;
     Frames rhsFrames;
+    std::vector<bool> reachability;
 
     const bool reversed;
     const int soln;

@@ -62,6 +62,7 @@ ScrewTheoryIkProblem::ScrewTheoryIkProblem(const PoeExpression & _poe, const Ste
 {
     poeTerms.reserve(soln);
     rhsFrames.reserve(soln);
+    reachability.reserve(soln);
 }
 
 // -----------------------------------------------------------------------------
@@ -76,21 +77,23 @@ ScrewTheoryIkProblem::~ScrewTheoryIkProblem()
 
 // -----------------------------------------------------------------------------
 
-bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray & reference, Solutions & solutions)
+std::vector<bool> ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray & reference, Solutions & solutions)
 {
     solutions.clear();
+    rhsFrames.clear();
+    reachability.clear();
 
     // Reserve space in memory to avoid additional allocations on runtime.
     solutions.reserve(soln);
-    solutions.emplace_back(poe.size()); // dummy value
+
+    // Insert a dummy value to avoid accessing an empty vector.
+    solutions.emplace_back(poe.size());
+    rhsFrames.emplace_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
+    reachability.emplace_back(true);
 
     poeTerms.assign(poe.size(), EXP_UNKNOWN);
 
-    rhsFrames.clear();
-    rhsFrames.emplace_back((reversed ? H_S_T.Inverse() : H_S_T) * poe.getTransform().Inverse());
-
     bool firstIteration = true;
-    bool reachable = true;
 
     ScrewTheoryIkSubproblem::Solutions partialSolutions;
 
@@ -114,8 +117,9 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
             const KDL::Frame & H = transformPoint(solutions[i], poeTerms);
 
             // Actually solve each subproblem, use current right-hand side of PoE to obtain
-            // the right-hand side of said subproblem.
-            reachable &= subproblem->solve(rhsFrames[i], H, referenceValues, partialSolutions);
+            // the right-hand side of said subproblem. Local reachability is common to all
+            // partial solutions, and will be and-ed with the global reachability status.
+            bool reachable = subproblem->solve(rhsFrames[i], H, referenceValues, partialSolutions) & reachability[i];
 
             // The global number of solutions is increased by this step.
             if (partialSolutions.size() > 1)
@@ -125,6 +129,7 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
                 // Noop if current size is not less than requested.
                 solutions.resize(partialSize);
                 rhsFrames.resize(partialSize);
+                reachability.resize(partialSize);
 
                 for (int j = 1; j < partialSolutions.size(); j++)
                 {
@@ -135,6 +140,9 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
 
                     // Replicate right-hand side frames for the next iteration, these might change.
                     rhsFrames[index] = rhsFrames[i];
+
+                    // Replicate reachability status.
+                    reachability[index] = reachability[i];
                 }
             }
 
@@ -159,13 +167,16 @@ bool ScrewTheoryIkProblem::solve(const KDL::Frame & H_S_T, const KDL::JntArray &
                     // Store the final value in the desired index, don't shuffle it after this point.
                     solutions[i + previousSize * j](id) = theta;
                 }
+
+                // Store reachability status.
+                reachability[i + previousSize * j] = reachable;
             }
         }
 
         firstIteration = false;
     }
 
-    return reachable;
+    return reachability; // returns a copy
 }
 
 // -----------------------------------------------------------------------------

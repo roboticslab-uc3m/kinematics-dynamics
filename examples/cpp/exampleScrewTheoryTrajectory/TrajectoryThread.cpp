@@ -2,7 +2,7 @@
 
 #include "TrajectoryThread.hpp"
 
-#include <algorithm>
+#include <algorithm> // std::none_of, std::transform
 #include <vector>
 
 #include <yarp/os/LogStream.h>
@@ -38,13 +38,14 @@ void TrajectoryThread::run()
     printCartesianCoordinates(H_S_T, movementTime);
 
     std::vector<KDL::JntArray> solutions;
+    auto reachability = ikProblem->solve(H_S_T, solutions);
 
-    if (!ikProblem->solve(H_S_T, solutions))
+    if (std::none_of(reachability.begin(), reachability.end(), [](bool r) { return r; }))
     {
         yWarning() << "IK exact solution not found";
     }
 
-    if (!ikConfig->configure(solutions))
+    if (!ikConfig->configure(solutions, reachability))
     {
         yError() << "IK solutions out of joint limits";
         return;
