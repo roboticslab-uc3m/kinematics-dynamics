@@ -42,12 +42,7 @@ namespace roboticslab
  *
  * @return Resulting square matrix.
  */
-inline KDL::Rotation vectorPow2(const KDL::Vector & v)
-{
-    return KDL::Rotation(v.x() * v.x(), v.x() * v.y(), v.x() * v.z(),
-                         v.x() * v.y(), v.y() * v.y(), v.y() * v.z(),
-                         v.x() * v.z(), v.y() * v.z(), v.z() * v.z());
-}
+KDL::Rotation vectorPow2(const KDL::Vector & v);
 
 /**
  * @ingroup ScrewTheoryLib
@@ -61,25 +56,7 @@ inline KDL::Rotation vectorPow2(const KDL::Vector & v)
  *
  * @return Normalized angle.
  */
-inline double normalizeAngle(double angle)
-{
-    if (KDL::Equal(std::abs(angle), KDL::PI))
-    {
-        return KDL::PI;
-    }
-    else if (angle > KDL::PI)
-    {
-        return angle - 2 * KDL::PI;
-    }
-    else if (angle < -KDL::PI)
-    {
-        return angle + 2 * KDL::PI;
-    }
-    else
-    {
-        return angle;
-    }
-}
+double normalizeAngle(double angle);
 
 } // namespace roboticslab
 

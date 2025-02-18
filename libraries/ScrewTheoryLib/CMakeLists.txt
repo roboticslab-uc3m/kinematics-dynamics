@@ -8,6 +8,7 @@ cmake_dependent_option(ENABLE_ScrewTheoryLib "Enable/disable ScrewTheoryLib libr
 if(ENABLE_ScrewTheoryLib)
 
     add_library(ScrewTheoryLib SHARED ScrewTheoryTools.hpp
+                                      ScrewTheoryTools.cpp
                                       MatrixExponential.hpp
                                       MatrixExponential.cpp
                                       ProductOfExponentials.hpp
