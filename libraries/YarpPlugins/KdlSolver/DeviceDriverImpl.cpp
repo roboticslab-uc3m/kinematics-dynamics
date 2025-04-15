@@ -2,7 +2,8 @@
 
 #include "KdlSolver.hpp"
 
-#include <sstream>
+#include <cmath>
+
 #include <string>
 
 #include <yarp/os/Bottle.h>
@@ -33,113 +34,35 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_KINEMATICS = "none.ini";
-constexpr auto DEFAULT_NUM_LINKS = 1;
-constexpr auto DEFAULT_EPS_POS = 1e-5;
-constexpr auto DEFAULT_EPS_VEL = 1e-5;
-constexpr auto DEFAULT_MAXITER_POS = 1000;
-constexpr auto DEFAULT_MAXITER_VEL = 150;
-constexpr auto DEFAULT_IK_POS_SOLVER = "st";
-constexpr auto DEFAULT_IK_VEL_SOLVER = "pinv";
-constexpr auto DEFAULT_LMA_WEIGHTS = "1 1 1 0.1 0.1 0.1";
-constexpr auto DEFAULT_LAMBDA = 0.01;
-constexpr auto DEFAULT_STRATEGY = "leastOverallAngularDisplacement";
-
 // ------------------- DeviceDriver Related ------------------------------------
 
 namespace
 {
-    bool getMatrixFromProperties(const yarp::os::Searchable & options, const std::string & tag, Eigen::MatrixXd & mat)
+    Eigen::MatrixXd getMatrixFromVector(const std::vector<double> & v)
     {
-        const auto * bH = options.find(tag).asList();
+        const int size = std::sqrt(static_cast<double>(v.size()));
+        Eigen::MatrixXd mat = Eigen::MatrixXd::Identity(size, size);
 
-        if (!bH)
+        for (int r = 0, c = 0, i = 0; i < v.size() && i < mat.rows() * mat.cols(); i++)
         {
-            return false;
-        }
+            mat(r, c) = v[i];
 
-        int i = 0;
-        int j = 0;
-
-        for (int cnt = 0; cnt < bH->size() && cnt < mat.rows() * mat.cols(); cnt++)
-        {
-            mat(i, j) = bH->get(cnt).asFloat64();
-
-            if (++j >= mat.cols())
+            if (++c >= mat.cols())
             {
-                i++;
-                j = 0;
+                r++;
+                c = 0;
             }
         }
 
-        std::stringstream ss;
-        ss << "Matrix " << tag << ":\n" << mat;
-        yCInfo(KDLS) << ss.str();
-
-        return true;
+        return mat;
     }
 
-    bool parseLmaFromBottle(const yarp::os::Bottle & b, Eigen::Matrix<double, 6, 1> & L)
+    KDL::JntArray retrieveJointLimits(const std::vector<double> in)
     {
-        if (b.size() != 6)
-        {
-            yCWarning(KDLS, "Wrong bottle size (expected: %d, was: %zu)", 6, b.size());
-            return false;
-        }
-
-        for (int i = 0; i < b.size(); i++)
-        {
-            L(i) = b.get(i).asFloat64();
-        }
-
-        return true;
-    }
-
-    bool retrieveJointLimits(const yarp::os::Searchable & options, KDL::JntArray & qMin, KDL::JntArray & qMax)
-    {
-        int nrOfJoints = qMin.rows();
-
-        if (!options.check("mins") || !options.check("maxs"))
-        {
-            yCError(KDLS) << "Missing 'mins' and/or 'maxs' option(s)";
-            return false;
-        }
-
-        const auto * maxs = options.findGroup("maxs", "joint upper limits (meters or degrees)").get(1).asList();
-        const auto * mins = options.findGroup("mins", "joint lower limits (meters or degrees)").get(1).asList();
-
-        if (!maxs || maxs->isNull() || !mins || mins->isNull())
-        {
-            yCError(KDLS) << "Empty 'mins' and/or 'maxs' option(s)";
-            return false;
-        }
-
-        if (maxs->size() != nrOfJoints || mins->size() != nrOfJoints)
-        {
-            yCError(KDLS, "chain.getNrOfJoints (%d) != maxs.size() or mins.size() (%zu, %zu)", nrOfJoints, maxs->size(), mins->size());
-            return false;
-        }
-
-        yCDebug(KDLS) << "qMax:" << maxs->toString();
-        yCDebug(KDLS) << "qMin:" << mins->toString();
-
-        for (int motor = 0; motor < nrOfJoints; motor++)
-        {
-            qMax(motor) = maxs->get(motor).asFloat64() * KDL::deg2rad;
-            qMin(motor) = mins->get(motor).asFloat64() * KDL::deg2rad;
-
-            if (qMin(motor) == qMax(motor))
-            {
-                yCWarning(KDLS, "qMin[%1$d] == qMax[%1$d] (%2$f)", motor, qMin(motor));
-            }
-            else if (qMin(motor) > qMax(motor))
-            {
-                yCError(KDLS, "qMin[%1$d] > qMax[%1$d] (%2$f > %3$f)", motor, qMin(motor), qMax(motor));
-                return false;
-            }
-        }
-
-        return true;
+        // https://forum.kde.org/viewtopic.php%3Ff=74&t=94839.html#p331301
+        KDL::JntArray ret;
+        ret.data = Eigen::VectorXd::Map(in.data(), in.size());
+        return ret;
     }
 }
 
@@ -147,62 +70,173 @@ namespace
 
 bool KdlSolver::open(yarp::os::Searchable & config)
 {
-    isQuiet = config.check("quiet", "disable logging");
-
-    //-- kinematics
-    std::string kinematics = config.check("kinematics", yarp::os::Value(DEFAULT_KINEMATICS),
-        "path to file with description of robot kinematics").asString();
-
-    yCInfo(KDLS) << "kinematics:" << kinematics;
-
-    yarp::os::ResourceFinder rf;
-    rf.setDefaultContext("kinematics");
-    std::string kinematicsFullPath = rf.findFileByName(kinematics);
-
-    yarp::os::Property fullConfig;
-    fullConfig.fromConfigFile(kinematicsFullPath.c_str());
-    fullConfig.fromString(config.toString(), false);
-
-    yCDebug(KDLS) << "fullConfig:" << fullConfig.toString();
-
-    //-- numlinks
-    int numLinks = fullConfig.check("numLinks", yarp::os::Value(DEFAULT_NUM_LINKS), "chain number of segments").asInt32();
-    yCInfo(KDLS) << "numLinks:" << numLinks;
-
-    //-- gravity (default)
-    yarp::os::Value defaultGravityValue;
-    yarp::os::Bottle * defaultGravityBottle = defaultGravityValue.asList();
-    defaultGravityBottle->addFloat64(0.0);
-    defaultGravityBottle->addFloat64(0.0);
-    defaultGravityBottle->addFloat64(-9.81);
-
-    //-- gravity
-    yarp::os::Value gravityValue = fullConfig.check("gravity", defaultGravityValue, "gravity vector (SI units)");
-    yarp::os::Bottle * gravityBottle = gravityValue.asList();
-    KDL::Vector gravity(gravityBottle->get(0).asFloat64(), gravityBottle->get(1).asFloat64(), gravityBottle->get(2).asFloat64());
-    yCInfo(KDLS) << "gravity:" << gravityBottle->toString();
-
-    //-- H0
-    Eigen::MatrixXd H0 = Eigen::MatrixXd::Identity(4, 4);
-
-    if (!getMatrixFromProperties(fullConfig, "H0", H0))
+    if (!parseParams(config))
     {
-        yCWarning(KDLS) << "Failed to parse H0, using default identity matrix";
+        yCError(KDLS) << "Failed to parse parameters";
+        return false;
     }
 
-    KDL::Vector kdlVec0(H0(0, 3), H0(1, 3), H0(2, 3));
-    KDL::Rotation kdlRot0(H0(0, 0), H0(0, 1), H0(0, 2), H0(1, 0), H0(1, 1), H0(1, 2), H0(2, 0), H0(2, 1), H0(2, 2));
-    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0, kdlVec0)));
+    yarp::os::Property kinematicsConfig;
 
-    //-- links
+    if (const auto & kinematicsGroup = config.findGroup("KINEMATICS"); !kinematicsGroup.isNull())
+    {
+        yCDebug(KDLS) << "Parsing kinematics group";
+        kinematicsConfig.fromString(kinematicsGroup.toString().c_str());
+    }
+    else if (!m_kinematics.empty())
+    {
+        yCDebug(KDLS) << "Parsing kinematics file" << m_kinematics;
+
+        yarp::os::ResourceFinder rf;
+        rf.setDefaultContext("kinematics");
+
+        std::string kinematicsFullPath = rf.findFileByName(m_kinematics);
+
+        if (!kinematicsConfig.fromConfigFile(kinematicsFullPath.c_str()))
+        {
+            yCError(KDLS) << "Could not configure kinematics from" << kinematicsFullPath;
+            return false;
+        }
+    }
+    else
+    {
+        yCError(KDLS) << "No kinematics group nor file provided";
+        return false;
+    }
+
+    yCDebug(KDLS) << "kinematicsConfig:" << kinematicsConfig.toString();
+
+    if (!makeChain(kinematicsConfig, chain))
+    {
+        yCError(KDLS) << "Failed to create kinematic chain";
+        return false;
+    }
+
+    KDL::Vector gravity(m_gravity[0], m_gravity[1], m_gravity[2]);
+
+    fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
+    idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
+
+    if (m_ikVel == "pinv")
+    {
+        ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain, m_epsVel, m_maxIterVel);
+    }
+    else if (m_ikVel == "wdls")
+    {
+        ikSolverVel = new KDL::ChainIkSolverVel_wdls(chain, m_epsVel, m_maxIterVel);
+
+        auto * temp = dynamic_cast<KDL::ChainIkSolverVel_wdls *>(ikSolverVel);
+        temp->setLambda(m_lambda);
+
+        if (m_weightsJS.size() != std::pow(chain.getNrOfJoints(), 2))
+        {
+            yCWarning(KDLS) << "Illegal size of weightJS";
+        }
+
+        temp->setWeightJS(getMatrixFromVector(m_weightsJS));
+
+        if (m_weightsTS.size() != std::pow(6, 2))
+        {
+            yCWarning(KDLS) << "Illegal size of weightTS";
+        }
+
+        temp->setWeightTS(getMatrixFromVector(m_weightsTS));
+    }
+    else
+    {
+        yCError(KDLS) << "Unsupported IK velocity solver algorithm:" << m_ikVel;
+        return false;
+    }
+
+    if (m_ikPos == "lma")
+    {
+        Eigen::Matrix<double, 6, 1> L(m_weightsLMA.data());
+        ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L, m_epsPos, m_maxIterPos);
+    }
+    else if (m_ikPos == "nrjl")
+    {
+        KDL::JntArray qMax = retrieveJointLimits(m_maxs);
+        KDL::JntArray qMin = retrieveJointLimits(m_mins);
+
+        ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, m_maxIterPos, m_epsPos);
+    }
+    else if (m_ikPos == "st")
+    {
+        KDL::JntArray qMax = retrieveJointLimits(m_maxs);
+        KDL::JntArray qMin = retrieveJointLimits(m_mins);
+
+        if (m_invKinStrategy == "leastOverallAngularDisplacement")
+        {
+            ConfigurationSelectorLeastOverallAngularDisplacementFactory factory(qMin, qMax);
+            ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
+        }
+        else if (m_invKinStrategy == "humanoidGait")
+        {
+            ConfigurationSelectorHumanoidGaitFactory factory(qMin, qMax);
+            ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
+        }
+        else
+        {
+            yCError(KDLS) << "Unsupported IK strategy:" << m_invKinStrategy;
+            return false;
+        }
+
+        if (!ikSolverPos)
+        {
+            yCError(KDLS) << "Unable to solve IK";
+            return false;
+        }
+    }
+    else if (m_ikPos == "id")
+    {
+        KDL::JntArray qMax = retrieveJointLimits(m_maxs);
+        KDL::JntArray qMin = retrieveJointLimits(m_mins);
+
+        ikSolverPos = new ChainIkSolverPos_ID(chain, qMin, qMax, *fkSolverPos);
+    }
+    else
+    {
+        yCError(KDLS) << "Unsupported IK position solver algorithm:" << m_ikPos;
+        return false;
+    }
+
+    originalChain = chain;
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool KdlSolver::makeChain(const yarp::os::Searchable & kinConfig, KDL::Chain & chain)
+{
+    int numLinks = kinConfig.check("numLinks", yarp::os::Value(0), "chain number of segments").asInt32();
+    yCInfo(KDLS) << "numLinks:" << numLinks;
+
+    if (const auto * H0 = kinConfig.find("H0").asList(); H0 != nullptr)
+    {
+        if (H0->size() != 16)
+        {
+            yCError(KDLS) << "Invalid or missing H0 matrix";
+            return false;
+        }
+
+        KDL::Vector kdlVec0(H0->get(3).asFloat64(), H0->get(7).asFloat64(), H0->get(11).asFloat64());
+
+        KDL::Rotation kdlRot0(
+            H0->get(0).asFloat64(), H0->get(1).asFloat64(), H0->get(2).asFloat64(),
+            H0->get(4).asFloat64(), H0->get(5).asFloat64(), H0->get(6).asFloat64(),
+            H0->get(8).asFloat64(), H0->get(9).asFloat64(), H0->get(10).asFloat64());
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRot0, kdlVec0)));
+    }
+
     for (int linkIndex = 0; linkIndex < numLinks; linkIndex++)
     {
         std::string link = "link_" + std::to_string(linkIndex);
-        yarp::os::Bottle & bLink = fullConfig.findGroup(link);
+        yarp::os::Bottle & bLink = kinConfig.findGroup(link);
 
         if (!bLink.isNull())
         {
-            //-- Kinematic
             double linkOffset = bLink.check("offset", yarp::os::Value(0.0), "DH joint angle (degrees)").asFloat64();
             double linkD = bLink.check("D", yarp::os::Value(0.0), "DH link offset (meters)").asFloat64();
             double linkA = bLink.check("A", yarp::os::Value(0.0), "DH link length (meters)").asFloat64();
@@ -211,7 +245,6 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             KDL::Joint axis(KDL::Joint::RotZ);
             KDL::Frame H = KDL::Frame::DH(linkA, linkAlpha * KDL::deg2rad, linkD, linkOffset * KDL::deg2rad);
 
-            //-- Dynamic
             if (bLink.check("mass") && bLink.check("cog") && bLink.check("inertia"))
             {
                 double linkMass = bLink.check("mass", yarp::os::Value(0.0), "link mass (SI units)").asFloat64();
@@ -239,7 +272,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             std::string xyzLink = "xyzLink_" + std::to_string(linkIndex);
             yCWarning(KDLS, "Not found: \"%s\", looking for \"%s\" instead.", link.c_str(), xyzLink.c_str());
 
-            yarp::os::Bottle & bXyzLink = fullConfig.findGroup(xyzLink);
+            yarp::os::Bottle & bXyzLink = kinConfig.findGroup(xyzLink);
 
             if (bXyzLink.isNull())
             {
@@ -288,164 +321,26 @@ bool KdlSolver::open(yarp::os::Searchable & config)
         }
     }
 
-    //-- HN
-    Eigen::MatrixXd HN = Eigen::MatrixXd::Identity(4, 4);
-
-    if (!getMatrixFromProperties(fullConfig, "HN", HN))
+    if (const auto * HN = kinConfig.find("HN").asList(); HN != nullptr)
     {
-        yCWarning(KDLS) << "Failed to parse HN, using default identity matrix";
-    }
+        if (HN->size() != 16)
+        {
+            yCError(KDLS) << "Invalid HN matrix";
+            return false;
+        }
 
-    KDL::Vector kdlVecN(HN(0, 3), HN(1, 3), HN(2, 3));
-    KDL::Rotation kdlRotN(HN(0, 0), HN(0, 1), HN(0, 2), HN(1, 0), HN(1, 1), HN(1, 2), HN(2, 0), HN(2, 1), HN(2, 2));
-    chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN, kdlVecN)));
+        KDL::Vector kdlVecN(HN->get(3).asFloat64(), HN->get(7).asFloat64(), HN->get(11).asFloat64());
+
+        KDL::Rotation kdlRotN(
+            HN->get(0).asFloat64(), HN->get(1).asFloat64(), HN->get(2).asFloat64(),
+            HN->get(4).asFloat64(), HN->get(5).asFloat64(), HN->get(6).asFloat64(),
+            HN->get(8).asFloat64(), HN->get(9).asFloat64(), HN->get(10).asFloat64());
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(kdlRotN, kdlVecN)));
+    }
 
     yCInfo(KDLS) << "Chain number of segments:" << chain.getNrOfSegments();
     yCInfo(KDLS) << "Chain number of joints:" << chain.getNrOfJoints();
-
-    fkSolverPos = new KDL::ChainFkSolverPos_recursive(chain);
-    idSolver = new KDL::ChainIdSolver_RNE(chain, gravity);
-
-    //-- IK vel solver algorithm.
-    auto ikVel = fullConfig.check("ikVel", yarp::os::Value(DEFAULT_IK_VEL_SOLVER), "IK velocity solver algorithm (pinv, wdls)").asString();
-
-    if (ikVel == "pinv")
-    {
-        double eps = fullConfig.check("epsVel", yarp::os::Value(DEFAULT_EPS_VEL), "IK velocity solver precision (meters)").asFloat64();
-        double maxIter = fullConfig.check("maxIterVel", yarp::os::Value(DEFAULT_MAXITER_VEL), "IK velocity solver max iterations").asInt32();
-
-        ikSolverVel = new KDL::ChainIkSolverVel_pinv(chain, eps, maxIter);
-    }
-    else if (ikVel == "wdls")
-    {
-        double lambda = fullConfig.check("lambda", yarp::os::Value(DEFAULT_LAMBDA), "lambda parameter for diff IK").asFloat64();
-        double eps = fullConfig.check("epsVel", yarp::os::Value(DEFAULT_EPS_VEL), "IK velocity solver precision (meters)").asFloat64();
-        double maxIter = fullConfig.check("maxIterVel", yarp::os::Value(DEFAULT_MAXITER_VEL), "IK velocity solver max iterations").asInt32();
-
-        ikSolverVel = new KDL::ChainIkSolverVel_wdls(chain, eps, maxIter);
-
-        auto * temp = dynamic_cast<KDL::ChainIkSolverVel_wdls *>(ikSolverVel);
-        temp->setLambda(lambda);
-
-        Eigen::MatrixXd wJS = Eigen::MatrixXd::Identity(chain.getNrOfJoints(), chain.getNrOfJoints());
-
-        if (!getMatrixFromProperties(fullConfig, "weightJS", wJS))
-        {
-            yCWarning(KDLS) << "Failed to parse weightJS, using default identity matrix";
-        }
-
-        temp->setWeightJS(wJS);
-
-        Eigen::MatrixXd wTS = Eigen::MatrixXd::Identity(6, 6);
-
-        if (!getMatrixFromProperties(fullConfig, "weightTS", wTS))
-        {
-            yCWarning(KDLS) << "Failed to parse weightTS, using default identity matrix";
-        }
-
-        temp->setWeightTS(wTS);
-    }
-    else
-    {
-        yCError(KDLS) << "Unsupported IK velocity solver algorithm:" << ikVel.c_str();
-        return false;
-    }
-
-    //-- IK pos solver algorithm.
-    auto ik = fullConfig.check("ik", yarp::os::Value(DEFAULT_IK_POS_SOLVER), "IK solver algorithm (lma, nrjl, st, id)"); // back-compat
-    auto ikPos = fullConfig.check("ikPos", ik, "IK position solver algorithm (lma, nrjl, st, id)").asString();
-
-    if (ikPos == "lma")
-    {
-        std::string weightsStr = fullConfig.check("weights", yarp::os::Value(DEFAULT_LMA_WEIGHTS), "LMA algorithm weights (bottle of 6 doubles)").asString();
-        yarp::os::Bottle weights(weightsStr);
-        Eigen::Matrix<double, 6, 1> L;
-
-        if (!parseLmaFromBottle(weights, L))
-        {
-            yCError(KDLS) << "Unable to parse LMA weights";
-            return false;
-        }
-
-        double eps = fullConfig.check("epsPos", yarp::os::Value(DEFAULT_EPS_POS), "IK position solver precision (meters)").asFloat64();
-        double maxIter = fullConfig.check("maxIterPos", yarp::os::Value(DEFAULT_MAXITER_POS), "IK position solver max iterations").asInt32();
-
-        ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L, eps, maxIter);
-    }
-    else if (ikPos == "nrjl")
-    {
-        KDL::JntArray qMax(chain.getNrOfJoints());
-        KDL::JntArray qMin(chain.getNrOfJoints());
-
-        if (!retrieveJointLimits(fullConfig, qMin, qMax))
-        {
-            yCError(KDLS) << "Unable to retrieve joint limits";
-            return false;
-        }
-
-        double eps = fullConfig.check("epsPos", yarp::os::Value(DEFAULT_EPS_POS), "IK position solver precision (meters)").asFloat64();
-        double maxIter = fullConfig.check("maxIterPos", yarp::os::Value(DEFAULT_MAXITER_POS), "IK position solver max iterations").asInt32();
-
-        ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, maxIter, eps);
-    }
-    else if (ikPos == "st")
-    {
-        KDL::JntArray qMax(chain.getNrOfJoints());
-        KDL::JntArray qMin(chain.getNrOfJoints());
-
-        //-- Joint limits.
-        if (!retrieveJointLimits(fullConfig, qMin, qMax))
-        {
-            yCError(KDLS) << "Unable to retrieve joint limits";
-            return false;
-        }
-
-        //-- IK configuration selection strategy.
-        std::string strategy = fullConfig.check("invKinStrategy", yarp::os::Value(DEFAULT_STRATEGY), "IK configuration strategy").asString();
-
-        if (strategy == "leastOverallAngularDisplacement")
-        {
-            ConfigurationSelectorLeastOverallAngularDisplacementFactory factory(qMin, qMax);
-            ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
-        }
-        else if (strategy == "humanoidGait")
-        {
-            ConfigurationSelectorHumanoidGaitFactory factory(qMin, qMax);
-            ikSolverPos = ChainIkSolverPos_ST::create(chain, factory);
-        }
-        else
-        {
-            yCError(KDLS) << "Unsupported IK strategy:" << strategy;
-            return false;
-        }
-
-        if (!ikSolverPos)
-        {
-            yCError(KDLS) << "Unable to solve IK";
-            return false;
-        }
-    }
-    else if (ikPos == "id")
-    {
-        KDL::JntArray qMax(chain.getNrOfJoints());
-        KDL::JntArray qMin(chain.getNrOfJoints());
-
-        //-- Joint limits.
-        if (!retrieveJointLimits(fullConfig, qMin, qMax))
-        {
-            yCError(KDLS) << "Unable to retrieve joint limits";
-            return false;
-        }
-
-        ikSolverPos = new ChainIkSolverPos_ID(chain, qMin, qMax, *fkSolverPos);
-    }
-    else
-    {
-        yCError(KDLS) << "Unsupported IK position solver algorithm:" << ikPos.c_str();
-        return false;
-    }
-
-    originalChain = chain;
 
     return true;
 }

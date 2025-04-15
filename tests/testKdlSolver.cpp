@@ -15,27 +15,28 @@ namespace roboticslab::test
 
 /**
  * @ingroup kinematics-dynamics-tests
- * @brief Tests \ref KdlSolver ikin and idyn on a simple mechanism.
+ * @brief Tests @ref KdlSolver ikin and idyn on a simple mechanism.
  */
 class KdlSolverTest : public testing::Test
 {
 public:
     void SetUp() override
     {
-        using yarp::os::Value;
+        yarp::os::Property solverOptions {
+            {"device", yarp::os::Value("KdlSolver")},
+            {"ikPos", yarp::os::Value("st")}
+        };
 
-        yarp::os::Bottle opts;
-        opts.add(Value::makeList("device KdlSolver"));
-        opts.add(Value::makeList("ikPos st"));
-        opts.add(Value::makeList("gravity (0.0 -10.0 0.0)")); // note gravity is applied on the Y axis
-        opts.add(Value::makeList("numLinks 2"));
-        // the CoG is referred to the segment's tip frame: https://github.com/orocos/orocos_kinematics_dynamics/issues/170
-        opts.add(Value::makeList("link_0 (offset  0.0) (D 0.0) (A 1.0) (alpha 0.0) (mass 1.0) (cog -0.5 0.0 0.0) (inertia 1.0 1.0 1.0)"));
-        opts.add(Value::makeList("link_1 (offset 90.0) (D 0.0) (A 1.0) (alpha 0.0) (mass 1.0) (cog -0.5 0.0 0.0) (inertia 1.0 1.0 1.0)"));
-        opts.add(Value::makeList("mins (-180.0 -180.0)"));
-        opts.add(Value::makeList("maxs (180.0 180.0)"));
+        solverOptions.put("gravity", yarp::os::Value::makeList("0.0 -10.0 0.0")); // note gravity is applied on the Y axis
+        solverOptions.put("mins", yarp::os::Value::makeList("-180.0 -180.0"));
+        solverOptions.put("maxs", yarp::os::Value::makeList("180.0 180.0"));
 
-        if (!solverDevice.open(opts))
+        auto & kinematics = solverOptions.addGroup("KINEMATICS");
+        kinematics.put("numLinks", 2);
+        kinematics.fromString("(link_0 (offset  0.0) (D 0.0) (A 1.0) (alpha 0.0) (mass 1.0) (cog -0.5 0.0 0.0) (inertia 1.0 1.0 1.0))", false);
+        kinematics.fromString("(link_1 (offset 90.0) (D 0.0) (A 1.0) (alpha 0.0) (mass 1.0) (cog -0.5 0.0 0.0) (inertia 1.0 1.0 1.0))", false);
+
+        if (!solverDevice.open(solverOptions))
         {
             yError() << "Unable to open solver device";
             return;
