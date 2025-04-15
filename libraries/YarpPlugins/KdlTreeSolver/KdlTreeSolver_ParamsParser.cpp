@@ -8,19 +8,19 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 13:52:31 2025
+// Generated on: Wed Apr 16 13:53:33 2025
 
 
-#include "KdlSolver_ParamsParser.h"
+#include "KdlTreeSolver_ParamsParser.h"
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Value.h>
 
 namespace {
-    YARP_LOG_COMPONENT(KdlSolverParamsCOMPONENT, "yarp.device.KdlSolver")
+    YARP_LOG_COMPONENT(KdlTreeSolverParamsCOMPONENT, "yarp.device.KdlTreeSolver")
 }
 
 
-KdlSolver_ParamsParser::KdlSolver_ParamsParser()
+KdlTreeSolver_ParamsParser::KdlTreeSolver_ParamsParser()
 {
     //Default value of parametergravity
     {
@@ -38,25 +38,6 @@ KdlSolver_ParamsParser::KdlSolver_ParamsParser()
         else
         {
              yError() <<"parameter 'gravity' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parameterweightsLMA
-    {
-        m_weightsLMA.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_weightsLMA_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_weightsLMA.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'weightsLMA' is not a properly formatted bottle";
         }
     }
 
@@ -136,66 +117,68 @@ KdlSolver_ParamsParser::KdlSolver_ParamsParser()
         }
     }
 
+    //Default value of parametermaxvels
+    {
+        m_maxvels.clear();
+        yarp::os::Value tempVal;
+        tempVal.fromString(m_maxvels_defaultValue.c_str());
+        yarp::os::Bottle* tempBot = tempVal.asList();
+        if (tempBot && tempBot->size()!=0)
+        {
+            for (size_t i=0; i<tempBot->size(); i++)
+            {
+                m_maxvels.push_back(tempBot->get(i).asFloat64());
+            }
+        }
+        else
+        {
+             yError() <<"parameter 'maxvels' is not a properly formatted bottle";
+        }
+    }
+
 }
 
 
-std::vector<std::string> KdlSolver_ParamsParser::getListOfParams() const
+std::vector<std::string> KdlTreeSolver_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("quiet");
     params.push_back("kinematics");
     params.push_back("gravity");
     params.push_back("ikPos");
-    params.push_back("ikVel");
     params.push_back("epsPos");
     params.push_back("maxIterPos");
-    params.push_back("epsVel");
-    params.push_back("maxIterVel");
+    params.push_back("vTranslMax");
+    params.push_back("vRotMax");
     params.push_back("lambda");
-    params.push_back("weightsLMA");
     params.push_back("weightsJS");
     params.push_back("weightsTS");
-    params.push_back("invKinStrategy");
     params.push_back("mins");
     params.push_back("maxs");
+    params.push_back("maxvels");
     return params;
 }
 
 
-bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & config)
+bool      KdlTreeSolver_ParamsParser::parseParams(const yarp::os::Searchable & config)
 {
     //Check for --help option
     if (config.check("help"))
     {
-        yCInfo(KdlSolverParamsCOMPONENT) << getDocumentationOfDeviceParams();
+        yCInfo(KdlTreeSolverParamsCOMPONENT) << getDocumentationOfDeviceParams();
     }
 
     std::string config_string = config.toString();
     yarp::os::Property prop_check(config_string.c_str());
-    //Parser of parameter quiet
-    {
-        if (config.check("quiet"))
-        {
-            m_quiet = config.find("quiet").asBool();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'quiet' using value:" << m_quiet;
-        }
-        else
-        {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'quiet' using DEFAULT value:" << m_quiet;
-        }
-        prop_check.unput("quiet");
-    }
-
     //Parser of parameter kinematics
     {
         if (config.check("kinematics"))
         {
             m_kinematics = config.find("kinematics").asString();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'kinematics' using value:" << m_kinematics;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'kinematics' using value:" << m_kinematics;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'kinematics' using DEFAULT value:" << m_kinematics;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'kinematics' using DEFAULT value:" << m_kinematics;
         }
         prop_check.unput("kinematics");
     }
@@ -217,14 +200,14 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
                 }
                 else
                 {
-                     yCError(KdlSolverParamsCOMPONENT) <<"parameter 'gravity' is not a properly formatted bottle";
+                     yCError(KdlTreeSolverParamsCOMPONENT) <<"parameter 'gravity' is not a properly formatted bottle";
                 }
             }
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'gravity' using value:" << m_gravity;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'gravity' using value:" << m_gravity;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'gravity' using DEFAULT value:" << m_gravity;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'gravity' using DEFAULT value:" << m_gravity;
         }
         prop_check.unput("gravity");
     }
@@ -234,27 +217,13 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         if (config.check("ikPos"))
         {
             m_ikPos = config.find("ikPos").asString();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'ikPos' using value:" << m_ikPos;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'ikPos' using value:" << m_ikPos;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'ikPos' using DEFAULT value:" << m_ikPos;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'ikPos' using DEFAULT value:" << m_ikPos;
         }
         prop_check.unput("ikPos");
-    }
-
-    //Parser of parameter ikVel
-    {
-        if (config.check("ikVel"))
-        {
-            m_ikVel = config.find("ikVel").asString();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'ikVel' using value:" << m_ikVel;
-        }
-        else
-        {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'ikVel' using DEFAULT value:" << m_ikVel;
-        }
-        prop_check.unput("ikVel");
     }
 
     //Parser of parameter epsPos
@@ -262,11 +231,11 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         if (config.check("epsPos"))
         {
             m_epsPos = config.find("epsPos").asFloat64();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'epsPos' using value:" << m_epsPos;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'epsPos' using value:" << m_epsPos;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'epsPos' using DEFAULT value:" << m_epsPos;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'epsPos' using DEFAULT value:" << m_epsPos;
         }
         prop_check.unput("epsPos");
     }
@@ -276,41 +245,41 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         if (config.check("maxIterPos"))
         {
             m_maxIterPos = config.find("maxIterPos").asInt64();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxIterPos' using value:" << m_maxIterPos;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxIterPos' using value:" << m_maxIterPos;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxIterPos' using DEFAULT value:" << m_maxIterPos;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxIterPos' using DEFAULT value:" << m_maxIterPos;
         }
         prop_check.unput("maxIterPos");
     }
 
-    //Parser of parameter epsVel
+    //Parser of parameter vTranslMax
     {
-        if (config.check("epsVel"))
+        if (config.check("vTranslMax"))
         {
-            m_epsVel = config.find("epsVel").asFloat64();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'epsVel' using value:" << m_epsVel;
+            m_vTranslMax = config.find("vTranslMax").asFloat64();
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'vTranslMax' using value:" << m_vTranslMax;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'epsVel' using DEFAULT value:" << m_epsVel;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'vTranslMax' using DEFAULT value:" << m_vTranslMax;
         }
-        prop_check.unput("epsVel");
+        prop_check.unput("vTranslMax");
     }
 
-    //Parser of parameter maxIterVel
+    //Parser of parameter vRotMax
     {
-        if (config.check("maxIterVel"))
+        if (config.check("vRotMax"))
         {
-            m_maxIterVel = config.find("maxIterVel").asInt64();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxIterVel' using value:" << m_maxIterVel;
+            m_vRotMax = config.find("vRotMax").asFloat64();
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'vRotMax' using value:" << m_vRotMax;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxIterVel' using DEFAULT value:" << m_maxIterVel;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'vRotMax' using DEFAULT value:" << m_vRotMax;
         }
-        prop_check.unput("maxIterVel");
+        prop_check.unput("vRotMax");
     }
 
     //Parser of parameter lambda
@@ -318,42 +287,13 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         if (config.check("lambda"))
         {
             m_lambda = config.find("lambda").asFloat64();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'lambda' using value:" << m_lambda;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'lambda' using value:" << m_lambda;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'lambda' using DEFAULT value:" << m_lambda;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'lambda' using DEFAULT value:" << m_lambda;
         }
         prop_check.unput("lambda");
-    }
-
-    //Parser of parameter weightsLMA
-    {
-        if (config.check("weightsLMA"))
-        {
-            {
-                m_weightsLMA.clear();
-                yarp::os::Bottle* tempBot = config.find("weightsLMA").asList();
-                if (tempBot)
-                {
-                    std::string tempBots = tempBot->toString();
-                    for (size_t i=0; i<tempBot->size(); i++)
-                    {
-                        m_weightsLMA.push_back(tempBot->get(i).asFloat64());
-                    }
-                }
-                else
-                {
-                     yCError(KdlSolverParamsCOMPONENT) <<"parameter 'weightsLMA' is not a properly formatted bottle";
-                }
-            }
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'weightsLMA' using value:" << m_weightsLMA;
-        }
-        else
-        {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'weightsLMA' using DEFAULT value:" << m_weightsLMA;
-        }
-        prop_check.unput("weightsLMA");
     }
 
     //Parser of parameter weightsJS
@@ -373,14 +313,14 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
                 }
                 else
                 {
-                     yCError(KdlSolverParamsCOMPONENT) <<"parameter 'weightsJS' is not a properly formatted bottle";
+                     yCError(KdlTreeSolverParamsCOMPONENT) <<"parameter 'weightsJS' is not a properly formatted bottle";
                 }
             }
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'weightsJS' using value:" << m_weightsJS;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'weightsJS' using value:" << m_weightsJS;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'weightsJS' using DEFAULT value:" << m_weightsJS;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'weightsJS' using DEFAULT value:" << m_weightsJS;
         }
         prop_check.unput("weightsJS");
     }
@@ -402,30 +342,16 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
                 }
                 else
                 {
-                     yCError(KdlSolverParamsCOMPONENT) <<"parameter 'weightsTS' is not a properly formatted bottle";
+                     yCError(KdlTreeSolverParamsCOMPONENT) <<"parameter 'weightsTS' is not a properly formatted bottle";
                 }
             }
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'weightsTS' using value:" << m_weightsTS;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'weightsTS' using value:" << m_weightsTS;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'weightsTS' using DEFAULT value:" << m_weightsTS;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'weightsTS' using DEFAULT value:" << m_weightsTS;
         }
         prop_check.unput("weightsTS");
-    }
-
-    //Parser of parameter invKinStrategy
-    {
-        if (config.check("invKinStrategy"))
-        {
-            m_invKinStrategy = config.find("invKinStrategy").asString();
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'invKinStrategy' using value:" << m_invKinStrategy;
-        }
-        else
-        {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'invKinStrategy' using DEFAULT value:" << m_invKinStrategy;
-        }
-        prop_check.unput("invKinStrategy");
     }
 
     //Parser of parameter mins
@@ -445,14 +371,14 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
                 }
                 else
                 {
-                     yCError(KdlSolverParamsCOMPONENT) <<"parameter 'mins' is not a properly formatted bottle";
+                     yCError(KdlTreeSolverParamsCOMPONENT) <<"parameter 'mins' is not a properly formatted bottle";
                 }
             }
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'mins' using value:" << m_mins;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'mins' using value:" << m_mins;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'mins' using DEFAULT value:" << m_mins;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'mins' using DEFAULT value:" << m_mins;
         }
         prop_check.unput("mins");
     }
@@ -474,16 +400,45 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
                 }
                 else
                 {
-                     yCError(KdlSolverParamsCOMPONENT) <<"parameter 'maxs' is not a properly formatted bottle";
+                     yCError(KdlTreeSolverParamsCOMPONENT) <<"parameter 'maxs' is not a properly formatted bottle";
                 }
             }
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxs' using value:" << m_maxs;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxs' using value:" << m_maxs;
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxs' using DEFAULT value:" << m_maxs;
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxs' using DEFAULT value:" << m_maxs;
         }
         prop_check.unput("maxs");
+    }
+
+    //Parser of parameter maxvels
+    {
+        if (config.check("maxvels"))
+        {
+            {
+                m_maxvels.clear();
+                yarp::os::Bottle* tempBot = config.find("maxvels").asList();
+                if (tempBot)
+                {
+                    std::string tempBots = tempBot->toString();
+                    for (size_t i=0; i<tempBot->size(); i++)
+                    {
+                        m_maxvels.push_back(tempBot->get(i).asFloat64());
+                    }
+                }
+                else
+                {
+                     yCError(KdlTreeSolverParamsCOMPONENT) <<"parameter 'maxvels' is not a properly formatted bottle";
+                }
+            }
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxvels' using value:" << m_maxvels;
+        }
+        else
+        {
+            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxvels' using DEFAULT value:" << m_maxvels;
+        }
+        prop_check.unput("maxvels");
     }
 
     /*
@@ -496,12 +451,12 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         {
             if (m_parser_is_strict)
             {
-                yCError(KdlSolverParamsCOMPONENT) << "User asking for parameter: "<<it->name <<" which is unknown to this parser!";
+                yCError(KdlTreeSolverParamsCOMPONENT) << "User asking for parameter: "<<it->name <<" which is unknown to this parser!";
                 extra_params_found = true;
             }
             else
             {
-                yCWarning(KdlSolverParamsCOMPONENT) << "User asking for parameter: "<< it->name <<" which is unknown to this parser!";
+                yCWarning(KdlTreeSolverParamsCOMPONENT) << "User asking for parameter: "<< it->name <<" which is unknown to this parser!";
             }
         }
 
@@ -515,33 +470,30 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
 }
 
 
-std::string      KdlSolver_ParamsParser::getDocumentationOfDeviceParams() const
+std::string      KdlTreeSolver_ParamsParser::getDocumentationOfDeviceParams() const
 {
     std::string doc;
     doc = doc + std::string("\n=============================================\n");
-    doc = doc + std::string("This is the help for device: KdlSolver\n");
+    doc = doc + std::string("This is the help for device: KdlTreeSolver\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'quiet': disable logging\n");
     doc = doc + std::string("'kinematics': path to file with description of robot kinematics\n");
     doc = doc + std::string("'gravity': gravity vector\n");
     doc = doc + std::string("'ikPos': IK position solver algorithm\n");
-    doc = doc + std::string("'ikVel': IK velocity solver algorithm\n");
     doc = doc + std::string("'epsPos': IK position solver precision\n");
     doc = doc + std::string("'maxIterPos': IK position solver max iterations\n");
-    doc = doc + std::string("'epsVel': IK velocity solver precision\n");
-    doc = doc + std::string("'maxIterVel': IK velocity solver max iterations\n");
+    doc = doc + std::string("'vTranslMax': maximum translation speed\n");
+    doc = doc + std::string("'vRotMax': maximum rotation speed\n");
     doc = doc + std::string("'lambda': lambda parameter for diff IK\n");
-    doc = doc + std::string("'weightsLMA': LMA algorithm weights\n");
     doc = doc + std::string("'weightsJS': joint space weights\n");
     doc = doc + std::string("'weightsTS': task space weights\n");
-    doc = doc + std::string("'invKinStrategy': IK configuration strategy\n");
     doc = doc + std::string("'mins': lower bound joint position limits\n");
     doc = doc + std::string("'maxs': upper bound joint position limits\n");
+    doc = doc + std::string("'maxvels': joint velocity limits\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device KdlSolver --quiet false --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos st --ikVel pinv --epsPos 1e-5 --maxIterPos 1000 --epsVel 1e-5 --maxIterVel 150 --lambda 0.01 --weightsLMA \" (1.0 1.0 1.0 0.1 0.1 0.1) \" --weightsJS \" (0.0) \" --weightsTS \" (0.0) \" --invKinStrategy leastOverallAngularDisplacement --mins \" (0.0) \" --maxs \" (0.0) \"\n";
+    doc = doc + " yarpdev --device KdlTreeSolver --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos nrjl --epsPos 1e-5 --maxIterPos 1000 --vTranslMax 1.0 --vRotMax 50.0 --lambda 0.01 --weightsJS \" (0.0) \" --weightsTS \" (0.0) \" --mins \" (0.0) \" --maxs \" (0.0) \" --maxvels \" (0.0) \"\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device KdlSolver\n";
+    doc = doc + " yarpdev --device KdlTreeSolver\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }

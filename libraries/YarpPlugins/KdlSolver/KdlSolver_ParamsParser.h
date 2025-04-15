@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Tue Apr 15 16:38:45 2025
+// Generated on: Wed Apr 16 13:52:31 2025
 
 
 #ifndef KDLSOLVER_PARAMSPARSER_H
@@ -23,24 +23,24 @@
 * This class is the parameters parser for class KdlSolver.
 *
 * These are the used parameters:
-* | Group name | Parameter name | Type           | Units | Default Value                   | Required | Description                                       | Notes |
-* |:----------:|:--------------:|:--------------:|:-----:|:-------------------------------:|:--------:|:-------------------------------------------------:|:-----:|
-* | -          | quiet          | bool           | -     | false                           | 0        | disable logging                                   | -     |
-* | -          | kinematics     | string         | -     | -                               | 0        | path to file with description of robot kinematics | -     |
-* | -          | gravity        | vector<double> | m/s^2 | (0.0 0.0 9.81)                  | 0        | gravity vector                                    | -     |
-* | -          | ikPos          | string         | -     | st                              | 0        | IK position solver algorithm (lma, nrjl, st, id)  | -     |
-* | -          | ikVel          | string         | -     | pinv                            | 0        | IK velocity solver algorithm (pinv, wdls)         | -     |
-* | -          | epsPos         | double         | m     | 1e-5                            | 0        | IK position solver precision                      | -     |
-* | -          | maxIterPos     | int            | -     | 1000                            | 0        | IK position solver max iterations                 | -     |
-* | -          | epsVel         | double         | m     | 1e-5                            | 0        | IK velocity solver precision                      | -     |
-* | -          | maxIterVel     | int            | -     | 150                             | 0        | IK velocity solver max iterations                 | -     |
-* | -          | lambda         | double         | -     | 0.01                            | 0        | lambda parameter for diff IK                      | -     |
-* | -          | weightsLMA     | vector<double> | -     | (1.0 1.0 1.0 0.1 0.1 0.1)       | 0        | LMA algorithm weights                             | -     |
-* | -          | weightsJS      | vector<double> | -     | (0.0)                           | 0        | joint space weights                               | -     |
-* | -          | weightsTS      | vector<double> | -     | (0.0)                           | 0        | task space weights                                | -     |
-* | -          | invKinStrategy | string         | -     | leastOverallAngularDisplacement | 0        | IK configuration strategy                         | -     |
-* | -          | mins           | vector<double> | deg   | (0.0)                           | 0        | lower bound joint position limits                 | -     |
-* | -          | maxs           | vector<double> | deg   | (0.0)                           | 0        | upper bound joint position limits                 | -     |
+* | Group name | Parameter name | Type           | Units | Default Value                   | Required | Description                                       | Notes             |
+* |:----------:|:--------------:|:--------------:|:-----:|:-------------------------------:|:--------:|:-------------------------------------------------:|:-----------------:|
+* | -          | quiet          | bool           | -     | false                           | 0        | disable logging                                   | -                 |
+* | -          | kinematics     | string         | -     | -                               | 0        | path to file with description of robot kinematics | -                 |
+* | -          | gravity        | vector<double> | m/s^2 | (0.0 0.0 9.81)                  | 0        | gravity vector                                    | -                 |
+* | -          | ikPos          | string         | -     | st                              | 0        | IK position solver algorithm                      | lma, nrjl, st, id |
+* | -          | ikVel          | string         | -     | pinv                            | 0        | IK velocity solver algorithm                      | pinv, wdls        |
+* | -          | epsPos         | double         | m     | 1e-5                            | 0        | IK position solver precision                      | -                 |
+* | -          | maxIterPos     | int            | -     | 1000                            | 0        | IK position solver max iterations                 | -                 |
+* | -          | epsVel         | double         | m     | 1e-5                            | 0        | IK velocity solver precision                      | -                 |
+* | -          | maxIterVel     | int            | -     | 150                             | 0        | IK velocity solver max iterations                 | -                 |
+* | -          | lambda         | double         | -     | 0.01                            | 0        | lambda parameter for diff IK                      | -                 |
+* | -          | weightsLMA     | vector<double> | -     | (1.0 1.0 1.0 0.1 0.1 0.1)       | 0        | LMA algorithm weights                             | -                 |
+* | -          | weightsJS      | vector<double> | -     | (0.0)                           | 0        | joint space weights                               | -                 |
+* | -          | weightsTS      | vector<double> | -     | (0.0)                           | 0        | task space weights                                | -                 |
+* | -          | invKinStrategy | string         | -     | leastOverallAngularDisplacement | 0        | IK configuration strategy                         | -                 |
+* | -          | mins           | vector<double> | deg   | (0.0)                           | 0        | lower bound joint position limits                 | -                 |
+* | -          | maxs           | vector<double> | deg   | (0.0)                           | 0        | upper bound joint position limits                 | -                 |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}

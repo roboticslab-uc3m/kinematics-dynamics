@@ -30,12 +30,10 @@ if(NOT SKIP_KdlSolver)
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
-                                    ${orocos_kdl_LIBRARIES}
                                     ROBOTICSLAB::ScrewTheoryLib
                                     ROBOTICSLAB::KdlVectorConverterLib
-                                    ROBOTICSLAB::KinematicsDynamicsInterfaces)
-
-    target_include_directories(KdlSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
+                                    ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                    ROBOTICSLAB::KdlSolverUtils)
 
     yarp_install(TARGETS KdlSolver
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

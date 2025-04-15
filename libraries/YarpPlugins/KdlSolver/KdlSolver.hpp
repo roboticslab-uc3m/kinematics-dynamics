@@ -74,8 +74,6 @@ public:
     bool close() override;
 
 private:
-    static bool makeChain(const yarp::os::Searchable & kinConfig, KDL::Chain & chain);
-
     inline const yarp::os::LogComponent & logc() const
     { return !m_quiet ? KDLS() : KDLS_QUIET(); }
 

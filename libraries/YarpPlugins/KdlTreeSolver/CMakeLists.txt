@@ -4,26 +4,29 @@ endif()
 
 yarp_prepare_plugin(KdlTreeSolver
                     CATEGORY device
-                    TYPE roboticslab::KdlTreeSolver
+                    TYPE KdlTreeSolver
                     INCLUDE KdlTreeSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND")
+                    DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
+                    GENERATE_PARSER)
 
 if(NOT SKIP_KdlTreeSolver)
 
-    yarp_add_plugin(KdlTreeSolver KdlTreeSolver.hpp
-                                  DeviceDriverImpl.cpp
-                                  ICartesianSolverImpl.cpp
-                                  LogComponent.hpp
-                                  LogComponent.cpp)
+    yarp_add_plugin(KdlTreeSolver)
+
+    target_sources(KdlTreeSolver PRIVATE KdlTreeSolver.hpp
+                                         DeviceDriverImpl.cpp
+                                         ICartesianSolverImpl.cpp
+                                         KdlTreeSolver_ParamsParser.h
+                                         KdlTreeSolver_ParamsParser.cpp
+                                         LogComponent.hpp
+                                         LogComponent.cpp)
 
     target_link_libraries(KdlTreeSolver YARP::YARP_os
                                         YARP::YARP_dev
-                                        ${orocos_kdl_LIBRARIES}
                                         ROBOTICSLAB::KdlVectorConverterLib
-                                        ROBOTICSLAB::KinematicsDynamicsInterfaces)
-
-    target_include_directories(KdlTreeSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
+                                        ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                        ROBOTICSLAB::KdlSolverUtils)
 
     yarp_install(TARGETS KdlTreeSolver
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

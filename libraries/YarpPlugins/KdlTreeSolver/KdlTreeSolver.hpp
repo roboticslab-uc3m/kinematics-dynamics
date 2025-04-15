@@ -15,15 +15,13 @@
 #include <kdl/treeidsolver.hpp>
 
 #include "ICartesianSolver.h"
-
-namespace roboticslab
-{
+#include "KdlTreeSolver_ParamsParser.h"
 
 /**
  * @ingroup YarpPlugins
  * @defgroup KdlTreeSolver
  *
- * @brief Contains roboticslab::KdlSolver.
+ * @brief Contains KdlTreeSolver.
  */
 
 /**
@@ -31,15 +29,10 @@ namespace roboticslab
  * @brief The KdlTreeSolver class implements ICartesianSolver.
  */
 class KdlTreeSolver : public yarp::dev::DeviceDriver,
-                      public ICartesianSolver
+                      public roboticslab::ICartesianSolver,
+                      public KdlTreeSolver_ParamsParser
 {
 public:
-    KdlTreeSolver() : fkSolverPos(nullptr),
-                      ikSolverPos(nullptr),
-                      ikSolverVel(nullptr),
-                      idSolver(nullptr)
-    {}
-
     // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --
 
     // Get number of joints for which the solver has been configured.
@@ -55,9 +48,7 @@ public:
     bool restoreOriginalChain() override;
 
     // Change reference frame.
-    bool changeOrigin(const std::vector<double> & x_old_obj,
-                      const std::vector<double> & x_new_old,
-                      std::vector<double> & x_new_obj) override;
+    bool changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj) override;
 
     // Perform forward kinematics.
     bool fwdKin(const std::vector<double> & q, std::vector<double> & x) override;
@@ -66,12 +57,10 @@ public:
     bool poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut) override;
 
     // Perform inverse kinematics.
-    bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q,
-                reference_frame frame) override;
+    bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame) override;
 
     // Perform differential inverse kinematics.
-    bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot,
-                    reference_frame frame) override;
+    bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, reference_frame frame) override;
 
     // Perform inverse dynamics.
     bool invDyn(const std::vector<double> & q, std::vector<double> & t) override;
@@ -87,15 +76,17 @@ public:
     bool close() override;
 
 protected:
+    bool makeTree(const yarp::os::Searchable & config);
+
     std::vector<std::string> endpoints;
     std::map<std::string, std::string> mergedEndpoints;
-    KDL::Tree tree;
-    KDL::TreeFkSolverPos * fkSolverPos;
-    KDL::TreeIkSolverPos * ikSolverPos;
-    KDL::TreeIkSolverVel * ikSolverVel;
-    KDL::TreeIdSolver * idSolver;
-};
 
-} // namespace roboticslab
+    KDL::Tree tree;
+
+    KDL::TreeFkSolverPos * fkSolverPos {nullptr};
+    KDL::TreeIkSolverPos * ikSolverPos {nullptr};
+    KDL::TreeIkSolverVel * ikSolverVel {nullptr};
+    KDL::TreeIdSolver * idSolver {nullptr};
+};
 
 #endif // __KDL_TREE_SOLVER_HPP__
