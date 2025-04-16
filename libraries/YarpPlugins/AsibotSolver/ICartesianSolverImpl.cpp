@@ -77,7 +77,7 @@ namespace
         }
     }
 
-    void computeBaseFrameDiffInvKin(double A1, double A2, double A3, const std::vector<double> & q, yarp::sig::Matrix & Ja)
+    void computeBaseFrameDiffInvKin(double m_A1, double m_A2, double m_A3, const std::vector<double> & q, yarp::sig::Matrix & Ja)
     {
         double s1 = std::sin(q[0]);
         double c1 = std::cos(q[0]);
@@ -90,22 +90,22 @@ namespace
         double s234 = std::sin(q[1] + q[2] + q[3]);
         double c234 = std::cos(q[1] + q[2] + q[3]);
 
-        Ja(0, 0) = -s1 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(0, 1) =  c1 * (A3 * c234 + A2 * c23 + A1 * c2);
-        Ja(0, 2) =  c1 * (A3 * c234 + A2 * c23);
-        Ja(0, 3) =  c1 * A3 * c234;
+        Ja(0, 0) = -s1 * (m_A3 * s234 + m_A2 * s23 + m_A1 * s2);
+        Ja(0, 1) =  c1 * (m_A3 * c234 + m_A2 * c23 + m_A1 * c2);
+        Ja(0, 2) =  c1 * (m_A3 * c234 + m_A2 * c23);
+        Ja(0, 3) =  c1 * m_A3 * c234;
         Ja(0, 4) =  0;
 
-        Ja(1, 0) = c1 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(1, 1) = s1 * (A3 * c234 + A2 * c23 + A1 * c2);
-        Ja(1, 2) = s1 * (A3 * c234 + A2 * c23);
-        Ja(1, 3) = s1 * A3 * c234;
+        Ja(1, 0) = c1 * (m_A3 * s234 + m_A2 * s23 + m_A1 * s2);
+        Ja(1, 1) = s1 * (m_A3 * c234 + m_A2 * c23 + m_A1 * c2);
+        Ja(1, 2) = s1 * (m_A3 * c234 + m_A2 * c23);
+        Ja(1, 3) = s1 * m_A3 * c234;
         Ja(1, 4) = 0;
 
         Ja(2, 0) = 0;
-        Ja(2, 1) = -A3 * s234 - A2 * s23 - A1 * s2;
-        Ja(2, 2) = -A3 * s234 - A2 * s23;
-        Ja(2, 3) = -A3 * s234;
+        Ja(2, 1) = -m_A3 * s234 - m_A2 * s23 - m_A1 * s2;
+        Ja(2, 2) = -m_A3 * s234 - m_A2 * s23;
+        Ja(2, 3) = -m_A3 * s234;
         Ja(2, 4) = 0;
 
         Ja(3, 0) = 0;
@@ -127,7 +127,7 @@ namespace
         Ja(5, 4) = c234;
     }
 
-    void computeTcpFrameDiffInvKin(double A1, double A2, double A3, const std::vector<double> & q, yarp::sig::Matrix & Ja)
+    void computeTcpFrameDiffInvKin(double m_A1, double m_A2, double m_A3, const std::vector<double> & q, yarp::sig::Matrix & Ja)
     {
         double s2 = std::sin(q[1]);
         double c2 = std::cos(q[1]);
@@ -145,21 +145,21 @@ namespace
         double s234 = std::sin(q[1] + q[2] + q[3]);
         double c234 = std::cos(q[1] + q[2] + q[3]);
 
-        Ja(0, 0) = s5 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(0, 1) = c5 * (A3 + A2 * c4 + A1 * c34);
-        Ja(0, 2) = c5 * (A3 + A2 * c4);
-        Ja(0, 3) = c5 * A3;
+        Ja(0, 0) = s5 * (m_A3 * s234 + m_A2 * s23 + m_A1 * s2);
+        Ja(0, 1) = c5 * (m_A3 + m_A2 * c4 + m_A1 * c34);
+        Ja(0, 2) = c5 * (m_A3 + m_A2 * c4);
+        Ja(0, 3) = c5 * m_A3;
         Ja(0, 4) = 0;
 
-        Ja(1, 0) = c5 * (A3 * s234 + A2 * s23 + A1 * s2);
-        Ja(1, 1) = -s5 * (A3 + A2 * c4 + A1 * c34);
-        Ja(1, 2) = -s5 * (A3 + A2 * c4);
-        Ja(1, 3) = -s5 * A3;
+        Ja(1, 0) = c5 * (m_A3 * s234 + m_A2 * s23 + m_A1 * s2);
+        Ja(1, 1) = -s5 * (m_A3 + m_A2 * c4 + m_A1 * c34);
+        Ja(1, 2) = -s5 * (m_A3 + m_A2 * c4);
+        Ja(1, 3) = -s5 * m_A3;
         Ja(1, 4) = 0;
 
         Ja(2, 0) = 0;
-        Ja(2, 1) = A2 * s4 + A1 * s34;
-        Ja(2, 2) = A2 * s4;
+        Ja(2, 1) = m_A2 * s4 + m_A1 * s34;
+        Ja(2, 2) = m_A2 * s4;
         Ja(2, 3) = 0;
         Ja(2, 4) = 0;
 
@@ -258,15 +258,15 @@ bool AsibotSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
     double c234 = std::cos(qInRad[1] + qInRad[2] + qInRad[3]);
 
     // P = prime
-    double prP = A1 * s2 + A2 * s23 + A3 * s234;
-    double phP = A1 * c2 + A2 * c23 + A3 * c234;
+    double prP = m_A1 * s2 + m_A2 * s23 + m_A3 * s234;
+    double phP = m_A1 * c2 + m_A2 * c23 + m_A3 * c234;
     double oyP = q[1] + q[2] + q[3];  // [deg]
 
     x.resize(5);  // translation[3] + rotation[2]
 
     x[0] = prP * c1;
     x[1] = prP * s1;
-    x[2] = phP + A0;  // pz = pzP
+    x[2] = phP + m_A0;  // pz = pzP
     x[3] = oyP;  // = pitchP
     x[4] = q[4];  // = ozPP
 
@@ -350,27 +350,27 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
     double ozdRad = std::atan2(xd_eYZ[1], xd_eYZ[0]);
 
     double prPd = std::sqrt(xd_eYZ[0] * xd_eYZ[0] + xd_eYZ[1] * xd_eYZ[1]);
-    double phPd = xd_eYZ[2] - A0;
+    double phPd = xd_eYZ[2] - m_A0;
     double oyPdRad = xd_eYZ[3];
 
-    if (std::sqrt(prPd * prPd + phPd * phPd) > A1 + A2 + A3)
+    if (std::sqrt(prPd * prPd + phPd * phPd) > m_A1 + m_A2 + m_A3)
     {
         yCError(ASIBOT) << "Target out of reach";
         return false;
     }
 
-    double prWd = prPd - A3 * std::sin(oyPdRad);
-    double phWd = phPd - A3 * std::cos(oyPdRad);
+    double prWd = prPd - m_A3 * std::sin(oyPdRad);
+    double phWd = phPd - m_A3 * std::cos(oyPdRad);
 
     double len_2 = phWd * phWd + prWd * prWd;
 
-    if (std::sqrt(len_2) > A1 + A2)
+    if (std::sqrt(len_2) > m_A1 + m_A2)
     {
         yCError(ASIBOT) << "Target out of reach";
         return false;
     }
 
-    double ct2 = (len_2 - A1 * A1 - A2 * A2) / (2 * A1 * A2);
+    double ct2 = (len_2 - m_A1 * m_A1 - m_A2 * m_A2) / (2 * m_A1 * m_A2);
     double st2 = std::sqrt(1 - ct2 * ct2);  // forces elbow-up in ASIBOT
     //double st2 = -std::sqrt(1 - ct2 * ct2);  // forces elbow-down in ASIBOT
 
@@ -378,12 +378,12 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
     //double t2Rad = std::atan2(-st2, ct2);  // or just '-std::atan(st2, ct2)' (elbow-down)
 
     // 'u': elbow-up; 'd': elbow-down
-    double st1u = ((A1 + A2 * ct2) * prWd - A2 * st2 * phWd) / len_2;
-    double ct1u = ((A1 + A2 * ct2) * phWd + A2 * st2 * prWd) / len_2;
-    // double ct1u = (phWd + A2 * st1 * st2) / (A1 + A2 * ct2);  // alternative method for same result
+    double st1u = ((m_A1 + m_A2 * ct2) * prWd - m_A2 * st2 * phWd) / len_2;
+    double ct1u = ((m_A1 + m_A2 * ct2) * phWd + m_A2 * st2 * prWd) / len_2;
+    // double ct1u = (phWd + m_A2 * st1 * st2) / (m_A1 + m_A2 * ct2);  // alternative method for same result
 
-    double st1d = ((A1 + A2 * ct2) * prWd + A2 * st2 * phWd) / len_2;
-    double ct1d = ((A1 + A2 * ct2) * phWd - A2 * st2 * prWd) / len_2;
+    double st1d = ((m_A1 + m_A2 * ct2) * prWd + m_A2 * st2 * phWd) / len_2;
+    double ct1d = ((m_A1 + m_A2 * ct2) * phWd - m_A2 * st2 * prWd) / len_2;
 
     double t1uRad = std::atan2(st1u, ct1u);
     double t1dRad = std::atan2(st1d, ct1d);
@@ -431,11 +431,11 @@ bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<do
 
     if (frame == BASE_FRAME)
     {
-        computeBaseFrameDiffInvKin(A1, A2, A3, qInRad, Ja);
+        computeBaseFrameDiffInvKin(m_A1, m_A2, m_A3, qInRad, Ja);
     }
     else if (frame == TCP_FRAME)
     {
-        computeTcpFrameDiffInvKin(A1, A2, A3, qInRad, Ja);
+        computeTcpFrameDiffInvKin(m_A1, m_A2, m_A3, qInRad, Ja);
     }
     else
     {

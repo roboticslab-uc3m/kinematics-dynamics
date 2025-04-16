@@ -12,13 +12,16 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_PREFIX = "/CartesianServer";
-constexpr auto DEFAULT_MS = 20;
-
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool CartesianControlServer::open(yarp::os::Searchable& config)
 {
+    if (!parseParams(config))
+    {
+        yCError(CCS) << "Failed to parse parameters";
+        return false;
+    }
+
     yarp::os::Value * name;
 
     if (config.check("subdevice", name))
@@ -55,15 +58,13 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
         yCInfo(CCS) << "Subdevice option not set, will use attach() later";
     }
 
-    auto prefix = config.check("name", yarp::os::Value(DEFAULT_PREFIX), "local port prefix").asString();
-
-    if (!rpcServer.open(prefix + "/rpc:s"))
+    if (!rpcServer.open(m_name + "/rpc:s"))
     {
         yCError(CCS) << "Failed to open RPC port";
         return false;
     }
 
-    if (!commandPort.open(prefix + "/command:i"))
+    if (!commandPort.open(m_name + "/command:i"))
     {
         yCError(CCS) << "Failed to open command port";
         return false;
@@ -75,34 +76,33 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
     rpcServer.setReader(*rpcResponder);
     commandPort.useCallback(*streamResponder);
 
-    int periodInMs = config.check("fkPeriod", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt32();
-
-    if (periodInMs > 0)
+    if (m_fkPeriod > 0)
     {
-        yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);
+        yarp::os::PeriodicThread::setPeriod(m_fkPeriod * 0.001);
 
-        if (!fkOutPort.open(prefix + "/state:o"))
+        if (!fkOutPort.open(m_name + "/state:o"))
         {
             yCError(CCS) << "Failed to open FK stream port";
             return false;
         }
     }
 
-    yarp::os::Value * angleRepr, * coordRepr, * angularUnits;
+    KinRepresentation::coordinate_system coord;
+    KinRepresentation::orientation_system orient;
+    KinRepresentation::angular_units units;
 
-    auto coord = KinRepresentation::coordinate_system::CARTESIAN;
-    auto orient = KinRepresentation::orientation_system::AXIS_ANGLE_SCALED;
-    auto units = KinRepresentation::angular_units::DEGREES;
+    // keep defaults in sync with CartesianControlServer_ParamsParser
+    KinRepresentation::parseEnumerator(m_coordRepr_defaultValue, &coord, KinRepresentation::coordinate_system::CARTESIAN);
+    KinRepresentation::parseEnumerator(m_angleRepr_defaultValue, &orient, KinRepresentation::orientation_system::AXIS_ANGLE_SCALED);
+    KinRepresentation::parseEnumerator(m_angularUnits_defaultValue, &units, KinRepresentation::angular_units::DEGREES);
 
     bool openTransformPort = false;
 
-    if (config.check("coordRepr", coordRepr, "coordinate representation for transform port"))
+    if (m_coordRepr != m_coordRepr_defaultValue)
     {
-        auto coordReprStr = coordRepr->asString();
-
-        if (!KinRepresentation::parseEnumerator(coordReprStr, &coord))
+        if (!KinRepresentation::parseEnumerator(m_coordRepr, &coord))
         {
-            yCWarning(CCS, "Unknown coordRepr \"%s\", falling back to default", coordReprStr.c_str());
+            yCWarning(CCS, "Unknown coordRepr \"%s\", falling back to default", m_coordRepr.c_str());
         }
         else
         {
@@ -110,14 +110,11 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
         }
     }
 
-    if (config.check("angleRepr", angleRepr, "angle representation for transform port"))
+    if (m_angleRepr != m_angleRepr_defaultValue)
     {
-        auto angleReprStr = angleRepr->asString();
-
-        if (!KinRepresentation::parseEnumerator(angleReprStr, &orient))
+        if (!KinRepresentation::parseEnumerator(m_angleRepr, &orient))
         {
-            yCWarning(CCS, "Unknown angleRepr \"%s\", falling back to default", angleReprStr.c_str());
-            return true;
+            yCWarning(CCS, "Unknown angleRepr \"%s\", falling back to default", m_angleRepr.c_str());
         }
         else
         {
@@ -125,19 +122,22 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
         }
     }
 
-    if (config.check("angularUnits", angularUnits, "angular units for transform port"))
+    if (m_angularUnits != m_angularUnits_defaultValue)
     {
-        auto angularUnitsStr = angularUnits->asString();
-
-        if (!KinRepresentation::parseEnumerator(angularUnitsStr, &units))
+        if (!KinRepresentation::parseEnumerator(m_angularUnits, &units, KinRepresentation::angular_units::DEGREES))
         {
-            yCWarning(CCS, "Unknown angularUnits \"%s\", falling back to default", angularUnitsStr.c_str());
-            return true;
+            yCWarning(CCS, "Unknown angularUnits \"%s\", falling back to default", m_angularUnits.c_str());
         }
         else
         {
             openTransformPort = true;
         }
+    }
+
+    if (openTransformPort && coord == KinRepresentation::coordinate_system::NONE && orient == KinRepresentation::orientation_system::NONE)
+    {
+        yCWarning(CCS) << "Transform port not opened, both coordinate and orientation systems are set as NONE";
+        openTransformPort = false;
     }
 
     if (openTransformPort)
@@ -145,7 +145,7 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
         rpcTransformResponder = new RpcTransformResponder(coord, orient, units);
         rpcTransformServer.setReader(*rpcTransformResponder);
 
-        if (!rpcTransformServer.open(prefix + "/rpc_transform:s"))
+        if (!rpcTransformServer.open(m_name + "/rpc_transform:s"))
         {
             yCError(CCS) << "Failed to open transform RPC port";
             return false;

@@ -8,108 +8,85 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_SOLVER = "KdlSolver";
-constexpr auto DEFAULT_ROBOT = "remote_controlboard";
-constexpr auto DEFAULT_GAIN = 0.05;
-constexpr auto DEFAULT_DURATION = 10.0;
-constexpr auto DEFAULT_CMC_PERIOD_MS = 50;
-constexpr auto DEFAULT_WAIT_PERIOD_MS = 30;
-constexpr auto DEFAULT_REFERENCE_FRAME = "base";
-
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool BasicCartesianControl::open(yarp::os::Searchable& config)
 {
-    gain = config.check("controllerGain", yarp::os::Value(DEFAULT_GAIN),
-            "controller gain").asFloat64();
+    if (!parseParams(config))
+    {
+        yCError(BCC) << "Invalid parameters";
+        return false;
+    }
 
-    duration = config.check("trajectoryDuration", yarp::os::Value(DEFAULT_DURATION),
-            "trajectory duration (seconds)").asFloat64();
-
-    cmcPeriodMs = config.check("cmcPeriodMs", yarp::os::Value(DEFAULT_CMC_PERIOD_MS),
-            "CMC rate (milliseconds)").asInt32();
-
-    waitPeriodMs = config.check("waitPeriodMs", yarp::os::Value(DEFAULT_WAIT_PERIOD_MS),
-            "wait command period (milliseconds)").asInt32();
-
-    usePosdMovl = config.check("usePosdMovl", "execute MOVL commands in POSD mode using IK");
-    enableFailFast = config.check("enableFailFast", "enable fail-fast mode for MOVL commands");
-
-    if (enableFailFast && !usePosdMovl)
+    if (m_enableFailFast && !m_usePosdMovl)
     {
         yCError(BCC) << "Cannot use --enableFailFast without --usePosdMovl";
         return false;
     }
 
-    std::string referenceFrameStr = config.check("referenceFrame", yarp::os::Value(DEFAULT_REFERENCE_FRAME),
-            "reference frame (base|tcp)").asString();
-
-    if (referenceFrameStr == "base")
+    if (m_referenceFrame == "base")
     {
         referenceFrame = ICartesianSolver::BASE_FRAME;
     }
-    else if (referenceFrameStr == "tcp")
+    else if (m_referenceFrame == "tcp")
     {
         referenceFrame = ICartesianSolver::TCP_FRAME;
     }
     else
     {
-        yCError(BCC) << "Unsupported reference frame:" << referenceFrameStr;
+        yCError(BCC) << "Unsupported reference frame:" << m_referenceFrame;
         return false;
     }
 
-    auto robotStr = config.check("robot", yarp::os::Value(DEFAULT_ROBOT), "robot device").asString();
-    auto solverStr = config.check("solver", yarp::os::Value(DEFAULT_SOLVER), "cartesian solver device").asString();
-
     yarp::os::Property robotOptions;
     robotOptions.fromString(config.toString());
-    robotOptions.put("device", robotStr);
+    robotOptions.put("device", m_robot);
 
     if (!robotDevice.open(robotOptions))
     {
-        yCError(BCC) << "Robot device not valid:" << robotStr;
+        yCError(BCC) << "Robot device not valid:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iEncoders))
     {
-        yCError(BCC) << "Could not view iEncoders in:" << robotStr;
+        yCError(BCC) << "Could not view iEncoders in:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iPositionControl))
     {
-        yCError(BCC) << "Could not view iPositionControl in:" << robotStr;
+        yCError(BCC) << "Could not view iPositionControl in:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iPositionDirect))
     {
-        yCError(BCC) << "Could not view iPositionDirect in:" << robotStr;
+        yCError(BCC) << "Could not view iPositionDirect in:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iVelocityControl))
     {
-        yCError(BCC) << "Could not view iVelocityControl in:" << robotStr;
+        yCError(BCC) << "Could not view iVelocityControl in:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iTorqueControl))
     {
-        yCError(BCC) << "Could not view iTorqueControl in:" << robotStr;
+        yCError(BCC) << "Could not view iTorqueControl in:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iControlMode))
     {
-        yCError(BCC) << "Could not view iControlMode in:" << robotStr;
+        yCError(BCC) << "Could not view iControlMode in:" << m_robot;
         return false;
     }
 
     if (!robotDevice.view(iPreciselyTimed))
     {
-        yCWarning(BCC, "Could not view iPreciselyTimed in: %s, using local timestamps", robotStr.c_str());
+        yCWarning(BCC, "Could not view iPreciselyTimed in: %s, using local timestamps", m_robot.c_str());
     }
 
     iEncoders->getAxes(&numJoints);
@@ -125,9 +102,8 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     yarp::os::Property solverOptions;
     solverOptions.fromString(config.toString());
-    solverOptions.put("device", solverStr);
+    solverOptions.put("device", m_solver);
 
-    if (!config.check("mins") || !config.check("maxs") || !config.check("maxvels"))
     {
         yCInfo(BCC) << "Using joint limits provided by robot";
 
@@ -135,7 +111,7 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
         if (!robotDevice.view(iControlLimits))
         {
-            yCError(BCC) << "Could not view iControlLimits in:" << robotStr;
+            yCError(BCC) << "Could not view iControlLimits in:" << m_robot;
             return false;
         }
 
@@ -182,26 +158,20 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         solverOptions.put("maxs", yarp::os::Value::makeList(bMax.toString().c_str()));
         solverOptions.put("maxvels", yarp::os::Value::makeList(bMaxVel.toString().c_str()));
     }
-    else
-    {
-        yCInfo(BCC) << "Using joint limits provided via user configuration";
-    }
 
     if (!solverDevice.open(solverOptions))
     {
-        yCError(BCC) << "Solver device not valid:" << solverStr;
+        yCError(BCC) << "Solver device not valid:" << m_solver;
         return false;
     }
 
     if (!solverDevice.view(iCartesianSolver))
     {
-        yCError(BCC) << "Could not view iCartesianSolver in:" << solverStr;
+        yCError(BCC) << "Could not view iCartesianSolver in:" << m_solver;
         return false;
     }
 
-    int numSolverJoints = iCartesianSolver->getNumJoints();
-
-    if (numSolverJoints != numJoints)
+    if (int numSolverJoints = iCartesianSolver->getNumJoints(); numSolverJoints != numJoints)
     {
         yCError(BCC, "numSolverJoints(%d) != numRobotJoints(%d)", numSolverJoints, numJoints);
         return false;
@@ -209,14 +179,7 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     yCInfo(BCC) << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
 
-    yarp::os::PeriodicThread::setPeriod(cmcPeriodMs * 0.001);
-
-    currentState = VOCAB_CC_NOT_CONTROLLING;
-    streamingCommand = VOCAB_CC_NOT_SET;
-    movementStartTime = 0.0;
-    cmcSuccess = true;
-
-    return yarp::os::PeriodicThread::start();
+    return yarp::os::PeriodicThread::setPeriod(m_cmcPeriodMs * 0.001) && yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------

@@ -12,45 +12,39 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_CARTESIAN_LOCAL = "/CartesianControlClient";
-constexpr auto DEFAULT_CARTESIAN_REMOTE = "/CartesianControl";
-constexpr auto DEFAULT_FK_STREAM_TIMEOUT_SECS = 0.5;
-
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool CartesianControlClient::open(yarp::os::Searchable& config)
 {
-    auto local = config.check("cartesianLocal", yarp::os::Value(DEFAULT_CARTESIAN_LOCAL),
-            "local port").asString();
-    auto remote = config.check("cartesianRemote", yarp::os::Value(DEFAULT_CARTESIAN_REMOTE),
-            "remote port").asString();
-
-    if (!rpcClient.open(local + "/rpc:c") || !commandPort.open(local + "/command:o"))
+    if (!parseParams(config))
     {
-        yCError(CCC) << "Unable to open ports";
+        yCError(CCC) << "Failed to parse parameters";
         return false;
     }
 
-    if (!rpcClient.addOutput(remote + "/rpc:s"))
+    if (!rpcClient.open(m_cartesianLocal+ "/rpc:c") || !commandPort.open(m_cartesianLocal + "/command:o"))
+    {
+        yCError(CCC) << "Unable to open local RPC and command ports";
+        return false;
+    }
+
+    if (!rpcClient.addOutput(m_cartesianRemote + "/rpc:s"))
     {
         yCError(CCC) << "Error on connect to remote RPC server";
         return false;
     }
 
-    if (!commandPort.addOutput(remote + "/command:i", "udp"))
+    if (!commandPort.addOutput(m_cartesianRemote + "/command:i", "udp"))
     {
         yCError(CCC) << "Error on connect to remote command server";
         return false;
     }
 
-    fkStreamTimeoutSecs = config.check("fkStreamTimeoutSecs", yarp::os::Value(DEFAULT_FK_STREAM_TIMEOUT_SECS),
-            "FK stream timeout (seconds)").asFloat64();
-
-    std::string statePort = remote + "/state:o";
+    std::string statePort = m_cartesianRemote + "/state:o";
 
     if (yarp::os::Network::exists(statePort))
     {
-        if (!fkInPort.open(local + "/state:i"))
+        if (!fkInPort.open(m_cartesianLocal + "/state:i"))
         {
             yCError(CCC) << "Unable to open local stream port";
             return false;
@@ -63,14 +57,14 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
         }
 
         fkInPort.useCallback(fkStreamResponder);
-        yarp::os::Time::delay(fkStreamTimeoutSecs); // wait for first data to arrive
+        yarp::os::Time::delay(m_fkStreamTimeoutSecs); // wait for first data to arrive
     }
     else
     {
         yCWarning(CCC) << "Missing remote" << statePort << "stream port, using RPC instead";
     }
 
-    yCInfo(CCC) << "Connected to remote" << remote;
+    yCInfo(CCC) << "Connected to remote" << m_cartesianRemote;
 
     return true;
 }

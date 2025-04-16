@@ -4,6 +4,7 @@
 #define __CARTESIAN_CONTROL_CLIENT_HPP__
 
 #include <mutex>
+#include <vector>
 
 #include <yarp/os/Bottle.h>
 #include <yarp/os/BufferedPort.h>
@@ -12,18 +13,14 @@
 
 #include <yarp/dev/Drivers.h>
 
-#include <vector>
-
 #include "ICartesianControl.h"
-
-namespace roboticslab
-{
+#include "CartesianControlClient_ParamsParser.h"
 
 /**
  * @ingroup YarpPlugins
  * @defgroup CartesianControlClient
  *
- * @brief Contains roboticslab::CartesianControlClient.
+ * @brief Contains CartesianControlClient.
  */
 
 /**
@@ -50,7 +47,8 @@ private:
  * @brief The CartesianControlClient class implements ICartesianControl client side.
  */
 class CartesianControlClient : public yarp::dev::DeviceDriver,
-                               public ICartesianControl
+                               public roboticslab::ICartesianControl,
+                               public CartesianControlClient_ParamsParser
 {
 public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
@@ -90,9 +88,6 @@ private:
     yarp::os::BufferedPort<yarp::os::Bottle> fkInPort, commandPort;
 
     FkStreamResponder fkStreamResponder;
-    double fkStreamTimeoutSecs;
 };
-
-} // namespace roboticslab
 
 #endif // __CARTESIAN_CONTROL_CLIENT_HPP__

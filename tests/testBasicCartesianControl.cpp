@@ -27,9 +27,10 @@ public:
             {"solver", yarp::os::Value("KdlSolver")}
         };
 
-        cartesianControlOptions.put("mins", yarp::os::Value::makeList("-100.0"));
-        cartesianControlOptions.put("maxs", yarp::os::Value::makeList("100.0"));
-        cartesianControlOptions.put("maxvels", yarp::os::Value::makeList("100.0"));
+        auto & limits = cartesianControlOptions.addGroup("LIMITS");
+        limits.put("mins", yarp::os::Value::makeList("-100.0"));
+        limits.put("maxs", yarp::os::Value::makeList("100.0"));
+        // default max joint velocity is hardcoded in fakeMotionControl
 
         auto & kinematics = cartesianControlOptions.addGroup("KINEMATICS");
         kinematics.put("numLinks", 1);
