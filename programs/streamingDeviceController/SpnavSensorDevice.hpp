@@ -18,7 +18,7 @@ class SpnavSensorDevice : public StreamingDevice
 {
 public:
     //! Constructor
-    SpnavSensorDevice(yarp::os::Searchable & config, bool usingMovi, double gain = 0.0);
+    SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain = 0.0);
 
     bool acquireInterfaces() override;
 

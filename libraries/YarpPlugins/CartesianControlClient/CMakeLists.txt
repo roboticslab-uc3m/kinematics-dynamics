@@ -1,17 +1,22 @@
 yarp_prepare_plugin(CartesianControlClient
                     CATEGORY device
-                    TYPE roboticslab::CartesianControlClient
+                    TYPE CartesianControlClient
                     INCLUDE CartesianControlClient.hpp
-                    DEFAULT ON)
+                    DEFAULT ON
+                    GENERATE_PARSER)
 
 if(NOT SKIP_CartesianControlClient)
 
-    yarp_add_plugin(CartesianControlClient CartesianControlClient.hpp
-                                           DeviceDriverImpl.cpp
-                                           ICartesianControlImpl.cpp
-                                           FkStreamResponder.cpp
-                                           LogComponent.hpp
-                                           LogComponent.cpp)
+    yarp_add_plugin(CartesianControlClient)
+
+    target_sources(CartesianControlClient PRIVATE CartesianControlClient.hpp
+                                                  DeviceDriverImpl.cpp
+                                                  ICartesianControlImpl.cpp
+                                                  FkStreamResponder.cpp
+                                                  CartesianControlClient_ParamsParser.h
+                                                  CartesianControlClient_ParamsParser.cpp
+                                                  LogComponent.hpp
+                                                  LogComponent.cpp)
 
     target_link_libraries(CartesianControlClient YARP::YARP_os
                                                  YARP::YARP_dev

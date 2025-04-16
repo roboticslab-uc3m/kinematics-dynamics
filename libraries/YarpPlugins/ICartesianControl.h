@@ -74,10 +74,6 @@ constexpr int VOCAB_CC_ACT = yarp::os::createVocab32('a','c','t');      ///< Act
 
 // Streaming commands
 constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');   ///< Achieve pose
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-[[deprecated("use `VOCAB_CC_POSE` instead")]]
-constexpr int VOCAB_CC_MOVI = yarp::os::createVocab32('m','o','v','i');
-#endif
 constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t');  ///< Instantaneous velocity steps
 constexpr int VOCAB_CC_WRENCH = yarp::os::createVocab32('w','r','n','c'); ///< Exert force
 
@@ -338,14 +334,6 @@ public:
      * axis-angle representation (radians).
      */
     virtual void pose(const std::vector<double> &x) = 0;
-
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-    [[deprecated("use `pose` instead")]]
-    virtual void movi(const std::vector<double> &x)
-    {
-        pose(x);
-    }
-#endif
 
     /**
      * @brief Instantaneous velocity steps

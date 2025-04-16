@@ -16,20 +16,21 @@
 
 #include "ICartesianControl.h"
 #include "KinematicRepresentation.hpp"
-
-namespace roboticslab
-{
+#include "CartesianControlServer_ParamsParser.h"
 
 /**
  * @ingroup YarpPlugins
  * @defgroup CartesianControlServer
  *
- * @brief Contains roboticslab::CartesianControlServer.
+ * @brief Contains CartesianControlServer.
  */
 
-class RpcResponder;
-class RpcTransformResponder;
-class StreamResponder;
+namespace roboticslab
+{
+    class RpcResponder;
+    class RpcTransformResponder;
+    class StreamResponder;
+}
 
 /**
  * @ingroup CartesianControlServer
@@ -37,7 +38,8 @@ class StreamResponder;
  */
 class CartesianControlServer : public yarp::dev::DeviceDriver,
                                public yarp::dev::WrapperSingle,
-                               public yarp::os::PeriodicThread
+                               public yarp::os::PeriodicThread,
+                               public CartesianControlServer_ParamsParser
 {
 public:
     CartesianControlServer() : yarp::os::PeriodicThread(1.0)
@@ -62,12 +64,15 @@ protected:
     yarp::os::RpcServer rpcServer, rpcTransformServer;
     yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
-    ICartesianControl * iCartesianControl {nullptr};
+    roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
-    RpcResponder * rpcResponder {nullptr};
-    RpcResponder * rpcTransformResponder {nullptr};
-    StreamResponder * streamResponder {nullptr};
+    roboticslab::RpcResponder * rpcResponder {nullptr};
+    roboticslab::RpcResponder * rpcTransformResponder {nullptr};
+    roboticslab::StreamResponder * streamResponder {nullptr};
 };
+
+namespace roboticslab
+{
 
 /**
  * @ingroup CartesianControlServer

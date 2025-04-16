@@ -1,21 +1,26 @@
 yarp_prepare_plugin(CartesianControlServer
                     CATEGORY device
-                    TYPE roboticslab::CartesianControlServer
+                    TYPE CartesianControlServer
                     INCLUDE CartesianControlServer.hpp
                     EXTRA_CONFIG WRAPPER=CartesianControlServer
                     DEFAULT ON
-                    DEPENDS ENABLE_KinematicRepresentationLib)
+                    DEPENDS ENABLE_KinematicRepresentationLib
+                    GENERATE_PARSER)
 
 if(NOT SKIP_CartesianControlServer)
 
-    yarp_add_plugin(CartesianControlServer CartesianControlServer.hpp
-                                           DeviceDriverImpl.cpp
-                                           IWrapperImpl.cpp
-                                           PeriodicThreadImpl.cpp
-                                           RpcResponder.cpp
-                                           StreamResponder.cpp
-                                           LogComponent.hpp
-                                           LogComponent.cpp)
+    yarp_add_plugin(CartesianControlServer)
+
+    target_sources(CartesianControlServer PRIVATE CartesianControlServer.hpp
+                                                  DeviceDriverImpl.cpp
+                                                  IWrapperImpl.cpp
+                                                  PeriodicThreadImpl.cpp
+                                                  RpcResponder.cpp
+                                                  StreamResponder.cpp
+                                                  CartesianControlServer_ParamsParser.h
+                                                  CartesianControlServer_ParamsParser.cpp
+                                                  LogComponent.hpp
+                                                  LogComponent.cpp)
 
     target_link_libraries(CartesianControlServer YARP::YARP_os
                                                  YARP::YARP_dev

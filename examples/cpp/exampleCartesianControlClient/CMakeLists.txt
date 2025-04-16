@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 project(exampleCartesianControlClient LANGUAGES CXX)
 
 if(NOT YARP_FOUND)
-    find_package(YARP 3.7 REQUIRED COMPONENTS os dev)
+    find_package(YARP 3.10 REQUIRED COMPONENTS os dev)
 endif()
 
 if(NOT TARGET ROBOTICSLAB::KinematicsDynamicsInterfaces)

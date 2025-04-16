@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16...3.28)
+cmake_minimum_required(VERSION 3.19...3.30)
 
 project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
 
@@ -26,8 +26,8 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YARP 3.8 REQUIRED COMPONENTS os dev sig
-                               OPTIONAL_COMPONENTS math)
+find_package(YARP 3.10 REQUIRED COMPONENTS os dev sig
+                                OPTIONAL_COMPONENTS math)
 
 # Soft dependencies.
 find_package(orocos_kdl 1.4 QUIET)

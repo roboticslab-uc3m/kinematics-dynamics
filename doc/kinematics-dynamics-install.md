@@ -4,10 +4,8 @@ First install the dependencies:
 
 - [Install CMake 3.16+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md/)
 - [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
-- [Install YARP 3.8+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
+- [Install YARP 3.10+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
 - [Install KDL 1.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-kdl.md/)
-
-We optionally use the `ProximitySensorsClient` device from [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices) in the `haarDetectionController` app. Refer to its installation guide for instructions.
 
 For unit testing, you'll need the googletest source package. Refer to [Install googletest](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-googletest.md/).
 

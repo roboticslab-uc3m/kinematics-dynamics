@@ -1,20 +1,25 @@
 yarp_prepare_plugin(BasicCartesianControl
                     CATEGORY device
-                    TYPE roboticslab::BasicCartesianControl
+                    TYPE BasicCartesianControl
                     INCLUDE BasicCartesianControl.hpp
                     DEFAULT ON
                     DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
-                    EXTRA_CONFIG WRAPPER=CartesianControlServer)
+                    EXTRA_CONFIG WRAPPER=CartesianControlServer
+                    GENERATE_PARSER)
 
 if(NOT SKIP_BasicCartesianControl)
 
-    yarp_add_plugin(BasicCartesianControl BasicCartesianControl.hpp
-                                          BasicCartesianControl.cpp
-                                          DeviceDriverImpl.cpp
-                                          ICartesianControlImpl.cpp
-                                          PeriodicThreadImpl.cpp
-                                          LogComponent.hpp
-                                          LogComponent.cpp)
+    yarp_add_plugin(BasicCartesianControl)
+
+    target_sources(BasicCartesianControl PRIVATE BasicCartesianControl.hpp
+                                                 BasicCartesianControl.cpp
+                                                 DeviceDriverImpl.cpp
+                                                 ICartesianControlImpl.cpp
+                                                 PeriodicThreadImpl.cpp
+                                                 BasicCartesianControl_ParamsParser.h
+                                                 BasicCartesianControl_ParamsParser.cpp
+                                                 LogComponent.hpp
+                                                 LogComponent.cpp)
 
     target_link_libraries(BasicCartesianControl YARP::YARP_os
                                                 YARP::YARP_dev

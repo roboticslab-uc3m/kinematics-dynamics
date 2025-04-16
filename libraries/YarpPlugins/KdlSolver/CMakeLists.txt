@@ -4,33 +4,36 @@ endif()
 
 yarp_prepare_plugin(KdlSolver
                     CATEGORY device
-                    TYPE roboticslab::KdlSolver
+                    TYPE KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND")
+                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
+                    GENERATE_PARSER)
 
 if(NOT SKIP_KdlSolver)
 
-    yarp_add_plugin(KdlSolver KdlSolver.hpp
-                              DeviceDriverImpl.cpp
-                              ICartesianSolverImpl.cpp
-                              ChainFkSolverPos_ST.hpp
-                              ChainFkSolverPos_ST.cpp
-                              ChainIkSolverPos_ST.hpp
-                              ChainIkSolverPos_ST.cpp
-                              ChainIkSolverPos_ID.hpp
-                              ChainIkSolverPos_ID.cpp
-                              LogComponent.hpp
-                              LogComponent.cpp)
+    yarp_add_plugin(KdlSolver)
+
+    target_sources(KdlSolver PRIVATE KdlSolver.hpp
+                                     DeviceDriverImpl.cpp
+                                     ICartesianSolverImpl.cpp
+                                     ChainFkSolverPos_ST.hpp
+                                     ChainFkSolverPos_ST.cpp
+                                     ChainIkSolverPos_ST.hpp
+                                     ChainIkSolverPos_ST.cpp
+                                     ChainIkSolverPos_ID.hpp
+                                     ChainIkSolverPos_ID.cpp
+                                     KdlSolver_ParamsParser.h
+                                     KdlSolver_ParamsParser.cpp
+                                     LogComponent.hpp
+                                     LogComponent.cpp)
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
-                                    ${orocos_kdl_LIBRARIES}
                                     ROBOTICSLAB::ScrewTheoryLib
                                     ROBOTICSLAB::KdlVectorConverterLib
-                                    ROBOTICSLAB::KinematicsDynamicsInterfaces)
-
-    target_include_directories(KdlSolver PRIVATE ${orocos_kdl_INCLUDE_DIRS})
+                                    ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                    ROBOTICSLAB::KdlSolverUtils)
 
     yarp_install(TARGETS KdlSolver
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

@@ -3,14 +3,7 @@ set_source_files_properties(${SWIG_BINDINGS_SOURCE_FILE} PROPERTIES CPLUSPLUS ON
 
 set(CMAKE_SWIG_FLAGS "-module;roboticslab_kinematics_dynamics;-threads;${SWIG_COMMON_FLAGS}")
 
-# https://github.com/pybind/pybind11/pull/2689
-if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
-  set(RL_Python_Development_Component "Development")
-else()
-  set(RL_Python_Development_Component "Development.Module")
-endif()
-
-find_package(Python3 COMPONENTS Interpreter ${RL_Python_Development_Component} REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
 set(CMAKE_SWIG_OUTDIR "${CMAKE_BINARY_DIR}/lib/python")
 set(SWIG_OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
@@ -21,7 +14,14 @@ swig_add_library(roboticslab_kinematics_dynamics_python
 swig_link_libraries(roboticslab_kinematics_dynamics_python Python3::Module ${SWIG_RL_LIBRARIES})
 
 set_target_properties(${SWIG_MODULE_roboticslab_kinematics_dynamics_python_REAL_NAME} PROPERTIES OUTPUT_NAME "_roboticslab_kinematics_dynamics"
-                                                                                                 LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/python")
+                                                                                                 LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/python"
+                                                                                                 # treat Python3_INCLUDE_DIRS as non-system so that it can be overriden
+                                                                                                 NO_SYSTEM_FROM_IMPORTED TRUE)
+
+# INCLUDE_DIRECTORIES might have gotten polluted by 3rd-party deps, make sure
+# the Python3 header path has more predecence by overriding the previous value
+# (set by `swig_link_libraries`) and prepending it to the search path
+target_include_directories(${SWIG_MODULE_roboticslab_kinematics_dynamics_python_REAL_NAME} BEFORE PRIVATE ${Python3_INCLUDE_DIRS})
 
 # installation path is determined reliably on most platforms using distutils
 execute_process(COMMAND ${Python3_EXECUTABLE} -c "from distutils import sysconfig; print(sysconfig.get_python_lib(plat_specific=True,standard_lib=False,prefix=''))"
@@ -38,7 +38,6 @@ else()
 endif()
 
 install(FILES ${CMAKE_BINARY_DIR}/lib/python/roboticslab_kinematics_dynamics.py
-              ${CMAKE_CURRENT_SOURCE_DIR}/kinematics_dynamics.py # deprecation
         DESTINATION ${CMAKE_INSTALL_PYTHONDIR})
 
 # Update RPATH

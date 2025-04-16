@@ -21,15 +21,13 @@
 
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"
-
-namespace roboticslab
-{
+#include "BasicCartesianControl_ParamsParser.h"
 
 /**
  * @ingroup YarpPlugins
  * @defgroup BasicCartesianControl
  *
- * @brief Contains roboticslab::BasicCartesianControl.
+ * @brief Contains BasicCartesianControl.
 
 @section BasicCartesianControl_Running1 Example with a Fake robot
 
@@ -106,7 +104,8 @@ are YARP devices (further reading on why this is good: <a href="http://asrob.uc3
  */
 class BasicCartesianControl : public yarp::dev::DeviceDriver,
                               public yarp::os::PeriodicThread,
-                              public ICartesianControl
+                              public roboticslab::ICartesianControl,
+                              public BasicCartesianControl_ParamsParser
 {
 public:
     BasicCartesianControl() : yarp::os::PeriodicThread(1.0, yarp::os::PeriodicThreadClock::Absolute)
@@ -178,7 +177,7 @@ private:
     void handleForc(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const StateWatcher & watcher);
 
     yarp::dev::PolyDriver solverDevice;
-    ICartesianSolver * iCartesianSolver {nullptr};
+    roboticslab::ICartesianSolver * iCartesianSolver {nullptr};
 
     yarp::dev::PolyDriver robotDevice;
     yarp::dev::IControlMode * iControlMode {nullptr};
@@ -189,19 +188,11 @@ private:
     yarp::dev::ITorqueControl * iTorqueControl {nullptr};
     yarp::dev::IVelocityControl * iVelocityControl {nullptr};
 
-    ICartesianSolver::reference_frame referenceFrame;
+    roboticslab::ICartesianSolver::reference_frame referenceFrame;
 
-    double gain;
-    double duration; // [s]
-
-    int cmcPeriodMs;
-    int waitPeriodMs;
-    int numJoints;
-    int currentState;
-    int streamingCommand;
-
-    bool usePosdMovl;
-    bool enableFailFast;
+    int numJoints {0};
+    int currentState {VOCAB_CC_NOT_CONTROLLING};
+    int streamingCommand {VOCAB_CC_NOT_SET};
 
     mutable std::mutex stateMutex;
 
@@ -209,7 +200,7 @@ private:
     std::vector<double> vmoStored;
 
     /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
-    double movementStartTime;
+    double movementStartTime {0.0};
 
     /** MOVL store Cartesian trajectory */
     std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
@@ -218,13 +209,11 @@ private:
     std::vector<double> fd;
 
     int encoderErrors {0};
-    std::atomic_bool cmcSuccess;
+    std::atomic<bool> cmcSuccess {true};
 
     std::vector<double> qMin, qMax;
     std::vector<double> qdotMin, qdotMax;
     std::vector<double> qRefSpeeds;
 };
-
-} // namespace roboticslab
 
 #endif // __BASIC_CARTESIAN_CONTROL_HPP__

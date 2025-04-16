@@ -4,7 +4,6 @@
 #define __ASIBOT_SOLVER_HPP__
 
 #include <mutex>
-#include <vector>
 
 #include <yarp/os/Searchable.h>
 #include <yarp/dev/DeviceDriver.h>
@@ -12,15 +11,13 @@
 
 #include "AsibotConfiguration.hpp"
 #include "ICartesianSolver.h"
-
-namespace roboticslab
-{
+#include "AsibotSolver_ParamsParser.h"
 
 /**
  * @ingroup YarpPlugins
  * @defgroup AsibotSolver
  *
- * @brief Contains roboticslab::AsibotSolver.
+ * @brief Contains AsibotSolver.
  */
 
 /**
@@ -28,7 +25,8 @@ namespace roboticslab
  * @brief The AsibotSolver implements ICartesianSolver.
  */
 class AsibotSolver : public yarp::dev::DeviceDriver,
-                     public ICartesianSolver
+                     public roboticslab::ICartesianSolver,
+                     public AsibotSolver_ParamsParser
 {
 public:
     // -------- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --------
@@ -46,9 +44,7 @@ public:
     bool restoreOriginalChain() override;
 
     // Change reference frame.
-    bool changeOrigin(const std::vector<double> &x_old_obj,
-                      const std::vector<double> &x_new_old,
-                      std::vector<double> &x_new_obj) override;
+    bool changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old, std::vector<double> &x_new_obj) override;
 
     // Perform forward kinematics.
     bool fwdKin(const std::vector<double> &q, std::vector<double> &x) override;
@@ -57,12 +53,10 @@ public:
     bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) override;
 
     // Perform inverse kinematics.
-    bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-                reference_frame frame) override;
+    bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame) override;
 
     // Perform differential inverse kinematics.
-    bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-                    reference_frame frame) override;
+    bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame) override;
 
     // Perform inverse dynamics.
     bool invDyn(const std::vector<double> &q, std::vector<double> &t) override;
@@ -82,22 +76,16 @@ private:
         yarp::sig::Matrix frameTcp;
     };
 
-    AsibotConfiguration * getConfiguration() const;
+    roboticslab::AsibotConfiguration * getConfiguration() const;
 
     AsibotTcpFrame getTcpFrame() const;
     void setTcpFrame(const AsibotTcpFrame & tcpFrameStruct);
 
-    double A0, A1, A2, A3;  // link lengths
-
-    std::vector<double> qMin, qMax;
-
-    AsibotConfigurationFactory * confFactory {nullptr};
+    roboticslab::AsibotConfigurationFactory * confFactory {nullptr};
 
     AsibotTcpFrame tcpFrameStruct;
 
     mutable std::mutex mtx;
 };
-
-} // namespace roboticslab
 
 #endif // __ASIBOT_SOLVER_HPP__

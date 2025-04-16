@@ -61,7 +61,7 @@ void BasicCartesianControl::run()
         handleMovj(q, watcher);
         break;
     case VOCAB_CC_MOVL_CONTROLLING:
-        usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
+        m_usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
         break;
     case VOCAB_CC_MOVV_CONTROLLING:
         handleMovv(q, watcher);
@@ -156,7 +156,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
 
     for (unsigned int i = 0; i < commandXdot.size(); i++)
     {
-        commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
+        commandXdot[i] *= m_controllerGain * (1000.0 / m_cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
     }
 
@@ -275,7 +275,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
 
     for (unsigned int i = 0; i < commandXdot.size(); i++)
     {
-        commandXdot[i] *= gain * (1000.0 / cmcPeriodMs);
+        commandXdot[i] *= m_controllerGain * (1000.0 / m_cmcPeriodMs);
         commandXdot[i] += desiredXdot[i];
     }
 

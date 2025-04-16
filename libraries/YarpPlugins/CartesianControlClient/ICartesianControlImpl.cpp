@@ -142,7 +142,7 @@ bool CartesianControlClient::stat(std::vector<double> &x, int * state, double * 
 {
     if (!fkInPort.isClosed())
     {
-        if (!fkStreamResponder.getLastStatData(x, state, timestamp, fkStreamTimeoutSecs))
+        if (!fkStreamResponder.getLastStatData(x, state, timestamp, m_fkStreamTimeoutSecs))
         {
             yCWarning(CCC) << "FK stream timeout, falling back to RPC request";
         }

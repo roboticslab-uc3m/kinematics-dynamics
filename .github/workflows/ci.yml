@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
 
 env:
-  CMAKE_CCACHE_LAUNCHER: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+  CMAKE_C_COMPILER_LAUNCHER: ccache
+  CMAKE_CXX_COMPILER_LAUNCHER: ccache
 
 jobs:
   maybe_skip:
@@ -35,8 +36,8 @@ jobs:
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
         robotology:
-        - { yarp: yarp-3.8, cmake: 3.16.x }
-        - { yarp: yarp-3.9, cmake: 3.16.x }
+        - { yarp: yarp-3.10, cmake: 3.19.x }
+        - { yarp: yarp-3.11, cmake: 3.19.x }
         - { yarp: master, cmake: 3.19.x }
         compiler:
         - { cc: gcc, cxx: g++ }
@@ -103,26 +104,26 @@ jobs:
 
     - name: Build YARP
       run: |
-        cmake -S .deps/yarp -B .deps/yarp/build $CMAKE_CCACHE_LAUNCHER -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
+        cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
         cmake --build .deps/yarp/build
         sudo cmake --install .deps/yarp/build
 
     - name: Build Orocos KDL
       run: |
-        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build $CMAKE_CCACHE_LAUNCHER
+        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build
         cmake --build .deps/kdl/orocos_kdl/build
         sudo cmake --install .deps/kdl/orocos_kdl/build
 
     - name: Build SWIG
       if: ${{matrix.os == 'ubuntu-24.04'}}
       run: |
-        cmake -S .deps/swig -B .deps/swig/build $CMAKE_CCACHE_LAUNCHER
+        cmake -S .deps/swig -B .deps/swig/build
         cmake --build .deps/swig/build
         sudo cmake --install .deps/swig/build
         sudo ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
 
     - name: Configure kinematics-dynamics
-      run: cmake -S . -B ./build $CMAKE_CCACHE_LAUNCHER -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
+      run: cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
 
     - name: Compile kinematics-dynamics
       run: cmake --build ./build
