@@ -272,10 +272,8 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
         currentCartVels.resize(NUM_CART_COORDS, 0.0);
 
         usingThread = rf.check("pose", "use POSE command");
-        usingThread = usingThread || rf.check("movi", "use POSE command"); // deprecated
 
-        // `moviPeriodMs` is deprecated
-        int threadMs = rf.check("posePeriodMs", rf.check("moviPeriodMs", yarp::os::Value(DEFAULT_THREAD_MS)), "POSE thread period [ms]").asInt32();
+        int threadMs = rf.check("posePeriodMs", yarp::os::Value(DEFAULT_THREAD_MS), "POSE thread period [ms]").asInt32();
 
         if (usingThread)
         {

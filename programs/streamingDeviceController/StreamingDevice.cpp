@@ -16,7 +16,6 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
 {
     auto & deviceConfig = config.findGroup(deviceName.c_str());
     bool usingPose = config.check("pose", "enable pose command");
-    usingPose = usingPose || config.check("movi", "enable pose command"); // deprecated
 
     yCDebug(SDC) << "Device configuration:" << deviceConfig.toString();
 

@@ -428,10 +428,7 @@ bool BasicCartesianControl::act(int command)
 
 void BasicCartesianControl::pose(const std::vector<double> &x)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || (
-            streamingCommand != VOCAB_CC_POSE &&
-            streamingCommand != VOCAB_CC_MOVI // deprecated
-        ) || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
+    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
         yCError(BCC) << "Streaming command not preset";
         return;
