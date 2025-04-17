@@ -2,8 +2,8 @@
     <name>ftCompensation app (left arm stump)</name>
 
     <module>
-        <name>multipleanalogsensorsserver</name>
-        <parameters>--subdevice Jr3 --name /jr3 --period 5 --filter 2 --dextrorotary</parameters>
+        <name>deviceBundler</name>
+        <parameters>--wrapper_device multipleanalogsensorsserver --attached_device Jr3Pci --name /jr3 --period 5 --filter 2 --dextrorotary</parameters>
         <node>2.2.2.105</node>
         <deployer>yarpdev</deployer>
     </module>
