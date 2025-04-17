@@ -34,11 +34,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
         robotology:
+        - { yarp: yarp-3.10, cmake: 3.19.x }
         - { yarp: yarp-3.11, cmake: 3.19.x }
+        - { yarp: master, cmake: 3.19.x }
         compiler:
-        - { cc: clang-15, cxx: clang++-15 }
+        - { cc: gcc, cxx: g++ }
+        experimental:
+        - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
+        exclude:
+        - { experimental: false, robotology: { yarp: master } }
+        include:
+        - compiler: { cc: clang, cxx: clang++ }
+        - os: ubuntu-22.04
+          compiler: { cc: clang-15, cxx: clang++-15 }
 
     steps:
     - name: Check out kinematics-dynamics
