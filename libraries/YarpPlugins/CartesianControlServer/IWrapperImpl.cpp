@@ -30,19 +30,6 @@ bool CartesianControlServer::attach(yarp::dev::PolyDriver * poly)
         return false;
     }
 
-    return configureHandle();
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlServer::configureHandle()
-{
-    if (!iCartesianControl)
-    {
-        yCError(CCS) << "Invalid ICartesianControl interface";
-        return false;
-    }
-
     rpcResponder->setHandle(iCartesianControl);
     streamResponder->setHandle(iCartesianControl);
 

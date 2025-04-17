@@ -2,10 +2,7 @@
 
 #include "CartesianControlServer.hpp"
 
-#include <string>
-
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
 
 #include "LogComponent.hpp"
@@ -20,42 +17,6 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
     {
         yCError(CCS) << "Failed to parse parameters";
         return false;
-    }
-
-    yarp::os::Value * name;
-
-    if (config.check("subdevice", name))
-    {
-        yCInfo(CCS) << "Subdevice" << name->toString();
-
-        if (name->isString())
-        {
-            // maybe user isn't doing nested configuration
-            yarp::os::Property p;
-            p.fromString(config.toString());
-            p.put("device", name->toString());
-            cartesianControlDevice.open(p);
-        }
-        else
-        {
-            cartesianControlDevice.open(*name);
-        }
-
-        if (!cartesianControlDevice.isValid())
-        {
-            yCError(CCS) << "Cartesian control device not valid";
-            return false;
-        }
-
-        if (!cartesianControlDevice.view(iCartesianControl))
-        {
-            yCError(CCS) << "iCartesianControl view failed";
-            return false;
-        }
-    }
-    else
-    {
-        yCInfo(CCS) << "Subdevice option not set, will use attach() later";
     }
 
     if (!rpcServer.open(m_name + "/rpc:s"))
@@ -152,7 +113,7 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
         }
     }
 
-    return !cartesianControlDevice.isValid() || configureHandle();
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -184,7 +145,7 @@ bool CartesianControlServer::close()
     delete streamResponder;
     streamResponder = nullptr;
 
-    return !cartesianControlDevice.isValid() || cartesianControlDevice.close();
+    return true;
 }
 
 // -----------------------------------------------------------------------------

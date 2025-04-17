@@ -11,7 +11,6 @@
 #include <yarp/os/RpcServer.h>
 
 #include <yarp/dev/Drivers.h>
-#include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/WrapperSingle.h>
 
 #include "ICartesianControl.h"
@@ -57,10 +56,6 @@ public:
     void run() override;
 
 protected:
-    bool configureHandle();
-
-    yarp::dev::PolyDriver cartesianControlDevice;
-
     yarp::os::RpcServer rpcServer, rpcTransformServer;
     yarp::os::BufferedPort<yarp::os::Bottle> fkOutPort, commandPort;
 
