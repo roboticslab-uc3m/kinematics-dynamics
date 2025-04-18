@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 13:53:33 2025
+// Generated on: Sat Apr 19 00:49:21 2025
 
 
 #include "KdlTreeSolver_ParamsParser.h"
@@ -38,101 +38,6 @@ KdlTreeSolver_ParamsParser::KdlTreeSolver_ParamsParser()
         else
         {
              yError() <<"parameter 'gravity' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parameterweightsJS
-    {
-        m_weightsJS.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_weightsJS_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_weightsJS.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'weightsJS' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parameterweightsTS
-    {
-        m_weightsTS.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_weightsTS_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_weightsTS.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'weightsTS' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parametermins
-    {
-        m_mins.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_mins_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_mins.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'mins' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parametermaxs
-    {
-        m_maxs.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_maxs_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_maxs.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'maxs' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parametermaxvels
-    {
-        m_maxvels.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_maxvels_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_maxvels.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'maxvels' is not a properly formatted bottle";
         }
     }
 
@@ -378,7 +283,10 @@ bool      KdlTreeSolver_ParamsParser::parseParams(const yarp::os::Searchable & c
         }
         else
         {
-            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'mins' using DEFAULT value:" << m_mins;
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Mandatory parameter 'mins' not found!";
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Description of the parameter: lower bound joint position limits";
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg'";
+            return false;
         }
         prop_check.unput("mins");
     }
@@ -407,7 +315,10 @@ bool      KdlTreeSolver_ParamsParser::parseParams(const yarp::os::Searchable & c
         }
         else
         {
-            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxs' using DEFAULT value:" << m_maxs;
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Mandatory parameter 'maxs' not found!";
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Description of the parameter: upper bound joint position limits";
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg'";
+            return false;
         }
         prop_check.unput("maxs");
     }
@@ -436,7 +347,10 @@ bool      KdlTreeSolver_ParamsParser::parseParams(const yarp::os::Searchable & c
         }
         else
         {
-            yCInfo(KdlTreeSolverParamsCOMPONENT) << "Parameter 'maxvels' using DEFAULT value:" << m_maxvels;
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Mandatory parameter 'maxvels' not found!";
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Description of the parameter: joint velocity limits";
+            yCError(KdlTreeSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg/s'";
+            return false;
         }
         prop_check.unput("maxvels");
     }
@@ -492,8 +406,8 @@ std::string      KdlTreeSolver_ParamsParser::getDocumentationOfDeviceParams() co
     doc = doc + std::string("'maxvels': joint velocity limits\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device KdlTreeSolver --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos nrjl --epsPos 1e-5 --maxIterPos 1000 --vTranslMax 1.0 --vRotMax 50.0 --lambda 0.01 --weightsJS \" (0.0) \" --weightsTS \" (0.0) \" --mins \" (0.0) \" --maxs \" (0.0) \" --maxvels \" (0.0) \"\n";
+    doc = doc + " yarpdev --device KdlTreeSolver --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos nrjl --epsPos 1e-5 --maxIterPos 1000 --vTranslMax 1.0 --vRotMax 50.0 --lambda 0.01 --weightsJS <optional_value> --weightsTS <optional_value> --mins <mandatory_value> --maxs <mandatory_value> --maxvels <mandatory_value>\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device KdlTreeSolver\n";
+    doc = doc + " yarpdev --device KdlTreeSolver --mins <mandatory_value> --maxs <mandatory_value> --maxvels <mandatory_value>\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }

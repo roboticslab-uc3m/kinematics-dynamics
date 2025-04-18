@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 13:52:31 2025
+// Generated on: Sat Apr 19 00:49:21 2025
 
 
 #include "KdlSolver_ParamsParser.h"
@@ -57,82 +57,6 @@ KdlSolver_ParamsParser::KdlSolver_ParamsParser()
         else
         {
              yError() <<"parameter 'weightsLMA' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parameterweightsJS
-    {
-        m_weightsJS.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_weightsJS_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_weightsJS.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'weightsJS' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parameterweightsTS
-    {
-        m_weightsTS.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_weightsTS_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_weightsTS.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'weightsTS' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parametermins
-    {
-        m_mins.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_mins_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_mins.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'mins' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parametermaxs
-    {
-        m_maxs.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_maxs_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_maxs.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'maxs' is not a properly formatted bottle";
         }
     }
 
@@ -452,7 +376,10 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'mins' using DEFAULT value:" << m_mins;
+            yCError(KdlSolverParamsCOMPONENT) << "Mandatory parameter 'mins' not found!";
+            yCError(KdlSolverParamsCOMPONENT) << "Description of the parameter: lower bound joint position limits";
+            yCError(KdlSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg'";
+            return false;
         }
         prop_check.unput("mins");
     }
@@ -481,7 +408,10 @@ bool      KdlSolver_ParamsParser::parseParams(const yarp::os::Searchable & confi
         }
         else
         {
-            yCInfo(KdlSolverParamsCOMPONENT) << "Parameter 'maxs' using DEFAULT value:" << m_maxs;
+            yCError(KdlSolverParamsCOMPONENT) << "Mandatory parameter 'maxs' not found!";
+            yCError(KdlSolverParamsCOMPONENT) << "Description of the parameter: upper bound joint position limits";
+            yCError(KdlSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg'";
+            return false;
         }
         prop_check.unput("maxs");
     }
@@ -540,8 +470,8 @@ std::string      KdlSolver_ParamsParser::getDocumentationOfDeviceParams() const
     doc = doc + std::string("'maxs': upper bound joint position limits\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device KdlSolver --quiet false --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos st --ikVel pinv --epsPos 1e-5 --maxIterPos 1000 --epsVel 1e-5 --maxIterVel 150 --lambda 0.01 --weightsLMA \" (1.0 1.0 1.0 0.1 0.1 0.1) \" --weightsJS \" (0.0) \" --weightsTS \" (0.0) \" --invKinStrategy leastOverallAngularDisplacement --mins \" (0.0) \" --maxs \" (0.0) \"\n";
+    doc = doc + " yarpdev --device KdlSolver --quiet false --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos st --ikVel pinv --epsPos 1e-5 --maxIterPos 1000 --epsVel 1e-5 --maxIterVel 150 --lambda 0.01 --weightsLMA \" (1.0 1.0 1.0 0.1 0.1 0.1) \" --weightsJS <optional_value> --weightsTS <optional_value> --invKinStrategy leastOverallAngularDisplacement --mins <mandatory_value> --maxs <mandatory_value>\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device KdlSolver\n";
+    doc = doc + " yarpdev --device KdlSolver --mins <mandatory_value> --maxs <mandatory_value>\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }

@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 13:52:31 2025
+// Generated on: Sat Apr 19 00:49:21 2025
 
 
 #ifndef KDLSOLVER_PARAMSPARSER_H
@@ -36,19 +36,19 @@
 * | -          | maxIterVel     | int            | -     | 150                             | 0        | IK velocity solver max iterations                 | -                 |
 * | -          | lambda         | double         | -     | 0.01                            | 0        | lambda parameter for diff IK                      | -                 |
 * | -          | weightsLMA     | vector<double> | -     | (1.0 1.0 1.0 0.1 0.1 0.1)       | 0        | LMA algorithm weights                             | -                 |
-* | -          | weightsJS      | vector<double> | -     | (0.0)                           | 0        | joint space weights                               | -                 |
-* | -          | weightsTS      | vector<double> | -     | (0.0)                           | 0        | task space weights                                | -                 |
+* | -          | weightsJS      | vector<double> | -     | -                               | 0        | joint space weights                               | -                 |
+* | -          | weightsTS      | vector<double> | -     | -                               | 0        | task space weights                                | -                 |
 * | -          | invKinStrategy | string         | -     | leastOverallAngularDisplacement | 0        | IK configuration strategy                         | -                 |
-* | -          | mins           | vector<double> | deg   | (0.0)                           | 0        | lower bound joint position limits                 | -                 |
-* | -          | maxs           | vector<double> | deg   | (0.0)                           | 0        | upper bound joint position limits                 | -                 |
+* | -          | mins           | vector<double> | deg   | -                               | 1        | lower bound joint position limits                 | -                 |
+* | -          | maxs           | vector<double> | deg   | -                               | 1        | upper bound joint position limits                 | -                 |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device KdlSolver --quiet false --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos st --ikVel pinv --epsPos 1e-5 --maxIterPos 1000 --epsVel 1e-5 --maxIterVel 150 --lambda 0.01 --weightsLMA \" (1.0 1.0 1.0 0.1 0.1 0.1) \" --weightsJS \" (0.0) \" --weightsTS \" (0.0) \" --invKinStrategy leastOverallAngularDisplacement --mins \" (0.0) \" --maxs \" (0.0) \"
+* yarpdev --device KdlSolver --quiet false --kinematics <optional_value> --gravity \" (0.0 0.0 9.81) \" --ikPos st --ikVel pinv --epsPos 1e-5 --maxIterPos 1000 --epsVel 1e-5 --maxIterVel 150 --lambda 0.01 --weightsLMA \" (1.0 1.0 1.0 0.1 0.1 0.1) \" --weightsJS <optional_value> --weightsTS <optional_value> --invKinStrategy leastOverallAngularDisplacement --mins <mandatory_value> --maxs <mandatory_value>
 * \endcode
 *
 * \code{.unparsed}
-* yarpdev --device KdlSolver
+* yarpdev --device KdlSolver --mins <mandatory_value> --maxs <mandatory_value>
 * \endcode
 *
 */
@@ -81,11 +81,11 @@ public:
     const std::string m_maxIterVel_defaultValue = {"150"};
     const std::string m_lambda_defaultValue = {"0.01"};
     const std::string m_weightsLMA_defaultValue = {"(1.0 1.0 1.0 0.1 0.1 0.1)"};
-    const std::string m_weightsJS_defaultValue = {"(0.0)"};
-    const std::string m_weightsTS_defaultValue = {"(0.0)"};
+    const std::string m_weightsJS_defaultValue = {""};
+    const std::string m_weightsTS_defaultValue = {""};
     const std::string m_invKinStrategy_defaultValue = {"leastOverallAngularDisplacement"};
-    const std::string m_mins_defaultValue = {"(0.0)"};
-    const std::string m_maxs_defaultValue = {"(0.0)"};
+    const std::string m_mins_defaultValue = {""};
+    const std::string m_maxs_defaultValue = {""};
 
     bool m_quiet = {false};
     std::string m_kinematics = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
@@ -98,11 +98,11 @@ public:
     int m_maxIterVel = {150};
     double m_lambda = {0.01};
     std::vector<double> m_weightsLMA = { }; //Default values for lists are managed in the class constructor. It is highly recommended to provide a suggested value also for optional string parameters.
-    std::vector<double> m_weightsJS = { }; //Default values for lists are managed in the class constructor. It is highly recommended to provide a suggested value also for optional string parameters.
-    std::vector<double> m_weightsTS = { }; //Default values for lists are managed in the class constructor. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::vector<double> m_weightsJS = {}; //The default value of this list is an empty list. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::vector<double> m_weightsTS = {}; //The default value of this list is an empty list. It is highly recommended to provide a suggested value also for optional string parameters.
     std::string m_invKinStrategy = {"leastOverallAngularDisplacement"};
-    std::vector<double> m_mins = { }; //Default values for lists are managed in the class constructor. It is highly recommended to provide a suggested value also for optional string parameters.
-    std::vector<double> m_maxs = { }; //Default values for lists are managed in the class constructor. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::vector<double> m_mins = {}; //This default value is autogenerated. It is highly recommended to provide a suggested value also for mandatory parameters.
+    std::vector<double> m_maxs = {}; //This default value is autogenerated. It is highly recommended to provide a suggested value also for mandatory parameters.
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }

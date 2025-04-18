@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 14:50:07 2025
+// Generated on: Sat Apr 19 00:43:13 2025
 
 
 #include "AsibotSolver_ParamsParser.h"
@@ -22,44 +22,6 @@ namespace {
 
 AsibotSolver_ParamsParser::AsibotSolver_ParamsParser()
 {
-    //Default value of parametermins
-    {
-        m_mins.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_mins_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_mins.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'mins' is not a properly formatted bottle";
-        }
-    }
-
-    //Default value of parametermaxs
-    {
-        m_maxs.clear();
-        yarp::os::Value tempVal;
-        tempVal.fromString(m_maxs_defaultValue.c_str());
-        yarp::os::Bottle* tempBot = tempVal.asList();
-        if (tempBot && tempBot->size()!=0)
-        {
-            for (size_t i=0; i<tempBot->size(); i++)
-            {
-                m_maxs.push_back(tempBot->get(i).asFloat64());
-            }
-        }
-        else
-        {
-             yError() <<"parameter 'maxs' is not a properly formatted bottle";
-        }
-    }
-
 }
 
 
@@ -181,7 +143,10 @@ bool      AsibotSolver_ParamsParser::parseParams(const yarp::os::Searchable & co
         }
         else
         {
-            yCInfo(AsibotSolverParamsCOMPONENT) << "Parameter 'mins' using DEFAULT value:" << m_mins;
+            yCError(AsibotSolverParamsCOMPONENT) << "Mandatory parameter 'mins' not found!";
+            yCError(AsibotSolverParamsCOMPONENT) << "Description of the parameter: lower bound joint position limits";
+            yCError(AsibotSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg'";
+            return false;
         }
         prop_check.unput("mins");
     }
@@ -210,7 +175,10 @@ bool      AsibotSolver_ParamsParser::parseParams(const yarp::os::Searchable & co
         }
         else
         {
-            yCInfo(AsibotSolverParamsCOMPONENT) << "Parameter 'maxs' using DEFAULT value:" << m_maxs;
+            yCError(AsibotSolverParamsCOMPONENT) << "Mandatory parameter 'maxs' not found!";
+            yCError(AsibotSolverParamsCOMPONENT) << "Description of the parameter: upper bound joint position limits";
+            yCError(AsibotSolverParamsCOMPONENT) << "Remember: Units for this parameter are: 'deg'";
+            return false;
         }
         prop_check.unput("maxs");
     }
@@ -260,8 +228,8 @@ std::string      AsibotSolver_ParamsParser::getDocumentationOfDeviceParams() con
     doc = doc + std::string("'maxs': upper bound joint position limits\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device AsibotSolver --A0 0.3 --A1 0.4 --A2 0.4 --A3 0.3 --invKinStrategy leastOverallAngularDisplacement --mins \" (0.0) \" --maxs \" (0.0) \"\n";
+    doc = doc + " yarpdev --device AsibotSolver --A0 0.3 --A1 0.4 --A2 0.4 --A3 0.3 --invKinStrategy leastOverallAngularDisplacement --mins <mandatory_value> --maxs <mandatory_value>\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device AsibotSolver\n";
+    doc = doc + " yarpdev --device AsibotSolver --mins <mandatory_value> --maxs <mandatory_value>\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }
