@@ -39,16 +39,20 @@ jobs:
         - { yarp: yarp-3.10, cmake: 3.19.x }
         - { yarp: yarp-3.11, cmake: 3.19.x }
         - { yarp: master, cmake: 3.19.x }
-        compiler:
-        - { cc: gcc, cxx: g++ }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
         exclude:
         - { experimental: false, robotology: { yarp: master } }
         include:
-        - compiler: { cc: clang, cxx: clang++ }
         - os: ubuntu-22.04
+          compiler: { cc: gcc-11, cxx: g++-11 }
+        - os: ubuntu-22.04
+          # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
           compiler: { cc: clang-15, cxx: clang++-15 }
+        - os: ubuntu-24.04
+          compiler: { cc: gcc-13, cxx: g++-13 }
+        - os: ubuntu-24.04
+          compiler: { cc: clang-18, cxx: clang++-18 }
 
     steps:
     - name: Check out kinematics-dynamics
