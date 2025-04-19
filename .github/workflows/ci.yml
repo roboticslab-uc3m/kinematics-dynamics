@@ -26,33 +26,28 @@ jobs:
         cancel_others: 'true'
 
   build:
-    name: build (${{matrix.os}}, ${{matrix.robotology.yarp}}, ${{matrix.compiler.cc}})
-    runs-on: ${{matrix.os}}
+    name: build (${{matrix.system.os}}, ${{matrix.robotology.yarp}}, ${{matrix.system.compiler.cc}})
+    runs-on: ${{matrix.system.os}}
     needs: maybe_skip
     if: ${{needs.maybe_skip.outputs.should_skip != 'true'}}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
+        system:
+        - { os: ubuntu-22.04, compiler: { cc: gcc-11, cxx: g++-11 } }
+        # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
+        - { os: ubuntu-22.04, compiler: { cc: clang-15, cxx: clang++-15 } }
+        - { os: ubuntu-24.04, compiler: { cc: gcc-13, cxx: g++-13 } }
+        - { os: ubuntu-24.04, compiler: { cc: clang-18, cxx: clang++-18 } }
         robotology:
         - { yarp: yarp-3.10, cmake: 3.19.x }
         - { yarp: yarp-3.11, cmake: 3.19.x }
-        - { yarp: master, cmake: 3.19.x }
+        - { yarp: master,    cmake: 3.19.x }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
         exclude:
         - { experimental: false, robotology: { yarp: master } }
-        include:
-        - os: ubuntu-22.04
-          compiler: { cc: gcc-11, cxx: g++-11 }
-        - os: ubuntu-22.04
-          # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
-          compiler: { cc: clang-15, cxx: clang++-15 }
-        - os: ubuntu-24.04
-          compiler: { cc: gcc-13, cxx: g++-13 }
-        - os: ubuntu-24.04
-          compiler: { cc: clang-18, cxx: clang++-18 }
 
     steps:
     - name: Check out kinematics-dynamics
@@ -78,7 +73,7 @@ jobs:
         path: .deps/kdl
 
     - name: Check out SWIG
-      if: ${{matrix.os == 'ubuntu-24.04'}}
+      if: ${{matrix.system.os == 'ubuntu-24.04'}}
       uses: actions/checkout@v4
       with:
         repository: swig/swig
@@ -96,12 +91,12 @@ jobs:
     - name: Set up Ccache
       uses: hendrikmuhs/ccache-action@v1
       with:
-        key: ${{matrix.os}}-${{matrix.robotology.yarp}}-${{matrix.compiler.cc}}
+        key: ${{matrix.system.os}}-${{matrix.robotology.yarp}}-${{matrix.system.compiler.cc}}
 
     - name: Set environment variables
       run: |
-        echo "CC=${{matrix.compiler.cc}}" >> $GITHUB_ENV
-        echo "CXX=${{matrix.compiler.cxx}}" >> $GITHUB_ENV
+        echo "CC=${{matrix.system.compiler.cc}}" >> $GITHUB_ENV
+        echo "CXX=${{matrix.system.compiler.cxx}}" >> $GITHUB_ENV
 
     - name: Build YCM
       run: |
@@ -122,25 +117,25 @@ jobs:
         sudo cmake --install .deps/kdl/orocos_kdl/build
 
     - name: Build SWIG
-      if: ${{matrix.os == 'ubuntu-24.04'}}
+      if: ${{matrix.system.os == 'ubuntu-24.04'}}
       run: |
         cmake -S .deps/swig -B .deps/swig/build
         cmake --build .deps/swig/build
         sudo cmake --install .deps/swig/build
         sudo ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
 
-    - name: Configure kinematics-dynamics
+    - name: Configure main project
       run: cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
 
-    - name: Compile kinematics-dynamics
+    - name: Compile main project
       run: cmake --build ./build
 
-    - name: Install kinematics-dynamics
+    - name: Install main project
       run: sudo cmake --install ./build && sudo ldconfig
 
-    - name: Test kinematics-dynamics
+    - name: Test main project
       working-directory: build
       run: ctest -V
 
-    - name: Uninstall kinematics-dynamics
+    - name: Uninstall main project
       run: sudo cmake --build ./build --target uninstall
