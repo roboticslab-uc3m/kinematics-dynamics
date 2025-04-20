@@ -35,10 +35,10 @@ jobs:
       fail-fast: false
       matrix:
         system:
-        - { os: ubuntu-22.04, compiler: { cc: gcc-11, cxx: g++-11 } }
+        - { os: ubuntu-22.04, compiler: { cc: gcc-11,   cxx: g++-11 } }
         # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
         - { os: ubuntu-22.04, compiler: { cc: clang-15, cxx: clang++-15 } }
-        - { os: ubuntu-24.04, compiler: { cc: gcc-13, cxx: g++-13 } }
+        - { os: ubuntu-24.04, compiler: { cc: gcc-13,   cxx: g++-13 } }
         - { os: ubuntu-24.04, compiler: { cc: clang-18, cxx: clang++-18 } }
         robotology:
         - { yarp: yarp-3.10, cmake: 3.19.x }
@@ -50,7 +50,7 @@ jobs:
         - { experimental: false, robotology: { yarp: master } }
 
     steps:
-    - name: Check out kinematics-dynamics
+    - name: Check out main project
       uses: actions/checkout@v4
 
     - name: Check out YCM

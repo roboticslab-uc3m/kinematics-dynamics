@@ -3,7 +3,7 @@
 
     <module>
         <name>deviceBundler</name>
-        <parameters>--wrapper_device multipleanalogsensorsserver --attached_device Jr3Pci --name /jr3 --period 5 --filter 2 --dextrorotary</parameters>
+        <parameters>--wrapper_device multipleanalogsensorsserver --attached_device Jr3Pci --name /jr3 --period 5 --filter 2</parameters>
         <node>2.2.2.105</node>
         <deployer>yarpdev</deployer>
     </module>
