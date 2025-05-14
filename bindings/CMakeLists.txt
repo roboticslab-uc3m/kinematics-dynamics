@@ -14,16 +14,16 @@ set(CMAKE_C_FLAGS "-w ${_USER_CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-w ${_USER_CMAKE_CXX_FLAGS}")
 
 # This is necessary for SWIG to parse .i file
-get_property(_include_dirs TARGET ROBOTICSLAB::KinematicsDynamicsInterfaces PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-foreach(_dir IN LISTS _include_dirs)
-  if("${_dir}" MATCHES "\\\$<BUILD_INTERFACE:(.+)>$")
-    include_directories("${CMAKE_MATCH_1}")
-  elseif("${_dir}" MATCHES "\\\$<INSTALL_INTERFACE:(.+)>$")
+#get_property(_include_dirs TARGET ROBOTICSLAB::KinematicsDynamicsInterfaces PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+#foreach(_dir IN LISTS _include_dirs)
+#  if("${_dir}" MATCHES "\\\$<BUILD_INTERFACE:(.+)>$")
+#    include_directories("${CMAKE_MATCH_1}")
+#  elseif("${_dir}" MATCHES "\\\$<INSTALL_INTERFACE:(.+)>$")
     # Nothing to do
-  else()
-    include_directories(${_dir})
-  endif()
-endforeach()
+#  else()
+#    include_directories(${_dir})
+#  endif()
+#endforeach()
 
 cmake_dependent_option(CREATE_BINDINGS "Compile optional language bindings" ON
                        SWIG_FOUND OFF)
