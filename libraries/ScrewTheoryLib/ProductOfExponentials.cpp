@@ -7,7 +7,7 @@
 #include <kdl/joint.hpp>
 #include <kdl/segment.hpp>
 
-#include <yarp/os/Log.h>
+//#include <yarp/os/Log.h>
 
 #include "LogComponent.hpp"
 
