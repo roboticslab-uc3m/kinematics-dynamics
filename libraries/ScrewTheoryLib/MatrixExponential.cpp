@@ -2,7 +2,7 @@
 
 #include "MatrixExponential.hpp"
 
-#include <yarp/os/LogStream.h>
+//#include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
 #include "ScrewTheoryTools.hpp"
