@@ -38,14 +38,15 @@ jobs:
       matrix:
         system:
         - { os: ubuntu-22.04, ros: humble, compiler: { cc: gcc-11,   cxx: g++-11,     apt: g++-11 } }
-        # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
+        # clang-15 instead of clang-14: https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
         - { os: ubuntu-22.04, ros: humble, compiler: { cc: clang-15, cxx: clang++-15, apt: clang-15 } }
         - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: gcc-13,   cxx: g++-13,     apt: g++-13 } }
         - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: clang-18, cxx: clang++-18, apt: clang-18 } }
         robotology:
-        - { yarp: yarp-3.10, cmake: 3.19.x }
-        - { yarp: yarp-3.11, cmake: 3.19.x }
-        - { yarp: master,    cmake: 3.19.x }
+        # CMake 3.20 instead of 3.19 because of ROS Jazzy
+        - { yarp: yarp-3.10, cmake: 3.20.x }
+        - { yarp: yarp-3.11, cmake: 3.20.x }
+        - { yarp: master,    cmake: 3.20.x }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
         exclude:
