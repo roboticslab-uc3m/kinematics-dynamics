@@ -4,9 +4,7 @@
 
 This project integrates YARP and ROS 2 to provide a Cartesian control server for robots. It enables communication with a YARP subdevice through its ICartesianControl interface, while allowing the robot's current position to be published and commands to be received via ROS 2 nodes.
 
-Original work: María de las Mercedes Rebollo Rayo, *Implementación en ROS 2 de un controlador
-genérico para teleoperación de un robot
-manipulador mediante un ratón 3D*, Trabajo Fin de Grado, Universidad Carlos III de Madrid, 2024. https://github.com/mercerebo1/cartesian-controllers
+Original work: María de las Mercedes Rebollo Rayo, *Implementación en ROS 2 de un controlador genérico para teleoperación de un robot manipulador mediante un ratón 3D*, Trabajo Fin de Grado, Universidad Carlos III de Madrid, 2024. https://github.com/mercerebo1/cartesian-controllers
 
 
 ## Overview

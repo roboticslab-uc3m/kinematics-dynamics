@@ -27,7 +27,9 @@ jobs:
 
   build:
     name: build (${{matrix.system.os}}, ${{matrix.robotology.yarp}}, ${{matrix.system.compiler.cc}})
-    runs-on: ${{matrix.system.os}}
+    runs-on: ubuntu-latest
+    container:
+      image: ros:${{matrix.system.ros}}-ros-core
     needs: maybe_skip
     if: ${{needs.maybe_skip.outputs.should_skip != 'true'}}
 
@@ -35,15 +37,16 @@ jobs:
       fail-fast: false
       matrix:
         system:
-        - { os: ubuntu-22.04, compiler: { cc: gcc-11,   cxx: g++-11 } }
-        # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
-        - { os: ubuntu-22.04, compiler: { cc: clang-15, cxx: clang++-15 } }
-        - { os: ubuntu-24.04, compiler: { cc: gcc-13,   cxx: g++-13 } }
-        - { os: ubuntu-24.04, compiler: { cc: clang-18, cxx: clang++-18 } }
+        - { os: ubuntu-22.04, ros: humble, compiler: { cc: gcc-11,   cxx: g++-11,     apt: g++-11 } }
+        # clang-15 instead of clang-14: https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
+        - { os: ubuntu-22.04, ros: humble, compiler: { cc: clang-15, cxx: clang++-15, apt: clang-15 } }
+        - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: gcc-13,   cxx: g++-13,     apt: g++-13 } }
+        - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: clang-18, cxx: clang++-18, apt: clang-18 } }
         robotology:
-        - { yarp: yarp-3.10, cmake: 3.19.x }
-        - { yarp: yarp-3.11, cmake: 3.19.x }
-        - { yarp: master,    cmake: 3.19.x }
+        # CMake 3.20 instead of 3.19 because of ROS Jazzy
+        - { yarp: yarp-3.10, cmake: 3.20.x }
+        - { yarp: yarp-3.11, cmake: 3.20.x }
+        - { yarp: master,    cmake: 3.20.x }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
         exclude:
@@ -73,7 +76,6 @@ jobs:
         path: .deps/kdl
 
     - name: Check out SWIG
-      if: ${{matrix.system.os == 'ubuntu-24.04'}}
       uses: actions/checkout@v4
       with:
         repository: swig/swig
@@ -81,7 +83,7 @@ jobs:
         path: .deps/swig
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache libeigen3-dev googletest
+      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} libeigen3-dev bison googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -102,40 +104,41 @@ jobs:
       run: |
         cmake -S .deps/ycm -B .deps/ycm/build
         cmake --build .deps/ycm/build
-        sudo cmake --install .deps/ycm/build
+        cmake --install .deps/ycm/build
 
     - name: Build YARP
       run: |
         cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
         cmake --build .deps/yarp/build
-        sudo cmake --install .deps/yarp/build
+        cmake --install .deps/yarp/build
 
     - name: Build Orocos KDL
       run: |
         cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build
         cmake --build .deps/kdl/orocos_kdl/build
-        sudo cmake --install .deps/kdl/orocos_kdl/build
+        cmake --install .deps/kdl/orocos_kdl/build
 
     - name: Build SWIG
-      if: ${{matrix.system.os == 'ubuntu-24.04'}}
       run: |
-        cmake -S .deps/swig -B .deps/swig/build
+        cmake -S .deps/swig -B .deps/swig/build -DWITH_PCRE=OFF
         cmake --build .deps/swig/build
-        sudo cmake --install .deps/swig/build
-        sudo ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
+        cmake --install .deps/swig/build
+        ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
 
     - name: Configure main project
-      run: cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
+      run: |
+        . /opt/ros/${{matrix.system.ros}}/setup.sh
+        cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
 
     - name: Compile main project
       run: cmake --build ./build
 
     - name: Install main project
-      run: sudo cmake --install ./build && sudo ldconfig
+      run: cmake --install ./build && ldconfig
 
     - name: Test main project
       working-directory: build
       run: ctest -V
 
     - name: Uninstall main project
-      run: sudo cmake --build ./build --target uninstall
+      run: cmake --build ./build --target uninstall
