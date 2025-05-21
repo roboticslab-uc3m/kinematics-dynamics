@@ -10,20 +10,25 @@ endif()
 
 yarp_prepare_plugin(CartesianControlServerROS2
                     CATEGORY device
-                    TYPE roboticslab::CartesianControlServerROS2
+                    TYPE CartesianControlServerROS2
                     INCLUDE CartesianControlServerROS2.hpp
                     EXTRA_CONFIG WRAPPER=CartesianControlServerROS2
                     DEFAULT ON
-                    DEPENDS "orocos_kdl_FOUND;rclcpp_FOUND;geometry_msgs_FOUND")
+                    DEPENDS "orocos_kdl_FOUND;rclcpp_FOUND;geometry_msgs_FOUND"
+                    GENERATE_PARSER)
 
 if(NOT SKIP_CartesianControlServerROS2)
 
-    yarp_add_plugin(CartesianControlServerROS2 CartesianControlServerROS2.hpp
-                                               CartesianControlServerROS2.cpp
-                                               PeriodicThreadImpl.cpp
-                                               DeviceDriverImpl.cpp
-                                               LogComponent.hpp
-                                               LogComponent.cpp)
+    yarp_add_plugin(CartesianControlServerROS2)
+
+    target_sources(CartesianControlServerROS2 PRIVATE CartesianControlServerROS2.hpp
+                                                      CartesianControlServerROS2.cpp
+                                                      PeriodicThreadImpl.cpp
+                                                      DeviceDriverImpl.cpp
+                                                      CartesianControlServerROS2_ParamsParser.h
+                                                      CartesianControlServerROS2_ParamsParser.cpp
+                                                      LogComponent.hpp
+                                                      LogComponent.cpp)
 
     target_link_libraries(CartesianControlServerROS2 YARP::YARP_os
                                                      YARP::YARP_dev

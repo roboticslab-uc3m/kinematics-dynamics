@@ -12,9 +12,6 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_NODE_NAME = "cartesian_control_server_ros2";
-constexpr auto DEFAULT_MS = 20;
-
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
@@ -61,29 +58,26 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
         return false;
     }
 
-    int periodInMs = config.check("period", yarp::os::Value(DEFAULT_MS), "FK stream period (milliseconds)").asInt32();
-
-    if (periodInMs > 0)
+    if (m_fkPeriod > 0)
     {
-        yarp::os::PeriodicThread::setPeriod(periodInMs * 0.001);
+        yarp::os::PeriodicThread::setPeriod(m_fkPeriod * 0.001);
     }
     else
     {
         yCWarning(CCS) << "Invalid period, using default";
-        yarp::os::PeriodicThread::setPeriod(DEFAULT_MS * 0.001);
+        yarp::os::PeriodicThread::setPeriod(std::stoi(m_fkPeriod_defaultValue) * 0.001);
     }
 
-    auto nodeName = config.check("node", yarp::os::Value(DEFAULT_NODE_NAME), "ROS node name").asString();
-    auto prefix = "/" + nodeName;
+    auto prefix = "/" + m_name;
 
     if (!rclcpp::ok())
     {
         rclcpp::init(0, nullptr);
     }
 
-    // ROS2 initialization 
-    m_node = std::make_shared<rclcpp::Node>(nodeName);
-    
+    // ROS2 initialization
+    m_node = std::make_shared<rclcpp::Node>(m_name);
+
     // Parameters
     callback_handle_ = m_node->add_on_set_parameters_callback(std::bind(&CartesianControlServerROS2::parameter_callback, this, std::placeholders::_1));
 
@@ -107,7 +101,6 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
     m_node->declare_parameter<std::string>("frame", "base", descriptor_frame); // Default frame (base)
     m_node->get_parameter("frame", frame);
 
-    
     // Publisher
     m_publisher = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
 
@@ -115,25 +108,25 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
     m_poseSubscription = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10,
                                                                                std::bind(&CartesianControlServerROS2::poseTopic_callback,
                                                                                this, std::placeholders::_1));
-    if(!m_poseSubscription)
+    if (!m_poseSubscription)
     {
         yCError(CCS) << "Could not initialize the Pose msg subscription";
         return false;
-    }     
-    
+    }
+
     m_twistSubscription = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10,
                                                                                  std::bind(&CartesianControlServerROS2::twistTopic_callback,
                                                                                  this, std::placeholders::_1));
-    if(!m_twistSubscription)
+    if (!m_twistSubscription)
     {
         yCError(CCS) << "Could not initialize the Twist msg subscription";
         return false;
     }
-    
+
     m_wrenchSubscription = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10,
                                                                                    std::bind(&CartesianControlServerROS2::wrenchTopic_callback,
                                                                                    this, std::placeholders::_1));
-    if(!m_wrenchSubscription)
+    if (!m_wrenchSubscription)
     {
         yCError(CCS) << "Could not initialize the Wrench msg subscription";
         return false;
@@ -143,7 +136,7 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
                                                                               std::bind(&CartesianControlServerROS2::gripperTopic_callback,
                                                                               this, std::placeholders::_1));
 
-    if(!m_gripperSubscription)
+    if (!m_gripperSubscription)
     {
         yCError(CCS) << "Could not initialize the Gripper msg subscription";
         return false;
@@ -165,11 +158,11 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
 
 bool CartesianControlServerROS2::close()
 {
-     if (m_spinner && m_spinner->isRunning())
+    if (m_spinner && m_spinner->isRunning())
     {
         m_spinner->stop();
     }
- 
+
     return cartesianControlDevice.close();
 }
 
