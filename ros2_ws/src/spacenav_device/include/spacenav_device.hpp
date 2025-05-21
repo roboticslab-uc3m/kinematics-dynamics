@@ -4,8 +4,6 @@
 #include <string>
 #include <mutex>
 
-#include <ICartesianControl.h>
-
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/twist.hpp>
@@ -20,27 +18,33 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Vector3.h>
 
+#include <ICartesianControl.h>
+
 using SetParameters = rcl_interfaces::srv::SetParameters;
 using Parameter = rcl_interfaces::msg::Parameter;
 using ParameterValue = rcl_interfaces::msg::ParameterValue;
 using SetParametersResult = rcl_interfaces::msg::SetParametersResult;
 
+/**
+ * @ingroup kinematics-dynamics-programs
+ * @defgroup SpacenavSubscriber SpacenavSubscriber
+ * @brief Creates an instance of SpacenavSubscriber.
+ */
 class SpacenavSubscriber : public rclcpp::Node
 {
 public:
     SpacenavSubscriber();
-    ~SpacenavSubscriber();
 
 private:
     void spnav_callback(const sensor_msgs::msg::Joy::SharedPtr msg);
     void state_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
-    bool set_preset_streaming_cmd(const std::string &value); 
+    bool set_preset_streaming_cmd(const std::string &value);
     SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
     void timer_callback();
 
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscription_spnav_{nullptr};
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr subscription_state_pose_{nullptr};
-    
+
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_spnav_twist_{nullptr};
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr publisher_spnav_pose_{nullptr};
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr publisher_spnav_wrench_{nullptr};
@@ -75,6 +79,4 @@ private:
     /*Notice that order of gripper_state enum values matches the same order from CartesianControlServerROS2. If modify, please, update*/
     enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
     gripper_state gripper_state_{GRIPPER_NONE};
-
 };
-

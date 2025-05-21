@@ -83,7 +83,7 @@ jobs:
         path: .deps/swig
 
     - name: Install dependencies via apt
-      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} libeigen3-dev bison googletest
+      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} libeigen3-dev bison ros-${{matrix.system.ros}}-tf2 ros-${{matrix.system.ros}}-tf2-geometry-msgs googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
