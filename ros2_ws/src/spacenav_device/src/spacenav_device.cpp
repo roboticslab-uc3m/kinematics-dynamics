@@ -10,7 +10,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <rclcpp/exceptions.hpp>
 
 constexpr auto DEFAULT_NODE_NAME = "/cartesian_control_server_ros2";
@@ -18,6 +17,32 @@ constexpr auto DEFAULT_AXIS_SCALE = 0.3;
 constexpr auto DEFAULT_STREAMING_MSG = "twist";
 
 using namespace std::placeholders;
+
+namespace
+{
+	// from tf2_geometry_msgs package
+
+	inline geometry_msgs::msg::Quaternion toMsg(const tf2::Quaternion & in)
+	{
+		geometry_msgs::msg::Quaternion out;
+		out.w = in.getW();
+		out.x = in.getX();
+		out.y = in.getY();
+		out.z = in.getZ();
+		return out;
+	}
+
+	inline void fromMsg(const geometry_msgs::msg::Point & in, tf2::Vector3 & out)
+	{
+		out = tf2::Vector3(in.x, in.y, in.z);
+	}
+
+	inline void fromMsg(const geometry_msgs::msg::Quaternion & in, tf2::Quaternion & out)
+	{
+		// w at the end in the constructor
+		out = tf2::Quaternion(in.x, in.y, in.z, in.w);
+	}
+}
 
 SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
 {
@@ -239,7 +264,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
 				msg_pose->position.x = new_position.x();
 				msg_pose->position.y = new_position.y();
 				msg_pose->position.z = new_position.z();
-				msg_pose->orientation = tf2::toMsg(new_orientation);;
+				msg_pose->orientation = toMsg(new_orientation);;
 
 				std::lock_guard<std::mutex> lock(msg_mutex_); // Lock mutex so it is not accessed by timer_callback
 				last_msg_pose_ = msg_pose;
@@ -270,8 +295,8 @@ void SpacenavSubscriber::state_callback(const geometry_msgs::msg::PoseStamped::S
 {
 	if (!initial_pose_set_ && streaming_msg_ == "pose")
 	{
-		tf2::fromMsg(msg->pose.position, initial_position_);
-		tf2::fromMsg(msg->pose.orientation, initial_orientation_);
+		fromMsg(msg->pose.position, initial_position_);
+		fromMsg(msg->pose.orientation, initial_orientation_);
 
 		if ((initial_pose_set_))
 		{

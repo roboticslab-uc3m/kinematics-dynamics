@@ -20,7 +20,8 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
+# avoid due to conflict with ROS-vendored orocos-kdl package
+# find_package(tf2_geometry_msgs REQUIRED)
 
 if(NOT TARGET ROBOTICSLAB::KinematicsDynamicsInterfaces)
   find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
@@ -30,7 +31,7 @@ add_executable(spacenav_device src/spacenav_device.cpp)
 
 target_link_libraries(spacenav_device ROBOTICSLAB::KinematicsDynamicsInterfaces)
 
-ament_target_dependencies(spacenav_device rclcpp std_msgs sensor_msgs geometry_msgs tf2 tf2_geometry_msgs)
+ament_target_dependencies(spacenav_device rclcpp std_msgs sensor_msgs geometry_msgs tf2)
 
 install(TARGETS
   spacenav_device
