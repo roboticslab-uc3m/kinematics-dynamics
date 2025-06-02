@@ -73,21 +73,29 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_poseSubscription;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twistSubscription;
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrenchSubscription;
-    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_gripperSubscription;
+
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movjSubscription;
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movlSubscription;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movvSubscription;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_forcSubscription;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_toolSubscription;
+    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_actSubscription;
 
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_parameterServer;
     std::string preset_streaming_cmd;
     std::string frame;
 
     // Subscription callbacks - Topics
-    void poseTopic_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void twistTopic_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
-    void wrenchTopic_callback(const geometry_msgs::msg::Wrench::SharedPtr msg);
-    void gripperTopic_callback(const std_msgs::msg::Int32::SharedPtr msg);
+    void pose_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void twist_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
+    void wrench_callback(const geometry_msgs::msg::Wrench::SharedPtr msg);
+
     void movj_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void movl_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void movv_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void forc_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void tool_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void act_callback(const std_msgs::msg::Int32::SharedPtr msg);
 
     rcl_interfaces::msg::SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
 
