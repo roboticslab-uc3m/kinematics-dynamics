@@ -18,6 +18,7 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
 #include <std_msgs/msg/int32.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 
 #include <kdl/frames.hpp>
 
@@ -75,6 +76,9 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr   m_wrenchSubscription;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr         m_gripperSubscription;
 
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr   m_movj;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr   m_movl;
+
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
     std::string preset_streaming_cmd;
     std::string frame;
@@ -84,6 +88,9 @@ private:
     void twistTopic_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
     void wrenchTopic_callback(const geometry_msgs::msg::Wrench::SharedPtr msg);
     void gripperTopic_callback(const std_msgs::msg::Int32::SharedPtr msg);
+
+    void movj_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void movl_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
 
     rcl_interfaces::msg::SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
 

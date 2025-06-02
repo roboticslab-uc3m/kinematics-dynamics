@@ -111,6 +111,43 @@ void CartesianControlServerROS2::gripperTopic_callback(const std_msgs::msg::Int3
     }
 }
 
+void CartesianControlServerROS2::movj_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg){
+    // Asegurarse que solo pueda tener 6 parámetros
+    if (msg->data.size() != 6){
+        yCError(CCS) << "Received invalid movj command. Expected 6 elements.";
+        return;
+    }
+
+    // Crear un vector de 6 elementos para movj
+    std::vector<double> xd = msg->data;
+
+    if(preset_streaming_cmd == "none"){
+        yCInfo(CCS) << "Received msg:" << xd;
+        m_iCartesianControl->movj(xd);
+    }else{
+        yCWarning(CCS) << "Streaming command not set to 'none'.";
+    }
+}
+
+
+void CartesianControlServerROS2::movl_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg){
+    // Asegurarse que solo pueda tener 6 parámetros
+    if (msg->data.size() != 6){
+        yCError(CCS) << "Received invalid movl command. Expected 6 elements.";
+        return;
+    }
+
+    // Crear un vector de 6 elementos para movj
+    std::vector<double> xd = msg->data;
+
+    if(preset_streaming_cmd == "none"){
+        yCInfo(CCS) << "Received msg:" << xd;
+        m_iCartesianControl->movl(xd);
+    }else{
+        yCWarning(CCS) << "Streaming command not set to 'none'.";
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::parameter_callback(const std::vector<rclcpp::Parameter> &parameters)

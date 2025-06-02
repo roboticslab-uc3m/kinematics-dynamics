@@ -16,34 +16,19 @@ using namespace roboticslab;
 
 bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
 {
-    yarp::os::Value * name;
+    // No es genérico, cambiar antes de entregar
 
-    if (config.check("subdevice", name))
+    yCInfo(CCS) << "Subdevice wrapping";
+
+    // maybe user isn't doing nested configuration
+    yarp::os::Property p;
+    p.fromString(config.toString());
+    p.put("device", "BasicCartesianControl");
+    cartesianControlDevice.open(p);
+
+    if (!cartesianControlDevice.isValid())
     {
-        yCInfo(CCS) << "Subdevice" << name->toString();
-
-        if (name->isString())
-        {
-            // maybe user isn't doing nested configuration
-            yarp::os::Property p;
-            p.fromString(config.toString());
-            p.put("device", name->toString());
-            cartesianControlDevice.open(p);
-        }
-        else
-        {
-            cartesianControlDevice.open(*name);
-        }
-
-        if (!cartesianControlDevice.isValid())
-        {
-            yCError(CCS) << "Cannot make" << name->toString();
-        }
-    }
-    else
-    {
-        yCError(CCS) << "Subdevice option not set in CartesianControlServerROS2";
-        return false;
+        yCError(CCS) << "Cannot make";
     }
 
     if (!cartesianControlDevice.isValid())
@@ -139,6 +124,24 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
     if (!m_gripperSubscription)
     {
         yCError(CCS) << "Could not initialize the Gripper msg subscription";
+        return false;
+    }
+
+        m_movj = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movjoint", 10,
+                                                                                   std::bind(&CartesianControlServerROS2::movj_callback,
+                                                                                             this, std::placeholders::_1));
+    if(!m_movj)
+    {
+        yCError(CCS) << "Could not initialize the movj msg subscription";
+        return false;
+    }
+
+    m_movl = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movlinear", 10,
+                                                                           std::bind(&CartesianControlServerROS2::movl_callback,
+                                                                                     this, std::placeholders::_1));
+    if(!m_movl)
+    {
+        yCError(CCS) << "Could not initialize the movl msg subscription";
         return false;
     }
 
