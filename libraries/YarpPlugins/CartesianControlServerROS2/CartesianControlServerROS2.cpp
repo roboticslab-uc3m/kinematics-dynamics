@@ -172,7 +172,7 @@ void CartesianControlServerROS2::pose_callback(const geometry_msgs::msg::Pose::S
         rot.z()
     };
 
-    if (preset_streaming_cmd == "pose")
+    if (preset_streaming_cmd == VOCAB_CC_POSE)
     {
         yCInfo(CCS) << "Received pose:" << v;
         m_iCartesianControl->pose(v);
@@ -198,7 +198,7 @@ void CartesianControlServerROS2::twist_callback(const geometry_msgs::msg::Twist:
 
     bool zero_msg = v == std::vector<double>(6, 0.0);
 
-    if (preset_streaming_cmd == "twist")
+    if (preset_streaming_cmd == VOCAB_CC_TWIST)
     {
         m_iCartesianControl->twist(v);
 
@@ -226,7 +226,7 @@ void CartesianControlServerROS2::wrench_callback(const geometry_msgs::msg::Wrenc
         msg->torque.z
     };
 
-    if (preset_streaming_cmd == "wrench")
+    if (preset_streaming_cmd == VOCAB_CC_WRENCH)
     {
         yCInfo(CCS) << "Received wrench:" << v;
         m_iCartesianControl->wrench(v);
@@ -247,7 +247,7 @@ void CartesianControlServerROS2::movj_callback(const std_msgs::msg::Float64Multi
         return;
     }
 
-    if (preset_streaming_cmd == "none")
+    if (preset_streaming_cmd == VOCAB_CC_NOT_SET)
     {
         yCInfo(CCS) << "Received movj msg:" << msg->data;
         m_iCartesianControl->movj(msg->data);
@@ -268,7 +268,7 @@ void CartesianControlServerROS2::movl_callback(const std_msgs::msg::Float64Multi
         return;
     }
 
-    if (preset_streaming_cmd == "none")
+    if (preset_streaming_cmd == VOCAB_CC_NOT_SET)
     {
         yCInfo(CCS) << "Received movl msg:" << msg->data;
         m_iCartesianControl->movl(msg->data);
@@ -289,7 +289,7 @@ void CartesianControlServerROS2::movv_callback(const std_msgs::msg::Float64Multi
         return;
     }
 
-    if (preset_streaming_cmd == "none")
+    if (preset_streaming_cmd == VOCAB_CC_NOT_SET)
     {
         yCInfo(CCS) << "Received movv msg:" << msg->data;
         m_iCartesianControl->movv(msg->data);
@@ -310,7 +310,7 @@ void CartesianControlServerROS2::forc_callback(const std_msgs::msg::Float64Multi
         return;
     }
 
-    if (preset_streaming_cmd == "none")
+    if (preset_streaming_cmd == VOCAB_CC_NOT_SET)
     {
         yCInfo(CCS) << "Received forc msg:" << msg->data;
         m_iCartesianControl->forc(msg->data);
@@ -384,81 +384,77 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::parameter_c
 
     for (const auto & param : parameters)
     {
-        if (param.get_name() == "preset_streaming_cmd")
+        const auto name = param.get_name();
+        const auto value = param.value_to_string();
+
+        if (name == "preset_streaming_cmd")
         {
-            preset_streaming_cmd = param.value_to_string();
-
-            if (preset_streaming_cmd == "twist")
-            {
-                yCInfo(CCS) << "Param for preset_streaming_cmd correctly set:" << preset_streaming_cmd;
-
-                if (!m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_TWIST))
-                {
-                    yCWarning(CCS) << "Unable to preset streaming command";
-                }
-            }
-            else if (preset_streaming_cmd == "pose")
-            {
-                yCInfo(CCS) << "Param for preset_streaming_cmd correctly set:" << preset_streaming_cmd;
-
-                if (!m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_POSE))
-                {
-                    yCWarning(CCS) << "Unable to preset streaming command";
-                }
-            }
-            else if (preset_streaming_cmd == "wrench")
-            {
-                yCInfo(CCS) << "Param for preset_streaming_cmd correctly set:" << preset_streaming_cmd;
-
-                if (!m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_WRENCH))
-                {
-                    yCWarning(CCS) << "Unable to preset streaming command";
-                }
-            }
-            else if (preset_streaming_cmd == "none")
-            {
-                yCInfo(CCS) << "Param for preset_streaming_cmd correctly set:" << preset_streaming_cmd;
-
-                if (!m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_NOT_SET))
-                {
-                    yCWarning(CCS) << "Unable to preset streaming command";
-                }
-            }
-            else
+            if (value != "pose" && value != "twist" && value != "wrench" && value != "none")
             {
                 result.successful = false;
                 result.reason = "Invalid parameter value. Only 'twist', 'pose', 'wrench' or 'none' are allowed.";
                 yCInfo(CCS) << "Invalid parameter value for preset_streaming_cmd.";
+                continue;
             }
-        }
 
-        if (param.get_name() == "frame")
-        {
-            frame = param.value_to_string();
+            int vocab;
 
-            if (frame == "base")
+            if (value == "twist")
             {
-                yCInfo(CCS) << "Param for frame correctly set:" << frame;
-
-                if (!m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
-                {
-                    yCWarning(CCS) << "Unable to preset frame";
-                }
+                vocab = VOCAB_CC_TWIST;
             }
-            else if (frame == "tcp")
+            else if (value == "pose")
             {
-                yCInfo(CCS) << "Param for frame correctly set:" << frame;
+                vocab = VOCAB_CC_POSE;
+            }
+            else if (value == "wrench")
+            {
+                vocab = VOCAB_CC_WRENCH;
+            }
+            else if (value == "none")
+            {
+                vocab = VOCAB_CC_NOT_SET;
+            }
 
-                if (!m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
-                {
-                    yCWarning(CCS) << "Unable to preset frame";
-                }
+            if (m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, vocab))
+            {
+                yCInfo(CCS) << "Param for preset_streaming_cmd correctly set:" << value;
+                preset_streaming_cmd = vocab;
             }
             else
             {
+                yCWarning(CCS) << "Unable to preset streaming command";
+            }
+        }
+        else if (name == "frame")
+        {
+            if (value != "base" && value != "tcp")
+            {
                 result.successful = false;
-                result.reason = "Invalid parameter value. Only 'base' or 'tcp' are allowed. Using 'base' as default.";
+                result.reason = "Invalid parameter value. Only 'base' or 'tcp' are allowed.";
                 yCInfo(CCS) << "Invalid parameter value for frame.";
+                continue;
+            }
+
+            ICartesianSolver::reference_frame refFrame;
+
+            if (value == "base")
+            {
+                refFrame = ICartesianSolver::BASE_FRAME;
+            }
+            else if (value == "tcp")
+            {
+                refFrame = ICartesianSolver::TCP_FRAME;
+            }
+
+            if (m_iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, refFrame))
+            {
+                yCInfo(CCS) << "Param for frame correctly set:" << value;
+                frame = refFrame;
+            }
+            else
+            {
+                yCWarning(CCS) << "Unable to preset frame";
             }
         }
     }

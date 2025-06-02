@@ -85,8 +85,8 @@ private:
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stopService;
 
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_parameterServer;
-    std::string preset_streaming_cmd;
-    std::string frame;
+    int preset_streaming_cmd;
+    roboticslab::ICartesianSolver::reference_frame frame;
 
     void pose_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
     void twist_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
