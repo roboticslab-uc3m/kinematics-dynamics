@@ -41,7 +41,7 @@ void CartesianControlServerROS2::run()
 
     ori.GetQuaternion(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
 
-    m_posePublisher->publish(msg);
+    m_stat->publish(msg);
 }
 
 // -----------------------------------------------------------------------------

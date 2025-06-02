@@ -17,114 +17,97 @@ using namespace roboticslab;
 bool CartesianControlServerROS2::configureRosHandlers()
 {
     using namespace std::placeholders;
+    using ccs = CartesianControlServerROS2;
 
-    auto prefix = "/" + m_name;
+    const auto prefix = "/" + m_name;
 
-    m_parameterServer = m_node->add_on_set_parameters_callback(std::bind(&CartesianControlServerROS2::parameter_callback, this, _1));
+    m_params = m_node->add_on_set_parameters_callback(std::bind(&ccs::params_cb, this, _1));
 
-    m_posePublisher = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
+    m_stat = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
 
-    m_poseSubscription = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10,
-                                                                               std::bind(&CartesianControlServerROS2::pose_callback,
-                                                                               this, _1));
-    if (!m_poseSubscription)
+    m_pose = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10, std::bind(&ccs::pose_cb, this, _1));
+
+    if (!m_pose)
     {
         yCError(CCS) << "Could not initialize the pose command subscription";
         return false;
     }
 
-    m_twistSubscription = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10,
-                                                                                 std::bind(&CartesianControlServerROS2::twist_callback,
-                                                                                 this, _1));
-    if (!m_twistSubscription)
+    m_twist = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10, std::bind(&ccs::twist_cb, this, _1));
+
+    if (!m_twist)
     {
         yCError(CCS) << "Could not initialize the twist command subscription";
         return false;
     }
 
-    m_wrenchSubscription = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10,
-                                                                                   std::bind(&CartesianControlServerROS2::wrench_callback,
-                                                                                   this, _1));
-    if (!m_wrenchSubscription)
+    m_wrench = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10, std::bind(&ccs::wrench_cb, this, _1));
+
+    if (!m_wrench)
     {
         yCError(CCS) << "Could not initialize the wrench command subscription";
         return false;
     }
 
-    m_movjSubscription = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movj", 10,
-                                                                                       std::bind(&CartesianControlServerROS2::movj_callback,
-                                                                                       this, _1));
+    m_movj = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movj", 10, std::bind(&ccs::movj_cb, this, _1));
 
-    if (!m_movjSubscription)
+    if (!m_movj)
     {
         yCError(CCS) << "Could not initialize the movj command subscription";
         return false;
     }
 
-    m_movlSubscription = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movl", 10,
-                                                                                       std::bind(&CartesianControlServerROS2::movl_callback,
-                                                                                       this, _1));
+    m_movl = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movl", 10, std::bind(&ccs::movl_cb, this, _1));
 
-    if (!m_movlSubscription)
+    if (!m_movl)
     {
         yCError(CCS) << "Could not initialize the movl command subscription";
         return false;
     }
 
-    m_movvSubscription = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movv", 10,
-                                                                                       std::bind(&CartesianControlServerROS2::movv_callback,
-                                                                                       this, _1));
+    m_movv = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movv", 10, std::bind(&ccs::movv_cb, this, _1));
 
-    if (!m_movvSubscription)
+    if (!m_movv)
     {
         yCError(CCS) << "Could not initialize the movv command subscription";
         return false;
     }
 
-    m_forcSubscription = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/forc", 10,
-                                                                                       std::bind(&CartesianControlServerROS2::forc_callback,
-                                                                                       this, _1));
+    m_forc = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/forc", 10, std::bind(&ccs::forc_cb, this, _1));
 
-    if (!m_forcSubscription)
+    if (!m_forc)
     {
         yCError(CCS) << "Could not initialize the forc command subscription";
         return false;
     }
 
-    m_toolSubscription = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10,
-                                                                               std::bind(&CartesianControlServerROS2::tool_callback,
-                                                                               this, _1));
-    if (!m_toolSubscription)
+    m_tool = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10, std::bind(&ccs::tool_cb, this, _1));
+
+    if (!m_tool)
     {
         yCError(CCS) << "Could not initialize the tool command subscription";
         return false;
     }
 
-    m_actSubscription = m_node->create_subscription<std_msgs::msg::Int32>(prefix + "/command/gripper", 10,
-                                                                          std::bind(&CartesianControlServerROS2::act_callback,
-                                                                          this, _1));
+    m_act = m_node->create_subscription<std_msgs::msg::Int32>(prefix + "/command/gripper", 10, std::bind(&ccs::act_cb, this, _1));
 
-    if (!m_actSubscription)
+    if (!m_act)
     {
         yCError(CCS) << "Could not initialize the gripper command subscription";
         return false;
     }
 
-    m_gcmpService = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/gcmp",
-                                                                   std::bind(&CartesianControlServerROS2::gcmp_callback,
-                                                                   this, _1, _2));
+    m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/gcmp", std::bind(&ccs::gcmp_cb, this, _1, _2));
 
-    if (!m_gcmpService)
+    if (!m_gcmp)
     {
         yCError(CCS) << "Could not initialize the gcmp service";
         return false;
     }
 
-    m_stopService = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/stop",
-                                                                   std::bind(&CartesianControlServerROS2::stop_callback,
-                                                                   this, _1, _2));
+    m_stop = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/stop", std::bind(&ccs::stop_cb, this, _1, _2));
 
-    if (!m_stopService)
+    if (!m_stop)
     {
         yCError(CCS) << "Could not initialize the stop service";
         return false;
@@ -137,28 +120,28 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
 void CartesianControlServerROS2::destroyRosHandlers()
 {
-    m_parameterServer.reset();
+    m_params.reset();
 
-    m_posePublisher.reset();
+    m_stat.reset();
 
-    m_movjSubscription.reset();
-    m_movlSubscription.reset();
-    m_movvSubscription.reset();
-    m_forcSubscription.reset();
-    m_toolSubscription.reset();
-    m_actSubscription.reset();
+    m_movj.reset();
+    m_movl.reset();
+    m_movv.reset();
+    m_forc.reset();
+    m_tool.reset();
+    m_act.reset();
 
-    m_poseSubscription.reset();
-    m_twistSubscription.reset();
-    m_wrenchSubscription.reset();
+    m_pose.reset();
+    m_twist.reset();
+    m_wrench.reset();
 
-    m_gcmpService.reset();
-    m_stopService.reset();
+    m_gcmp.reset();
+    m_stop.reset();
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::pose_callback(const geometry_msgs::msg::Pose::SharedPtr msg)
+void CartesianControlServerROS2::pose_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
 {
     const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
     const auto rot = ori.GetRot();
@@ -185,7 +168,7 @@ void CartesianControlServerROS2::pose_callback(const geometry_msgs::msg::Pose::S
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::twist_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
+void CartesianControlServerROS2::twist_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
     std::vector<double> v {
         msg->linear.x,
@@ -215,7 +198,7 @@ void CartesianControlServerROS2::twist_callback(const geometry_msgs::msg::Twist:
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::wrench_callback(const geometry_msgs::msg::Wrench::SharedPtr msg)
+void CartesianControlServerROS2::wrench_cb(const geometry_msgs::msg::Wrench::SharedPtr msg)
 {
     std::vector<double> v {
         msg->force.x,
@@ -239,7 +222,7 @@ void CartesianControlServerROS2::wrench_callback(const geometry_msgs::msg::Wrenc
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::movj_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::movj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
 {
     if (msg->data.size() != 6)
     {
@@ -260,7 +243,7 @@ void CartesianControlServerROS2::movj_callback(const std_msgs::msg::Float64Multi
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::movl_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::movl_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
 {
     if (msg->data.size() != 6)
     {
@@ -281,7 +264,7 @@ void CartesianControlServerROS2::movl_callback(const std_msgs::msg::Float64Multi
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::movv_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::movv_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
 {
     if (msg->data.size() != 6)
     {
@@ -302,7 +285,7 @@ void CartesianControlServerROS2::movv_callback(const std_msgs::msg::Float64Multi
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::forc_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::forc_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
 {
     if (msg->data.size() != 6)
     {
@@ -323,7 +306,7 @@ void CartesianControlServerROS2::forc_callback(const std_msgs::msg::Float64Multi
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::tool_callback(const geometry_msgs::msg::Pose::SharedPtr msg)
+void CartesianControlServerROS2::tool_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
 {
     const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
     const auto rot = ori.GetRot();
@@ -342,7 +325,7 @@ void CartesianControlServerROS2::tool_callback(const geometry_msgs::msg::Pose::S
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::act_callback(const std_msgs::msg::Int32::SharedPtr msg)
+void CartesianControlServerROS2::act_cb(const std_msgs::msg::Int32::SharedPtr msg)
 {
     switch (msg->data)
     {
@@ -363,21 +346,21 @@ void CartesianControlServerROS2::act_callback(const std_msgs::msg::Int32::Shared
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::gcmp_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
+void CartesianControlServerROS2::gcmp_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
 {
     response->success = m_iCartesianControl->gcmp();
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::stop_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
+void CartesianControlServerROS2::stop_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
 {
     response->success = m_iCartesianControl->stopControl();
 }
 
 // -----------------------------------------------------------------------------
 
-rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::parameter_callback(const std::vector<rclcpp::Parameter> &parameters)
+rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(const std::vector<rclcpp::Parameter> &parameters)
 {
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;

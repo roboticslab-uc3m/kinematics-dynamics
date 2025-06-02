@@ -68,41 +68,41 @@ private:
 
     rclcpp::Node::SharedPtr m_node;
 
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_posePublisher;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_stat;
 
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_poseSubscription;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twistSubscription;
-    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrenchSubscription;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_pose;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twist;
+    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movjSubscription;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movlSubscription;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movvSubscription;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_forcSubscription;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_toolSubscription;
-    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_actSubscription;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movj;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movl;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movv;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_forc;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_tool;
+    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_act;
 
-    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmpService;
-    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stopService;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;
 
-    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_parameterServer;
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_params;
     int preset_streaming_cmd;
     roboticslab::ICartesianSolver::reference_frame frame;
 
-    void pose_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void twist_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
-    void wrench_callback(const geometry_msgs::msg::Wrench::SharedPtr msg);
+    void pose_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void twist_cb(const geometry_msgs::msg::Twist::SharedPtr msg);
+    void wrench_cb(const geometry_msgs::msg::Wrench::SharedPtr msg);
 
-    void movj_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void movl_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void movv_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void forc_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void tool_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void act_callback(const std_msgs::msg::Int32::SharedPtr msg);
+    void movj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void movl_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void movv_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void forc_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void tool_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void act_cb(const std_msgs::msg::Int32::SharedPtr msg);
 
-    void gcmp_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
-    void stop_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
+    void gcmp_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
+    void stop_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
 
-    rcl_interfaces::msg::SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
+    rcl_interfaces::msg::SetParametersResult params_cb(const std::vector<rclcpp::Parameter> &parameters);
 
     // Note that the order of gripper_state enum values must match the order from spacenav_device. If modifying this, please update.
     enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
