@@ -17,12 +17,11 @@ using namespace roboticslab;
 void CartesianControlServerROS2::run()
 {
     std::vector<double> x;
-    int state;
     double timestamp;
 
-    if (!m_iCartesianControl->stat(x, &state, &timestamp))
+    if (int state; !m_iCartesianControl->stat(x, &state, &timestamp))
     {
-        yCWarning(CCS) << "Failed to get status";
+        yCWarning(CCS) << "Failed to stat";
         return;
     }
 
@@ -35,13 +34,14 @@ void CartesianControlServerROS2::run()
     geometry_msgs::msg::PoseStamped msg;
     msg.header.stamp.sec = sec;
     msg.header.stamp.nanosec = nsec;
+
     msg.pose.position.x = x[0];
     msg.pose.position.y = x[1];
     msg.pose.position.z = x[2];
 
     ori.GetQuaternion(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
 
-    m_publisher->publish(msg);
+    m_stat->publish(msg);
 }
 
 // -----------------------------------------------------------------------------

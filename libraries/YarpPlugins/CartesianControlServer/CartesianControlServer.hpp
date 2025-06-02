@@ -85,6 +85,9 @@ public:
     void setHandle(ICartesianControl * _iCartesianControl)
     { iCartesianControl = _iCartesianControl; }
 
+    void unsetHandle()
+    { iCartesianControl = nullptr; }
+
     bool respond(const yarp::os::Bottle & in, yarp::os::Bottle & out) override;
     void makeUsage();
 
@@ -150,6 +153,9 @@ class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 public:
     void setHandle(ICartesianControl * _iCartesianControl)
     { iCartesianControl = _iCartesianControl;}
+
+    void unsetHandle()
+    { iCartesianControl = nullptr; }
 
     void onRead(yarp::os::Bottle & b) override;
 

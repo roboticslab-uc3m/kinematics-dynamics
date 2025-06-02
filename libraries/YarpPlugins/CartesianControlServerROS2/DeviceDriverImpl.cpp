@@ -5,8 +5,6 @@
 #include <string>
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Property.h>
-#include <yarp/os/Value.h>
 
 #include "LogComponent.hpp"
 
@@ -16,45 +14,9 @@ using namespace roboticslab;
 
 bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
 {
-    yarp::os::Value * name;
-
-    if (config.check("subdevice", name))
+    if (!parseParams(config))
     {
-        yCInfo(CCS) << "Subdevice" << name->toString();
-
-        if (name->isString())
-        {
-            // maybe user isn't doing nested configuration
-            yarp::os::Property p;
-            p.fromString(config.toString());
-            p.put("device", name->toString());
-            cartesianControlDevice.open(p);
-        }
-        else
-        {
-            cartesianControlDevice.open(*name);
-        }
-
-        if (!cartesianControlDevice.isValid())
-        {
-            yCError(CCS) << "Cannot make" << name->toString();
-        }
-    }
-    else
-    {
-        yCError(CCS) << "Subdevice option not set in CartesianControlServerROS2";
-        return false;
-    }
-
-    if (!cartesianControlDevice.isValid())
-    {
-        yCError(CCS) << "Cartesian control device not valid";
-        return false;
-    }
-
-    if (!cartesianControlDevice.view(m_iCartesianControl))
-    {
-        yCError(CCS) << "Problems acquiring ICartesianControl interface";
+        yCError(CCS) << "Failed to parse parameters";
         return false;
     }
 
@@ -68,8 +30,6 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
         yarp::os::PeriodicThread::setPeriod(std::stoi(m_fkPeriod_defaultValue) * 0.001);
     }
 
-    auto prefix = "/" + m_name;
-
     if (!rclcpp::ok())
     {
         rclcpp::init(0, nullptr);
@@ -78,18 +38,15 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
     // ROS2 initialization
     m_node = std::make_shared<rclcpp::Node>(m_name);
 
-    // Parameters
-    callback_handle_ = m_node->add_on_set_parameters_callback(std::bind(&CartesianControlServerROS2::parameter_callback, this, std::placeholders::_1));
+    rcl_interfaces::msg::ParameterDescriptor descriptor_streaming_cmd;
+    descriptor_streaming_cmd.name = "preset_streaming_cmd";
+    descriptor_streaming_cmd.description = "Streaming command to be used by the device.";
+    descriptor_streaming_cmd.read_only = false;
+    descriptor_streaming_cmd.additional_constraints = "Only 'pose', 'twist', 'wrench' or 'none' are allowed.";
+    descriptor_streaming_cmd.set__type(rcl_interfaces::msg::ParameterType::PARAMETER_STRING);
 
-    rcl_interfaces::msg::ParameterDescriptor descriptor_msg;
-    descriptor_msg.name = "preset_streaming_cmd";
-    descriptor_msg.description = "Streaming command to be used by the device.";
-    descriptor_msg.read_only = false;
-    descriptor_msg.additional_constraints = "Only 'twist', 'pose', 'wrench' or 'none' are allowed.";
-    descriptor_msg.set__type(rcl_interfaces::msg::ParameterType::PARAMETER_STRING);
-
-    m_node->declare_parameter("preset_streaming_cmd", "none", descriptor_msg); //null default value
-    m_node->get_parameter("preset_streaming_cmd", preset_streaming_cmd);
+    m_node->declare_parameter("preset_streaming_cmd", "none", descriptor_streaming_cmd);
+    preset_streaming_cmd = VOCAB_CC_NOT_SET;
 
     rcl_interfaces::msg::ParameterDescriptor descriptor_frame;
     descriptor_frame.name = "frame";
@@ -98,49 +55,8 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
     descriptor_frame.additional_constraints = "Only 'base' or 'tcp' are allowed.";
     descriptor_frame.set__type(rcl_interfaces::msg::ParameterType::PARAMETER_STRING);
 
-    m_node->declare_parameter<std::string>("frame", "base", descriptor_frame); // Default frame (base)
-    m_node->get_parameter("frame", frame);
-
-    // Publisher
-    m_publisher = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
-
-    // Subscriptions
-    m_poseSubscription = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10,
-                                                                               std::bind(&CartesianControlServerROS2::poseTopic_callback,
-                                                                               this, std::placeholders::_1));
-    if (!m_poseSubscription)
-    {
-        yCError(CCS) << "Could not initialize the Pose msg subscription";
-        return false;
-    }
-
-    m_twistSubscription = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10,
-                                                                                 std::bind(&CartesianControlServerROS2::twistTopic_callback,
-                                                                                 this, std::placeholders::_1));
-    if (!m_twistSubscription)
-    {
-        yCError(CCS) << "Could not initialize the Twist msg subscription";
-        return false;
-    }
-
-    m_wrenchSubscription = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10,
-                                                                                   std::bind(&CartesianControlServerROS2::wrenchTopic_callback,
-                                                                                   this, std::placeholders::_1));
-    if (!m_wrenchSubscription)
-    {
-        yCError(CCS) << "Could not initialize the Wrench msg subscription";
-        return false;
-    }
-
-    m_gripperSubscription = m_node->create_subscription<std_msgs::msg::Int32>(prefix + "/command/gripper", 10,
-                                                                              std::bind(&CartesianControlServerROS2::gripperTopic_callback,
-                                                                              this, std::placeholders::_1));
-
-    if (!m_gripperSubscription)
-    {
-        yCError(CCS) << "Could not initialize the Gripper msg subscription";
-        return false;
-    }
+    m_node->declare_parameter<std::string>("frame", "base", descriptor_frame);
+    frame = ICartesianSolver::BASE_FRAME;
 
     // Spin node for ROS2
     m_spinner = new Spinner(m_node);
@@ -151,7 +67,7 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
         return false;
     }
 
-    return m_spinner->start() && yarp::os::PeriodicThread::start();
+    return m_spinner->start();
 }
 
 // -----------------------------------------------------------------------------
@@ -160,38 +76,10 @@ bool CartesianControlServerROS2::close()
 {
     if (m_spinner && m_spinner->isRunning())
     {
-        m_spinner->stop();
+        return m_spinner->stop();
     }
 
-    return cartesianControlDevice.close();
-}
-
-// ------------------- Spinner Class Related ------------------------------------
-
-Spinner::Spinner(std::shared_ptr<rclcpp::Node> input_node)
-    : m_node(input_node)
-{}
-
-// -----------------------------------------------------------------------------
-
-Spinner::~Spinner()
-{
-    if (m_spun)
-    {
-        rclcpp::shutdown();
-        m_spun = false;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-void Spinner::run()
-{
-    if (!m_spun)
-    {
-        m_spun = true;
-        rclcpp::spin(m_node);
-    }
+    return true;
 }
 
 // -----------------------------------------------------------------------------

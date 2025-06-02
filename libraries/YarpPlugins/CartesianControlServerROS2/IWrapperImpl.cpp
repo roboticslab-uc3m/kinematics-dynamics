@@ -1,6 +1,6 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "CartesianControlServer.hpp"
+#include "CartesianControlServerROS2.hpp"
 
 #include <yarp/os/LogStream.h>
 
@@ -10,7 +10,7 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlServer::attach(yarp::dev::PolyDriver * poly)
+bool CartesianControlServerROS2::attach(yarp::dev::PolyDriver * poly)
 {
     if (poly == nullptr)
     {
@@ -24,43 +24,29 @@ bool CartesianControlServer::attach(yarp::dev::PolyDriver * poly)
         return false;
     }
 
-    if (!poly->view(iCartesianControl))
+    if (!poly->view(m_iCartesianControl))
     {
         yCError(CCS) << "attach() failed to obtain ICartesianControl interface";
         return false;
     }
 
-    rpcResponder->setHandle(iCartesianControl);
-    streamResponder->setHandle(iCartesianControl);
-
-    if (rpcTransformResponder)
+    if (!configureRosHandlers())
     {
-        rpcTransformResponder->setHandle(iCartesianControl);
+        yCError(CCS) << "Failed to configure ROS handlers";
+        destroyRosHandlers(); // cleanup
+        return false;
     }
 
-    if (!fkOutPort.isClosed())
-    {
-        return yarp::os::PeriodicThread::start();
-    }
-
-    return true;
+    return yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlServer::detach()
+bool CartesianControlServerROS2::detach()
 {
     yarp::os::PeriodicThread::stop();
-
-    rpcResponder->unsetHandle();
-    streamResponder->unsetHandle();
-
-    if (rpcTransformResponder)
-    {
-        rpcTransformResponder->unsetHandle();
-    }
-
-    iCartesianControl = nullptr;
+    destroyRosHandlers();
+    m_iCartesianControl = nullptr;
     return true;
 }
 
