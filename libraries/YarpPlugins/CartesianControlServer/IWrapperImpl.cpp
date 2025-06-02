@@ -51,6 +51,15 @@ bool CartesianControlServer::attach(yarp::dev::PolyDriver * poly)
 bool CartesianControlServer::detach()
 {
     yarp::os::PeriodicThread::stop();
+
+    rpcResponder->unsetHandle();
+    streamResponder->unsetHandle();
+
+    if (rpcTransformResponder)
+    {
+        rpcTransformResponder->unsetHandle();
+    }
+
     iCartesianControl = nullptr;
     return true;
 }
