@@ -30,7 +30,7 @@ bool CartesianControlServerROS2::attach(yarp::dev::PolyDriver * poly)
         return false;
     }
 
-    return configureSubscriptions() && yarp::os::PeriodicThread::start();
+    return configureRosHandlers() && yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ bool CartesianControlServerROS2::attach(yarp::dev::PolyDriver * poly)
 bool CartesianControlServerROS2::detach()
 {
     yarp::os::PeriodicThread::stop();
-    cancelSubscriptions();
+    destroyRosHandlers();
     m_iCartesianControl = nullptr;
     return true;
 }

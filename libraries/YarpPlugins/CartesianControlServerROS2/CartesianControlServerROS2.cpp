@@ -14,21 +14,15 @@ using namespace roboticslab;
 
 // ------------------- Subscription callbacks ------------------------------------
 
-bool CartesianControlServerROS2::configureSubscriptions()
+bool CartesianControlServerROS2::configureRosHandlers()
 {
     using namespace std::placeholders;
 
     auto prefix = "/" + m_name;
 
-    // Parameters
-
     m_parameterServer = m_node->add_on_set_parameters_callback(std::bind(&CartesianControlServerROS2::parameter_callback, this, _1));
 
-    // Publisher
-
     m_posePublisher = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
-
-    // Subscriptions
 
     m_poseSubscription = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10,
                                                                                std::bind(&CartesianControlServerROS2::pose_callback,
@@ -116,12 +110,32 @@ bool CartesianControlServerROS2::configureSubscriptions()
         return false;
     }
 
+    m_gcmpService = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/gcmp",
+                                                                   std::bind(&CartesianControlServerROS2::gcmp_callback,
+                                                                   this, _1, _2));
+
+    if (!m_gcmpService)
+    {
+        yCError(CCS) << "Could not initialize the gcmp service";
+        return false;
+    }
+
+    m_stopService = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/stop",
+                                                                   std::bind(&CartesianControlServerROS2::stop_callback,
+                                                                   this, _1, _2));
+
+    if (!m_stopService)
+    {
+        yCError(CCS) << "Could not initialize the stop service";
+        return false;
+    }
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::cancelSubscriptions()
+void CartesianControlServerROS2::destroyRosHandlers()
 {
     m_parameterServer.reset();
 
@@ -137,6 +151,9 @@ void CartesianControlServerROS2::cancelSubscriptions()
     m_poseSubscription.reset();
     m_twistSubscription.reset();
     m_wrenchSubscription.reset();
+
+    m_gcmpService.reset();
+    m_stopService.reset();
 }
 
 // -----------------------------------------------------------------------------
@@ -342,6 +359,20 @@ void CartesianControlServerROS2::act_callback(const std_msgs::msg::Int32::Shared
         m_iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER);
         break;
     }
+}
+
+// -----------------------------------------------------------------------------
+
+void CartesianControlServerROS2::gcmp_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+    response->success = m_iCartesianControl->gcmp();
+}
+
+// -----------------------------------------------------------------------------
+
+void CartesianControlServerROS2::stop_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+    response->success = m_iCartesianControl->stopControl();
 }
 
 // -----------------------------------------------------------------------------

@@ -23,6 +23,8 @@
 #include <std_msgs/msg/int32.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
 
+#include <std_srvs/srv/trigger.hpp>
+
 #include <kdl/frames.hpp>
 
 #include "Spinner.hpp"
@@ -57,13 +59,11 @@ public:
     void run() override;
 
 private:
-    bool configureSubscriptions();
-    void cancelSubscriptions();
+    bool configureRosHandlers();
+    void destroyRosHandlers();
 
-    // Devices
     roboticslab::ICartesianControl * m_iCartesianControl;
 
-    // ROS2 attributes
     Spinner * m_spinner;
 
     rclcpp::Node::SharedPtr m_node;
@@ -81,11 +81,13 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_toolSubscription;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_actSubscription;
 
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmpService;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stopService;
+
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_parameterServer;
     std::string preset_streaming_cmd;
     std::string frame;
 
-    // Subscription callbacks - Topics
     void pose_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
     void twist_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
     void wrench_callback(const geometry_msgs::msg::Wrench::SharedPtr msg);
@@ -97,9 +99,12 @@ private:
     void tool_callback(const geometry_msgs::msg::Pose::SharedPtr msg);
     void act_callback(const std_msgs::msg::Int32::SharedPtr msg);
 
+    void gcmp_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
+    void stop_callback(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
+
     rcl_interfaces::msg::SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
 
-    /*Notice that order of gripper_state enum values matches the same order from spacenav_device. If modify, please, update*/
+    // Note that the order of gripper_state enum values must match the order from spacenav_device. If modifying this, please update.
     enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
 };
 
