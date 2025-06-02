@@ -30,7 +30,14 @@ bool CartesianControlServerROS2::attach(yarp::dev::PolyDriver * poly)
         return false;
     }
 
-    return configureRosHandlers() && yarp::os::PeriodicThread::start();
+    if (!configureRosHandlers())
+    {
+        yCError(CCS) << "Failed to configure ROS handlers";
+        destroyRosHandlers(); // cleanup
+        return false;
+    }
+
+    return yarp::os::PeriodicThread::start();
 }
 
 // -----------------------------------------------------------------------------
