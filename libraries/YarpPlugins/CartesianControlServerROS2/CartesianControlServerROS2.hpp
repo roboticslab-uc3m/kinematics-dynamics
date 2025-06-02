@@ -9,19 +9,23 @@
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/DeviceDriver.h>
-#include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/WrapperSingle.h>
 
 #include <rclcpp/rclcpp.hpp>
+
 #include <rcl_interfaces/msg/set_parameters_result.hpp>
+
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
+
 #include <std_msgs/msg/int32.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
 
 #include <kdl/frames.hpp>
 
+#include "Spinner.hpp"
 #include "ICartesianControl.h"
 #include "CartesianControlServerROS2_ParamsParser.h"
 
@@ -32,21 +36,8 @@
  * @brief Contains CartesianControlServerROS2.
  */
 
-class Spinner : public yarp::os::Thread
-{
-public:
-    Spinner(std::shared_ptr<rclcpp::Node> input_node);
-    ~Spinner() override;
-    void run() override;
-
-private:
-    bool m_spun {false};
-    std::shared_ptr<rclcpp::Node> m_node;
-};
-
-// -----------------------------------------------------------------------------
-
 class CartesianControlServerROS2 : public yarp::dev::DeviceDriver,
+                                   public yarp::dev::WrapperSingle,
                                    public yarp::os::PeriodicThread,
                                    public CartesianControlServerROS2_ParamsParser
 {
@@ -58,28 +49,35 @@ public:
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
 
+    // Implementation in IWrapperImpl.cpp
+    bool attach(yarp::dev::PolyDriver * poly) override;
+    bool detach() override;
+
     // Implementation in PeriodicThread.cpp
     void run() override;
 
 private:
+    bool configureSubscriptions();
+    void cancelSubscriptions();
+
     // Devices
-    yarp::dev::PolyDriver cartesianControlDevice;
     roboticslab::ICartesianControl * m_iCartesianControl;
 
     // ROS2 attributes
     Spinner * m_spinner;
 
-    rclcpp::Node::SharedPtr                                       m_node;
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_publisher;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr     m_poseSubscription;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr    m_twistSubscription;
-    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr   m_wrenchSubscription;
-    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr         m_gripperSubscription;
+    rclcpp::Node::SharedPtr m_node;
 
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr   m_movj;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr   m_movl;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_posePublisher;
 
-    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_poseSubscription;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twistSubscription;
+    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrenchSubscription;
+    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_gripperSubscription;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movjSubscription;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movlSubscription;
+
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_parameterServer;
     std::string preset_streaming_cmd;
     std::string frame;
 
@@ -88,7 +86,6 @@ private:
     void twistTopic_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
     void wrenchTopic_callback(const geometry_msgs::msg::Wrench::SharedPtr msg);
     void gripperTopic_callback(const std_msgs::msg::Int32::SharedPtr msg);
-
     void movj_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void movl_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
 

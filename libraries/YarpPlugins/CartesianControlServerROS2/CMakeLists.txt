@@ -25,6 +25,9 @@ if(NOT SKIP_CartesianControlServerROS2)
                                                       CartesianControlServerROS2.cpp
                                                       PeriodicThreadImpl.cpp
                                                       DeviceDriverImpl.cpp
+                                                      IWrapperImpl.cpp
+                                                      Spinner.hpp
+                                                      Spinner.cpp
                                                       CartesianControlServerROS2_ParamsParser.h
                                                       CartesianControlServerROS2_ParamsParser.cpp
                                                       LogComponent.hpp
