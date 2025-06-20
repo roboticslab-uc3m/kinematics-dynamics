@@ -18,8 +18,6 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Vector3.h>
 
-#include <ICartesianControl.h>
-
 using SetParameters = rcl_interfaces::srv::SetParameters;
 using Parameter = rcl_interfaces::msg::Parameter;
 using ParameterValue = rcl_interfaces::msg::ParameterValue;
@@ -71,8 +69,6 @@ private:
     bool initial_pose_set_ {false};
     bool virtual_pose_set {false};
     bool position_changed_ {false};
-
-    roboticslab::ICartesianControl * iCartesianControl_ { nullptr};
 
     double scale_ {0.0};
     std::string streaming_msg_;
