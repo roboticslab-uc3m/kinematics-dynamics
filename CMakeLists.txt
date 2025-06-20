@@ -67,14 +67,7 @@ add_subdirectory(share)
 add_subdirectory(bindings)
 add_subdirectory(doc)
 add_subdirectory(examples/cpp)
-
-# ROS workspace.
-cmake_dependent_option(ENABLE_ros2_ws_spacenav_device "Enable/disable spacenav_device ROS 2 package" ON
-                       rclcpp_FOUND OFF)
-
-if(ENABLE_ros2_ws_spacenav_device)
-    add_subdirectory(ros2_ws/src/spacenav_device)
-endif()
+add_subdirectory(ros2)
 
 # Collect public exported dependencies.
 get_property(_exported_dependencies GLOBAL PROPERTY _exported_dependencies)

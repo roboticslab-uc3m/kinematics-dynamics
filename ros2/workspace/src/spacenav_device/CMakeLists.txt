@@ -1,7 +1,18 @@
+# https://stackoverflow.com/a/25217937
+get_directory_property(_has_parent PARENT_DIRECTORY)
+
+if(_has_parent)
+  option(ENABLE_ros2_ws_spacenav_device "Enable/disable spacenav_device ROS 2 package" ON)
+
+  if(NOT ENABLE_ros2_ws_spacenav_device)
+    return()
+  endif()
+endif()
+
 cmake_minimum_required(VERSION 3.8)
 project(spacenav_device)
 
-#Default to C++14
+# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
