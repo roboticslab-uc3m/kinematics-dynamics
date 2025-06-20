@@ -346,6 +346,28 @@ void CartesianControlServerROS2::act_cb(const std_msgs::msg::Int32::SharedPtr ms
 
 // -----------------------------------------------------------------------------
 
+void CartesianControlServerROS2::inv_cb(const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
+{
+    const auto & pose = request->x;
+    const auto ori = KDL::Rotation::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+    const auto rot = ori.GetRot();
+
+    std::vector<double> v {
+        pose.position.x,
+        pose.position.y,
+        pose.position.z,
+        rot.x(),
+        rot.y(),
+        rot.z()
+    };
+
+    std::vector<double> q;
+    response->success = m_iCartesianControl->inv(v, q);
+    response->q.data = q;
+}
+
+// -----------------------------------------------------------------------------
+
 void CartesianControlServerROS2::gcmp_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
 {
     response->success = m_iCartesianControl->gcmp();
