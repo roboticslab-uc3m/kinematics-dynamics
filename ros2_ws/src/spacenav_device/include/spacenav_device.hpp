@@ -1,8 +1,8 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include <vector>
-#include <string>
 #include <mutex>
+#include <string>
+#include <vector>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -42,41 +42,42 @@ private:
     SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
     void timer_callback();
 
-    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscription_spnav_{nullptr};
-    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr subscription_state_pose_{nullptr};
+    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscription_spnav_;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr subscription_state_pose_;
 
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_spnav_twist_{nullptr};
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr publisher_spnav_pose_{nullptr};
-    rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr publisher_spnav_wrench_{nullptr};
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr publisher_spnav_gripper_{nullptr};
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_spnav_twist_;
+    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr publisher_spnav_pose_;
+    rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr publisher_spnav_wrench_;
+    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr publisher_spnav_gripper_;
 
-    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_{nullptr};
-    rclcpp::Client<SetParameters>::SharedPtr client_param_{nullptr};
-    rclcpp::TimerBase::SharedPtr timer_{nullptr};
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
+    rclcpp::Client<SetParameters>::SharedPtr client_param_;
+    rclcpp::TimerBase::SharedPtr timer_;
 
-    geometry_msgs::msg::Twist::SharedPtr last_msg_{nullptr};
-    geometry_msgs::msg::Pose::SharedPtr last_msg_pose_{nullptr};
-    geometry_msgs::msg::Wrench::SharedPtr last_msg_wrench_{nullptr};
+    geometry_msgs::msg::Twist::SharedPtr last_msg_;
+    geometry_msgs::msg::Pose::SharedPtr last_msg_pose_;
+    geometry_msgs::msg::Wrench::SharedPtr last_msg_wrench_;
 
     std::mutex msg_mutex_;
 
-    rclcpp::Time last_update_time_{0};
+    rclcpp::Time last_update_time_ {0};
 
-    tf2::Vector3 initial_position_{0, 0, 0};
-    tf2::Vector3 current_position_{0, 0, 0};
-    tf2::Quaternion initial_orientation_{0, 0, 0, 1};
-    tf2::Quaternion current_orientation_{0, 0, 0, 1};
+    tf2::Vector3 initial_position_ {0, 0, 0};
+    tf2::Vector3 current_position_ {0, 0, 0};
 
-    bool initial_pose_set_{false};
-    bool virtual_pose_set{false};
-    bool position_changed_{false};
+    tf2::Quaternion initial_orientation_ {0, 0, 0, 1};
+    tf2::Quaternion current_orientation_ {0, 0, 0, 1};
 
-    roboticslab::ICartesianControl * iCartesianControl_{nullptr};
+    bool initial_pose_set_ {false};
+    bool virtual_pose_set {false};
+    bool position_changed_ {false};
 
-    double scale_{0.3};
-    std::string streaming_msg_{"twist"};
+    roboticslab::ICartesianControl * iCartesianControl_ { nullptr};
 
-    /*Notice that order of gripper_state enum values matches the same order from CartesianControlServerROS2. If modify, please, update*/
+    double scale_ {0.0};
+    std::string streaming_msg_;
+
+    /* Notice that order of gripper_state enum values matches the same order from CartesianControlServerROS2. If ever modified, please, update this. */
     enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
-    gripper_state gripper_state_{GRIPPER_NONE};
+    gripper_state gripper_state_ {GRIPPER_NONE};
 };

@@ -46,7 +46,9 @@ namespace
 
 SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
 {
-    last_update_time_ = this->now(); // Initialize last update time
+    using ss = SpacenavSubscriber;
+
+    last_update_time_ = now(); // Initialize last update time
 
     // Declare node Parameters
     rcl_interfaces::msg::ParameterDescriptor descriptor_msg;
@@ -56,8 +58,8 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
     descriptor_msg.additional_constraints = "Only 'twist' or 'pose' are allowed.";
     descriptor_msg.set__type(rcl_interfaces::msg::ParameterType::PARAMETER_STRING);
 
-    this->declare_parameter<std::string>("streaming_msg", DEFAULT_STREAMING_MSG, descriptor_msg);
-    this->get_parameter("streaming_msg", streaming_msg_);
+    declare_parameter<std::string>("streaming_msg", DEFAULT_STREAMING_MSG, descriptor_msg);
+    get_parameter("streaming_msg", streaming_msg_);
 
     rcl_interfaces::msg::ParameterDescriptor descriptor_scale;
     descriptor_scale.name = "scale";
@@ -66,45 +68,41 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
     descriptor_scale.additional_constraints = "Only positive double values are allowed.";
     descriptor_scale.set__type(rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE);
 
-    this->declare_parameter<double>("scale", DEFAULT_AXIS_SCALE, descriptor_scale);
-    this->get_parameter("scale", scale_);
+    declare_parameter<double>("scale", DEFAULT_AXIS_SCALE, descriptor_scale);
+    get_parameter("scale", scale_);
+
+    std::string prefix = DEFAULT_NODE_NAME;
 
     // Callback for parameter changes
-    callback_handle_ = this->add_on_set_parameters_callback(std::bind(&SpacenavSubscriber::parameter_callback, this, _1));
+    callback_handle_ = add_on_set_parameters_callback(std::bind(&ss::parameter_callback, this, _1));
 
     // Set parameters for external node
-    client_param_ = this->create_client<SetParameters>(DEFAULT_NODE_NAME + std::string("/set_parameters"));
+    client_param_ = create_client<SetParameters>(prefix + "/set_parameters");
 
     while (!client_param_->wait_for_service(std::chrono::seconds(1)))
     {
         if (!rclcpp::ok())
         {
-            RCLCPP_ERROR(this->get_logger(), "Interrupted while waiting for the service. Exiting.");
+            RCLCPP_ERROR(get_logger(), "Interrupted while waiting for the service. Exiting.");
             throw std::runtime_error("Interrupted while waiting for the service. Exiting.");
             return;
         }
 
-        RCLCPP_INFO(this->get_logger(), "Service not available, waiting again...");
+        RCLCPP_INFO(get_logger(), "Service not available, waiting again...");
     }
 
     // Subscribers
-
-    subscription_spnav_ = this->create_subscription<sensor_msgs::msg::Joy>("/spacenav/joy", 10,
-                                        std::bind(&SpacenavSubscriber::spnav_callback,
-                                        this, _1));
-
-    subscription_state_pose_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(DEFAULT_NODE_NAME + std::string("/state/pose"), 10,
-                                                std::bind(&SpacenavSubscriber::state_callback,
-                                                this, _1));
+    subscription_spnav_ = create_subscription<sensor_msgs::msg::Joy>("/spacenav/joy", 10, std::bind(&ss::spnav_callback, this, _1));
+    subscription_state_pose_ = create_subscription<geometry_msgs::msg::PoseStamped>("/state/pose", 10, std::bind(&ss::state_callback, this, _1));
 
     // Timer
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(20), std::bind(&SpacenavSubscriber::timer_callback, this));
+    timer_ = create_wall_timer(std::chrono::milliseconds(20), std::bind(&ss::timer_callback, this));
 
     // Publisher
-    publisher_spnav_twist_ = this->create_publisher<geometry_msgs::msg::Twist>(DEFAULT_NODE_NAME + std::string("/command/twist"), 10);
-    publisher_spnav_pose_ = this->create_publisher<geometry_msgs::msg::Pose>(DEFAULT_NODE_NAME + std::string("/command/pose"), 10);
-    publisher_spnav_wrench_ = this->create_publisher<geometry_msgs::msg::Wrench>(DEFAULT_NODE_NAME + std::string("/command/wrench"), 10);
-    publisher_spnav_gripper_ = this->create_publisher<std_msgs::msg::Int32>(DEFAULT_NODE_NAME + std::string("/command/gripper"), 10);
+    publisher_spnav_twist_ = create_publisher<geometry_msgs::msg::Twist>("/command/twist", 10);
+    publisher_spnav_pose_ = create_publisher<geometry_msgs::msg::Pose>("/command/pose", 10);
+    publisher_spnav_wrench_ = create_publisher<geometry_msgs::msg::Wrench>("/command/wrench", 10);
+    publisher_spnav_gripper_ = create_publisher<std_msgs::msg::Int32>("/command/gripper", 10);
 
     // Parameters validation with exceptions to avoid runtime errors
     if (streaming_msg_ == "twist" && !set_preset_streaming_cmd("twist"))
@@ -204,7 +202,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
         }
         else
         {
-            RCLCPP_ERROR(this->get_logger(), "Failed to create Twist message");
+            RCLCPP_ERROR(get_logger(), "Failed to create Twist message");
         }
     }
     else if (streaming_msg_ == "pose")
@@ -215,7 +213,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
 
         if (!initial_pose_set_)
         {
-            RCLCPP_WARN(this->get_logger(), "Initial pose not set. Cannot publish Pose message yet.");
+            RCLCPP_WARN(get_logger(), "Initial pose not set. Cannot publish Pose message yet.");
             return;
         }
         // Set initial position as a virtual point to avoid PID compensation
@@ -228,15 +226,15 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
         }
 
         // Transform linear and angular velocities into space translations (de = v*dt)
-        std::vector<double> msg_traslation;
+        std::vector<double> msg_translation;
 
         for (int j = 0; j < 6; j++)
         {
-            msg_traslation.push_back(a[j] * dt * scale_);
+            msg_translation.push_back(a[j] * dt * scale_);
         }
 
-        tf2::Vector3 linear_translation(msg_traslation[0], msg_traslation[1], msg_traslation[2]);
-        tf2::Vector3 angular_rotation(msg_traslation[3], msg_traslation[4], msg_traslation[5]);
+        tf2::Vector3 linear_translation(msg_translation[0], msg_translation[1], msg_translation[2]);
+        tf2::Vector3 angular_rotation(msg_translation[3], msg_translation[4], msg_translation[5]);
 
         // New position applying linear translation
         tf2::Vector3 new_position = current_position_ + linear_translation;
@@ -255,7 +253,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
             std::isfinite(new_orientation.x()) && std::isfinite(new_orientation.y()) && std::isfinite(new_orientation.z()) && std::isfinite(new_orientation.w()))
         {
             // Only publish if position has changed
-            if (new_position!=current_position_ || new_orientation!=current_orientation_)
+            if (new_position != current_position_ || new_orientation != current_orientation_)
             {
                 current_position_ = new_position;
                 current_orientation_ = new_orientation;
@@ -298,9 +296,9 @@ void SpacenavSubscriber::state_callback(const geometry_msgs::msg::PoseStamped::S
         fromMsg(msg->pose.position, initial_position_);
         fromMsg(msg->pose.orientation, initial_orientation_);
 
-        if ((initial_pose_set_))
+        if (initial_pose_set_)
         {
-            RCLCPP_INFO(this->get_logger(), "Initial pose correctly set.");
+            RCLCPP_INFO(get_logger(), "Initial pose correctly set.");
         }
     }
 }
@@ -326,11 +324,11 @@ bool SpacenavSubscriber::set_preset_streaming_cmd(const std::string &value)
     {
         if (future.get()->results[0].successful)
         {
-            RCLCPP_INFO(this->get_logger(), "Preset streaming command correctly stablished in external node.");
+            RCLCPP_INFO(get_logger(), "Preset streaming command correctly stablished in external node.");
         }
         else
         {
-            RCLCPP_ERROR(this->get_logger(), "Failed to set preset streaming command.");
+            RCLCPP_ERROR(get_logger(), "Failed to set preset streaming command.");
         }
     };
 
@@ -346,13 +344,13 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;
 
-    for (const auto &param: parameters)
+    for (const auto & param: parameters)
     {
         if (param.get_name() == "streaming_msg")
         {
             if (streaming_msg_ == param.value_to_string())
             {
-                RCLCPP_WARN(this->get_logger(), "Param for streaming_msg is already set to %s!", streaming_msg_.c_str());
+                RCLCPP_WARN(get_logger(), "Param for streaming_msg is already set to %s!", streaming_msg_.c_str());
                 continue;
             }
             else
@@ -367,7 +365,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(this->get_logger(), "Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO(get_logger(), "Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
                     }
 
                 }
@@ -381,7 +379,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(this->get_logger(),"Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
 
                         // Reset initial pose
                         initial_pose_set_ = false;
@@ -398,14 +396,14 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(this->get_logger(),"Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
                     }
                 }
                 else
                 {
                     result.successful = false;
                     result.reason = "Invalid parameter type for streaming_msg. Only 'twist', 'pose' or 'wrench' are allowed.";
-                    RCLCPP_ERROR(this->get_logger(), result.reason.c_str());
+                    RCLCPP_ERROR(get_logger(), result.reason.c_str());
                 }
             }
         }
@@ -414,13 +412,13 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
             if (param.as_double() > 0)
             {
                 scale_ = param.as_double();
-                RCLCPP_INFO(this->get_logger(), "Param for scale correctly stablished: %f", scale_);
+                RCLCPP_INFO(get_logger(), "Param for scale correctly stablished: %f", scale_);
             }
             else
             {
                 result.successful = false;
                 result.reason = "Invalid parameter for scale. Only positive values are allowed.";
-                RCLCPP_ERROR(this->get_logger(), result.reason.c_str());
+                RCLCPP_ERROR(get_logger(), result.reason.c_str());
             }
         }
     }
@@ -436,10 +434,11 @@ void SpacenavSubscriber::timer_callback()
     if (streaming_msg_ == "twist")
     {
         geometry_msgs::msg::Twist::SharedPtr msg_to_publish;
+
         {
             std::lock_guard<std::mutex> lock(msg_mutex_);
 
-            if (last_msg_!=nullptr) // Check if there is a message to publish to avoid publishing null messages
+            if (last_msg_ != nullptr) // Check if there is a message to publish to avoid publishing null messages
             {
                 msg_to_publish = last_msg_;
             }
@@ -450,26 +449,28 @@ void SpacenavSubscriber::timer_callback()
         }
 
         bool zero_msg = (msg_to_publish->linear.x == 0.0 && msg_to_publish->linear.y == 0.0 && msg_to_publish->linear.z == 0.0 &&
-                        msg_to_publish->angular.x == 0.0 && msg_to_publish->angular.y == 0.0 && msg_to_publish->angular.z == 0.0);
+                         msg_to_publish->angular.x == 0.0 && msg_to_publish->angular.y == 0.0 && msg_to_publish->angular.z == 0.0);
 
         if (msg_to_publish)
         {
             publisher_spnav_twist_->publish(*msg_to_publish);
 
-            if(!zero_msg)
+            if (!zero_msg)
             {
-                RCLCPP_INFO(this->get_logger(), "Spnav Twist: [%f %f %f] [%f %f %f]", msg_to_publish->linear.x, msg_to_publish->linear.y, msg_to_publish->linear.z,
-                                                msg_to_publish->angular.x, msg_to_publish->angular.y, msg_to_publish->angular.z);
+                RCLCPP_INFO(get_logger(), "Spnav Twist: [%f %f %f] [%f %f %f]",
+                                          msg_to_publish->linear.x, msg_to_publish->linear.y, msg_to_publish->linear.z,
+                                          msg_to_publish->angular.x, msg_to_publish->angular.y, msg_to_publish->angular.z);
             }
         }
     }
     else if (streaming_msg_ == "pose")
     {
         geometry_msgs::msg::Pose::SharedPtr msg_to_publish;
+
         {
             std::lock_guard<std::mutex> lock(msg_mutex_);
 
-            if (last_msg_pose_!=nullptr)
+            if (last_msg_pose_ != nullptr)
             {
                 msg_to_publish = last_msg_pose_;
             }
@@ -481,8 +482,9 @@ void SpacenavSubscriber::timer_callback()
 
         if (msg_to_publish && position_changed_)
         {
-            RCLCPP_INFO(this->get_logger(), "Spnav Pose: [%f %f %f] [%f %f %f %f]", msg_to_publish->position.x, msg_to_publish->position.y, msg_to_publish->position.z,
-                                                msg_to_publish->orientation.x, msg_to_publish->orientation.y, msg_to_publish->orientation.z, msg_to_publish->orientation.w);
+            RCLCPP_INFO(get_logger(), "Spnav Pose: [%f %f %f] [%f %f %f %f]",
+                                      msg_to_publish->position.x, msg_to_publish->position.y, msg_to_publish->position.z,
+                                      msg_to_publish->orientation.x, msg_to_publish->orientation.y, msg_to_publish->orientation.z, msg_to_publish->orientation.w);
 
             publisher_spnav_pose_->publish(*msg_to_publish);
             position_changed_ = false;
@@ -491,10 +493,11 @@ void SpacenavSubscriber::timer_callback()
     else if (streaming_msg_ == "wrench")
     {
         geometry_msgs::msg::Wrench::SharedPtr msg_to_publish;
+
         {
             std::lock_guard<std::mutex> lock(msg_mutex_);
 
-            if (last_msg_wrench_!=nullptr)
+            if (last_msg_wrench_ != nullptr)
             {
                 msg_to_publish = last_msg_wrench_;
             }
@@ -507,8 +510,9 @@ void SpacenavSubscriber::timer_callback()
         if (msg_to_publish)
         {
             publisher_spnav_wrench_->publish(*msg_to_publish);
-            RCLCPP_INFO(this->get_logger(), "Spnav Wrench: [%f %f %f] [%f %f %f]", msg_to_publish->force.x, msg_to_publish->force.y, msg_to_publish->force.z,
-                                                msg_to_publish->torque.x, msg_to_publish->torque.y, msg_to_publish->torque.z);
+            RCLCPP_INFO(get_logger(), "Spnav Wrench: [%f %f %f] [%f %f %f]",
+                                      msg_to_publish->force.x, msg_to_publish->force.y, msg_to_publish->force.z,
+                                      msg_to_publish->torque.x, msg_to_publish->torque.y, msg_to_publish->torque.z);
         }
     }
 }
@@ -528,7 +532,7 @@ int main(int argc, char * argv[])
         std::cerr << e.what() << "Something went wrong. Exiting." << std::endl;
     }
 
-    rclcpp::spin(std::make_shared<SpacenavSubscriber>());
+    rclcpp::spin(std::make_shared<SpacenavSubscriber>()); // FIXME: is this necessary?
     rclcpp::shutdown();
     return 0;
 }
