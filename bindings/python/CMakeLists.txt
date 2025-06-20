@@ -3,7 +3,7 @@ set_source_files_properties(${SWIG_BINDINGS_SOURCE_FILE} PROPERTIES CPLUSPLUS ON
 
 set(CMAKE_SWIG_FLAGS "-module;roboticslab_kinematics_dynamics;-threads;${SWIG_COMMON_FLAGS}")
 
-find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
 set(CMAKE_SWIG_OUTDIR "${CMAKE_BINARY_DIR}/lib/python")
 set(SWIG_OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
