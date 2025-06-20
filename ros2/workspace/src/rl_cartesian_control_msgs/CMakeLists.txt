@@ -1,14 +1,3 @@
-# https://stackoverflow.com/a/25217937
-get_directory_property(_has_parent PARENT_DIRECTORY)
-
-if(_has_parent)
-  option(ENABLE_ros2_ws_rl_cartesian_control_msgs "Enable/disable rl_cartesian_control_msgs ROS 2 package" ON)
-
-  if(NOT ENABLE_ros2_ws_rl_cartesian_control_msgs)
-    return()
-  endif()
-endif()
-
 cmake_minimum_required(VERSION 3.19)
 project(rl_cartesian_control_msgs)
 

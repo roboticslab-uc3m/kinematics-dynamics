@@ -35,6 +35,7 @@ find_package(rclcpp QUIET)
 find_package(std_msgs QUIET)
 find_package(std_srvs QUIET)
 find_package(geometry_msgs QUIET)
+find_package(rl_cartesian_control_msgs QUIET)
 find_package(GTestSources 1.8 QUIET)
 find_package(SWIG 3.0.12 QUIET)
 find_package(Doxygen QUIET)
@@ -60,6 +61,7 @@ include(CMakeDependentOption)
 enable_testing()
 
 # Add main contents.
+add_subdirectory(ros2)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(tests)
@@ -67,7 +69,6 @@ add_subdirectory(share)
 add_subdirectory(bindings)
 add_subdirectory(doc)
 add_subdirectory(examples/cpp)
-add_subdirectory(ros2)
 
 # Collect public exported dependencies.
 get_property(_exported_dependencies GLOBAL PROPERTY _exported_dependencies)
