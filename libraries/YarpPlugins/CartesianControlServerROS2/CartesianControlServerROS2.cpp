@@ -97,6 +97,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
+    m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(prefix + "/inv", std::bind(&ccs::inv_cb, this, _1, _2));
+
+    if (!m_inv)
+    {
+        yCError(CCS) << "Could not initialize the inv service";
+        return false;
+    }
+
     m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/gcmp", std::bind(&ccs::gcmp_cb, this, _1, _2));
 
     if (!m_gcmp)
@@ -135,6 +143,7 @@ void CartesianControlServerROS2::destroyRosHandlers()
     m_twist.reset();
     m_wrench.reset();
 
+    m_inv.reset();
     m_gcmp.reset();
     m_stop.reset();
 }

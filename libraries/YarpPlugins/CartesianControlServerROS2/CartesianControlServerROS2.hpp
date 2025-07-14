@@ -83,6 +83,7 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_tool;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_act;
 
+    rclcpp::Service<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_inv;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;
 
