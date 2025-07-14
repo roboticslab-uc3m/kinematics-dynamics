@@ -2,6 +2,7 @@
 
 #include "CartesianControlServerROS2.hpp"
 
+#include <algorithm> // std::transform
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -372,6 +373,10 @@ void CartesianControlServerROS2::inv_cb(const rl_cartesian_control_msgs::srv::In
 
     std::vector<double> q;
     response->success = m_iCartesianControl->inv(v, q);
+
+    std::transform(q.begin(), q.end(), std::back_inserter(response->q.data),
+                   [](double val) { return val * KDL::deg2rad; });
+
     response->q.data = q;
 }
 
