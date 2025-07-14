@@ -131,7 +131,9 @@ jobs:
         cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON -DUSE_LOCAL_ROS2_PACKAGES=ON
 
     - name: Compile main project
-      run: cmake --build ./build
+      run: |
+        . /opt/ros/${{matrix.system.ros}}/setup.sh
+        cmake --build ./build
 
     - name: Install main project
       run: cmake --install ./build && ldconfig
