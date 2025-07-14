@@ -9,6 +9,8 @@ if(NOT DEFINED ENABLE_CartesianControlServerROS2 OR ENABLE_CartesianControlServe
         message(WARNING "std_srvs package not found, disabling CartesianControlServerROS2")
     elseif(NOT geometry_msgs_FOUND)
         message(WARNING "geometry_msgs package not found, disabling CartesianControlServerROS2")
+    elseif(NOT (rl_cartesian_control_msgs_FOUND OR TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp))
+        message(WARNING "rl_cartesian_control_msgs package/target not found, disabling CartesianControlServerROS2")
     endif()
 endif()
 
@@ -18,7 +20,7 @@ yarp_prepare_plugin(CartesianControlServerROS2
                     INCLUDE CartesianControlServerROS2.hpp
                     EXTRA_CONFIG WRAPPER=CartesianControlServerROS2
                     DEFAULT ON
-                    DEPENDS "orocos_kdl_FOUND;rclcpp_FOUND;std_msgs_FOUND;std_srvs_FOUND;geometry_msgs_FOUND"
+                    DEPENDS "orocos_kdl_FOUND;rclcpp_FOUND;std_msgs_FOUND;std_srvs_FOUND;geometry_msgs_FOUND;rl_cartesian_control_msgs_FOUND OR TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp"
                     GENERATE_PARSER)
 
 if(NOT SKIP_CartesianControlServerROS2)
@@ -43,6 +45,7 @@ if(NOT SKIP_CartesianControlServerROS2)
                                                      std_msgs::std_msgs__rosidl_typesupport_cpp
                                                      std_srvs::std_srvs__rosidl_typesupport_cpp
                                                      geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
+                                                     rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp
                                                      ROBOTICSLAB::KinematicsDynamicsInterfaces
                                                      ${orocos_kdl_LIBRARIES})
 

@@ -13,3 +13,5 @@ CMakeLists.txt.user
 /.vscode/
 /external/
 /doc/html/*
+/ros2/workspace/install/*
+/ros2/workspace/log/*
