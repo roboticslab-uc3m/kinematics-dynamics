@@ -7,7 +7,7 @@ if(NOT YARP_FOUND)
 endif()
 
 if(NOT TARGET ROBOTICSLAB::ScrewTheoryLib)
-    find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
+    find_package(SCREW_THEORY_SOLVERS REQUIRED)
 endif()
 
 find_package(orocos_kdl 1.4 QUIET)

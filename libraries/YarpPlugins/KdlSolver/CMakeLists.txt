@@ -1,5 +1,9 @@
-if(NOT orocos_kdl_FOUND AND (NOT DEFINED ENABLE_KdlSolver OR ENABLE_KdlSolver))
-    message(WARNING "orocos_kdl package not found, disabling KdlSolver")
+if(NOT DEFINED ENABLE_KdlSolver OR ENABLE_KdlSolver)
+    if(NOT orocos_kdl_FOUND)
+        message(WARNING "orocos_kdl package not found, disabling KdlSolver")
+    elseif(NOT SCREW_THEORY_SOLVERS_FOUND)
+        message(WARNING "SCREW_THEORY_SOLVERS package not found, disabling KdlSolver")
+    endif()
 endif()
 
 yarp_prepare_plugin(KdlSolver
@@ -7,7 +11,7 @@ yarp_prepare_plugin(KdlSolver
                     TYPE KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
+                    DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND;SCREW_THEORY_SOLVERS_FOUND"
                     GENERATE_PARSER)
 
 if(NOT SKIP_KdlSolver)

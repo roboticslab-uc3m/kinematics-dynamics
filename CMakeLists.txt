@@ -32,6 +32,7 @@ find_package(YARP 3.10 REQUIRED COMPONENTS os dev sig
 
 # Soft dependencies.
 find_package(orocos_kdl 1.4 QUIET)
+find_package(SCREW_THEORY_SOLVERS QUIET)
 find_package(rclcpp QUIET)
 find_package(std_msgs QUIET)
 find_package(std_srvs QUIET)

@@ -44,22 +44,29 @@ int ChainIkSolverPos_ST::CartToJnt(const KDL::JntArray & q_init, const KDL::Fram
 
     auto reachability = problem->solve(p_in, q_init, solutions);
 
-    if (std::none_of(reachability.begin(), reachability.end(), [](bool r) { return r; }))
+    // if (std::none_of(reachability.begin(), reachability.end(), [](bool r) { return r; }))
+    // {
+    //     return (error = E_NOT_REACHABLE);
+    // }
+
+    // if (!config->configure(solutions, reachability))
+    // {
+    //     return (error = E_OUT_OF_LIMITS);
+    // }
+
+    // if (!config->findOptimalConfiguration(q_init))
+    // {
+    //     return (error = E_OUT_OF_LIMITS);
+    // }
+
+    // config->retrievePose(q_out);
+
+    for (const auto & s : solutions)
     {
-        return (error = E_NOT_REACHABLE);
+        std::printf("%f %f %f %f %f %f\n", s(0), s(1), s(2), s(3), s(4), s(5));
     }
 
-    if (!config->configure(solutions, reachability))
-    {
-        return (error = E_OUT_OF_LIMITS);
-    }
-
-    if (!config->findOptimalConfiguration(q_init))
-    {
-        return (error = E_OUT_OF_LIMITS);
-    }
-
-    config->retrievePose(q_out);
+    q_out = solutions[0];
 
     return (error = E_NOERROR);
 }

@@ -60,7 +60,7 @@ make -j$(nproc)
 
 #include "TrajectoryThread.hpp"
 
-constexpr auto DEFAULT_REMOTE_PORT = "/teoSim/leftArm";
+constexpr auto DEFAULT_REMOTE_PORT = "/ur16esim";
 constexpr auto DEFAULT_TRAJ_DURATION = 10.0;
 constexpr auto DEFAULT_TRAJ_MAX_VEL = 0.05;
 constexpr auto DEFAULT_PERIOD_MS = 50.0;
@@ -69,21 +69,17 @@ namespace rl = roboticslab;
 
 namespace
 {
-    rl::PoeExpression makeTeoLeftArmKinematics()
+    rl::PoeExpression makeUr16eKinematics()
     {
-        KDL::Frame H_S_0(KDL::Rotation::RotY(-KDL::PI_2) * KDL::Rotation::RotX(-KDL::PI_2), {0, 0.34692, 0.1932 + 0.305});
-        KDL::Frame H_0_T({-0.63401, 0, 0});
+        KDL::Frame H_ST_0({0.838, 0.364, 0.061});
+        rl::PoeExpression poe(H_ST_0);
 
-        rl::PoeExpression poe(H_0_T);
-
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 0, 1}, KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 1, 0}, KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {1, 0, 0}, KDL::Vector::Zero()));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 0, 1}, {-0.32901, 0, 0}));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {1, 0, 0}, {-0.32901, 0, 0}));
-        poe.append(rl::MatrixExponential(rl::MatrixExponential::ROTATION, {0, 0, 1}, {-0.54401, 0, 0}));
-
-        poe.changeBaseFrame(H_S_0);
+        poe.append(rl::MatrixExponential(   rl::MatrixExponential::ROTATION, {0,  0, 1}, {    0,     0, 0.181}));
+        poe.append(rl::MatrixExponential(   rl::MatrixExponential::ROTATION, {0,  1, 0}, {    0,     0, 0.181}));
+        poe.append(rl::MatrixExponential(   rl::MatrixExponential::ROTATION, {0,  1, 0}, {0.478,     0, 0.181}));
+        poe.append(rl::MatrixExponential(   rl::MatrixExponential::ROTATION, {0,  1, 0}, {0.838, 0.174, 0.181}));
+        poe.append(rl::MatrixExponential(   rl::MatrixExponential::ROTATION, {0,  0,-1}, {0.838, 0.174, 0.061}));
+        poe.append(rl::MatrixExponential(   rl::MatrixExponential::ROTATION, {0,  1, 0}, {0.838, 0.174, 0.061}));
 
         return poe;
     }
@@ -148,7 +144,7 @@ int main(int argc, char *argv[])
         yarp::os::Time::delay(0.1);
     }
 
-    rl::PoeExpression poe = makeTeoLeftArmKinematics();
+    rl::PoeExpression poe = makeUr16eKinematics();
 
     axes = poe.size(); // just for real TEO (7 joints, 6 motor axes)
 
@@ -192,7 +188,7 @@ int main(int argc, char *argv[])
     std::unique_ptr<rl::ConfigurationSelector> ikConfig(confFactory.create());
 
     KDL::Frame H_base_end = H_base_start;
-    H_base_end.p += {0.15, 0.1, 0.1};
+    H_base_end.p += {-0.3, 0.0, 0.0};
 
     KDL::RotationalInterpolation_SingleAxis interp;
     KDL::Path_Line path(H_base_start, H_base_end, &interp, 0.1, false);
