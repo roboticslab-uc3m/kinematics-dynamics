@@ -40,16 +40,16 @@ void TrajectoryThread::run()
     std::vector<KDL::JntArray> solutions;
     auto reachability = ikProblem->solve(H_S_T, solutions);
 
-    // if (std::none_of(reachability.begin(), reachability.end(), [](bool r) { return r; }))
-    // {
-    //     yWarning() << "IK exact solution not found";
-    // }
+    if (std::none_of(reachability.begin(), reachability.end(), [](bool r) { return r; }))
+    {
+        yWarning() << "IK exact solution not found";
+    }
 
-    // if (!ikConfig->configure(solutions, reachability))
-    // {
-    //     yError() << "IK solutions out of joint limits";
-    //     return;
-    // }
+    if (!ikConfig->configure(solutions, reachability))
+    {
+        yError() << "IK solutions out of joint limits";
+        return;
+    }
 
     KDL::JntArray q(axes);
 
@@ -64,15 +64,16 @@ void TrajectoryThread::run()
         q(i) = KDL::deg2rad * q(i);
     }
 
-    // if (!ikConfig->findOptimalConfiguration(q))
-    // {
-    //     yError() << "Optimal configuration not found";
-    //     return;
-    // }
+    if (!ikConfig->findOptimalConfiguration(q))
+    {
+        yError() << "Optimal configuration not found";
+        return;
+    }
 
-    KDL::JntArray solution = solutions[0];
+    //KDL::JntArray solution = solutions[0];
 
-    // ikConfig->retrievePose(solution);
+    KDL::JntArray solution;
+    ikConfig->retrievePose(solution);
 
     std::vector<double> refs(solution.data.data(), solution.data.data() + solution.data.size());
     std::transform(refs.begin(), refs.end(), refs.begin(), [](const auto & v) { return v * KDL::rad2deg; });
