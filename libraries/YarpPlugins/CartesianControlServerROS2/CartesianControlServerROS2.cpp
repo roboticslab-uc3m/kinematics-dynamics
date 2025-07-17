@@ -2,6 +2,7 @@
 
 #include "CartesianControlServerROS2.hpp"
 
+#include <algorithm> // std::transform
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -97,6 +98,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
+    m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(prefix + "/inv", std::bind(&ccs::inv_cb, this, _1, _2));
+
+    if (!m_inv)
+    {
+        yCError(CCS) << "Could not initialize the inv service";
+        return false;
+    }
+
     m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/gcmp", std::bind(&ccs::gcmp_cb, this, _1, _2));
 
     if (!m_gcmp)
@@ -135,6 +144,7 @@ void CartesianControlServerROS2::destroyRosHandlers()
     m_twist.reset();
     m_wrench.reset();
 
+    m_inv.reset();
     m_gcmp.reset();
     m_stop.reset();
 }
@@ -342,6 +352,32 @@ void CartesianControlServerROS2::act_cb(const std_msgs::msg::Int32::SharedPtr ms
         m_iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER);
         break;
     }
+}
+
+// -----------------------------------------------------------------------------
+
+void CartesianControlServerROS2::inv_cb(const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
+{
+    const auto & pose = request->x;
+    const auto ori = KDL::Rotation::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+    const auto rot = ori.GetRot();
+
+    std::vector<double> v {
+        pose.position.x,
+        pose.position.y,
+        pose.position.z,
+        rot.x(),
+        rot.y(),
+        rot.z()
+    };
+
+    std::vector<double> q;
+    response->success = m_iCartesianControl->inv(v, q);
+
+    std::transform(q.begin(), q.end(), std::back_inserter(response->q.data),
+                   [](double val) { return val * KDL::deg2rad; });
+
+    response->q.data = q;
 }
 
 // -----------------------------------------------------------------------------

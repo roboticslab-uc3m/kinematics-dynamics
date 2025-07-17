@@ -27,6 +27,8 @@
 
 #include <kdl/frames.hpp>
 
+#include <rl_cartesian_control_msgs/srv/inv.hpp>
+
 #include "Spinner.hpp"
 #include "ICartesianControl.h"
 #include "CartesianControlServerROS2_ParamsParser.h"
@@ -81,6 +83,7 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_tool;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_act;
 
+    rclcpp::Service<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_inv;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;
 
@@ -99,6 +102,7 @@ private:
     void tool_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
     void act_cb(const std_msgs::msg::Int32::SharedPtr msg);
 
+    void inv_cb(const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response);
     void gcmp_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
     void stop_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
 

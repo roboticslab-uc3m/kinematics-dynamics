@@ -83,7 +83,7 @@ jobs:
         path: .deps/swig
 
     - name: Install dependencies via apt
-      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} libeigen3-dev bison googletest
+      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} libeigen3-dev bison ros-${{matrix.system.ros}}-tf2 googletest
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -128,10 +128,12 @@ jobs:
     - name: Configure main project
       run: |
         . /opt/ros/${{matrix.system.ros}}/setup.sh
-        cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
+        cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON -DUSE_LOCAL_ROS2_PACKAGES=ON
 
     - name: Compile main project
-      run: cmake --build ./build
+      run: |
+        . /opt/ros/${{matrix.system.ros}}/setup.sh
+        cmake --build ./build
 
     - name: Install main project
       run: cmake --install ./build && ldconfig
