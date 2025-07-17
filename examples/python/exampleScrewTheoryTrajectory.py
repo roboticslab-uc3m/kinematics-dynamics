@@ -4,7 +4,9 @@ import time
 import numpy as np
 import yarp
 import PyKDL as kdl
+import PySTS as sts
 import threading
+from motion_3 import *
 
 # Placeholder imports for custom classes
 # from your_module import PoeExpression, MatrixExponential, ScrewTheoryIkProblemBuilder, ConfigurationSelectorLeastOverallAngularDisplacementFactory, TrajectoryThread
@@ -16,14 +18,14 @@ DEFAULT_PERIOD_MS = 50.0
 
 def make_ur16e_kinematics():
     H_ST_0 = kdl.Frame(kdl.Vector(0.838, 0.364, 0.061))
-    poe = PoeExpression(H_ST_0)
+    poe = sts.PoeExpression(H_ST_0)
 
-    poe.append(MatrixExponential(MatrixExponential.ROTATION, [0, 0, 1], [0, 0, 0.181]))
-    poe.append(MatrixExponential(MatrixExponential.ROTATION, [0, 1, 0], [0, 0, 0.181]))
-    poe.append(MatrixExponential(MatrixExponential.ROTATION, [0, 1, 0], [0.478, 0, 0.181]))
-    poe.append(MatrixExponential(MatrixExponential.ROTATION, [0, 1, 0], [0.838, 0.174, 0.181]))
-    poe.append(MatrixExponential(MatrixExponential.ROTATION, [0, 0, -1], [0.838, 0.174, 0.061]))
-    poe.append(MatrixExponential(MatrixExponential.ROTATION, [0, 1, 0], [0.838, 0.174, 0.061]))
+    poe.append(sts.MatrixExponential(sts.MatrixExponential.ROTATION, [0, 0, 1], [0, 0, 0.181]))
+    poe.append(sts.MatrixExponential(sts.MatrixExponential.ROTATION, [0, 1, 0], [0, 0, 0.181]))
+    poe.append(sts.MatrixExponential(sts.MatrixExponential.ROTATION, [0, 1, 0], [0.478, 0, 0.181]))
+    poe.append(sts.MatrixExponential(sts.MatrixExponential.ROTATION, [0, 1, 0], [0.838, 0.174, 0.181]))
+    poe.append(sts.MatrixExponential(sts.MatrixExponential.ROTATION, [0, 0, -1], [0.838, 0.174, 0.061]))
+    poe.append(sts.MatrixExponential(sts.MatrixExponential.ROTATION, [0, 1, 0], [0.838, 0.174, 0.061]))
 
     return poe
 
@@ -79,36 +81,34 @@ if __name__ == "__main__":
         print("FK error")
         exit(1)
 
-    builder = ScrewTheoryIkProblemBuilder(poe)
+    builder = sts.ScrewTheoryIkProblemBuilder(poe)
     ik_problem = builder.build()
+
     if ik_problem is None:
         print("Unable to solve IK")
         exit(1)
 
     q_min = kdl.JntArray(axes)
     q_max = kdl.JntArray(axes)
-    for i in range(axes):
-        min_val, max_val = iControlLimits.getLimits(i)
-        q_min[i] = min_val
-        q_max[i] = max_val
 
-    conf_factory = ConfigurationSelectorLeastOverallAngularDisplacementFactory(q_min, q_max)
+    for i in range(axes):
+        min, max = yarp.DVector(1), yarp.DVector(1)
+        iControlLimits.getLimits(i, min, max)
+        q_min[i] = min[0]
+        q_max[i] = max[0]
+
+    conf_factory = sts.ConfigurationSelectorLeastOverallAngularDisplacementFactory(q_min, q_max)
     ik_config = conf_factory.create()
 
     H_base_end = kdl.Frame(H_base_start)
     H_base_end.p = H_base_end.p + kdl.Vector(-0.3, 0.0, 0.0)
 
-    interp = kdl.RotationalInterpolation_SingleAxis()
-    path = kdl.Path_Line(H_base_start, H_base_end, interp, 0.1, False)
-    profile = kdl.VelocityProfile_Trap(traj_max_vel, 0.2)
-    trajectory = kdl.Trajectory_Segment(path, profile, traj_duration, False)
+    interp = RotationalInterpolation_SingleAxis()
+    path = PathLine(H_base_start, H_base_end, interp, 0.1, False)
+    profile = VelocityProfileRect(traj_max_vel, 0.2)
+    trajectory = TrajectorySegment(path, profile, traj_duration, False)
 
-    VOCAB_CM_POSITION_DIRECT = 7  # Replace with actual value if available
-    modes = yarp.IVector(axes)
-    for i in range(axes):
-        modes[i] = VOCAB_CM_POSITION_DIRECT
-
-    if not iControlMode.setControlModes(modes):
+    if not iControlMode.setControlModes(yarp.IVector(axes, yarp.encode('posd'))):
         print("Unable to change mode")
         exit(1)
 
@@ -140,12 +140,12 @@ if __name__ == "__main__":
             yarp.log.error("setPositions() failed")
 
     t = threading.Thread(target=run)
-    t.start()
+    # t.start()
 
-    # traj_thread = TrajectoryThread(iEncoders, iPositionDirect, ik_problem, ik_config, trajectory, period_ms)
+    # # traj_thread = TrajectoryThread(iEncoders, iPositionDirect, ik_problem, ik_config, trajectory, period_ms)
 
-    time.sleep(traj_duration)
-    t.join()
+    # time.sleep(traj_duration)
+    # t.join()
 
     joint_device.close()
     yarp.Network.fini()
