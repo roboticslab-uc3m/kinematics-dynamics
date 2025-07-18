@@ -391,7 +391,7 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
     double t3uRad = oyPdRad - t1uRad - t2Rad;
     double t3dRad = oyPdRad - t1dRad + t2Rad;
 
-    std::unique_ptr<AsibotConfiguration> conf(getConfiguration());
+    std::unique_ptr<AsibotConfiguration> conf(getJointConfiguration());
 
     if (!conf->configure(radToDeg(ozdRad),
             radToDeg(t1uRad),

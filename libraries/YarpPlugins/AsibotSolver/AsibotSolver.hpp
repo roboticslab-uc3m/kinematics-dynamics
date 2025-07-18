@@ -76,7 +76,7 @@ private:
         yarp::sig::Matrix frameTcp;
     };
 
-    roboticslab::AsibotConfiguration * getConfiguration() const;
+    roboticslab::AsibotConfiguration * getJointConfiguration() const;
 
     AsibotTcpFrame getTcpFrame() const;
     void setTcpFrame(const AsibotTcpFrame & tcpFrameStruct);

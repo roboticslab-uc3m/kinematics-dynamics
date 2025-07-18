@@ -44,8 +44,8 @@ jobs:
         - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: clang-18, cxx: clang++-18, apt: clang-18 } }
         robotology:
         # CMake 3.20 instead of 3.19 because of ROS Jazzy
-        - { yarp: yarp-3.10, cmake: 3.20.x }
         - { yarp: yarp-3.11, cmake: 3.20.x }
+        - { yarp: yarp-3.12, cmake: 3.20.x }
         - { yarp: master,    cmake: 3.20.x }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
