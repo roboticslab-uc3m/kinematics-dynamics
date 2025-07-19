@@ -24,10 +24,16 @@ set_target_properties(${SWIG_MODULE_roboticslab_kinematics_dynamics_python_REAL_
 # (set by `swig_link_libraries`) and prepending it to the search path
 target_include_directories(${SWIG_MODULE_roboticslab_kinematics_dynamics_python_REAL_NAME} BEFORE PRIVATE ${Python3_INCLUDE_DIRS})
 
-# installation path is determined reliably on most platforms using distutils
-execute_process(COMMAND ${Python3_EXECUTABLE} -c "from distutils import sysconfig; print(sysconfig.get_python_lib(plat_specific=True,standard_lib=False,prefix=''))"
-                OUTPUT_VARIABLE Python_INSTDIR
-                OUTPUT_STRIP_TRAILING_WHITESPACE )
+# installation path is determined reliably on most platforms using sysconfig
+if(Python3_VERSION VERSION_GREATER_EQUAL 3.12)
+  execute_process(COMMAND ${Python3_EXECUTABLE} -c "import os;import sysconfig;relative_site_packages = sysconfig.get_path('purelib').replace(sysconfig.get_path('data'), '').lstrip(os.path.sep);print(relative_site_packages)"
+                  OUTPUT_VARIABLE Python_INSTDIR
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+else()
+  execute_process(COMMAND ${Python3_EXECUTABLE} -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1,0,prefix=''))"
+                  OUTPUT_VARIABLE Python_INSTDIR
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
 
 set(_CMAKE_INSTALL_PYTHONDIR "${Python_INSTDIR}")
 set(CMAKE_INSTALL_PYTHONDIR ${_CMAKE_INSTALL_PYTHONDIR} CACHE PATH "python bindings (${_CMAKE_INSTALL_PYTHONDIR})")
