@@ -1,7 +1,6 @@
 #include "WiimoteSensorDevice.hpp"
 
-#include <cmath>
-#include <algorithm>
+#include <algorithm> // std::copy
 
 #include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
@@ -10,29 +9,37 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_STEP = 0.01;
+
 WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingPose)
     : StreamingDevice(config),
-      iAnalogSensor(nullptr),
-      mode(NONE),
-      usingPose(usingPose),
-      step(0.0)
+      usingPose(usingPose)
 {
-    data.resize(3);  // already called by base constructor
-    buffer.resize(5);
+    data.resize(3); // already called by base constructor
     step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asFloat64();
 }
 
 bool WiimoteSensorDevice::acquireInterfaces()
 {
-    bool ok = true;
-
-    if (!yarp::dev::PolyDriver::view(iAnalogSensor))
+    if (!yarp::dev::PolyDriver::view(iJoypadController))
     {
-        yCWarning(SDC) << "Could not view iAnalogSensor";
-        ok = false;
+        yCWarning(SDC) << "Could not view IJoypadController interface";
+        return false;
     }
 
-    return ok;
+    if (unsigned int axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount < 2)
+    {
+        yCWarning(SDC) << "Unable to query number of axes or wrong value";
+        return false;
+    }
+
+    if (unsigned int buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 3)
+    {
+        yCWarning(SDC) << "Unable to query number of buttons or wrong value";
+        return false;
+    }
+
+    return true;
 }
 
 bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
@@ -65,31 +72,32 @@ bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 
 bool WiimoteSensorDevice::acquireData()
 {
-    yarp::sig::Vector data;
-    iAnalogSensor->read(data);
+    double axis1, axis2;
+    float button1, button2, button3;
 
-    yCDebug(SDC) << data.toString(4, 1);
-
-    if (data.size() != 5)
+    if (!iJoypadController->getAxis(0, axis1) ||
+        !iJoypadController->getAxis(1, axis2) ||
+        !iJoypadController->getButton(0, button1) ||
+        !iJoypadController->getButton(1, button2) ||
+        !iJoypadController->getButton(2, button3))
     {
-        yCWarning(SDC) << "Invalid data size:" << data.size();
+        yCWarning(SDC) << "Unable to acquire data from IJoypadController";
         return false;
     }
 
-    for (int i = 0; i < data.size(); i++)
-    {
-        buffer[i] = data[i];
-    }
+    data = {axis1, axis2, 0.0};
+
+    buttonA = (button1 != 0.f);
+    buttonB = (button2 != 0.f);
+    yawActive = (button3 != 0.f);
+
+    yCDebug(SDC) << "axes:" << axis1 << axis2 << "|| buttons:" << button1 << button2 << button3;
 
     return true;
 }
 
 bool WiimoteSensorDevice::transformData(double scaling)
 {
-    bool buttonA = buffer[2] == 1.0;
-    bool buttonB = buffer[3] == 1.0;
-    bool yawActive = buffer[4] == 1.0;
-
     if (buttonA && buttonB)
     {
         mode = ROT;
@@ -108,17 +116,16 @@ bool WiimoteSensorDevice::transformData(double scaling)
         return true;
     }
 
-    data[1] = -buffer[1] / scaling;
+    data[1] = -data[1] / scaling;
 
     if (yawActive)
     {
+        data[2] = data[0] / scaling;
         data[0] = 0.0;
-        data[2] = buffer[0] / scaling;
     }
     else
     {
-        data[0] = buffer[0] / scaling;
-        data[2] = 0.0;
+        data[0] /= scaling;
     }
 
     return true;

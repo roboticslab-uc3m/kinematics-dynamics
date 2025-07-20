@@ -3,12 +3,8 @@
 
 #include "StreamingDevice.hpp"
 
-#include <vector>
-
 #include <yarp/os/Value.h>
-#include <yarp/dev/IAnalogSensor.h>
-
-#define DEFAULT_STEP 0.01
+#include <yarp/dev/IJoypadController.h>
 
 namespace roboticslab
 {
@@ -22,34 +18,26 @@ namespace roboticslab
 class WiimoteSensorDevice : public StreamingDevice
 {
 public:
-    //! Constructor
     WiimoteSensorDevice(yarp::os::Searchable & config, bool usingPose);
 
     bool acquireInterfaces() override;
-
     bool initialize(bool usingStreamingPreset) override;
-
     bool acquireData() override;
-
     bool transformData(double scaling) override;
-
     bool hasValidMovementData() const override;
-
     void sendMovementCommand(double timestamp) override;
-
     void stopMotion() override;
 
 private:
     enum cmd_mode { NONE, FWD, BKWD, ROT };
 
-    yarp::dev::IAnalogSensor * iAnalogSensor;
-
-    cmd_mode mode;
-
-    std::vector<double> buffer;
-
-    bool usingPose;
-    double step;
+    yarp::dev::IJoypadController * iJoypadController {nullptr};
+    cmd_mode mode {NONE};
+    bool usingPose {false};
+    double step {0.0};
+    bool buttonA {false};
+    bool buttonB {false};
+    bool yawActive {false};
 };
 
 } // namespace roboticslab
