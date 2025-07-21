@@ -18,8 +18,8 @@ if(ENABLE_streamingDeviceController)
                                              SpnavSensorDevice.cpp
                                             #  LeapMotionSensorDevice.hpp
                                             #  LeapMotionSensorDevice.cpp
-                                             WiimoteSensorDevice.hpp
-                                             WiimoteSensorDevice.cpp
+                                             WiimoteDevice.hpp
+                                             WiimoteDevice.cpp
                                              StreamingDeviceController.hpp
                                              StreamingDeviceController.cpp
                                              CentroidTransform.hpp

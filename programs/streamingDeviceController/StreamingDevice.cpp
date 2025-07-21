@@ -8,7 +8,7 @@
 #include "LogComponent.hpp"
 #include "SpnavSensorDevice.hpp"
 // #include "LeapMotionSensorDevice.hpp"
-#include "WiimoteSensorDevice.hpp"
+#include "WiimoteDevice.hpp"
 
 using namespace roboticslab;
 
@@ -31,9 +31,9 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     // {
     //     return new LeapMotionSensorDevice(deviceConfig, usingPose);
     // }
-    else if (deviceName == "WiimoteSensor")
+    else if (deviceName == "Wiimote")
     {
-        return new WiimoteSensorDevice(deviceConfig, usingPose);
+        return new WiimoteDevice(deviceConfig, usingPose);
     }
     else
     {

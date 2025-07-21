@@ -1,4 +1,4 @@
-#include "WiimoteSensorDevice.hpp"
+#include "WiimoteDevice.hpp"
 
 #include <algorithm> // std::copy
 
@@ -11,7 +11,7 @@ using namespace roboticslab;
 
 constexpr auto DEFAULT_STEP = 0.01;
 
-WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usingPose)
+WiimoteDevice::WiimoteDevice(yarp::os::Searchable & config, bool usingPose)
     : StreamingDevice(config),
       usingPose(usingPose)
 {
@@ -19,7 +19,7 @@ WiimoteSensorDevice::WiimoteSensorDevice(yarp::os::Searchable & config, bool usi
     step = config.check("step", yarp::os::Value(DEFAULT_STEP), "").asFloat64();
 }
 
-bool WiimoteSensorDevice::acquireInterfaces()
+bool WiimoteDevice::acquireInterfaces()
 {
     if (!yarp::dev::PolyDriver::view(iJoypadController))
     {
@@ -42,7 +42,7 @@ bool WiimoteSensorDevice::acquireInterfaces()
     return true;
 }
 
-bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
+bool WiimoteDevice::initialize(bool usingStreamingPreset)
 {
     if (usingPose && step <= 0.0)
     {
@@ -70,7 +70,7 @@ bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
     return true;
 }
 
-bool WiimoteSensorDevice::acquireData()
+bool WiimoteDevice::acquireData()
 {
     double axis1, axis2;
     float buttonA, buttonB, button1, button2;
@@ -105,7 +105,7 @@ bool WiimoteSensorDevice::acquireData()
     return true;
 }
 
-bool WiimoteSensorDevice::transformData(double scaling)
+bool WiimoteDevice::transformData(double scaling)
 {
     if (buttonA && buttonB)
     {
@@ -140,12 +140,12 @@ bool WiimoteSensorDevice::transformData(double scaling)
     return true;
 }
 
-bool WiimoteSensorDevice::hasValidMovementData() const
+bool WiimoteDevice::hasValidMovementData() const
 {
     return mode != NONE;
 }
 
-void WiimoteSensorDevice::sendMovementCommand(double timestamp)
+void WiimoteDevice::sendMovementCommand(double timestamp)
 {
     std::vector<double> xdot(6, 0.0);
     std::copy(data.begin(), data.end(), xdot.begin() + 3);
@@ -175,7 +175,7 @@ void WiimoteSensorDevice::sendMovementCommand(double timestamp)
     }
 }
 
-void WiimoteSensorDevice::stopMotion()
+void WiimoteDevice::stopMotion()
 {
     if (!usingPose)
     {

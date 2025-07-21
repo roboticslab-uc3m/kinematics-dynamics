@@ -15,10 +15,10 @@ namespace roboticslab
  * @brief Represents a Wiimote device wrapped as an
  * analog sensor by YARP.
  */
-class WiimoteSensorDevice : public StreamingDevice
+class WiimoteDevice : public StreamingDevice
 {
 public:
-    WiimoteSensorDevice(yarp::os::Searchable & config, bool usingPose);
+    WiimoteDevice(yarp::os::Searchable & config, bool usingPose);
 
     bool acquireInterfaces() override;
     bool initialize(bool usingStreamingPreset) override;
