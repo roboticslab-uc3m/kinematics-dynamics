@@ -27,13 +27,13 @@ bool WiimoteSensorDevice::acquireInterfaces()
         return false;
     }
 
-    if (unsigned int axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount < 2)
+    if (unsigned int axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount < 3)
     {
         yCWarning(SDC) << "Unable to query number of axes or wrong value";
         return false;
     }
 
-    if (unsigned int buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 3)
+    if (unsigned int buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 4)
     {
         yCWarning(SDC) << "Unable to query number of buttons or wrong value";
         return false;
@@ -73,13 +73,14 @@ bool WiimoteSensorDevice::initialize(bool usingStreamingPreset)
 bool WiimoteSensorDevice::acquireData()
 {
     double axis1, axis2;
-    float button1, button2, button3;
+    float buttonA, buttonB, button1, button2;
 
     if (!iJoypadController->getAxis(0, axis1) ||
         !iJoypadController->getAxis(1, axis2) ||
-        !iJoypadController->getButton(0, button1) ||
-        !iJoypadController->getButton(1, button2) ||
-        !iJoypadController->getButton(2, button3))
+        !iJoypadController->getButton(0, buttonA) ||
+        !iJoypadController->getButton(1, buttonB) ||
+        !iJoypadController->getButton(2, button1) ||
+        !iJoypadController->getButton(3, button2))
     {
         yCWarning(SDC) << "Unable to acquire data from IJoypadController";
         return false;
@@ -87,11 +88,19 @@ bool WiimoteSensorDevice::acquireData()
 
     data = {axis1, axis2, 0.0};
 
-    buttonA = (button1 != 0.f);
-    buttonB = (button2 != 0.f);
-    yawActive = (button3 != 0.f);
+    buttonA = (buttonA != 0.f);
+    buttonB = (buttonB != 0.f);
 
-    yCDebug(SDC) << "axes:" << axis1 << axis2 << "|| buttons:" << button1 << button2 << button3;
+    if (button1 != 0.f)
+    {
+        yawActive = false;
+    }
+    else if (button2 != 0.f)
+    {
+        yawActive = true;
+    }
+
+    yCDebug(SDC) << "axes:" << axis1 << axis2 << "|| buttons:" << buttonA << buttonB << button1 << button2;
 
     return true;
 }
