@@ -1,7 +1,8 @@
 #include "SpnavSensorDevice.hpp"
 
+#include <algorithm> // std::copy
+
 #include <yarp/os/LogStream.h>
-#include <yarp/sig/Vector.h>
 
 #include "LogComponent.hpp"
 
@@ -9,24 +10,37 @@ using namespace roboticslab;
 
 SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain)
     : StreamingDevice(config),
-      iAnalogSensor(nullptr),
-      usingPose(usingPose),
-      gain(gain),
-      buttonClose(false),
-      buttonOpen(false)
+        usingPose(usingPose),
+        gain(gain)
 {}
 
 bool SpnavSensorDevice::acquireInterfaces()
 {
-    bool ok = true;
-
-    if (!yarp::dev::PolyDriver::view(iAnalogSensor))
+    if (!yarp::dev::PolyDriver::view(iJoypadController))
     {
-        yCWarning(SDC) << "Could not view iAnalogSensor";
-        ok = false;
+        yCWarning(SDC) << "Could not view IJoypadController interface";
+        return false;
     }
 
-    return ok;
+    if (unsigned int stickCount; !iJoypadController->getStickCount(stickCount) || stickCount < 1)
+    {
+        yCWarning(SDC) << "Unable to query number of sticks or wrong value";
+        return false;
+    }
+
+    if (unsigned int stickDoF; !iJoypadController->getStickDoF(0, stickDoF) || stickDoF < 6)
+    {
+        yCWarning(SDC) << "Unable to query number of stick DoF or wrong value";
+        return false;
+    }
+
+    if (unsigned int buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 2)
+    {
+        yCWarning(SDC) << "Unable to query number of buttons or wrong value";
+        return false;
+    }
+
+    return true;
 }
 
 bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
@@ -65,27 +79,29 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
 bool SpnavSensorDevice::acquireData()
 {
-    yarp::sig::Vector data;
-    iAnalogSensor->read(data);
+    yarp::sig::Vector stick;
 
-    yCDebug(SDC) << data.toString(4, 1);
-
-    if (data.size() != 6 && data.size() != 8)
+    if (!iJoypadController->getStick(0, stick, yarp::dev::IJoypadController::JypCtrlcoord_CARTESIAN))
     {
-        yCWarning(SDC) << "Invalid data size:" << data.size();
+        yCWarning(SDC) << "Unable to acquire data from IJoypadController stick";
         return false;
     }
 
-    for (int i = 0; i < 6; i++)
+    float button1, button2;
+
+    if (!iJoypadController->getButton(0, button1) ||
+        !iJoypadController->getButton(1, button2))
     {
-        this->data[i] = data[i];
+        yCWarning(SDC) << "Unable to acquire data from IJoypadController buttons";
+        return false;
     }
 
-    if (data.size() == 8)
-    {
-        buttonClose = data[6] == 1;
-        buttonOpen = data[7] == 1;
-    }
+    std::copy(stick.begin(), stick.begin() + 6, data.begin());
+
+    buttonClose = (button1 != 0.f);
+    buttonOpen = (button2 != 0.f);
+
+    yCDebug(SDC) << "stick:" << stick.toString(4, 1) << "|| buttons:" << buttonClose << buttonOpen;
 
     return true;
 }

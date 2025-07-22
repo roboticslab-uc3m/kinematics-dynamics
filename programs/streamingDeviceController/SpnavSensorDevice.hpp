@@ -3,7 +3,7 @@
 
 #include "StreamingDevice.hpp"
 
-#include <yarp/dev/IAnalogSensor.h>
+#include <yarp/dev/IJoypadController.h>
 
 namespace roboticslab
 {
@@ -17,34 +17,24 @@ namespace roboticslab
 class SpnavSensorDevice : public StreamingDevice
 {
 public:
-    //! Constructor
     SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain = 0.0);
 
     bool acquireInterfaces() override;
-
     bool initialize(bool usingStreamingPreset) override;
-
     bool acquireData() override;
-
     bool transformData(double scaling) override;
-
     int getActuatorState() override;
-
     bool hasValidMovementData() const override;
-
     void sendMovementCommand(double timestamp) override;
-
     void stopMotion() override;
 
 private:
-    yarp::dev::IAnalogSensor * iAnalogSensor;
-
+    yarp::dev::IJoypadController * iJoypadController {nullptr};
     std::vector<double> currentX;
-
-    bool usingPose;
-    double gain;
-    bool buttonClose;
-    bool buttonOpen;
+    bool usingPose {false};
+    double gain {0.0};
+    bool buttonClose {false};
+    bool buttonOpen {false};
 };
 
 } // namespace roboticslab
