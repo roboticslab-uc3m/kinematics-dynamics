@@ -21,7 +21,7 @@ using namespace roboticslab;
 
 constexpr auto DEFAULT_DEVICE_NAME = "SpaceNavigator";
 constexpr auto DEFAULT_LOCAL_PREFIX = "/streamingDeviceController";
-constexpr auto DEFAULT_PERIOD = 0.1;
+constexpr auto DEFAULT_PERIOD = 0.02;
 constexpr auto DEFAULT_SCALING = 10.0;
 
 constexpr auto DEFAULT_PORTMONITOR_TYPE = "lua";
