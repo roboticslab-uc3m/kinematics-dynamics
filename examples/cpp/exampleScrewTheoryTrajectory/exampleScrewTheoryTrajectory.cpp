@@ -52,6 +52,7 @@ make -j$(nproc)
 #include <kdl/rotational_interpolation_sa.hpp>
 #include <kdl/trajectory_segment.hpp>
 #include <kdl/velocityprofile_trap.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
 
 #include <ConfigurationSelector.hpp>
 #include <MatrixExponential.hpp>
@@ -69,6 +70,27 @@ namespace rl = roboticslab;
 
 namespace
 {
+    KDL::Chain makeUR16eFromDh()
+    {
+        const KDL::Joint rotZ(KDL::Joint::RotZ);
+        KDL::Chain chain;
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotZ(0))));
+
+        //                                                     a       alpha      d    theta
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(  0.0, -KDL::PI_2, 0.181,     0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(0.478,        0.0,   0.0,     0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH( 0.36,        0.0,   0.0,     0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(  0.0, -KDL::PI_2, 0.174,     0.0)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(  0.0,  KDL::PI_2,  0.12,     0.0)));
+        // chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(  0.0,        0.0,  0.19, KDL::PI)));
+        chain.addSegment(KDL::Segment(rotZ, KDL::Frame::DH(  0.0,        0.0,  0.19,     0.0)));
+
+        chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), KDL::Frame(KDL::Rotation::RotX(KDL::PI_2))));
+
+        return chain;
+    }
+
     rl::PoeExpression makeUr16eKinematics()
     {
         KDL::Frame H_ST_0({0.838, 0.364, 0.061});
@@ -144,7 +166,37 @@ int main(int argc, char *argv[])
         yarp::os::Time::delay(0.1);
     }
 
-    rl::PoeExpression poe = makeUr16eKinematics();
+    // rl::PoeExpression poe = makeUr16eKinematics();
+
+    // KDL::JntArray q0(6);
+    // KDL::Frame H_ST_0;
+    // poe.evaluate(q0, H_ST_0);
+
+    // const auto chain = makeUR16eFromDh();
+    // auto fkSolver = KDL::ChainFkSolverPos_recursive(chain);
+    KDL::Frame H_DH_0;
+    // fkSolver.JntToCart(q0, H_DH_0);
+
+    // rl::PoeExpression poe2 = rl::PoeExpression::fromChain(makeUR16eFromDh());
+    // poe2.evaluate(q0, H_DH_0);
+
+    // yInfo() << "H_ST_0:" << H_ST_0.p.x() << H_ST_0.p.y() << H_ST_0.p.z();
+    // yInfo() << "H_DH_0:" << H_DH_0.p.x() << H_DH_0.p.y() << H_DH_0.p.z();
+
+    // yInfo() << "H_ST_0 == H_DH_0:" << (H_ST_0 == H_DH_0);
+
+    // const auto chain = poe.toChain();
+
+    // for (auto i = 0; i < chain.getNrOfSegments(); i++)
+    // {
+    //     const auto & segment = chain.getSegment(i);
+    //     const auto H = segment.getFrameToTip();
+    //     yInfo() << "Joint" << i << H.p.x() << H.p.y() << H.p.z();
+    // }
+
+    auto poe = rl::PoeExpression::fromChain(makeUR16eFromDh());
+
+    // return 0;
 
     axes = poe.size(); // just for real TEO (7 joints, 6 motor axes)
 
