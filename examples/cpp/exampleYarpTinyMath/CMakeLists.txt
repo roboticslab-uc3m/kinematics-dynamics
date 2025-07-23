@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19)
 project(exampleYarpTinyMath LANGUAGES CXX)
 
 if(NOT YARP_math_FOUND)
-    find_package(YARP 3.10 REQUIRED COMPONENTS sig math)
+    find_package(YARP 3.11 REQUIRED COMPONENTS sig math)
 endif()
 
 if(NOT TARGET ROBOTICSLAB::YarpTinyMathLib)

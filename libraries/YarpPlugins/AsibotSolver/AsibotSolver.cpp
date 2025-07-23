@@ -6,7 +6,7 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-AsibotConfiguration * AsibotSolver::getConfiguration() const
+AsibotConfiguration * AsibotSolver::getJointConfiguration() const
 {
     return confFactory->create();
 }
