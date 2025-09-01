@@ -74,6 +74,21 @@ Bartek Łukawski, Juan G. Victores, and Carlos Balaguer. A generic controller fo
 }
 ```
 
+- [CartesianControlServerROS2](libraries/YarpPlugins/CartesianControlServerROS2/) and [ROS 2 workspace packages](ros2/workspace/src/)
+
+Bartek Łukawski, Mercedes Rebollo, Ángel Gilabert, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. YARP Cartesian controller layers over ROS 2 for teleoperation and web applications. In *XLVI Jornadas de Automática*. Universidade da Coruña, 2025.
+
+```bibtex
+@inproceedings{lukawski2025jjaa,
+    author    = {{\L}ukawski, Bartek and Mercedes, Rebollo and Gilabert, Ángel and Victores, Juan G. and Balaguer, Carlos and Jardón, Alberto},
+    title     = {{YARP} {Cartesian} controller layers over {ROS} 2 for teleoperation and web applications},
+    booktitle = {XLVI Jornadas de Automática},
+    year      = {2025},
+    publisher = {Universidade da Coruña},
+    doi       = {10.17979/ja-cea.2025.46.12252},
+}
+```
+
 ## Status
 
 [![Continuous Integration](https://github.com/roboticslab-uc3m/kinematics-dynamics/actions/workflows/ci.yml/badge.svg)](https://github.com/roboticslab-uc3m/kinematics-dynamics/actions/workflows/ci.yml)
