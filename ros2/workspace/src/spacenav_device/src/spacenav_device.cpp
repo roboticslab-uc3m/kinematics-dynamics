@@ -213,7 +213,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
 
         if (!initial_pose_set_)
         {
-            RCLCPP_WARN(get_logger(), "Initial pose not set. Cannot publish Pose message yet.");
+            RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000, "Initial pose not set. Cannot publish Pose message yet.");
             return;
         }
         // Set initial position as a virtual point to avoid PID compensation
@@ -296,10 +296,8 @@ void SpacenavSubscriber::state_callback(const geometry_msgs::msg::PoseStamped::S
         fromMsg(msg->pose.position, initial_position_);
         fromMsg(msg->pose.orientation, initial_orientation_);
 
-        if (initial_pose_set_)
-        {
-            RCLCPP_INFO(get_logger(), "Initial pose correctly set.");
-        }
+        initial_pose_set_ = true;
+        RCLCPP_INFO(get_logger(), "Initial pose correctly set.");
     }
 }
 
