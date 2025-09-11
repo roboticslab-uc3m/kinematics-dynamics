@@ -93,16 +93,16 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
 
     // Subscribers
     subscription_spnav_ = create_subscription<sensor_msgs::msg::Joy>("/spacenav/joy", 10, std::bind(&ss::spnav_callback, this, _1));
-    subscription_state_pose_ = create_subscription<geometry_msgs::msg::PoseStamped>("/state/pose", 10, std::bind(&ss::state_callback, this, _1));
+    subscription_state_pose_ = create_subscription<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10, std::bind(&ss::state_callback, this, _1));
 
     // Timer
     timer_ = create_wall_timer(std::chrono::milliseconds(20), std::bind(&ss::timer_callback, this));
 
     // Publisher
-    publisher_spnav_twist_ = create_publisher<geometry_msgs::msg::Twist>("/command/twist", 10);
-    publisher_spnav_pose_ = create_publisher<geometry_msgs::msg::Pose>("/command/pose", 10);
-    publisher_spnav_wrench_ = create_publisher<geometry_msgs::msg::Wrench>("/command/wrench", 10);
-    publisher_spnav_gripper_ = create_publisher<std_msgs::msg::Int32>("/command/gripper", 10);
+    publisher_spnav_twist_ = create_publisher<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10);
+    publisher_spnav_pose_ = create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10);
+    publisher_spnav_wrench_ = create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10);
+    publisher_spnav_gripper_ = create_publisher<std_msgs::msg::Int32>(prefix + "/command/gripper", 10);
 
     // Parameters validation with exceptions to avoid runtime errors
     if (streaming_msg_ == "twist" && !set_preset_streaming_cmd("twist"))
@@ -324,7 +324,7 @@ bool SpacenavSubscriber::set_preset_streaming_cmd(const std::string &value)
     {
         if (future.get()->results[0].successful)
         {
-            RCLCPP_INFO(get_logger(), "Preset streaming command correctly stablished in external node.");
+            RCLCPP_INFO(get_logger(), "Preset streaming command correctly established in external node.");
         }
         else
         {
@@ -365,7 +365,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(get_logger(), "Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO(get_logger(), "Param for streaming_msg correctly established: %s", streaming_msg_.c_str());
                     }
 
                 }
@@ -379,7 +379,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly established: %s", streaming_msg_.c_str());
 
                         // Reset initial pose
                         initial_pose_set_ = false;
@@ -396,7 +396,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly stablished: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly established: %s", streaming_msg_.c_str());
                     }
                 }
                 else
@@ -412,7 +412,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
             if (param.as_double() > 0)
             {
                 scale_ = param.as_double();
-                RCLCPP_INFO(get_logger(), "Param for scale correctly stablished: %f", scale_);
+                RCLCPP_INFO(get_logger(), "Param for scale correctly established: %f", scale_);
             }
             else
             {
