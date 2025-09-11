@@ -11,7 +11,7 @@
 using namespace roboticslab;
 
 constexpr int MAX_ENCODER_ERRORS = 20;
-constexpr double ERROR_THROTTLE = 0.5; // [s]
+constexpr double ENCODER_THROTTLE = 1.0; // [s]
 
 // ------------------- PeriodicThread Related ------------------------------------
 
@@ -30,9 +30,9 @@ void BasicCartesianControl::run()
     std::vector<double> qdot(numJoints);
     std::vector<double> qdotdot(numJoints);
 
-    if (!iEncoders->getEncoders(q.data()) || !iEncoders->getEncoderSpeeds(qdot.data()) || !iEncoders->getEncoderAccelerations(qdotdot.data()))
+    if (!iEncoders->getEncoders(q.data()))
     {
-        yCErrorThrottle(BCC, ERROR_THROTTLE) << "Unable to query encoders";
+        yCErrorThrottle(BCC, ENCODER_THROTTLE) << "Unable to query encoders";
         encoderErrors++;
 
         if (encoderErrors > MAX_ENCODER_ERRORS)
@@ -45,6 +45,10 @@ void BasicCartesianControl::run()
         }
 
         return;
+    }
+    else if (!iEncoders->getEncoderSpeeds(qdot.data()) || !iEncoders->getEncoderAccelerations(qdotdot.data()))
+    {
+        yCWarningThrottle(BCC, ENCODER_THROTTLE) << "Unable to query encoder speeds or accelerations";
     }
 
     encoderErrors = 0; // reset error counter
