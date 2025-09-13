@@ -24,7 +24,8 @@ namespace
     double normalizeAngle(double q)
     {
         // FIXME: assumes that joint limits may not surpass +-180º, but this
-        // is not necessarily true for circular joints (q1 and q2)
+        // is not necessarily true for circular joints (q1 and q5).
+        // See https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/111.
         if (q > 180)
         {
             return q - 360;
