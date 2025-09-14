@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 14:50:07 2025
+// Generated on: Sun Sep 14 11:54:05 2025
 
 
 #ifndef BASICCARTESIANCONTROL_PARAMSPARSER_H
@@ -27,6 +27,8 @@
 * |:----------:|:------------------:|:------:|:-----:|:-------------------:|:--------:|:-------------------------------------------:|:---------:|
 * | -          | controllerGain     | double | -     | 0.05                | 0        | controller gain                             | -         |
 * | -          | trajectoryDuration | double | s     | 10.0                | 0        | trajectory duration                         | -         |
+* | -          | trajectoryRefSpeed | double | m/s   | 10.0                | 0        | trajectory reference linear speed           | -         |
+* | -          | trajectoryRefAccel | double | m/s^2 | 10.0                | 0        | trajectory reference linear acceleration    | -         |
 * | -          | cmcPeriodMs        | int    | ms    | 50                  | 0        | CMC rate                                    | -         |
 * | -          | waitPeriodMs       | int    | ms    | 30                  | 0        | wait command period                         | -         |
 * | -          | usePosdMovl        | bool   | -     | false               | 0        | execute MOVL commands in POSD mode using IK | -         |
@@ -37,7 +39,7 @@
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 10.0 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver
+* yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 10.0 --trajectoryRefSpeed 10.0 --trajectoryRefAccel 10.0 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver
 * \endcode
 *
 * \code{.unparsed}
@@ -65,6 +67,8 @@ public:
 
     const std::string m_controllerGain_defaultValue = {"0.05"};
     const std::string m_trajectoryDuration_defaultValue = {"10.0"};
+    const std::string m_trajectoryRefSpeed_defaultValue = {"10.0"};
+    const std::string m_trajectoryRefAccel_defaultValue = {"10.0"};
     const std::string m_cmcPeriodMs_defaultValue = {"50"};
     const std::string m_waitPeriodMs_defaultValue = {"30"};
     const std::string m_usePosdMovl_defaultValue = {"false"};
@@ -75,6 +79,8 @@ public:
 
     double m_controllerGain = {0.05};
     double m_trajectoryDuration = {10.0};
+    double m_trajectoryRefSpeed = {10.0};
+    double m_trajectoryRefAccel = {10.0};
     int m_cmcPeriodMs = {50};
     int m_waitPeriodMs = {30};
     bool m_usePosdMovl = {false};

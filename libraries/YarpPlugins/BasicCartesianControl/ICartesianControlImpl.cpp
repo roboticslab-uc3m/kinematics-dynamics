@@ -220,7 +220,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 
         auto * interpolator = new KDL::RotationalInterpolation_SingleAxis();
         auto * path = new KDL::Path_Line(H_base_start, H_base_end, interpolator, 1.0);
-        auto * profile = new KDL::VelocityProfile_Trap(10.0, 10.0);
+        auto * profile = new KDL::VelocityProfile_Trap(m_trajectoryRefSpeed, m_trajectoryRefAccel);
 
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, m_trajectoryDuration));
     }
@@ -278,13 +278,13 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
         auto * interpolator = new KDL::RotationalInterpolation_SingleAxis();
         auto * path = new KDL::Path_Line(H_base_start, twist_in_base, interpolator, 1.0);
-        auto * profile = new KDL::VelocityProfile_Rectangular(10.0);
-        profile->SetProfileDuration(0, 10.0, 10.0 / path->PathLength());
+        auto * profile = new KDL::VelocityProfile_Rectangular(m_trajectoryRefSpeed);
+        profile->SetProfileDuration(0.0, m_trajectoryRefSpeed, m_trajectoryRefSpeed / path->PathLength());
 
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
-    //-- Set velocity mode and set state which makes periodic thread implement control.
+    //-- Set velocity mode and set state which makes periodic thread implement control
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Unable to set velocity mode";
@@ -593,6 +593,22 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_trajectoryDuration = value;
         break;
+    case VOCAB_CC_CONFIG_TRAJ_REF_SPD:
+        if (value <= 0.0)
+        {
+            yCError(BCC) << "Trajectory reference speed cannot be negative nor zero";
+            return false;
+        }
+        m_trajectoryRefSpeed = value;
+        break;
+    case VOCAB_CC_CONFIG_TRAJ_REF_ACC:
+        if (value <= 0.0)
+        {
+            yCError(BCC) << "Trajectory reference acceleration cannot be negative nor zero";
+            return false;
+        }
+        m_trajectoryRefAccel = value;
+        break;
     case VOCAB_CC_CONFIG_CMC_PERIOD:
         if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
@@ -645,6 +661,12 @@ bool BasicCartesianControl::getParameter(int vocab, double * value)
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
         *value = m_trajectoryDuration;
         break;
+    case VOCAB_CC_CONFIG_TRAJ_REF_SPD:
+        *value = m_trajectoryRefSpeed;
+        break;
+    case VOCAB_CC_CONFIG_TRAJ_REF_ACC:
+        *value = m_trajectoryRefAccel;
+        break;
     case VOCAB_CC_CONFIG_CMC_PERIOD:
         *value = m_cmcPeriodMs;
         break;
@@ -691,6 +713,8 @@ bool BasicCartesianControl::getParameters(std::map<int, double> & params)
 {
     params.emplace(VOCAB_CC_CONFIG_GAIN, m_controllerGain);
     params.emplace(VOCAB_CC_CONFIG_TRAJ_DURATION, m_trajectoryDuration);
+    params.emplace(VOCAB_CC_CONFIG_TRAJ_REF_SPD, m_trajectoryRefSpeed);
+    params.emplace(VOCAB_CC_CONFIG_TRAJ_REF_ACC, m_trajectoryRefAccel);
     params.emplace(VOCAB_CC_CONFIG_CMC_PERIOD, m_cmcPeriodMs);
     params.emplace(VOCAB_CC_CONFIG_WAIT_PERIOD, m_waitPeriodMs);
     params.emplace(VOCAB_CC_CONFIG_FRAME, referenceFrame);

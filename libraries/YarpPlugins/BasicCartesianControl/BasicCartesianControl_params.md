@@ -2,6 +2,8 @@
 |:-----:|:------------------:|:------:|:-----:|:-------------------:|:--------:|:-------------------------------------------:|:---------:|
 |       |   controllerGain   | double |       |        0.05         |    no    |               controller gain               |           |
 |       | trajectoryDuration | double |   s   |        10.0         |    no    |             trajectory duration             |           |
+|       | trajectoryRefSpeed | double |  m/s  |        10.0         |    no    |      trajectory reference linear speed      |           |
+|       | trajectoryRefAccel | double | m/s^2 |        10.0         |    no    |  trajectory reference linear acceleration   |           |
 |       |    cmcPeriodMs     |  int   |   ms  |         50          |    no    |                  CMC rate                   |           |
 |       |    waitPeriodMs    |  int   |   ms  |         30          |    no    |             wait command period             |           |
 |       |    usePosdMovl     |  bool  |       |        false        |    no    | execute MOVL commands in POSD mode using IK |           |
