@@ -174,8 +174,6 @@ bool BasicCartesianControl::relj(const std::vector<double> &xd)
 
 bool BasicCartesianControl::movl(const std::vector<double> &xd)
 {
-    yCWarning(BCC) << "MOVL mode still experimental";
-
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
