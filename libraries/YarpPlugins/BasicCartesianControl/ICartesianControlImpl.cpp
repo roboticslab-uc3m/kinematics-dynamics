@@ -600,6 +600,17 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
             yCError(BCC) << "Trajectory duration cannot be negative";
             return false;
         }
+        else if ((m_trajectoryDuration == 0.0) ^ (value == 0.0))
+        {
+            if (value == 0.0)
+            {
+                yCInfo(BCC) << "Duration set to zero, therefore trajectory execution time will depend on reference speed and acceleration";
+            }
+            else
+            {
+                yCInfo(BCC) << "Trajectory duration forced to" << value << "seconds regardless of velocity profile";
+            }
+        }
         m_trajectoryDuration = value;
         break;
     case VOCAB_CC_CONFIG_TRAJ_REF_SPD:

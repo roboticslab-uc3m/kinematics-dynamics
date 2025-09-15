@@ -38,6 +38,50 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
+    if (m_controllerGain < 0.0)
+    {
+        yCError(BCC) << "Controller gain must be positive";
+        return false;
+    }
+
+    if (m_trajectoryDuration < 0.0)
+    {
+        yCError(BCC) << "Trajectory duration must be positive or zero";
+        return false;
+    }
+    else if (m_trajectoryDuration == 0.0)
+    {
+        yCInfo(BCC) << "Duration set to zero, therefore trajectory execution time will depend on reference speed and acceleration";
+    }
+    else
+    {
+        yCInfo(BCC) << "Trajectory duration forced to" << m_trajectoryDuration << "seconds regardless of velocity profile";
+    }
+
+    if (m_trajectoryRefSpeed <= 0.0)
+    {
+        yCError(BCC) << "Trajectory reference speed must be positive";
+        return false;
+    }
+
+    if (m_trajectoryRefAccel <= 0.0)
+    {
+        yCError(BCC) << "Trajectory reference acceleration must be positive";
+        return false;
+    }
+
+    if (m_cmcPeriodMs <= 0)
+    {
+        yCError(BCC) << "CMC period must be positive";
+        return false;
+    }
+
+    if (m_waitPeriodMs <= 0)
+    {
+        yCError(BCC) << "Wait period must be positive";
+        return false;
+    }
+
     yarp::os::Property robotOptions;
     robotOptions.fromString(config.toString());
     robotOptions.put("device", m_robot);
