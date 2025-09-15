@@ -1,9 +1,9 @@
 | Group |     Parameter      |  Type  | Units |    Default Value    | Required |                 Description                 |                  Notes                   |
 |:-----:|:------------------:|:------:|:-----:|:-------------------:|:--------:|:-------------------------------------------:|:----------------------------------------:|
 |       |   controllerGain   | double |       |        0.05         |    no    |               controller gain               |                                          |
-|       | trajectoryDuration | double |   s   |        10.0         |    no    |             trajectory duration             | 0: use ref speed/acc to compute duration |
-|       | trajectoryRefSpeed | double |  m/s  |        10.0         |    no    |      trajectory reference linear speed      |                                          |
-|       | trajectoryRefAccel | double | m/s^2 |        10.0         |    no    |  trajectory reference linear acceleration   |                                          |
+|       | trajectoryDuration | double |   s   |         0.0         |    no    |             trajectory duration             | 0: use ref speed/acc to compute duration |
+|       | trajectoryRefSpeed | double |  m/s  |        0.05         |    no    |      trajectory reference linear speed      |                                          |
+|       | trajectoryRefAccel | double | m/s^2 |        0.02         |    no    |  trajectory reference linear acceleration   |                                          |
 |       |    cmcPeriodMs     |  int   |   ms  |         50          |    no    |                  CMC rate                   |                                          |
 |       |    waitPeriodMs    |  int   |   ms  |         30          |    no    |             wait command period             |                                          |
 |       |    usePosdMovl     |  bool  |       |        false        |    no    | execute MOVL commands in POSD mode using IK |                                          |

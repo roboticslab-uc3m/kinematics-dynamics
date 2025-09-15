@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Mon Sep 15 19:57:13 2025
+// Generated on: Mon Sep 15 20:34:59 2025
 
 
 #ifndef BASICCARTESIANCONTROL_PARAMSPARSER_H
@@ -26,9 +26,9 @@
 * | Group name | Parameter name     | Type   | Units | Default Value       | Required | Description                                 | Notes                                    |
 * |:----------:|:------------------:|:------:|:-----:|:-------------------:|:--------:|:-------------------------------------------:|:----------------------------------------:|
 * | -          | controllerGain     | double | -     | 0.05                | 0        | controller gain                             | -                                        |
-* | -          | trajectoryDuration | double | s     | 10.0                | 0        | trajectory duration                         | 0: use ref speed/acc to compute duration |
-* | -          | trajectoryRefSpeed | double | m/s   | 10.0                | 0        | trajectory reference linear speed           | -                                        |
-* | -          | trajectoryRefAccel | double | m/s^2 | 10.0                | 0        | trajectory reference linear acceleration    | -                                        |
+* | -          | trajectoryDuration | double | s     | 0.0                 | 0        | trajectory duration                         | 0: use ref speed/acc to compute duration |
+* | -          | trajectoryRefSpeed | double | m/s   | 0.05                | 0        | trajectory reference linear speed           | -                                        |
+* | -          | trajectoryRefAccel | double | m/s^2 | 0.02                | 0        | trajectory reference linear acceleration    | -                                        |
 * | -          | cmcPeriodMs        | int    | ms    | 50                  | 0        | CMC rate                                    | -                                        |
 * | -          | waitPeriodMs       | int    | ms    | 30                  | 0        | wait command period                         | -                                        |
 * | -          | usePosdMovl        | bool   | -     | false               | 0        | execute MOVL commands in POSD mode using IK | -                                        |
@@ -39,7 +39,7 @@
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 10.0 --trajectoryRefSpeed 10.0 --trajectoryRefAccel 10.0 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver
+* yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver
 * \endcode
 *
 * \code{.unparsed}
@@ -66,9 +66,9 @@ public:
     const parser_version_type m_parser_version = {};
 
     const std::string m_controllerGain_defaultValue = {"0.05"};
-    const std::string m_trajectoryDuration_defaultValue = {"10.0"};
-    const std::string m_trajectoryRefSpeed_defaultValue = {"10.0"};
-    const std::string m_trajectoryRefAccel_defaultValue = {"10.0"};
+    const std::string m_trajectoryDuration_defaultValue = {"0.0"};
+    const std::string m_trajectoryRefSpeed_defaultValue = {"0.05"};
+    const std::string m_trajectoryRefAccel_defaultValue = {"0.02"};
     const std::string m_cmcPeriodMs_defaultValue = {"50"};
     const std::string m_waitPeriodMs_defaultValue = {"30"};
     const std::string m_usePosdMovl_defaultValue = {"false"};
@@ -78,9 +78,9 @@ public:
     const std::string m_solver_defaultValue = {"KdlSolver"};
 
     double m_controllerGain = {0.05};
-    double m_trajectoryDuration = {10.0};
-    double m_trajectoryRefSpeed = {10.0};
-    double m_trajectoryRefAccel = {10.0};
+    double m_trajectoryDuration = {0.0};
+    double m_trajectoryRefSpeed = {0.05};
+    double m_trajectoryRefAccel = {0.02};
     int m_cmcPeriodMs = {50};
     int m_waitPeriodMs = {30};
     bool m_usePosdMovl = {false};

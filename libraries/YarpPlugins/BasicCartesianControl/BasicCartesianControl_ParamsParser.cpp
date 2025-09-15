@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Mon Sep 15 19:57:13 2025
+// Generated on: Mon Sep 15 20:34:59 2025
 
 
 #include "BasicCartesianControl_ParamsParser.h"
@@ -256,7 +256,7 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("'solver': cartesian solver device\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 10.0 --trajectoryRefSpeed 10.0 --trajectoryRefAccel 10.0 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
+    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device BasicCartesianControl\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
