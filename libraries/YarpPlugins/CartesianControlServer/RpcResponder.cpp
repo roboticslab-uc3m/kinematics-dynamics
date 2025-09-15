@@ -170,7 +170,15 @@ void RpcResponder::makeUsage()
     ss.str("");
 
     ss << "... [" << Vocab::decode(VOCAB_CC_CONFIG_TRAJ_DURATION) << "] value";
-    addUsage(ss.str().c_str(), "(config param) trajectory duration");
+    addUsage(ss.str().c_str(), "(config param) trajectory duration [s]");
+    ss.str("");
+
+    ss << "... [" << Vocab::decode(VOCAB_CC_CONFIG_TRAJ_REF_SPD) << "] value";
+    addUsage(ss.str().c_str(), "(config param) trajectory reference speed [m/s]");
+    ss.str("");
+
+    ss << "... [" << Vocab::decode(VOCAB_CC_CONFIG_TRAJ_REF_ACC) << "] value";
+    addUsage(ss.str().c_str(), "(config param) trajectory reference acceleration [m/s^2]");
     ss.str("");
 
     ss << "... [" << Vocab::decode(VOCAB_CC_CONFIG_CMC_PERIOD) << "] value";

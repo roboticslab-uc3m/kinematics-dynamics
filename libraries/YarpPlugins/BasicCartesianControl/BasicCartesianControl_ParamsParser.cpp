@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Apr 16 14:50:07 2025
+// Generated on: Mon Sep 15 20:34:59 2025
 
 
 #include "BasicCartesianControl_ParamsParser.h"
@@ -30,6 +30,8 @@ std::vector<std::string> BasicCartesianControl_ParamsParser::getListOfParams() c
     std::vector<std::string> params;
     params.push_back("controllerGain");
     params.push_back("trajectoryDuration");
+    params.push_back("trajectoryRefSpeed");
+    params.push_back("trajectoryRefAccel");
     params.push_back("cmcPeriodMs");
     params.push_back("waitPeriodMs");
     params.push_back("usePosdMovl");
@@ -77,6 +79,34 @@ bool      BasicCartesianControl_ParamsParser::parseParams(const yarp::os::Search
             yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'trajectoryDuration' using DEFAULT value:" << m_trajectoryDuration;
         }
         prop_check.unput("trajectoryDuration");
+    }
+
+    //Parser of parameter trajectoryRefSpeed
+    {
+        if (config.check("trajectoryRefSpeed"))
+        {
+            m_trajectoryRefSpeed = config.find("trajectoryRefSpeed").asFloat64();
+            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'trajectoryRefSpeed' using value:" << m_trajectoryRefSpeed;
+        }
+        else
+        {
+            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'trajectoryRefSpeed' using DEFAULT value:" << m_trajectoryRefSpeed;
+        }
+        prop_check.unput("trajectoryRefSpeed");
+    }
+
+    //Parser of parameter trajectoryRefAccel
+    {
+        if (config.check("trajectoryRefAccel"))
+        {
+            m_trajectoryRefAccel = config.find("trajectoryRefAccel").asFloat64();
+            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'trajectoryRefAccel' using value:" << m_trajectoryRefAccel;
+        }
+        else
+        {
+            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'trajectoryRefAccel' using DEFAULT value:" << m_trajectoryRefAccel;
+        }
+        prop_check.unput("trajectoryRefAccel");
     }
 
     //Parser of parameter cmcPeriodMs
@@ -215,6 +245,8 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
     doc = doc + std::string("'controllerGain': controller gain\n");
     doc = doc + std::string("'trajectoryDuration': trajectory duration\n");
+    doc = doc + std::string("'trajectoryRefSpeed': trajectory reference linear speed\n");
+    doc = doc + std::string("'trajectoryRefAccel': trajectory reference linear acceleration\n");
     doc = doc + std::string("'cmcPeriodMs': CMC rate\n");
     doc = doc + std::string("'waitPeriodMs': wait command period\n");
     doc = doc + std::string("'usePosdMovl': execute MOVL commands in POSD mode using IK\n");
@@ -224,7 +256,7 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("'solver': cartesian solver device\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 10.0 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
+    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device BasicCartesianControl\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
