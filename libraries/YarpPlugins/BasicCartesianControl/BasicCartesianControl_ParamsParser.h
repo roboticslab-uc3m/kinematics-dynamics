@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun Sep 14 11:54:05 2025
+// Generated on: Mon Sep 15 19:57:13 2025
 
 
 #ifndef BASICCARTESIANCONTROL_PARAMSPARSER_H
@@ -23,19 +23,19 @@
 * This class is the parameters parser for class BasicCartesianControl.
 *
 * These are the used parameters:
-* | Group name | Parameter name     | Type   | Units | Default Value       | Required | Description                                 | Notes     |
-* |:----------:|:------------------:|:------:|:-----:|:-------------------:|:--------:|:-------------------------------------------:|:---------:|
-* | -          | controllerGain     | double | -     | 0.05                | 0        | controller gain                             | -         |
-* | -          | trajectoryDuration | double | s     | 10.0                | 0        | trajectory duration                         | -         |
-* | -          | trajectoryRefSpeed | double | m/s   | 10.0                | 0        | trajectory reference linear speed           | -         |
-* | -          | trajectoryRefAccel | double | m/s^2 | 10.0                | 0        | trajectory reference linear acceleration    | -         |
-* | -          | cmcPeriodMs        | int    | ms    | 50                  | 0        | CMC rate                                    | -         |
-* | -          | waitPeriodMs       | int    | ms    | 30                  | 0        | wait command period                         | -         |
-* | -          | usePosdMovl        | bool   | -     | false               | 0        | execute MOVL commands in POSD mode using IK | -         |
-* | -          | enableFailFast     | bool   | -     | false               | 0        | enable fail-fast mode for MOVL commands     | -         |
-* | -          | referenceFrame     | string | -     | base                | 0        | reference frame                             | base, tcp |
-* | -          | robot              | string | -     | remote_controlboard | 0        | robot device                                | -         |
-* | -          | solver             | string | -     | KdlSolver           | 0        | cartesian solver device                     | -         |
+* | Group name | Parameter name     | Type   | Units | Default Value       | Required | Description                                 | Notes                                    |
+* |:----------:|:------------------:|:------:|:-----:|:-------------------:|:--------:|:-------------------------------------------:|:----------------------------------------:|
+* | -          | controllerGain     | double | -     | 0.05                | 0        | controller gain                             | -                                        |
+* | -          | trajectoryDuration | double | s     | 10.0                | 0        | trajectory duration                         | 0: use ref speed/acc to compute duration |
+* | -          | trajectoryRefSpeed | double | m/s   | 10.0                | 0        | trajectory reference linear speed           | -                                        |
+* | -          | trajectoryRefAccel | double | m/s^2 | 10.0                | 0        | trajectory reference linear acceleration    | -                                        |
+* | -          | cmcPeriodMs        | int    | ms    | 50                  | 0        | CMC rate                                    | -                                        |
+* | -          | waitPeriodMs       | int    | ms    | 30                  | 0        | wait command period                         | -                                        |
+* | -          | usePosdMovl        | bool   | -     | false               | 0        | execute MOVL commands in POSD mode using IK | -                                        |
+* | -          | enableFailFast     | bool   | -     | false               | 0        | enable fail-fast mode for MOVL commands     | -                                        |
+* | -          | referenceFrame     | string | -     | base                | 0        | reference frame                             | base, tcp                                |
+* | -          | robot              | string | -     | remote_controlboard | 0        | robot device                                | -                                        |
+* | -          | solver             | string | -     | KdlSolver           | 0        | cartesian solver device                     | -                                        |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}

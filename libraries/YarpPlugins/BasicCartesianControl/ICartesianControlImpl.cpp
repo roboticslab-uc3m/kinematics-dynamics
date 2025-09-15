@@ -220,7 +220,18 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         auto * path = new KDL::Path_Line(H_base_start, H_base_end, interpolator, 1.0);
         auto * profile = new KDL::VelocityProfile_Trap(m_trajectoryRefSpeed, m_trajectoryRefAccel);
 
-        trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile, m_trajectoryDuration));
+        if (m_trajectoryDuration != 0.0)
+        {
+            // Set duration, let profile compute speed and acceleration
+            profile->SetProfileDuration(0.0, path->PathLength(), m_trajectoryDuration);
+        }
+        else
+        {
+            // Set speed and acceleration, let profile compute duration
+            profile->SetProfile(0.0, path->PathLength());
+        }
+
+        trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
     if (m_enableFailFast && !doFailFastChecks(currentQ))
@@ -584,9 +595,9 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         m_controllerGain = value;
         break;
     case VOCAB_CC_CONFIG_TRAJ_DURATION:
-        if (value <= 0.0)
+        if (value < 0.0)
         {
-            yCError(BCC) << "Trajectory duration cannot be negative nor zero";
+            yCError(BCC) << "Trajectory duration cannot be negative";
             return false;
         }
         m_trajectoryDuration = value;
