@@ -19,6 +19,7 @@
 
 //---------------------------------------------------------------------------------------------------------------
 // KEEP VOCAB LIST AND DOCUMENTATION IN SYNC WITH roboticslab::RpcResponder::makeUsage AT CartesianControlServer/
+// and roboticslab::CartesianControlServerROS2::configureRosParameters AT CartesianControlServerROS2/
 //-----------------------------------------------------------------------------------------------------------------------------------
 // USING `int` INSTEAD OF `yarp::conf::vocab32_t` BECAUSE OF SWIG: https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/180
 //-----------------------------------------------------------------------------------------------------------------------------------

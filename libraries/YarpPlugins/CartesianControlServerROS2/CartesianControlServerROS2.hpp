@@ -5,7 +5,6 @@
 
 #include <string>
 
-#include <yarp/os/Thread.h>
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/DeviceDriver.h>
@@ -62,6 +61,7 @@ public:
 
 private:
     bool configureRosHandlers();
+    bool configureRosParameters();
     void destroyRosHandlers();
 
     roboticslab::ICartesianControl * m_iCartesianControl;
@@ -88,8 +88,6 @@ private:
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;
 
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_params;
-    int preset_streaming_cmd;
-    roboticslab::ICartesianSolver::reference_frame frame;
 
     void pose_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
     void twist_cb(const geometry_msgs::msg::Twist::SharedPtr msg);

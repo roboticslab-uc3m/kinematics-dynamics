@@ -30,9 +30,9 @@ bool CartesianControlServerROS2::attach(yarp::dev::PolyDriver * poly)
         return false;
     }
 
-    if (!configureRosHandlers())
+    if (!configureRosHandlers() || !configureRosParameters())
     {
-        yCError(CCS) << "Failed to configure ROS handlers";
+        yCError(CCS) << "Failed to configure ROS handlers and parameters";
         destroyRosHandlers(); // cleanup
         return false;
     }
