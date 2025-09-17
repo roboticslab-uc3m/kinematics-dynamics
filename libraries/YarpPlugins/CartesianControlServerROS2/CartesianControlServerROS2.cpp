@@ -48,7 +48,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movj = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movj", 10, std::bind(&ccs::movj_cb, this, _1));
+    m_movj = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/movj", 10, std::bind(&ccs::movj_cb, this, _1));
 
     if (!m_movj)
     {
@@ -56,7 +56,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_relj = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/relj", 10, std::bind(&ccs::relj_cb, this, _1));
+    m_relj = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/relj", 10, std::bind(&ccs::relj_cb, this, _1));
 
     if (!m_relj)
     {
@@ -64,7 +64,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movl = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movl", 10, std::bind(&ccs::movl_cb, this, _1));
+    m_movl = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/movl", 10, std::bind(&ccs::movl_cb, this, _1));
 
     if (!m_movl)
     {
@@ -72,7 +72,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movv = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movv", 10, std::bind(&ccs::movv_cb, this, _1));
+    m_movv = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/movv", 10, std::bind(&ccs::movv_cb, this, _1));
 
     if (!m_movv)
     {
@@ -80,7 +80,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_forc = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/forc", 10, std::bind(&ccs::forc_cb, this, _1));
+    m_forc = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/forc", 10, std::bind(&ccs::forc_cb, this, _1));
 
     if (!m_forc)
     {
@@ -301,72 +301,76 @@ void CartesianControlServerROS2::wrench_cb(const geometry_msgs::msg::Wrench::Sha
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::movj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::movj_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
 {
-    if (msg->data.size() != 6)
-    {
-        yCError(CCS) << "Received invalid movj command. Expected 6 elements.";
-        return;
-    }
+    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+    const auto rot = ori.GetRot();
 
-    yCInfo(CCS) << "Received movj:" << msg->data;
-    m_iCartesianControl->movj(msg->data);
+    std::vector<double> v {
+        msg->position.x, msg->position.y, msg->position.z,
+        rot.x(), rot.y(), rot.z()
+    };
+
+    yCInfo(CCS) << "Received movj:" << v;
+    m_iCartesianControl->movj(v);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::relj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::relj_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
 {
-    if (msg->data.size() != 6)
-    {
-        yCError(CCS) << "Received invalid relj command. Expected 6 elements.";
-        return;
-    }
+    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+    const auto rot = ori.GetRot();
 
-    yCInfo(CCS) << "Received relj:" << msg->data;
-    m_iCartesianControl->relj(msg->data);
+    std::vector<double> v {
+        msg->position.x, msg->position.y, msg->position.z,
+        rot.x(), rot.y(), rot.z()
+    };
+
+    yCInfo(CCS) << "Received relj:" << v;
+    m_iCartesianControl->relj(v);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::movl_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::movl_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
 {
-    if (msg->data.size() != 6)
-    {
-        yCError(CCS) << "Received invalid movl command. Expected 6 elements.";
-        return;
-    }
+    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+    const auto rot = ori.GetRot();
 
-    yCInfo(CCS) << "Received movl:" << msg->data;
-    m_iCartesianControl->movl(msg->data);
+    std::vector<double> v {
+        msg->position.x, msg->position.y, msg->position.z,
+        rot.x(), rot.y(), rot.z()
+    };
+
+    yCInfo(CCS) << "Received movl:" << v;
+    m_iCartesianControl->movl(v);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::movv_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::movv_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-    if (msg->data.size() != 6)
-    {
-        yCError(CCS) << "Received invalid movv command. Expected 6 elements.";
-        return;
-    }
+    std::vector<double> v {
+        msg->linear.x, msg->linear.y, msg->linear.z,
+        msg->angular.x, msg->angular.y, msg->angular.z
+    };
 
-    yCInfo(CCS) << "Received movv:" << msg->data;
-    m_iCartesianControl->movv(msg->data);
+    yCInfo(CCS) << "Received movv:" << v;
+    m_iCartesianControl->movv(v);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlServerROS2::forc_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+void CartesianControlServerROS2::forc_cb(const geometry_msgs::msg::Wrench::SharedPtr msg)
 {
-    if (msg->data.size() != 6)
-    {
-        yCError(CCS) << "Received invalid forc command. Expected 6 elements.";
-        return;
-    }
+    std::vector<double> v {
+        msg->force.x, msg->force.y, msg->force.z,
+        msg->torque.x, msg->torque.y, msg->torque.z
+    };
 
-    yCInfo(CCS) << "Received forc:" << msg->data;
-    m_iCartesianControl->forc(msg->data);
+    yCInfo(CCS) << "Received forc:" << v;
+    m_iCartesianControl->forc(v);
 }
 
 // -----------------------------------------------------------------------------

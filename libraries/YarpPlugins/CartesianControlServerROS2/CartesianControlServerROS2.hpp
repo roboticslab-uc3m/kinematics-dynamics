@@ -20,8 +20,6 @@
 #include <geometry_msgs/msg/wrench.hpp>
 
 #include <std_msgs/msg/int32.hpp>
-#include <std_msgs/msg/float64_multi_array.hpp>
-
 #include <std_srvs/srv/trigger.hpp>
 
 #include <kdl/frames.hpp>
@@ -76,11 +74,11 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movj;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_relj;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movl;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movv;
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_forc;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movj;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_relj;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movl;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_movv;
+    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_forc;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_tool;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_act;
 
@@ -94,11 +92,11 @@ private:
     void twist_cb(const geometry_msgs::msg::Twist::SharedPtr msg);
     void wrench_cb(const geometry_msgs::msg::Wrench::SharedPtr msg);
 
-    void movj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void relj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void movl_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void movv_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-    void forc_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void movj_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void relj_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void movl_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
+    void movv_cb(const geometry_msgs::msg::Twist::SharedPtr msg);
+    void forc_cb(const geometry_msgs::msg::Wrench::SharedPtr msg);
     void tool_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
     void act_cb(const std_msgs::msg::Int32::SharedPtr msg);
 
