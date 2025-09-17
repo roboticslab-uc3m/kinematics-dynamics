@@ -77,6 +77,7 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movj;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_relj;
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movl;
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_movv;
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr m_forc;
@@ -94,6 +95,7 @@ private:
     void wrench_cb(const geometry_msgs::msg::Wrench::SharedPtr msg);
 
     void movj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
+    void relj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void movl_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void movv_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
     void forc_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg);

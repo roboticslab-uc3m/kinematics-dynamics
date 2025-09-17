@@ -56,6 +56,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
+    m_relj = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/relj", 10, std::bind(&ccs::relj_cb, this, _1));
+
+    if (!m_relj)
+    {
+        yCError(CCS) << "Could not initialize the relj command subscription";
+        return false;
+    }
+
     m_movl = m_node->create_subscription<std_msgs::msg::Float64MultiArray>(prefix + "/command/movl", 10, std::bind(&ccs::movl_cb, this, _1));
 
     if (!m_movl)
@@ -232,6 +240,7 @@ void CartesianControlServerROS2::destroyRosHandlers()
 {
     m_stat.reset();
     m_movj.reset();
+    m_relj.reset();
     m_movl.reset();
     m_movv.reset();
     m_forc.reset();
@@ -302,6 +311,20 @@ void CartesianControlServerROS2::movj_cb(const std_msgs::msg::Float64MultiArray:
 
     yCInfo(CCS) << "Received movj:" << msg->data;
     m_iCartesianControl->movj(msg->data);
+}
+
+// -----------------------------------------------------------------------------
+
+void CartesianControlServerROS2::relj_cb(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+{
+    if (msg->data.size() != 6)
+    {
+        yCError(CCS) << "Received invalid relj command. Expected 6 elements.";
+        return;
+    }
+
+    yCInfo(CCS) << "Received relj:" << msg->data;
+    m_iCartesianControl->relj(msg->data);
 }
 
 // -----------------------------------------------------------------------------
