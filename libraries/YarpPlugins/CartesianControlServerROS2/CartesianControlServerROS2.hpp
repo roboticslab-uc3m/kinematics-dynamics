@@ -88,22 +88,6 @@ private:
 
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_params;
 
-    void pose_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void twist_cb(const geometry_msgs::msg::Twist::SharedPtr msg);
-    void wrench_cb(const geometry_msgs::msg::Wrench::SharedPtr msg);
-
-    void movj_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void relj_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void movl_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void movv_cb(const geometry_msgs::msg::Twist::SharedPtr msg);
-    void forc_cb(const geometry_msgs::msg::Wrench::SharedPtr msg);
-    void tool_cb(const geometry_msgs::msg::Pose::SharedPtr msg);
-    void act_cb(const std_msgs::msg::Int32::SharedPtr msg);
-
-    void inv_cb(const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response);
-    void gcmp_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
-    void stop_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response);
-
     rcl_interfaces::msg::SetParametersResult params_cb(const std::vector<rclcpp::Parameter> &parameters);
 
     // Note that the order of gripper_state enum values must match the order from spacenav_device. If modifying this, please update.

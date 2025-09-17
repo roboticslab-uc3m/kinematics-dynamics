@@ -13,18 +13,51 @@
 
 using namespace roboticslab;
 
+namespace
+{
+    inline std::vector<double> pose_to_vector(const geometry_msgs::msg::Pose * msg)
+    {
+        auto rot = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w).GetRot();
+
+        return {
+            msg->position.x, msg->position.y, msg->position.z,
+            rot.x(), rot.y(), rot.z()
+        };
+    }
+
+    inline std::vector<double> twist_to_vector(const geometry_msgs::msg::Twist * msg)
+    {
+        return {
+            msg->linear.x, msg->linear.y, msg->linear.z,
+            msg->angular.x, msg->angular.y, msg->angular.z
+        };
+    }
+
+    inline std::vector<double> wrench_to_vector(const geometry_msgs::msg::Wrench * msg)
+    {
+        return {
+            msg->force.x, msg->force.y, msg->force.z,
+            msg->torque.x, msg->torque.y, msg->torque.z
+        };
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 bool CartesianControlServerROS2::configureRosHandlers()
 {
-    using namespace std::placeholders;
-    using ccs = CartesianControlServerROS2;
-
     const auto prefix = "/" + m_name;
 
     m_stat = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
 
-    m_pose = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10, std::bind(&ccs::pose_cb, this, _1));
+    m_pose = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/pose", 10,
+        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        {
+            const auto v = pose_to_vector(msg.get());
+            yCDebug(CCS) << "Received pose command:" << v;
+            m_iCartesianControl->pose(v);
+        });
 
     if (!m_pose)
     {
@@ -32,7 +65,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_twist = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10, std::bind(&ccs::twist_cb, this, _1));
+    m_twist = m_node->create_subscription<geometry_msgs::msg::Twist>(
+        prefix + "/command/twist", 10,
+        [this](const geometry_msgs::msg::Twist::SharedPtr msg)
+        {
+            const auto v = twist_to_vector(msg.get());
+            yCDebug(CCS) << "Received twist command:" << v;
+            m_iCartesianControl->twist(twist_to_vector(msg.get()));
+        });
 
     if (!m_twist)
     {
@@ -40,7 +80,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_wrench = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10, std::bind(&ccs::wrench_cb, this, _1));
+    m_wrench = m_node->create_subscription<geometry_msgs::msg::Wrench>(
+        prefix + "/command/wrench", 10,
+        [this](const geometry_msgs::msg::Wrench::SharedPtr msg)
+        {
+            const auto v = wrench_to_vector(msg.get());
+            yCDebug(CCS) << "Received wrench command:" << v;
+            m_iCartesianControl->wrench(v);
+        });
 
     if (!m_wrench)
     {
@@ -48,7 +95,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movj = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/movj", 10, std::bind(&ccs::movj_cb, this, _1));
+    m_movj = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/movj", 10,
+        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        {
+            const auto v = pose_to_vector(msg.get());
+            yCDebug(CCS) << "Received movj command:" << v;
+            m_iCartesianControl->movj(v);
+        });
 
     if (!m_movj)
     {
@@ -56,7 +110,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_relj = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/relj", 10, std::bind(&ccs::relj_cb, this, _1));
+    m_relj = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/relj", 10,
+        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        {
+            const auto v = pose_to_vector(msg.get());
+            yCDebug(CCS) << "Received relj command:" << v;
+            m_iCartesianControl->relj(v);
+        });
 
     if (!m_relj)
     {
@@ -64,7 +125,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movl = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/movl", 10, std::bind(&ccs::movl_cb, this, _1));
+    m_movl = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/movl", 10,
+        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        {
+            const auto v = pose_to_vector(msg.get());
+            yCDebug(CCS) << "Received movl command:" << v;
+            m_iCartesianControl->movl(v);
+        });
 
     if (!m_movl)
     {
@@ -72,7 +140,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movv = m_node->create_subscription<geometry_msgs::msg::Twist>(prefix + "/command/movv", 10, std::bind(&ccs::movv_cb, this, _1));
+    m_movv = m_node->create_subscription<geometry_msgs::msg::Twist>(
+        prefix + "/command/movv", 10,
+        [this](const geometry_msgs::msg::Twist::SharedPtr msg)
+        {
+            const auto v = twist_to_vector(msg.get());
+            yCDebug(CCS) << "Received movv command:" << v;
+            m_iCartesianControl->movv(v);
+        });
 
     if (!m_movv)
     {
@@ -80,7 +155,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_forc = m_node->create_subscription<geometry_msgs::msg::Wrench>(prefix + "/command/forc", 10, std::bind(&ccs::forc_cb, this, _1));
+    m_forc = m_node->create_subscription<geometry_msgs::msg::Wrench>(
+        prefix + "/command/forc", 10,
+        [this](const geometry_msgs::msg::Wrench::SharedPtr msg)
+        {
+            const auto v = wrench_to_vector(msg.get());
+            yCDebug(CCS) << "Received forc command:" << v;
+            m_iCartesianControl->forc(v);
+        });
 
     if (!m_forc)
     {
@@ -88,7 +170,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_tool = m_node->create_subscription<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10, std::bind(&ccs::tool_cb, this, _1));
+    m_tool = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/pose", 10,
+        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        {
+            const auto v = pose_to_vector(msg.get());
+            yCDebug(CCS) << "Received tool command:" << v;
+            m_iCartesianControl->tool(v);
+        });
 
     if (!m_tool)
     {
@@ -96,7 +185,26 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_act = m_node->create_subscription<std_msgs::msg::Int32>(prefix + "/command/gripper", 10, std::bind(&ccs::act_cb, this, _1));
+    m_act = m_node->create_subscription<std_msgs::msg::Int32>(
+        prefix + "/command/gripper", 10,
+        [this](const std_msgs::msg::Int32::SharedPtr msg)
+        {
+            switch (msg->data)
+            {
+            case GRIPPER_CLOSE:
+                yCDebug(CCS) << "Gripper close";
+                m_iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
+                break;
+            case GRIPPER_OPEN:
+                yCDebug(CCS) << "Gripper open";
+                m_iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER);
+                break;
+            case GRIPPER_STOP:
+                yCDebug(CCS) << "Gripper stop";
+                m_iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER);
+                break;
+            }
+        });
 
     if (!m_act)
     {
@@ -104,7 +212,16 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(prefix + "/inv", std::bind(&ccs::inv_cb, this, _1, _2));
+    m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(
+        prefix + "/inv",
+        [this](const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request,
+               rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
+        {
+            std::vector<double> q;
+            response->success = m_iCartesianControl->inv(pose_to_vector(&request->x), q);
+            std::transform(q.begin(), q.end(), std::back_inserter(response->q.data), [](double val) { return val * KDL::deg2rad; });
+            response->q.data = q;
+        });
 
     if (!m_inv)
     {
@@ -112,7 +229,13 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/gcmp", std::bind(&ccs::gcmp_cb, this, _1, _2));
+    m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(
+        prefix + "/gcmp",
+        [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
+        {
+            yCDebug(CCS) << "Received gcmp request";
+            response->success = m_iCartesianControl->gcmp();
+        });
 
     if (!m_gcmp)
     {
@@ -120,7 +243,13 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_stop = m_node->create_service<std_srvs::srv::Trigger>(prefix + "/stop", std::bind(&ccs::stop_cb, this, _1, _2));
+    m_stop = m_node->create_service<std_srvs::srv::Trigger>(
+        prefix + "/stop",
+        [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
+        {
+            yCDebug(CCS) << "Received stop request";
+            response->success = m_iCartesianControl->stopControl();
+        });
 
     if (!m_stop)
     {
@@ -229,7 +358,7 @@ bool CartesianControlServerROS2::configureRosParameters()
         }
     }
 
-    m_params = m_node->add_on_set_parameters_callback(std::bind(&CartesianControlServerROS2::params_cb, this, std::placeholders::_1));
+    m_params = m_node->add_on_set_parameters_callback([this](const auto & parameters) { return params_cb(parameters); });
 
     return true;
 }
@@ -255,199 +384,6 @@ void CartesianControlServerROS2::destroyRosHandlers()
     m_stop.reset();
 
     m_params.reset();
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::pose_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
-{
-    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
-    const auto rot = ori.GetRot();
-
-    std::vector<double> v {
-        msg->position.x, msg->position.y, msg->position.z,
-        rot.x(), rot.y(), rot.z()
-    };
-
-    yCInfo(CCS) << "Received pose:" << v;
-    m_iCartesianControl->pose(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::twist_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
-{
-    std::vector<double> v {
-        msg->linear.x, msg->linear.y, msg->linear.z,
-        msg->angular.x, msg->angular.y, msg->angular.z
-    };
-
-    yCInfo(CCS) << "Received twist:" << v;
-    m_iCartesianControl->twist(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::wrench_cb(const geometry_msgs::msg::Wrench::SharedPtr msg)
-{
-    std::vector<double> v {
-        msg->force.x, msg->force.y, msg->force.z,
-        msg->torque.x, msg->torque.y, msg->torque.z
-    };
-
-    yCInfo(CCS) << "Received wrench:" << v;
-    m_iCartesianControl->wrench(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::movj_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
-{
-    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
-    const auto rot = ori.GetRot();
-
-    std::vector<double> v {
-        msg->position.x, msg->position.y, msg->position.z,
-        rot.x(), rot.y(), rot.z()
-    };
-
-    yCInfo(CCS) << "Received movj:" << v;
-    m_iCartesianControl->movj(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::relj_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
-{
-    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
-    const auto rot = ori.GetRot();
-
-    std::vector<double> v {
-        msg->position.x, msg->position.y, msg->position.z,
-        rot.x(), rot.y(), rot.z()
-    };
-
-    yCInfo(CCS) << "Received relj:" << v;
-    m_iCartesianControl->relj(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::movl_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
-{
-    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
-    const auto rot = ori.GetRot();
-
-    std::vector<double> v {
-        msg->position.x, msg->position.y, msg->position.z,
-        rot.x(), rot.y(), rot.z()
-    };
-
-    yCInfo(CCS) << "Received movl:" << v;
-    m_iCartesianControl->movl(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::movv_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
-{
-    std::vector<double> v {
-        msg->linear.x, msg->linear.y, msg->linear.z,
-        msg->angular.x, msg->angular.y, msg->angular.z
-    };
-
-    yCInfo(CCS) << "Received movv:" << v;
-    m_iCartesianControl->movv(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::forc_cb(const geometry_msgs::msg::Wrench::SharedPtr msg)
-{
-    std::vector<double> v {
-        msg->force.x, msg->force.y, msg->force.z,
-        msg->torque.x, msg->torque.y, msg->torque.z
-    };
-
-    yCInfo(CCS) << "Received forc:" << v;
-    m_iCartesianControl->forc(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::tool_cb(const geometry_msgs::msg::Pose::SharedPtr msg)
-{
-    const auto ori = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
-    const auto rot = ori.GetRot();
-
-    std::vector<double> v {
-        msg->position.x, msg->position.y, msg->position.z,
-        rot.x(), rot.y(), rot.z()
-    };
-
-    yCInfo(CCS) << "Received tool:" << v;
-    m_iCartesianControl->tool(v);
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::act_cb(const std_msgs::msg::Int32::SharedPtr msg)
-{
-    switch (msg->data)
-    {
-    case GRIPPER_CLOSE:
-        yCInfo(CCS) << "Gripper close";
-        m_iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
-        break;
-    case GRIPPER_OPEN:
-        yCInfo(CCS) << "Gripper open";
-        m_iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER);
-        break;
-    case GRIPPER_STOP:
-        yCInfo(CCS) << "Gripper stop";
-        m_iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER);
-        break;
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::inv_cb(const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
-{
-    const auto & pose = request->x;
-    const auto ori = KDL::Rotation::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
-    const auto rot = ori.GetRot();
-
-    std::vector<double> v {
-        pose.position.x, pose.position.y, pose.position.z,
-        rot.x(), rot.y(), rot.z()
-    };
-
-    yCInfo(CCS) << "Received inv request:" << v;
-
-    std::vector<double> q;
-    response->success = m_iCartesianControl->inv(v, q);
-
-    std::transform(q.begin(), q.end(), std::back_inserter(response->q.data),
-                   [](double val) { return val * KDL::deg2rad; });
-
-    response->q.data = q;
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::gcmp_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
-{
-    yCInfo(CCS) << "Received gcmp request";
-    response->success = m_iCartesianControl->gcmp();
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlServerROS2::stop_cb(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
-{
-    yCInfo(CCS) << "Received stop request";
-    response->success = m_iCartesianControl->stopControl();
 }
 
 // -----------------------------------------------------------------------------
