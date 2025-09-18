@@ -171,7 +171,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
     }
 
     m_tool = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/pose", 10,
+        prefix + "/command/tool", 10,
         [this](const geometry_msgs::msg::Pose::SharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
