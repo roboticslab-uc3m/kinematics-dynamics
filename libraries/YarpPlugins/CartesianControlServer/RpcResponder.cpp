@@ -51,6 +51,8 @@ namespace
 
 bool RpcResponder::respond(const yarp::os::Bottle& in, yarp::os::Bottle& out)
 {
+    yCDebug(CCS, "Got: %s", in.toString().c_str());
+
     if (!iCartesianControl)
     {
         yCError(CCS) << "Invalid ICartesianControl interface";
