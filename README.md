@@ -135,7 +135,7 @@ Bartek Łukawski, Mercedes Rebollo, Ángel Gilabert, Juan G. Victores, Carlos Ba
 - https://rosindustrial.org/news/2018/7/5/optimization-motion-planning-with-tesseract-and-trajopt-for-industrial-applications
 - [ROSPlan](http://kcl-planning.github.io/ROSPlan/) ([KCL-Planning/ROSPlan](https://github.com/KCL-Planning/ROSPlan)): Tools for AI Planning in a ROS system.
 - [jrl-umi3218/Tasks](https://github.com/jrl-umi3218/Tasks): It has been used extensively to control humanoid robots such as HOAP-3, HRP-2, HRP-4 and Atlas.
-- [googlecartographer (org)](https://github.com/googlecartographer): Cartographer is a system that provides real-time simultaneous localization and mapping (SLAM) in 2D and 3D across multiple platforms and sensor configuration
+- [cartographer-project (org)](https://github.com/cartographer-project): Cartographer is a system that provides real-time simultaneous localization and mapping (SLAM) in 2D and 3D across multiple platforms and sensor configuration
 
 ### Humanoid-oriented
 
