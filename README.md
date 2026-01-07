@@ -123,6 +123,7 @@ Bartek Łukawski, Mercedes Rebollo, Ángel Gilabert, Juan G. Victores, Carlos Ba
 - [iDyn](http://www.icub.org/doc/icub-main/idyn_introduction.html): Library in [robotology/icub-main](https://github.com/robotology/icub-main) for computing kinematics and dynamics of serial-links chains of revolute joints and limbs
 - [stack-of-tasks/pinocchio](https://github.com/stack-of-tasks/pinocchio)
 - [RBDL](https://rbdl.github.io/) ([rbdl/rbdl](https://github.com/rbdl/rbdl)): Rigid Body Dynamics Library. The code tightly follows the notation used in Roy Featherstone's book "Rigid Body Dynamics Algorithm".
+- [NxRLab/ModernRobotics](https://github.com/NxRLab/ModernRobotics)
 - [adityadua24/robopy](https://github.com/adityadua24/robopy)
 - [jdj2261/pykin](https://github.com/jdj2261/pykin)
 
