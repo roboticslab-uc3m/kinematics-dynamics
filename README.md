@@ -31,7 +31,7 @@ If you found this project useful, please consider citing the following works:
 
 - [ScrewTheoryLib](libraries/ScrewTheoryLib/)
 
-Bartek Łukawski, Ignacio Montesino Valle, Juan G. Victores, Alberto Jardón, and Carlos Balaguer. An inverse kinematics problem solver based on screw theory for manipulator arms. In *XLIII Jornadas de Automática*, pages 864–869. Universidade da Coruña, 2022.
+Bartek Łukawski, Ignacio Montesino Valle, Juan G. Victores, Alberto Jardón, and Carlos Balaguer. An inverse kinematics problem solver based on screw theory for manipulator arms. In *XLIII Jornadas de Automática*, pages 864–869. Universidade da Coruña, 2022. DOI: [10.17979/spudc.9788497498418.0864 ](https://doi.org/10.17979/spudc.9788497498418.0864 )
 
 ```bibtex
 @inproceedings{lukawski2022jjaa,
@@ -47,7 +47,7 @@ Bartek Łukawski, Ignacio Montesino Valle, Juan G. Victores, Alberto Jardón, an
 
 - [streamingDeviceController](programs/streamingDeviceController/)
 
-Edwin Daniel Oña, Bartek Łukawski, Alberto Jardón, and Carlos Balaguer. A modular framework to facilitate the control of an assistive robotic arm using visual servoing and proximity sensing. In *IEEE Int. Conf. on Autonomous Robot Systems and Competitions (ICARSC)*, pages 28–33, 2020.
+Edwin Daniel Oña, Bartek Łukawski, Alberto Jardón, and Carlos Balaguer. A modular framework to facilitate the control of an assistive robotic arm using visual servoing and proximity sensing. In *IEEE Int. Conf. on Autonomous Robot Systems and Competitions (ICARSC)*, pages 28–33, 2020. DOI: [10.1109/ICARSC49921.2020.9096146](https://doi.org/10.1109/ICARSC49921.2020.9096146)
 
 ```bibtex
 @inproceedings{eona2020icarsc,
@@ -60,7 +60,7 @@ Edwin Daniel Oña, Bartek Łukawski, Alberto Jardón, and Carlos Balaguer. A mod
 }
 ```
 
-Bartek Łukawski, Juan G. Victores, and Carlos Balaguer. A generic controller for teleoperation on robotic manipulators using low-cost devices. In *XLIV Jornadas de Automática*, pages 785–788. Universidade da Coruña, 2023.
+Bartek Łukawski, Juan G. Victores, and Carlos Balaguer. A generic controller for teleoperation on robotic manipulators using low-cost devices. In *XLIV Jornadas de Automática*, pages 785–788. Universidade da Coruña, 2023. DOI: [10.17979/spudc.9788497498609.785](https://doi.org/10.17979/spudc.9788497498609.785)
 
 ```bibtex
 @inproceedings{lukawski2023jjaa,
@@ -76,7 +76,7 @@ Bartek Łukawski, Juan G. Victores, and Carlos Balaguer. A generic controller fo
 
 - [CartesianControlServerROS2](libraries/YarpPlugins/CartesianControlServerROS2/) and [ROS 2 workspace packages](ros2/workspace/src/)
 
-Bartek Łukawski, Mercedes Rebollo, Ángel Gilabert, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. YARP Cartesian controller layers over ROS 2 for teleoperation and web applications. In *XLVI Jornadas de Automática*. Universidade da Coruña, 2025.
+Bartek Łukawski, Mercedes Rebollo, Ángel Gilabert, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. YARP Cartesian controller layers over ROS 2 for teleoperation and web applications. In *XLVI Jornadas de Automática*. Universidade da Coruña, 2025. DOI: [10.17979/ja-cea.2025.46.12252](https://doi.org/10.17979/ja-cea.2025.46.12252)
 
 ```bibtex
 @inproceedings{lukawski2025jjaa,
