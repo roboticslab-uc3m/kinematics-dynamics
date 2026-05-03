@@ -130,7 +130,7 @@ jobs:
     - name: Configure main project
       run: |
         . /opt/ros/${{matrix.system.ros}}/setup.sh
-        cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON -DUSE_LOCAL_ROS2_PACKAGES=ON
+        cmake -S . -B ./build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON -DUSE_LOCAL_ROS2_PACKAGES=ON -DALLOW_DEVICE_PARAM_PARSER_GENERATION=ON
 
     - name: Compile main project
       run: |
