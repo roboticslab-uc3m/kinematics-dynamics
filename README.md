@@ -116,6 +116,7 @@ Bartek Łukawski, Mercedes Rebollo, Ángel Gilabert, Juan G. Victores, Carlos Ba
 - [IKPy](https://phylliade.github.io/ikpy) ([Phylliade/ikpy](https://github.com/Phylliade/ikpy))
 - [uts-magic-lab/Magiks](https://github.com/uts-magic-lab/Magiks)
 - [tasts-robots/pink](https://github.com/tasts-robots/pink): Based on Pinocchio
+- [personalrobotics/ssik](https://github.com/personalrobotics/ssik)
 
 ### Kinematics and Dynamics
 
