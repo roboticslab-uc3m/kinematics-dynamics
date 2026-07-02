@@ -17,7 +17,7 @@ env:
 
 jobs:
   maybe_skip:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       should_skip: ${{steps.skip_check.outputs.should_skip}}
     steps:
@@ -38,11 +38,10 @@ jobs:
       fail-fast: false
       matrix:
         system:
-        - { os: ubuntu-22.04, ros: humble, compiler: { cc: gcc-11,   cxx: g++-11,     apt: g++-11 } }
-        # clang-15 instead of clang-14: https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
-        - { os: ubuntu-22.04, ros: humble, compiler: { cc: clang-15, cxx: clang++-15, apt: clang-15 } }
-        - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: gcc-13,   cxx: g++-13,     apt: g++-13 } }
-        - { os: ubuntu-24.04, ros: jazzy,  compiler: { cc: clang-18, cxx: clang++-18, apt: clang-18 } }
+        - { os: ubuntu-24.04, ros: jazzy,   compiler: { cc: gcc-13,   cxx: g++-13,     apt: g++-13 } }
+        - { os: ubuntu-24.04, ros: jazzy,   compiler: { cc: clang-18, cxx: clang++-18, apt: clang-18 } }
+        - { os: ubuntu-26.04, ros: lyrical, compiler: { cc: gcc-15,   cxx: g++-15,     apt: g++-15 } }
+        - { os: ubuntu-26.04, ros: lyrical, compiler: { cc: clang-21, cxx: clang++-21, apt: clang-21 } }
         robotology:
         # CMake 3.20 instead of 3.19 because of ROS Jazzy
         # CMake 3.22 instead of 3.20 because of the CMAKE_BUILD_TYPE env var
@@ -56,36 +55,31 @@ jobs:
 
     steps:
     - name: Check out main project
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Check out YCM
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: robotology/ycm
         path: .deps/ycm
 
     - name: Check out YARP
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: robotology/yarp
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
-    - name: Check out Orocos KDL
-      uses: actions/checkout@v4
-      with:
-        repository: orocos/orocos_kinematics_dynamics
-        path: .deps/kdl
-
     - name: Check out SWIG
-      uses: actions/checkout@v4
+      if: ${{matrix.system.os == 'ubuntu-24.04'}}
+      uses: actions/checkout@v7
       with:
         repository: swig/swig
         ref: v4.2.1
         path: .deps/swig
 
     - name: Install dependencies via apt
-      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} libeigen3-dev bison ros-${{matrix.system.ros}}-tf2 googletest
+      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} liborocos-kdl-dev bison ros-${{matrix.system.ros}}-tf2 googletest swig
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -114,13 +108,8 @@ jobs:
         cmake --build .deps/yarp/build
         cmake --install .deps/yarp/build
 
-    - name: Build Orocos KDL
-      run: |
-        cmake -S .deps/kdl/orocos_kdl -B .deps/kdl/orocos_kdl/build
-        cmake --build .deps/kdl/orocos_kdl/build
-        cmake --install .deps/kdl/orocos_kdl/build
-
     - name: Build SWIG
+      if: ${{matrix.system.os == 'ubuntu-24.04'}}
       run: |
         cmake -S .deps/swig -B .deps/swig/build -DWITH_PCRE=OFF
         cmake --build .deps/swig/build

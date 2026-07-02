@@ -9,6 +9,8 @@ cmake_dependent_option(ENABLE_ros2_spacenav_device "Enable/disable spacenav_devi
 
 if(ENABLE_ros2_rl_cartesian_control_msgs)
     add_subdirectory(workspace/src/rl_cartesian_control_msgs)
+else()
+    find_package(rl_cartesian_control_msgs QUIET)
 endif()
 
 if(ENABLE_ros2_spacenav_device)

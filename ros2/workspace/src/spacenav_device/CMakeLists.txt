@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.19)
 project(spacenav_device)
 
 # Default to C++14
@@ -25,7 +25,11 @@ find_package(tf2 REQUIRED)
 
 add_executable(spacenav_device src/spacenav_device.cpp)
 
-ament_target_dependencies(spacenav_device rclcpp std_msgs sensor_msgs geometry_msgs tf2)
+target_link_libraries(spacenav_device PUBLIC rclcpp::rclcpp
+                                             std_msgs::std_msgs__rosidl_typesupport_cpp
+                                             sensor_msgs::sensor_msgs__rosidl_typesupport_cpp
+                                             geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
+                                             tf2::tf2)
 
 install(TARGETS
   spacenav_device

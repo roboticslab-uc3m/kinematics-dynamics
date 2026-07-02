@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.19...3.30)
 
-project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES CXX)
+# ROS Lyrical requires a C compiler here.
+project(ROBOTICSLAB_KINEMATICS_DYNAMICS LANGUAGES C CXX)
 
 # Let the user specify a configuration (only single-config generators).
 if(NOT CMAKE_CONFIGURATION_TYPES)
@@ -36,7 +37,6 @@ find_package(rclcpp QUIET)
 find_package(std_msgs QUIET)
 find_package(std_srvs QUIET)
 find_package(geometry_msgs QUIET)
-find_package(rl_cartesian_control_msgs QUIET)
 find_package(GTestSources 1.8 QUIET)
 find_package(SWIG 3.0.12 QUIET)
 find_package(Doxygen QUIET)
