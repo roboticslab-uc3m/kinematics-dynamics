@@ -16,13 +16,14 @@ on:
     - 'tests/**'
   workflow_dispatch:
 
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: fkirc/skip-duplicate-actions@v5
-      with:
-        cancel_others: 'true'
     - run: sudo apt-get install -qq --no-install-recommends doxygen texlive-bibtex-extra
     - uses: actions/checkout@v7
     - run: cmake -S doc -B doc/build
