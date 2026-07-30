@@ -3,6 +3,7 @@ name: Continuous Integration
 on:
   push:
     paths-ignore:
+    - .github/workflows/ci.yml
     - 'doc/**'
     - '**.md'
   pull_request:

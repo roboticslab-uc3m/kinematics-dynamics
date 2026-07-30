@@ -17,18 +17,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: fkirc/skip-duplicate-actions@master
+    - uses: fkirc/skip-duplicate-actions@v5
       with:
         cancel_others: 'true'
     - run: sudo apt-get install -qq --no-install-recommends doxygen texlive-bibtex-extra
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
     - run: cmake -S doc -B doc/build
     - run: cmake --build doc/build --target dox
-    - uses: crazy-max/ghaction-github-pages@v2
+    - uses: actions/upload-pages-artifact@v5
       with:
-        build_dir: doc/build/html
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        path: doc/build/html
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
