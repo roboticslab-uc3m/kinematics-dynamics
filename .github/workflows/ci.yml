@@ -3,7 +3,7 @@ name: Continuous Integration
 on:
   push:
     paths-ignore:
-    - .github/workflows/ci.yml
+    - .github/workflows/doxygen.yml
     - 'doc/**'
     - '**.md'
   pull_request:
