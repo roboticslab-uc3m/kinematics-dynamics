@@ -32,6 +32,7 @@ option(ALLOW_DEVICE_PARAM_PARSER_GENERATION "Allow YARP to (re)build device para
 add_subdirectory(AsibotSolver)
 add_subdirectory(BasicCartesianControl)
 add_subdirectory(CartesianControlClient)
+add_subdirectory(CartesianControlClientROS2)
 add_subdirectory(CartesianControlServer)
 add_subdirectory(CartesianControlServerROS2)
 add_subdirectory(KdlSolver)
