@@ -21,7 +21,7 @@ bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
     m_node = std::make_shared<rclcpp::Node>(m_name);
     m_spinner = std::make_unique<Spinner>(m_node);
 
-    return m_spinner->start();
+    return m_spinner->start() && configureRosHandlers();
 }
 
 // -----------------------------------------------------------------------------

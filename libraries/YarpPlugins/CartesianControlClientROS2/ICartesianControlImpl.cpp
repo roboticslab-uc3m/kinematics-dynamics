@@ -2,13 +2,31 @@
 
 #include "CartesianControlClientROS2.hpp"
 
+#include <kdl/frames.hpp>
+
 #include "LogComponent.hpp"
 
 // ------------------- ICartesianControl Related ------------------------------------
 
 bool CartesianControlClientROS2::stat(std::vector<double> & x, int * state, double * timestamp)
 {
-    return false;
+    std::lock_guard lock(m_state_mutex);
+
+    KDL::Vector axisAngle = KDL::Rotation::Quaternion(
+        m_last_pose.pose.orientation.x,
+        m_last_pose.pose.orientation.y,
+        m_last_pose.pose.orientation.z,
+        m_last_pose.pose.orientation.w
+    ).GetRot();
+
+    x = {
+        m_last_pose.pose.position.x, m_last_pose.pose.position.y, m_last_pose.pose.position.z,
+        axisAngle.x(), axisAngle.y(), axisAngle.z()
+    };
+
+    *timestamp = m_last_pose.header.stamp.sec + m_last_pose.header.stamp.nanosec * 1e-9;
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------

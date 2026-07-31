@@ -3,9 +3,12 @@
 #ifndef __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 #define __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 
+#include <mutex>
+
 #include <yarp/dev/Drivers.h>
 
 #include <rclcpp/rclcpp.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 
 #include "Spinner.hpp"
 #include "ICartesianControl.h"
@@ -53,8 +56,14 @@ public:
     bool close() override;
 
 private:
+    bool configureRosHandlers();
+
     rclcpp::Node::SharedPtr m_node;
     roboticslab::Spinner::Ptr m_spinner;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
+
+    std::mutex m_state_mutex;
+    geometry_msgs::msg::PoseStamped m_last_pose;
 };
 
 #endif // __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__

@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Fri Jul 31 23:44:03 2026
+// Generated on: Sat Aug  1 00:17:40 2026
 
 
 #ifndef CARTESIANCONTROLCLIENTROS2_PARAMSPARSER_H
@@ -23,16 +23,15 @@
 * This class is the parameters parser for class CartesianControlClientROS2.
 *
 * These are the used parameters:
-* | Group name | Parameter name      | Type   | Units | Default Value                 | Required | Description       | Notes |
-* |:----------:|:-------------------:|:------:|:-----:|:-----------------------------:|:--------:|:-----------------:|:-----:|
-* | -          | name                | string | -     | cartesian_control_client_ros2 | 0        | ROS node name     | -     |
-* | -          | cartesianLocal      | string | -     | /CartesianControlClient       | 0        | local port        | -     |
-* | -          | cartesianRemote     | string | -     | /CartesianControl             | 0        | remote port       | -     |
-* | -          | fkStreamTimeoutSecs | double | s     | 0.5                           | 0        | FK stream timeout | -     |
+* | Group name | Parameter name      | Type   | Units | Default Value                 | Required | Description         | Notes |
+* |:----------:|:-------------------:|:------:|:-----:|:-----------------------------:|:--------:|:-------------------:|:-----:|
+* | -          | name                | string | -     | cartesian_control_client_ros2 | 0        | ROS node name       | -     |
+* | -          | remote              | string | -     | cartesian_control_server_ros2 | 0        | remote topic prefix | -     |
+* | -          | fkStreamTimeoutSecs | double | s     | 0.5                           | 0        | FK stream timeout   | -     |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --cartesianLocal /CartesianControlClient --cartesianRemote /CartesianControl --fkStreamTimeoutSecs 0.5
+* yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2 --fkStreamTimeoutSecs 0.5
 * \endcode
 *
 * \code{.unparsed}
@@ -61,13 +60,11 @@ public:
     std::string m_provided_configuration;
 
     const std::string m_name_defaultValue = {"cartesian_control_client_ros2"};
-    const std::string m_cartesianLocal_defaultValue = {"/CartesianControlClient"};
-    const std::string m_cartesianRemote_defaultValue = {"/CartesianControl"};
+    const std::string m_remote_defaultValue = {"cartesian_control_server_ros2"};
     const std::string m_fkStreamTimeoutSecs_defaultValue = {"0.5"};
 
     std::string m_name = {"cartesian_control_client_ros2"};
-    std::string m_cartesianLocal = {"/CartesianControlClient"};
-    std::string m_cartesianRemote = {"/CartesianControl"};
+    std::string m_remote = {"cartesian_control_server_ros2"};
     double m_fkStreamTimeoutSecs = {0.5};
 
     bool          parseParams(const yarp::os::Searchable & config) override;

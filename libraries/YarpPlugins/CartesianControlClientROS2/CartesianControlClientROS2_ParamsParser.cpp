@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Fri Jul 31 23:44:03 2026
+// Generated on: Sat Aug  1 00:17:40 2026
 
 
 #include "CartesianControlClientROS2_ParamsParser.h"
@@ -29,8 +29,7 @@ std::vector<std::string> CartesianControlClientROS2_ParamsParser::getListOfParam
 {
     std::vector<std::string> params;
     params.push_back("name");
-    params.push_back("cartesianLocal");
-    params.push_back("cartesianRemote");
+    params.push_back("remote");
     params.push_back("fkStreamTimeoutSecs");
     return params;
 }
@@ -43,14 +42,9 @@ bool CartesianControlClientROS2_ParamsParser::getParamValue(const std::string& p
         paramValue = m_name;
         return true;
     }
-    if (paramName =="cartesianLocal")
+    if (paramName =="remote")
     {
-        paramValue = m_cartesianLocal;
-        return true;
-    }
-    if (paramName =="cartesianRemote")
-    {
-        paramValue = m_cartesianRemote;
+        paramValue = m_remote;
         return true;
     }
     if (paramName =="fkStreamTimeoutSecs")
@@ -99,32 +93,18 @@ bool      CartesianControlClientROS2_ParamsParser::parseParams(const yarp::os::S
         prop_check.unput("name");
     }
 
-    //Parser of parameter cartesianLocal
+    //Parser of parameter remote
     {
-        if (config.check("cartesianLocal"))
+        if (config.check("remote"))
         {
-            m_cartesianLocal = config.find("cartesianLocal").asString();
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'cartesianLocal' using value:" << m_cartesianLocal;
+            m_remote = config.find("remote").asString();
+            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'remote' using value:" << m_remote;
         }
         else
         {
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'cartesianLocal' using DEFAULT value:" << m_cartesianLocal;
+            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'remote' using DEFAULT value:" << m_remote;
         }
-        prop_check.unput("cartesianLocal");
-    }
-
-    //Parser of parameter cartesianRemote
-    {
-        if (config.check("cartesianRemote"))
-        {
-            m_cartesianRemote = config.find("cartesianRemote").asString();
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'cartesianRemote' using value:" << m_cartesianRemote;
-        }
-        else
-        {
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'cartesianRemote' using DEFAULT value:" << m_cartesianRemote;
-        }
-        prop_check.unput("cartesianRemote");
+        prop_check.unput("remote");
     }
 
     //Parser of parameter fkStreamTimeoutSecs
@@ -178,12 +158,11 @@ std::string      CartesianControlClientROS2_ParamsParser::getDocumentationOfDevi
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
     doc = doc + std::string("'name': ROS node name\n");
-    doc = doc + std::string("'cartesianLocal': local port\n");
-    doc = doc + std::string("'cartesianRemote': remote port\n");
+    doc = doc + std::string("'remote': remote topic prefix\n");
     doc = doc + std::string("'fkStreamTimeoutSecs': FK stream timeout\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --cartesianLocal /CartesianControlClient --cartesianRemote /CartesianControl --fkStreamTimeoutSecs 0.5\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2 --fkStreamTimeoutSecs 0.5\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device CartesianControlClientROS2\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
