@@ -7,6 +7,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
+#include "Spinner.hpp"
 #include "ICartesianControl.h"
 #include "CartesianControlClientROS2_ParamsParser.h"
 
@@ -53,6 +54,7 @@ public:
 
 private:
     rclcpp::Node::SharedPtr m_node;
+    roboticslab::Spinner::Ptr m_spinner;
 };
 
 #endif // __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__

@@ -64,7 +64,7 @@ private:
 
     roboticslab::ICartesianControl * m_iCartesianControl;
 
-    Spinner * m_spinner;
+    roboticslab::Spinner::Ptr m_spinner;
 
     rclcpp::Node::SharedPtr m_node;
 

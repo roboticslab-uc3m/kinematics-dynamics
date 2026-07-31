@@ -6,6 +6,8 @@
 
 #include "LogComponent.hpp"
 
+using namespace roboticslab;
+
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
@@ -16,13 +18,21 @@ bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
         return false;
     }
 
-    return true;
+    m_node = std::make_shared<rclcpp::Node>(m_name);
+    m_spinner = std::make_unique<Spinner>(m_node);
+
+    return m_spinner->start();
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlClientROS2::close()
 {
+    if (m_spinner)
+    {
+        return m_spinner->stop();
+    }
+
     return true;
 }
 

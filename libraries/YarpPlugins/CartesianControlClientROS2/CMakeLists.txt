@@ -21,7 +21,8 @@ if(NOT SKIP_CartesianControlClientROS2)
     target_link_libraries(CartesianControlClientROS2 YARP::YARP_os
                                                      YARP::YARP_dev
                                                      rclcpp::rclcpp
-                                                     ROBOTICSLAB::KinematicsDynamicsInterfaces)
+                                                     ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                     ROBOTICSLAB::RosUtils)
 
     yarp_install(TARGETS CartesianControlClientROS2
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

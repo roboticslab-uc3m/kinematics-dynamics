@@ -2,11 +2,18 @@
 
 #include "Spinner.hpp"
 
+using namespace roboticslab;
+
 // ------------------- Spinner Class Related ------------------------------------
 
-Spinner::Spinner(std::shared_ptr<rclcpp::Node> input_node)
-    : m_node(input_node)
-{}
+Spinner::Spinner(rclcpp::Node::SharedPtr node)
+    : m_node(node)
+{
+    if (!rclcpp::ok())
+    {
+        rclcpp::init(0, nullptr);
+    }
+}
 
 // -----------------------------------------------------------------------------
 

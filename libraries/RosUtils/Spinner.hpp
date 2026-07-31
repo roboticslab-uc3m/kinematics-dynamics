@@ -3,20 +3,29 @@
 #ifndef __SPINNER_HPP__
 #define __SPINNER_HPP__
 
+#include <memory>
+
 #include <yarp/os/Thread.h>
 
 #include <rclcpp/rclcpp.hpp>
 
+namespace roboticslab
+{
+
 class Spinner : public yarp::os::Thread
 {
 public:
-    Spinner(std::shared_ptr<rclcpp::Node> input_node);
+    Spinner(rclcpp::Node::SharedPtr node);
     ~Spinner() override;
     void run() override;
 
+    using Ptr = std::unique_ptr<Spinner>;
+
 private:
     bool m_spun {false};
-    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Node::SharedPtr m_node;
 };
+
+} // namespace roboticslab
 
 #endif // __SPINNER_HPP__
