@@ -60,10 +60,13 @@ private:
 
     rclcpp::Node::SharedPtr m_node;
     roboticslab::ros2utils::Spinner::Ptr m_spinner;
-    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
 
-    std::mutex m_state_mutex;
-    geometry_msgs::msg::PoseStamped m_last_pose;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
+    rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr m_client_get_params;
+    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr m_client_set_params;
+
+    std::mutex m_mutex_state;
+    geometry_msgs::msg::PoseStamped m_pose_last;
 };
 
 #endif // __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
