@@ -10,7 +10,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
-#include "Spinner.hpp"
+#include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
 #include "CartesianControlClientROS2_ParamsParser.h"
 

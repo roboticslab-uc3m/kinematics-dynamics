@@ -1,21 +1,24 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "Spinner.hpp"
+#include "Ros2Utils.hpp"
 
 using namespace roboticslab::ros2utils;
 
 // -----------------------------------------------------------------------------
 
-rclcpp::Node::SharedPtr createNode(const std::string & name,
-                                   const std::string & ns,
-                                   const rclcpp::NodeOptions & options)
+namespace roboticslab::ros2utils
 {
-    if (!rclcpp::ok())
+    rclcpp::Node::SharedPtr createNode(const std::string & name,
+                                       const std::string & ns,
+                                       const rclcpp::NodeOptions & options)
     {
-        rclcpp::init(0, nullptr);
-    }
+        if (!rclcpp::ok())
+        {
+            rclcpp::init(0, nullptr);
+        }
 
-    return std::make_shared<rclcpp::Node>(name, ns, options);
+        return std::make_shared<rclcpp::Node>(name, ns, options);
+    }
 }
 
 // ------------------- Spinner Class Related ------------------------------------

@@ -26,7 +26,7 @@
 
 #include <rl_cartesian_control_msgs/srv/inv.hpp>
 
-#include "Spinner.hpp"
+#include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
 #include "CartesianControlServerROS2_ParamsParser.h"
 

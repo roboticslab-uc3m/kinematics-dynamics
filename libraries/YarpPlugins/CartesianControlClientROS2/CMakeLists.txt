@@ -34,7 +34,7 @@ if(NOT SKIP_CartesianControlClientROS2)
                                                      rclcpp::rclcpp
                                                      geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
                                                      ROBOTICSLAB::KinematicsDynamicsInterfaces
-                                                     ROBOTICSLAB::RosUtils
+                                                     ROBOTICSLAB::Ros2Utils
                                                      ${orocos_kdl_LIBRARIES})
 
     target_include_directories(CartesianControlClientROS2 PRIVATE ${orocos_kdl_INCLUDE_DIRS})

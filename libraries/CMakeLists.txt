@@ -6,4 +6,4 @@ add_subdirectory(YarpTinyMathLib)
 
 # depends on CMake options defined in YarpPlugins
 add_subdirectory(KdlSolverUtils)
-add_subdirectory(RosUtils)
+add_subdirectory(Ros2Utils)
