@@ -2,7 +2,21 @@
 
 #include "Spinner.hpp"
 
-using namespace roboticslab;
+using namespace roboticslab::ros2utils;
+
+// -----------------------------------------------------------------------------
+
+rclcpp::Node::SharedPtr createNode(const std::string & name,
+                                   const std::string & ns,
+                                   const rclcpp::NodeOptions & options)
+{
+    if (!rclcpp::ok())
+    {
+        rclcpp::init(0, nullptr);
+    }
+
+    return std::make_shared<rclcpp::Node>(name, ns, options);
+}
 
 // ------------------- Spinner Class Related ------------------------------------
 

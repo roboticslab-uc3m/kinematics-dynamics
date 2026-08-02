@@ -4,6 +4,7 @@
 #define __SPINNER_HPP__
 
 #include <memory>
+#include <string>
 
 #include <yarp/os/Thread.h>
 
@@ -11,6 +12,13 @@
 
 namespace roboticslab
 {
+
+namespace ros2utils
+{
+
+rclcpp::Node::SharedPtr createNode(const std::string & name,
+                                   const std::string & ns = "", // namespace
+                                   const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
 
 class Spinner : public yarp::os::Thread
 {
@@ -25,6 +33,8 @@ private:
     bool m_spun {false};
     rclcpp::Node::SharedPtr m_node;
 };
+
+} // namespace ros2utils
 
 } // namespace roboticslab
 

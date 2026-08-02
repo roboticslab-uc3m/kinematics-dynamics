@@ -6,7 +6,7 @@
 
 #include "LogComponent.hpp"
 
-using namespace roboticslab;
+using namespace roboticslab::ros2utils;
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -18,7 +18,7 @@ bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
         return false;
     }
 
-    m_node = std::make_shared<rclcpp::Node>(m_name);
+    m_node = createNode(m_name);
     m_spinner = std::make_unique<Spinner>(m_node);
 
     return m_spinner->start() && configureRosHandlers();

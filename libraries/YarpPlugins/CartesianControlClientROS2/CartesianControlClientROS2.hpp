@@ -59,7 +59,7 @@ private:
     bool configureRosHandlers();
 
     rclcpp::Node::SharedPtr m_node;
-    roboticslab::Spinner::Ptr m_spinner;
+    roboticslab::ros2utils::Spinner::Ptr m_spinner;
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
 
     std::mutex m_state_mutex;
