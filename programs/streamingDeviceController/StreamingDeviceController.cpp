@@ -19,6 +19,8 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
+
 constexpr auto DEFAULT_DEVICE_NAME = "SpaceNavigator";
 constexpr auto DEFAULT_LOCAL_PREFIX = "/streamingDeviceController";
 constexpr auto DEFAULT_PERIOD = 0.02;
@@ -58,7 +60,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
     }
 
     yarp::os::Property cartesianControlClientOptions {
-        {"device", yarp::os::Value("CartesianControlClient")},
+        {"device", rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name")},
         {"local", yarp::os::Value(localPrefix + "/cartesian")},
         {"remote", yarp::os::Value(remoteCartesian)}
     };

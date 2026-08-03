@@ -24,6 +24,8 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
+
 constexpr auto DEFAULT_LOCAL_PREFIX = "/keyboardController";
 
 constexpr auto DEFAULT_ANGLE_REPR = "axisAngle"; // keep in sync with KinRepresentation::parseEnumerator's
@@ -228,9 +230,9 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
     if (usingRemoteCartesian)
     {
         yarp::os::Property cartesianControlClientOptions {
-            {"device", yarp::os::Value("CartesianControlClient")},
+            {"device", rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name")},
             {"local", yarp::os::Value(localPrefix + "/cartesian")},
-            {"remote", yarp::os::Value(rf.find("remoteCartesian"))},
+            {"remote", rf.find("remoteCartesian")},
         };
 
         if (!cartesianControlDevice.open(cartesianControlClientOptions))
