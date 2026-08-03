@@ -200,7 +200,32 @@ bool CartesianControlClientROS2::stat(std::vector<double> & x, int * state, doub
 
 bool CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector<double> & q)
 {
-    return false;
+    rl_cartesian_control_msgs::srv::Inv::Request request;
+    request.x.position.x = xd[0];
+    request.x.position.y = xd[1];
+    request.x.position.z = xd[2];
+
+    KDL::Vector axis(xd[3], xd[4], xd[5]);
+    double angle = axis.Norm();
+
+    KDL::Rotation::Rot(axis, angle).GetQuaternion(
+        request.x.orientation.x,
+        request.x.orientation.y,
+        request.x.orientation.z,
+        request.x.orientation.w
+    );
+
+    auto result = m_client_inv->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Inv::Request>(request));
+    auto response = result.get();
+
+    if (!response->success)
+    {
+        yCError(CCC) << "Inverse kinematics service call failed";
+        return false;
+    }
+
+    q = response->q.data;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -296,7 +321,10 @@ bool CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
 
 bool CartesianControlClientROS2::gcmp()
 {
-    return false;
+    std_srvs::srv::Trigger::Request request;
+    auto result = m_client_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
+    auto response = result.get();
+    return response->success;
 }
 
 // -----------------------------------------------------------------------------
@@ -320,14 +348,18 @@ bool CartesianControlClientROS2::forc(const std::vector<double> & fd)
 
 bool CartesianControlClientROS2::stopControl()
 {
-    return false;
+    std_srvs::srv::Trigger::Request request;
+    auto result = m_client_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
+    auto response = result.get();
+    return response->success;
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlClientROS2::wait(double timeout)
 {
-    return false;
+    yCWarning(CCC) << "wait() not implemented for CartesianControlClientROS2";
+    return true;
 }
 
 // -----------------------------------------------------------------------------

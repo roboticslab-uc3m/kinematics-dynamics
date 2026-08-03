@@ -41,13 +41,52 @@ bool CartesianControlClientROS2::configureRosHandlers()
         return false;
     }
 
+    m_client_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(prefix + "/inv");
+
+    while (!m_client_inv->wait_for_service(std::chrono::seconds(1)))
+    {
+        if (!rclcpp::ok())
+        {
+            yCError(CCC) << "Interrupted while waiting for inverse kinematics service. Exiting.";
+            return false;
+        }
+
+        yCInfo(CCC) << "Inverse kinematics service not available, waiting again...";
+    }
+
+    m_client_gcmp = m_node->create_client<std_srvs::srv::Trigger>(prefix + "/gcmp");
+
+    while (!m_client_gcmp->wait_for_service(std::chrono::seconds(1)))
+    {
+        if (!rclcpp::ok())
+        {
+            yCError(CCC) << "Interrupted while waiting for gravity compensation service. Exiting.";
+            return false;
+        }
+
+        yCInfo(CCC) << "Gravity compensation service not available, waiting again...";
+    }
+
+    m_client_stop = m_node->create_client<std_srvs::srv::Trigger>(prefix + "/stop");
+
+    while (!m_client_stop->wait_for_service(std::chrono::seconds(1)))
+    {
+        if (!rclcpp::ok())
+        {
+            yCError(CCC) << "Interrupted while waiting for stop service. Exiting.";
+            return false;
+        }
+
+        yCInfo(CCC) << "Stop service not available, waiting again...";
+    }
+
     m_client_get_params = m_node->create_client<rcl_interfaces::srv::GetParameters>(prefix + "/get_parameters");
 
     while (!m_client_get_params->wait_for_service(std::chrono::seconds(1)))
     {
         if (!rclcpp::ok())
         {
-            yCError(CCC) << "Interrupted while waiting for the service. Exiting.";
+            yCError(CCC) << "Interrupted while waiting for get parameters service. Exiting.";
             return false;
         }
 
@@ -60,7 +99,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
     {
         if (!rclcpp::ok())
         {
-            yCError(CCC) << "Interrupted while waiting for the service. Exiting.";
+            yCError(CCC) << "Interrupted while waiting for set parameters service. Exiting.";
             return false;
         }
 

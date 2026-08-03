@@ -10,11 +10,14 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <std_msgs/msg/int32.hpp>
+#include <std_srvs/srv/trigger.hpp>
 
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
+
+#include <rl_cartesian_control_msgs/srv/inv.hpp>
 
 #include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
@@ -80,6 +83,10 @@ private:
     rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr m_act;
 
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
+
+    rclcpp::Client<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_client_inv;
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_client_gcmp;
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_client_stop;
 
     rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr m_client_get_params;
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr m_client_set_params;
