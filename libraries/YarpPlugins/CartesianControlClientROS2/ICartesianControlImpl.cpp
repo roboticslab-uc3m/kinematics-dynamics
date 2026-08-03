@@ -191,7 +191,10 @@ bool CartesianControlClientROS2::stat(std::vector<double> & x, int * state, doub
         axisAngle.x(), axisAngle.y(), axisAngle.z()
     };
 
-    *timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
+    if (timestamp)
+    {
+        *timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
+    }
 
     return true;
 }
