@@ -2,7 +2,7 @@
 
 #include "CartesianControlClient.hpp"
 
-#include <yarp/os/Time.h>
+#include <yarp/os/SystemClock.h>
 
 using namespace roboticslab;
 
@@ -20,7 +20,7 @@ void FkStreamResponder::onRead(yarp::os::Bottle & b)
 {
     std::lock_guard lock(mtx);
 
-    localArrivalTime = yarp::os::Time::now();
+    localArrivalTime = yarp::os::SystemClock::nowSystem();
     state = b.get(0).asVocab32();
     x.resize(b.size() - 2);
 
@@ -50,7 +50,7 @@ bool FkStreamResponder::getLastStatData(std::vector<double> &x, int *state, doub
         *timestamp = this->timestamp;
     }
 
-    return yarp::os::Time::now() - localArrivalTime <= timeout;
+    return yarp::os::SystemClock::nowSystem() - localArrivalTime <= timeout;
 }
 
 // -----------------------------------------------------------------------------

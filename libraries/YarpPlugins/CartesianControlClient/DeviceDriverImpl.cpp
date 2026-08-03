@@ -6,7 +6,7 @@
 
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
-#include <yarp/os/Time.h>
+#include <yarp/os/SystemClock.h>
 
 #include "LogComponent.hpp"
 
@@ -22,29 +22,29 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (!rpcClient.open(m_cartesianLocal+ "/rpc:c") || !commandPort.open(m_cartesianLocal + "/command:o"))
+    if (!rpcClient.open(m_local + "/rpc:c") || !commandPort.open(m_local + "/command:o"))
     {
         yCError(CCC) << "Unable to open local RPC and command ports";
         return false;
     }
 
-    if (!rpcClient.addOutput(m_cartesianRemote + "/rpc:s"))
+    if (!rpcClient.addOutput(m_remote + "/rpc:s"))
     {
         yCError(CCC) << "Error on connect to remote RPC server";
         return false;
     }
 
-    if (!commandPort.addOutput(m_cartesianRemote + "/command:i", "udp"))
+    if (!commandPort.addOutput(m_remote + "/command:i", "udp"))
     {
         yCError(CCC) << "Error on connect to remote command server";
         return false;
     }
 
-    std::string statePort = m_cartesianRemote + "/state:o";
+    std::string statePort = m_remote + "/state:o";
 
     if (yarp::os::Network::exists(statePort))
     {
-        if (!fkInPort.open(m_cartesianLocal + "/state:i"))
+        if (!fkInPort.open(m_local + "/state:i"))
         {
             yCError(CCC) << "Unable to open local stream port";
             return false;
@@ -57,14 +57,14 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
         }
 
         fkInPort.useCallback(fkStreamResponder);
-        yarp::os::Time::delay(m_fkStreamTimeoutSecs); // wait for first data to arrive
+        yarp::os::SystemClock::delaySystem(m_fkStreamTimeoutSecs); // wait for first data to arrive
     }
     else
     {
         yCWarning(CCC) << "Missing remote" << statePort << "stream port, using RPC instead";
     }
 
-    yCInfo(CCC) << "Connected to remote" << m_cartesianRemote;
+    yCInfo(CCC) << "Connected to remote" << m_remote;
 
     return true;
 }

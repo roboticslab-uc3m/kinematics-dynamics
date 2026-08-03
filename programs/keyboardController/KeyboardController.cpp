@@ -229,8 +229,8 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
     {
         yarp::os::Property cartesianControlClientOptions {
             {"device", yarp::os::Value("CartesianControlClient")},
-            {"cartesianLocal", yarp::os::Value(localPrefix + "/cartesian")},
-            {"cartesianRemote", yarp::os::Value(rf.find("remoteCartesian"))},
+            {"local", yarp::os::Value(localPrefix + "/cartesian")},
+            {"remote", yarp::os::Value(rf.find("remoteCartesian"))},
         };
 
         if (!cartesianControlDevice.open(cartesianControlClientOptions))

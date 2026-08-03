@@ -257,8 +257,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
         yarp::os::Property cartesianOptions {
             {"device", yarp::os::Value("CartesianControlClient")},
-            {"cartesianRemote", yarp::os::Value(cartesianRemote)},
-            {"cartesianLocal", yarp::os::Value(localPrefix + cartesianRemote)}
+            {"remote", yarp::os::Value(cartesianRemote)},
+            {"local", yarp::os::Value(localPrefix + cartesianRemote)}
         };
 
         if (!cartesianDevice.open(cartesianOptions))

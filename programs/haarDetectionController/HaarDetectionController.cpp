@@ -37,8 +37,8 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
     yarp::os::Property cartesianControlClientOptions {
         {"device", yarp::os::Value("CartesianControlClient")},
-        {"cartesianLocal", yarp::os::Value(localPort)},
-        {"cartesianRemote", yarp::os::Value(remoteCartesian)}
+        {"local", yarp::os::Value(localPort)},
+        {"remote", yarp::os::Value(remoteCartesian)}
     };
 
     if (!cartesianControlDevice.open(cartesianControlClientOptions))

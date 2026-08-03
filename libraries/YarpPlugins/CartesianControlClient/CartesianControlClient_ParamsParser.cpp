@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun May  3 12:50:24 2026
+// Generated on: Mon Aug  3 20:35:36 2026
 
 
 #include "CartesianControlClient_ParamsParser.h"
@@ -28,8 +28,8 @@ CartesianControlClient_ParamsParser::CartesianControlClient_ParamsParser()
 std::vector<std::string> CartesianControlClient_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("cartesianLocal");
-    params.push_back("cartesianRemote");
+    params.push_back("local");
+    params.push_back("remote");
     params.push_back("fkStreamTimeoutSecs");
     return params;
 }
@@ -37,14 +37,14 @@ std::vector<std::string> CartesianControlClient_ParamsParser::getListOfParams() 
 
 bool CartesianControlClient_ParamsParser::getParamValue(const std::string& paramName, std::string& paramValue) const
 {
-    if (paramName =="cartesianLocal")
+    if (paramName =="local")
     {
-        paramValue = m_cartesianLocal;
+        paramValue = m_local;
         return true;
     }
-    if (paramName =="cartesianRemote")
+    if (paramName =="remote")
     {
-        paramValue = m_cartesianRemote;
+        paramValue = m_remote;
         return true;
     }
     if (paramName =="fkStreamTimeoutSecs")
@@ -79,32 +79,32 @@ bool      CartesianControlClient_ParamsParser::parseParams(const yarp::os::Searc
 
     m_provided_configuration = config.toString();
     yarp::os::Property prop_check(m_provided_configuration.c_str());
-    //Parser of parameter cartesianLocal
+    //Parser of parameter local
     {
-        if (config.check("cartesianLocal"))
+        if (config.check("local"))
         {
-            m_cartesianLocal = config.find("cartesianLocal").asString();
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'cartesianLocal' using value:" << m_cartesianLocal;
+            m_local = config.find("local").asString();
+            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'local' using value:" << m_local;
         }
         else
         {
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'cartesianLocal' using DEFAULT value:" << m_cartesianLocal;
+            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'local' using DEFAULT value:" << m_local;
         }
-        prop_check.unput("cartesianLocal");
+        prop_check.unput("local");
     }
 
-    //Parser of parameter cartesianRemote
+    //Parser of parameter remote
     {
-        if (config.check("cartesianRemote"))
+        if (config.check("remote"))
         {
-            m_cartesianRemote = config.find("cartesianRemote").asString();
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'cartesianRemote' using value:" << m_cartesianRemote;
+            m_remote = config.find("remote").asString();
+            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'remote' using value:" << m_remote;
         }
         else
         {
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'cartesianRemote' using DEFAULT value:" << m_cartesianRemote;
+            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'remote' using DEFAULT value:" << m_remote;
         }
-        prop_check.unput("cartesianRemote");
+        prop_check.unput("remote");
     }
 
     //Parser of parameter fkStreamTimeoutSecs
@@ -157,12 +157,12 @@ std::string      CartesianControlClient_ParamsParser::getDocumentationOfDevicePa
     doc = doc + std::string("This is the help for device: CartesianControlClient\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'cartesianLocal': local port\n");
-    doc = doc + std::string("'cartesianRemote': remote port\n");
+    doc = doc + std::string("'local': local port\n");
+    doc = doc + std::string("'remote': remote port\n");
     doc = doc + std::string("'fkStreamTimeoutSecs': FK stream timeout\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device CartesianControlClient --cartesianLocal /CartesianControlClient --cartesianRemote /CartesianControl --fkStreamTimeoutSecs 0.5\n";
+    doc = doc + " yarpdev --device CartesianControlClient --local /CartesianControlClient --remote /CartesianControl --fkStreamTimeoutSecs 0.5\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device CartesianControlClient\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

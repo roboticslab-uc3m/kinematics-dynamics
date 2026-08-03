@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Mon Aug  3 20:21:41 2026
+// Generated on: Mon Aug  3 20:35:36 2026
 
 
 #ifndef CARTESIANCONTROLCLIENTROS2_PARAMSPARSER_H
@@ -25,16 +25,16 @@
 * These are the used parameters:
 * | Group name | Parameter name | Type   | Units | Default Value                 | Required | Description      | Notes |
 * |:----------:|:--------------:|:------:|:-----:|:-----------------------------:|:--------:|:----------------:|:-----:|
-* | -          | name           | string | -     | cartesian_control_client_ros2 | 1        | local node name  | -     |
+* | -          | local          | string | -     | cartesian_control_client_ros2 | 1        | local node name  | -     |
 * | -          | remote         | string | -     | cartesian_control_server_ros2 | 1        | remote node name | -     |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2
+* yarpdev --device CartesianControlClientROS2 --local cartesian_control_client_ros2 --remote cartesian_control_server_ros2
 * \endcode
 *
 * \code{.unparsed}
-* yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2
+* yarpdev --device CartesianControlClientROS2 --local cartesian_control_client_ros2 --remote cartesian_control_server_ros2
 * \endcode
 *
 */
@@ -58,10 +58,10 @@ public:
 
     std::string m_provided_configuration;
 
-    const std::string m_name_defaultValue = {"cartesian_control_client_ros2"};
+    const std::string m_local_defaultValue = {"cartesian_control_client_ros2"};
     const std::string m_remote_defaultValue = {"cartesian_control_server_ros2"};
 
-    std::string m_name = {"cartesian_control_client_ros2"};
+    std::string m_local = {"cartesian_control_client_ros2"};
     std::string m_remote = {"cartesian_control_server_ros2"};
 
     bool          parseParams(const yarp::os::Searchable & config) override;

@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Mon Aug  3 20:21:41 2026
+// Generated on: Mon Aug  3 20:35:36 2026
 
 
 #include "CartesianControlClientROS2_ParamsParser.h"
@@ -28,7 +28,7 @@ CartesianControlClientROS2_ParamsParser::CartesianControlClientROS2_ParamsParser
 std::vector<std::string> CartesianControlClientROS2_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("name");
+    params.push_back("local");
     params.push_back("remote");
     return params;
 }
@@ -36,9 +36,9 @@ std::vector<std::string> CartesianControlClientROS2_ParamsParser::getListOfParam
 
 bool CartesianControlClientROS2_ParamsParser::getParamValue(const std::string& paramName, std::string& paramValue) const
 {
-    if (paramName =="name")
+    if (paramName =="local")
     {
-        paramValue = m_name;
+        paramValue = m_local;
         return true;
     }
     if (paramName =="remote")
@@ -73,20 +73,20 @@ bool      CartesianControlClientROS2_ParamsParser::parseParams(const yarp::os::S
 
     m_provided_configuration = config.toString();
     yarp::os::Property prop_check(m_provided_configuration.c_str());
-    //Parser of parameter name
+    //Parser of parameter local
     {
-        if (config.check("name"))
+        if (config.check("local"))
         {
-            m_name = config.find("name").asString();
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'name' using value:" << m_name;
+            m_local = config.find("local").asString();
+            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'local' using value:" << m_local;
         }
         else
         {
-            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Mandatory parameter 'name' not found!";
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Mandatory parameter 'local' not found!";
             yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Description of the parameter: local node name";
             return false;
         }
-        prop_check.unput("name");
+        prop_check.unput("local");
     }
 
     //Parser of parameter remote
@@ -141,12 +141,12 @@ std::string      CartesianControlClientROS2_ParamsParser::getDocumentationOfDevi
     doc = doc + std::string("This is the help for device: CartesianControlClientROS2\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'name': local node name\n");
+    doc = doc + std::string("'local': local node name\n");
     doc = doc + std::string("'remote': remote node name\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --local cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --local cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }
