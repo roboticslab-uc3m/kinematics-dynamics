@@ -391,7 +391,26 @@ bool CartesianControlClientROS2::tool(const std::vector<double> & x)
 bool CartesianControlClientROS2::act(int command)
 {
     std_msgs::msg::Int32 actMsg;
-    actMsg.data = command;
+
+    switch (command)
+    {
+    case VOCAB_CC_ACTUATOR_NONE:
+        actMsg.data = GRIPPER_NONE;
+        break;
+    case VOCAB_CC_ACTUATOR_OPEN_GRIPPER:
+        actMsg.data = GRIPPER_OPEN;
+        break;
+    case VOCAB_CC_ACTUATOR_CLOSE_GRIPPER:
+        actMsg.data = GRIPPER_CLOSE;
+        break;
+    case VOCAB_CC_ACTUATOR_STOP_GRIPPER:
+        actMsg.data = GRIPPER_STOP;
+        break;
+    default:
+        yCError(CCC) << "Invalid actuator command:" << command;
+        return false;
+    }
+
     m_act->publish(actMsg);
     return true;
 }

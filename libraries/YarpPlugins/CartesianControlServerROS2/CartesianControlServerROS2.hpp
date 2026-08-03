@@ -90,7 +90,7 @@ private:
 
     rcl_interfaces::msg::SetParametersResult params_cb(const std::vector<rclcpp::Parameter> &parameters);
 
-    // Note that the order of gripper_state enum values must match the order from spacenav_device. If modifying this, please update.
+    // Note that the order of gripper_state enum values must match the order from CCC and spacenav_device.
     enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
 };
 

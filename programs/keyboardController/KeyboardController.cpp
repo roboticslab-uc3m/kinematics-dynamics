@@ -715,10 +715,9 @@ void KeyboardController::actuateTool(int command)
     {
         yCError(KC) << "Unable to send" << yarp::os::Vocab32::decode(command) << "command to actuator";
     }
-    else
-    {
-        currentActuatorCommand = command;
-    }
+
+    currentActuatorCommand = command;
+    std::cout << "Sent " << yarp::os::Vocab32::decode(command) << " command to actuator" << std::endl;
 }
 
 void KeyboardController::printJointPositions()

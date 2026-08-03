@@ -93,6 +93,8 @@ private:
 
     std::mutex m_mutex_state;
     geometry_msgs::msg::PoseStamped m_pose_last;
+
+    enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
 };
 
 #endif // __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
