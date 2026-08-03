@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sat Aug  1 00:17:40 2026
+// Generated on: Mon Aug  3 20:21:41 2026
 
 
 #include "CartesianControlClientROS2_ParamsParser.h"
@@ -30,7 +30,6 @@ std::vector<std::string> CartesianControlClientROS2_ParamsParser::getListOfParam
     std::vector<std::string> params;
     params.push_back("name");
     params.push_back("remote");
-    params.push_back("fkStreamTimeoutSecs");
     return params;
 }
 
@@ -45,11 +44,6 @@ bool CartesianControlClientROS2_ParamsParser::getParamValue(const std::string& p
     if (paramName =="remote")
     {
         paramValue = m_remote;
-        return true;
-    }
-    if (paramName =="fkStreamTimeoutSecs")
-    {
-        paramValue = std::to_string(m_fkStreamTimeoutSecs);
         return true;
     }
 
@@ -88,7 +82,9 @@ bool      CartesianControlClientROS2_ParamsParser::parseParams(const yarp::os::S
         }
         else
         {
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'name' using DEFAULT value:" << m_name;
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Mandatory parameter 'name' not found!";
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Description of the parameter: local node name";
+            return false;
         }
         prop_check.unput("name");
     }
@@ -102,23 +98,11 @@ bool      CartesianControlClientROS2_ParamsParser::parseParams(const yarp::os::S
         }
         else
         {
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'remote' using DEFAULT value:" << m_remote;
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Mandatory parameter 'remote' not found!";
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Description of the parameter: remote node name";
+            return false;
         }
         prop_check.unput("remote");
-    }
-
-    //Parser of parameter fkStreamTimeoutSecs
-    {
-        if (config.check("fkStreamTimeoutSecs"))
-        {
-            m_fkStreamTimeoutSecs = config.find("fkStreamTimeoutSecs").asFloat64();
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'fkStreamTimeoutSecs' using value:" << m_fkStreamTimeoutSecs;
-        }
-        else
-        {
-            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'fkStreamTimeoutSecs' using DEFAULT value:" << m_fkStreamTimeoutSecs;
-        }
-        prop_check.unput("fkStreamTimeoutSecs");
     }
 
     /*
@@ -157,13 +141,12 @@ std::string      CartesianControlClientROS2_ParamsParser::getDocumentationOfDevi
     doc = doc + std::string("This is the help for device: CartesianControlClientROS2\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'name': ROS node name\n");
-    doc = doc + std::string("'remote': remote topic prefix\n");
-    doc = doc + std::string("'fkStreamTimeoutSecs': FK stream timeout\n");
+    doc = doc + std::string("'name': local node name\n");
+    doc = doc + std::string("'remote': remote node name\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2 --fkStreamTimeoutSecs 0.5\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device CartesianControlClientROS2\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --name cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }
