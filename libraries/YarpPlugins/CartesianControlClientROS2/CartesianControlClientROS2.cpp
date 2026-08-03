@@ -12,21 +12,19 @@ using namespace roboticslab;
 
 bool CartesianControlClientROS2::configureRosHandlers()
 {
-    const auto prefix = "/" + m_remote;
-
-    m_pose = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10);
-    m_twist = m_node->create_publisher<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10);
-    m_wrench = m_node->create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10);
-    m_movj = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/movj", 10);
-    m_relj = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/relj", 10);
-    m_movl = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/movl", 10);
-    m_movv = m_node->create_publisher<geometry_msgs::msg::Twist>(prefix + "/command/movv", 10);
-    m_forc = m_node->create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/forc", 10);
-    m_tool = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/tool", 10);
-    m_act = m_node->create_publisher<std_msgs::msg::Int32>(prefix + "/command/gripper", 10);
+    m_pose = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/pose", 10);
+    m_twist = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/twist", 10);
+    m_wrench = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/wrench", 10);
+    m_movj = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movj", 10);
+    m_relj = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/relj", 10);
+    m_movl = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movl", 10);
+    m_movv = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/movv", 10);
+    m_forc = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/forc", 10);
+    m_tool = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/tool", 10);
+    m_act = m_node->create_publisher<std_msgs::msg::Int32>(m_remote + "/command/gripper", 10);
 
     m_subscription_state = m_node->create_subscription<geometry_msgs::msg::PoseStamped>(
-        prefix + "/state/pose",
+        m_remote + "/state/pose",
         10,
         [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg)
         {
@@ -41,7 +39,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         return false;
     }
 
-    m_client_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(prefix + "/inv");
+    m_client_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(m_remote + "/inv");
 
     while (!m_client_inv->wait_for_service(std::chrono::seconds(1)))
     {
@@ -54,7 +52,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Inverse kinematics service not available, waiting again...";
     }
 
-    m_client_gcmp = m_node->create_client<std_srvs::srv::Trigger>(prefix + "/gcmp");
+    m_client_gcmp = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/gcmp");
 
     while (!m_client_gcmp->wait_for_service(std::chrono::seconds(1)))
     {
@@ -67,7 +65,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Gravity compensation service not available, waiting again...";
     }
 
-    m_client_stop = m_node->create_client<std_srvs::srv::Trigger>(prefix + "/stop");
+    m_client_stop = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/stop");
 
     while (!m_client_stop->wait_for_service(std::chrono::seconds(1)))
     {
@@ -80,7 +78,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Stop service not available, waiting again...";
     }
 
-    m_client_get_params = m_node->create_client<rcl_interfaces::srv::GetParameters>(prefix + "/get_parameters");
+    m_client_get_params = m_node->create_client<rcl_interfaces::srv::GetParameters>(m_remote + "/get_parameters");
 
     while (!m_client_get_params->wait_for_service(std::chrono::seconds(1)))
     {
@@ -93,7 +91,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Parameter service (get) not available, waiting again...";
     }
 
-    m_client_set_params = m_node->create_client<rcl_interfaces::srv::SetParameters>(prefix + "/set_parameters");
+    m_client_set_params = m_node->create_client<rcl_interfaces::srv::SetParameters>(m_remote + "/set_parameters");
 
     while (!m_client_set_params->wait_for_service(std::chrono::seconds(1)))
     {
