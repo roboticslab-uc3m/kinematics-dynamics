@@ -27,7 +27,7 @@ params = kd.IntDoubleMap()
 ret = cc.getParameters(params)
 
 for key, value in params.items():
-    print(f'< {key}: {value}')
+    print(f'< {yarp.decode(key)}: {value}')
 
 print('> setParameters')
 params[kd.VOCAB_CC_CONFIG_TRAJ_DURATION] = 5.0

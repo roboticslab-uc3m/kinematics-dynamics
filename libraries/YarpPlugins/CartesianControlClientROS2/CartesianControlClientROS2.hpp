@@ -4,6 +4,8 @@
 #define __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 
 #include <mutex>
+#include <string>
+#include <vector>
 
 #include <yarp/dev/Drivers.h>
 
@@ -16,6 +18,9 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
+
+#include <rcl_interfaces/srv/get_parameters.hpp>
+#include <rcl_interfaces/srv/set_parameters.hpp>
 
 #include <rl_cartesian_control_msgs/srv/inv.hpp>
 
@@ -66,6 +71,7 @@ public:
 
 private:
     bool configureRosHandlers();
+    bool populateRosParameters();
 
     rclcpp::Node::SharedPtr m_node;
     roboticslab::ros2utils::Spinner::Ptr m_spinner;
@@ -93,6 +99,8 @@ private:
 
     std::mutex m_mutex_state;
     geometry_msgs::msg::PoseStamped m_pose_last;
+
+    std::vector<std::string> m_supported_parameters;
 
     enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
 };

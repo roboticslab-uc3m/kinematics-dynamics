@@ -4,9 +4,13 @@
 
 #include <yarp/os/LogStream.h>
 
+#include <rcl_interfaces/srv/list_parameters.hpp>
+
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
+
+constexpr auto TIMEOUT = std::chrono::seconds(1);
 
 // -----------------------------------------------------------------------------
 
@@ -41,7 +45,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
 
     m_client_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(m_remote + "/inv");
 
-    while (!m_client_inv->wait_for_service(std::chrono::seconds(1)))
+    while (!m_client_inv->wait_for_service(TIMEOUT))
     {
         if (!rclcpp::ok())
         {
@@ -54,7 +58,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
 
     m_client_gcmp = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/gcmp");
 
-    while (!m_client_gcmp->wait_for_service(std::chrono::seconds(1)))
+    while (!m_client_gcmp->wait_for_service(TIMEOUT))
     {
         if (!rclcpp::ok())
         {
@@ -67,7 +71,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
 
     m_client_stop = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/stop");
 
-    while (!m_client_stop->wait_for_service(std::chrono::seconds(1)))
+    while (!m_client_stop->wait_for_service(TIMEOUT))
     {
         if (!rclcpp::ok())
         {
@@ -80,7 +84,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
 
     m_client_get_params = m_node->create_client<rcl_interfaces::srv::GetParameters>(m_remote + "/get_parameters");
 
-    while (!m_client_get_params->wait_for_service(std::chrono::seconds(1)))
+    while (!m_client_get_params->wait_for_service(TIMEOUT))
     {
         if (!rclcpp::ok())
         {
@@ -93,7 +97,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
 
     m_client_set_params = m_node->create_client<rcl_interfaces::srv::SetParameters>(m_remote + "/set_parameters");
 
-    while (!m_client_set_params->wait_for_service(std::chrono::seconds(1)))
+    while (!m_client_set_params->wait_for_service(TIMEOUT))
     {
         if (!rclcpp::ok())
         {
@@ -103,6 +107,32 @@ bool CartesianControlClientROS2::configureRosHandlers()
 
         yCInfo(CCC) << "Parameter service (set) not available, waiting again...";
     }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool CartesianControlClientROS2::populateRosParameters()
+{
+    auto client = m_node->create_client<rcl_interfaces::srv::ListParameters>(m_remote + "/list_parameters");
+
+    while (!client->wait_for_service(TIMEOUT))
+    {
+        if (!rclcpp::ok())
+        {
+            yCError(CCC) << "Interrupted while waiting for list parameters service. Exiting.";
+            return false;
+        }
+
+        yCInfo(CCC) << "Parameter service (list) not available, waiting again...";
+    }
+
+    auto request = std::make_shared<rcl_interfaces::srv::ListParameters::Request>();
+    auto result = client->async_send_request(request);
+    auto response = result.get();
+
+    m_supported_parameters = response->result.names;
 
     return true;
 }

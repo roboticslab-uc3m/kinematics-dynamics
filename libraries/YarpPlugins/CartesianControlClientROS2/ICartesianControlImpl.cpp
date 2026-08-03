@@ -165,7 +165,8 @@ namespace
         }
         else
         {
-            yCError(CCC) << "Invalid parameter name:" << name;
+            // silence logs here since this function is called for every parameter in the response,
+            // and we only care about the ones we support
             return false;
         }
 
@@ -547,42 +548,23 @@ bool CartesianControlClientROS2::setParameters(const std::map<int, double> & par
 bool CartesianControlClientROS2::getParameters(std::map<int, double> & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
-
-    for (const auto & [vocab, _] : params)
-    {
-        if (vocabToParamName.find(vocab) == vocabToParamName.end())
-        {
-            yCError(CCC) << "Invalid parameter vocab:" << vocab;
-            return false;
-        }
-
-        request->names.push_back(vocabToParamName.at(vocab));
-    }
+    request->names = m_supported_parameters;
 
     auto result = m_client_get_params->async_send_request(request);
     auto response = result.get();
-    const auto & values = response->values;
 
-    if (values.size() != params.size())
-    {
-        yCError(CCC) << "Mismatch in number of parameters received";
-        return false;
-    }
-
-    for (auto i = 0; i < values.size(); ++i)
+    for (auto i = 0; i < response->values.size(); ++i)
     {
         const auto & name = request->names[i];
-        const auto & responseValue = values[i];
+        const auto & responseValue = response->values[i];
 
         int vocab;
         double value;
 
-        if (!vocabFromParameter(name, responseValue, &vocab, &value))
+        if (vocabFromParameter(name, responseValue, &vocab, &value))
         {
-            return false;
+            params[vocab] = value;
         }
-
-        params[vocab] = value;
     }
 
     return true;
