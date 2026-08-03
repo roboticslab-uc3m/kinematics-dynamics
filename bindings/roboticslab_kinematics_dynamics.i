@@ -10,11 +10,15 @@
 
 %module "roboticslab_kinematics_dynamics"
 
-%include "std_vector.i"  /* Do not doubt about the importance of this line */
+%include "std_vector.i"
+%include "std_map.i"
 %include "typemaps.i"
 
 %apply int *OUTPUT { int *state };
 %apply double *OUTPUT { double *timestamp };
+%apply double *OUTPUT { double *value };
+
+%template(IntDoubleMap) std::map<int, double>;
 
 %define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS %enddef
 
@@ -49,4 +53,3 @@ roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d)
 }
 %}
 extern roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d);
-

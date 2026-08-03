@@ -20,11 +20,29 @@ if not dd.isValid():
     print('Cannot open the device!')
     raise SystemExit
 
-cartesianControl = kd.viewICartesianControl(dd)
+cc = kd.viewICartesianControl(dd)
+
+print('> getParameters')
+params = kd.IntDoubleMap()
+ret = cc.getParameters(params)
+
+for key, value in params.items():
+    print(f'< {key}: {value}')
+
+print('> setParameters')
+params[kd.VOCAB_CC_CONFIG_TRAJ_DURATION] = 5.0
+cc.setParameters(params)
+
+print('> getParameter')
+ret, value = cc.getParameter(kd.VOCAB_CC_CONFIG_TRAJ_DURATION)
+print('<', value)
+
+print('> setParameter')
+cc.setParameter(kd.VOCAB_CC_CONFIG_TRAJ_DURATION, 6.0)
 
 print('> stat')
 x = yarp.DVector()
-ret, state, ts = cartesianControl.stat(x)
+ret, state, ts = cc.stat(x)
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
 
 xd = [
@@ -43,7 +61,7 @@ for i in range(len(xd)):
     xd_vector = yarp.DVector(xd[i])
     qd_vector = yarp.DVector()
 
-    if cartesianControl.inv(xd_vector, qd_vector):
+    if cc.inv(xd_vector, qd_vector):
         print('< [%s]' % ', '.join(map(str, qd_vector)))
     else:
         print('< [fail]')
@@ -52,10 +70,10 @@ for i in range(len(xd)):
     print('> movj [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
 
-    if cartesianControl.movj(xd_vector):
+    if cc.movj(xd_vector):
         print('< [ok]')
         print('< [wait...]')
-        cartesianControl.wait()
+        cc.wait()
     else:
         print('< [fail]')
 
