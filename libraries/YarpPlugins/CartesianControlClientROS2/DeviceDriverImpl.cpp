@@ -53,11 +53,7 @@ bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
 
 bool CartesianControlClientROS2::close()
 {
-    if (m_spinner)
-    {
-        return m_spinner->stop();
-    }
-
+    m_spinner.reset(); // calls rclcpp::shutdown() in destructor
     return true;
 }
 
