@@ -20,6 +20,7 @@ namespace
     YARP_LOG_COMPONENT(FTC, "rl.FtCompensation")
 }
 
+constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
 constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_PERIOD = 0.02;
 constexpr auto DEFAULT_LIN_GAIN = 0.01;
@@ -253,12 +254,10 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        auto cartesianRemote = rf.find("cartesianRemote").asString();
-
         yarp::os::Property cartesianOptions {
-            {"device", yarp::os::Value("CartesianControlClient")},
-            {"cartesianRemote", yarp::os::Value(cartesianRemote)},
-            {"cartesianLocal", yarp::os::Value(localPrefix + cartesianRemote)}
+            {"device", rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name")},
+            {"remote", rf.find("cartesianRemote")},
+            {"local", yarp::os::Value(localPrefix + "/ccs")}
         };
 
         if (!cartesianDevice.open(cartesianOptions))

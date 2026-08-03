@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
 
     yarp::os::Property options {
         {"device", yarp::os::Value("CartesianControlClient")},
-        {"cartesianRemote", yarp::os::Value("/teoSim/rightArm/CartesianControl")},
-        {"cartesianLocal", yarp::os::Value("/CartesianControlExample")}
+        {"remote", yarp::os::Value("/teoSim/rightArm/CartesianControl")},
+        {"local", yarp::os::Value("/CartesianControlExample")}
     };
 
     yarp::dev::PolyDriver dd(options);

@@ -13,6 +13,7 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
 constexpr auto DEFAULT_LOCAL_PORT = "/HaarDetectionControl";
 constexpr auto DEFAULT_REMOTE_VISION = "/haarDetection2D";
 constexpr auto DEFAULT_REMOTE_CARTESIAN = "/CartesianControl";
@@ -26,19 +27,17 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 {
     yCDebug(HDC) << "Config:" << rf.toString();
 
-    std::string localPort = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PORT),
-            "local cartesian port").asString();
-    std::string remoteVision = rf.check("remoteVision", yarp::os::Value(DEFAULT_REMOTE_VISION),
-            "remote vision port").asString();
-    std::string remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_REMOTE_CARTESIAN),
-            "remote cartesian port").asString();
+    auto cartesianDeviceName = rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name").asString();
+    auto localPort = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PORT), "local cartesian port").asString();
+    auto remoteVision = rf.check("remoteVision", yarp::os::Value(DEFAULT_REMOTE_VISION), "remote vision port").asString();
+    auto remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_REMOTE_CARTESIAN), "remote cartesian port").asString();
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
 
     yarp::os::Property cartesianControlClientOptions {
-        {"device", yarp::os::Value("CartesianControlClient")},
-        {"cartesianLocal", yarp::os::Value(localPort)},
-        {"cartesianRemote", yarp::os::Value(remoteCartesian)}
+        {"device", yarp::os::Value(cartesianDeviceName)},
+        {"local", yarp::os::Value(localPort)},
+        {"remote", yarp::os::Value(remoteCartesian)}
     };
 
     if (!cartesianControlDevice.open(cartesianControlClientOptions))
@@ -55,8 +54,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
     if (!rf.check("disableSensors"))
     {
-        std::string sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS),
-                "remote sensors port").asString();
+        auto sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS), "remote sensors port").asString();
 
         yarp::os::Property sensorsClientOptions;
         sensorsClientOptions.fromString(rf.toString());

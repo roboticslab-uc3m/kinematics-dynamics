@@ -11,31 +11,30 @@
 // Generated on: Mon Aug  3 20:35:36 2026
 
 
-#include "CartesianControlClient_ParamsParser.h"
+#include "CartesianControlClientROS2_ParamsParser.h"
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Value.h>
 
 namespace {
-    YARP_LOG_COMPONENT(CartesianControlClientParamsCOMPONENT, "yarp.device.CartesianControlClient")
+    YARP_LOG_COMPONENT(CartesianControlClientROS2ParamsCOMPONENT, "yarp.device.CartesianControlClientROS2")
 }
 
 
-CartesianControlClient_ParamsParser::CartesianControlClient_ParamsParser()
+CartesianControlClientROS2_ParamsParser::CartesianControlClientROS2_ParamsParser()
 {
 }
 
 
-std::vector<std::string> CartesianControlClient_ParamsParser::getListOfParams() const
+std::vector<std::string> CartesianControlClientROS2_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
     params.push_back("local");
     params.push_back("remote");
-    params.push_back("fkStreamTimeoutSecs");
     return params;
 }
 
 
-bool CartesianControlClient_ParamsParser::getParamValue(const std::string& paramName, std::string& paramValue) const
+bool CartesianControlClientROS2_ParamsParser::getParamValue(const std::string& paramName, std::string& paramValue) const
 {
     if (paramName =="local")
     {
@@ -47,11 +46,6 @@ bool CartesianControlClient_ParamsParser::getParamValue(const std::string& param
         paramValue = m_remote;
         return true;
     }
-    if (paramName =="fkStreamTimeoutSecs")
-    {
-        paramValue = std::to_string(m_fkStreamTimeoutSecs);
-        return true;
-    }
 
     yError() <<"parameter '" << paramName << "' was not found";
     return false;
@@ -59,7 +53,7 @@ bool CartesianControlClient_ParamsParser::getParamValue(const std::string& param
 }
 
 
-std::string CartesianControlClient_ParamsParser::getConfiguration() const
+std::string CartesianControlClientROS2_ParamsParser::getConfiguration() const
 {
     //This is a sub-optimal solution.
     //Ideally getConfiguration() should return all parameters but it is currently
@@ -69,12 +63,12 @@ std::string CartesianControlClient_ParamsParser::getConfiguration() const
     return s_cfg;
 }
 
-bool      CartesianControlClient_ParamsParser::parseParams(const yarp::os::Searchable & config)
+bool      CartesianControlClientROS2_ParamsParser::parseParams(const yarp::os::Searchable & config)
 {
     //Check for --help option
     if (config.check("help"))
     {
-        yCInfo(CartesianControlClientParamsCOMPONENT) << getDocumentationOfDeviceParams();
+        yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << getDocumentationOfDeviceParams();
     }
 
     m_provided_configuration = config.toString();
@@ -84,11 +78,13 @@ bool      CartesianControlClient_ParamsParser::parseParams(const yarp::os::Searc
         if (config.check("local"))
         {
             m_local = config.find("local").asString();
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'local' using value:" << m_local;
+            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'local' using value:" << m_local;
         }
         else
         {
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'local' using DEFAULT value:" << m_local;
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Mandatory parameter 'local' not found!";
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Description of the parameter: local node name";
+            return false;
         }
         prop_check.unput("local");
     }
@@ -98,27 +94,15 @@ bool      CartesianControlClient_ParamsParser::parseParams(const yarp::os::Searc
         if (config.check("remote"))
         {
             m_remote = config.find("remote").asString();
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'remote' using value:" << m_remote;
+            yCInfo(CartesianControlClientROS2ParamsCOMPONENT) << "Parameter 'remote' using value:" << m_remote;
         }
         else
         {
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'remote' using DEFAULT value:" << m_remote;
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Mandatory parameter 'remote' not found!";
+            yCError(CartesianControlClientROS2ParamsCOMPONENT) << "Description of the parameter: remote node name";
+            return false;
         }
         prop_check.unput("remote");
-    }
-
-    //Parser of parameter fkStreamTimeoutSecs
-    {
-        if (config.check("fkStreamTimeoutSecs"))
-        {
-            m_fkStreamTimeoutSecs = config.find("fkStreamTimeoutSecs").asFloat64();
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'fkStreamTimeoutSecs' using value:" << m_fkStreamTimeoutSecs;
-        }
-        else
-        {
-            yCInfo(CartesianControlClientParamsCOMPONENT) << "Parameter 'fkStreamTimeoutSecs' using DEFAULT value:" << m_fkStreamTimeoutSecs;
-        }
-        prop_check.unput("fkStreamTimeoutSecs");
     }
 
     /*
@@ -131,12 +115,12 @@ bool      CartesianControlClient_ParamsParser::parseParams(const yarp::os::Searc
         {
             if (m_parser_is_strict)
             {
-                yCError(CartesianControlClientParamsCOMPONENT) << "User asking for parameter: "<<it->name <<" which is unknown to this parser!";
+                yCError(CartesianControlClientROS2ParamsCOMPONENT) << "User asking for parameter: "<<it->name <<" which is unknown to this parser!";
                 extra_params_found = true;
             }
             else
             {
-                yCWarning(CartesianControlClientParamsCOMPONENT) << "User asking for parameter: "<< it->name <<" which is unknown to this parser!";
+                yCWarning(CartesianControlClientROS2ParamsCOMPONENT) << "User asking for parameter: "<< it->name <<" which is unknown to this parser!";
             }
         }
 
@@ -150,20 +134,19 @@ bool      CartesianControlClient_ParamsParser::parseParams(const yarp::os::Searc
 }
 
 
-std::string      CartesianControlClient_ParamsParser::getDocumentationOfDeviceParams() const
+std::string      CartesianControlClientROS2_ParamsParser::getDocumentationOfDeviceParams() const
 {
     std::string doc;
     doc = doc + std::string("\n=============================================\n");
-    doc = doc + std::string("This is the help for device: CartesianControlClient\n");
+    doc = doc + std::string("This is the help for device: CartesianControlClientROS2\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'local': local port\n");
-    doc = doc + std::string("'remote': remote port\n");
-    doc = doc + std::string("'fkStreamTimeoutSecs': FK stream timeout\n");
+    doc = doc + std::string("'local': local node name\n");
+    doc = doc + std::string("'remote': remote node name\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device CartesianControlClient --local /CartesianControlClient --remote /CartesianControl --fkStreamTimeoutSecs 0.5\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --local cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device CartesianControlClient\n";
+    doc = doc + " yarpdev --device CartesianControlClientROS2 --local cartesian_control_client_ros2 --remote cartesian_control_server_ros2\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }

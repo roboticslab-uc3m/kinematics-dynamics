@@ -24,6 +24,8 @@
 
 using namespace roboticslab;
 
+constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
+
 constexpr auto DEFAULT_LOCAL_PREFIX = "/keyboardController";
 
 constexpr auto DEFAULT_ANGLE_REPR = "axisAngle"; // keep in sync with KinRepresentation::parseEnumerator's
@@ -228,9 +230,9 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
     if (usingRemoteCartesian)
     {
         yarp::os::Property cartesianControlClientOptions {
-            {"device", yarp::os::Value("CartesianControlClient")},
-            {"cartesianLocal", yarp::os::Value(localPrefix + "/cartesian")},
-            {"cartesianRemote", yarp::os::Value(rf.find("remoteCartesian"))},
+            {"device", rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name")},
+            {"local", yarp::os::Value(localPrefix + "/cartesian")},
+            {"remote", rf.find("remoteCartesian")},
         };
 
         if (!cartesianControlDevice.open(cartesianControlClientOptions))
@@ -713,10 +715,9 @@ void KeyboardController::actuateTool(int command)
     {
         yCError(KC) << "Unable to send" << yarp::os::Vocab32::decode(command) << "command to actuator";
     }
-    else
-    {
-        currentActuatorCommand = command;
-    }
+
+    currentActuatorCommand = command;
+    std::cout << "Sent " << yarp::os::Vocab32::decode(command) << " command to actuator" << std::endl;
 }
 
 void KeyboardController::printJointPositions()

@@ -32,8 +32,6 @@ if(NOT SKIP_CartesianControlServerROS2)
                                                       PeriodicThreadImpl.cpp
                                                       DeviceDriverImpl.cpp
                                                       IWrapperImpl.cpp
-                                                      Spinner.hpp
-                                                      Spinner.cpp
                                                       CartesianControlServerROS2_ParamsParser.h
                                                       CartesianControlServerROS2_ParamsParser.cpp
                                                       LogComponent.hpp
@@ -47,6 +45,7 @@ if(NOT SKIP_CartesianControlServerROS2)
                                                      geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
                                                      rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp
                                                      ROBOTICSLAB::KinematicsDynamicsInterfaces
+                                                     ROBOTICSLAB::Ros2Utils
                                                      ${orocos_kdl_LIBRARIES})
 
     target_include_directories(CartesianControlServerROS2 PRIVATE ${orocos_kdl_INCLUDE_DIRS})

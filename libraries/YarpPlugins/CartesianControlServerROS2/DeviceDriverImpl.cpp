@@ -8,7 +8,7 @@
 
 #include "LogComponent.hpp"
 
-using namespace roboticslab;
+using namespace roboticslab::ros2utils;
 
 // ------------------- DeviceDriver Related ------------------------------------
 
@@ -30,14 +30,8 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
         yarp::os::PeriodicThread::setPeriod(std::stoi(m_fkPeriod_defaultValue) * 0.001);
     }
 
-    if (!rclcpp::ok())
-    {
-        rclcpp::init(0, nullptr);
-    }
-
-    // ROS2 initialization
-    m_node = std::make_shared<rclcpp::Node>(m_name);
-    m_spinner = new Spinner(m_node);
+    m_node = createNode(m_name);
+    m_spinner = std::make_unique<Spinner>(m_node);
 
     return m_spinner->start();
 }
@@ -46,16 +40,12 @@ bool CartesianControlServerROS2::open(yarp::os::Searchable & config)
 
 bool CartesianControlServerROS2::close()
 {
-    bool ret = true;
-
     if (m_spinner)
     {
-        ret = m_spinner->stop();
-        delete m_spinner;
-        m_spinner = nullptr;
+        return m_spinner->stop();
     }
 
-    return ret;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
