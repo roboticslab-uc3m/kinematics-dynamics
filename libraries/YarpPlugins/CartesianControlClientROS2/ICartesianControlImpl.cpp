@@ -207,28 +207,89 @@ bool CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector
 
 bool CartesianControlClientROS2::movj(const std::vector<double> & xd)
 {
-    return false;
+    geometry_msgs::msg::Pose poseMsg;
+    poseMsg.position.x = xd[0];
+    poseMsg.position.y = xd[1];
+    poseMsg.position.z = xd[2];
+
+    KDL::Vector axis(xd[3], xd[4], xd[5]);
+    double angle = axis.Norm();
+
+    KDL::Rotation::Rot(axis, angle).GetQuaternion(
+        poseMsg.orientation.x,
+        poseMsg.orientation.y,
+        poseMsg.orientation.z,
+        poseMsg.orientation.w
+    );
+
+    m_movj->publish(poseMsg);
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlClientROS2::relj(const std::vector<double> & xd)
 {
-    return false;
+    geometry_msgs::msg::Pose poseMsg;
+    poseMsg.position.x = xd[0];
+    poseMsg.position.y = xd[1];
+    poseMsg.position.z = xd[2];
+
+    KDL::Vector axis(xd[3], xd[4], xd[5]);
+    double angle = axis.Norm();
+
+    KDL::Rotation::Rot(axis, angle).GetQuaternion(
+        poseMsg.orientation.x,
+        poseMsg.orientation.y,
+        poseMsg.orientation.z,
+        poseMsg.orientation.w
+    );
+
+    m_relj->publish(poseMsg);
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlClientROS2::movl(const std::vector<double> & xd)
 {
-    return false;
+    geometry_msgs::msg::Pose poseMsg;
+    poseMsg.position.x = xd[0];
+    poseMsg.position.y = xd[1];
+    poseMsg.position.z = xd[2];
+
+    KDL::Vector axis(xd[3], xd[4], xd[5]);
+    double angle = axis.Norm();
+
+    KDL::Rotation::Rot(axis, angle).GetQuaternion(
+        poseMsg.orientation.x,
+        poseMsg.orientation.y,
+        poseMsg.orientation.z,
+        poseMsg.orientation.w
+    );
+
+    m_movl->publish(poseMsg);
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
 {
-    return false;
+    geometry_msgs::msg::Twist twistMsg;
+    twistMsg.linear.x = xdotd[0];
+    twistMsg.linear.y = xdotd[1];
+    twistMsg.linear.z = xdotd[2];
+    twistMsg.angular.x = xdotd[3];
+    twistMsg.angular.y = xdotd[4];
+    twistMsg.angular.z = xdotd[5];
+
+    m_movv->publish(twistMsg);
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -242,7 +303,17 @@ bool CartesianControlClientROS2::gcmp()
 
 bool CartesianControlClientROS2::forc(const std::vector<double> & fd)
 {
-    return false;
+    geometry_msgs::msg::Wrench wrenchMsg;
+    wrenchMsg.force.x = fd[0];
+    wrenchMsg.force.y = fd[1];
+    wrenchMsg.force.z = fd[2];
+    wrenchMsg.torque.x = fd[3];
+    wrenchMsg.torque.y = fd[4];
+    wrenchMsg.torque.z = fd[5];
+
+    m_forc->publish(wrenchMsg);
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -263,32 +334,86 @@ bool CartesianControlClientROS2::wait(double timeout)
 
 bool CartesianControlClientROS2::tool(const std::vector<double> & x)
 {
-    return false;
+    geometry_msgs::msg::Pose poseMsg;
+    poseMsg.position.x = x[0];
+    poseMsg.position.y = x[1];
+    poseMsg.position.z = x[2];
+
+    KDL::Vector axis(x[3], x[4], x[5]);
+    double angle = axis.Norm();
+
+    KDL::Rotation::Rot(axis, angle).GetQuaternion(
+        poseMsg.orientation.x,
+        poseMsg.orientation.y,
+        poseMsg.orientation.z,
+        poseMsg.orientation.w
+    );
+
+    m_tool->publish(poseMsg);
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 bool CartesianControlClientROS2::act(int command)
 {
-    return false;
+    std_msgs::msg::Int32 actMsg;
+    actMsg.data = command;
+    m_act->publish(actMsg);
+    return true;
 }
 
 // -----------------------------------------------------------------------------
 
 void CartesianControlClientROS2::pose(const std::vector<double> & x)
 {
+    geometry_msgs::msg::Pose poseMsg;
+    poseMsg.position.x = x[0];
+    poseMsg.position.y = x[1];
+    poseMsg.position.z = x[2];
+
+    KDL::Vector axis(x[3], x[4], x[5]);
+    double angle = axis.Norm();
+
+    KDL::Rotation::Rot(axis, angle).GetQuaternion(
+        poseMsg.orientation.x,
+        poseMsg.orientation.y,
+        poseMsg.orientation.z,
+        poseMsg.orientation.w
+    );
+
+    m_pose->publish(poseMsg);
 }
 
 // -----------------------------------------------------------------------------
 
 void CartesianControlClientROS2::twist(const std::vector<double> & xdot)
 {
+    geometry_msgs::msg::Twist twistMsg;
+    twistMsg.linear.x = xdot[0];
+    twistMsg.linear.y = xdot[1];
+    twistMsg.linear.z = xdot[2];
+    twistMsg.angular.x = xdot[3];
+    twistMsg.angular.y = xdot[4];
+    twistMsg.angular.z = xdot[5];
+
+    m_twist->publish(twistMsg);
 }
 
 // -----------------------------------------------------------------------------
 
 void CartesianControlClientROS2::wrench(const std::vector<double> & w)
 {
+    geometry_msgs::msg::Wrench wrenchMsg;
+    wrenchMsg.force.x = w[0];
+    wrenchMsg.force.y = w[1];
+    wrenchMsg.force.z = w[2];
+    wrenchMsg.torque.x = w[3];
+    wrenchMsg.torque.y = w[4];
+    wrenchMsg.torque.z = w[5];
+
+    m_wrench->publish(wrenchMsg);
 }
 
 // -----------------------------------------------------------------------------

@@ -14,6 +14,17 @@ bool CartesianControlClientROS2::configureRosHandlers()
 {
     const auto prefix = "/" + m_remote;
 
+    m_pose = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10);
+    m_twist = m_node->create_publisher<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10);
+    m_wrench = m_node->create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10);
+    m_movj = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/movj", 10);
+    m_relj = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/relj", 10);
+    m_movl = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/movl", 10);
+    m_movv = m_node->create_publisher<geometry_msgs::msg::Twist>(prefix + "/command/movv", 10);
+    m_forc = m_node->create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/forc", 10);
+    m_tool = m_node->create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/tool", 10);
+    m_act = m_node->create_publisher<std_msgs::msg::Int32>(prefix + "/command/gripper", 10);
+
     m_subscription_state = m_node->create_subscription<geometry_msgs::msg::PoseStamped>(
         prefix + "/state/pose",
         10,
