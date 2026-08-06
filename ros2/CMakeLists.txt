@@ -2,7 +2,7 @@ cmake_dependent_option(USE_LOCAL_ROS2_PACKAGES "Build ROS 2 packages locally" OF
                        rclcpp_FOUND OFF)
 
 cmake_dependent_option(ENABLE_ros2_rl_cartesian_control_msgs "Enable/disable rl_cartesian_control_msgs ROS 2 package" ON
-                       USE_LOCAL_ROS2_PACKAGES OFF)
+                       "USE_LOCAL_ROS2_PACKAGES;NOT rl_cartesian_control_msgs_FOUND" OFF)
 
 cmake_dependent_option(ENABLE_ros2_spacenav_device "Enable/disable spacenav_device ROS 2 package" ON
                        USE_LOCAL_ROS2_PACKAGES OFF)
