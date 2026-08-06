@@ -9,8 +9,9 @@
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianControl.h"
-#include "IProximitySensors.h"
-
+#if 0
+# include "IProximitySensors.h"
+#endif
 #include "GrabberResponder.hpp"
 
 namespace roboticslab
@@ -41,8 +42,10 @@ private:
     yarp::dev::PolyDriver cartesianControlDevice;
     roboticslab::ICartesianControl * iCartesianControl;
 
+#if 0
     yarp::dev::PolyDriver sensorsClientDevice;
     roboticslab::IProximitySensors * iProximitySensors;
+#endif
 
     double period;
 };

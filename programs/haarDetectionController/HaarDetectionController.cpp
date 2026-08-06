@@ -17,7 +17,9 @@ constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
 constexpr auto DEFAULT_LOCAL_PORT = "/HaarDetectionControl";
 constexpr auto DEFAULT_REMOTE_VISION = "/haarDetection2D";
 constexpr auto DEFAULT_REMOTE_CARTESIAN = "/CartesianControl";
+#if 0
 constexpr auto DEFAULT_PROXIMITY_SENSORS = "/sensor_reader";
+#endif
 constexpr auto DEFAULT_PERIOD = 0.01; // [s]
 
 constexpr auto INITIAL_ACT_DELAY = 3;
@@ -52,6 +54,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
+#if 0
     if (!rf.check("disableSensors"))
     {
         auto sensorsPort = rf.check("sensorsPort", yarp::os::Value(DEFAULT_PROXIMITY_SENSORS), "remote sensors port").asString();
@@ -76,6 +79,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
             return false;
         }
     }
+#endif
 
     if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER))
     {
@@ -113,6 +117,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
 
 bool HaarDetectionController::updateModule()
 {
+#if 0
     if (sensorsClientDevice.isValid() && iProximitySensors->hasTarget())
     {
         yCInfo(HDC) << "Target detected";
@@ -133,6 +138,7 @@ bool HaarDetectionController::updateModule()
 
         return false;
     }
+#endif
 
     return true;
 }
@@ -152,7 +158,13 @@ bool HaarDetectionController::interruptModule()
 bool HaarDetectionController::close()
 {
     grabberPort.close();
-    return sensorsClientDevice.close() & cartesianControlDevice.close();
+
+    bool ret = true;
+#if 0
+    ret &= sensorsClientDevice.close();
+#endif
+    ret &= cartesianControlDevice.close();
+    return ret;
 }
 
 double HaarDetectionController::getPeriod()
