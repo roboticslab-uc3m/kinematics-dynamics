@@ -80,7 +80,7 @@ jobs:
         path: .deps/swig
 
     - name: Install dependencies via apt
-      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} liborocos-kdl-dev bison ros-${{matrix.system.ros}}-tf2 googletest
+      run: apt-get update && apt-get install -qq ccache make ${{matrix.system.compiler.apt}} liborocos-kdl-dev bison ros-${{matrix.system.ros}}-tf2 googletest swig
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
