@@ -19,13 +19,13 @@ constexpr double STEP_Z = 0.01;
 constexpr double DEADBAND_X_PX = 0.0;
 constexpr double DEADBAND_Y_PX = 0.0;
 
-void GrabberResponder::onRead(yarp::os::Bottle &b)
+void GrabberResponder::onRead(yarp::os::Bottle & b)
 {
-    yCDebug(HDC) << "Got:" << b.toString();
+    yCDebug(VSC) << "Got:" << b.toString();
 
     if (b.size() != 2)
     {
-        yCWarning(HDC) << "Wrong data size:" << b.size() << "(expected: 2)";
+        yCWarning(VSC) << "Wrong data size:" << b.size() << "(expected: 2)";
         return;
     }
 
@@ -53,7 +53,7 @@ void GrabberResponder::onRead(yarp::os::Bottle &b)
     {
         std::vector<double> xdot(6);
         xdot[0] = target_x;
-        xdot[1] = -target_y;  // inverted for AMOR
+        xdot[1] = -target_y; // inverted for AMOR
         xdot[2] = noApproach ? 0.0 : STEP_Z;
 
         iCartesianControl->twist(xdot);

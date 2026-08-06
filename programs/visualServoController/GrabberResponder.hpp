@@ -12,7 +12,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup haarDetectionController
+ * @ingroup visualServoController
  *
  * @brief Callback class for dealing with incoming grabber
  * data streams.
@@ -20,14 +20,9 @@ namespace roboticslab
 class GrabberResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
-    GrabberResponder() : iCartesianControl(nullptr),
-                         isStopped(true),
-                         noApproach(false)
-    {}
+    void onRead(yarp::os::Bottle & b) override;
 
-    void onRead(yarp::os::Bottle &b) override;
-
-    void setICartesianControlDriver(roboticslab::ICartesianControl *iCartesianControl)
+    void setICartesianControlDriver(roboticslab::ICartesianControl * iCartesianControl)
     {
         this->iCartesianControl = iCartesianControl;
     }
@@ -38,9 +33,10 @@ public:
     }
 
 private:
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
-    bool isStopped, noApproach;
+    bool isStopped {true};
+    bool noApproach {false};
 };
 
 } // namespace roboticslab
