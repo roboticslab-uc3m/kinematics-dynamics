@@ -1,7 +1,7 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __HAAR_DETECTION_CONTROLLER_HPP__
-#define __HAAR_DETECTION_CONTROLLER_HPP__
+#ifndef __VISUAL_SERVO_CONTROLLER_HPP__
+#define __VISUAL_SERVO_CONTROLLER_HPP__
 
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/RFModule.h>
@@ -18,15 +18,15 @@ namespace roboticslab
 {
 
 /**
- * @ingroup haarDetectionController
+ * @ingroup visualServoController
  *
  * @brief Create seek-and-follow trajectories based on
- * Haar detection algorithms.
+ * visual servoing algorithms.
  */
-class HaarDetectionController : public yarp::os::RFModule
+class VisualServoController : public yarp::os::RFModule
 {
 public:
-    ~HaarDetectionController() override
+    ~VisualServoController() override
     { close(); }
 
     bool configure(yarp::os::ResourceFinder & rf) override;
@@ -52,4 +52,4 @@ private:
 
 } // namespace roboticslab
 
-#endif // __HAAR_DETECTION_CONTROLLER_HPP__
+#endif // __VISUAL_SERVO_CONTROLLER_HPP__

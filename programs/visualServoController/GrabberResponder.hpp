@@ -12,7 +12,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup haarDetectionController
+ * @ingroup visualServoController
  *
  * @brief Callback class for dealing with incoming grabber
  * data streams.

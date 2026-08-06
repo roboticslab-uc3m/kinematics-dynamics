@@ -21,11 +21,11 @@ constexpr double DEADBAND_Y_PX = 0.0;
 
 void GrabberResponder::onRead(yarp::os::Bottle & b)
 {
-    yCDebug(HDC) << "Got:" << b.toString();
+    yCDebug(VSC) << "Got:" << b.toString();
 
     if (b.size() != 2)
     {
-        yCWarning(HDC) << "Wrong data size:" << b.size() << "(expected: 2)";
+        yCWarning(VSC) << "Wrong data size:" << b.size() << "(expected: 2)";
         return;
     }
 
