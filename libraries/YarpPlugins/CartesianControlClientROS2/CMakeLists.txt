@@ -7,7 +7,7 @@ if(NOT DEFINED ENABLE_CartesianControlClientROS2 OR ENABLE_CartesianControlClien
         message(WARNING "std_srvs package not found, disabling CartesianControlClientROS2")
     elseif(NOT geometry_msgs_FOUND)
         message(WARNING "geometry_msgs package not found, disabling CartesianControlClientROS2")
-    elseif(NOT rl_cartesian_control_msgs_FOUND)
+    elseif(NOT (rl_cartesian_control_msgs_FOUND OR TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp))
         message(WARNING "rl_cartesian_control_msgs package not found, disabling CartesianControlClientROS2")
     elseif(NOT orocos_kdl_FOUND)
         message(WARNING "orocos_kdl package not found, disabling CartesianControlClientROS2")
@@ -19,7 +19,7 @@ yarp_prepare_plugin(CartesianControlClientROS2
                     TYPE CartesianControlClientROS2
                     INCLUDE CartesianControlClientROS2.hpp
                     DEFAULT ON
-                    DEPENDS "rclcpp_FOUND;geometry_msgs_FOUND"
+                    DEPENDS "rclcpp_FOUND;std_msgs_FOUND;std_srvs_FOUND;geometry_msgs_FOUND;rl_cartesian_control_msgs_FOUND OR TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp;orocos_kdl_FOUND"
                     GENERATE_PARSER)
 
 if(NOT SKIP_CartesianControlClientROS2)
