@@ -40,11 +40,11 @@ private:
     yarp::os::BufferedPort<yarp::os::Bottle> grabberPort;
 
     yarp::dev::PolyDriver cartesianControlDevice;
-    roboticslab::ICartesianControl * iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
 #if 0
     yarp::dev::PolyDriver sensorsClientDevice;
-    roboticslab::IProximitySensors * iProximitySensors;
+    roboticslab::IProximitySensors * iProximitySensors {nullptr};
 #endif
 
     double period;

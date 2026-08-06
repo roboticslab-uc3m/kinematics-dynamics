@@ -6,7 +6,7 @@
 
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
-#include <yarp/os/Time.h>
+#include <yarp/os/SystemClock.h>
 #include <yarp/os/Value.h>
 
 #include "LogComponent.hpp"
@@ -22,10 +22,10 @@ constexpr auto DEFAULT_PROXIMITY_SENSORS = "/sensor_reader";
 #endif
 constexpr auto DEFAULT_PERIOD = 0.01; // [s]
 
-constexpr auto INITIAL_ACT_DELAY = 3;
-constexpr auto FINAL_ACT_DELAY = 5;
+constexpr auto INITIAL_ACT_DELAY = 3; // [s]
+constexpr auto FINAL_ACT_DELAY = 5; // [s]
 
-bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
+bool HaarDetectionController::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(HDC) << "Config:" << rf.toString();
 
@@ -110,7 +110,7 @@ bool HaarDetectionController::configure(yarp::os::ResourceFinder &rf)
     }
 
     yCInfo(HDC) << "Delaying" << INITIAL_ACT_DELAY << "seconds...";
-    yarp::os::Time::delay(INITIAL_ACT_DELAY);
+    yarp::os::SystemClock::delaySystem(INITIAL_ACT_DELAY);
 
     return true;
 }
@@ -128,12 +128,12 @@ bool HaarDetectionController::updateModule()
         sensorsClientDevice.close();
 
         // close gripper, delay needed for AMOR
-        const double now = yarp::os::Time::now();
+        const double now = yarp::os::SystemClock::now();
 
-        while (yarp::os::Time::now() - now < FINAL_ACT_DELAY)
+        while (yarp::os::SystemClock::now() - now < FINAL_ACT_DELAY)
         {
             iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
-            yarp::os::Time::delay(0.1);
+            yarp::os::SystemClock::delaySystem(0.1);
         }
 
         return false;
