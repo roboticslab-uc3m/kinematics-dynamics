@@ -487,7 +487,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinEE)
     xdotee[0] = -0.005;  //- m/step
     xdotee[5] = 0.017453292;  //-- 1º/step
 
-    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdotee, qdot, ICartesianSolver::TCP_FRAME));
+    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdotee, qdot, ICartesianSolver::Frame::TCP));
 
     ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
 

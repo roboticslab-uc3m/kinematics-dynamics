@@ -259,19 +259,20 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         double frameDouble;
 
-        if (!iCartesianControl->getParameter(VOCAB_CC_CONFIG_FRAME, &frameDouble))
+        if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, &frameDouble))
         {
             yCError(KC) << "Could not retrieve current frame";
             return false;
         }
 
-        if (frameDouble != ICartesianSolver::BASE_FRAME && frameDouble != ICartesianSolver::TCP_FRAME)
+        if (frameDouble != static_cast<double>(ICartesianSolver::Frame::BASE) &&
+            frameDouble != static_cast<double>(ICartesianSolver::Frame::TCP))
         {
             yCError(KC) << "Unrecognized or unsupported frame";
             return false;
         }
 
-        cartFrame = static_cast<ICartesianSolver::reference_frame>(frameDouble);
+        cartFrame = static_cast<ICartesianSolver::Frame>(frameDouble);
 
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
@@ -297,7 +298,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
                 return false;
             }
 
-            linTrajThread->useTcpFrame(cartFrame == ICartesianSolver::TCP_FRAME);
+            linTrajThread->useTcpFrame(cartFrame == ICartesianSolver::Frame::TCP);
             linTrajThread->suspend(); // start in suspended state
 
             if (!linTrajThread->start())
@@ -443,11 +444,11 @@ bool KeyboardController::updateModule()
         break;
     // actuate tool (open gripper)
     case 'k':
-        actuateTool(VOCAB_CC_ACTUATOR_OPEN_GRIPPER);
+        actuateTool(ICartesianControl::Actuator::OPEN);
         break;
     // actuate tool (close gripper)
     case 'l':
-        actuateTool(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
+        actuateTool(ICartesianControl::Actuator::CLOSE);
         break;
     // issue stop
     case 13:  // enter
@@ -683,17 +684,17 @@ void KeyboardController::toggleReferenceFrame()
 
     issueStop();
 
-    ICartesianSolver::reference_frame newFrame;
+    ICartesianSolver::Frame newFrame;
     std::string str;
 
     switch (cartFrame)
     {
-    case ICartesianSolver::BASE_FRAME:
-        newFrame = ICartesianSolver::TCP_FRAME;
+    case ICartesianSolver::Frame::BASE:
+        newFrame = ICartesianSolver::Frame::TCP;
         str = "end effector";
         break;
-    case ICartesianSolver::TCP_FRAME:
-        newFrame = ICartesianSolver::BASE_FRAME;
+    case ICartesianSolver::Frame::TCP:
+        newFrame = ICartesianSolver::Frame::BASE;
         str = "inertial";
         break;
     default:
@@ -703,7 +704,7 @@ void KeyboardController::toggleReferenceFrame()
 
     if (str != "unknown")
     {
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, newFrame))
+        if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(newFrame)))
         {
             yCError(KC) << "Unable to set reference frame:" << str;
             return;
@@ -714,13 +715,13 @@ void KeyboardController::toggleReferenceFrame()
 
     if (usingThread)
     {
-        linTrajThread->useTcpFrame(newFrame == ICartesianSolver::TCP_FRAME);
+        linTrajThread->useTcpFrame(newFrame == ICartesianSolver::Frame::TCP);
     }
 
     std::cout << "Toggled reference frame for cartesian commands: " << str << std::endl;
 }
 
-void KeyboardController::actuateTool(int command)
+void KeyboardController::actuateTool(ICartesianControl::Actuator command)
 {
     if (!cartesianControlDevice.isValid())
     {
@@ -731,11 +732,11 @@ void KeyboardController::actuateTool(int command)
 
     if (!iCartesianControl->act(command))
     {
-        yCError(KC) << "Unable to send" << yarp::os::Vocab32::decode(command) << "command to actuator";
+        yCError(KC) << "Unable to send" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command)) << "command to actuator";
     }
 
     currentActuatorCommand = command;
-    std::cout << "Sent " << yarp::os::Vocab32::decode(command) << " command to actuator" << std::endl;
+    std::cout << "Sent " << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command)) << " command to actuator" << std::endl;
 }
 
 void KeyboardController::printJointPositions()
@@ -775,15 +776,15 @@ void KeyboardController::issueStop()
 {
     if (cartesianControlDevice.isValid())
     {
-        if (currentActuatorCommand != VOCAB_CC_ACTUATOR_NONE)
+        if (currentActuatorCommand != ICartesianControl::Actuator::NONE)
         {
-            if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER))
+            if (!iCartesianControl->act(ICartesianControl::Actuator::STOP))
             {
                 yCWarning(KC) << "Unable to stop actuator";
             }
             else
             {
-                currentActuatorCommand = VOCAB_CC_ACTUATOR_NONE;
+                currentActuatorCommand = ICartesianControl::Actuator::NONE;
             }
         }
 
@@ -891,7 +892,7 @@ void KeyboardController::printHelp()
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
         std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cartFrame == ICartesianSolver::BASE_FRAME ? "inertial" : "end effector") << ")" << std::endl;
+        std::cout << (cartFrame == ICartesianSolver::Frame::BASE ? "inertial" : "end effector") << ")" << std::endl;
 
         std::cout << " 'k'/'l' - open/close gripper" << std::endl;
     }

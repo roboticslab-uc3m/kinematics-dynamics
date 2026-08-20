@@ -23,7 +23,7 @@ public:
     bool initialize(bool usingStreamingPreset) override;
     bool acquireData() override;
     bool transformData(double scaling) override;
-    int getActuatorState() override;
+    ICartesianControl::Actuator getActuatorState() override;
     bool hasValidMovementData() const override;
     void sendMovementCommand(double timestamp) override;
     void stopMotion() override;

@@ -67,7 +67,7 @@ private:
     void toggleJointMode();
     void toggleReferenceFrame();
 
-    void actuateTool(int command);
+    void actuateTool(ICartesianControl::Actuator command);
 
     void printJointPositions();
     void printCartesianPositions();
@@ -81,12 +81,12 @@ private:
 #else
     int axes {0};
 #endif
-    int currentActuatorCommand {VOCAB_CC_ACTUATOR_NONE};
+    ICartesianControl::Actuator currentActuatorCommand {ICartesianControl::Actuator::NONE};
 
     double jointPosStep {0.0};
     double jointVelStep {0.0};
 
-    ICartesianSolver::reference_frame cartFrame {ICartesianSolver::BASE_FRAME};
+    ICartesianSolver::Frame cartFrame {ICartesianSolver::Frame::BASE};
     std::string angleRepr;
     KinRepresentation::orientation_system orient {KinRepresentation::orientation_system::AXIS_ANGLE};
     control_modes controlMode {NOT_CONTROLLING};

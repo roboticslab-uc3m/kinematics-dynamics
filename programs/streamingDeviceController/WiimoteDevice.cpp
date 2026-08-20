@@ -62,16 +62,16 @@ bool WiimoteDevice::initialize(bool usingStreamingPreset)
 
     if (usingStreamingPreset)
     {
-        int cmd = usingPose ? VOCAB_CC_POSE : VOCAB_CC_TWIST;
+        auto cmd = usingPose ? ICartesianControl::Streaming::POSE : ICartesianControl::Streaming::TWIST;
 
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
+        if (!iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(cmd)))
         {
             yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
-    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
+    if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::TCP)))
     {
         yCWarning(SDC) << "Unable to set TCP reference frame";
         return false;

@@ -67,16 +67,16 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
     if (usingStreamingPreset)
     {
-        int cmd = usingPose ? VOCAB_CC_POSE : VOCAB_CC_TWIST;
+        auto cmd = usingPose ? ICartesianControl::Streaming::POSE : ICartesianControl::Streaming::TWIST;
 
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
+        if (!iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(cmd)))
         {
             yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
-    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
+    if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::BASE)))
     {
         yCWarning(SDC) << "Unable to set inertial reference frame";
         return false;
@@ -162,30 +162,30 @@ bool SpnavSensorDevice::transformData(double scaling)
     }
 }
 
-int SpnavSensorDevice::getActuatorState()
+ICartesianControl::Actuator SpnavSensorDevice::getActuatorState()
 {
     if (buttonClose)
     {
-        actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
+        actuatorState = ICartesianControl::Actuator::CLOSE;
     }
     else if (buttonOpen)
     {
-        actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
+        actuatorState = ICartesianControl::Actuator::OPEN;
     }
-    else if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    else if (actuatorState != ICartesianControl::Actuator::NONE)
     {
-        if (actuatorState != VOCAB_CC_ACTUATOR_STOP_GRIPPER)
+        if (actuatorState != ICartesianControl::Actuator::STOP)
         {
-            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+            actuatorState = ICartesianControl::Actuator::STOP;
         }
         else
         {
-            actuatorState = VOCAB_CC_ACTUATOR_NONE;
+            actuatorState = ICartesianControl::Actuator::NONE;
         }
     }
     else
     {
-        actuatorState = VOCAB_CC_ACTUATOR_NONE;
+        actuatorState = ICartesianControl::Actuator::NONE;
     }
 
     return actuatorState;

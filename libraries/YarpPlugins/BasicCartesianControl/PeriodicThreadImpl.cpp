@@ -19,9 +19,9 @@ constexpr double ENCODER_THROTTLE = 1.0; // [s]
 
 void BasicCartesianControl::run()
 {
-    const int currentState = getCurrentState();
+    const auto currentState = getCurrentState();
 
-    if (currentState == VOCAB_CC_NOT_CONTROLLING)
+    if (currentState == State::NONE)
     {
         return;
     }
@@ -63,19 +63,19 @@ void BasicCartesianControl::run()
 
     switch (currentState)
     {
-    case VOCAB_CC_MOVJ_CONTROLLING:
+    case State::MOVJ:
         handleMovj(q, watcher);
         break;
-    case VOCAB_CC_MOVL_CONTROLLING:
+    case State::MOVL:
         m_usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
         break;
-    case VOCAB_CC_MOVV_CONTROLLING:
+    case State::MOVV:
         handleMovv(q, watcher);
         break;
-    case VOCAB_CC_GCMP_CONTROLLING:
+    case State::GCMP:
         handleGcmp(q, watcher);
         break;
-    case VOCAB_CC_FORC_CONTROLLING:
+    case State::FORC:
         handleForc(q, qdot, qdotdot, watcher);
         break;
     default:
@@ -109,7 +109,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
     if (done)
     {
-        setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+        setCurrentState(State::NONE);
 
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         if (!iPositionControl->setTrajSpeeds(vmoStored.data()))

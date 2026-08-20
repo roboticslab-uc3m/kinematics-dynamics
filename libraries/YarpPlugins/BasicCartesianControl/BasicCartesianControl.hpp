@@ -114,7 +114,7 @@ public:
     {}
 
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-    bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr) override;
+    bool stat(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
     bool inv(const std::vector<double> & xd, std::vector<double> & q) override;
     bool movj(const std::vector<double> & xd) override;
     bool relj(const std::vector<double> & xd) override;
@@ -125,14 +125,14 @@ public:
     bool stopControl() override;
     bool wait(double timeout) override;
     bool tool(const std::vector<double> & x) override;
-    bool act(int command) override;
+    bool act(roboticslab::ICartesianControl::Actuator command) override;
     void pose(const std::vector<double> & x) override;
     void twist(const std::vector<double> & xdot) override;
     void wrench(const std::vector<double> & w) override;
-    bool setParameter(int vocab, double value) override;
-    bool getParameter(int vocab, double * value) override;
-    bool setParameters(const std::map<int, double> & params) override;
-    bool getParameters(std::map<int, double> & params) override;
+    bool setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
+    bool getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
+    bool setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
+    bool getParameters(std::map<roboticslab::ICartesianControl::Config, double> & params) override;
 
     // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
     void run() override;
@@ -159,8 +159,8 @@ private:
         mutable std::function<void()> handler;
     };
 
-    int getCurrentState() const;
-    void setCurrentState(int value);
+    roboticslab::ICartesianControl::State getCurrentState() const;
+    void setCurrentState(roboticslab::ICartesianControl::State value);
 
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
@@ -168,7 +168,7 @@ private:
     bool doFailFastChecks(const std::vector<double> & initialQ);
     bool checkControlModes(int mode);
     bool setControlModes(int mode);
-    bool presetStreamingCommand(int command);
+    bool presetStreamingCommand(roboticslab::ICartesianControl::Streaming command);
     bool computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> & q, const StateWatcher & watcher);
@@ -190,15 +190,15 @@ private:
     yarp::dev::ITorqueControl * iTorqueControl {nullptr};
     yarp::dev::IVelocityControl * iVelocityControl {nullptr};
 
-    roboticslab::ICartesianSolver::reference_frame referenceFrame;
+    roboticslab::ICartesianSolver::Frame referenceFrame;
 
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     std::size_t numJoints {0};
 #else
     int numJoints {0};
 #endif
-    int currentState {VOCAB_CC_NOT_CONTROLLING};
-    int streamingCommand {VOCAB_CC_NOT_SET};
+    roboticslab::ICartesianControl::State currentState {roboticslab::ICartesianControl::State::NONE};
+    roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::POSE};
 
     mutable std::mutex stateMutex;
 

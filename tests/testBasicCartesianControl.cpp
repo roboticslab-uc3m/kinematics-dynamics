@@ -63,9 +63,9 @@ protected:
 TEST_F(BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
-    int state;
+    ICartesianControl::State state;
     ASSERT_TRUE(iCartesianControl->stat(x, &state));
-    ASSERT_EQ(state, VOCAB_CC_NOT_CONTROLLING);
+    ASSERT_EQ(state, ICartesianControl::State::NONE);
     ASSERT_NEAR(x[0], 1, eps);
     ASSERT_NEAR(x[1], 0, eps);
     ASSERT_NEAR(x[2], 0, eps);

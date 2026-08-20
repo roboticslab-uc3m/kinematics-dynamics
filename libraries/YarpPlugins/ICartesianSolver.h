@@ -6,13 +6,6 @@
 #include <vector>
 #include <yarp/os/Vocab.h>
 
-/**
- * @file
- * @brief Contains roboticslab::ICartesianSolver
- * @ingroup YarpPlugins
- * @{
- */
-
 namespace roboticslab
 {
 
@@ -23,10 +16,10 @@ class ICartesianSolver
 {
 public:
     //! Lists supported reference frames.
-    enum reference_frame
+    enum class Frame
     {
-        BASE_FRAME = yarp::os::createVocab32('c','p','f','b'), //!< Base frame
-        TCP_FRAME = yarp::os::createVocab32('c','p','f','t')   //!< End-effector frame (TCP)
+        BASE = yarp::os::createVocab32('c','p','f','b'), //!< Base frame
+        TCP = yarp::os::createVocab32('c','p','f','t')   //!< End-effector frame (TCP)
     };
 
     //! Destructor
@@ -123,12 +116,12 @@ public:
      * axis-angle representation (radians).
      * @param qGuess Vector describing current position in joint space (meters or degrees).
      * @param q Vector describing target position in joint space (meters or degrees).
-     * @param frame Points at the @ref reference_frame the desired position is expressed in.
+     * @param frame Points at the @ref frame the desired position is expressed in.
      *
      * @return true on success, false otherwise
      */
     virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-                        reference_frame frame = BASE_FRAME) = 0;
+                        Frame frame = Frame::BASE) = 0;
 
     /**
      * @brief Perform differential inverse kinematics
@@ -138,12 +131,12 @@ public:
      * three elements denote translational velocity (meters/second), last three denote
      * angular velocity (radians/second).
      * @param qdot Vector describing target velocity in joint space (meters/second or degrees/second).
-     * @param frame Points at the @ref reference_frame the desired position is expressed in.
+     * @param frame Points at the @ref frame the desired position is expressed in.
      *
      * @return true on success, false otherwise
      */
     virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-                            reference_frame frame = BASE_FRAME) = 0;
+                            Frame frame = Frame::BASE) = 0;
 
     /**
      * @brief Perform inverse dynamics
@@ -195,16 +188,14 @@ public:
      * @param t 6-element vector describing desired forces in cartesian space; first
      * three elements denote translational acceleration (meters/second²), last three denote
      * angular acceleration (radians/second²).
-     * @param frame Points at the @ref reference_frame @p ftip is expressed in.
+     * @param frame Points at the @ref frame @p ftip is expressed in.
      *
      * @return true on success, false otherwise
      */
     virtual bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                        const std::vector<double> &ftip, std::vector<double> &t, reference_frame frame = BASE_FRAME) = 0;
+                        const std::vector<double> &ftip, std::vector<double> &t, Frame frame = Frame::BASE) = 0;
 };
 
 } // namespace roboticslab
-
-/** @} */
 
 #endif // __I_CARTESIAN_SOLVER__

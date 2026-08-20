@@ -19,7 +19,7 @@ void CartesianControlServerROS2::run()
     std::vector<double> x;
     double timestamp;
 
-    if (int state; !m_iCartesianControl->stat(x, &state, &timestamp))
+    if (ICartesianControl::State state; !m_iCartesianControl->stat(x, &state, &timestamp))
     {
         yCWarning(CCS) << "Failed to stat";
         return;

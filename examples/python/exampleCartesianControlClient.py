@@ -23,22 +23,22 @@ if not dd.isValid():
 cc = kd.viewICartesianControl(dd)
 
 print('> getParameters')
-params = kd.IntDoubleMap()
+params = kd.ConfigMap()
 ret = cc.getParameters(params)
 
 for key, value in params.items():
     print(f'< {yarp.decode(key)}: {value}')
 
 print('> setParameters')
-params[kd.VOCAB_CC_CONFIG_TRAJ_DURATION] = 5.0
+params[kd.ICartesianControl.Config_TRAJ_DURATION] = 5.0
 cc.setParameters(params)
 
 print('> getParameter')
-ret, value = cc.getParameter(kd.VOCAB_CC_CONFIG_TRAJ_DURATION)
+ret, value = cc.getParameter(kd.ICartesianControl.Config_TRAJ_DURATION)
 print('<', value)
 
 print('> setParameter')
-cc.setParameter(kd.VOCAB_CC_CONFIG_TRAJ_DURATION, 6.0)
+cc.setParameter(kd.ICartesianControl.Config_TRAJ_DURATION, 6.0)
 
 print('> stat')
 x = yarp.DVector()

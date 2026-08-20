@@ -28,11 +28,11 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (m_referenceFrame == "base")
     {
-        referenceFrame = ICartesianSolver::BASE_FRAME;
+        referenceFrame = ICartesianSolver::Frame::BASE;
     }
     else if (m_referenceFrame == "tcp")
     {
-        referenceFrame = ICartesianSolver::TCP_FRAME;
+        referenceFrame = ICartesianSolver::Frame::TCP;
     }
     else
     {

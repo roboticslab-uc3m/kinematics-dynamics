@@ -311,17 +311,17 @@ bool AsibotSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<d
 
 // -----------------------------------------------------------------------------
 
-bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame)
+bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame)
 {
     std::vector<double> xd_base_obj;
 
-    if (frame == TCP_FRAME)
+    if (frame == Frame::TCP)
     {
         std::vector<double> x_base_tcp;
         fwdKin(qGuess, x_base_tcp);
         changeOrigin(xd, x_base_tcp, xd_base_obj);
     }
-    else if (frame == BASE_FRAME)
+    else if (frame == Frame::BASE)
     {
         xd_base_obj = xd;
     }
@@ -418,7 +418,7 @@ bool AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<doubl
 
 // -----------------------------------------------------------------------------
 
-bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame)
+bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame)
 {
     std::vector<double> qInRad(q);
 
@@ -429,11 +429,11 @@ bool AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<do
 
     yarp::sig::Matrix Ja(6, 5);
 
-    if (frame == BASE_FRAME)
+    if (frame == Frame::BASE)
     {
         computeBaseFrameDiffInvKin(m_A1, m_A2, m_A3, qInRad, Ja);
     }
-    else if (frame == TCP_FRAME)
+    else if (frame == Frame::TCP)
     {
         computeTcpFrameDiffInvKin(m_A1, m_A2, m_A3, qInRad, Ja);
     }
@@ -493,7 +493,7 @@ bool AsibotSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
 // -----------------------------------------------------------------------------
 
 bool AsibotSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                          const std::vector<double> &ftip, std::vector<double> &t, reference_frame frame)
+                          const std::vector<double> &ftip, std::vector<double> &t, Frame frame)
 {
     yCWarning(ASIBOT) << "invDyn() not implemented";
     return false;

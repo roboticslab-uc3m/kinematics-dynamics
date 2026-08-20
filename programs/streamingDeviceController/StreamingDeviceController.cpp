@@ -77,7 +77,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    std::map<int, double> params;
+    std::map<ICartesianControl::Config, double> params;
 
     if (!iCartesianControl->getParameters(params))
     {
@@ -85,7 +85,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+    bool usingStreamingPreset = params.find(ICartesianControl::Config::STREAMING_CMD) != params.end();
 
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 
@@ -273,9 +273,9 @@ bool StreamingDeviceController::update(double timestamp)
         }
     }
 
-    int actuatorState = streamingDevice->getActuatorState();
+    auto actuatorState = streamingDevice->getActuatorState();
 
-    if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    if (actuatorState != ICartesianControl::Actuator::NONE)
     {
         iCartesianControl->act(actuatorState);
     }

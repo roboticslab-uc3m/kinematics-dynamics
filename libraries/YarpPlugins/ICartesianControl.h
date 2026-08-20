@@ -10,130 +10,10 @@
 
 #include <ICartesianSolver.h>
 
-/**
- * @file
- * @brief Contains roboticslab::ICartesianControl and related vocabs.
- * @ingroup YarpPlugins
- * @{
- */
-
 //---------------------------------------------------------------------------------------------------------------
 // KEEP VOCAB LIST AND DOCUMENTATION IN SYNC WITH roboticslab::RpcResponder::makeUsage AT CartesianControlServer/
 // and roboticslab::CartesianControlServerROS2::configureRosParameters AT CartesianControlServerROS2/
 //-----------------------------------------------------------------------------------------------------------------------------------
-// USING `int` INSTEAD OF `yarp::conf::vocab32_t` BECAUSE OF SWIG: https://github.com/roboticslab-uc3m/kinematics-dynamics/issues/180
-//-----------------------------------------------------------------------------------------------------------------------------------
-
-/**
- * @name General-purpose vocabs
- *
- * Used in acknowledge responses, @ref ICartesianControl_config_commands "configuration accessors", etc..
- *
- * @{
- */
-
-// General-purpose vocabs
-constexpr int VOCAB_CC_OK = yarp::os::createVocab32('o','k');              ///< Success
-constexpr int VOCAB_CC_FAILED = yarp::os::createVocab32('f','a','i','l');  ///< Failure
-constexpr int VOCAB_CC_SET = yarp::os::createVocab32('s','e','t');         ///< Setter
-constexpr int VOCAB_CC_GET = yarp::os::createVocab32('g','e','t');         ///< Getter
-constexpr int VOCAB_CC_NOT_SET = yarp::os::createVocab32('n','s','e','t'); ///< State: not set
-
- /** @} */
-
-/**
- * @name RPC vocabs
- *
- * Used by @ref ICartesianControl_RPC_commands "RPC commands" in roboticslab::ICartesianControl.
- *
- * @{
- */
-
-// RPC commands
-constexpr int VOCAB_CC_STAT = yarp::os::createVocab32('s','t','a','t'); ///< Current state and position
-constexpr int VOCAB_CC_INV = yarp::os::createVocab32('i','n','v');      ///< Inverse kinematics
-constexpr int VOCAB_CC_MOVJ = yarp::os::createVocab32('m','o','v','j'); ///< Move in joint space, absolute coordinates
-constexpr int VOCAB_CC_RELJ = yarp::os::createVocab32('r','e','l','j'); ///< Move in joint space, relative coordinates
-constexpr int VOCAB_CC_MOVL = yarp::os::createVocab32('m','o','v','l'); ///< Linear move to target position
-constexpr int VOCAB_CC_MOVV = yarp::os::createVocab32('m','o','v','v'); ///< Linear move with given velocity
-constexpr int VOCAB_CC_GCMP = yarp::os::createVocab32('g','c','m','p'); ///< Gravity compensation
-constexpr int VOCAB_CC_FORC = yarp::os::createVocab32('f','o','r','c'); ///< Force control
-constexpr int VOCAB_CC_STOP = yarp::os::createVocab32('s','t','o','p'); ///< Stop control
-constexpr int VOCAB_CC_WAIT = yarp::os::createVocab32('w','a','i','t'); ///< Wait motion done
-constexpr int VOCAB_CC_TOOL = yarp::os::createVocab32('t','o','o','l'); ///< Change tool
-constexpr int VOCAB_CC_ACT = yarp::os::createVocab32('a','c','t');      ///< Actuate tool
-
-/** @} */
-
-/**
- * @name Streaming vocabs
- *
- * Used by @ref ICartesianControl_streaming_commands "streaming commands" in roboticslab::ICartesianControl.
- *
- * @{
- */
-
-// Streaming commands
-constexpr int VOCAB_CC_POSE = yarp::os::createVocab32('p','o','s','e');   ///< Achieve pose
-constexpr int VOCAB_CC_TWIST = yarp::os::createVocab32('t','w','s','t');  ///< Instantaneous velocity steps
-constexpr int VOCAB_CC_WRENCH = yarp::os::createVocab32('w','r','n','c'); ///< Exert force
-
-/** @} */
-
-/**
- * @name Control state vocabs
- *
- * Used by roboticslab::ICartesianControl::stat to reflect current control state.
- *
- * @{
- */
-
-// Control state
-constexpr int VOCAB_CC_NOT_CONTROLLING = yarp::os::createVocab32('c','c','n','c');  ///< Not controlling
-constexpr int VOCAB_CC_MOVJ_CONTROLLING = yarp::os::createVocab32('c','c','j','c'); ///< Controlling MOVJ commands
-constexpr int VOCAB_CC_MOVL_CONTROLLING = yarp::os::createVocab32('c','c','l','c'); ///< Controlling MOVL commands
-constexpr int VOCAB_CC_MOVV_CONTROLLING = yarp::os::createVocab32('c','c','v','c'); ///< Controlling MOVV commands
-constexpr int VOCAB_CC_GCMP_CONTROLLING = yarp::os::createVocab32('c','c','g','c'); ///< Controlling GCMP commands
-constexpr int VOCAB_CC_FORC_CONTROLLING = yarp::os::createVocab32('c','c','f','c'); ///< Controlling FORC commands
-
-/** @} */
-
-/**
- * @anchor ICartesianControl_actuator_vocabs
- * @name Actuator control vocabs
- *
- * Used by roboticslab::ICartesianControl::act to control the actuator.
- *
- * @{
- */
-
-// Actuator control
-constexpr int VOCAB_CC_ACTUATOR_NONE = yarp::os::createVocab32('a','c','n');              ///< No actuator or no action
-constexpr int VOCAB_CC_ACTUATOR_CLOSE_GRIPPER = yarp::os::createVocab32('a','c','c','g'); ///< Close gripper
-constexpr int VOCAB_CC_ACTUATOR_OPEN_GRIPPER = yarp::os::createVocab32('a','c','o','g');  ///< Open gripper
-constexpr int VOCAB_CC_ACTUATOR_STOP_GRIPPER = yarp::os::createVocab32('a','c','s','g');  ///< Stop gripper
-constexpr int VOCAB_CC_ACTUATOR_GENERIC = yarp::os::createVocab32('a','c','g');           ///< Generic actuator
-
-/**
- * @name Controller configuration vocabs
- *
- * Used by @ref ICartesianControl_config_commands "configuration accessors".
- *
- * @{
- */
-
-// Controller configuration (parameter keys)
-constexpr int VOCAB_CC_CONFIG_PARAMS = yarp::os::createVocab32('p','r','m','s');        ///< Parameter group
-constexpr int VOCAB_CC_CONFIG_GAIN = yarp::os::createVocab32('c','p','c','g');          ///< Controller gain
-constexpr int VOCAB_CC_CONFIG_TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'); ///< Trajectory duration [s]
-constexpr int VOCAB_CC_CONFIG_TRAJ_REF_SPD = yarp::os::createVocab32('c','p','t','s');  ///< Trajectory reference speed [m/s]
-constexpr int VOCAB_CC_CONFIG_TRAJ_REF_ACC = yarp::os::createVocab32('c','p','t','a');  ///< Trajectory reference acceleration [m/s^2]
-constexpr int VOCAB_CC_CONFIG_CMC_PERIOD = yarp::os::createVocab32('c','p','c','p');    ///< CMC period [ms]
-constexpr int VOCAB_CC_CONFIG_WAIT_PERIOD = yarp::os::createVocab32('c','p','w','p');   ///< Check period of 'wait' command [ms]
-constexpr int VOCAB_CC_CONFIG_FRAME = yarp::os::createVocab32('c','p','f');             ///< Reference frame
-constexpr int VOCAB_CC_CONFIG_STREAMING_CMD = yarp::os::createVocab32('c','p','s','c'); ///< Preset streaming command
-
-/** @} */
 
 namespace roboticslab
 {
@@ -144,6 +24,100 @@ namespace roboticslab
 class ICartesianControl
 {
 public:
+    /**
+     * @brief General-purpose vocabs
+     *
+     * Used in acknowledge responses, @ref ICartesianControl::Config_commands "configuration accessors", etc..
+     */
+    enum class Vocabs
+    {
+        OK = yarp::os::createVocab32('o','k'),              ///< Success
+        FAILED = yarp::os::createVocab32('f','a','i','l'),  ///< Failure
+        SET = yarp::os::createVocab32('s','e','t'),         ///< Setter
+        GET = yarp::os::createVocab32('g','e','t'),         ///< Getter
+        NOT_SET = yarp::os::createVocab32('n','s','e','t')  ///< State: not set
+    };
+
+    /**
+     * @brief RPC vocabs
+     *
+     * Used by @ref ICartesianControl_RPC_commands "RPC commands".
+     */
+    enum class RPC
+    {
+        STAT = yarp::os::createVocab32('s','t','a','t'), ///< Current state and position
+        INV = yarp::os::createVocab32('i','n','v'),      ///< Inverse kinematics
+        MOVJ = yarp::os::createVocab32('m','o','v','j'), ///< Move in joint space, absolute coordinates
+        RELJ = yarp::os::createVocab32('r','e','l','j'), ///< Move in joint space, relative coordinates
+        MOVL = yarp::os::createVocab32('m','o','v','l'), ///< Linear move to target position
+        MOVV = yarp::os::createVocab32('m','o','v','v'), ///< Linear move with given velocity
+        GCMP = yarp::os::createVocab32('g','c','m','p'), ///< Gravity compensation
+        FORC = yarp::os::createVocab32('f','o','r','c'), ///< Force control
+        STOP = yarp::os::createVocab32('s','t','o','p'), ///< Stop control
+        WAIT = yarp::os::createVocab32('w','a','i','t'), ///< Wait motion done
+        TOOL = yarp::os::createVocab32('t','o','o','l'), ///< Change tool
+        ACT = yarp::os::createVocab32('a','c','t')       ///< Actuate tool
+    };
+
+    /**
+     * @brief Streaming vocabs
+     *
+     * Used by @ref ICartesianControl_streaming_commands "streaming commands".
+     */
+    enum class Streaming
+    {
+        POSE = yarp::os::createVocab32('p','o','s','e'),  ///< Achieve pose
+        TWIST = yarp::os::createVocab32('t','w','s','t'), ///< Instantaneous velocity steps
+        WRENCH = yarp::os::createVocab32('w','r','n','c') ///< Exert force
+    };
+
+    /**
+     * @brief Control state vocabs
+     *
+     * Used by ICartesianControl::stat to reflect current control state.
+     */
+    enum class State
+    {
+        NONE = yarp::os::createVocab32('n','c','t','l'), ///< Not controlling
+        MOVJ = yarp::os::createVocab32('m','o','v','j'), ///< Executing MOVJ command
+        MOVL = yarp::os::createVocab32('m','o','v','l'), ///< Executing MOVL command
+        MOVV = yarp::os::createVocab32('m','o','v','v'), ///< Executing MOVV command
+        GCMP = yarp::os::createVocab32('g','c','m','p'), ///< Executing GCMP command
+        FORC = yarp::os::createVocab32('f','o','r','c')  ///< Executing FORC command
+    };
+
+    /**
+     * @brief Actuator control vocabs
+     *
+     * Used by ICartesianControl::act to control the actuator.
+     */
+    enum class Actuator
+    {
+        NONE = yarp::os::createVocab32('a','c','n'),      ///< No actuator or no action
+        CLOSE = yarp::os::createVocab32('a','c','c','g'), ///< Close gripper
+        OPEN = yarp::os::createVocab32('a','c','o','g'),  ///< Open gripper
+        STOP = yarp::os::createVocab32('a','c','s','g'),  ///< Stop gripper
+        GENERIC = yarp::os::createVocab32('a','c','g')    ///< Generic actuator
+    };
+
+    /**
+     * @brief Controller configuration vocabs
+     *
+     * Used by @ref ICartesianControl_config_commands "configuration accessors".
+     */
+    enum class Config
+    {
+        PARAMS = yarp::os::createVocab32('p','r','m','s'),        ///< Parameter group
+        GAIN = yarp::os::createVocab32('c','p','c','g'),          ///< Controller gain
+        TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'), ///< Trajectory duration [s]
+        TRAJ_REF_SPD = yarp::os::createVocab32('c','p','t','s'),  ///< Trajectory reference speed [m/s]
+        TRAJ_REF_ACC = yarp::os::createVocab32('c','p','t','a'),  ///< Trajectory reference acceleration [m/s^2]
+        CMC_PERIOD = yarp::os::createVocab32('c','p','c','p'),    ///< CMC period [ms]
+        WAIT_PERIOD = yarp::os::createVocab32('c','p','w','p'),   ///< Check period of 'wait' command [ms]
+        FRAME = yarp::os::createVocab32('c','p','f'),             ///< Reference frame
+        STREAMING_CMD = yarp::os::createVocab32('c','p','s','c')  ///< Preset streaming command
+    };
+
     //! Destructor
     virtual ~ICartesianControl() = default;
 
@@ -171,7 +145,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool stat(std::vector<double> &x, int * state = nullptr, double * timestamp = nullptr) = 0;
+    virtual bool stat(std::vector<double> & x, State * state = nullptr, double * timestamp = nullptr) = 0;
 
     /**
      * @brief Inverse kinematics
@@ -185,7 +159,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool inv(const std::vector<double> &xd, std::vector<double> &q) = 0;
+    virtual bool inv(const std::vector<double> & xd, std::vector<double> & q) = 0;
 
     /**
      * @brief Move in joint space, absolute coordinates
@@ -201,7 +175,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool movj(const std::vector<double> &xd) = 0;
+    virtual bool movj(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Move in joint space, relative coordinates
@@ -217,7 +191,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool relj(const std::vector<double> &xd) = 0;
+    virtual bool relj(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move to target position
@@ -230,7 +204,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool movl(const std::vector<double> &xd) = 0;
+    virtual bool movl(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move with given velocity
@@ -243,7 +217,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool movv(const std::vector<double> &xdotd) = 0;
+    virtual bool movv(const std::vector<double> & xdotd) = 0;
 
     /**
      * @brief Gravity compensation
@@ -265,7 +239,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool forc(const std::vector<double> &fd) = 0;
+    virtual bool forc(const std::vector<double> & fd) = 0;
 
     /**
      * @brief Stop control
@@ -300,18 +274,18 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool tool(const std::vector<double> &x) = 0;
+    virtual bool tool(const std::vector<double> & x) = 0;
 
     /**
      * @brief Actuate tool
      *
      * Send control command to actuate the robot's tool, if available.
      *
-     * @param command One of available @ref ICartesianControl_actuator_vocabs "actuator vocabs".
+     * @param command One of the available @ref ICartesianControl::Actuator vocabs.
      *
      * @return true on success, false otherwise
      */
-    virtual bool act(int command) = 0;
+    virtual bool act(Actuator command) = 0;
 
     /** @} */
 
@@ -336,7 +310,7 @@ public:
      * first three elements denote translation (meters), last three denote rotation in scaled
      * axis-angle representation (radians).
      */
-    virtual void pose(const std::vector<double> &x) = 0;
+    virtual void pose(const std::vector<double> & x) = 0;
 
     /**
      * @brief Instantaneous velocity steps
@@ -347,7 +321,7 @@ public:
      * first three elements denote translational velocity (meters/second), last three
      * denote angular velocity (radians/second).
      */
-    virtual void twist(const std::vector<double> &xdot) = 0;
+    virtual void twist(const std::vector<double> & xdot) = 0;
 
     /**
      * @brief Exert force
@@ -357,7 +331,7 @@ public:
      * @param w 6-element vector describing desired force exerted by the TCP in cartesian space;
      * first three elements denote linear force (Newton), last three denote torque (Newton*meters).
      */
-    virtual void wrench(const std::vector<double> &w) = 0;
+    virtual void wrench(const std::vector<double> & w) = 0;
 
     /** @} */
 
@@ -382,7 +356,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool setParameter(int vocab, double value) = 0;
+    virtual bool setParameter(Config vocab, double value) = 0;
 
     /**
      * @brief Retrieve a configuration parameter.
@@ -394,7 +368,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getParameter(int vocab, double * value) = 0;
+    virtual bool getParameter(Config vocab, double * value) = 0;
 
     /**
      * @brief Set multiple configuration parameters.
@@ -405,7 +379,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool setParameters(const std::map<int, double> & params) = 0;
+    virtual bool setParameters(const std::map<Config, double> & params) = 0;
 
     /**
      * @brief Retrieve multiple configuration parameters.
@@ -416,13 +390,11 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getParameters(std::map<int, double> & params) = 0;
+    virtual bool getParameters(std::map<Config, double> & params) = 0;
 
     /** @} */
 };
 
 } // namespace roboticslab
-
-/** @} */
 
 #endif // __I_CARTESIAN_CONTROL__

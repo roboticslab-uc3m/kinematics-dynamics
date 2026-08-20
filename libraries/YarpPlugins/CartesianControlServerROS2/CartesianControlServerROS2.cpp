@@ -8,6 +8,7 @@
 #include <kdl/frames.hpp>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/Vocab.h>
 
 #include "LogComponent.hpp"
 
@@ -193,15 +194,15 @@ bool CartesianControlServerROS2::configureRosHandlers()
             {
             case GRIPPER_CLOSE:
                 yCDebug(CCS) << "Gripper close";
-                m_iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
+                m_iCartesianControl->act(ICartesianControl::Actuator::CLOSE);
                 break;
             case GRIPPER_OPEN:
                 yCDebug(CCS) << "Gripper open";
-                m_iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER);
+                m_iCartesianControl->act(ICartesianControl::Actuator::OPEN);
                 break;
             case GRIPPER_STOP:
                 yCDebug(CCS) << "Gripper stop";
-                m_iCartesianControl->act(VOCAB_CC_ACTUATOR_STOP_GRIPPER);
+                m_iCartesianControl->act(ICartesianControl::Actuator::STOP);
                 break;
             }
         });
@@ -264,7 +265,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
 bool CartesianControlServerROS2::configureRosParameters()
 {
-    std::map<int, double> params;
+    std::map<ICartesianControl::Config, double> params;
 
     if (!m_iCartesianControl->getParameters(params))
     {
@@ -279,28 +280,32 @@ bool CartesianControlServerROS2::configureRosParameters()
 
         switch (key)
         {
-        case VOCAB_CC_CONFIG_STREAMING_CMD:
+        case ICartesianControl::Config::STREAMING_CMD:
         {
-            int intValue = static_cast<int>(value);
+            auto vocab = static_cast<ICartesianControl::Streaming>(value);
             std::string normalizedValue;
 
-            switch (intValue)
+            switch (vocab)
             {
-            case VOCAB_CC_POSE:
+            case ICartesianControl::Streaming::POSE:
                 normalizedValue = "pose";
                 break;
-            case VOCAB_CC_TWIST:
+            case ICartesianControl::Streaming::TWIST:
                 normalizedValue = "twist";
                 break;
-            case VOCAB_CC_WRENCH:
+            case ICartesianControl::Streaming::WRENCH:
                 normalizedValue = "wrench";
                 break;
-            case VOCAB_CC_NOT_SET:
-                normalizedValue = "none";
-                break;
             default:
-                yCError(CCS) << "Unknown preset streaming command value:" << intValue;
-                return false;
+                if (value == static_cast<double>(ICartesianControl::Vocabs::NOT_SET))
+                {
+                    normalizedValue = "none";
+                }
+                else
+                {
+                    yCError(CCS) << "Unknown preset streaming command value:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(value));
+                    return false;
+                }
             }
 
             descriptor.description = "Streaming command to be used by the device.";
@@ -308,21 +313,21 @@ bool CartesianControlServerROS2::configureRosParameters()
             m_node->declare_parameter("preset_streaming_cmd", normalizedValue, descriptor);
             break;
         }
-        case VOCAB_CC_CONFIG_FRAME:
+        case ICartesianControl::Config::FRAME:
         {
-            int intValue = static_cast<int>(value);
+            auto vocab = static_cast<ICartesianSolver::Frame>(value);
             std::string normalizedValue;
 
-            switch (intValue)
+            switch (vocab)
             {
-            case ICartesianSolver::BASE_FRAME:
+            case ICartesianSolver::Frame::BASE:
                 normalizedValue = "base";
                 break;
-            case ICartesianSolver::TCP_FRAME:
+            case ICartesianSolver::Frame::TCP:
                 normalizedValue = "tcp";
                 break;
             default:
-                yCError(CCS) << "Unknown reference frame value:" << intValue;
+                yCError(CCS) << "Unknown reference frame value:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(value));
                 return false;
             }
 
@@ -331,27 +336,27 @@ bool CartesianControlServerROS2::configureRosParameters()
             m_node->declare_parameter("frame", normalizedValue, descriptor);
             break;
         }
-        case VOCAB_CC_CONFIG_GAIN:
+        case ICartesianControl::Config::GAIN:
             descriptor.description = "Gain for the cartesian controller.";
             m_node->declare_parameter("gain", value, descriptor);
             break;
-        case VOCAB_CC_CONFIG_TRAJ_DURATION:
+        case ICartesianControl::Config::TRAJ_DURATION:
             descriptor.description = "Default trajectory duration (seconds).";
             m_node->declare_parameter("trajectory_duration", value, descriptor);
             break;
-        case VOCAB_CC_CONFIG_TRAJ_REF_SPD:
+        case ICartesianControl::Config::TRAJ_REF_SPD:
             descriptor.description = "Default trajectory reference speed (meters/second).";
             m_node->declare_parameter("trajectory_reference_speed", value, descriptor);
             break;
-        case VOCAB_CC_CONFIG_TRAJ_REF_ACC:
+        case ICartesianControl::Config::TRAJ_REF_ACC:
             descriptor.description = "Default trajectory reference acceleration (meters/second^2).";
             m_node->declare_parameter("trajectory_reference_acceleration", value, descriptor);
             break;
-        case VOCAB_CC_CONFIG_CMC_PERIOD:
+        case ICartesianControl::Config::CMC_PERIOD:
             descriptor.description = "Cartesian controller period (seconds).";
             m_node->declare_parameter("cmc_period", value, descriptor);
             break;
-        case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        case ICartesianControl::Config::WAIT_PERIOD:
             descriptor.description = "Wait period for motion completion (seconds).";
             m_node->declare_parameter("wait_period", value, descriptor);
             break;
@@ -396,28 +401,28 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
     for (const auto & param : parameters)
     {
         const auto & name = param.get_name();
-        int vocab;
+        ICartesianControl::Config vocab;
         double value;
 
         if (name == "preset_streaming_cmd")
         {
-            vocab = VOCAB_CC_CONFIG_STREAMING_CMD;
+            vocab = ICartesianControl::Config::STREAMING_CMD;
 
             if (const auto strValue = param.value_to_string(); strValue == "twist")
             {
-                value = VOCAB_CC_TWIST;
+                value = static_cast<double>(ICartesianControl::Streaming::TWIST);
             }
             else if (strValue == "pose")
             {
-                value = VOCAB_CC_POSE;
+                value = static_cast<double>(ICartesianControl::Streaming::POSE);
             }
             else if (strValue == "wrench")
             {
-                value = VOCAB_CC_WRENCH;
+                value = static_cast<double>(ICartesianControl::Streaming::WRENCH);
             }
             else if (strValue == "none")
             {
-                value = VOCAB_CC_NOT_SET;
+                value = static_cast<double>(ICartesianControl::Vocabs::NOT_SET);
             }
             else
             {
@@ -429,15 +434,15 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
         }
         else if (name == "frame")
         {
-            vocab = VOCAB_CC_CONFIG_FRAME;
+            vocab = ICartesianControl::Config::FRAME;
 
             if (const auto strValue = param.value_to_string(); strValue == "base")
             {
-                value = ICartesianSolver::BASE_FRAME;
+                value = static_cast<double>(ICartesianSolver::Frame::BASE);
             }
             else if (strValue == "tcp")
             {
-                value = ICartesianSolver::TCP_FRAME;
+                value = static_cast<double>(ICartesianSolver::Frame::TCP);
             }
             else
             {
@@ -449,32 +454,32 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
         }
         else if (name == "gain")
         {
-            vocab = VOCAB_CC_CONFIG_GAIN;
+            vocab = ICartesianControl::Config::GAIN;
             value = param.as_double();
         }
         else if (name == "trajectory_duration")
         {
-            vocab = VOCAB_CC_CONFIG_TRAJ_DURATION;
+            vocab = ICartesianControl::Config::TRAJ_DURATION;
             value = param.as_double();
         }
         else if (name == "trajectory_reference_speed")
         {
-            vocab = VOCAB_CC_CONFIG_TRAJ_REF_SPD;
+            vocab = ICartesianControl::Config::TRAJ_REF_SPD;
             value = param.as_double();
         }
         else if (name == "trajectory_reference_acceleration")
         {
-            vocab = VOCAB_CC_CONFIG_TRAJ_REF_ACC;
+            vocab = ICartesianControl::Config::TRAJ_REF_ACC;
             value = param.as_double();
         }
         else if (name == "cmc_period")
         {
-            vocab = VOCAB_CC_CONFIG_CMC_PERIOD;
+            vocab = ICartesianControl::Config::CMC_PERIOD;
             value = param.as_double();
         }
         else if (name == "wait_period")
         {
-            vocab = VOCAB_CC_CONFIG_WAIT_PERIOD;
+            vocab = ICartesianControl::Config::WAIT_PERIOD;
             value = param.as_double();
         }
         else

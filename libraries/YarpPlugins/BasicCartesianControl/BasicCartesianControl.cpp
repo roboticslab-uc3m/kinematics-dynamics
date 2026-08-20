@@ -35,7 +35,7 @@ constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
-int BasicCartesianControl::getCurrentState() const
+ICartesianControl::State BasicCartesianControl::getCurrentState() const
 {
     std::lock_guard lock(stateMutex);
     return currentState;
@@ -43,11 +43,10 @@ int BasicCartesianControl::getCurrentState() const
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::setCurrentState(int value)
+void BasicCartesianControl::setCurrentState(State value)
 {
     std::lock_guard lock(stateMutex);
     currentState = value;
-    streamingCommand = VOCAB_CC_NOT_SET;
 }
 
 // -----------------------------------------------------------------------------
@@ -272,20 +271,21 @@ bool BasicCartesianControl::setControlModes(int mode)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::presetStreamingCommand(int command)
+bool BasicCartesianControl::presetStreamingCommand(Streaming command)
 {
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    setCurrentState(State::NONE);
 
     switch (command)
     {
-    case VOCAB_CC_POSE:
+    case Streaming::POSE:
         return setControlModes(VOCAB_CM_POSITION_DIRECT);
-    case VOCAB_CC_TWIST:
+    case Streaming::TWIST:
         return setControlModes(VOCAB_CM_VELOCITY);
-    case VOCAB_CC_WRENCH:
+    case Streaming::WRENCH:
         return setControlModes(VOCAB_CM_TORQUE);
     default:
-        yCError(BCC) << "Unrecognized or unsupported streaming command vocab:" << command;
+        yCError(BCC) << "Unrecognized or unsupported streaming command vocab:"
+                     << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
     }
 
     return false;

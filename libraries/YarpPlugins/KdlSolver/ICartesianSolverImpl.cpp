@@ -113,7 +113,7 @@ bool KdlSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<doub
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, reference_frame frame)
+bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame)
 {
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
     KDL::JntArray qGuessInRad(chain.getNrOfJoints());
@@ -129,13 +129,13 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
     {
         std::lock_guard lock(mtx);
 
-        if (frame == TCP_FRAME)
+        if (frame == Frame::TCP)
         {
             KDL::Frame fOutCart;
             fkSolverPos->JntToCart(qGuessInRad, fOutCart);
             frameXd = fOutCart * frameXd;
         }
-        else if (frame != BASE_FRAME)
+        else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
             return false;
@@ -166,7 +166,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, reference_frame frame)
+bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -182,7 +182,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
     {
         std::lock_guard lock(mtx);
 
-        if (frame == TCP_FRAME)
+        if (frame == Frame::TCP)
         {
             KDL::Frame fOutCart;
             fkSolverPos->JntToCart(qInRad, fOutCart);
@@ -191,7 +191,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
             //-- "Twist and Wrench transformations" @ http://docs.ros.org/indigo/api/orocos_kdl/html/geomprim.html
             kdlxdot = fOutCart.M * kdlxdot;
         }
-        else if (frame != BASE_FRAME)
+        else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
             return false;
@@ -266,7 +266,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
 // -----------------------------------------------------------------------------
 
 bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                       const std::vector<double> &ftip, std::vector<double> &t, reference_frame frame)
+                       const std::vector<double> &ftip, std::vector<double> &t, Frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -292,7 +292,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
     KDL::Wrenches wrenches(chain.getNrOfSegments(), KDL::Wrench::Zero());
     KDL::Wrench kdlftip = KdlVectorConverter::vectorToWrench(ftip);
 
-    if (frame == BASE_FRAME)
+    if (frame == Frame::BASE)
     {
         KDL::Frame fOutCart;
         fkSolverPos->JntToCart(qInRad, fOutCart);
@@ -301,7 +301,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
         //-- "Twist and Wrench transformations" @ http://docs.ros.org/indigo/api/orocos_kdl/html/geomprim.html
         kdlftip = fOutCart.M.Inverse() * kdlftip;
     }
-    else if (frame != TCP_FRAME)
+    else if (frame != Frame::TCP)
     {
         yCWarning(logc, "Unsupported frame");
         return false;

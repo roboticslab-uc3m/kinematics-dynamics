@@ -32,7 +32,7 @@ class FkStreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 public:
     FkStreamResponder();
     void onRead(yarp::os::Bottle& b) override;
-    bool getLastStatData(std::vector<double> &x, int *state, double * timestamp, double timeout);
+    bool getLastStatData(std::vector<double> &x, roboticslab::ICartesianControl::State * state, double * timestamp, double timeout);
 
 private:
     double localArrivalTime;
@@ -52,7 +52,7 @@ class CartesianControlClient : public yarp::dev::DeviceDriver,
 {
 public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-    bool stat(std::vector<double> &x, int * state = nullptr, double * timestamp = nullptr) override;
+    bool stat(std::vector<double> &x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
     bool inv(const std::vector<double> &xd, std::vector<double> &q) override;
     bool movj(const std::vector<double> &xd) override;
     bool relj(const std::vector<double> &xd) override;
@@ -63,26 +63,26 @@ public:
     bool stopControl() override;
     bool wait(double timeout) override;
     bool tool(const std::vector<double> &x) override;
-    bool act(int command) override;
+    bool act(roboticslab::ICartesianControl::Actuator command) override;
     void pose(const std::vector<double> &x) override;
     void twist(const std::vector<double> &xdot) override;
     void wrench(const std::vector<double> &w) override;
-    bool setParameter(int vocab, double value) override;
-    bool getParameter(int vocab, double * value) override;
-    bool setParameters(const std::map<int, double> & params) override;
-    bool getParameters(std::map<int, double> & params) override;
+    bool setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
+    bool getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
+    bool setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
+    bool getParameters(std::map<roboticslab::ICartesianControl::Config, double> & params) override;
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
     bool open(yarp::os::Searchable& config) override;
     bool close() override;
 
 private:
-    bool handleRpcRunnableCmd(int vocab);
-    bool handleRpcConsumerCmd(int vocab, const std::vector<double>& in);
-    bool handleRpcFunctionCmd(int vocab, const std::vector<double>& in, std::vector<double>& out);
+    bool handleRpcRunnableCmd(roboticslab::ICartesianControl::RPC vocab);
+    bool handleRpcConsumerCmd(roboticslab::ICartesianControl::RPC vocab, const std::vector<double>& in);
+    bool handleRpcFunctionCmd(roboticslab::ICartesianControl::RPC vocab, const std::vector<double>& in, std::vector<double>& out);
 
-    void handleStreamingConsumerCmd(int vocab, const std::vector<double>& in);
-    void handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2);
+    void handleStreamingConsumerCmd(roboticslab::ICartesianControl::Streaming vocab, const std::vector<double>& in);
+    void handleStreamingBiConsumerCmd(roboticslab::ICartesianControl::Streaming vocab, const std::vector<double>& in1, double in2);
 
     yarp::os::RpcClient rpcClient;
     yarp::os::BufferedPort<yarp::os::Bottle> fkInPort, commandPort;

@@ -124,7 +124,7 @@ bool KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame)
+bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
 {
     KDL::Frames frames;
     int i = 0;
@@ -150,7 +150,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
         qGuessInRad(motor) = qGuess[motor] * KDL::deg2rad;
     }
 
-    if (frame == TCP_FRAME)
+    if (frame == Frame::TCP)
     {
         for (const auto & endpoint : endpoints)
         {
@@ -165,7 +165,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
             it->second = fOutCart * it->second;
         }
     }
-    else if (frame != BASE_FRAME)
+    else if (frame != Frame::BASE)
     {
         yCWarning(KDLS) << "Unsupported frame";
         return false;
@@ -190,7 +190,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, reference_frame frame)
+bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
 {
     KDL::Twists twists;
     int i = 0;
@@ -216,7 +216,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
         qInRad(motor) = q[motor] * KDL::deg2rad;
     }
 
-    if (frame == TCP_FRAME)
+    if (frame == Frame::TCP)
     {
         for (const auto & endpoint : endpoints)
         {
@@ -234,7 +234,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
             it->second = fOutCart.M * it->second;
         }
     }
-    else if (frame != BASE_FRAME)
+    else if (frame != Frame::BASE)
     {
         yCWarning(KDLS) << "Unsupported frame";
         return false;
@@ -297,7 +297,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
 // -----------------------------------------------------------------------------
 
 bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
-                           const std::vector<double> & ftip, std::vector<double> & t, reference_frame frame)
+                           const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
 {
     KDL::WrenchMap wrenches;
     int i = 0;
@@ -337,7 +337,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
         qdotdotInRad(motor) = qdotdot[motor] * KDL::deg2rad;
     }
 
-    if (frame == BASE_FRAME)
+    if (frame == Frame::BASE)
     {
         for (const auto & endpoint : endpoints)
         {
@@ -355,7 +355,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
             it->second = fOutCart.M.Inverse() * it->second;
         }
     }
-    else if (frame != TCP_FRAME)
+    else if (frame != Frame::TCP)
     {
         yCWarning(KDLS) << "Unsupported frame";
         return false;

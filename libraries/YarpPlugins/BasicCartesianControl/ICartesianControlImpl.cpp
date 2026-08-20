@@ -36,7 +36,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool BasicCartesianControl::stat(std::vector<double> & x, int * state, double * timestamp)
+bool BasicCartesianControl::stat(std::vector<double> & x, State * state, double * timestamp)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -151,7 +151,7 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
         cmcSuccess = true;
         yCInfo(BCC) << "Performing MOVJ";
 
-        setCurrentState(VOCAB_CC_MOVJ_CONTROLLING);
+        setCurrentState(State::MOVJ);
     }
     else
     {
@@ -165,7 +165,7 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
 
 bool BasicCartesianControl::relj(const std::vector<double> &xd)
 {
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
         return movj(xd);
     }
@@ -208,7 +208,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 
     std::vector<double> xd_obj;
 
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
         if (!iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj))
         {
@@ -266,7 +266,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVL";
 
-    setCurrentState(VOCAB_CC_MOVL_CONTROLLING);
+    setCurrentState(State::MOVL);
 
     return true;
 }
@@ -321,7 +321,7 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVV";
 
-    setCurrentState(VOCAB_CC_MOVV_CONTROLLING);
+    setCurrentState(State::MOVV);
 
     return true;
 }
@@ -336,7 +336,7 @@ bool BasicCartesianControl::gcmp()
         return false;
     }
 
-    setCurrentState(VOCAB_CC_GCMP_CONTROLLING);
+    setCurrentState(State::GCMP);
     return true;
 }
 
@@ -346,7 +346,7 @@ bool BasicCartesianControl::forc(const std::vector<double> &fd)
 {
     yCWarning(BCC) << "FORC mode still experimental";
 
-    if (referenceFrame == ICartesianSolver::TCP_FRAME)
+    if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
         yCWarning(BCC) << "TCP frame not supported yet in forc command";
         return false;
@@ -364,7 +364,7 @@ bool BasicCartesianControl::forc(const std::vector<double> &fd)
         return false;
     }
 
-    setCurrentState(VOCAB_CC_FORC_CONTROLLING);
+    setCurrentState(State::FORC);
     return true;
 }
 
@@ -374,7 +374,7 @@ bool BasicCartesianControl::stopControl()
 {
     yCDebug(BCC) << "Stopping control";
 
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    setCurrentState(State::NONE);
 
     // first switch control so that manipulators don't fall due to e.g. gravity
     if (!setControlModes(VOCAB_CM_POSITION))
@@ -397,16 +397,16 @@ bool BasicCartesianControl::stopControl()
 
 bool BasicCartesianControl::wait(double timeout)
 {
-    int state = getCurrentState();
+    auto state = getCurrentState();
 
-    if (state != VOCAB_CC_MOVJ_CONTROLLING && state != VOCAB_CC_MOVL_CONTROLLING)
+    if (state != State::MOVJ && state != State::MOVL)
     {
         return true;
     }
 
     double start = yarp::os::Time::now();
 
-    while (state != VOCAB_CC_NOT_CONTROLLING)
+    while (state != State::NONE)
     {
         if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
         {
@@ -443,7 +443,7 @@ bool BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::act(int command)
+bool BasicCartesianControl::act(Actuator command)
 {
     yCError(BCC) << "act() not implemented";
     return false;
@@ -453,7 +453,9 @@ bool BasicCartesianControl::act(int command)
 
 void BasicCartesianControl::pose(const std::vector<double> &x)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_POSE || !checkControlModes(VOCAB_CM_POSITION_DIRECT))
+    if (getCurrentState() != State::NONE ||
+        streamingCommand != Streaming::POSE ||
+        !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
         yCError(BCC) << "Streaming command not preset";
         return;
@@ -496,8 +498,9 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
 
 void BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_TWIST
-            || !checkControlModes(VOCAB_CM_VELOCITY))
+    if (getCurrentState() != State::NONE ||
+        streamingCommand != Streaming::TWIST ||
+        !checkControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Streaming command not preset";
         return;
@@ -536,8 +539,9 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void BasicCartesianControl::wrench(const std::vector<double> &w)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING || streamingCommand != VOCAB_CC_WRENCH
-            || !checkControlModes(VOCAB_CM_TORQUE))
+    if (getCurrentState() != State::NONE ||
+        streamingCommand != Streaming::WRENCH ||
+        !checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Streaming command not preset";
         return;
@@ -592,9 +596,9 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::setParameter(int vocab, double value)
+bool BasicCartesianControl::setParameter(Config vocab, double value)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
+    if (getCurrentState() != State::NONE)
     {
         yCError(BCC) << "Unable to set config parameter while controlling";
         return false;
@@ -602,7 +606,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
 
     switch (vocab)
     {
-    case VOCAB_CC_CONFIG_GAIN:
+    case Config::GAIN:
         if (value < 0.0)
         {
             yCError(BCC) << "Controller gain cannot be negative";
@@ -610,7 +614,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_controllerGain = value;
         break;
-    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+    case Config::TRAJ_DURATION:
         if (value < 0.0)
         {
             yCError(BCC) << "Trajectory duration cannot be negative";
@@ -629,7 +633,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_trajectoryDuration = value;
         break;
-    case VOCAB_CC_CONFIG_TRAJ_REF_SPD:
+    case Config::TRAJ_REF_SPD:
         if (value <= 0.0)
         {
             yCError(BCC) << "Trajectory reference speed cannot be negative nor zero";
@@ -637,7 +641,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_trajectoryRefSpeed = value;
         break;
-    case VOCAB_CC_CONFIG_TRAJ_REF_ACC:
+    case Config::TRAJ_REF_ACC:
         if (value <= 0.0)
         {
             yCError(BCC) << "Trajectory reference acceleration cannot be negative nor zero";
@@ -645,7 +649,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_trajectoryRefAccel = value;
         break;
-    case VOCAB_CC_CONFIG_CMC_PERIOD:
+    case Config::CMC_PERIOD:
         if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
             yCError(BCC) << "Cannot set new CMC period";
@@ -653,7 +657,7 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_cmcPeriodMs = value;
         break;
-    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+    case Config::WAIT_PERIOD:
         if (value <= 0.0)
         {
             yCError(BCC) << "Wait period cannot be negative nor zero";
@@ -661,24 +665,26 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
         }
         m_waitPeriodMs = value;
         break;
-    case VOCAB_CC_CONFIG_FRAME:
-        if (value != ICartesianSolver::BASE_FRAME && value != ICartesianSolver::TCP_FRAME)
+    case Config::FRAME:
+        if (value != static_cast<double>(ICartesianSolver::Frame::BASE) &&
+            value != static_cast<double>(ICartesianSolver::Frame::TCP))
         {
             yCError(BCC) << "Unrecognized or unsupported reference frame vocab";
             return false;
         }
-        referenceFrame = static_cast<ICartesianSolver::reference_frame>(value);
+        referenceFrame = static_cast<ICartesianSolver::Frame>(value);
         break;
-    case VOCAB_CC_CONFIG_STREAMING_CMD:
-        if (!presetStreamingCommand(value))
+    case Config::STREAMING_CMD:
+        if (!presetStreamingCommand(static_cast<Streaming>(value)))
         {
             yCError(BCC) << "Unable to preset streaming command";
             return false;
         }
-        streamingCommand = value;
+        streamingCommand = static_cast<Streaming>(value);
         break;
     default:
-        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
+        yCError(BCC) << "Unrecognized or unsupported config parameter key:"
+                     << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
         return false;
     }
 
@@ -687,36 +693,37 @@ bool BasicCartesianControl::setParameter(int vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::getParameter(int vocab, double * value)
+bool BasicCartesianControl::getParameter(Config vocab, double * value)
 {
     switch (vocab)
     {
-    case VOCAB_CC_CONFIG_GAIN:
+    case Config::GAIN:
         *value = m_controllerGain;
         break;
-    case VOCAB_CC_CONFIG_TRAJ_DURATION:
+    case Config::TRAJ_DURATION:
         *value = m_trajectoryDuration;
         break;
-    case VOCAB_CC_CONFIG_TRAJ_REF_SPD:
+    case Config::TRAJ_REF_SPD:
         *value = m_trajectoryRefSpeed;
         break;
-    case VOCAB_CC_CONFIG_TRAJ_REF_ACC:
+    case Config::TRAJ_REF_ACC:
         *value = m_trajectoryRefAccel;
         break;
-    case VOCAB_CC_CONFIG_CMC_PERIOD:
+    case Config::CMC_PERIOD:
         *value = m_cmcPeriodMs;
         break;
-    case VOCAB_CC_CONFIG_WAIT_PERIOD:
+    case Config::WAIT_PERIOD:
         *value = m_waitPeriodMs;
         break;
-    case VOCAB_CC_CONFIG_FRAME:
-        *value = referenceFrame;
+    case Config::FRAME:
+        *value = static_cast<double>(referenceFrame);
         break;
-    case VOCAB_CC_CONFIG_STREAMING_CMD:
-        *value = streamingCommand;
+    case Config::STREAMING_CMD:
+        *value = static_cast<double>(streamingCommand);
         break;
     default:
-        yCError(BCC) << "Unrecognized or unsupported config parameter key:" << yarp::os::Vocab32::decode(vocab);
+        yCError(BCC) << "Unrecognized or unsupported config parameter key:"
+                     << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
         return false;
     }
 
@@ -725,9 +732,9 @@ bool BasicCartesianControl::getParameter(int vocab, double * value)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
+bool BasicCartesianControl::setParameters(const std::map<Config, double> & params)
 {
-    if (getCurrentState() != VOCAB_CC_NOT_CONTROLLING)
+    if (getCurrentState() != State::NONE)
     {
         yCError(BCC) << "Unable to set config parameters while controlling";
         return false;
@@ -745,16 +752,16 @@ bool BasicCartesianControl::setParameters(const std::map<int, double> & params)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::getParameters(std::map<int, double> & params)
+bool BasicCartesianControl::getParameters(std::map<Config, double> & params)
 {
-    params.emplace(VOCAB_CC_CONFIG_GAIN, m_controllerGain);
-    params.emplace(VOCAB_CC_CONFIG_TRAJ_DURATION, m_trajectoryDuration);
-    params.emplace(VOCAB_CC_CONFIG_TRAJ_REF_SPD, m_trajectoryRefSpeed);
-    params.emplace(VOCAB_CC_CONFIG_TRAJ_REF_ACC, m_trajectoryRefAccel);
-    params.emplace(VOCAB_CC_CONFIG_CMC_PERIOD, m_cmcPeriodMs);
-    params.emplace(VOCAB_CC_CONFIG_WAIT_PERIOD, m_waitPeriodMs);
-    params.emplace(VOCAB_CC_CONFIG_FRAME, referenceFrame);
-    params.emplace(VOCAB_CC_CONFIG_STREAMING_CMD, streamingCommand);
+    params.emplace(Config::GAIN, m_controllerGain);
+    params.emplace(Config::TRAJ_DURATION, m_trajectoryDuration);
+    params.emplace(Config::TRAJ_REF_SPD, m_trajectoryRefSpeed);
+    params.emplace(Config::TRAJ_REF_ACC, m_trajectoryRefAccel);
+    params.emplace(Config::CMC_PERIOD, m_cmcPeriodMs);
+    params.emplace(Config::WAIT_PERIOD, m_waitPeriodMs);
+    params.emplace(Config::FRAME, static_cast<double>(referenceFrame));
+    params.emplace(Config::STREAMING_CMD, static_cast<double>(streamingCommand));
     return true;
 }
 
