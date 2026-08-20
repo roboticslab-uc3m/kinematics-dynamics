@@ -4,7 +4,10 @@
 #define __I_CARTESIAN_SOLVER__
 
 #include <vector>
+
 #include <yarp/os/Vocab.h>
+
+#include <yarp/dev/ReturnValue.h>
 
 namespace roboticslab
 {
@@ -30,14 +33,14 @@ public:
      *
      * @return Number of joints.
      */
-    virtual int getNumJoints() = 0;
+    virtual yarp::dev::ReturnValue getNumJoints(std::size_t & numJoints) = 0;
 
     /**
      * @brief Get number of TCPs for which the solver has been configured
      *
      * @return The number of TCPs.
      */
-    virtual int getNumTcps() = 0;
+    virtual yarp::dev::ReturnValue getNumTcps(std::size_t & numTcps) = 0;
 
     /**
      * @brief Append an additional link
@@ -48,14 +51,14 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool appendLink(const std::vector<double>& x) = 0;
+    virtual yarp::dev::ReturnValue appendLink(const std::vector<double> & x) = 0;
 
     /**
      * @brief Restore original kinematic chain
      *
      * @return true on success, false otherwise
      */
-    virtual bool restoreOriginalChain() = 0;
+    virtual yarp::dev::ReturnValue restoreOriginalChain() = 0;
 
     /**
      * @brief Change origin in which a pose is expressed
@@ -72,9 +75,9 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool changeOrigin(const std::vector<double> &x_old_obj,
-                              const std::vector<double> &x_new_old,
-                              std::vector<double> &x_new_obj) = 0;
+    virtual yarp::dev::ReturnValue changeOrigin(const std::vector<double> & x_old_obj,
+                                                const std::vector<double> & x_new_old,
+                                                std::vector<double> & x_new_obj) = 0;
 
     /**
      * @brief Perform forward kinematics
@@ -86,7 +89,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
+    virtual yarp::dev::ReturnValue fwdKin(const std::vector<double> & q, std::vector<double> & x) = 0;
 
     /**
      * @brief Obtain difference between supplied pose inputs
@@ -106,7 +109,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) = 0;
+    virtual yarp::dev::ReturnValue poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut) = 0;
 
     /**
      * @brief Perform inverse kinematics
@@ -120,8 +123,8 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-                        Frame frame = Frame::BASE) = 0;
+    virtual yarp::dev::ReturnValue invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q,
+                                          Frame frame = Frame::BASE) = 0;
 
     /**
      * @brief Perform differential inverse kinematics
@@ -135,8 +138,8 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-                            Frame frame = Frame::BASE) = 0;
+    virtual yarp::dev::ReturnValue diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot,
+                                              Frame frame = Frame::BASE) = 0;
 
     /**
      * @brief Perform inverse dynamics
@@ -150,7 +153,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t) = 0;
+    virtual yarp::dev::ReturnValue invDyn(const std::vector<double> & q, std::vector<double> & t) = 0;
 
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
     /**
@@ -169,8 +172,8 @@ public:
      * @return true on success, false otherwise
      */
     [[deprecated("use `const std::vector<double> &ftip` signature instead")]]
-    virtual bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                        const std::vector<std::vector<double>> &fexts, std::vector<double> &t)
+    virtual yarp::dev::ReturnValue invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                          const std::vector<std::vector<double>> & fexts, std::vector<double> & t)
     {
         return invDyn(q, qdot, qdotdot, fexts.back(), t);
     }
@@ -192,8 +195,8 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                        const std::vector<double> &ftip, std::vector<double> &t, Frame frame = Frame::BASE) = 0;
+    virtual yarp::dev::ReturnValue invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                          const std::vector<double> & ftip, std::vector<double> & t, Frame frame = Frame::BASE) = 0;
 };
 
 } // namespace roboticslab

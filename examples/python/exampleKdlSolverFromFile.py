@@ -15,7 +15,7 @@ kinematicsFileFullPath = rf.findFileByName("testKdlSolverFromFile.ini")
 
 solverOptions = yarp.Property()
 solverOptions.fromConfigFile(kinematicsFileFullPath)
-solverOptions.put("device","KdlSolver")
+solverOptions.put("device", "KdlSolver")
 solverOptions.fromString("(mins (-70 -15 -10 -100 -90 -100)) (maxs (45 70 75 10 90 10))", False)
 
 solverDevice = yarp.PolyDriver(solverOptions)
@@ -34,7 +34,7 @@ q = [0,0,0,0,0,0,0]
 q_vector = yarp.DVector(q)
 x_vector = yarp.DVector()
 
-cartesianSolver.fwdKin(q_vector,x_vector);
+cartesianSolver.fwdKin(q_vector, x_vector);
 
 print('> fwdKin [%s]' % ', '.join(map(str, q_vector)))
 print('< [%s]' % ', '.join(map(str, x_vector)))
@@ -45,7 +45,7 @@ q = [-90,0,0,0,0,0,0]
 q_vector = yarp.DVector(q)
 x_vector = yarp.DVector()
 
-cartesianSolver.fwdKin(q_vector,x_vector);
+cartesianSolver.fwdKin(q_vector, x_vector);
 
 print('> fwdKin [%s]' % ', '.join(map(str, q_vector)))
 print('< [%s]' % ', '.join(map(str, x_vector)))

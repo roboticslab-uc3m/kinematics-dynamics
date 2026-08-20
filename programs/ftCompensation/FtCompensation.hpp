@@ -62,7 +62,7 @@ private:
     KDL::Frame initialPose;
     KDL::Frame previousPose;
 
-    using cartesian_cmd = void (ICartesianControl::*)(const std::vector<double> &);
+    using cartesian_cmd = yarp::dev::ReturnValue (ICartesianControl::*)(const std::vector<double> &);
     cartesian_cmd command;
 
     bool dryRun;

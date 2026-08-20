@@ -17,37 +17,39 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-int KdlTreeSolver::getNumJoints()
+yarp::dev::ReturnValue KdlTreeSolver::getNumJoints(std::size_t & numJoints)
 {
-    return tree.getNrOfJoints();
+    numJoints = tree.getNrOfJoints();
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-int KdlTreeSolver::getNumTcps()
+yarp::dev::ReturnValue KdlTreeSolver::getNumTcps(std::size_t & numTcps)
 {
-    return endpoints.size();
+    numTcps = endpoints.size();
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::appendLink(const std::vector<double> & x)
+yarp::dev::ReturnValue KdlTreeSolver::appendLink(const std::vector<double> & x)
 {
     yCError(KDLS) << "Not supported: appendLink";
-    return false;
+    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::restoreOriginalChain()
+yarp::dev::ReturnValue KdlTreeSolver::restoreOriginalChain()
 {
     yCError(KDLS) << "Not supported: restoreOriginalChain";
-    return false;
+    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj)
+yarp::dev::ReturnValue KdlTreeSolver::changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj)
 {
     x_new_obj.clear();
     x_new_obj.reserve(endpoints.size() * 6);
@@ -65,12 +67,12 @@ bool KdlTreeSolver::changeOrigin(const std::vector<double> & x_old_obj, const st
         x_new_obj.insert(x_new_obj.end(), temp_new_obj.cbegin(), temp_new_obj.cend());
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::fwdKin(const std::vector<double> & q, std::vector<double> & x)
+yarp::dev::ReturnValue KdlTreeSolver::fwdKin(const std::vector<double> & q, std::vector<double> & x)
 {
     KDL::JntArray qInRad(tree.getNrOfJoints());
 
@@ -88,19 +90,19 @@ bool KdlTreeSolver::fwdKin(const std::vector<double> & q, std::vector<double> & 
 
         if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
         {
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         auto temp = KdlVectorConverter::frameToVector(fOutCart);
         x.insert(x.end(), temp.cbegin(), temp.cend());
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut)
+yarp::dev::ReturnValue KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut)
 {
     xOut.clear();
     xOut.reserve(endpoints.size() * 6);
@@ -119,12 +121,12 @@ bool KdlTreeSolver::poseDiff(const std::vector<double> & xLhs, const std::vector
         xOut.insert(xOut.end(), temp_xOut.cbegin(), temp_xOut.cend());
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
+yarp::dev::ReturnValue KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
 {
     KDL::Frames frames;
     int i = 0;
@@ -158,7 +160,7 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
 
             if (fkSolverPos->JntToCart(qGuessInRad, fOutCart, endpoint) < 0)
             {
-                return false;
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
             }
 
             auto it = frames.find(endpoint);
@@ -168,14 +170,14 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
     else if (frame != Frame::BASE)
     {
         yCWarning(KDLS) << "Unsupported frame";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     KDL::JntArray kdlq(tree.getNrOfJoints());
 
     if (ikSolverPos->CartToJnt(qGuessInRad, frames, kdlq) < 0)
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     q.resize(tree.getNrOfJoints());
@@ -185,12 +187,12 @@ bool KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<dou
         q[motor] = kdlq(motor) * KDL::rad2deg;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
+yarp::dev::ReturnValue KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
 {
     KDL::Twists twists;
     int i = 0;
@@ -224,7 +226,7 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
 
             if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
             {
-                return false;
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
             }
 
             auto it = twists.find(endpoint);
@@ -237,14 +239,14 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
     else if (frame != Frame::BASE)
     {
         yCWarning(KDLS) << "Unsupported frame";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     KDL::JntArray qDotOutRadS(tree.getNrOfJoints());
 
     if (ikSolverVel->CartToJnt(qInRad, twists, qDotOutRadS) < 0)
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     qdot.resize(tree.getNrOfJoints());
@@ -254,12 +256,12 @@ bool KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<
         qdot[motor] = qDotOutRadS(motor) * KDL::rad2deg;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & t)
+yarp::dev::ReturnValue KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & t)
 {
     KDL::WrenchMap wrenches;
 
@@ -281,7 +283,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
 
     if (idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt) < 0)
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     t.resize(tree.getNrOfJoints());
@@ -291,13 +293,13 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & 
         t[motor] = kdlt(motor);
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
-                           const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
+yarp::dev::ReturnValue KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                             const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
 {
     KDL::WrenchMap wrenches;
     int i = 0;
@@ -345,7 +347,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
 
             if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
             {
-                return false;
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
             }
 
             auto it = wrenches.find(endpoint);
@@ -358,14 +360,14 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
     else if (frame != Frame::TCP)
     {
         yCWarning(KDLS) << "Unsupported frame";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     KDL::JntArray kdlt(tree.getNrOfJoints());
 
     if (idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt) < 0)
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     t.resize(tree.getNrOfJoints());
@@ -375,7 +377,7 @@ bool KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<doub
         t[motor] = kdlt(motor);
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

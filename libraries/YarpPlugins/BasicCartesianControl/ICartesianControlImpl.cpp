@@ -36,14 +36,14 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool BasicCartesianControl::stat(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue BasicCartesianControl::stat(std::vector<double> & x, State * state, double * timestamp)
 {
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCErrorThreadThrottle(BCC, 1.0) << "getEncoders() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (timestamp)
@@ -54,7 +54,7 @@ bool BasicCartesianControl::stat(std::vector<double> & x, State * state, double 
     if (!iCartesianSolver->fwdKin(currentQ, x))
     {
         yCError(BCC) << "fwdKin() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (state)
@@ -62,46 +62,46 @@ bool BasicCartesianControl::stat(std::vector<double> & x, State * state, double 
         *state = getCurrentState();
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
+yarp::dev::ReturnValue BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iCartesianSolver->invKin(xd, currentQ, q, referenceFrame))
     {
         yCError(BCC) << "invKin() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::movj(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::movj(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numJoints), qd;
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iCartesianSolver->invKin(xd, currentQ, qd, referenceFrame))
     {
         yCError(BCC) << "invKin() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (std::vector<double> vmo(numJoints); computeIsocronousSpeeds(currentQ, qd, vmo))
@@ -112,25 +112,25 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
         if (!iPositionControl->getTrajSpeeds(vmoStored.data()))
         {
             yCError(BCC) << "getTrajSpeeds() (for storing) failed";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         if (!iPositionControl->setTrajSpeeds(vmo.data()))
         {
             yCError(BCC) << "setTrajSpeeds() failed";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 #else
         if (!iPositionControl->getRefSpeeds(vmoStored.data()))
         {
             yCError(BCC) << "getRefSpeeds() (for storing) failed";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         if (!iPositionControl->setRefSpeeds(vmo.data()))
         {
             yCError(BCC) << "setRefSpeeds() failed";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 #endif
 
@@ -138,13 +138,13 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
         if (!setControlModes(VOCAB_CM_POSITION))
         {
             yCError(BCC) << "Unable to set position mode";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         if (!iPositionControl->positionMove(qd.data()))
         {
             yCError(BCC) << "positionMove() failed";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         //-- Set state, enable CMC thread and wait for movement to be done
@@ -158,12 +158,12 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
         yCWarning(BCC) << "No motion planned";
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::relj(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::relj(const std::vector<double> &xd)
 {
     if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
@@ -175,7 +175,7 @@ bool BasicCartesianControl::relj(const std::vector<double> &xd)
     if (!stat(x))
     {
         yCError(BCC) << "stat() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     for (unsigned int i = 0; i < xd.size(); i++)
@@ -188,14 +188,14 @@ bool BasicCartesianControl::relj(const std::vector<double> &xd)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::movl(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::movl(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     std::vector<double> x_base_tcp;
@@ -203,7 +203,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
         yCError(BCC) << "fwdKin() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     std::vector<double> xd_obj;
@@ -213,7 +213,7 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
         if (!iCartesianSolver->changeOrigin(xd, x_base_tcp, xd_obj))
         {
             yCError(BCC) << "changeOrigin() failed";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
     }
     else
@@ -253,13 +253,13 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
     if (m_enableFailFast && !doFailFastChecks(currentQ))
     {
         yCError(BCC) << "Fail-fast checks failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!setControlModes(m_usePosdMovl ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Unable to set" << (m_usePosdMovl ? "position direct" : "velocity") << "control mode";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     movementStartTime = yarp::os::Time::now();
@@ -268,19 +268,19 @@ bool BasicCartesianControl::movl(const std::vector<double> &xd)
 
     setCurrentState(State::MOVL);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
+yarp::dev::ReturnValue BasicCartesianControl::movv(const std::vector<double> &xdotd)
 {
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     std::vector<double> x_base_tcp;
@@ -288,7 +288,7 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
     if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
     {
         yCError(BCC) << "fwdKin() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     trajectories.clear();
@@ -313,7 +313,7 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
     if (!setControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Unable to set velocity mode";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
@@ -323,33 +323,33 @@ bool BasicCartesianControl::movv(const std::vector<double> &xdotd)
 
     setCurrentState(State::MOVV);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::gcmp()
+yarp::dev::ReturnValue BasicCartesianControl::gcmp()
 {
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Unable to set torque mode";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     setCurrentState(State::GCMP);
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::forc(const std::vector<double> &fd)
+yarp::dev::ReturnValue BasicCartesianControl::forc(const std::vector<double> &fd)
 {
     yCWarning(BCC) << "FORC mode still experimental";
 
     if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
         yCWarning(BCC) << "TCP frame not supported yet in forc command";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     this->fd.clear();
@@ -361,16 +361,16 @@ bool BasicCartesianControl::forc(const std::vector<double> &fd)
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Unable to set torque mode";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     setCurrentState(State::FORC);
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::stopControl()
+yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 {
     yCDebug(BCC) << "Stopping control";
 
@@ -390,18 +390,18 @@ bool BasicCartesianControl::stopControl()
 
     trajectories.clear();
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::wait(double timeout)
+yarp::dev::ReturnValue BasicCartesianControl::wait(double timeout)
 {
     auto state = getCurrentState();
 
     if (state != State::MOVJ && state != State::MOVL)
     {
-        return true;
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
     }
 
     double start = yarp::os::Time::now();
@@ -419,46 +419,48 @@ bool BasicCartesianControl::wait(double timeout)
         state = getCurrentState();
     }
 
-    return cmcSuccess;
+    return cmcSuccess
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::tool(const std::vector<double> &x)
+yarp::dev::ReturnValue BasicCartesianControl::tool(const std::vector<double> &x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
     {
         yCError(BCC) << "restoreOriginalChain() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iCartesianSolver->appendLink(x))
     {
         yCError(BCC) << "appendLink() failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::act(Actuator command)
+yarp::dev::ReturnValue BasicCartesianControl::act(Actuator command)
 {
     yCError(BCC) << "act() not implemented";
-    return false;
+    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::pose(const std::vector<double> &x)
+yarp::dev::ReturnValue BasicCartesianControl::pose(const std::vector<double> &x)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::POSE ||
         !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
         yCError(BCC) << "Streaming command not preset";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
     }
 
     std::vector<double> currentQ(numJoints), q;
@@ -466,13 +468,13 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
     {
         yCError(BCC) << "invKin() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     std::vector<double> qdiff(numJoints);
@@ -485,25 +487,28 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
     if (!checkJointLimits(currentQ, qdiff))
     {
         yCError(BCC) << "Joint position limits exceeded, not moving";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iPositionDirect->setPositions(q.data()))
     {
         yCError(BCC) << "setPositions() failed";
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
+
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::twist(const std::vector<double> &xdot)
+yarp::dev::ReturnValue BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::TWIST ||
         !checkControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Streaming command not preset";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
     }
 
     StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
@@ -512,19 +517,19 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         yCError(BCC) << "diffInvKin() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
         yCError(BCC) << "Joint position or velocity limits exceeded";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     watcher.suppress();
@@ -532,19 +537,22 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
         yCError(BCC) << "velocityMove() failed";
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
+
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::wrench(const std::vector<double> &w)
+yarp::dev::ReturnValue BasicCartesianControl::wrench(const std::vector<double> &w)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::WRENCH ||
         !checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Streaming command not preset";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
     }
 
     StateWatcher watcher([this] { iTorqueControl->setRefTorques(std::vector(numJoints, 0.0).data()); });
@@ -553,25 +561,25 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iEncoders->getEncoderSpeeds(currentQdot.data()))
     {
         yCError(BCC) << "getEncoderSpeeds() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!iEncoders->getEncoderAccelerations(currentQdotdot.data()))
     {
         yCError(BCC) << "getEncoderAccelerations() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (!checkJointLimits(currentQ))
     {
         yCError(BCC) << "Joint position limits exceeded, not moving";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     // negate since the solver's contract interprets the wrench as an external force applied on
@@ -583,7 +591,7 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
     if (!iCartesianSolver->invDyn(currentQ, currentQdot, currentQdotdot, ftip, t, referenceFrame))
     {
         yCError(BCC) << "invDyn() failed";
-        return;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     watcher.suppress();
@@ -591,17 +599,20 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
     if (!iTorqueControl->setRefTorques(t.data()))
     {
         yCError(BCC) << "setRefTorques() failed";
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
+
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::setParameter(Config vocab, double value)
+yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double value)
 {
     if (getCurrentState() != State::NONE)
     {
         yCError(BCC) << "Unable to set config parameter while controlling";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     switch (vocab)
@@ -610,7 +621,11 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (value < 0.0)
         {
             yCError(BCC) << "Controller gain cannot be negative";
-            return false;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
         m_controllerGain = value;
         break;
@@ -618,7 +633,11 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (value < 0.0)
         {
             yCError(BCC) << "Trajectory duration cannot be negative";
-            return false;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
         else if ((m_trajectoryDuration == 0.0) ^ (value == 0.0))
         {
@@ -637,7 +656,11 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (value <= 0.0)
         {
             yCError(BCC) << "Trajectory reference speed cannot be negative nor zero";
-            return false;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
         m_trajectoryRefSpeed = value;
         break;
@@ -645,7 +668,11 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (value <= 0.0)
         {
             yCError(BCC) << "Trajectory reference acceleration cannot be negative nor zero";
-            return false;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
         m_trajectoryRefAccel = value;
         break;
@@ -653,7 +680,11 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
         {
             yCError(BCC) << "Cannot set new CMC period";
-            return false;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
         m_cmcPeriodMs = value;
         break;
@@ -661,7 +692,11 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (value <= 0.0)
         {
             yCError(BCC) << "Wait period cannot be negative nor zero";
-            return false;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
         m_waitPeriodMs = value;
         break;
@@ -670,7 +705,7 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
             value != static_cast<double>(ICartesianSolver::Frame::TCP))
         {
             yCError(BCC) << "Unrecognized or unsupported reference frame vocab";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
         referenceFrame = static_cast<ICartesianSolver::Frame>(value);
         break;
@@ -678,22 +713,22 @@ bool BasicCartesianControl::setParameter(Config vocab, double value)
         if (!presetStreamingCommand(static_cast<Streaming>(value)))
         {
             yCError(BCC) << "Unable to preset streaming command";
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
         streamingCommand = static_cast<Streaming>(value);
         break;
     default:
         yCError(BCC) << "Unrecognized or unsupported config parameter key:"
                      << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::getParameter(Config vocab, double * value)
+yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double * value)
 {
     switch (vocab)
     {
@@ -724,20 +759,20 @@ bool BasicCartesianControl::getParameter(Config vocab, double * value)
     default:
         yCError(BCC) << "Unrecognized or unsupported config parameter key:"
                      << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::setParameters(const std::map<Config, double> & params)
+yarp::dev::ReturnValue BasicCartesianControl::setParameters(const std::map<Config, double> & params)
 {
     if (getCurrentState() != State::NONE)
     {
         yCError(BCC) << "Unable to set config parameters while controlling";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     bool ok = true;
@@ -747,12 +782,13 @@ bool BasicCartesianControl::setParameters(const std::map<Config, double> & param
         ok &= setParameter(vocab, value);
     }
 
-    return ok;
+    return ok ? yarp::dev::ReturnValue::return_code::return_value_ok
+              : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::getParameters(std::map<Config, double> & params)
+yarp::dev::ReturnValue BasicCartesianControl::getParameters(std::map<Config, double> & params)
 {
     params.emplace(Config::GAIN, m_controllerGain);
     params.emplace(Config::TRAJ_DURATION, m_trajectoryDuration);
@@ -762,7 +798,7 @@ bool BasicCartesianControl::getParameters(std::map<Config, double> & params)
     params.emplace(Config::WAIT_PERIOD, m_waitPeriodMs);
     params.emplace(Config::FRAME, static_cast<double>(referenceFrame));
     params.emplace(Config::STREAMING_CMD, static_cast<double>(streamingCommand));
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

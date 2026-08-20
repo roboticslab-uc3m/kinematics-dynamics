@@ -16,21 +16,23 @@ using namespace roboticslab;
 
 // -----------------------------------------------------------------------------
 
-int KdlSolver::getNumJoints()
+yarp::dev::ReturnValue KdlSolver::getNumJoints(std::size_t & numJoints)
 {
-    return chain.getNrOfJoints();
+    numJoints = chain.getNrOfJoints();
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-int KdlSolver::getNumTcps()
+yarp::dev::ReturnValue KdlSolver::getNumTcps(std::size_t & numTcps)
 {
-    return 1;
+    numTcps = 1;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::appendLink(const std::vector<double>& x)
+yarp::dev::ReturnValue KdlSolver::appendLink(const std::vector<double> & x)
 {
     KDL::Frame frameX = KdlVectorConverter::vectorToFrame(x);
 
@@ -43,12 +45,12 @@ bool KdlSolver::appendLink(const std::vector<double>& x)
     ikSolverVel->updateInternalDataStructures();
     idSolver->updateInternalDataStructures();
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::restoreOriginalChain()
+yarp::dev::ReturnValue KdlSolver::restoreOriginalChain()
 {
     std::lock_guard lock(mtx);
 
@@ -59,12 +61,12 @@ bool KdlSolver::restoreOriginalChain()
     ikSolverVel->updateInternalDataStructures();
     idSolver->updateInternalDataStructures();
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old, std::vector<double> &x_new_obj)
+yarp::dev::ReturnValue KdlSolver::changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj)
 {
     KDL::Frame H_old_obj = KdlVectorConverter::vectorToFrame(x_old_obj);
     KDL::Frame H_new_old = KdlVectorConverter::vectorToFrame(x_new_old);
@@ -72,12 +74,12 @@ bool KdlSolver::changeOrigin(const std::vector<double> &x_old_obj, const std::ve
 
     x_new_obj = KdlVectorConverter::frameToVector(H_new_obj);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
+yarp::dev::ReturnValue KdlSolver::fwdKin(const std::vector<double> & q, std::vector<double> & x)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -95,12 +97,12 @@ bool KdlSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
 
     x = KdlVectorConverter::frameToVector(fOutCart);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut)
+yarp::dev::ReturnValue KdlSolver::poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut)
 {
     KDL::Frame fLhs = KdlVectorConverter::vectorToFrame(xLhs);
     KDL::Frame fRhs = KdlVectorConverter::vectorToFrame(xRhs);
@@ -108,12 +110,12 @@ bool KdlSolver::poseDiff(const std::vector<double> &xLhs, const std::vector<doub
     KDL::Twist diff = KDL::diff(fRhs, fLhs); // [fLhs - fRhs] for translation
     xOut = KdlVectorConverter::twistToVector(diff);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame)
+yarp::dev::ReturnValue KdlSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
 {
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
     KDL::JntArray qGuessInRad(chain.getNrOfJoints());
@@ -138,7 +140,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
         else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         ret = ikSolverPos->CartToJnt(qGuessInRad, frameXd, kdlq);
@@ -147,7 +149,7 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
     if (ret < 0)
     {
         yCError(logc, "invKin(): %s", ikSolverPos->strError(ret));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -161,12 +163,12 @@ bool KdlSolver::invKin(const std::vector<double> &xd, const std::vector<double> 
         q[motor] = kdlq(motor) * KDL::rad2deg;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame)
+yarp::dev::ReturnValue KdlSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -194,7 +196,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
         else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         ret = ikSolverVel->CartToJnt(qInRad, kdlxdot, qDotOutRadS);
@@ -203,7 +205,7 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
     if (ret < 0)
     {
         yCError(logc, "diffInvKin(): %s", ikSolverVel->strError(ret));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -217,12 +219,12 @@ bool KdlSolver::diffInvKin(const std::vector<double> &q, const std::vector<doubl
         qdot[motor] = qDotOutRadS(motor) * KDL::rad2deg;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
+yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, std::vector<double> & t)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -246,7 +248,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
     if (ret < 0)
     {
         yCError(logc, "invDyn(): %s", idSolver->strError(ret));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -260,13 +262,13 @@ bool KdlSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
         t[motor] = kdlt(motor);
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                       const std::vector<double> &ftip, std::vector<double> &t, Frame frame)
+yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                         const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -304,7 +306,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
     else if (frame != Frame::TCP)
     {
         yCWarning(logc, "Unsupported frame");
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     wrenches.back() = kdlftip; // must be expressed in the HN frame
@@ -320,7 +322,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
     if (ret < 0)
     {
         yCError(logc, "invDyn(): %s", idSolver->strError(ret));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -334,7 +336,7 @@ bool KdlSolver::invDyn(const std::vector<double> &q, const std::vector<double> &
         t[motor] = kdlt(motor);
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

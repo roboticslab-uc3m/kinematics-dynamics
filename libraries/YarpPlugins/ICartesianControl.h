@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <yarp/os/Vocab.h>
+#include <yarp/dev/ReturnValue.h>
 
 #include <ICartesianSolver.h>
 
@@ -145,7 +146,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool stat(std::vector<double> & x, State * state = nullptr, double * timestamp = nullptr) = 0;
+    virtual yarp::dev::ReturnValue stat(std::vector<double> & x, State * state = nullptr, double * timestamp = nullptr) = 0;
 
     /**
      * @brief Inverse kinematics
@@ -159,7 +160,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool inv(const std::vector<double> & xd, std::vector<double> & q) = 0;
+    virtual yarp::dev::ReturnValue inv(const std::vector<double> & xd, std::vector<double> & q) = 0;
 
     /**
      * @brief Move in joint space, absolute coordinates
@@ -175,7 +176,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool movj(const std::vector<double> & xd) = 0;
+    virtual yarp::dev::ReturnValue movj(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Move in joint space, relative coordinates
@@ -191,7 +192,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool relj(const std::vector<double> & xd) = 0;
+    virtual yarp::dev::ReturnValue relj(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move to target position
@@ -204,7 +205,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool movl(const std::vector<double> & xd) = 0;
+    virtual yarp::dev::ReturnValue movl(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move with given velocity
@@ -217,7 +218,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool movv(const std::vector<double> & xdotd) = 0;
+    virtual yarp::dev::ReturnValue movv(const std::vector<double> & xdotd) = 0;
 
     /**
      * @brief Gravity compensation
@@ -226,7 +227,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool gcmp() = 0;
+    virtual yarp::dev::ReturnValue gcmp() = 0;
 
     /**
      * @brief Force control
@@ -239,7 +240,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool forc(const std::vector<double> & fd) = 0;
+    virtual yarp::dev::ReturnValue forc(const std::vector<double> & fd) = 0;
 
     /**
      * @brief Stop control
@@ -248,7 +249,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool stopControl() = 0;
+    virtual yarp::dev::ReturnValue stopControl() = 0;
 
     /**
      * @brief Wait until completion
@@ -261,7 +262,7 @@ public:
      * @return true on success, false if errors occurred during the execution
      * of the trajectory
      */
-    virtual bool wait(double timeout = 0.0) = 0;
+    virtual yarp::dev::ReturnValue wait(double timeout = 0.0) = 0;
 
     /**
      * @brief Change tool
@@ -274,7 +275,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool tool(const std::vector<double> & x) = 0;
+    virtual yarp::dev::ReturnValue tool(const std::vector<double> & x) = 0;
 
     /**
      * @brief Actuate tool
@@ -285,7 +286,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool act(Actuator command) = 0;
+    virtual yarp::dev::ReturnValue act(Actuator command) = 0;
 
     /** @} */
 
@@ -310,7 +311,7 @@ public:
      * first three elements denote translation (meters), last three denote rotation in scaled
      * axis-angle representation (radians).
      */
-    virtual void pose(const std::vector<double> & x) = 0;
+    virtual yarp::dev::ReturnValue pose(const std::vector<double> & x) = 0;
 
     /**
      * @brief Instantaneous velocity steps
@@ -321,7 +322,7 @@ public:
      * first three elements denote translational velocity (meters/second), last three
      * denote angular velocity (radians/second).
      */
-    virtual void twist(const std::vector<double> & xdot) = 0;
+    virtual yarp::dev::ReturnValue twist(const std::vector<double> & xdot) = 0;
 
     /**
      * @brief Exert force
@@ -331,7 +332,7 @@ public:
      * @param w 6-element vector describing desired force exerted by the TCP in cartesian space;
      * first three elements denote linear force (Newton), last three denote torque (Newton*meters).
      */
-    virtual void wrench(const std::vector<double> & w) = 0;
+    virtual yarp::dev::ReturnValue wrench(const std::vector<double> & w) = 0;
 
     /** @} */
 
@@ -356,7 +357,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool setParameter(Config vocab, double value) = 0;
+    virtual yarp::dev::ReturnValue setParameter(Config vocab, double value) = 0;
 
     /**
      * @brief Retrieve a configuration parameter.
@@ -368,7 +369,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getParameter(Config vocab, double * value) = 0;
+    virtual yarp::dev::ReturnValue getParameter(Config vocab, double * value) = 0;
 
     /**
      * @brief Set multiple configuration parameters.
@@ -379,7 +380,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool setParameters(const std::map<Config, double> & params) = 0;
+    virtual yarp::dev::ReturnValue setParameters(const std::map<Config, double> & params) = 0;
 
     /**
      * @brief Retrieve multiple configuration parameters.
@@ -390,7 +391,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool getParameters(std::map<Config, double> & params) = 0;
+    virtual yarp::dev::ReturnValue getParameters(std::map<Config, double> & params) = 0;
 
     /** @} */
 };

@@ -13,9 +13,11 @@ using namespace roboticslab;
 
 namespace
 {
-    inline bool checkSuccess(const yarp::os::Bottle & response)
+    inline yarp::dev::ReturnValue checkSuccess(const yarp::os::Bottle & response)
     {
-        return !response.get(0).isVocab32() || response.get(0).asVocab32() != static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::FAILED);
+        return !response.get(0).isVocab32() || response.get(0).asVocab32() != static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::FAILED)
+            ? yarp::dev::ReturnValue::return_code::return_value_ok
+            : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     inline void addValue(yarp::os::Bottle& b, yarp::conf::vocab32_t vocab, double value)
@@ -47,7 +49,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool CartesianControlClient::handleRpcRunnableCmd(RPC vocab)
+yarp::dev::ReturnValue CartesianControlClient::handleRpcRunnableCmd(RPC vocab)
 {
     yarp::os::Bottle cmd, response;
     cmd.addVocab32(static_cast<yarp::conf::vocab32_t>(vocab));
@@ -57,7 +59,7 @@ bool CartesianControlClient::handleRpcRunnableCmd(RPC vocab)
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::handleRpcConsumerCmd(RPC vocab, const std::vector<double>& in)
+yarp::dev::ReturnValue CartesianControlClient::handleRpcConsumerCmd(RPC vocab, const std::vector<double>& in)
 {
     yarp::os::Bottle cmd, response;
 
@@ -75,7 +77,7 @@ bool CartesianControlClient::handleRpcConsumerCmd(RPC vocab, const std::vector<d
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::handleRpcFunctionCmd(RPC vocab, const std::vector<double>& in, std::vector<double>& out)
+yarp::dev::ReturnValue CartesianControlClient::handleRpcFunctionCmd(RPC vocab, const std::vector<double>& in, std::vector<double>& out)
 {
     yarp::os::Bottle cmd, response;
 
@@ -90,7 +92,7 @@ bool CartesianControlClient::handleRpcFunctionCmd(RPC vocab, const std::vector<d
 
     if (!checkSuccess(response))
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     out.resize(response.size());
@@ -100,12 +102,12 @@ bool CartesianControlClient::handleRpcFunctionCmd(RPC vocab, const std::vector<d
         out[i] = response.get(i).asFloat64();
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const std::vector<double>& in)
+yarp::dev::ReturnValue CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const std::vector<double>& in)
 {
     yarp::os::Bottle& cmd = commandPort.prepare();
 
@@ -118,11 +120,12 @@ void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const s
     }
 
     commandPort.write();
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::handleStreamingBiConsumerCmd(Streaming vocab, const std::vector<double>& in1, double in2)
+yarp::dev::ReturnValue CartesianControlClient::handleStreamingBiConsumerCmd(Streaming vocab, const std::vector<double>& in1, double in2)
 {
     yarp::os::Bottle& cmd = commandPort.prepare();
 
@@ -136,11 +139,12 @@ void CartesianControlClient::handleStreamingBiConsumerCmd(Streaming vocab, const
     }
 
     commandPort.write();
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::stat(std::vector<double> &x, State * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClient::stat(std::vector<double> &x, State * state, double * timestamp)
 {
     if (!fkInPort.isClosed())
     {
@@ -150,7 +154,7 @@ bool CartesianControlClient::stat(std::vector<double> &x, State * state, double 
         }
         else
         {
-            return true;
+            return yarp::dev::ReturnValue::return_code::return_value_ok;
         }
     }
 
@@ -162,7 +166,7 @@ bool CartesianControlClient::stat(std::vector<double> &x, State * state, double 
 
     if (!checkSuccess(response))
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     if (state != nullptr)
@@ -182,68 +186,68 @@ bool CartesianControlClient::stat(std::vector<double> &x, State * state, double 
         *timestamp = response.get(response.size() - 1).asFloat64();
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
+yarp::dev::ReturnValue CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
 {
     return handleRpcFunctionCmd(RPC::INV, xd, q);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::movj(const std::vector<double> &xd)
+yarp::dev::ReturnValue CartesianControlClient::movj(const std::vector<double> &xd)
 {
     return handleRpcConsumerCmd(RPC::MOVJ, xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::relj(const std::vector<double> &xd)
+yarp::dev::ReturnValue CartesianControlClient::relj(const std::vector<double> &xd)
 {
     return handleRpcConsumerCmd(RPC::RELJ, xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::movl(const std::vector<double> &xd)
+yarp::dev::ReturnValue CartesianControlClient::movl(const std::vector<double> &xd)
 {
     return handleRpcConsumerCmd(RPC::MOVL, xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::movv(const std::vector<double> &xdotd)
+yarp::dev::ReturnValue CartesianControlClient::movv(const std::vector<double> &xdotd)
 {
     return handleRpcConsumerCmd(RPC::MOVV, xdotd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::gcmp()
+yarp::dev::ReturnValue CartesianControlClient::gcmp()
 {
     return handleRpcRunnableCmd(RPC::GCMP);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::forc(const std::vector<double> &fd)
+yarp::dev::ReturnValue CartesianControlClient::forc(const std::vector<double> &fd)
 {
     return handleRpcConsumerCmd(RPC::FORC, fd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::stopControl()
+yarp::dev::ReturnValue CartesianControlClient::stopControl()
 {
     return handleRpcRunnableCmd(RPC::STOP);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::wait(double timeout)
+yarp::dev::ReturnValue CartesianControlClient::wait(double timeout)
 {
     yarp::os::Bottle cmd, response;
 
@@ -257,14 +261,14 @@ bool CartesianControlClient::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::tool(const std::vector<double> &x)
+yarp::dev::ReturnValue CartesianControlClient::tool(const std::vector<double> &x)
 {
     return handleRpcConsumerCmd(RPC::TOOL, x);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::act(Actuator command)
+yarp::dev::ReturnValue CartesianControlClient::act(Actuator command)
 {
     yarp::os::Bottle cmd, response;
 
@@ -278,28 +282,28 @@ bool CartesianControlClient::act(Actuator command)
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::pose(const std::vector<double> &x)
+yarp::dev::ReturnValue CartesianControlClient::pose(const std::vector<double> &x)
 {
-    handleStreamingConsumerCmd(Streaming::POSE, x);
+    return handleStreamingConsumerCmd(Streaming::POSE, x);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::twist(const std::vector<double> &xdot)
+yarp::dev::ReturnValue CartesianControlClient::twist(const std::vector<double> &xdot)
 {
-    handleStreamingConsumerCmd(Streaming::TWIST, xdot);
+    return handleStreamingConsumerCmd(Streaming::TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::wrench(const std::vector<double> &w)
+yarp::dev::ReturnValue CartesianControlClient::wrench(const std::vector<double> &w)
 {
-    handleStreamingConsumerCmd(Streaming::WRENCH, w);
+    return handleStreamingConsumerCmd(Streaming::WRENCH, w);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::setParameter(Config vocab, double value)
+yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, double value)
 {
     yarp::os::Bottle cmd, response;
 
@@ -314,7 +318,7 @@ bool CartesianControlClient::setParameter(Config vocab, double value)
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::getParameter(Config vocab, double * value)
+yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, double * value)
 {
     yarp::os::Bottle cmd, response;
 
@@ -325,17 +329,17 @@ bool CartesianControlClient::getParameter(Config vocab, double * value)
 
     if (!checkSuccess(response))
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     *value = asValue(static_cast<yarp::conf::vocab32_t>(vocab), response.get(0));
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::setParameters(const std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClient::setParameters(const std::map<Config, double> & params)
 {
     yarp::os::Bottle cmd, response;
 
@@ -356,7 +360,7 @@ bool CartesianControlClient::setParameters(const std::map<Config, double> & para
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::getParameters(std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClient::getParameters(std::map<Config, double> & params)
 {
     yarp::os::Bottle cmd, response;
 
@@ -367,7 +371,7 @@ bool CartesianControlClient::getParameters(std::map<Config, double> & params)
 
     if (!checkSuccess(response))
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     for (int i = 0; i < response.size(); i++)
@@ -378,7 +382,7 @@ bool CartesianControlClient::getParameters(std::map<Config, double> & params)
         params.emplace(key, value);
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

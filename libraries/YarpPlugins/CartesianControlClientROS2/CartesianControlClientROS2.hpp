@@ -45,25 +45,25 @@ class CartesianControlClientROS2 : public yarp::dev::DeviceDriver,
 {
 public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
-    bool stat(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
-    bool inv(const std::vector<double> & xd, std::vector<double> & q) override;
-    bool movj(const std::vector<double> & xd) override;
-    bool relj(const std::vector<double> & xd) override;
-    bool movl(const std::vector<double> & xd) override;
-    bool movv(const std::vector<double> & xdotd) override;
-    bool gcmp() override;
-    bool forc(const std::vector<double> & fd) override;
-    bool stopControl() override;
-    bool wait(double timeout) override;
-    bool tool(const std::vector<double> & x) override;
-    bool act(roboticslab::ICartesianControl::Actuator command) override;
-    void pose(const std::vector<double> & x) override;
-    void twist(const std::vector<double> & xdot) override;
-    void wrench(const std::vector<double> & w) override;
-    bool setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
-    bool getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
-    bool setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
-    bool getParameters(std::map<roboticslab::ICartesianControl::Config, double> & params) override;
+    yarp::dev::ReturnValue stat(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
+    yarp::dev::ReturnValue inv(const std::vector<double> & xd, std::vector<double> & q) override;
+    yarp::dev::ReturnValue movj(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue relj(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue movl(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue movv(const std::vector<double> & xdotd) override;
+    yarp::dev::ReturnValue gcmp() override;
+    yarp::dev::ReturnValue forc(const std::vector<double> & fd) override;
+    yarp::dev::ReturnValue stopControl() override;
+    yarp::dev::ReturnValue wait(double timeout) override;
+    yarp::dev::ReturnValue tool(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue act(roboticslab::ICartesianControl::Actuator command) override;
+    yarp::dev::ReturnValue pose(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue twist(const std::vector<double> & xdot) override;
+    yarp::dev::ReturnValue wrench(const std::vector<double> & w) override;
+    yarp::dev::ReturnValue setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
+    yarp::dev::ReturnValue getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
+    yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
+    yarp::dev::ReturnValue getParameters(std::map<roboticslab::ICartesianControl::Config, double> & params) override;
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable & config) override;

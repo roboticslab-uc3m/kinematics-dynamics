@@ -183,7 +183,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool CartesianControlClientROS2::stat(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClientROS2::stat(std::vector<double> & x, State * state, double * timestamp)
 {
     std::lock_guard lock(m_mutex_state);
 
@@ -204,12 +204,12 @@ bool CartesianControlClientROS2::stat(std::vector<double> & x, State * state, do
         *timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector<double> & q)
+yarp::dev::ReturnValue CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector<double> & q)
 {
     rl_cartesian_control_msgs::srv::Inv::Request request;
     request.x.position.x = xd[0];
@@ -232,16 +232,16 @@ bool CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector
     if (!response->success)
     {
         yCError(CCC) << "Inverse kinematics service call failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     q = response->q.data;
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::movj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::movj(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -260,12 +260,12 @@ bool CartesianControlClientROS2::movj(const std::vector<double> & xd)
 
     m_movj->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::relj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::relj(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -284,12 +284,12 @@ bool CartesianControlClientROS2::relj(const std::vector<double> & xd)
 
     m_relj->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::movl(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::movl(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -308,12 +308,12 @@ bool CartesianControlClientROS2::movl(const std::vector<double> & xd)
 
     m_movl->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
+yarp::dev::ReturnValue CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
 {
     geometry_msgs::msg::Twist twistMsg;
     twistMsg.linear.x = xdotd[0];
@@ -325,22 +325,25 @@ bool CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
 
     m_movv->publish(twistMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::gcmp()
+yarp::dev::ReturnValue CartesianControlClientROS2::gcmp()
 {
     std_srvs::srv::Trigger::Request request;
     auto result = m_client_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
-    return response->success;
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::forc(const std::vector<double> & fd)
+yarp::dev::ReturnValue CartesianControlClientROS2::forc(const std::vector<double> & fd)
 {
     geometry_msgs::msg::Wrench wrenchMsg;
     wrenchMsg.force.x = fd[0];
@@ -352,30 +355,33 @@ bool CartesianControlClientROS2::forc(const std::vector<double> & fd)
 
     m_forc->publish(wrenchMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::stopControl()
+yarp::dev::ReturnValue CartesianControlClientROS2::stopControl()
 {
     std_srvs::srv::Trigger::Request request;
     auto result = m_client_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
-    return response->success;
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::wait(double timeout)
+yarp::dev::ReturnValue CartesianControlClientROS2::wait(double timeout)
 {
     yCWarning(CCC) << "wait() not implemented for CartesianControlClientROS2";
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::tool(const std::vector<double> & x)
+yarp::dev::ReturnValue CartesianControlClientROS2::tool(const std::vector<double> & x)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = x[0];
@@ -394,12 +400,12 @@ bool CartesianControlClientROS2::tool(const std::vector<double> & x)
 
     m_tool->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::act(Actuator command)
+yarp::dev::ReturnValue CartesianControlClientROS2::act(Actuator command)
 {
     std_msgs::msg::Int32 actMsg;
 
@@ -419,16 +425,16 @@ bool CartesianControlClientROS2::act(Actuator command)
         break;
     default:
         yCError(CCC) << "Invalid actuator command:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     m_act->publish(actMsg);
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClientROS2::pose(const std::vector<double> & x)
+yarp::dev::ReturnValue CartesianControlClientROS2::pose(const std::vector<double> & x)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = x[0];
@@ -446,11 +452,12 @@ void CartesianControlClientROS2::pose(const std::vector<double> & x)
     );
 
     m_pose->publish(poseMsg);
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClientROS2::twist(const std::vector<double> & xdot)
+yarp::dev::ReturnValue CartesianControlClientROS2::twist(const std::vector<double> & xdot)
 {
     geometry_msgs::msg::Twist twistMsg;
     twistMsg.linear.x = xdot[0];
@@ -461,11 +468,12 @@ void CartesianControlClientROS2::twist(const std::vector<double> & xdot)
     twistMsg.angular.z = xdot[5];
 
     m_twist->publish(twistMsg);
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClientROS2::wrench(const std::vector<double> & w)
+yarp::dev::ReturnValue CartesianControlClientROS2::wrench(const std::vector<double> & w)
 {
     geometry_msgs::msg::Wrench wrenchMsg;
     wrenchMsg.force.x = w[0];
@@ -480,13 +488,13 @@ void CartesianControlClientROS2::wrench(const std::vector<double> & w)
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::setParameter(Config vocab, double value)
+yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, double value)
 {
     rcl_interfaces::msg::Parameter param;
 
     if (!parameterFromVocab(vocab, value, param))
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
@@ -495,19 +503,21 @@ bool CartesianControlClientROS2::setParameter(Config vocab, double value)
     auto result = m_client_set_params->async_send_request(request);
     auto response = result.get();
 
-    return response->results.size() == 1 && response->results[0].successful;
+    return response->results.size() == 1 && response->results[0].successful
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::getParameter(Config vocab, double * value)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, double * value)
 {
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
 
     if (vocabToParamName.find(vocab) == vocabToParamName.end())
     {
         yCError(CCC) << "Invalid parameter vocab:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     const auto & name = vocabToParamName.at(vocab);
@@ -519,15 +529,17 @@ bool CartesianControlClientROS2::getParameter(Config vocab, double * value)
     if (response->values.size() != 1)
     {
         yCError(CCC) << "Unexpected number of parameter values received";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return vocabFromParameter(name, response->values[0], &vocab, value);
+    return vocabFromParameter(name, response->values[0], &vocab, value)
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::setParameters(const std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const std::map<Config, double> & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
 
@@ -537,7 +549,7 @@ bool CartesianControlClientROS2::setParameters(const std::map<Config, double> & 
 
         if (!parameterFromVocab(vocab, value, param))
         {
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         request->parameters.push_back(param);
@@ -547,12 +559,14 @@ bool CartesianControlClientROS2::setParameters(const std::map<Config, double> & 
     auto response = result.get();
     const auto & results = response->results;
 
-    return std::all_of(results.begin(), results.end(), [](const auto & r) { return r.successful; });
+    return std::all_of(results.begin(), results.end(), [](const auto & r) { return r.successful; })
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::getParameters(std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(std::map<Config, double> & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names = m_supported_parameters;
@@ -574,7 +588,7 @@ bool CartesianControlClientROS2::getParameters(std::map<Config, double> & params
         }
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

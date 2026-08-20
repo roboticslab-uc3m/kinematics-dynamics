@@ -62,8 +62,11 @@ protected:
 
 TEST_F(KdlSolverTest, ChainSize)
 {
-    ASSERT_EQ(iCartesianSolver->getNumJoints(), 2);
-    ASSERT_EQ(iCartesianSolver->getNumTcps(), 1);
+    std::size_t numJoints, numTcps;
+    ASSERT_TRUE(iCartesianSolver->getNumJoints(numJoints));
+    ASSERT_TRUE(iCartesianSolver->getNumTcps(numTcps));
+    ASSERT_EQ(numJoints, 2);
+    ASSERT_EQ(numTcps, 1);
 }
 
 TEST_F(KdlSolverTest, FwdKin1)

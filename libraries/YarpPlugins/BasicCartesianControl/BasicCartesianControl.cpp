@@ -136,11 +136,14 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
     const double timestep = yarp::os::PeriodicThread::getPeriod() * 0.5;
 
     std::vector<double> x;
-    x.reserve(iCartesianSolver->getNumTcps() * 6);
+    std::size_t numTcps;
+
+    iCartesianSolver->getNumTcps(numTcps);
+    x.reserve(numTcps * 6);
 
     std::vector<double> oldQ = initialQ;
     std::vector<double> newQ;
-    std::vector<double> qdot(iCartesianSolver->getNumTcps() * 6);
+    std::vector<double> qdot(numTcps * 6);
 
     double maxDuration = 0.0;
 

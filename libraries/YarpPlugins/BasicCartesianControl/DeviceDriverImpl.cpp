@@ -229,13 +229,16 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (int numSolverJoints = iCartesianSolver->getNumJoints(); numSolverJoints != numJoints)
+    if (std::size_t numSolverJoints; iCartesianSolver->getNumJoints(numSolverJoints) && numSolverJoints != numJoints)
     {
-        yCError(BCC, "numSolverJoints(%d) != numRobotJoints(%zu)", numSolverJoints, numJoints);
+        yCError(BCC, "numSolverJoints(%zu) != numRobotJoints(%zu)", numSolverJoints, numJoints);
         return false;
     }
 
-    yCInfo(BCC) << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
+    std::size_t numSolverTcps;
+    iCartesianSolver->getNumTcps(numSolverTcps);
+
+    yCInfo(BCC) << "Number of solver TCPs:" << numSolverTcps;
 
     return yarp::os::PeriodicThread::setPeriod(m_cmcPeriodMs * 0.001) && yarp::os::PeriodicThread::start();
 }
