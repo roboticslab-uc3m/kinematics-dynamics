@@ -14,6 +14,7 @@
 #include <yarp/dev/Drivers.h>
 
 #include "ICartesianControl.h"
+#include "CartesianControlMsgs.h"
 #include "CartesianControlClient_ParamsParser.h"
 
 /**
@@ -22,6 +23,9 @@
  *
  * @brief Contains CartesianControlClient.
  */
+
+ namespace roboticslab
+ {
 
 /**
  * @ingroup CartesianControlClient
@@ -42,6 +46,8 @@ private:
     mutable std::mutex mtx;
 };
 
+} // namespace roboticslab
+
 /**
  * @ingroup CartesianControlClient
  * @brief The CartesianControlClient class implements ICartesianControl client side.
@@ -52,42 +58,39 @@ class CartesianControlClient : public yarp::dev::DeviceDriver,
 {
 public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-    yarp::dev::ReturnValue stat(std::vector<double> &x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
-    yarp::dev::ReturnValue inv(const std::vector<double> &xd, std::vector<double> &q) override;
-    yarp::dev::ReturnValue movj(const std::vector<double> &xd) override;
-    yarp::dev::ReturnValue relj(const std::vector<double> &xd) override;
-    yarp::dev::ReturnValue movl(const std::vector<double> &xd) override;
-    yarp::dev::ReturnValue movv(const std::vector<double> &xdotd) override;
+    yarp::dev::ReturnValue stat(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
+    yarp::dev::ReturnValue inv(const std::vector<double> & xd, std::vector<double> & q) override;
+    yarp::dev::ReturnValue movj(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue relj(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue movl(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue movv(const std::vector<double> & xdotd) override;
     yarp::dev::ReturnValue gcmp() override;
-    yarp::dev::ReturnValue forc(const std::vector<double> &fd) override;
+    yarp::dev::ReturnValue forc(const std::vector<double> & fd) override;
     yarp::dev::ReturnValue stopControl() override;
     yarp::dev::ReturnValue wait(double timeout) override;
-    yarp::dev::ReturnValue tool(const std::vector<double> &x) override;
+    yarp::dev::ReturnValue tool(const std::vector<double> & x) override;
     yarp::dev::ReturnValue act(roboticslab::ICartesianControl::Actuator command) override;
-    yarp::dev::ReturnValue pose(const std::vector<double> &x) override;
-    yarp::dev::ReturnValue twist(const std::vector<double> &xdot) override;
-    yarp::dev::ReturnValue wrench(const std::vector<double> &w) override;
+    yarp::dev::ReturnValue pose(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue twist(const std::vector<double> & xdot) override;
+    yarp::dev::ReturnValue wrench(const std::vector<double> & w) override;
     yarp::dev::ReturnValue setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
     yarp::dev::ReturnValue getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
     yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
     yarp::dev::ReturnValue getParameters(std::map<roboticslab::ICartesianControl::Config, double> & params) override;
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
-    bool open(yarp::os::Searchable& config) override;
+    bool open(yarp::os::Searchable & config) override;
     bool close() override;
 
 private:
-    yarp::dev::ReturnValue handleRpcRunnableCmd(roboticslab::ICartesianControl::RPC vocab);
-    yarp::dev::ReturnValue handleRpcConsumerCmd(roboticslab::ICartesianControl::RPC vocab, const std::vector<double>& in);
-    yarp::dev::ReturnValue handleRpcFunctionCmd(roboticslab::ICartesianControl::RPC vocab, const std::vector<double>& in, std::vector<double>& out);
-
-    yarp::dev::ReturnValue handleStreamingConsumerCmd(roboticslab::ICartesianControl::Streaming vocab, const std::vector<double>& in);
-    yarp::dev::ReturnValue handleStreamingBiConsumerCmd(roboticslab::ICartesianControl::Streaming vocab, const std::vector<double>& in1, double in2);
+    yarp::dev::ReturnValue handleStreamingConsumerCmd(roboticslab::ICartesianControl::Streaming vocab, const std::vector<double> & in);
 
     yarp::os::RpcClient rpcClient;
-    yarp::os::BufferedPort<yarp::os::Bottle> fkInPort, commandPort;
+    yarp::os::BufferedPort<yarp::os::Bottle> fkInPort;
+    yarp::os::BufferedPort<yarp::os::Bottle> commandPort;
 
-    FkStreamResponder fkStreamResponder;
+    roboticslab::CartesianControlMsgs rpcSender;
+    roboticslab::FkStreamResponder fkStreamResponder;
 };
 
 #endif // __CARTESIAN_CONTROL_CLIENT_HPP__
