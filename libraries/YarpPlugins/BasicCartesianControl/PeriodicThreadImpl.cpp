@@ -2,6 +2,8 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
@@ -93,7 +95,11 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
     bool done;
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!iPositionControl->checkMotionDone(done))
+#else
     if (!iPositionControl->checkMotionDone(&done))
+#endif
     {
         yCError(BCC) << "Unable to query current robot state";
         return;
@@ -105,10 +111,17 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
     {
         setCurrentState(VOCAB_CC_NOT_CONTROLLING);
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        if (!iPositionControl->setTrajSpeeds(vmoStored.data()))
+        {
+             yCWarning(BCC) << "setTrajSpeeds() (to restore) failed";
+        }
+#else
         if (!iPositionControl->setRefSpeeds(vmoStored.data()))
         {
              yCWarning(BCC) << "setRefSpeeds() (to restore) failed";
         }
+#endif
     }
 }
 

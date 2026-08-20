@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/DeviceDriver.h>
@@ -190,7 +192,11 @@ private:
 
     roboticslab::ICartesianSolver::reference_frame referenceFrame;
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::size_t numJoints {0};
+#else
     int numJoints {0};
+#endif
     int currentState {VOCAB_CC_NOT_CONTROLLING};
     int streamingCommand {VOCAB_CC_NOT_SET};
 

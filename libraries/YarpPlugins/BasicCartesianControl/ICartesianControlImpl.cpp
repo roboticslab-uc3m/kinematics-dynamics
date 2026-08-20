@@ -7,6 +7,8 @@
 #include <iterator> // std::back_inserter
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
@@ -106,6 +108,19 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
     {
         vmoStored.resize(numJoints);
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iPositionControl->getTrajSpeeds(vmoStored.data()))
+        {
+            yCError(BCC) << "getTrajSpeeds() (for storing) failed";
+            return false;
+        }
+
+        if (!iPositionControl->setTrajSpeeds(vmo.data()))
+        {
+            yCError(BCC) << "setTrajSpeeds() failed";
+            return false;
+        }
+#else
         if (!iPositionControl->getRefSpeeds(vmoStored.data()))
         {
             yCError(BCC) << "getRefSpeeds() (for storing) failed";
@@ -117,6 +132,7 @@ bool BasicCartesianControl::movj(const std::vector<double> &xd)
             yCError(BCC) << "setRefSpeeds() failed";
             return false;
         }
+#endif
 
         //-- Enter position mode and perform movement
         if (!setControlModes(VOCAB_CM_POSITION))

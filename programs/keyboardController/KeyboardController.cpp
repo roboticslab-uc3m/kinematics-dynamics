@@ -15,6 +15,8 @@
 #include <iterator>
 #include <algorithm>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Value.h>
@@ -171,9 +173,13 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iEncoders->getAxes(axes) || axes > MAX_JOINTS)
+#else
         if (!iEncoders->getAxes(&axes) || axes > MAX_JOINTS)
+#endif
         {
-            yCError(KC, "Number of joints (%d) exceeds supported limit (%d)", axes, MAX_JOINTS);
+            yCError(KC, "Number of joints (%zu) exceeds supported limit (%d)", axes, MAX_JOINTS);
             return false;
         }
 
@@ -185,7 +191,11 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
         {
             double minPos, maxPos;
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            if (!iControlLimits->getPosLimits(i, &minPos, &maxPos))
+#else
             if (!iControlLimits->getLimits(i, &minPos, &maxPos))
+#endif
             {
                 yCError(KC) << "Unable to retrieve joint limits";
                 return false;
@@ -502,7 +512,11 @@ void KeyboardController::incrementOrDecrementJointCommand(joint j, func op)
 
     if (jointMode == POSITION)
     {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iControlMode->setControlModes(std::vector(axes, yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION)))
+#else
         if (!iControlMode->setControlModes(std::vector(axes, VOCAB_CM_POSITION).data()))
+#endif
         {
             yCError(KC) << "setPositionModes failed";
             issueStop();
@@ -539,7 +553,11 @@ void KeyboardController::incrementOrDecrementJointCommand(joint j, func op)
     }
     else if (jointMode == VELOCITY)
     {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iControlMode->setControlModes(std::vector(axes, yarp::dev::SelectableControlModeEnum::VOCAB_CM_VELOCITY)))
+#else
         if (!iControlMode->setControlModes(std::vector(axes, VOCAB_CM_VELOCITY).data()))
+#endif
         {
             yCError(KC) << "setVelocityModes failed";
             issueStop();

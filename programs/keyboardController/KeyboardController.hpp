@@ -7,6 +7,8 @@
 #include <vector>
 #include <functional>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/RFModule.h>
 #include <yarp/os/ResourceFinder.h>
 
@@ -74,7 +76,11 @@ private:
 
     void printHelp();
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::size_t axes {0};
+#else
     int axes {0};
+#endif
     int currentActuatorCommand {VOCAB_CC_ACTUATOR_NONE};
 
     double jointPosStep {0.0};

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/SystemClock.h>
@@ -183,24 +185,40 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
 
 bool BasicCartesianControl::checkControlModes(int mode)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::vector<yarp::dev::ControlModeEnum> modes(numJoints);
+#else
     std::vector<int> modes(numJoints);
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iControlMode->getControlModes(modes))
+#else
     if (!iControlMode->getControlModes(modes.data()))
+#endif
     {
         yCWarning(BCC) << "getControlModes() failed";
         return false;
     }
 
-    return std::all_of(modes.begin(), modes.end(), [mode](int retrievedMode) { return retrievedMode == mode; });
+    return std::all_of(modes.begin(), modes.end(), [mode](auto retrievedMode) { return static_cast<int>(retrievedMode) == mode; });
 }
 
 // -----------------------------------------------------------------------------
 
 bool BasicCartesianControl::setControlModes(int mode)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::vector<yarp::dev::ControlModeEnum> modes(numJoints);
+#else
     std::vector<int> modes(numJoints);
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iControlMode->getControlModes(modes))
+#else
     if (!iControlMode->getControlModes(modes.data()))
+#endif
     {
         yCWarning(BCC) << "getControlModes() failed";
         return false;
@@ -210,7 +228,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     for (unsigned int i = 0; i < modes.size(); i++)
     {
-        if (modes[i] != mode)
+        if (static_cast<int>(modes[i]) != mode)
         {
             jointIds.push_back(i);
         }
@@ -218,9 +236,18 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     if (!jointIds.empty())
     {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        auto modeSet = static_cast<yarp::dev::SelectableControlModeEnum>(mode);
+        std::vector modesSet(jointIds.size(), modeSet);
+#else
         modes.assign(jointIds.size(), mode);
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iControlMode->setControlModes(jointIds, modesSet))
+#else
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
+#endif
         {
             yCWarning(BCC) << "setControlModes() failed for mode:" << yarp::os::Vocab32::decode(mode);
             return false;

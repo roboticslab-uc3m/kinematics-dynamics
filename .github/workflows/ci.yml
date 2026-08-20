@@ -46,8 +46,8 @@ jobs:
         robotology:
         # CMake 3.20 instead of 3.19 because of ROS Jazzy
         # CMake 3.22 instead of 3.20 because of the CMAKE_BUILD_TYPE env var
-        - { yarp: yarp-3.11, cmake: 3.22.x }
         - { yarp: yarp-3.12, cmake: 3.22.x }
+        - { yarp: yarp-4.0,  cmake: 3.22.x }
         - { yarp: master,    cmake: 3.22.x }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}

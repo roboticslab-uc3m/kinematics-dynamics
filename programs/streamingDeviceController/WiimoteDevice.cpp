@@ -2,6 +2,8 @@
 
 #include <algorithm> // std::copy
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/sig/Vector.h>
 
@@ -27,13 +29,21 @@ bool WiimoteDevice::acquireInterfaces()
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (std::size_t axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount < 3)
+#else
     if (unsigned int axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount < 3)
+#endif
     {
         yCWarning(SDC) << "Unable to query number of axes or wrong value";
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (std::size_t buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 4)
+#else
     if (unsigned int buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 4)
+#endif
     {
         yCWarning(SDC) << "Unable to query number of buttons or wrong value";
         return false;
@@ -73,7 +83,11 @@ bool WiimoteDevice::initialize(bool usingStreamingPreset)
 bool WiimoteDevice::acquireData()
 {
     double axis1, axis2;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    double buttonA, buttonB, button1, button2;
+#else
     float buttonA, buttonB, button1, button2;
+#endif
 
     if (!iJoypadController->getAxis(0, axis1) ||
         !iJoypadController->getAxis(1, axis2) ||
@@ -88,14 +102,14 @@ bool WiimoteDevice::acquireData()
 
     data = {axis1, axis2, 0.0};
 
-    buttonA = (buttonA != 0.f);
-    buttonB = (buttonB != 0.f);
+    buttonA = (buttonA != 0.0);
+    buttonB = (buttonB != 0.0);
 
-    if (button1 != 0.f)
+    if (button1 != 0.0)
     {
         yawActive = false;
     }
-    else if (button2 != 0.f)
+    else if (button2 != 0.0)
     {
         yawActive = true;
     }
