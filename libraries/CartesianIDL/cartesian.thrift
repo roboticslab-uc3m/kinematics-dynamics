@@ -67,11 +67,6 @@ service CartesianControlMsgs
     yReturnValue moveJoint(1: list<double> xd);
 
     /**
-     * Move in joint space, relative coordinates.
-     */
-    yReturnValue relativeJoint(1: list<double> xd);
-
-    /**
      * Linear move to target position.
      */
     yReturnValue moveLinear(1: list<double> xd);

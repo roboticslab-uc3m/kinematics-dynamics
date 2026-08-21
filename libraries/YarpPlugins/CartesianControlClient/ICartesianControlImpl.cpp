@@ -75,13 +75,6 @@ yarp::dev::ReturnValue CartesianControlClient::moveJoint(const std::vector<doubl
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::relativeJoint(const std::vector<double> & xd)
-{
-    return rpcSender.relativeJoint(xd);
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue CartesianControlClient::moveLinear(const std::vector<double> & xd)
 {
     return rpcSender.moveLinear(xd);

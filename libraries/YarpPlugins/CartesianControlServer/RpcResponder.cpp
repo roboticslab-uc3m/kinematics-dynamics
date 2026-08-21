@@ -31,13 +31,6 @@ yarp::dev::ReturnValue RpcResponder::moveJoint(const std::vector<double> & xd)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::relativeJoint(const std::vector<double> & xd)
-{
-    return iCartesianControl->relativeJoint(xd);
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue RpcResponder::moveLinear(const std::vector<double> & xd)
 {
     return iCartesianControl->moveLinear(xd);

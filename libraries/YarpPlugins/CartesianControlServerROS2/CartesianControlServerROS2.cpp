@@ -111,21 +111,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_relj = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/relj", 10,
-        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
-        {
-            const auto v = pose_to_vector(msg.get());
-            yCDebug(CCS) << "Received relj command:" << v;
-            m_iCartesianControl->relativeJoint(v);
-        });
-
-    if (!m_relj)
-    {
-        yCError(CCS) << "Could not initialize the relj command subscription";
-        return false;
-    }
-
     m_movl = m_node->create_subscription<geometry_msgs::msg::Pose>(
         prefix + "/command/movl", 10,
         [this](const geometry_msgs::msg::Pose::SharedPtr msg)
@@ -374,7 +359,6 @@ void CartesianControlServerROS2::destroyRosHandlers()
 {
     m_stat.reset();
     m_movj.reset();
-    m_relj.reset();
     m_movl.reset();
     m_movv.reset();
     m_forc.reset();

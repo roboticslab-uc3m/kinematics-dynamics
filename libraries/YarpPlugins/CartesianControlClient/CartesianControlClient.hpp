@@ -63,7 +63,6 @@ public:
     yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
     yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
     yarp::dev::ReturnValue gravityCompensation() override;

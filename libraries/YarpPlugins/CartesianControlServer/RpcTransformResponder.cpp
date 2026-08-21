@@ -54,20 +54,6 @@ yarp::dev::ReturnValue RpcTransformResponder::moveJoint(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcTransformResponder::relativeJoint(const std::vector<double> & xd)
-{
-    std::vector<double> transformed;
-
-    if (!transformIncomingData(xd, transformed))
-    {
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-    }
-
-    return RpcResponder::relativeJoint(transformed);
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue RpcTransformResponder::moveLinear(const std::vector<double> & xd)
 {
     std::vector<double> transformed;

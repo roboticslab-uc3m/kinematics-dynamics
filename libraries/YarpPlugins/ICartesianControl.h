@@ -45,7 +45,6 @@ public:
         STATE = yarp::os::createVocab32('s','t','a','t'), ///< Current state and position
         INV = yarp::os::createVocab32('i','n','v'),       ///< Inverse kinematics
         MOVEJ = yarp::os::createVocab32('m','o','v','j'), ///< Move in joint space, absolute coordinates
-        RELJ = yarp::os::createVocab32('r','e','l','j'),  ///< Move in joint space, relative coordinates
         MOVEL = yarp::os::createVocab32('m','o','v','l'), ///< Linear move to target position
         MOVEV = yarp::os::createVocab32('m','o','v','v'), ///< Linear move with given velocity
         GCMP = yarp::os::createVocab32('g','c','m','p'),  ///< Gravity compensation
@@ -159,7 +158,7 @@ public:
     virtual yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) = 0;
 
     /**
-     * @brief Move in joint space, absolute coordinates
+     * @brief Move in joint space
      *
      * Perform inverse kinematics and move to desired position in joint space using absolute
      * coordinates.
@@ -168,27 +167,9 @@ public:
      * three elements denote translation (meters), last three denote rotation in scaled
      * axis-angle representation (radians).
      *
-     * @see relj (relative coordinates)
-     *
      * @return true on success, false otherwise
      */
     virtual yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) = 0;
-
-    /**
-     * @brief Move in joint space, relative coordinates
-     *
-     * Perform inverse kinematics and move to desired position in joint space using relative
-     * coordinates.
-     *
-     * @param xd 6-element vector describing desired offset in cartesian space; first
-     * three elements denote translation (meters), last three denote rotation in scaled
-     * axis-angle representation (radians).
-     *
-     * @see movj (absolute coordinates)
-     *
-     * @return true on success, false otherwise
-     */
-    virtual yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move to target position
@@ -404,9 +385,9 @@ public:
     virtual bool movj(const std::vector<double> & xd)
     { return moveJoint(xd); }
 
-    [[deprecated("use `ICartesianControl::relativeJoint` instead")]]
+    [[deprecated("use `ICartesianControl::getState and moveJoint` instead")]]
     virtual bool relj(const std::vector<double> & xd)
-    { return relativeJoint(xd); }
+    { return false; }
 
     [[deprecated("use `ICartesianControl::moveLinear` instead")]]
     virtual bool movl(const std::vector<double> & xd)
@@ -480,8 +461,8 @@ constexpr auto VOCAB_CC_INV = static_cast<int>(roboticslab::ICartesianControl::R
 [[deprecated("use `ICartesianControl::RPC::MOVEJ` instead")]]
 constexpr auto VOCAB_CC_MOVJ = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEJ);
 
-[[deprecated("use `ICartesianControl::RPC::RELJ` instead")]]
-constexpr auto VOCAB_CC_RELJ = static_cast<int>(roboticslab::ICartesianControl::RPC::RELJ);
+[[deprecated("use `ICartesianControl::RPC::MOVJ` instead")]]
+constexpr auto VOCAB_CC_RELJ = 0;
 
 [[deprecated("use `ICartesianControl::RPC::MOVEL` instead")]]
 constexpr auto VOCAB_CC_MOVL = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEL);

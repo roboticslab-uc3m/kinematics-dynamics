@@ -103,7 +103,6 @@ public:
     return_get_state getState() override;
     return_solve_pose solvePose(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
     yarp::dev::ReturnValue gravityCompensation() override;
@@ -139,7 +138,6 @@ public:
     return_get_state getState() override;
     return_solve_pose solvePose(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
 

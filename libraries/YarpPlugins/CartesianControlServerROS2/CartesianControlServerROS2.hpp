@@ -75,7 +75,6 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movj;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_relj;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movl;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_movv;
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_forc;

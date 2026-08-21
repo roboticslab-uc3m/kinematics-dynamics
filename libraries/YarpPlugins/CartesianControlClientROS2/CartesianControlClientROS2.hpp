@@ -50,7 +50,6 @@ public:
     yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
     yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
     yarp::dev::ReturnValue gravityCompensation() override;
@@ -87,7 +86,6 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movj;
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_relj;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movl;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_movv;
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_forc;

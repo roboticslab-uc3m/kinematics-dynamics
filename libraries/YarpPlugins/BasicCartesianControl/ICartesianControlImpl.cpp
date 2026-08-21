@@ -163,31 +163,6 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::relativeJoint(const std::vector<double> &xd)
-{
-    if (referenceFrame == ICartesianSolver::Frame::TCP)
-    {
-        return moveJoint(xd);
-    }
-
-    std::vector<double> x;
-
-    if (!getState(x))
-    {
-        yCError(BCC) << "stat() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-    }
-
-    for (unsigned int i = 0; i < xd.size(); i++)
-    {
-        x[i] += xd[i];
-    }
-
-    return moveJoint(x);
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numJoints);

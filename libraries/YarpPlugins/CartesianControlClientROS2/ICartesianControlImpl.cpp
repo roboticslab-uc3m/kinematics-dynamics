@@ -265,30 +265,6 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<d
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::relativeJoint(const std::vector<double> & xd)
-{
-    geometry_msgs::msg::Pose poseMsg;
-    poseMsg.position.x = xd[0];
-    poseMsg.position.y = xd[1];
-    poseMsg.position.z = xd[2];
-
-    KDL::Vector axis(xd[3], xd[4], xd[5]);
-    double angle = axis.Norm();
-
-    KDL::Rotation::Rot(axis, angle).GetQuaternion(
-        poseMsg.orientation.x,
-        poseMsg.orientation.y,
-        poseMsg.orientation.z,
-        poseMsg.orientation.w
-    );
-
-    m_relj->publish(poseMsg);
-
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue CartesianControlClientROS2::moveLinear(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
