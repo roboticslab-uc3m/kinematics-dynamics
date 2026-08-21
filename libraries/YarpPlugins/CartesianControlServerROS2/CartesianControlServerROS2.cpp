@@ -53,7 +53,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_pose = m_node->create_subscription<geometry_msgs::msg::Pose>(
         prefix + "/command/pose", 10,
-        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received pose command:" << v;
@@ -68,7 +68,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_twist = m_node->create_subscription<geometry_msgs::msg::Twist>(
         prefix + "/command/twist", 10,
-        [this](const geometry_msgs::msg::Twist::SharedPtr msg)
+        [this](geometry_msgs::msg::Twist::ConstSharedPtr msg)
         {
             const auto v = twist_to_vector(msg.get());
             yCDebug(CCS) << "Received twist command:" << v;
@@ -83,7 +83,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_wrench = m_node->create_subscription<geometry_msgs::msg::Wrench>(
         prefix + "/command/wrench", 10,
-        [this](const geometry_msgs::msg::Wrench::SharedPtr msg)
+        [this](geometry_msgs::msg::Wrench::ConstSharedPtr msg)
         {
             const auto v = wrench_to_vector(msg.get());
             yCDebug(CCS) << "Received wrench command:" << v;
@@ -98,7 +98,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_movj = m_node->create_subscription<geometry_msgs::msg::Pose>(
         prefix + "/command/movj", 10,
-        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received movj command:" << v;
@@ -113,7 +113,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_movl = m_node->create_subscription<geometry_msgs::msg::Pose>(
         prefix + "/command/movl", 10,
-        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received movl command:" << v;
@@ -128,7 +128,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_movv = m_node->create_subscription<geometry_msgs::msg::Twist>(
         prefix + "/command/movv", 10,
-        [this](const geometry_msgs::msg::Twist::SharedPtr msg)
+        [this](geometry_msgs::msg::Twist::ConstSharedPtr msg)
         {
             const auto v = twist_to_vector(msg.get());
             yCDebug(CCS) << "Received movv command:" << v;
@@ -143,7 +143,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_forc = m_node->create_subscription<geometry_msgs::msg::Wrench>(
         prefix + "/command/forc", 10,
-        [this](const geometry_msgs::msg::Wrench::SharedPtr msg)
+        [this](geometry_msgs::msg::Wrench::ConstSharedPtr msg)
         {
             const auto v = wrench_to_vector(msg.get());
             yCDebug(CCS) << "Received forc command:" << v;
@@ -158,7 +158,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_tool = m_node->create_subscription<geometry_msgs::msg::Pose>(
         prefix + "/command/tool", 10,
-        [this](const geometry_msgs::msg::Pose::SharedPtr msg)
+        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received tool command:" << v;
@@ -173,7 +173,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_act = m_node->create_subscription<std_msgs::msg::Int32>(
         prefix + "/command/gripper", 10,
-        [this](const std_msgs::msg::Int32::SharedPtr msg)
+        [this](std_msgs::msg::Int32::ConstSharedPtr msg)
         {
             switch (msg->data)
             {

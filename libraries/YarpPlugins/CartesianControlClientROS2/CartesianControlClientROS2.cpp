@@ -29,7 +29,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
     m_subscription_state = m_node->create_subscription<geometry_msgs::msg::PoseStamped>(
         m_remote + "/state/pose",
         10,
-        [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+        [this](geometry_msgs::msg::PoseStamped::ConstSharedPtr msg)
         {
             std::lock_guard lock(m_mutex_state);
             m_pose_last = *msg;

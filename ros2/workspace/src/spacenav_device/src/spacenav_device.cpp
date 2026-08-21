@@ -133,7 +133,7 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
 
 // -----------------------Callback from SpaceNavigator----------------------------------
 
-void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
+void SpacenavSubscriber::spnav_callback(sensor_msgs::msg::Joy::ConstSharedPtr msg)
 {
     std::vector<float> a = msg->axes;
     std::vector<int> b = msg->buttons;
@@ -289,7 +289,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
 
 // ---------------------- Get initial position and orientation from robot -----------------------
 
-void SpacenavSubscriber::state_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+void SpacenavSubscriber::state_callback(geometry_msgs::msg::PoseStamped::ConstSharedPtr msg)
 {
     if (!initial_pose_set_ && streaming_msg_ == "pose")
     {

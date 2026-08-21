@@ -34,8 +34,8 @@ public:
     SpacenavSubscriber();
 
 private:
-    void spnav_callback(const sensor_msgs::msg::Joy::SharedPtr msg);
-    void state_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
+    void spnav_callback(sensor_msgs::msg::Joy::ConstSharedPtr msg);
+    void state_callback(geometry_msgs::msg::PoseStamped::ConstSharedPtr msg);
     bool set_preset_streaming_cmd(const std::string &value);
     SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> &parameters);
     void timer_callback();
