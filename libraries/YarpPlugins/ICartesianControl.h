@@ -50,7 +50,6 @@ public:
         GCMP = yarp::os::createVocab32('g','c','m','p'),  ///< Gravity compensation
         FORCE = yarp::os::createVocab32('f','o','r','c'), ///< Force control
         STOP = yarp::os::createVocab32('s','t','o','p'),  ///< Stop control
-        WAIT = yarp::os::createVocab32('w','a','i','t'),  ///< Wait motion done
         TOOL = yarp::os::createVocab32('t','o','o','l'),  ///< Change tool
         ACT = yarp::os::createVocab32('a','c','t')        ///< Actuate tool
     };
@@ -229,19 +228,6 @@ public:
     virtual yarp::dev::ReturnValue stopControl() = 0;
 
     /**
-     * @brief Wait until completion
-     *
-     * Block execution until the movement is completed, errors occur or timeout
-     * is reached.
-     *
-     * @param timeout Timeout in seconds, '0.0' means no timeout.
-     *
-     * @return true on success, false if errors occurred during the execution
-     * of the trajectory
-     */
-    virtual yarp::dev::ReturnValue wait(double timeout = 0.0) = 0;
-
-    /**
      * @brief Change tool
      *
      * Unload current tool if any and append new tool frame to the kinematic chain.
@@ -405,7 +391,9 @@ public:
     virtual bool forc(const std::vector<double> & fd)
     { return forceControl(fd); }
 
-    // virtual bool wait(double timeout = 0.0)
+    [[deprecated("use `ICartesianControl::getState` instead")]]
+    virtual bool wait(double timeout = 0.0)
+    { return false; }
 
     [[deprecated("use `ICartesianControl::changeTool` instead")]]
     virtual bool tool(const std::vector<double> & x)
@@ -479,8 +467,8 @@ constexpr auto VOCAB_CC_FORC = static_cast<int>(roboticslab::ICartesianControl::
 [[deprecated("use `ICartesianControl::RPC::STOP` instead")]]
 constexpr auto VOCAB_CC_STOP = static_cast<int>(roboticslab::ICartesianControl::RPC::STOP);
 
-[[deprecated("use `ICartesianControl::RPC::WAIT` instead")]]
-constexpr auto VOCAB_CC_WAIT = static_cast<int>(roboticslab::ICartesianControl::RPC::WAIT);
+[[deprecated("use `ICartesianControl::RPC::STATE` instead")]]
+constexpr auto VOCAB_CC_WAIT = 0;
 
 [[deprecated("use `ICartesianControl::RPC::TOOL` instead")]]
 constexpr auto VOCAB_CC_TOOL = static_cast<int>(roboticslab::ICartesianControl::RPC::TOOL);

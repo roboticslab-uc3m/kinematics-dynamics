@@ -108,7 +108,6 @@ public:
     yarp::dev::ReturnValue gravityCompensation() override;
     yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) override;
     yarp::dev::ReturnValue stopControl() override;
-    yarp::dev::ReturnValue wait(const double timeout = 0.0) override;
     yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
     yarp::dev::ReturnValue actuateTool(const roboticslab::ICartesianControl::Actuator command) override;
     yarp::dev::ReturnValue setParameter(const roboticslab::ICartesianControl::Config vocab, const double value) override;

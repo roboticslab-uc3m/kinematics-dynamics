@@ -92,11 +92,6 @@ service CartesianControlMsgs
     yReturnValue stopControl();
 
     /**
-     * Wait until completion.
-     */
-    yReturnValue wait(1: double timeout = 0.0);
-
-    /**
      * Change tool.
      */
     yReturnValue changeTool(1: list<double> x);

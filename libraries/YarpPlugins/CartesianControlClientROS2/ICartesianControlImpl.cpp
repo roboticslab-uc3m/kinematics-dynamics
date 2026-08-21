@@ -349,14 +349,6 @@ yarp::dev::ReturnValue CartesianControlClientROS2::stopControl()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::wait(double timeout)
-{
-    yCWarning(CCC) << "wait() not implemented for CartesianControlClientROS2";
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue CartesianControlClientROS2::changeTool(const std::vector<double> & x)
 {
     geometry_msgs::msg::Pose poseMsg;

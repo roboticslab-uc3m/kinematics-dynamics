@@ -66,13 +66,6 @@ yarp::dev::ReturnValue RpcResponder::stopControl()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::wait(double timeout)
-{
-    return iCartesianControl->wait(timeout);
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue RpcResponder::changeTool(const std::vector<double> & x)
 {
     return iCartesianControl->changeTool(x);

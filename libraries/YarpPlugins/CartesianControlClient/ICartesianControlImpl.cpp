@@ -110,13 +110,6 @@ yarp::dev::ReturnValue CartesianControlClient::stopControl()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::wait(double timeout)
-{
-    return rpcSender.wait(timeout);
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue CartesianControlClient::changeTool(const std::vector<double> & x)
 {
     return rpcSender.changeTool(x);

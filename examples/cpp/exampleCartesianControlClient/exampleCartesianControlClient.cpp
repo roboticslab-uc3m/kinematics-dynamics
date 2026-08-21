@@ -21,10 +21,26 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/SystemClock.h>
 
 #include <yarp/dev/PolyDriver.h>
 
 #include <ICartesianControl.h>
+
+namespace
+{
+    void awaitMotionCompletion(roboticslab::ICartesianControl * iCartesianControl)
+    {
+        std::vector<double> vector;
+        roboticslab::ICartesianControl::State state;
+
+        do
+        {
+            yarp::os::SystemClock::delaySystem(0.1);
+        }
+        while (iCartesianControl->getState(vector, &state) && state != roboticslab::ICartesianControl::State::NONE);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -50,7 +66,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 
     if (!dd.view(iCartesianControl))
     {
@@ -71,7 +87,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 2: move forward along axis X";
 
@@ -81,7 +97,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 3: move right along axis Y";
 
@@ -91,7 +107,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 4: rotate -12 degrees about global axis Y";
 
@@ -101,7 +117,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 5: rotate 45 degrees about global axis X";
 
@@ -111,7 +127,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 6: poss (0 0 0 -90 0 0)";
 
@@ -121,7 +137,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 7: homing";
 
@@ -131,7 +147,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     dd.close();
     return 0;

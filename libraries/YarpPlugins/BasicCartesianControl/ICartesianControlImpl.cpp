@@ -370,37 +370,6 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::wait(double timeout)
-{
-    auto state = getCurrentState();
-
-    if (state != State::MOVEJ && state != State::MOVEL)
-    {
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
-    }
-
-    double start = yarp::os::SystemClock::nowSystem();
-
-    while (state != State::NONE)
-    {
-        if (timeout != 0.0 && yarp::os::SystemClock::nowSystem() - start > timeout)
-        {
-            yCWarning(BCC, "Timeout reached (%f seconds), stopping control", timeout);
-            stopControl();
-            break;
-        }
-
-        yarp::os::SystemClock::delaySystem(m_waitPeriodMs / 1000.0);
-        state = getCurrentState();
-    }
-
-    return cmcSuccess
-        ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-}
-
-// -----------------------------------------------------------------------------
-
 yarp::dev::ReturnValue BasicCartesianControl::changeTool(const std::vector<double> &x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
