@@ -102,7 +102,6 @@ public:
      */
     enum class Config
     {
-        PARAMS = yarp::os::createVocab32('p','r','m','s'),        ///< Parameter group
         GAIN = yarp::os::createVocab32('c','p','c','g'),          ///< Controller gain
         TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'), ///< Trajectory duration [s]
         TRAJ_REF_SPD = yarp::os::createVocab32('c','p','t','s'),  ///< Trajectory reference speed [m/s]
@@ -518,8 +517,8 @@ constexpr auto VOCAB_CC_ACTUATOR_STOP_GRIPPER = static_cast<int>(roboticslab::IC
 [[deprecated("use `ICartesianControl::Actuator::GENERIC` instead")]]
 constexpr auto VOCAB_CC_ACTUATOR_GENERIC = static_cast<int>(roboticslab::ICartesianControl::Actuator::GENERIC);
 
-[[deprecated("use `ICartesianControl::Config::PARAMS` instead")]]
-constexpr auto VOCAB_CC_CONFIG_PARAMS = static_cast<int>(roboticslab::ICartesianControl::Config::PARAMS);
+[[deprecated("unused")]]
+constexpr auto VOCAB_CC_CONFIG_PARAMS = 0;
 
 [[deprecated("use `ICartesianControl::Config::GAIN` instead")]]
 constexpr auto VOCAB_CC_CONFIG_GAIN = static_cast<int>(roboticslab::ICartesianControl::Config::GAIN);
