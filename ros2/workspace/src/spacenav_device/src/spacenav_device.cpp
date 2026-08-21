@@ -83,12 +83,12 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
     {
         if (!rclcpp::ok())
         {
-            RCLCPP_ERROR(get_logger(), "Interrupted while waiting for the service. Exiting.");
+            RCLCPP_ERROR_STREAM(get_logger(), "Interrupted while waiting for the service. Exiting.");
             throw std::runtime_error("Interrupted while waiting for the service. Exiting.");
             return;
         }
 
-        RCLCPP_INFO(get_logger(), "Service not available, waiting again...");
+        RCLCPP_INFO_STREAM(get_logger(), "Service not available, waiting again...");
     }
 
     // Subscribers
@@ -202,7 +202,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
         }
         else
         {
-            RCLCPP_ERROR(get_logger(), "Failed to create Twist message");
+            RCLCPP_ERROR_STREAM(get_logger(), "Failed to create Twist message");
         }
     }
     else if (streaming_msg_ == "pose")
@@ -213,7 +213,7 @@ void SpacenavSubscriber::spnav_callback(const sensor_msgs::msg::Joy::SharedPtr m
 
         if (!initial_pose_set_)
         {
-            RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000, "Initial pose not set. Cannot publish Pose message yet.");
+            RCLCPP_WARN_STREAM_THROTTLE(get_logger(), *get_clock(), 1000, "Initial pose not set. Cannot publish Pose message yet.");
             return;
         }
         // Set initial position as a virtual point to avoid PID compensation
@@ -297,7 +297,7 @@ void SpacenavSubscriber::state_callback(const geometry_msgs::msg::PoseStamped::S
         fromMsg(msg->pose.orientation, initial_orientation_);
 
         initial_pose_set_ = true;
-        RCLCPP_INFO(get_logger(), "Initial pose correctly set.");
+        RCLCPP_INFO_STREAM(get_logger(), "Initial pose correctly set.");
     }
 }
 
@@ -322,11 +322,11 @@ bool SpacenavSubscriber::set_preset_streaming_cmd(const std::string &value)
     {
         if (future.get()->results[0].successful)
         {
-            RCLCPP_INFO(get_logger(), "Preset streaming command correctly established in external node.");
+            RCLCPP_INFO_STREAM(get_logger(), "Preset streaming command correctly established in external node.");
         }
         else
         {
-            RCLCPP_ERROR(get_logger(), "Failed to set preset streaming command.");
+            RCLCPP_ERROR_STREAM(get_logger(), "Failed to set preset streaming command.");
         }
     };
 
@@ -348,7 +348,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
         {
             if (streaming_msg_ == param.value_to_string())
             {
-                RCLCPP_WARN(get_logger(), "Param for streaming_msg is already set to %s!", streaming_msg_.c_str());
+                RCLCPP_WARN_STREAM(get_logger(), "Param for streaming_msg is already set to " << streaming_msg_);
                 continue;
             }
             else
@@ -363,7 +363,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(get_logger(), "Param for streaming_msg correctly established: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO_STREAM(get_logger(), "Param for streaming_msg correctly set: " << streaming_msg_);
                     }
 
                 }
@@ -377,7 +377,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly established: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO_STREAM(get_logger(), "Param for streaming_msg correctly set: " << streaming_msg_);
 
                         // Reset initial pose
                         initial_pose_set_ = false;
@@ -394,14 +394,14 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
                     }
                     else
                     {
-                        RCLCPP_INFO(get_logger(),"Param for streaming_msg correctly established: %s", streaming_msg_.c_str());
+                        RCLCPP_INFO_STREAM(get_logger(), "Param for streaming_msg correctly set: " << streaming_msg_);
                     }
                 }
                 else
                 {
                     result.successful = false;
                     result.reason = "Invalid parameter type for streaming_msg. Only 'twist', 'pose' or 'wrench' are allowed.";
-                    RCLCPP_ERROR(get_logger(), result.reason.c_str());
+                    RCLCPP_ERROR_STREAM(get_logger(), result.reason);
                 }
             }
         }
@@ -410,13 +410,13 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
             if (param.as_double() > 0)
             {
                 scale_ = param.as_double();
-                RCLCPP_INFO(get_logger(), "Param for scale correctly established: %f", scale_);
+                RCLCPP_INFO_STREAM(get_logger(), "Param for scale correctly set: " << scale_);
             }
             else
             {
                 result.successful = false;
                 result.reason = "Invalid parameter for scale. Only positive values are allowed.";
-                RCLCPP_ERROR(get_logger(), result.reason.c_str());
+                RCLCPP_ERROR_STREAM(get_logger(), result.reason);
             }
         }
     }
