@@ -27,7 +27,7 @@ void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const s
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::stat(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x, State * state, double * timestamp)
 {
     if (!fkInPort.isClosed())
     {
@@ -41,7 +41,7 @@ yarp::dev::ReturnValue CartesianControlClient::stat(std::vector<double> & x, Sta
         }
     }
 
-    auto ret = rpcSender.stat();
+    auto ret = rpcSender.getState();
     x = ret.x;
 
     if (state != nullptr)
@@ -59,53 +59,53 @@ yarp::dev::ReturnValue CartesianControlClient::stat(std::vector<double> & x, Sta
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::inv(const std::vector<double> & xd, std::vector<double> & q)
+yarp::dev::ReturnValue CartesianControlClient::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
-    auto ret = rpcSender.inv(xd);
+    auto ret = rpcSender.solvePose(xd);
     q = ret.q;
     return ret.ret;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::movj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClient::moveJoint(const std::vector<double> & xd)
 {
-    return rpcSender.movj(xd);
+    return rpcSender.moveJoint(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::relj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClient::relativeJoint(const std::vector<double> & xd)
 {
-    return rpcSender.relj(xd);
+    return rpcSender.relativeJoint(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::movl(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClient::moveLinear(const std::vector<double> & xd)
 {
-    return rpcSender.movl(xd);
+    return rpcSender.moveLinear(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::movv(const std::vector<double> & xdotd)
+yarp::dev::ReturnValue CartesianControlClient::moveVelocity(const std::vector<double> & xdotd)
 {
-    return rpcSender.movv(xdotd);
+    return rpcSender.moveVelocity(xdotd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::gcmp()
+yarp::dev::ReturnValue CartesianControlClient::gravityCompensation()
 {
-    return rpcSender.gcmp();
+    return rpcSender.gravityCompensation();
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::forc(const std::vector<double> & fd)
+yarp::dev::ReturnValue CartesianControlClient::forceControl(const std::vector<double> & fd)
 {
-    return rpcSender.forc(fd);
+    return rpcSender.forceControl(fd);
 }
 
 // -----------------------------------------------------------------------------
@@ -124,16 +124,16 @@ yarp::dev::ReturnValue CartesianControlClient::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::tool(const std::vector<double> & x)
+yarp::dev::ReturnValue CartesianControlClient::changeTool(const std::vector<double> & x)
 {
-    return rpcSender.tool(x);
+    return rpcSender.changeTool(x);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::act(Actuator command)
+yarp::dev::ReturnValue CartesianControlClient::actuateTool(Actuator command)
 {
-    return rpcSender.act(command);
+    return rpcSender.actuateTool(command);
 }
 
 // -----------------------------------------------------------------------------

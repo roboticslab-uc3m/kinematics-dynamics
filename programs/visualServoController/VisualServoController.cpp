@@ -81,7 +81,7 @@ bool VisualServoController::configure(yarp::os::ResourceFinder & rf)
     }
 #endif
 
-    if (!iCartesianControl->act(ICartesianControl::Actuator::OPEN))
+    if (!iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN))
     {
         yCError(VSC) << "Unable to actuate tool";
         return false;
@@ -132,7 +132,7 @@ bool VisualServoController::updateModule()
 
         while (yarp::os::SystemClock::now() - now < FINAL_ACT_DELAY)
         {
-            iCartesianControl->act(ICartesianControl::Actuator::CLOSE);
+            iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
             yarp::os::SystemClock::delaySystem(0.1);
         }
 

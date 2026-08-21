@@ -100,18 +100,18 @@ class RpcResponder : public CartesianControlMsgs,
                      public ResponderBase
 {
 public:
-    return_stat stat() override;
-    return_inv inv(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movj(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relj(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movl(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movv(const std::vector<double> & xdotd) override;
-    yarp::dev::ReturnValue gcmp() override;
-    yarp::dev::ReturnValue forc(const std::vector<double> & fd) override;
+    return_get_state getState() override;
+    return_solve_pose solvePose(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
+    yarp::dev::ReturnValue gravityCompensation() override;
+    yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) override;
     yarp::dev::ReturnValue stopControl() override;
     yarp::dev::ReturnValue wait(const double timeout = 0.0) override;
-    yarp::dev::ReturnValue tool(const std::vector<double> & x) override;
-    yarp::dev::ReturnValue act(const roboticslab::ICartesianControl::Actuator command) override;
+    yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue actuateTool(const roboticslab::ICartesianControl::Actuator command) override;
     yarp::dev::ReturnValue setParameter(const roboticslab::ICartesianControl::Config vocab, const double value) override;
     return_get_parameter getParameter(const roboticslab::ICartesianControl::Config vocab) override;
     yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
@@ -136,12 +136,12 @@ public:
           units(units)
     {}
 
-    return_stat stat() override;
-    return_inv inv(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movj(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relj(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movl(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue tool(const std::vector<double> & x) override;
+    return_get_state getState() override;
+    return_solve_pose solvePose(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
 
 private:
     bool transformIncomingData(const std::vector<double> & vin, std::vector<double> & vout);

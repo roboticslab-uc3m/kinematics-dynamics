@@ -42,18 +42,18 @@ public:
      */
     enum class RPC
     {
-        STAT = yarp::os::createVocab32('s','t','a','t'), ///< Current state and position
-        INV = yarp::os::createVocab32('i','n','v'),      ///< Inverse kinematics
-        MOVJ = yarp::os::createVocab32('m','o','v','j'), ///< Move in joint space, absolute coordinates
-        RELJ = yarp::os::createVocab32('r','e','l','j'), ///< Move in joint space, relative coordinates
-        MOVL = yarp::os::createVocab32('m','o','v','l'), ///< Linear move to target position
-        MOVV = yarp::os::createVocab32('m','o','v','v'), ///< Linear move with given velocity
-        GCMP = yarp::os::createVocab32('g','c','m','p'), ///< Gravity compensation
-        FORC = yarp::os::createVocab32('f','o','r','c'), ///< Force control
-        STOP = yarp::os::createVocab32('s','t','o','p'), ///< Stop control
-        WAIT = yarp::os::createVocab32('w','a','i','t'), ///< Wait motion done
-        TOOL = yarp::os::createVocab32('t','o','o','l'), ///< Change tool
-        ACT = yarp::os::createVocab32('a','c','t')       ///< Actuate tool
+        STATE = yarp::os::createVocab32('s','t','a','t'), ///< Current state and position
+        INV = yarp::os::createVocab32('i','n','v'),       ///< Inverse kinematics
+        MOVEJ = yarp::os::createVocab32('m','o','v','j'), ///< Move in joint space, absolute coordinates
+        RELJ = yarp::os::createVocab32('r','e','l','j'),  ///< Move in joint space, relative coordinates
+        MOVEL = yarp::os::createVocab32('m','o','v','l'), ///< Linear move to target position
+        MOVEV = yarp::os::createVocab32('m','o','v','v'), ///< Linear move with given velocity
+        GCMP = yarp::os::createVocab32('g','c','m','p'),  ///< Gravity compensation
+        FORCE = yarp::os::createVocab32('f','o','r','c'), ///< Force control
+        STOP = yarp::os::createVocab32('s','t','o','p'),  ///< Stop control
+        WAIT = yarp::os::createVocab32('w','a','i','t'),  ///< Wait motion done
+        TOOL = yarp::os::createVocab32('t','o','o','l'),  ///< Change tool
+        ACT = yarp::os::createVocab32('a','c','t')        ///< Actuate tool
     };
 
     /**
@@ -75,12 +75,12 @@ public:
      */
     enum class State
     {
-        NONE = yarp::os::createVocab32('n','c','t','l'), ///< Not controlling
-        MOVJ = yarp::os::createVocab32('m','o','v','j'), ///< Executing MOVJ command
-        MOVL = yarp::os::createVocab32('m','o','v','l'), ///< Executing MOVL command
-        MOVV = yarp::os::createVocab32('m','o','v','v'), ///< Executing MOVV command
-        GCMP = yarp::os::createVocab32('g','c','m','p'), ///< Executing GCMP command
-        FORC = yarp::os::createVocab32('f','o','r','c')  ///< Executing FORC command
+        NONE = yarp::os::createVocab32('n','c','t','l'),  ///< Not controlling
+        MOVEJ = yarp::os::createVocab32('m','o','v','j'), ///< Executing MOVEJ command
+        MOVEL = yarp::os::createVocab32('m','o','v','l'), ///< Executing MOVEL command
+        MOVEV = yarp::os::createVocab32('m','o','v','v'), ///< Executing MOVEV command
+        GCMP = yarp::os::createVocab32('g','c','m','p'),  ///< Executing GCMP command
+        FORCE = yarp::os::createVocab32('f','o','r','c')  ///< Executing FORCE command
     };
 
     /**
@@ -142,7 +142,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue stat(std::vector<double> & x, State * state = nullptr, double * timestamp = nullptr) = 0;
+    virtual yarp::dev::ReturnValue getState(std::vector<double> & x, State * state = nullptr, double * timestamp = nullptr) = 0;
 
     /**
      * @brief Inverse kinematics
@@ -156,7 +156,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue inv(const std::vector<double> & xd, std::vector<double> & q) = 0;
+    virtual yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) = 0;
 
     /**
      * @brief Move in joint space, absolute coordinates
@@ -172,7 +172,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue movj(const std::vector<double> & xd) = 0;
+    virtual yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Move in joint space, relative coordinates
@@ -188,7 +188,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue relj(const std::vector<double> & xd) = 0;
+    virtual yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move to target position
@@ -201,7 +201,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue movl(const std::vector<double> & xd) = 0;
+    virtual yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) = 0;
 
     /**
      * @brief Linear move with given velocity
@@ -214,7 +214,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue movv(const std::vector<double> & xdotd) = 0;
+    virtual yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) = 0;
 
     /**
      * @brief Gravity compensation
@@ -223,7 +223,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue gcmp() = 0;
+    virtual yarp::dev::ReturnValue gravityCompensation() = 0;
 
     /**
      * @brief Force control
@@ -236,7 +236,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue forc(const std::vector<double> & fd) = 0;
+    virtual yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) = 0;
 
     /**
      * @brief Stop control
@@ -271,7 +271,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue tool(const std::vector<double> & x) = 0;
+    virtual yarp::dev::ReturnValue changeTool(const std::vector<double> & x) = 0;
 
     /**
      * @brief Actuate tool
@@ -282,7 +282,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue act(Actuator command) = 0;
+    virtual yarp::dev::ReturnValue actuateTool(Actuator command) = 0;
 
     /** @} */
 
@@ -392,27 +392,62 @@ public:
     /** @} */
 
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-    // bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr)
-    // { return stat(x, reinterpret_cast<State *>(state), timestamp); }
+    [[deprecated("use `ICartesianControl::getState` instead")]]
+    virtual bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr)
+    { return getState(x, reinterpret_cast<State *>(state), timestamp); }
+
+    [[deprecated("use `ICartesianControl::solvePose` instead")]]
+    virtual bool inv(const std::vector<double> & xd, std::vector<double> & q)
+    { return solvePose(xd, q); }
+
+    [[deprecated("use `ICartesianControl::moveJoint` instead")]]
+    virtual bool movj(const std::vector<double> & xd)
+    { return moveJoint(xd); }
+
+    [[deprecated("use `ICartesianControl::relativeJoint` instead")]]
+    virtual bool relj(const std::vector<double> & xd)
+    { return relativeJoint(xd); }
+
+    [[deprecated("use `ICartesianControl::moveLinear` instead")]]
+    virtual bool movl(const std::vector<double> & xd)
+    { return moveLinear(xd); }
+
+    [[deprecated("use `ICartesianControl::moveVelocity` instead")]]
+    virtual bool movv(const std::vector<double> & xdotd)
+    { return moveVelocity(xdotd); }
+
+    [[deprecated("use `ICartesianControl::gravityCompensation` instead")]]
+    virtual bool gcmp()
+    { return gravityCompensation(); }
+
+    [[deprecated("use `ICartesianControl::forceControl` instead")]]
+    virtual bool forc(const std::vector<double> & fd)
+    { return forceControl(fd); }
+
+    // virtual bool wait(double timeout = 0.0)
+
+    [[deprecated("use `ICartesianControl::changeTool` instead")]]
+    virtual bool tool(const std::vector<double> & x)
+    { return changeTool(x); }
 
     [[deprecated("use `ICartesianControl::Actuator` signature instead")]]
-    bool act(int command)
-    { return act(static_cast<Actuator>(command)); }
+    virtual bool act(int command)
+    { return actuateTool(static_cast<Actuator>(command)); }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
-    bool setParameter(int vocab, double value)
+    virtual bool setParameter(int vocab, double value)
     { return setParameter(static_cast<Config>(vocab), value); }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
-    bool getParameter(int vocab, double * value)
+    virtual bool getParameter(int vocab, double * value)
     { return getParameter(static_cast<Config>(vocab), value); }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
-    bool setParameters(const std::map<int, double> & params)
+    virtual bool setParameters(const std::map<int, double> & params)
     { return std::all_of(params.begin(), params.end(), [this](const auto & kv) { return setParameter(static_cast<Config>(kv.first), kv.second); }); }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
-    bool getParameters(std::map<int, double> & params)
+    virtual bool getParameters(std::map<int, double> & params)
     { return std::all_of(params.begin(), params.end(), [this](auto & kv) { return getParameter(static_cast<Config>(kv.first), &kv.second); }); }
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 };
@@ -436,29 +471,29 @@ constexpr auto VOCAB_CC_GET = static_cast<int>(roboticslab::ICartesianControl::V
 [[deprecated("use `ICartesianControl::Vocabs::NOT_SET` instead")]]
 constexpr auto VOCAB_CC_NOT_SET = static_cast<int>(roboticslab::ICartesianControl::Vocabs::NOT_SET);
 
-[[deprecated("use `ICartesianControl::RPC::STAT` instead")]]
-constexpr auto VOCAB_CC_STAT = static_cast<int>(roboticslab::ICartesianControl::RPC::STAT);
+[[deprecated("use `ICartesianControl::RPC::STATE` instead")]]
+constexpr auto VOCAB_CC_STAT = static_cast<int>(roboticslab::ICartesianControl::RPC::STATE);
 
 [[deprecated("use `ICartesianControl::RPC::INV` instead")]]
 constexpr auto VOCAB_CC_INV = static_cast<int>(roboticslab::ICartesianControl::RPC::INV);
 
-[[deprecated("use `ICartesianControl::RPC::MOVJ` instead")]]
-constexpr auto VOCAB_CC_MOVJ = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVJ);
+[[deprecated("use `ICartesianControl::RPC::MOVEJ` instead")]]
+constexpr auto VOCAB_CC_MOVJ = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEJ);
 
 [[deprecated("use `ICartesianControl::RPC::RELJ` instead")]]
 constexpr auto VOCAB_CC_RELJ = static_cast<int>(roboticslab::ICartesianControl::RPC::RELJ);
 
-[[deprecated("use `ICartesianControl::RPC::MOVL` instead")]]
-constexpr auto VOCAB_CC_MOVL = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVL);
+[[deprecated("use `ICartesianControl::RPC::MOVEL` instead")]]
+constexpr auto VOCAB_CC_MOVL = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEL);
 
-[[deprecated("use `ICartesianControl::RPC::MOVV` instead")]]
-constexpr auto VOCAB_CC_MOVV = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVV);
+[[deprecated("use `ICartesianControl::RPC::MOVEV` instead")]]
+constexpr auto VOCAB_CC_MOVV = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEV);
 
 [[deprecated("use `ICartesianControl::RPC::GCMP` instead")]]
 constexpr auto VOCAB_CC_GCMP = static_cast<int>(roboticslab::ICartesianControl::RPC::GCMP);
 
-[[deprecated("use `ICartesianControl::RPC::FORC` instead")]]
-constexpr auto VOCAB_CC_FORC = static_cast<int>(roboticslab::ICartesianControl::RPC::FORC);
+[[deprecated("use `ICartesianControl::RPC::FORCE` instead")]]
+constexpr auto VOCAB_CC_FORC = static_cast<int>(roboticslab::ICartesianControl::RPC::FORCE);
 
 [[deprecated("use `ICartesianControl::RPC::STOP` instead")]]
 constexpr auto VOCAB_CC_STOP = static_cast<int>(roboticslab::ICartesianControl::RPC::STOP);
@@ -484,20 +519,20 @@ constexpr auto VOCAB_CC_WRENCH = static_cast<int>(roboticslab::ICartesianControl
 [[deprecated("use `ICartesianControl::State::NONE` instead")]]
 constexpr auto VOCAB_CC_NOT_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::NONE);
 
-[[deprecated("use `ICartesianControl::State::MOVJ` instead")]]
-constexpr auto VOCAB_CC_MOVJ_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVJ);
+[[deprecated("use `ICartesianControl::State::MOVEJ` instead")]]
+constexpr auto VOCAB_CC_MOVJ_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVEJ);
 
-[[deprecated("use `ICartesianControl::State::MOVL` instead")]]
-constexpr auto VOCAB_CC_MOVL_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVL);
+[[deprecated("use `ICartesianControl::State::MOVEL` instead")]]
+constexpr auto VOCAB_CC_MOVL_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVEL);
 
-[[deprecated("use `ICartesianControl::State::MOVV` instead")]]
-constexpr auto VOCAB_CC_MOVV_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVV);
+[[deprecated("use `ICartesianControl::State::MOVEV` instead")]]
+constexpr auto VOCAB_CC_MOVV_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVEV);
 
 [[deprecated("use `ICartesianControl::State::GCMP` instead")]]
 constexpr auto VOCAB_CC_GCMP_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::GCMP);
 
-[[deprecated("use `ICartesianControl::State::FORC` instead")]]
-constexpr auto VOCAB_CC_FORC_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::FORC);
+[[deprecated("use `ICartesianControl::State::FORCE` instead")]]
+constexpr auto VOCAB_CC_FORC_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::FORCE);
 
 [[deprecated("use `ICartesianControl::Actuator::NONE` instead")]]
 constexpr auto VOCAB_CC_ACTUATOR_NONE = static_cast<int>(roboticslab::ICartesianControl::Actuator::NONE);

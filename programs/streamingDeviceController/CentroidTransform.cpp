@@ -65,7 +65,7 @@ bool CentroidTransform::processStoredBottle() const
 
     std::vector<double> x;
 
-    if (!streamingDevice->iCartesianControl->stat(x))
+    if (!streamingDevice->iCartesianControl->getState(x))
     {
         yCWarning(SDC) << "stat failed";
         return false;

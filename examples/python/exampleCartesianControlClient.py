@@ -11,7 +11,7 @@ if not yarp.Network.checkNetwork():
 
 options = yarp.Property()
 options.put('device', 'CartesianControlClient')
-options.put('remote', '/teoSim/rightArm/CartesianControl')
+options.put('remote', '/ccs')
 options.put('local', '/cartesianControlExample')
 
 dd = yarp.PolyDriver(options)
@@ -27,7 +27,7 @@ params = kd.ConfigMap()
 ret = cc.getParameters(params)
 
 for key, value in params.items():
-    print(f'< {yarp.decode(key)}: {value}')
+    print(f'< {yarp.decode(int(key))}: {value}')
 
 print('> setParameters')
 params[kd.ICartesianControl.Config_TRAJ_DURATION] = 5.0
@@ -40,9 +40,9 @@ print('<', value)
 print('> setParameter')
 cc.setParameter(kd.ICartesianControl.Config_TRAJ_DURATION, 6.0)
 
-print('> stat')
+print('> getState')
 x = yarp.DVector()
-ret, state, ts = cc.stat(x)
+ret, state, ts = cc.getState(x)
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
 
 xd = [
@@ -57,20 +57,20 @@ xd = [
 
 for i in range(len(xd)):
     print('-- movement ' + str(i + 1) + ':')
-    print('> inv [%s]' % ', '.join(map(str, xd[i])))
+    print('> solvePose [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
     qd_vector = yarp.DVector()
 
-    if cc.inv(xd_vector, qd_vector):
+    if cc.solvePose(xd_vector, qd_vector):
         print('< [%s]' % ', '.join(map(str, qd_vector)))
     else:
         print('< [fail]')
         continue
 
-    print('> movj [%s]' % ', '.join(map(str, xd[i])))
+    print('> movej [%s]' % ', '.join(map(str, xd[i])))
     xd_vector = yarp.DVector(xd[i])
 
-    if cc.movj(xd_vector):
+    if cc.moveJoint(xd_vector):
         print('< [ok]')
         print('< [wait...]')
         cc.wait()

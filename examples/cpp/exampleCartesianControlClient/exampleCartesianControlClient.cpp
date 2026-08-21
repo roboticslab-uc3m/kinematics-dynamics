@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
     }
 
     std::vector<double> vector;
-    iCartesianControl->stat(vector);
+    iCartesianControl->getState(vector);
 
     yInfo() << "Controller status (forward kinematics):" << vector;
 
     yInfo() << "Position 1: poss (0 0 0 90 0 0)";
 
-    if (!iCartesianControl->movj({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
     yInfo() << "Position 2: move forward along axis X";
 
-    if (!iCartesianControl->movj({0.5, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.5, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
     yInfo() << "Position 3: move right along axis Y";
 
-    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.5, -0.4, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
     yInfo() << "Position 4: rotate -12 degrees about global axis Y";
 
-    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.0, 1.36, 0.0}))
+    if (!iCartesianControl->moveJoint({0.5, -0.4, 0.1692, 0.0, 1.36, 0.0}))
     {
         yError() << "failure";
         return 1;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
     yInfo() << "Position 5: rotate 45 degrees about global axis X";
 
-    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.6139, 1.4822, 0.6139}))
+    if (!iCartesianControl->moveJoint({0.5, -0.4, 0.1692, 0.6139, 1.4822, 0.6139}))
     {
         yError() << "failure";
         return 1;
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
     yInfo() << "Position 6: poss (0 0 0 -90 0 0)";
 
-    if (!iCartesianControl->movj({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 
     yInfo() << "Position 7: homing";
 
-    if (!iCartesianControl->movj({0.0, -0.3469, -0.2333, 0.0, 3.1416, 0.0}))
+    if (!iCartesianControl->moveJoint({0.0, -0.3469, -0.2333, 0.0, 3.1416, 0.0}))
     {
         yError() << "failure";
         return 1;

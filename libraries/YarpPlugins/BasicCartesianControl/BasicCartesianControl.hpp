@@ -116,18 +116,18 @@ public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
     // RPC commands
-    yarp::dev::ReturnValue stat(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
-    yarp::dev::ReturnValue inv(const std::vector<double> & xd, std::vector<double> & q) override;
-    yarp::dev::ReturnValue movj(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue relj(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movl(const std::vector<double> & xd) override;
-    yarp::dev::ReturnValue movv(const std::vector<double> & xdotd) override;
-    yarp::dev::ReturnValue gcmp() override;
-    yarp::dev::ReturnValue forc(const std::vector<double> & fd) override;
+    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
+    yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
+    yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue relativeJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
+    yarp::dev::ReturnValue gravityCompensation() override;
+    yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) override;
     yarp::dev::ReturnValue stopControl() override;
     yarp::dev::ReturnValue wait(double timeout) override;
-    yarp::dev::ReturnValue tool(const std::vector<double> & x) override;
-    yarp::dev::ReturnValue act(roboticslab::ICartesianControl::Actuator command) override;
+    yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue actuateTool(roboticslab::ICartesianControl::Actuator command) override;
 
     // streaming commands
     void pose(const std::vector<double> & x) override;
@@ -208,16 +208,16 @@ private:
 
     mutable std::mutex stateMutex;
 
-    /** MOVJ store previous reference speeds */
+    /** MOVEJ store previous reference speeds */
     std::vector<double> vmoStored;
 
-    /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
+    /** MOVEL keep track of movement start time to know at what time of trajectory movement we are */
     double movementStartTime {0.0};
 
-    /** MOVL store Cartesian trajectory */
+    /** MOVEL store Cartesian trajectory */
     std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
 
-    /** FORC desired Cartesian force */
+    /** FORCE desired Cartesian force */
     std::vector<double> fd;
 
     int encoderErrors {0};

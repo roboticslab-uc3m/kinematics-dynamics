@@ -305,7 +305,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
         std::vector<double> x;
 
-        if (enableImpedance && !iCartesianControl->stat(x))
+        if (enableImpedance && !iCartesianControl->getState(x))
         {
             yCError(FTC) << "Failed to retrieve initial pose";
             return false;
@@ -346,7 +346,7 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 {
     std::vector<double> currentX;
 
-    if (!iCartesianControl->stat(currentX))
+    if (!iCartesianControl->getState(currentX))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;
@@ -364,7 +364,7 @@ bool FtCompensation::applyImpedance(KDL::Wrench & wrench)
 {
     std::vector<double> x;
 
-    if (!iCartesianControl->stat(x))
+    if (!iCartesianControl->getState(x))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;

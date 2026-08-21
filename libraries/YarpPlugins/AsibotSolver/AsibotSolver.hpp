@@ -47,23 +47,23 @@ public:
     yarp::dev::ReturnValue changeOrigin(const std::vector<double> &x_old_obj, const std::vector<double> &x_new_old, std::vector<double> &x_new_obj) override;
 
     // Perform forward kinematics.
-    yarp::dev::ReturnValue fwdKin(const std::vector<double> &q, std::vector<double> &x) override;
+    yarp::dev::ReturnValue forwardKinematics(const std::vector<double> &q, std::vector<double> &x) override;
 
     // Obtain difference between supplied pose inputs.
     yarp::dev::ReturnValue poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) override;
 
     // Perform inverse kinematics.
-    yarp::dev::ReturnValue invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame) override;
+    yarp::dev::ReturnValue inverseKinematics(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame) override;
 
     // Perform differential inverse kinematics.
-    yarp::dev::ReturnValue diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame) override;
+    yarp::dev::ReturnValue diffInverseKinematics(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame) override;
 
     // Perform inverse dynamics.
-    yarp::dev::ReturnValue invDyn(const std::vector<double> &q, std::vector<double> &t) override;
+    yarp::dev::ReturnValue inverseDynamics(const std::vector<double> &q, std::vector<double> &t) override;
 
     // Perform inverse dynamics.
-    yarp::dev::ReturnValue invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                                  const std::vector<double> &ftip, std::vector<double> &t, Frame frame) override;
+    yarp::dev::ReturnValue inverseDynamics(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
+                                           const std::vector<double> &ftip, std::vector<double> &t, Frame frame) override;
 
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable& config) override;

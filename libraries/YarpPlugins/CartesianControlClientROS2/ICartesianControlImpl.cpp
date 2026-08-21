@@ -183,7 +183,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::stat(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClientROS2::getState(std::vector<double> & x, State * state, double * timestamp)
 {
     std::lock_guard lock(m_mutex_state);
 
@@ -209,7 +209,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::stat(std::vector<double> & x,
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector<double> & q)
+yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
     rl_cartesian_control_msgs::srv::Inv::Request request;
     request.x.position.x = xd[0];
@@ -241,7 +241,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::inv(const std::vector<double>
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::movj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -265,7 +265,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::movj(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::relj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::relativeJoint(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -289,7 +289,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::relj(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::movl(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::moveLinear(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -313,7 +313,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::movl(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
+yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vector<double> & xdotd)
 {
     geometry_msgs::msg::Twist twistMsg;
     twistMsg.linear.x = xdotd[0];
@@ -330,7 +330,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::movv(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::gcmp()
+yarp::dev::ReturnValue CartesianControlClientROS2::gravityCompensation()
 {
     std_srvs::srv::Trigger::Request request;
     auto result = m_client_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
@@ -343,7 +343,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::gcmp()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::forc(const std::vector<double> & fd)
+yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vector<double> & fd)
 {
     geometry_msgs::msg::Wrench wrenchMsg;
     wrenchMsg.force.x = fd[0];
@@ -381,7 +381,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::tool(const std::vector<double> & x)
+yarp::dev::ReturnValue CartesianControlClientROS2::changeTool(const std::vector<double> & x)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = x[0];
@@ -405,7 +405,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::tool(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::act(Actuator command)
+yarp::dev::ReturnValue CartesianControlClientROS2::actuateTool(Actuator command)
 {
     std_msgs::msg::Int32 actMsg;
 

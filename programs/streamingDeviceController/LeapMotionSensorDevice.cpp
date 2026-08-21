@@ -75,7 +75,7 @@ bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    if (!iCartesianControl->stat(initialTcpOffset))
+    if (!iCartesianControl->getState(initialTcpOffset))
     {
         yCWarning(SDC) << "stat failed";
         return false;

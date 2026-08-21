@@ -10,9 +10,9 @@ using namespace roboticslab;
 
 // ------------------- RpcTransformResponder Related ------------------------------------
 
-return_stat RpcTransformResponder::stat()
+return_get_state RpcTransformResponder::getState()
 {
-    return_stat ret = RpcResponder::stat();
+    return_get_state ret = RpcResponder::getState();
 
     if (ret.ret && !transformOutgoingData(ret.x, ret.x))
     {
@@ -24,23 +24,23 @@ return_stat RpcTransformResponder::stat()
 
 // -----------------------------------------------------------------------------
 
-return_inv RpcTransformResponder::inv(const std::vector<double> & xd)
+return_solve_pose RpcTransformResponder::solvePose(const std::vector<double> & xd)
 {
     std::vector<double> transformed;
 
     if (!transformIncomingData(xd, transformed))
     {
-        return_inv ret;
+        return_solve_pose ret;
         ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         return ret;
     }
 
-    return RpcResponder::inv(transformed);
+    return RpcResponder::solvePose(transformed);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcTransformResponder::movj(const std::vector<double> & xd)
+yarp::dev::ReturnValue RpcTransformResponder::moveJoint(const std::vector<double> & xd)
 {
     std::vector<double> transformed;
 
@@ -49,12 +49,12 @@ yarp::dev::ReturnValue RpcTransformResponder::movj(const std::vector<double> & x
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return RpcResponder::movj(transformed);
+    return RpcResponder::moveJoint(transformed);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcTransformResponder::relj(const std::vector<double> & xd)
+yarp::dev::ReturnValue RpcTransformResponder::relativeJoint(const std::vector<double> & xd)
 {
     std::vector<double> transformed;
 
@@ -63,12 +63,12 @@ yarp::dev::ReturnValue RpcTransformResponder::relj(const std::vector<double> & x
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return RpcResponder::relj(transformed);
+    return RpcResponder::relativeJoint(transformed);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcTransformResponder::movl(const std::vector<double> & xd)
+yarp::dev::ReturnValue RpcTransformResponder::moveLinear(const std::vector<double> & xd)
 {
     std::vector<double> transformed;
 
@@ -77,12 +77,12 @@ yarp::dev::ReturnValue RpcTransformResponder::movl(const std::vector<double> & x
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return RpcResponder::movl(transformed);
+    return RpcResponder::moveLinear(transformed);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcTransformResponder::tool(const std::vector<double> & x)
+yarp::dev::ReturnValue RpcTransformResponder::changeTool(const std::vector<double> & x)
 {
     std::vector<double> transformed;
 
@@ -91,7 +91,7 @@ yarp::dev::ReturnValue RpcTransformResponder::tool(const std::vector<double> & x
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return RpcResponder::tool(transformed);
+    return RpcResponder::changeTool(transformed);
 }
 
 // -----------------------------------------------------------------------------

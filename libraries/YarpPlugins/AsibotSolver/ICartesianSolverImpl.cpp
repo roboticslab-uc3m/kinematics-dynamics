@@ -239,7 +239,7 @@ yarp::dev::ReturnValue AsibotSolver::changeOrigin(const std::vector<double> &x_o
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue AsibotSolver::fwdKin(const std::vector<double> &q, std::vector<double> &x)
+yarp::dev::ReturnValue AsibotSolver::forwardKinematics(const std::vector<double> &q, std::vector<double> &x)
 {
     std::vector<double> qInRad(q);
 
@@ -313,14 +313,14 @@ yarp::dev::ReturnValue AsibotSolver::poseDiff(const std::vector<double> &xLhs, c
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue AsibotSolver::invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame)
+yarp::dev::ReturnValue AsibotSolver::inverseKinematics(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q, Frame frame)
 {
     std::vector<double> xd_base_obj;
 
     if (frame == Frame::TCP)
     {
         std::vector<double> x_base_tcp;
-        fwdKin(qGuess, x_base_tcp);
+        forwardKinematics(qGuess, x_base_tcp);
         changeOrigin(xd, x_base_tcp, xd_base_obj);
     }
     else if (frame == Frame::BASE)
@@ -420,7 +420,7 @@ yarp::dev::ReturnValue AsibotSolver::invKin(const std::vector<double> &xd, const
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue AsibotSolver::diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame)
+yarp::dev::ReturnValue AsibotSolver::diffInverseKinematics(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot, Frame frame)
 {
     std::vector<double> qInRad(q);
 
@@ -450,7 +450,7 @@ yarp::dev::ReturnValue AsibotSolver::diffInvKin(const std::vector<double> &q, co
     if (tcpFrameStruct.hasFrame)
     {
         std::vector<double> x;
-        fwdKin(q, x);
+        forwardKinematics(q, x);
 
         yarp::sig::Matrix R_0_N = vectorToMatrix(x, true).submatrix(0, 2, 0, 2);
         yarp::sig::Vector transl = tcpFrameStruct.frameTcp.subcol(0, 3, 3);
@@ -486,18 +486,18 @@ yarp::dev::ReturnValue AsibotSolver::diffInvKin(const std::vector<double> &q, co
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue AsibotSolver::invDyn(const std::vector<double> &q, std::vector<double> &t)
+yarp::dev::ReturnValue AsibotSolver::inverseDynamics(const std::vector<double> &q, std::vector<double> &t)
 {
-    yCWarning(ASIBOT) << "invDyn() not implemented";
+    yCWarning(ASIBOT) << "inverseDynamics() not implemented";
     return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue AsibotSolver::invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                                            const std::vector<double> &ftip, std::vector<double> &t, Frame frame)
+yarp::dev::ReturnValue AsibotSolver::inverseDynamics(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
+                                                     const std::vector<double> &ftip, std::vector<double> &t, Frame frame)
 {
-    yCWarning(ASIBOT) << "invDyn() not implemented";
+    yCWarning(ASIBOT) << "inverseDynamics() not implemented";
     return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
 

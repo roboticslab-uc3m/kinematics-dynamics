@@ -64,7 +64,7 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlStat)
 {
     std::vector<double> x;
     ICartesianControl::State state;
-    ASSERT_TRUE(iCartesianControl->stat(x, &state));
+    ASSERT_TRUE(iCartesianControl->getState(x, &state));
     ASSERT_EQ(state, ICartesianControl::State::NONE);
     ASSERT_NEAR(x[0], 1, eps);
     ASSERT_NEAR(x[1], 0, eps);
@@ -75,7 +75,7 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlInv1)
 {
     std::vector<double> xd = {1, 0, 0, 0, 0, 0};
     std::vector<double> q;
-    ASSERT_TRUE(iCartesianControl->inv(xd, q));
+    ASSERT_TRUE(iCartesianControl->solvePose(xd, q));
     ASSERT_EQ(q.size(), 1);
     ASSERT_NEAR(q[0], 0, eps);
 }
@@ -84,7 +84,7 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlInv2)
 {
     std::vector<double> xd = {0, 1, 0, 0, 0, M_PI / 2};
     std::vector<double> q;
-    ASSERT_TRUE(iCartesianControl->inv(xd, q));
+    ASSERT_TRUE(iCartesianControl->solvePose(xd, q));
     ASSERT_EQ(q.size(), 1);
     ASSERT_NEAR(q[0], 90, eps);
 }
@@ -96,8 +96,8 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
     std::vector<double> x = {0, 0, 1, M_PI / 4, 0, 0};
 
     // add tool ('A')
-    ASSERT_TRUE(iCartesianControl->tool(x));
-    ASSERT_TRUE(iCartesianControl->stat(xToolA));
+    ASSERT_TRUE(iCartesianControl->changeTool(x));
+    ASSERT_TRUE(iCartesianControl->getState(xToolA));
     ASSERT_NEAR(xToolA[0], 1, eps);
     ASSERT_NEAR(xToolA[1], 0, eps);
     ASSERT_NEAR(xToolA[2], 1, eps);
@@ -107,8 +107,8 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
 
     // change tool ('b')
     x = {1, 0, 0, 0, M_PI / 4, 0};
-    ASSERT_TRUE(iCartesianControl->tool(x));
-    ASSERT_TRUE(iCartesianControl->stat(xToolB));
+    ASSERT_TRUE(iCartesianControl->changeTool(x));
+    ASSERT_TRUE(iCartesianControl->getState(xToolB));
     ASSERT_NEAR(xToolB[0], 2, eps);
     ASSERT_NEAR(xToolB[1], 0, eps);
     ASSERT_NEAR(xToolB[2], 0, eps);
@@ -118,8 +118,8 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
 
     // remove tool
     std::fill(x.begin(), x.end(), 0);
-    ASSERT_TRUE(iCartesianControl->tool(x));
-    ASSERT_TRUE(iCartesianControl->stat(xNoTool));
+    ASSERT_TRUE(iCartesianControl->changeTool(x));
+    ASSERT_TRUE(iCartesianControl->getState(xNoTool));
     ASSERT_NEAR(xNoTool[0], 1, eps);
     ASSERT_NEAR(xNoTool[1], 0, eps);
     ASSERT_NEAR(xNoTool[2], 0, eps);

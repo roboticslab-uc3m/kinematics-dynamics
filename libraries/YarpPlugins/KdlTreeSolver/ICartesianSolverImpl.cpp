@@ -72,7 +72,7 @@ yarp::dev::ReturnValue KdlTreeSolver::changeOrigin(const std::vector<double> & x
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlTreeSolver::fwdKin(const std::vector<double> & q, std::vector<double> & x)
+yarp::dev::ReturnValue KdlTreeSolver::forwardKinematics(const std::vector<double> & q, std::vector<double> & x)
 {
     KDL::JntArray qInRad(tree.getNrOfJoints());
 
@@ -126,7 +126,7 @@ yarp::dev::ReturnValue KdlTreeSolver::poseDiff(const std::vector<double> & xLhs,
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlTreeSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
+yarp::dev::ReturnValue KdlTreeSolver::inverseKinematics(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
 {
     KDL::Frames frames;
     int i = 0;
@@ -192,7 +192,7 @@ yarp::dev::ReturnValue KdlTreeSolver::invKin(const std::vector<double> & xd, con
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlTreeSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
+yarp::dev::ReturnValue KdlTreeSolver::diffInverseKinematics(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
 {
     KDL::Twists twists;
     int i = 0;
@@ -261,7 +261,7 @@ yarp::dev::ReturnValue KdlTreeSolver::diffInvKin(const std::vector<double> & q, 
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlTreeSolver::invDyn(const std::vector<double> & q, std::vector<double> & t)
+yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> & q, std::vector<double> & t)
 {
     KDL::WrenchMap wrenches;
 
@@ -298,8 +298,8 @@ yarp::dev::ReturnValue KdlTreeSolver::invDyn(const std::vector<double> & q, std:
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlTreeSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
-                                             const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
+yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                                      const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
 {
     KDL::WrenchMap wrenches;
     int i = 0;

@@ -67,7 +67,7 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 
     std::vector<double> x;
 
-    if (!iCartesianControl->stat(x))
+    if (!iCartesianControl->getState(x))
     {
         yCError(KC) << "stat failed";
         return false;

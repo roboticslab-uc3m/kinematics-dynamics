@@ -102,7 +102,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received movj command:" << v;
-            m_iCartesianControl->movj(v);
+            m_iCartesianControl->moveJoint(v);
         });
 
     if (!m_movj)
@@ -117,7 +117,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received relj command:" << v;
-            m_iCartesianControl->relj(v);
+            m_iCartesianControl->relativeJoint(v);
         });
 
     if (!m_relj)
@@ -132,7 +132,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received movl command:" << v;
-            m_iCartesianControl->movl(v);
+            m_iCartesianControl->moveLinear(v);
         });
 
     if (!m_movl)
@@ -147,7 +147,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             const auto v = twist_to_vector(msg.get());
             yCDebug(CCS) << "Received movv command:" << v;
-            m_iCartesianControl->movv(v);
+            m_iCartesianControl->moveVelocity(v);
         });
 
     if (!m_movv)
@@ -162,7 +162,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             const auto v = wrench_to_vector(msg.get());
             yCDebug(CCS) << "Received forc command:" << v;
-            m_iCartesianControl->forc(v);
+            m_iCartesianControl->forceControl(v);
         });
 
     if (!m_forc)
@@ -177,7 +177,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             const auto v = pose_to_vector(msg.get());
             yCDebug(CCS) << "Received tool command:" << v;
-            m_iCartesianControl->tool(v);
+            m_iCartesianControl->changeTool(v);
         });
 
     if (!m_tool)
@@ -194,15 +194,15 @@ bool CartesianControlServerROS2::configureRosHandlers()
             {
             case GRIPPER_CLOSE:
                 yCDebug(CCS) << "Gripper close";
-                m_iCartesianControl->act(ICartesianControl::Actuator::CLOSE);
+                m_iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
                 break;
             case GRIPPER_OPEN:
                 yCDebug(CCS) << "Gripper open";
-                m_iCartesianControl->act(ICartesianControl::Actuator::OPEN);
+                m_iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN);
                 break;
             case GRIPPER_STOP:
                 yCDebug(CCS) << "Gripper stop";
-                m_iCartesianControl->act(ICartesianControl::Actuator::STOP);
+                m_iCartesianControl->actuateTool(ICartesianControl::Actuator::STOP);
                 break;
             }
         });
@@ -219,7 +219,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
                rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
         {
             std::vector<double> q;
-            response->success = m_iCartesianControl->inv(pose_to_vector(&request->x), q);
+            response->success = m_iCartesianControl->solvePose(pose_to_vector(&request->x), q);
             std::transform(q.begin(), q.end(), std::back_inserter(response->q.data), [](double val) { return val * KDL::deg2rad; });
             response->q.data = q;
         });
@@ -235,7 +235,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
         {
             yCDebug(CCS) << "Received gcmp request";
-            response->success = m_iCartesianControl->gcmp();
+            response->success = m_iCartesianControl->gravityCompensation();
         });
 
     if (!m_gcmp)

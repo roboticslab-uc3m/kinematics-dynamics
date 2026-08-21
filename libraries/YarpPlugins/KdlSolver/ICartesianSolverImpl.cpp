@@ -79,7 +79,7 @@ yarp::dev::ReturnValue KdlSolver::changeOrigin(const std::vector<double> & x_old
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlSolver::fwdKin(const std::vector<double> & q, std::vector<double> & x)
+yarp::dev::ReturnValue KdlSolver::forwardKinematics(const std::vector<double> & q, std::vector<double> & x)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -115,7 +115,7 @@ yarp::dev::ReturnValue KdlSolver::poseDiff(const std::vector<double> & xLhs, con
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlSolver::invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
+yarp::dev::ReturnValue KdlSolver::inverseKinematics(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame)
 {
     KDL::Frame frameXd = KdlVectorConverter::vectorToFrame(xd);
     KDL::JntArray qGuessInRad(chain.getNrOfJoints());
@@ -148,12 +148,12 @@ yarp::dev::ReturnValue KdlSolver::invKin(const std::vector<double> & xd, const s
 
     if (ret < 0)
     {
-        yCError(logc, "invKin(): %s", ikSolverPos->strError(ret));
+        yCError(logc, "inverseKinematics(): %s", ikSolverPos->strError(ret));
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
-        yCWarning(logc, "invKin(): %s", ikSolverPos->strError(ret));
+        yCWarning(logc, "inverseKinematics(): %s", ikSolverPos->strError(ret));
     }
 
     q.resize(chain.getNrOfJoints());
@@ -168,7 +168,7 @@ yarp::dev::ReturnValue KdlSolver::invKin(const std::vector<double> & xd, const s
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlSolver::diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
+yarp::dev::ReturnValue KdlSolver::diffInverseKinematics(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -204,12 +204,12 @@ yarp::dev::ReturnValue KdlSolver::diffInvKin(const std::vector<double> & q, cons
 
     if (ret < 0)
     {
-        yCError(logc, "diffInvKin(): %s", ikSolverVel->strError(ret));
+        yCError(logc, "diffInverseKinematics(): %s", ikSolverVel->strError(ret));
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
-        yCWarning(logc, "diffInvKin(): %s", ikSolverVel->strError(ret));
+        yCWarning(logc, "diffInverseKinematics(): %s", ikSolverVel->strError(ret));
     }
 
     qdot.resize(chain.getNrOfJoints());
@@ -224,7 +224,7 @@ yarp::dev::ReturnValue KdlSolver::diffInvKin(const std::vector<double> & q, cons
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, std::vector<double> & t)
+yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q, std::vector<double> & t)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -247,12 +247,12 @@ yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, std::vec
 
     if (ret < 0)
     {
-        yCError(logc, "invDyn(): %s", idSolver->strError(ret));
+        yCError(logc, "inverseDynamics(): %s", idSolver->strError(ret));
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
-        yCWarning(logc, "invDyn(): %s", idSolver->strError(ret));
+        yCWarning(logc, "inverseDynamics(): %s", idSolver->strError(ret));
     }
 
     t.resize(chain.getNrOfJoints());
@@ -267,8 +267,8 @@ yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, std::vec
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
-                                         const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
+yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                                  const std::vector<double> & ftip, std::vector<double> & t, Frame frame)
 {
     KDL::JntArray qInRad(chain.getNrOfJoints());
 
@@ -321,12 +321,12 @@ yarp::dev::ReturnValue KdlSolver::invDyn(const std::vector<double> & q, const st
 
     if (ret < 0)
     {
-        yCError(logc, "invDyn(): %s", idSolver->strError(ret));
+        yCError(logc, "inverseDynamics(): %s", idSolver->strError(ret));
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
     else if (ret > 0)
     {
-        yCWarning(logc, "invDyn(): %s", idSolver->strError(ret));
+        yCWarning(logc, "inverseDynamics(): %s", idSolver->strError(ret));
     }
 
     t.resize(chain.getNrOfJoints());

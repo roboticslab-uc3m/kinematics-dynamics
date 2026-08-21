@@ -63,19 +63,19 @@ void BasicCartesianControl::run()
 
     switch (currentState)
     {
-    case State::MOVJ:
+    case State::MOVEJ:
         handleMovj(q, watcher);
         break;
-    case State::MOVL:
+    case State::MOVEL:
         m_usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
         break;
-    case State::MOVV:
+    case State::MOVEV:
         handleMovv(q, watcher);
         break;
     case State::GCMP:
         handleGcmp(q, watcher);
         break;
-    case State::FORC:
+    case State::FORCE:
         handleForc(q, qdot, qdotdot, watcher);
         break;
     default:
@@ -161,9 +161,9 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
 
     std::vector<double> currentX;
 
-    if (!iCartesianSolver->fwdKin(q, currentX))
+    if (!iCartesianSolver->forwardKinematics(q, currentX))
     {
-        yCWarning(BCC) << "fwdKin() failed";
+        yCWarning(BCC) << "forwardKinematics() failed";
         return;
     }
 
@@ -180,17 +180,17 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, ICartesianSolver::Frame::BASE))
+    if (!iCartesianSolver->diffInverseKinematics(q, commandXdot, commandQdot))
     {
-        yCWarning(BCC) << "diffInvKin() failed";
+        yCWarning(BCC) << "diffInverseKinematics() failed";
         return;
     }
 
-    yCDebug(BCC) << "[MOVL]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVEL]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
-        yCError(BCC) << "diffInvKin() too dangerous";
+        yCError(BCC) << "diffInverseKinematics() too dangerous";
         return;
     }
 
@@ -234,13 +234,13 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
     //-- Compute joint position commands and send to robot.
     std::vector<double> commandQ;
 
-    if (!iCartesianSolver->invKin(desiredX, q, commandQ, ICartesianSolver::Frame::BASE))
+    if (!iCartesianSolver->inverseKinematics(desiredX, q, commandQ))
     {
-        yCWarning(BCC) << "invKin() failed";
+        yCWarning(BCC) << "inverseKinematics() failed";
         return;
     }
 
-    yCDebug(BCC) << "[MOVL]" << movementTime << "[s] ||" << desiredX << "->" << commandQ << "[deg]";
+    yCDebug(BCC) << "[MOVEL]" << movementTime << "[s] ||" << desiredX << "->" << commandQ << "[deg]";
 
     watcher.suppress();
 
@@ -264,9 +264,9 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
 
     std::vector<double> currentX;
 
-    if (!iCartesianSolver->fwdKin(q, currentX))
+    if (!iCartesianSolver->forwardKinematics(q, currentX))
     {
-        yCWarning(BCC) << "fwdKin() failed";
+        yCWarning(BCC) << "forwardKinematics() failed";
         return;
     }
 
@@ -299,17 +299,17 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, referenceFrame))
+    if (!iCartesianSolver->diffInverseKinematics(q, commandXdot, commandQdot, referenceFrame))
     {
-        yCWarning(BCC) << "diffInvKin() failed";
+        yCWarning(BCC) << "diffInverseKinematics() failed";
         return;
     }
 
-    yCDebug(BCC) << "[MOVV]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVEV]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
-        yCError(BCC) << "diffInvKin() too dangerous";
+        yCError(BCC) << "diffInverseKinematics() too dangerous";
         return;
     }
 
@@ -333,9 +333,9 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const State
 
     std::vector<double> t(numJoints);
 
-    if (!iCartesianSolver->invDyn(q, t))
+    if (!iCartesianSolver->inverseDynamics(q, t))
     {
-        yCWarning(BCC) << "invDyn() failed";
+        yCWarning(BCC) << "inverseDynamics() failed";
         return;
     }
 
@@ -360,9 +360,9 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q, const std::
 
     std::vector<double> t(numJoints);
 
-    if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fd, t, referenceFrame))
+    if (!iCartesianSolver->inverseDynamics(q, qdot, qdotdot, fd, t, referenceFrame))
     {
-        yCWarning(BCC) << "invDyn() failed";
+        yCWarning(BCC) << "inverseDynamics() failed";
         return;
     }
 

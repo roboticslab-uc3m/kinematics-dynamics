@@ -163,7 +163,7 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
             x.insert(x.end(), x_tcp.cbegin(), x_tcp.cend());
         }
 
-        if (!iCartesianSolver->invKin(x, oldQ, newQ, ICartesianSolver::Frame::BASE))
+        if (!iCartesianSolver->inverseKinematics(x, oldQ, newQ))
         {
             yCWarning(BCC) << "IK failed at interval" << interval << "out of" << maxDuration << "seconds";
             return false;

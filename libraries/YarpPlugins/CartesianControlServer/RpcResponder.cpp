@@ -6,62 +6,62 @@ using namespace roboticslab;
 
 // ------------------- RpcResponder Related ------------------------------------
 
-return_stat RpcResponder::stat()
+return_get_state RpcResponder::getState()
 {
-    return_stat ret;
-    ret.ret = iCartesianControl->stat(ret.x, &ret.state, &ret.timestamp);
+    return_get_state ret;
+    ret.ret = iCartesianControl->getState(ret.x, &ret.state, &ret.timestamp);
     return ret;
 }
 
 // -----------------------------------------------------------------------------
 
-return_inv RpcResponder::inv(const std::vector<double> & xd)
+return_solve_pose RpcResponder::solvePose(const std::vector<double> & xd)
 {
-    return_inv ret;
-    ret.ret = iCartesianControl->inv(xd, ret.q);
+    return_solve_pose ret;
+    ret.ret = iCartesianControl->solvePose(xd, ret.q);
     return ret;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::movj(const std::vector<double> & xd)
+yarp::dev::ReturnValue RpcResponder::moveJoint(const std::vector<double> & xd)
 {
-    return iCartesianControl->movj(xd);
+    return iCartesianControl->moveJoint(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::relj(const std::vector<double> & xd)
+yarp::dev::ReturnValue RpcResponder::relativeJoint(const std::vector<double> & xd)
 {
-    return iCartesianControl->relj(xd);
+    return iCartesianControl->relativeJoint(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::movl(const std::vector<double> & xd)
+yarp::dev::ReturnValue RpcResponder::moveLinear(const std::vector<double> & xd)
 {
-    return iCartesianControl->movl(xd);
+    return iCartesianControl->moveLinear(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::movv(const std::vector<double> & xdotd)
+yarp::dev::ReturnValue RpcResponder::moveVelocity(const std::vector<double> & xdotd)
 {
-    return iCartesianControl->movv(xdotd);
+    return iCartesianControl->moveVelocity(xdotd);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::gcmp()
+yarp::dev::ReturnValue RpcResponder::gravityCompensation()
 {
-    return iCartesianControl->gcmp();
+    return iCartesianControl->gravityCompensation();
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::forc(const std::vector<double> & fd)
+yarp::dev::ReturnValue RpcResponder::forceControl(const std::vector<double> & fd)
 {
-    return iCartesianControl->forc(fd);
+    return iCartesianControl->forceControl(fd);
 }
 
 // -----------------------------------------------------------------------------
@@ -80,16 +80,16 @@ yarp::dev::ReturnValue RpcResponder::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::tool(const std::vector<double> & x)
+yarp::dev::ReturnValue RpcResponder::changeTool(const std::vector<double> & x)
 {
-    return iCartesianControl->tool(x);
+    return iCartesianControl->changeTool(x);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::act(const roboticslab::ICartesianControl::Actuator command)
+yarp::dev::ReturnValue RpcResponder::actuateTool(const roboticslab::ICartesianControl::Actuator command)
 {
-    return iCartesianControl->act(command);
+    return iCartesianControl->actuateTool(command);
 }
 
 // -----------------------------------------------------------------------------

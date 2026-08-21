@@ -624,7 +624,7 @@ void KeyboardController::incrementOrDecrementCartesianCommand(cart coord, func o
         }
         else
         {
-            iCartesianControl->movv(currentCartVels);
+            iCartesianControl->moveVelocity(currentCartVels);
         }
     }
     else
@@ -641,7 +641,7 @@ void KeyboardController::incrementOrDecrementCartesianCommand(cart coord, func o
         }
         else
         {
-            iCartesianControl->movv(currentCartVels);
+            iCartesianControl->moveVelocity(currentCartVels);
         }
     }
 
@@ -730,7 +730,7 @@ void KeyboardController::actuateTool(ICartesianControl::Actuator command)
         return;
     }
 
-    if (!iCartesianControl->act(command))
+    if (!iCartesianControl->actuateTool(command))
     {
         yCError(KC) << "Unable to send" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command)) << "command to actuator";
     }
@@ -765,7 +765,7 @@ void KeyboardController::printCartesianPositions()
     }
 
     std::vector<double> x;
-    iCartesianControl->stat(x);
+    iCartesianControl->getState(x);
     KinRepresentation::decodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, orient, KinRepresentation::angular_units::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
@@ -778,7 +778,7 @@ void KeyboardController::issueStop()
     {
         if (currentActuatorCommand != ICartesianControl::Actuator::NONE)
         {
-            if (!iCartesianControl->act(ICartesianControl::Actuator::STOP))
+            if (!iCartesianControl->actuateTool(ICartesianControl::Actuator::STOP))
             {
                 yCWarning(KC) << "Unable to stop actuator";
             }

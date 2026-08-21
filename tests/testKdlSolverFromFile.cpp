@@ -67,7 +67,7 @@ TEST_F(KdlSolverTestFromFile, KdlSolverFwdKin1)
 {
     std::vector<double> q(6, 0.0);
     std::vector<double> x;
-    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+    ASSERT_TRUE(iCartesianSolver->forwardKinematics(q, x));
     ASSERT_EQ(x.size(), 6); //-- axisAngle (scaled)
     ASSERT_NEAR(x[0], 0.0, 1e-9); //-- x
     ASSERT_NEAR(x[1], 0.34692, 1e-9); //-- y
@@ -79,7 +79,7 @@ TEST_F(KdlSolverTestFromFile, KdlSolverFwdKin2)
 {
     std::vector<double> q {-90.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     std::vector<double> x;
-    ASSERT_TRUE(iCartesianSolver->fwdKin(q, x));
+    ASSERT_TRUE(iCartesianSolver->forwardKinematics(q, x));
     ASSERT_EQ(x.size(), 6); //-- axisAngle (scaled)
     ASSERT_NEAR(x[0], 0.718506, 1e-9); //-- x
     ASSERT_NEAR(x[1], 0.34692, 1e-9); //-- y

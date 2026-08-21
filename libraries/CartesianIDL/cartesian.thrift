@@ -27,14 +27,14 @@ enum CartesianControlActuator {
     yarp.enumbase = "int32_t"
 )
 
-struct return_stat {
+struct return_get_state {
     1: yReturnValue ret;
     2: list<double> x;
     3: CartesianControlState state;
     4: double timestamp;
 }
 
-struct return_inv {
+struct return_solve_pose {
     1: yReturnValue ret;
     2: list<double> q;
 }
@@ -54,42 +54,42 @@ service CartesianControlMsgs
     /**
      * Inform on control state, get robot position and perform forward kinematics.
      */
-    return_stat stat();
+    return_get_state getState();
 
     /**
      * Perform inverse kinematics (using robot position as initial guess), but do not move.
      */
-    return_inv inv(1: list<double> xd);
+    return_solve_pose solvePose(1: list<double> xd);
 
     /**
      * Move in joint space, absolute coordinates.
      */
-    yReturnValue movj(1: list<double> xd);
+    yReturnValue moveJoint(1: list<double> xd);
 
     /**
      * Move in joint space, relative coordinates.
      */
-    yReturnValue relj(1: list<double> xd);
+    yReturnValue relativeJoint(1: list<double> xd);
 
     /**
      * Linear move to target position.
      */
-    yReturnValue movl(1: list<double> xd);
+    yReturnValue moveLinear(1: list<double> xd);
 
     /**
      * Linear move with given velocity.
      */
-    yReturnValue movv(1: list<double> xdotd);
+    yReturnValue moveVelocity(1: list<double> xdotd);
 
     /**
      * Enable gravity compensation.
      */
-    yReturnValue gcmp();
+    yReturnValue gravityCompensation();
 
     /**
      * Force control.
      */
-    yReturnValue forc(1: list<double> fd);
+    yReturnValue forceControl(1: list<double> fd);
 
     /**
      * Stop control.
@@ -104,12 +104,12 @@ service CartesianControlMsgs
     /**
      * Change tool.
      */
-    yReturnValue tool(1: list<double> x);
+    yReturnValue changeTool(1: list<double> x);
 
     /**
      * Actuate tool.
      */
-    yReturnValue act(1: CartesianControlActuator command);
+    yReturnValue actuateTool(1: CartesianControlActuator command);
 
     /**
      * Set a configuration parameter.

@@ -36,7 +36,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::stat(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, State * state, double * timestamp)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -51,9 +51,9 @@ yarp::dev::ReturnValue BasicCartesianControl::stat(std::vector<double> & x, Stat
         *timestamp = getTimestamp(iPreciselyTimed);
     }
 
-    if (!iCartesianSolver->fwdKin(currentQ, x))
+    if (!iCartesianSolver->forwardKinematics(currentQ, x))
     {
-        yCError(BCC) << "fwdKin() failed";
+        yCError(BCC) << "forwardKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -67,7 +67,7 @@ yarp::dev::ReturnValue BasicCartesianControl::stat(std::vector<double> & x, Stat
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::inv(const std::vector<double> &xd, std::vector<double> &q)
+yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double> &xd, std::vector<double> &q)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -77,9 +77,9 @@ yarp::dev::ReturnValue BasicCartesianControl::inv(const std::vector<double> &xd,
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (!iCartesianSolver->invKin(xd, currentQ, q, referenceFrame))
+    if (!iCartesianSolver->inverseKinematics(xd, currentQ, q, referenceFrame))
     {
-        yCError(BCC) << "invKin() failed";
+        yCError(BCC) << "inverseKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -88,7 +88,7 @@ yarp::dev::ReturnValue BasicCartesianControl::inv(const std::vector<double> &xd,
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::movj(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numJoints), qd;
 
@@ -98,9 +98,9 @@ yarp::dev::ReturnValue BasicCartesianControl::movj(const std::vector<double> &xd
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (!iCartesianSolver->invKin(xd, currentQ, qd, referenceFrame))
+    if (!iCartesianSolver->inverseKinematics(xd, currentQ, qd, referenceFrame))
     {
-        yCError(BCC) << "invKin() failed";
+        yCError(BCC) << "inverseKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -149,9 +149,9 @@ yarp::dev::ReturnValue BasicCartesianControl::movj(const std::vector<double> &xd
 
         //-- Set state, enable CMC thread and wait for movement to be done
         cmcSuccess = true;
-        yCInfo(BCC) << "Performing MOVJ";
+        yCInfo(BCC) << "Performing MOVEJ";
 
-        setCurrentState(State::MOVJ);
+        setCurrentState(State::MOVEJ);
     }
     else
     {
@@ -163,16 +163,16 @@ yarp::dev::ReturnValue BasicCartesianControl::movj(const std::vector<double> &xd
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::relj(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::relativeJoint(const std::vector<double> &xd)
 {
     if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
-        return movj(xd);
+        return moveJoint(xd);
     }
 
     std::vector<double> x;
 
-    if (!stat(x))
+    if (!getState(x))
     {
         yCError(BCC) << "stat() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -183,12 +183,12 @@ yarp::dev::ReturnValue BasicCartesianControl::relj(const std::vector<double> &xd
         x[i] += xd[i];
     }
 
-    return movj(x);
+    return moveJoint(x);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::movl(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<double> &xd)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -200,9 +200,9 @@ yarp::dev::ReturnValue BasicCartesianControl::movl(const std::vector<double> &xd
 
     std::vector<double> x_base_tcp;
 
-    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
+    if (!iCartesianSolver->forwardKinematics(currentQ, x_base_tcp))
     {
-        yCError(BCC) << "fwdKin() failed";
+        yCError(BCC) << "forwardKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -264,16 +264,16 @@ yarp::dev::ReturnValue BasicCartesianControl::movl(const std::vector<double> &xd
 
     movementStartTime = yarp::os::Time::now();
     cmcSuccess = true;
-    yCInfo(BCC) << "Performing MOVL";
+    yCInfo(BCC) << "Performing MOVEL";
 
-    setCurrentState(State::MOVL);
+    setCurrentState(State::MOVEL);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::movv(const std::vector<double> &xdotd)
+yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<double> &xdotd)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -285,9 +285,9 @@ yarp::dev::ReturnValue BasicCartesianControl::movv(const std::vector<double> &xd
 
     std::vector<double> x_base_tcp;
 
-    if (!iCartesianSolver->fwdKin(currentQ, x_base_tcp))
+    if (!iCartesianSolver->forwardKinematics(currentQ, x_base_tcp))
     {
-        yCError(BCC) << "fwdKin() failed";
+        yCError(BCC) << "forwardKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -319,16 +319,16 @@ yarp::dev::ReturnValue BasicCartesianControl::movv(const std::vector<double> &xd
     //-- Set state, enable CMC thread and wait for movement to be done
     movementStartTime = yarp::os::Time::now();
     cmcSuccess = true;
-    yCInfo(BCC) << "Performing MOVV";
+    yCInfo(BCC) << "Performing MOVEV";
 
-    setCurrentState(State::MOVV);
+    setCurrentState(State::MOVEV);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::gcmp()
+yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
 {
     if (!setControlModes(VOCAB_CM_TORQUE))
     {
@@ -342,9 +342,9 @@ yarp::dev::ReturnValue BasicCartesianControl::gcmp()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::forc(const std::vector<double> &fd)
+yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<double> &fd)
 {
-    yCWarning(BCC) << "FORC mode still experimental";
+    yCWarning(BCC) << "FORCE mode still experimental";
 
     if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
@@ -364,7 +364,7 @@ yarp::dev::ReturnValue BasicCartesianControl::forc(const std::vector<double> &fd
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    setCurrentState(State::FORC);
+    setCurrentState(State::FORCE);
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
@@ -399,7 +399,7 @@ yarp::dev::ReturnValue BasicCartesianControl::wait(double timeout)
 {
     auto state = getCurrentState();
 
-    if (state != State::MOVJ && state != State::MOVL)
+    if (state != State::MOVEJ && state != State::MOVEL)
     {
         return yarp::dev::ReturnValue::return_code::return_value_ok;
     }
@@ -426,7 +426,7 @@ yarp::dev::ReturnValue BasicCartesianControl::wait(double timeout)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::tool(const std::vector<double> &x)
+yarp::dev::ReturnValue BasicCartesianControl::changeTool(const std::vector<double> &x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
     {
@@ -445,7 +445,7 @@ yarp::dev::ReturnValue BasicCartesianControl::tool(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::act(Actuator command)
+yarp::dev::ReturnValue BasicCartesianControl::actuateTool(Actuator command)
 {
     yCError(BCC) << "act() not implemented";
     return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
@@ -471,9 +471,9 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
         return;
     }
 
-    if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
+    if (!iCartesianSolver->inverseKinematics(x, currentQ, q, referenceFrame))
     {
-        yCError(BCC) << "invKin() failed";
+        yCError(BCC) << "inverseKinematics() failed";
         return;
     }
 
@@ -518,9 +518,9 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
         return;
     }
 
-    if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
+    if (!iCartesianSolver->diffInverseKinematics(currentQ, xdot, qdot, referenceFrame))
     {
-        yCError(BCC) << "diffInvKin() failed";
+        yCError(BCC) << "diffInverseKinematics() failed";
         return;
     }
 
@@ -584,9 +584,9 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
 
     std::vector<double> t;
 
-    if (!iCartesianSolver->invDyn(currentQ, currentQdot, currentQdotdot, ftip, t, referenceFrame))
+    if (!iCartesianSolver->inverseDynamics(currentQ, currentQdot, currentQdotdot, ftip, t, referenceFrame))
     {
-        yCError(BCC) << "invDyn() failed";
+        yCError(BCC) << "inverseDynamics() failed";
         return;
     }
 

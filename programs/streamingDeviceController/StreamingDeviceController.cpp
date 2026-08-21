@@ -277,7 +277,7 @@ bool StreamingDeviceController::update(double timestamp)
 
     if (actuatorState != ICartesianControl::Actuator::NONE)
     {
-        iCartesianControl->act(actuatorState);
+        iCartesianControl->actuateTool(actuatorState);
     }
 
     if (!streamingDevice->transformData(localScaling))
