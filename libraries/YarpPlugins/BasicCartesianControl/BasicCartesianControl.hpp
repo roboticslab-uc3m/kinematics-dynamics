@@ -113,7 +113,9 @@ public:
     BasicCartesianControl() : yarp::os::PeriodicThread(1.0, yarp::os::PeriodicThreadClock::Absolute)
     {}
 
-    // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
+    // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
+
+    // RPC commands
     yarp::dev::ReturnValue stat(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
     yarp::dev::ReturnValue inv(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue movj(const std::vector<double> & xd) override;
@@ -126,9 +128,13 @@ public:
     yarp::dev::ReturnValue wait(double timeout) override;
     yarp::dev::ReturnValue tool(const std::vector<double> & x) override;
     yarp::dev::ReturnValue act(roboticslab::ICartesianControl::Actuator command) override;
-    yarp::dev::ReturnValue pose(const std::vector<double> & x) override;
-    yarp::dev::ReturnValue twist(const std::vector<double> & xdot) override;
-    yarp::dev::ReturnValue wrench(const std::vector<double> & w) override;
+
+    // streaming commands
+    void pose(const std::vector<double> & x) override;
+    void twist(const std::vector<double> & xdot) override;
+    void wrench(const std::vector<double> & w) override;
+
+    // configuration getters/setters
     yarp::dev::ReturnValue setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
     yarp::dev::ReturnValue getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
     yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;

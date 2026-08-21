@@ -10,7 +10,7 @@ using namespace roboticslab;
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const std::vector<double> & in)
+void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const std::vector<double> & in)
 {
     auto & cmd = commandPort.prepare();
 
@@ -23,7 +23,6 @@ yarp::dev::ReturnValue CartesianControlClient::handleStreamingConsumerCmd(Stream
     }
 
     commandPort.write();
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -139,21 +138,21 @@ yarp::dev::ReturnValue CartesianControlClient::act(Actuator command)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::pose(const std::vector<double> & x)
+void CartesianControlClient::pose(const std::vector<double> & x)
 {
     return handleStreamingConsumerCmd(Streaming::POSE, x);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::twist(const std::vector<double> & xdot)
+void CartesianControlClient::twist(const std::vector<double> & xdot)
 {
     return handleStreamingConsumerCmd(Streaming::TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::wrench(const std::vector<double> & w)
+void CartesianControlClient::wrench(const std::vector<double> & w)
 {
     return handleStreamingConsumerCmd(Streaming::WRENCH, w);
 }

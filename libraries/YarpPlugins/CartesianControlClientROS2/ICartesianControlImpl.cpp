@@ -434,7 +434,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::act(Actuator command)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::pose(const std::vector<double> & x)
+void CartesianControlClientROS2::pose(const std::vector<double> & x)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = x[0];
@@ -452,12 +452,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::pose(const std::vector<double
     );
 
     m_pose->publish(poseMsg);
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::twist(const std::vector<double> & xdot)
+void CartesianControlClientROS2::twist(const std::vector<double> & xdot)
 {
     geometry_msgs::msg::Twist twistMsg;
     twistMsg.linear.x = xdot[0];
@@ -468,12 +467,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::twist(const std::vector<doubl
     twistMsg.angular.z = xdot[5];
 
     m_twist->publish(twistMsg);
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::wrench(const std::vector<double> & w)
+void CartesianControlClientROS2::wrench(const std::vector<double> & w)
 {
     geometry_msgs::msg::Wrench wrenchMsg;
     wrenchMsg.force.x = w[0];

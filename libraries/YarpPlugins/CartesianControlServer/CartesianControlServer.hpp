@@ -163,11 +163,8 @@ public:
     void onRead(yarp::os::Bottle & b) override;
 
 private:
-    using ConsumerFun = yarp::dev::ReturnValue (ICartesianControl::*)(const std::vector<double> &);
-    using BiConsumerFun = yarp::dev::ReturnValue (ICartesianControl::*)(const std::vector<double> &, double);
-
+    using ConsumerFun = void (ICartesianControl::*)(const std::vector<double> &);
     void handleConsumerCmdMsg(const yarp::os::Bottle & in, ConsumerFun cmd);
-    void handleBiConsumerCmdMsg(const yarp::os::Bottle & in, BiConsumerFun cmd);
 };
 
 } // namespace roboticslab

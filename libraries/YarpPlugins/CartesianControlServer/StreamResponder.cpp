@@ -61,25 +61,3 @@ void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle & in, Consumer
 }
 
 // -----------------------------------------------------------------------------
-
-void StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle & in, BiConsumerFun cmd)
-{
-    if (in.size() > 2)
-    {
-        double d = in.get(1).asFloat64();
-        std::vector<double> v;
-
-        for (size_t i = 2; i < in.size(); i++)
-        {
-            v.push_back(in.get(i).asFloat64());
-        }
-
-        std::invoke(cmd, iCartesianControl, v, d);
-    }
-    else
-    {
-        yCError(CCS) << "Size error:" << in.size();
-    }
-}
-
-// -----------------------------------------------------------------------------

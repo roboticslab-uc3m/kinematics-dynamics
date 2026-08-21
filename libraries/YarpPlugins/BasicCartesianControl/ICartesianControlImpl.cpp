@@ -453,14 +453,14 @@ yarp::dev::ReturnValue BasicCartesianControl::act(Actuator command)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::pose(const std::vector<double> &x)
+void BasicCartesianControl::pose(const std::vector<double> &x)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::POSE ||
         !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
         yCError(BCC) << "Streaming command not preset";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return;
     }
 
     std::vector<double> currentQ(numJoints), q;
@@ -468,13 +468,13 @@ yarp::dev::ReturnValue BasicCartesianControl::pose(const std::vector<double> &x)
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!iCartesianSolver->invKin(x, currentQ, q, referenceFrame))
     {
         yCError(BCC) << "invKin() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     std::vector<double> qdiff(numJoints);
@@ -487,28 +487,26 @@ yarp::dev::ReturnValue BasicCartesianControl::pose(const std::vector<double> &x)
     if (!checkJointLimits(currentQ, qdiff))
     {
         yCError(BCC) << "Joint position limits exceeded, not moving";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!iPositionDirect->setPositions(q.data()))
     {
         yCError(BCC) << "setPositions() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
-
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::twist(const std::vector<double> &xdot)
+void BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::TWIST ||
         !checkControlModes(VOCAB_CM_VELOCITY))
     {
         yCError(BCC) << "Streaming command not preset";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return;
     }
 
     StateWatcher watcher([this] { iVelocityControl->velocityMove(std::vector(numJoints, 0.0).data()); });
@@ -517,19 +515,19 @@ yarp::dev::ReturnValue BasicCartesianControl::twist(const std::vector<double> &x
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!iCartesianSolver->diffInvKin(currentQ, xdot, qdot, referenceFrame))
     {
         yCError(BCC) << "diffInvKin() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!checkJointLimits(currentQ, qdot) || !checkJointVelocities(qdot))
     {
         yCError(BCC) << "Joint position or velocity limits exceeded";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     watcher.suppress();
@@ -537,22 +535,20 @@ yarp::dev::ReturnValue BasicCartesianControl::twist(const std::vector<double> &x
     if (!iVelocityControl->velocityMove(qdot.data()))
     {
         yCError(BCC) << "velocityMove() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
-
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::wrench(const std::vector<double> &w)
+void BasicCartesianControl::wrench(const std::vector<double> &w)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::WRENCH ||
         !checkControlModes(VOCAB_CM_TORQUE))
     {
         yCError(BCC) << "Streaming command not preset";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return;
     }
 
     StateWatcher watcher([this] { iTorqueControl->setRefTorques(std::vector(numJoints, 0.0).data()); });
@@ -561,25 +557,25 @@ yarp::dev::ReturnValue BasicCartesianControl::wrench(const std::vector<double> &
     if (!iEncoders->getEncoders(currentQ.data()))
     {
         yCError(BCC) << "getEncoders() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!iEncoders->getEncoderSpeeds(currentQdot.data()))
     {
         yCError(BCC) << "getEncoderSpeeds() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!iEncoders->getEncoderAccelerations(currentQdotdot.data()))
     {
         yCError(BCC) << "getEncoderAccelerations() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     if (!checkJointLimits(currentQ))
     {
         yCError(BCC) << "Joint position limits exceeded, not moving";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     // negate since the solver's contract interprets the wrench as an external force applied on
@@ -591,7 +587,7 @@ yarp::dev::ReturnValue BasicCartesianControl::wrench(const std::vector<double> &
     if (!iCartesianSolver->invDyn(currentQ, currentQdot, currentQdotdot, ftip, t, referenceFrame))
     {
         yCError(BCC) << "invDyn() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
 
     watcher.suppress();
@@ -599,10 +595,8 @@ yarp::dev::ReturnValue BasicCartesianControl::wrench(const std::vector<double> &
     if (!iTorqueControl->setRefTorques(t.data()))
     {
         yCError(BCC) << "setRefTorques() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return;
     }
-
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

@@ -311,7 +311,7 @@ public:
      * first three elements denote translation (meters), last three denote rotation in scaled
      * axis-angle representation (radians).
      */
-    virtual yarp::dev::ReturnValue pose(const std::vector<double> & x) = 0;
+    virtual void pose(const std::vector<double> & x) = 0;
 
     /**
      * @brief Instantaneous velocity steps
@@ -322,7 +322,7 @@ public:
      * first three elements denote translational velocity (meters/second), last three
      * denote angular velocity (radians/second).
      */
-    virtual yarp::dev::ReturnValue twist(const std::vector<double> & xdot) = 0;
+    virtual void twist(const std::vector<double> & xdot) = 0;
 
     /**
      * @brief Exert force
@@ -332,7 +332,7 @@ public:
      * @param w 6-element vector describing desired force exerted by the TCP in cartesian space;
      * first three elements denote linear force (Newton), last three denote torque (Newton*meters).
      */
-    virtual yarp::dev::ReturnValue wrench(const std::vector<double> & w) = 0;
+    virtual void wrench(const std::vector<double> & w) = 0;
 
     /** @} */
 
