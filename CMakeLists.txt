@@ -28,8 +28,14 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
-find_package(YARP 3.11 REQUIRED COMPONENTS os dev sig
-                                OPTIONAL_COMPONENTS math)
+set(_yarp_components os dev sig)
+set(_yarp_optional_components math idl_tools)
+find_package(YARP 3.12 QUIET COMPONENTS ${_yarp_components}
+                             OPTIONAL_COMPONENTS ${_yarp_optional_components})
+if(NOT YARP_FOUND)
+    find_package(YARP 4.0 REQUIRED COMPONENTS ${_yarp_components}
+                                   OPTIONAL_COMPONENTS ${_yarp_optional_components})
+endif()
 
 # Soft dependencies.
 find_package(orocos_kdl 1.4 QUIET)

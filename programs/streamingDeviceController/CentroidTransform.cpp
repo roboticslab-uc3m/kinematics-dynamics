@@ -64,10 +64,12 @@ bool CentroidTransform::processStoredBottle() const
     double cy = lastBottle.get(1).asFloat64(); // points down
 
     std::vector<double> x;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!streamingDevice->iCartesianControl->stat(x))
+    if (!streamingDevice->iCartesianControl->getState(x, state, timestamp))
     {
-        yCWarning(SDC) << "stat failed";
+        yCWarning(SDC) << "getState failed";
         return false;
     }
 

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/SystemClock.h>
@@ -33,7 +35,7 @@ constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
-int BasicCartesianControl::getCurrentState() const
+ICartesianControl::State BasicCartesianControl::getCurrentState() const
 {
     std::lock_guard lock(stateMutex);
     return currentState;
@@ -41,11 +43,10 @@ int BasicCartesianControl::getCurrentState() const
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::setCurrentState(int value)
+void BasicCartesianControl::setCurrentState(State value)
 {
     std::lock_guard lock(stateMutex);
     currentState = value;
-    streamingCommand = VOCAB_CC_NOT_SET;
 }
 
 // -----------------------------------------------------------------------------
@@ -135,11 +136,14 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
     const double timestep = yarp::os::PeriodicThread::getPeriod() * 0.5;
 
     std::vector<double> x;
-    x.reserve(iCartesianSolver->getNumTcps() * 6);
+    std::size_t numTcps;
+
+    iCartesianSolver->getNumTcps(numTcps);
+    x.reserve(numTcps * 6);
 
     std::vector<double> oldQ = initialQ;
     std::vector<double> newQ;
-    std::vector<double> qdot(iCartesianSolver->getNumTcps() * 6);
+    std::vector<double> qdot(numTcps * 6);
 
     double maxDuration = 0.0;
 
@@ -159,7 +163,7 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
             x.insert(x.end(), x_tcp.cbegin(), x_tcp.cend());
         }
 
-        if (!iCartesianSolver->invKin(x, oldQ, newQ))
+        if (!iCartesianSolver->inverseKinematics(x, oldQ, newQ))
         {
             yCWarning(BCC) << "IK failed at interval" << interval << "out of" << maxDuration << "seconds";
             return false;
@@ -183,24 +187,40 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
 
 bool BasicCartesianControl::checkControlModes(int mode)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::vector<yarp::dev::ControlModeEnum> modes(numJoints);
+#else
     std::vector<int> modes(numJoints);
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iControlMode->getControlModes(modes))
+#else
     if (!iControlMode->getControlModes(modes.data()))
+#endif
     {
         yCWarning(BCC) << "getControlModes() failed";
         return false;
     }
 
-    return std::all_of(modes.begin(), modes.end(), [mode](int retrievedMode) { return retrievedMode == mode; });
+    return std::all_of(modes.begin(), modes.end(), [mode](auto retrievedMode) { return static_cast<int>(retrievedMode) == mode; });
 }
 
 // -----------------------------------------------------------------------------
 
 bool BasicCartesianControl::setControlModes(int mode)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::vector<yarp::dev::ControlModeEnum> modes(numJoints);
+#else
     std::vector<int> modes(numJoints);
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iControlMode->getControlModes(modes))
+#else
     if (!iControlMode->getControlModes(modes.data()))
+#endif
     {
         yCWarning(BCC) << "getControlModes() failed";
         return false;
@@ -210,7 +230,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     for (unsigned int i = 0; i < modes.size(); i++)
     {
-        if (modes[i] != mode)
+        if (static_cast<int>(modes[i]) != mode)
         {
             jointIds.push_back(i);
         }
@@ -218,9 +238,18 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     if (!jointIds.empty())
     {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        auto modeSet = static_cast<yarp::dev::SelectableControlModeEnum>(mode);
+        std::vector modesSet(jointIds.size(), modeSet);
+#else
         modes.assign(jointIds.size(), mode);
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iControlMode->setControlModes(jointIds, modesSet))
+#else
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
+#endif
         {
             yCWarning(BCC) << "setControlModes() failed for mode:" << yarp::os::Vocab32::decode(mode);
             return false;
@@ -245,20 +274,21 @@ bool BasicCartesianControl::setControlModes(int mode)
 
 // -----------------------------------------------------------------------------
 
-bool BasicCartesianControl::presetStreamingCommand(int command)
+bool BasicCartesianControl::presetStreamingCommand(Streaming command)
 {
-    setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+    setCurrentState(State::NONE);
 
     switch (command)
     {
-    case VOCAB_CC_POSE:
+    case Streaming::POSE:
         return setControlModes(VOCAB_CM_POSITION_DIRECT);
-    case VOCAB_CC_TWIST:
+    case Streaming::TWIST:
         return setControlModes(VOCAB_CM_VELOCITY);
-    case VOCAB_CC_WRENCH:
+    case Streaming::WRENCH:
         return setControlModes(VOCAB_CM_TORQUE);
     default:
-        yCError(BCC) << "Unrecognized or unsupported streaming command vocab:" << command;
+        yCError(BCC) << "Unrecognized or unsupported streaming command vocab:"
+                     << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
     }
 
     return false;

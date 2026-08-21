@@ -19,11 +19,10 @@ bool CartesianControlClientROS2::configureRosHandlers()
     m_pose = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/pose", 10);
     m_twist = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/twist", 10);
     m_wrench = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/wrench", 10);
-    m_movj = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movj", 10);
-    m_relj = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/relj", 10);
-    m_movl = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movl", 10);
-    m_movv = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/movv", 10);
-    m_forc = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/forc", 10);
+    m_movj = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movej", 10);
+    m_movl = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movel", 10);
+    m_movv = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/movev", 10);
+    m_forc = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/force", 10);
     m_tool = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/tool", 10);
     m_act = m_node->create_publisher<std_msgs::msg::Int32>(m_remote + "/command/gripper", 10);
 

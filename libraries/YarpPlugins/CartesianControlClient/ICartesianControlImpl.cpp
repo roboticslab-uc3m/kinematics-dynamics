@@ -3,112 +3,19 @@
 #include "CartesianControlClient.hpp"
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Time.h>
 
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
 
-// -----------------------------------------------------------------------------
-
-namespace
-{
-    inline bool checkSuccess(const yarp::os::Bottle & response)
-    {
-        return !response.get(0).isVocab32() || response.get(0).asVocab32() != VOCAB_CC_FAILED;
-    }
-
-    inline void addValue(yarp::os::Bottle& b, int vocab, double value)
-    {
-        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
-        {
-            b.addVocab32(static_cast<yarp::conf::vocab32_t>(value));
-        }
-        else
-        {
-            b.addFloat64(value);
-        }
-    }
-
-    inline double asValue(int vocab, const yarp::os::Value& v)
-    {
-        if (vocab == VOCAB_CC_CONFIG_FRAME || vocab == VOCAB_CC_CONFIG_STREAMING_CMD)
-        {
-            return v.asVocab32();
-        }
-        else
-        {
-            return v.asFloat64();
-        }
-    }
-}
-
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool CartesianControlClient::handleRpcRunnableCmd(int vocab)
+void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const std::vector<double> & in)
 {
-    yarp::os::Bottle cmd, response;
-    cmd.addVocab32(vocab);
-    rpcClient.write(cmd, response);
-    return checkSuccess(response);
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClient::handleRpcConsumerCmd(int vocab, const std::vector<double>& in)
-{
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(vocab);
-
-    for (auto i = 0; i < in.size(); i++)
-    {
-        cmd.addFloat64(in[i]);
-    }
-
-    rpcClient.write(cmd, response);
-
-    return checkSuccess(response);
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClient::handleRpcFunctionCmd(int vocab, const std::vector<double>& in, std::vector<double>& out)
-{
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(vocab);
-
-    for (auto i = 0; i < in.size(); i++)
-    {
-        cmd.addFloat64(in[i]);
-    }
-
-    rpcClient.write(cmd, response);
-
-    if (!checkSuccess(response))
-    {
-        return false;
-    }
-
-    out.resize(response.size());
-
-    for (auto i = 0; i < response.size(); i++)
-    {
-        out[i] = response.get(i).asFloat64();
-    }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-void CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::vector<double>& in)
-{
-    yarp::os::Bottle& cmd = commandPort.prepare();
+    auto & cmd = commandPort.prepare();
 
     cmd.clear();
-    cmd.addVocab32(vocab);
+    cmd.addVocab32(static_cast<yarp::conf::vocab32_t>(vocab));
 
     for (auto i = 0; i < in.size(); i++)
     {
@@ -120,25 +27,7 @@ void CartesianControlClient::handleStreamingConsumerCmd(int vocab, const std::ve
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::handleStreamingBiConsumerCmd(int vocab, const std::vector<double>& in1, double in2)
-{
-    yarp::os::Bottle& cmd = commandPort.prepare();
-
-    cmd.clear();
-    cmd.addVocab32(vocab);
-    cmd.addFloat64(in2);
-
-    for (auto i = 0; i < in1.size(); i++)
-    {
-        cmd.addFloat64(in1[i]);
-    }
-
-    commandPort.write();
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClient::stat(std::vector<double> &x, int * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x, State & state, double & timestamp)
 {
     if (!fkInPort.isClosed())
     {
@@ -148,235 +37,134 @@ bool CartesianControlClient::stat(std::vector<double> &x, int * state, double * 
         }
         else
         {
-            return true;
+            return yarp::dev::ReturnValue::return_code::return_value_ok;
         }
     }
 
-    yarp::os::Bottle cmd, response;
+    auto ret = rpcSender.getState();
+    x = ret.x;
+    state = ret.state;
+    timestamp = ret.timestamp;
 
-    cmd.addVocab32(VOCAB_CC_STAT);
-
-    rpcClient.write(cmd, response);
-
-    if (!checkSuccess(response))
-    {
-        return false;
-    }
-
-    if (state != 0)
-    {
-        *state = response.get(0).asVocab32();
-    }
-
-    x.resize(response.size() - 2);
-
-    for (auto i = 0; i < x.size(); i++)
-    {
-        x[i] = response.get(i + 1).asFloat64();
-    }
-
-    if (timestamp != 0)
-    {
-        *timestamp = response.get(response.size() - 1).asFloat64();
-    }
-
-    return true;
+    return ret.ret;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::inv(const std::vector<double> &xd, std::vector<double> &q)
+yarp::dev::ReturnValue CartesianControlClient::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
-    return handleRpcFunctionCmd(VOCAB_CC_INV, xd, q);
+    auto ret = rpcSender.solvePose(xd);
+    q = ret.q;
+    return ret.ret;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::movj(const std::vector<double> &xd)
+yarp::dev::ReturnValue CartesianControlClient::moveJoint(const std::vector<double> & xd)
 {
-    return handleRpcConsumerCmd(VOCAB_CC_MOVJ, xd);
+    return rpcSender.moveJoint(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::relj(const std::vector<double> &xd)
+yarp::dev::ReturnValue CartesianControlClient::moveLinear(const std::vector<double> & xd)
 {
-    return handleRpcConsumerCmd(VOCAB_CC_RELJ, xd);
+    return rpcSender.moveLinear(xd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::movl(const std::vector<double> &xd)
+yarp::dev::ReturnValue CartesianControlClient::moveVelocity(const std::vector<double> & xdotd)
 {
-    return handleRpcConsumerCmd(VOCAB_CC_MOVL, xd);
+    return rpcSender.moveVelocity(xdotd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::movv(const std::vector<double> &xdotd)
+yarp::dev::ReturnValue CartesianControlClient::gravityCompensation()
 {
-    return handleRpcConsumerCmd(VOCAB_CC_MOVV, xdotd);
+    return rpcSender.gravityCompensation();
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::gcmp()
+yarp::dev::ReturnValue CartesianControlClient::forceControl(const std::vector<double> & fd)
 {
-    return handleRpcRunnableCmd(VOCAB_CC_GCMP);
+    return rpcSender.forceControl(fd);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::forc(const std::vector<double> &fd)
+yarp::dev::ReturnValue CartesianControlClient::stopControl()
 {
-    return handleRpcConsumerCmd(VOCAB_CC_FORC, fd);
+    return rpcSender.stopControl();
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::stopControl()
+yarp::dev::ReturnValue CartesianControlClient::changeTool(const std::vector<double> & x)
 {
-    return handleRpcRunnableCmd(VOCAB_CC_STOP);
+    return rpcSender.changeTool(x);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::wait(double timeout)
+yarp::dev::ReturnValue CartesianControlClient::actuateTool(Actuator command)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(VOCAB_CC_WAIT);
-    cmd.addFloat64(timeout);
-
-    rpcClient.write(cmd, response);
-
-    return checkSuccess(response);
+    return rpcSender.actuateTool(command);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::tool(const std::vector<double> &x)
+void CartesianControlClient::pose(const std::vector<double> & x)
 {
-    return handleRpcConsumerCmd(VOCAB_CC_TOOL, x);
+    return handleStreamingConsumerCmd(Streaming::POSE, x);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::act(int command)
+void CartesianControlClient::twist(const std::vector<double> & xdot)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(VOCAB_CC_ACT);
-    cmd.addVocab32(command);
-
-    rpcClient.write(cmd,response);
-
-    return checkSuccess(response);
+    return handleStreamingConsumerCmd(Streaming::TWIST, xdot);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::pose(const std::vector<double> &x)
+void CartesianControlClient::wrench(const std::vector<double> & w)
 {
-    handleStreamingConsumerCmd(VOCAB_CC_POSE, x);
+    return handleStreamingConsumerCmd(Streaming::WRENCH, w);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::twist(const std::vector<double> &xdot)
+yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, double value)
 {
-    handleStreamingConsumerCmd(VOCAB_CC_TWIST, xdot);
+    return rpcSender.setParameter(vocab, value);
 }
 
 // -----------------------------------------------------------------------------
 
-void CartesianControlClient::wrench(const std::vector<double> &w)
+yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, double * value)
 {
-    handleStreamingConsumerCmd(VOCAB_CC_WRENCH, w);
+    auto ret = rpcSender.getParameter(vocab);
+    *value = ret.value;
+    return ret.ret;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::setParameter(int vocab, double value)
+yarp::dev::ReturnValue CartesianControlClient::setParameters(const std::map<Config, double> & params)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(VOCAB_CC_SET);
-    cmd.addVocab32(vocab);
-    addValue(cmd, vocab, value);
-
-    rpcClient.write(cmd, response);
-
-    return checkSuccess(response);
+    return rpcSender.setParameters(params);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClient::getParameter(int vocab, double * value)
+yarp::dev::ReturnValue CartesianControlClient::getParameters(std::map<Config, double> & params)
 {
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(VOCAB_CC_GET);
-    cmd.addVocab32(vocab);
-
-    rpcClient.write(cmd, response);
-
-    if (!checkSuccess(response))
-    {
-        return false;
-    }
-
-    *value = asValue(vocab, response.get(0));
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClient::setParameters(const std::map<int, double> & params)
-{
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(VOCAB_CC_SET);
-    cmd.addVocab32(VOCAB_CC_CONFIG_PARAMS);
-
-    for (std::map<int, double>::const_iterator it = params.begin(); it != params.end(); ++it)
-    {
-        yarp::os::Bottle & b = cmd.addList();
-        b.addVocab32(it->first);
-        addValue(b, it->first, it->second);
-    }
-
-    rpcClient.write(cmd, response);
-
-    return checkSuccess(response);
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClient::getParameters(std::map<int, double> & params)
-{
-    yarp::os::Bottle cmd, response;
-
-    cmd.addVocab32(VOCAB_CC_GET);
-    cmd.addVocab32(VOCAB_CC_CONFIG_PARAMS);
-
-    rpcClient.write(cmd, response);
-
-    if (!checkSuccess(response))
-    {
-        return false;
-    }
-
-    for (int i = 0; i < response.size(); i++)
-    {
-        yarp::os::Bottle * b = response.get(i).asList();
-        int vocab = b->get(0).asVocab32();
-        double value = asValue(vocab, b->get(1));
-        params.emplace(vocab, value);
-    }
-
-    return true;
+    auto ret = rpcSender.getParameters();
+    params = ret.params;
+    return ret.ret;
 }
 
 // -----------------------------------------------------------------------------

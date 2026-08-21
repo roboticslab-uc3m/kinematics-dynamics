@@ -81,7 +81,7 @@ bool VisualServoController::configure(yarp::os::ResourceFinder & rf)
     }
 #endif
 
-    if (!iCartesianControl->act(VOCAB_CC_ACTUATOR_OPEN_GRIPPER))
+    if (!iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN))
     {
         yCError(VSC) << "Unable to actuate tool";
         return false;
@@ -91,7 +91,7 @@ bool VisualServoController::configure(yarp::os::ResourceFinder & rf)
     {
         grabberResponder.setICartesianControlDriver(iCartesianControl);
 
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
+        if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::TCP)))
         {
             yCError(VSC) << "Unable to set TCP reference frame";
             return false;
@@ -132,7 +132,7 @@ bool VisualServoController::updateModule()
 
         while (yarp::os::SystemClock::now() - now < FINAL_ACT_DELAY)
         {
-            iCartesianControl->act(VOCAB_CC_ACTUATOR_CLOSE_GRIPPER);
+            iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
             yarp::os::SystemClock::delaySystem(0.1);
         }
 

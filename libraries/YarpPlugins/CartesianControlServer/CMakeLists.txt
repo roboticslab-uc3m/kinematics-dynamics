@@ -16,6 +16,7 @@ if(NOT SKIP_CartesianControlServer)
                                                   IWrapperImpl.cpp
                                                   PeriodicThreadImpl.cpp
                                                   RpcResponder.cpp
+                                                  RpcTransformResponder.cpp
                                                   StreamResponder.cpp
                                                   CartesianControlServer_ParamsParser.h
                                                   CartesianControlServer_ParamsParser.cpp
@@ -24,6 +25,7 @@ if(NOT SKIP_CartesianControlServer)
 
     target_link_libraries(CartesianControlServer YARP::YARP_os
                                                  YARP::YARP_dev
+                                                 ROBOTICSLAB::CartesianIDL
                                                  ROBOTICSLAB::KinematicRepresentationLib
                                                  ROBOTICSLAB::KinematicsDynamicsInterfaces)
 

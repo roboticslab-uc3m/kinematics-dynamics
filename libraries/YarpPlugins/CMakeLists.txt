@@ -18,12 +18,8 @@ install(TARGETS KinematicsDynamicsInterfaces
 # Create alias target.
 add_library(ROBOTICSLAB::KinematicsDynamicsInterfaces ALIAS KinematicsDynamicsInterfaces)
 
-# FIXME: workaround for YARP 3.12.
-if(YARP_VERSION VERSION_LESS 3.11.100)
-    set(ALLOW_DEVICE_PARAM_PARSER_GENERATION_DEFAULT_VALUE OFF)
-else()
-    set(ALLOW_DEVICE_PARAM_PARSER_GENERATION_DEFAULT_VALUE ON)
-endif()
+# FIXME: workaround for YARP 3.12+.
+set(ALLOW_DEVICE_PARAM_PARSER_GENERATION_DEFAULT_VALUE ON)
 
 option(ALLOW_DEVICE_PARAM_PARSER_GENERATION "Allow YARP to (re)build device param parsers"
        ${ALLOW_DEVICE_PARAM_PARSER_GENERATION_DEFAULT_VALUE})

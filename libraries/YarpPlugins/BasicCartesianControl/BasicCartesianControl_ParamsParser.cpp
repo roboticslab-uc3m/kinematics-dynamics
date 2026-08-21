@@ -325,8 +325,8 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("'trajectoryRefAccel': trajectory reference linear acceleration\n");
     doc = doc + std::string("'cmcPeriodMs': CMC rate\n");
     doc = doc + std::string("'waitPeriodMs': wait command period\n");
-    doc = doc + std::string("'usePosdMovl': execute MOVL commands in POSD mode using IK\n");
-    doc = doc + std::string("'enableFailFast': enable fail-fast mode for MOVL commands\n");
+    doc = doc + std::string("'usePosdMovl': execute MOVEL commands in POSD mode using IK\n");
+    doc = doc + std::string("'enableFailFast': enable fail-fast mode for MOVEL commands\n");
     doc = doc + std::string("'referenceFrame': reference frame\n");
     doc = doc + std::string("'robot': robot device\n");
     doc = doc + std::string("'solver': cartesian solver device\n");

@@ -2,6 +2,8 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
@@ -26,11 +28,11 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (m_referenceFrame == "base")
     {
-        referenceFrame = ICartesianSolver::BASE_FRAME;
+        referenceFrame = ICartesianSolver::Frame::BASE;
     }
     else if (m_referenceFrame == "tcp")
     {
-        referenceFrame = ICartesianSolver::TCP_FRAME;
+        referenceFrame = ICartesianSolver::Frame::TCP;
     }
     else
     {
@@ -133,12 +135,20 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         yCWarning(BCC, "Could not view iPreciselyTimed in: %s, using local timestamps", m_robot.c_str());
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    iEncoders->getAxes(numJoints);
+#else
     iEncoders->getAxes(&numJoints);
+#endif
     yCInfo(BCC) << "Number of robot joints:" << numJoints;
 
     qRefSpeeds.resize(numJoints);
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iPositionControl->getTrajSpeeds(qRefSpeeds.data()))
+#else
     if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
+#endif
     {
         yCError(BCC) << "Could not retrieve reference speeds";
         return false;
@@ -171,7 +181,11 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         {
             double _qMin, _qMax;
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+            if (!iControlLimits->getPosLimits(joint, &_qMin, &_qMax))
+#else
             if (!iControlLimits->getLimits(joint, &_qMin, &_qMax))
+#endif
             {
                 yCError(BCC) << "Unable to retrieve position limits for joint" << joint;
                 return false;
@@ -215,13 +229,16 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (int numSolverJoints = iCartesianSolver->getNumJoints(); numSolverJoints != numJoints)
+    if (std::size_t numSolverJoints; iCartesianSolver->getNumJoints(numSolverJoints) && numSolverJoints != numJoints)
     {
-        yCError(BCC, "numSolverJoints(%d) != numRobotJoints(%d)", numSolverJoints, numJoints);
+        yCError(BCC, "numSolverJoints(%zu) != numRobotJoints(%zu)", numSolverJoints, numJoints);
         return false;
     }
 
-    yCInfo(BCC) << "Number of solver TCPs:" << iCartesianSolver->getNumTcps();
+    std::size_t numSolverTcps;
+    iCartesianSolver->getNumTcps(numSolverTcps);
+
+    yCInfo(BCC) << "Number of solver TCPs:" << numSolverTcps;
 
     return yarp::os::PeriodicThread::setPeriod(m_cmcPeriodMs * 0.001) && yarp::os::PeriodicThread::start();
 }

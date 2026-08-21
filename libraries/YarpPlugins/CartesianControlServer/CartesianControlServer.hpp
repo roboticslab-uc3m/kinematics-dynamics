@@ -9,11 +9,13 @@
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/PeriodicThread.h>
 #include <yarp/os/RpcServer.h>
+#include <yarp/os/TypedReaderCallback.h>
 
 #include <yarp/dev/Drivers.h>
 #include <yarp/dev/WrapperSingle.h>
 
 #include "ICartesianControl.h"
+#include "CartesianControlMsgs.h"
 #include "KinematicRepresentation.hpp"
 #include "CartesianControlServer_ParamsParser.h"
 
@@ -44,7 +46,7 @@ public:
     CartesianControlServer() : yarp::os::PeriodicThread(1.0)
     {}
 
-    // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
+    // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
 
@@ -71,16 +73,12 @@ namespace roboticslab
 
 /**
  * @ingroup CartesianControlServer
- * @brief Responds to RPC command messages.
+ * @brief Base class for all responders.
  */
-class RpcResponder : public yarp::dev::DeviceResponder
+class ResponderBase
 {
 public:
-    RpcResponder()
-    {
-        // shadows DeviceResponder::makeUsage(), which was already called by the base constructor
-        makeUsage();
-    }
+    virtual ~ResponderBase() = 0;
 
     void setHandle(ICartesianControl * _iCartesianControl)
     { iCartesianControl = _iCartesianControl; }
@@ -88,36 +86,37 @@ public:
     void unsetHandle()
     { iCartesianControl = nullptr; }
 
-    bool respond(const yarp::os::Bottle & in, yarp::os::Bottle & out) override;
-    void makeUsage();
-
 protected:
-    virtual bool transformIncomingData(std::vector<double> & vin)
-    { return true; }
+    ICartesianControl * iCartesianControl {nullptr};
+};
 
-    virtual bool transformOutgoingData(std::vector<double> & vout)
-    { return true; }
+inline ResponderBase::~ResponderBase() {}
+
+/**
+ * @ingroup CartesianControlServer
+ * @brief Responds to RPC command messages.
+ */
+class RpcResponder : public CartesianControlMsgs,
+                     public ResponderBase
+{
+public:
+    return_get_state getState() override;
+    return_solve_pose solvePose(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
+    yarp::dev::ReturnValue gravityCompensation() override;
+    yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) override;
+    yarp::dev::ReturnValue stopControl() override;
+    yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue actuateTool(const roboticslab::ICartesianControl::Actuator command) override;
+    yarp::dev::ReturnValue setParameter(const roboticslab::ICartesianControl::Config vocab, const double value) override;
+    return_get_parameter getParameter(const roboticslab::ICartesianControl::Config vocab) override;
+    yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
+    return_get_parameters getParameters() override;
 
 private:
-    using RunnableFun = bool (ICartesianControl::*)();
-    using ConsumerFun = bool (ICartesianControl::*)(const std::vector<double> &);
-    using FunctionFun = bool (ICartesianControl::*)(const std::vector<double> &, std::vector<double> &);
-
-    bool handleStatMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-    bool handleWaitMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-    bool handleActMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-
-    bool handleRunnableCmdMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out, RunnableFun cmd);
-    bool handleConsumerCmdMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out, ConsumerFun cmd);
-    bool handleFunctionCmdMsg(const yarp::os::Bottle & in, yarp::os::Bottle & out, FunctionFun cmd);
-
-    bool handleParameterSetter(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-    bool handleParameterGetter(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-
-    bool handleParameterSetterGroup(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-    bool handleParameterGetterGroup(const yarp::os::Bottle & in, yarp::os::Bottle & out);
-
-    ICartesianControl * iCartesianControl;
+    using ResponderBase::iCartesianControl;
 };
 
 /**
@@ -135,9 +134,15 @@ public:
           units(units)
     {}
 
+    return_get_state getState() override;
+    return_solve_pose solvePose(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
+
 private:
-    bool transformIncomingData(std::vector<double> & vin) override;
-    bool transformOutgoingData(std::vector<double> & vout) override;
+    bool transformIncomingData(const std::vector<double> & vin, std::vector<double> & vout);
+    bool transformOutgoingData(const std::vector<double> & vin, std::vector<double> & vout);
 
     KinRepresentation::coordinate_system coord;
     KinRepresentation::orientation_system orient;
@@ -148,25 +153,15 @@ private:
  * @ingroup CartesianControlServer
  * @brief Responds to streaming command messages.
  */
-class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
+class StreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>,
+                        public ResponderBase
 {
 public:
-    void setHandle(ICartesianControl * _iCartesianControl)
-    { iCartesianControl = _iCartesianControl;}
-
-    void unsetHandle()
-    { iCartesianControl = nullptr; }
-
     void onRead(yarp::os::Bottle & b) override;
 
 private:
     using ConsumerFun = void (ICartesianControl::*)(const std::vector<double> &);
-    using BiConsumerFun = void (ICartesianControl::*)(const std::vector<double> &, double);
-
     void handleConsumerCmdMsg(const yarp::os::Bottle & in, ConsumerFun cmd);
-    void handleBiConsumerCmdMsg(const yarp::os::Bottle & in, BiConsumerFun cmd);
-
-    ICartesianControl * iCartesianControl {nullptr};
 };
 
 } // namespace roboticslab

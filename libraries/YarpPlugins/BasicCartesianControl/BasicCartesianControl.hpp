@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/DeviceDriver.h>
@@ -111,26 +113,30 @@ public:
     BasicCartesianControl() : yarp::os::PeriodicThread(1.0, yarp::os::PeriodicThreadClock::Absolute)
     {}
 
-    // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp--
-    bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr) override;
-    bool inv(const std::vector<double> & xd, std::vector<double> & q) override;
-    bool movj(const std::vector<double> & xd) override;
-    bool relj(const std::vector<double> & xd) override;
-    bool movl(const std::vector<double> & xd) override;
-    bool movv(const std::vector<double> & xdotd) override;
-    bool gcmp() override;
-    bool forc(const std::vector<double> & fd) override;
-    bool stopControl() override;
-    bool wait(double timeout) override;
-    bool tool(const std::vector<double> & x) override;
-    bool act(int command) override;
+    // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
+
+    // RPC commands
+    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State & state, double & timestamp) override;
+    yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
+    yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
+    yarp::dev::ReturnValue moveVelocity(const std::vector<double> & xdotd) override;
+    yarp::dev::ReturnValue gravityCompensation() override;
+    yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) override;
+    yarp::dev::ReturnValue stopControl() override;
+    yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue actuateTool(roboticslab::ICartesianControl::Actuator command) override;
+
+    // streaming commands
     void pose(const std::vector<double> & x) override;
     void twist(const std::vector<double> & xdot) override;
     void wrench(const std::vector<double> & w) override;
-    bool setParameter(int vocab, double value) override;
-    bool getParameter(int vocab, double * value) override;
-    bool setParameters(const std::map<int, double> & params) override;
-    bool getParameters(std::map<int, double> & params) override;
+
+    // configuration getters/setters
+    yarp::dev::ReturnValue setParameter(roboticslab::ICartesianControl::Config vocab, double value) override;
+    yarp::dev::ReturnValue getParameter(roboticslab::ICartesianControl::Config vocab, double * value) override;
+    yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
+    yarp::dev::ReturnValue getParameters(std::map<roboticslab::ICartesianControl::Config, double> & params) override;
 
     // -------- PeriodicThread declarations. Implementation in PeriodicThreadImpl.cpp --------
     void run() override;
@@ -157,8 +163,8 @@ private:
         mutable std::function<void()> handler;
     };
 
-    int getCurrentState() const;
-    void setCurrentState(int value);
+    roboticslab::ICartesianControl::State getCurrentState() const;
+    void setCurrentState(roboticslab::ICartesianControl::State value);
 
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
@@ -166,7 +172,7 @@ private:
     bool doFailFastChecks(const std::vector<double> & initialQ);
     bool checkControlModes(int mode);
     bool setControlModes(int mode);
-    bool presetStreamingCommand(int command);
+    bool presetStreamingCommand(roboticslab::ICartesianControl::Streaming command);
     bool computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> & q, const StateWatcher & watcher);
@@ -188,24 +194,28 @@ private:
     yarp::dev::ITorqueControl * iTorqueControl {nullptr};
     yarp::dev::IVelocityControl * iVelocityControl {nullptr};
 
-    roboticslab::ICartesianSolver::reference_frame referenceFrame;
+    roboticslab::ICartesianSolver::Frame referenceFrame;
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::size_t numJoints {0};
+#else
     int numJoints {0};
-    int currentState {VOCAB_CC_NOT_CONTROLLING};
-    int streamingCommand {VOCAB_CC_NOT_SET};
+#endif
+    roboticslab::ICartesianControl::State currentState {roboticslab::ICartesianControl::State::NONE};
+    roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::POSE};
 
     mutable std::mutex stateMutex;
 
-    /** MOVJ store previous reference speeds */
+    /** MOVEJ store previous reference speeds */
     std::vector<double> vmoStored;
 
-    /** MOVL keep track of movement start time to know at what time of trajectory movement we are */
+    /** MOVEL keep track of movement start time to know at what time of trajectory movement we are */
     double movementStartTime {0.0};
 
-    /** MOVL store Cartesian trajectory */
+    /** MOVEL store Cartesian trajectory */
     std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
 
-    /** FORC desired Cartesian force */
+    /** FORCE desired Cartesian force */
     std::vector<double> fd;
 
     int encoderErrors {0};

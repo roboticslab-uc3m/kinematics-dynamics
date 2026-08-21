@@ -95,7 +95,7 @@ public:
      * current state.
      * @return integer value describing current actuator state
      */
-    virtual int getActuatorState()
+    virtual ICartesianControl::Actuator getActuatorState()
     {
         return actuatorState;
     }
@@ -133,7 +133,7 @@ protected:
     std::vector<double> data;
     std::vector<bool> fixedAxes;
 
-    int actuatorState;
+    ICartesianControl::Actuator actuatorState;
 
 private:
     /**

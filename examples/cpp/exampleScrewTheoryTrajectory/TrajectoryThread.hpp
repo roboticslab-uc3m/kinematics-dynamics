@@ -3,6 +3,8 @@
 #ifndef __TRAJECTORY_THREAD_HPP__
 #define __TRAJECTORY_THREAD_HPP__
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/PeriodicThread.h>
 
 #include <yarp/dev/IEncoders.h>
@@ -42,7 +44,11 @@ private:
     roboticslab::ScrewTheoryIkProblem * ikProblem;
     roboticslab::ConfigurationSelector * ikConfig;
     KDL::Trajectory * trajectory;
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::size_t axes;
+#else
     int axes;
+#endif
     double startTime;
 };
 

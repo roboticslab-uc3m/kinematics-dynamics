@@ -33,9 +33,13 @@ bool CartesianControlServer::attach(yarp::dev::PolyDriver * poly)
     rpcResponder->setHandle(iCartesianControl);
     streamResponder->setHandle(iCartesianControl);
 
+    rpcServer.setReader(*rpcResponder);
+    commandPort.useCallback(*streamResponder);
+
     if (rpcTransformResponder)
     {
         rpcTransformResponder->setHandle(iCartesianControl);
+        rpcTransformServer.setReader(*rpcTransformResponder);
     }
 
     if (!fkOutPort.isClosed())
@@ -50,15 +54,22 @@ bool CartesianControlServer::attach(yarp::dev::PolyDriver * poly)
 
 bool CartesianControlServer::detach()
 {
+    fkOutPort.interrupt();
     yarp::os::PeriodicThread::stop();
+
+    rpcServer.interrupt();
+    commandPort.interrupt();
 
     rpcResponder->unsetHandle();
     streamResponder->unsetHandle();
 
     if (rpcTransformResponder)
     {
+        rpcTransformServer.interrupt();
         rpcTransformResponder->unsetHandle();
     }
+
+    commandPort.interrupt();
 
     iCartesianControl = nullptr;
     return true;

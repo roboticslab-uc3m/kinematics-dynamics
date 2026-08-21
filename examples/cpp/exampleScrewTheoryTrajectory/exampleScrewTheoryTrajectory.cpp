@@ -32,6 +32,8 @@ make -j$(nproc)
 #include <memory>
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
@@ -133,9 +135,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    std::size_t axes;
+#else
     int axes;
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iEncoders->getAxes(axes))
+#else
     if (!iEncoders->getAxes(&axes))
+#endif
     {
         yError() << "getAxes() failed";
         return 1;
@@ -181,7 +191,11 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < axes; i++)
     {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!iControlLimits->getPosLimits(i, &qMin(i), &qMax(i)))
+#else
         if (!iControlLimits->getLimits(i, &qMin(i), &qMax(i)))
+#endif
         {
             yError() << "Unable to retrieve limits for joint" << i;
             return 1;
@@ -199,9 +213,13 @@ int main(int argc, char *argv[])
     KDL::VelocityProfile_Trap profile(trajMaxVel, 0.2);
     KDL::Trajectory_Segment trajectory(&path, &profile, trajDuration, false);
 
-    std::vector<int> modes(axes, VOCAB_CM_POSITION_DIRECT);
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    const auto mode = yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION_DIRECT;
 
-    if (!iControlMode->setControlModes(modes.data()))
+    if (std::vector modes(axes, mode); !iControlMode->setControlModes(modes))
+#else
+    if (std::vector<int> modes(axes, VOCAB_CM_POSITION_DIRECT); !iControlMode->setControlModes(modes.data()))
+#endif
     {
         yError() << "Unable to change mode";
         return 1;

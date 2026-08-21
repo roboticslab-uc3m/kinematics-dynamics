@@ -34,9 +34,6 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
     rpcResponder = new RpcResponder();
     streamResponder = new StreamResponder();
 
-    rpcServer.setReader(*rpcResponder);
-    commandPort.useCallback(*streamResponder);
-
     if (m_fkPeriod > 0)
     {
         yarp::os::PeriodicThread::setPeriod(m_fkPeriod * 0.001);
@@ -104,7 +101,6 @@ bool CartesianControlServer::open(yarp::os::Searchable& config)
     if (openTransformPort)
     {
         rpcTransformResponder = new RpcTransformResponder(coord, orient, units);
-        rpcTransformServer.setReader(*rpcTransformResponder);
 
         if (!rpcTransformServer.open(m_name + "/rpc_transform:s"))
         {
@@ -123,24 +119,20 @@ bool CartesianControlServer::close()
     if (!fkOutPort.isClosed())
     {
         yarp::os::PeriodicThread::stop();
-        fkOutPort.interrupt();
         fkOutPort.close();
     }
 
-    rpcServer.interrupt();
     rpcServer.close();
     delete rpcResponder;
     rpcResponder = nullptr;
 
     if (rpcTransformResponder)
     {
-        rpcTransformServer.interrupt();
         rpcTransformServer.close();
         delete rpcTransformResponder;
         rpcTransformResponder = nullptr;
     }
 
-    commandPort.interrupt();
     commandPort.close();
     delete streamResponder;
     streamResponder = nullptr;

@@ -4,14 +4,10 @@
 #define __I_CARTESIAN_SOLVER__
 
 #include <vector>
+
 #include <yarp/os/Vocab.h>
 
-/**
- * @file
- * @brief Contains roboticslab::ICartesianSolver
- * @ingroup YarpPlugins
- * @{
- */
+#include <yarp/dev/ReturnValue.h>
 
 namespace roboticslab
 {
@@ -23,10 +19,10 @@ class ICartesianSolver
 {
 public:
     //! Lists supported reference frames.
-    enum reference_frame
+    enum class Frame
     {
-        BASE_FRAME = yarp::os::createVocab32('c','p','f','b'), //!< Base frame
-        TCP_FRAME = yarp::os::createVocab32('c','p','f','t')   //!< End-effector frame (TCP)
+        BASE = yarp::os::createVocab32('c','p','f','b'), //!< Base frame
+        TCP = yarp::os::createVocab32('c','p','f','t')   //!< End-effector frame (TCP)
     };
 
     //! Destructor
@@ -37,14 +33,14 @@ public:
      *
      * @return Number of joints.
      */
-    virtual int getNumJoints() = 0;
+    virtual yarp::dev::ReturnValue getNumJoints(std::size_t & numJoints) = 0;
 
     /**
      * @brief Get number of TCPs for which the solver has been configured
      *
      * @return The number of TCPs.
      */
-    virtual int getNumTcps() = 0;
+    virtual yarp::dev::ReturnValue getNumTcps(std::size_t & numTcps) = 0;
 
     /**
      * @brief Append an additional link
@@ -55,14 +51,14 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool appendLink(const std::vector<double>& x) = 0;
+    virtual yarp::dev::ReturnValue appendLink(const std::vector<double> & x) = 0;
 
     /**
      * @brief Restore original kinematic chain
      *
      * @return true on success, false otherwise
      */
-    virtual bool restoreOriginalChain() = 0;
+    virtual yarp::dev::ReturnValue restoreOriginalChain() = 0;
 
     /**
      * @brief Change origin in which a pose is expressed
@@ -79,9 +75,9 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool changeOrigin(const std::vector<double> &x_old_obj,
-                              const std::vector<double> &x_new_old,
-                              std::vector<double> &x_new_obj) = 0;
+    virtual yarp::dev::ReturnValue changeOrigin(const std::vector<double> & x_old_obj,
+                                                const std::vector<double> & x_new_old,
+                                                std::vector<double> & x_new_obj) = 0;
 
     /**
      * @brief Perform forward kinematics
@@ -93,7 +89,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool fwdKin(const std::vector<double> &q, std::vector<double> &x) = 0;
+    virtual yarp::dev::ReturnValue forwardKinematics(const std::vector<double> & q, std::vector<double> & x) = 0;
 
     /**
      * @brief Obtain difference between supplied pose inputs
@@ -113,7 +109,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool poseDiff(const std::vector<double> &xLhs, const std::vector<double> &xRhs, std::vector<double> &xOut) = 0;
+    virtual yarp::dev::ReturnValue poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut) = 0;
 
     /**
      * @brief Perform inverse kinematics
@@ -123,12 +119,12 @@ public:
      * axis-angle representation (radians).
      * @param qGuess Vector describing current position in joint space (meters or degrees).
      * @param q Vector describing target position in joint space (meters or degrees).
-     * @param frame Points at the @ref reference_frame the desired position is expressed in.
+     * @param frame Points at the @ref frame the desired position is expressed in.
      *
      * @return true on success, false otherwise
      */
-    virtual bool invKin(const std::vector<double> &xd, const std::vector<double> &qGuess, std::vector<double> &q,
-                        reference_frame frame = BASE_FRAME) = 0;
+    virtual yarp::dev::ReturnValue inverseKinematics(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q,
+                                                     Frame frame = Frame::BASE) = 0;
 
     /**
      * @brief Perform differential inverse kinematics
@@ -138,12 +134,12 @@ public:
      * three elements denote translational velocity (meters/second), last three denote
      * angular velocity (radians/second).
      * @param qdot Vector describing target velocity in joint space (meters/second or degrees/second).
-     * @param frame Points at the @ref reference_frame the desired position is expressed in.
+     * @param frame Points at the @ref frame the desired position is expressed in.
      *
      * @return true on success, false otherwise
      */
-    virtual bool diffInvKin(const std::vector<double> &q, const std::vector<double> &xdot, std::vector<double> &qdot,
-                            reference_frame frame = BASE_FRAME) = 0;
+    virtual yarp::dev::ReturnValue diffInverseKinematics(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot,
+                                                         Frame frame = Frame::BASE) = 0;
 
     /**
      * @brief Perform inverse dynamics
@@ -157,31 +153,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual bool invDyn(const std::vector<double> &q, std::vector<double> &t) = 0;
-
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-    /**
-     * @brief Perform inverse dynamics
-     *
-     * @param q Vector describing current position in joint space (meters or degrees).
-     * @param qdot Vector describing current velocity in joint space (meters/second or degrees/second).
-     * @param qdotdot Vector describing current acceleration in joint space (meters/second² or degrees/second²).
-     * @param fexts vector of external forces applied to each robot segment, expressed in
-     * cartesian space; first three elements denote translational acceleration (meters/second²),
-     * last three denote angular acceleration (radians/second²).
-     * @param t 6-element vector describing desired forces in cartesian space; first
-     * three elements denote translational acceleration (meters/second²), last three denote
-     * angular acceleration (radians/second²).
-     *
-     * @return true on success, false otherwise
-     */
-    [[deprecated("use `const std::vector<double> &ftip` signature instead")]]
-    virtual bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                        const std::vector<std::vector<double>> &fexts, std::vector<double> &t)
-    {
-        return invDyn(q, qdot, qdotdot, fexts.back(), t);
-    }
-#endif
+    virtual yarp::dev::ReturnValue inverseDynamics(const std::vector<double> & q, std::vector<double> & t) = 0;
 
     /**
      * @brief Perform inverse dynamics
@@ -195,16 +167,36 @@ public:
      * @param t 6-element vector describing desired forces in cartesian space; first
      * three elements denote translational acceleration (meters/second²), last three denote
      * angular acceleration (radians/second²).
-     * @param frame Points at the @ref reference_frame @p ftip is expressed in.
+     * @param frame Points at the @ref frame @p ftip is expressed in.
      *
      * @return true on success, false otherwise
      */
-    virtual bool invDyn(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
-                        const std::vector<double> &ftip, std::vector<double> &t, reference_frame frame = BASE_FRAME) = 0;
+    virtual yarp::dev::ReturnValue inverseDynamics(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                                   const std::vector<double> & ftip, std::vector<double> & t, Frame frame = Frame::BASE) = 0;
+
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+    enum reference_frame
+    {
+        BASE_FRAME [[deprecated("use `ICartesianSolver::Frame::Base` instead")]] = static_cast<int>(Frame::BASE),
+        TCP_FRAME  [[deprecated("use `ICartesianSolver::Frame::TCP` instead")]]  = static_cast<int>(Frame::TCP)
+    };
+
+    [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
+    virtual bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
+    { return inverseKinematics(xd, qGuess, q, static_cast<Frame>(frame)); }
+
+    [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
+    virtual bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
+    { return diffInverseKinematics(q, xdot, qdot, static_cast<Frame>(frame)); }
+
+    [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
+    virtual bool invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                        const std::vector<double> & ftip, std::vector<double> & t, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
+    { return inverseDynamics(q, qdot, qdotdot, ftip, t, static_cast<Frame>(frame)); }
+#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 };
 
 } // namespace roboticslab
-
-/** @} */
 
 #endif // __I_CARTESIAN_SOLVER__

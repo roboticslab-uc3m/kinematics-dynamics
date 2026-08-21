@@ -34,9 +34,15 @@ bool CartesianControlClient::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (!commandPort.addOutput(m_remote + "/command:i", "udp"))
+    if (!commandPort.addOutput(m_remote + "/command:i", "fast_tcp"))
     {
         yCError(CCC) << "Error on connect to remote command server";
+        return false;
+    }
+
+    if (!rpcSender.yarp().attachAsClient(rpcClient))
+    {
+        yCError(CCC) << "Unable to attach RPC sender to port";
         return false;
     }
 

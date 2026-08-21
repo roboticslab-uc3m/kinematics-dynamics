@@ -11,17 +11,17 @@ void CartesianControlServer::run()
     if (iCartesianControl)
     {
         std::vector<double> x;
-        int state;
+        ICartesianControl::State state;
         double timestamp;
 
-        if (!iCartesianControl->stat(x, &state, &timestamp))
+        if (!iCartesianControl->getState(x, state, timestamp))
         {
             return;
         }
 
         yarp::os::Bottle & out = fkOutPort.prepare();
         out.clear();
-        out.addVocab32(state);
+        out.addVocab32(static_cast<yarp::conf::vocab32_t>(state));
 
         for (auto i = 0; i < x.size(); i++)
         {

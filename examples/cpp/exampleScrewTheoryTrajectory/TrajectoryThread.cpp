@@ -5,6 +5,8 @@
 #include <algorithm> // std::none_of, std::transform
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
@@ -27,7 +29,11 @@ namespace
 bool TrajectoryThread::threadInit()
 {
     startTime = yarp::os::Time::now();
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    return iEncoders->getAxes(axes);
+#else
     return iEncoders->getAxes(&axes);
+#endif
 }
 
 void TrajectoryThread::run()

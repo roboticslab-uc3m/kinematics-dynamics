@@ -6,46 +6,49 @@
 #include <unordered_map>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/Vocab.h>
 
 #include <kdl/frames.hpp>
 
 #include "LogComponent.hpp"
 
+using namespace roboticslab;
+
 namespace
 {
-    const std::unordered_map<int, std::string> vocabToParamName = {
-        {VOCAB_CC_CONFIG_GAIN, "gain"},
-        {VOCAB_CC_CONFIG_TRAJ_DURATION, "trajectory_duration"},
-        {VOCAB_CC_CONFIG_TRAJ_REF_SPD, "trajectory_reference_speed"},
-        {VOCAB_CC_CONFIG_TRAJ_REF_ACC, "trajectory_reference_acceleration"},
-        {VOCAB_CC_CONFIG_CMC_PERIOD, "cmc_period"},
-        {VOCAB_CC_CONFIG_WAIT_PERIOD, "wait_period"},
-        {VOCAB_CC_CONFIG_FRAME, "frame"},
-        {VOCAB_CC_CONFIG_STREAMING_CMD, "preset_streaming_cmd"}
+    const std::unordered_map<ICartesianControl::Config, std::string> vocabToParamName = {
+        {ICartesianControl::Config::GAIN, "gain"},
+        {ICartesianControl::Config::TRAJ_DURATION, "trajectory_duration"},
+        {ICartesianControl::Config::TRAJ_REF_SPD, "trajectory_reference_speed"},
+        {ICartesianControl::Config::TRAJ_REF_ACC, "trajectory_reference_acceleration"},
+        {ICartesianControl::Config::CMC_PERIOD, "cmc_period"},
+        {ICartesianControl::Config::WAIT_PERIOD, "wait_period"},
+        {ICartesianControl::Config::FRAME, "frame"},
+        {ICartesianControl::Config::STREAMING_CMD, "preset_streaming_cmd"}
     };
 
-    bool parameterFromVocab(int vocab, double value, rcl_interfaces::msg::Parameter & param)
+    bool parameterFromVocab(ICartesianControl::Config vocab, double value, rcl_interfaces::msg::Parameter & param)
     {
         switch (vocab)
         {
-        case VOCAB_CC_CONFIG_GAIN:
-        case VOCAB_CC_CONFIG_TRAJ_DURATION:
-        case VOCAB_CC_CONFIG_TRAJ_REF_SPD:
-        case VOCAB_CC_CONFIG_TRAJ_REF_ACC:
-        case VOCAB_CC_CONFIG_CMC_PERIOD:
-        case VOCAB_CC_CONFIG_WAIT_PERIOD:
+        case ICartesianControl::Config::GAIN:
+        case ICartesianControl::Config::TRAJ_DURATION:
+        case ICartesianControl::Config::TRAJ_REF_SPD:
+        case ICartesianControl::Config::TRAJ_REF_ACC:
+        case ICartesianControl::Config::CMC_PERIOD:
+        case ICartesianControl::Config::WAIT_PERIOD:
             param.value.type = rclcpp::ParameterType::PARAMETER_DOUBLE;
             param.value.double_value = value;
             break;
-        case VOCAB_CC_CONFIG_FRAME:
+        case ICartesianControl::Config::FRAME:
             param.value.type = rclcpp::ParameterType::PARAMETER_STRING;
 
-            switch (static_cast<int>(value))
+            switch (static_cast<ICartesianSolver::Frame>(value))
             {
-            case roboticslab::ICartesianSolver::BASE_FRAME:
+            case ICartesianSolver::Frame::BASE:
                 param.value.string_value = "base";
                 break;
-            case roboticslab::ICartesianSolver::TCP_FRAME:
+            case ICartesianSolver::Frame::TCP:
                 param.value.string_value = "tcp";
                 break;
             default:
@@ -54,31 +57,35 @@ namespace
             }
 
             break;
-        case VOCAB_CC_CONFIG_STREAMING_CMD:
+        case ICartesianControl::Config::STREAMING_CMD:
             param.value.type = rclcpp::ParameterType::PARAMETER_STRING;
 
-            switch (static_cast<int>(value))
+            switch (static_cast<ICartesianControl::Streaming>(value))
             {
-            case VOCAB_CC_POSE:
+            case ICartesianControl::Streaming::POSE:
                 param.value.string_value = "pose";
                 break;
-            case VOCAB_CC_TWIST:
+            case ICartesianControl::Streaming::TWIST:
                 param.value.string_value = "twist";
                 break;
-            case VOCAB_CC_WRENCH:
+            case ICartesianControl::Streaming::WRENCH:
                 param.value.string_value = "wrench";
                 break;
-            case VOCAB_CC_NOT_SET:
-                param.value.string_value = "none";
-                break;
             default:
-                yCError(CCC) << "Invalid streaming command";
-                return false;
+                if (value == static_cast<double>(ICartesianControl::Vocabs::NOT_SET))
+                {
+                    param.value.string_value = "none";
+                }
+                else
+                {
+                    yCError(CCC) << "Invalid streaming command";
+                    return false;
+                }
             }
 
             break;
         default:
-            yCError(CCC) << "Invalid parameter vocab:" << vocab;
+            yCError(CCC) << "Invalid parameter vocab:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
             return false;
         }
 
@@ -87,49 +94,49 @@ namespace
         return true;
     }
 
-    bool vocabFromParameter(const std::string & name, const rcl_interfaces::msg::ParameterValue & paramValue, int * vocab, double * value)
+    bool vocabFromParameter(const std::string & name, const rcl_interfaces::msg::ParameterValue & paramValue, ICartesianControl::Config * vocab, double * value)
     {
         if (name == "gain")
         {
-            *vocab = VOCAB_CC_CONFIG_GAIN;
+            *vocab = ICartesianControl::Config::GAIN;
             *value = paramValue.double_value;
         }
         else if (name == "trajectory_duration")
         {
-            *vocab = VOCAB_CC_CONFIG_TRAJ_DURATION;
+            *vocab = ICartesianControl::Config::TRAJ_DURATION;
             *value = paramValue.double_value;
         }
         else if (name == "trajectory_reference_speed")
         {
-            *vocab = VOCAB_CC_CONFIG_TRAJ_REF_SPD;
+            *vocab = ICartesianControl::Config::TRAJ_REF_SPD;
             *value = paramValue.double_value;
         }
         else if (name == "trajectory_reference_acceleration")
         {
-            *vocab = VOCAB_CC_CONFIG_TRAJ_REF_ACC;
+            *vocab = ICartesianControl::Config::TRAJ_REF_ACC;
             *value = paramValue.double_value;
         }
         else if (name == "cmc_period")
         {
-            *vocab = VOCAB_CC_CONFIG_CMC_PERIOD;
+            *vocab = ICartesianControl::Config::CMC_PERIOD;
             *value = paramValue.double_value;
         }
         else if (name == "wait_period")
         {
-            *vocab = VOCAB_CC_CONFIG_WAIT_PERIOD;
+            *vocab = ICartesianControl::Config::WAIT_PERIOD;
             *value = paramValue.double_value;
         }
         else if (name == "frame")
         {
-            *vocab = VOCAB_CC_CONFIG_FRAME;
+            *vocab = ICartesianControl::Config::FRAME;
 
             if (paramValue.string_value == "base")
             {
-                *value = static_cast<double>(roboticslab::ICartesianSolver::BASE_FRAME);
+                *value = static_cast<double>(ICartesianSolver::Frame::BASE);
             }
             else if (paramValue.string_value == "tcp")
             {
-                *value = static_cast<double>(roboticslab::ICartesianSolver::TCP_FRAME);
+                *value = static_cast<double>(ICartesianSolver::Frame::TCP);
             }
             else
             {
@@ -139,23 +146,23 @@ namespace
         }
         else if (name == "preset_streaming_cmd")
         {
-            *vocab = VOCAB_CC_CONFIG_STREAMING_CMD;
+            *vocab = ICartesianControl::Config::STREAMING_CMD;
 
             if (paramValue.string_value == "pose")
             {
-                *value = static_cast<double>(VOCAB_CC_POSE);
+                *value = static_cast<double>(ICartesianControl::Streaming::POSE);
             }
             else if (paramValue.string_value == "twist")
             {
-                *value = static_cast<double>(VOCAB_CC_TWIST);
+                *value = static_cast<double>(ICartesianControl::Streaming::TWIST);
             }
             else if (paramValue.string_value == "wrench")
             {
-                *value = static_cast<double>(VOCAB_CC_WRENCH);
+                *value = static_cast<double>(ICartesianControl::Streaming::WRENCH);
             }
             else if (paramValue.string_value == "none")
             {
-                *value = static_cast<double>(VOCAB_CC_NOT_SET);
+                *value = static_cast<double>(ICartesianControl::Vocabs::NOT_SET);
             }
             else
             {
@@ -176,7 +183,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-bool CartesianControlClientROS2::stat(std::vector<double> & x, int * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClientROS2::getState(std::vector<double> & x, State & state, double & timestamp)
 {
     std::lock_guard lock(m_mutex_state);
 
@@ -192,17 +199,15 @@ bool CartesianControlClientROS2::stat(std::vector<double> & x, int * state, doub
         axisAngle.x(), axisAngle.y(), axisAngle.z()
     };
 
-    if (timestamp)
-    {
-        *timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
-    }
+    // FIXME: handle state
+    timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector<double> & q)
+yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
     rl_cartesian_control_msgs::srv::Inv::Request request;
     request.x.position.x = xd[0];
@@ -225,16 +230,16 @@ bool CartesianControlClientROS2::inv(const std::vector<double> & xd, std::vector
     if (!response->success)
     {
         yCError(CCC) << "Inverse kinematics service call failed";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     q = response->q.data;
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::movj(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -253,36 +258,12 @@ bool CartesianControlClientROS2::movj(const std::vector<double> & xd)
 
     m_movj->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::relj(const std::vector<double> & xd)
-{
-    geometry_msgs::msg::Pose poseMsg;
-    poseMsg.position.x = xd[0];
-    poseMsg.position.y = xd[1];
-    poseMsg.position.z = xd[2];
-
-    KDL::Vector axis(xd[3], xd[4], xd[5]);
-    double angle = axis.Norm();
-
-    KDL::Rotation::Rot(axis, angle).GetQuaternion(
-        poseMsg.orientation.x,
-        poseMsg.orientation.y,
-        poseMsg.orientation.z,
-        poseMsg.orientation.w
-    );
-
-    m_relj->publish(poseMsg);
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClientROS2::movl(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::moveLinear(const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -301,12 +282,12 @@ bool CartesianControlClientROS2::movl(const std::vector<double> & xd)
 
     m_movl->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
+yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vector<double> & xdotd)
 {
     geometry_msgs::msg::Twist twistMsg;
     twistMsg.linear.x = xdotd[0];
@@ -318,22 +299,25 @@ bool CartesianControlClientROS2::movv(const std::vector<double> & xdotd)
 
     m_movv->publish(twistMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::gcmp()
+yarp::dev::ReturnValue CartesianControlClientROS2::gravityCompensation()
 {
     std_srvs::srv::Trigger::Request request;
     auto result = m_client_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
-    return response->success;
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::forc(const std::vector<double> & fd)
+yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vector<double> & fd)
 {
     geometry_msgs::msg::Wrench wrenchMsg;
     wrenchMsg.force.x = fd[0];
@@ -345,30 +329,25 @@ bool CartesianControlClientROS2::forc(const std::vector<double> & fd)
 
     m_forc->publish(wrenchMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::stopControl()
+yarp::dev::ReturnValue CartesianControlClientROS2::stopControl()
 {
     std_srvs::srv::Trigger::Request request;
     auto result = m_client_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
-    return response->success;
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::wait(double timeout)
-{
-    yCWarning(CCC) << "wait() not implemented for CartesianControlClientROS2";
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-
-bool CartesianControlClientROS2::tool(const std::vector<double> & x)
+yarp::dev::ReturnValue CartesianControlClientROS2::changeTool(const std::vector<double> & x)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = x[0];
@@ -387,36 +366,36 @@ bool CartesianControlClientROS2::tool(const std::vector<double> & x)
 
     m_tool->publish(poseMsg);
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::act(int command)
+yarp::dev::ReturnValue CartesianControlClientROS2::actuateTool(Actuator command)
 {
     std_msgs::msg::Int32 actMsg;
 
     switch (command)
     {
-    case VOCAB_CC_ACTUATOR_NONE:
+    case Actuator::NONE:
         actMsg.data = GRIPPER_NONE;
         break;
-    case VOCAB_CC_ACTUATOR_OPEN_GRIPPER:
+    case Actuator::OPEN:
         actMsg.data = GRIPPER_OPEN;
         break;
-    case VOCAB_CC_ACTUATOR_CLOSE_GRIPPER:
+    case Actuator::CLOSE:
         actMsg.data = GRIPPER_CLOSE;
         break;
-    case VOCAB_CC_ACTUATOR_STOP_GRIPPER:
+    case Actuator::STOP:
         actMsg.data = GRIPPER_STOP;
         break;
     default:
-        yCError(CCC) << "Invalid actuator command:" << command;
-        return false;
+        yCError(CCC) << "Invalid actuator command:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     m_act->publish(actMsg);
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -473,13 +452,13 @@ void CartesianControlClientROS2::wrench(const std::vector<double> & w)
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::setParameter(int vocab, double value)
+yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, double value)
 {
     rcl_interfaces::msg::Parameter param;
 
     if (!parameterFromVocab(vocab, value, param))
     {
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
@@ -488,19 +467,21 @@ bool CartesianControlClientROS2::setParameter(int vocab, double value)
     auto result = m_client_set_params->async_send_request(request);
     auto response = result.get();
 
-    return response->results.size() == 1 && response->results[0].successful;
+    return response->results.size() == 1 && response->results[0].successful
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::getParameter(int vocab, double * value)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, double * value)
 {
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
 
     if (vocabToParamName.find(vocab) == vocabToParamName.end())
     {
-        yCError(CCC) << "Invalid parameter vocab:" << vocab;
-        return false;
+        yCError(CCC) << "Invalid parameter vocab:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     const auto & name = vocabToParamName.at(vocab);
@@ -512,15 +493,17 @@ bool CartesianControlClientROS2::getParameter(int vocab, double * value)
     if (response->values.size() != 1)
     {
         yCError(CCC) << "Unexpected number of parameter values received";
-        return false;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    return vocabFromParameter(name, response->values[0], &vocab, value);
+    return vocabFromParameter(name, response->values[0], &vocab, value)
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::setParameters(const std::map<int, double> & params)
+yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const std::map<Config, double> & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
 
@@ -530,7 +513,7 @@ bool CartesianControlClientROS2::setParameters(const std::map<int, double> & par
 
         if (!parameterFromVocab(vocab, value, param))
         {
-            return false;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
         request->parameters.push_back(param);
@@ -540,12 +523,14 @@ bool CartesianControlClientROS2::setParameters(const std::map<int, double> & par
     auto response = result.get();
     const auto & results = response->results;
 
-    return std::all_of(results.begin(), results.end(), [](const auto & r) { return r.successful; });
+    return std::all_of(results.begin(), results.end(), [](const auto & r) { return r.successful; })
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
-bool CartesianControlClientROS2::getParameters(std::map<int, double> & params)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(std::map<Config, double> & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names = m_supported_parameters;
@@ -558,7 +543,7 @@ bool CartesianControlClientROS2::getParameters(std::map<int, double> & params)
         const auto & name = request->names[i];
         const auto & responseValue = response->values[i];
 
-        int vocab;
+        Config vocab;
         double value;
 
         if (vocabFromParameter(name, responseValue, &vocab, &value))
@@ -567,7 +552,7 @@ bool CartesianControlClientROS2::getParameters(std::map<int, double> & params)
         }
     }
 
-    return true;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------

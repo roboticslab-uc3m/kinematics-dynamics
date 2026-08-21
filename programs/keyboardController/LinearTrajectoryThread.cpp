@@ -32,7 +32,7 @@ LinearTrajectoryThread::~LinearTrajectoryThread()
 
 bool LinearTrajectoryThread::checkStreamingConfig()
 {
-    std::map<int, double> params;
+    std::map<ICartesianControl::Config, double> params;
 
     if (!iCartesianControl->getParameters(params))
     {
@@ -40,14 +40,15 @@ bool LinearTrajectoryThread::checkStreamingConfig()
         return false;
     }
 
-    usingStreamingCommandConfig = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+    usingStreamingCommandConfig = params.find(ICartesianControl::Config::STREAMING_CMD) != params.end();
 
     return true;
 }
 
 bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
 {
-    if (usingStreamingCommandConfig && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, VOCAB_CC_POSE))
+    if (usingStreamingCommandConfig &&
+        !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(ICartesianControl::Streaming::POSE)))
     {
         yCWarning(KC) << "Unable to preset streaming command";
         return false;
@@ -65,10 +66,12 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
     }
 
     std::vector<double> x;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!iCartesianControl->stat(x))
+    if (!iCartesianControl->getState(x, state, timestamp))
     {
-        yCError(KC) << "stat failed";
+        yCError(KC) << "getState failed";
         return false;
     }
 

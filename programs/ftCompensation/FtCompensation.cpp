@@ -38,16 +38,16 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     auto modeStr = rf.check("mode", yarp::os::Value(""), "command mode (twist or wrench)").asString();
 
-    int modeVocab;
+    ICartesianControl::Streaming modeVocab;
 
     if (modeStr == "twist")
     {
-        modeVocab = VOCAB_CC_TWIST;
+        modeVocab = ICartesianControl::Streaming::TWIST;
         command = &ICartesianControl::twist;
     }
     else if (modeStr == "wrench")
     {
-        modeVocab = VOCAB_CC_WRENCH;
+        modeVocab = ICartesianControl::Streaming::WRENCH;
         command = &ICartesianControl::wrench;
     }
     else
@@ -74,7 +74,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     if (rf.check("linStiffness") || rf.check("rotStiffness") || rf.check("linDamping") || rf.check("rotDamping"))
     {
-        if (modeVocab != VOCAB_CC_WRENCH)
+        if (modeVocab != ICartesianControl::Streaming::WRENCH)
         {
             yCError(FTC) << "Impedance control can only be enabled in wrench mode";
             return false;
@@ -274,7 +274,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
         if (!dryRun)
         {
-            std::map<int, double> params;
+            std::map<ICartesianControl::Config, double> params;
 
             if (!iCartesianControl->getParameters(params))
             {
@@ -282,15 +282,15 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
                 return false;
             }
 
-            bool usingStreamingPreset = params.find(VOCAB_CC_CONFIG_STREAMING_CMD) != params.end();
+            bool usingStreamingPreset = params.find(ICartesianControl::Config::STREAMING_CMD) != params.end();
 
-            if (usingStreamingPreset && !iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, modeVocab))
+            if (usingStreamingPreset && !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(modeVocab)))
             {
                 yCWarning(FTC) << "Unable to preset streaming command";
                 return false;
             }
 
-            if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::TCP_FRAME))
+            if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::TCP)))
             {
                 yCWarning(FTC) << "Unable to set TCP frame";
                 return false;
@@ -304,8 +304,10 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         }
 
         std::vector<double> x;
+        ICartesianControl::State state;
+        double timestamp;
 
-        if (enableImpedance && !iCartesianControl->stat(x))
+        if (enableImpedance && !iCartesianControl->getState(x, state, timestamp))
         {
             yCError(FTC) << "Failed to retrieve initial pose";
             return false;
@@ -345,8 +347,10 @@ bool FtCompensation::readSensor(KDL::Wrench & wrench) const
 bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 {
     std::vector<double> currentX;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!iCartesianControl->stat(currentX))
+    if (!iCartesianControl->getState(currentX, state, timestamp))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;
@@ -363,8 +367,10 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 bool FtCompensation::applyImpedance(KDL::Wrench & wrench)
 {
     std::vector<double> x;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!iCartesianControl->stat(x))
+    if (!iCartesianControl->getState(x, state, timestamp))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;

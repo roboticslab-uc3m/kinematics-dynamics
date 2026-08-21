@@ -2,6 +2,8 @@
 
 #include "BasicCartesianControl.hpp"
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Time.h>
 
@@ -17,9 +19,9 @@ constexpr double ENCODER_THROTTLE = 1.0; // [s]
 
 void BasicCartesianControl::run()
 {
-    const int currentState = getCurrentState();
+    const auto currentState = getCurrentState();
 
-    if (currentState == VOCAB_CC_NOT_CONTROLLING)
+    if (currentState == State::NONE)
     {
         return;
     }
@@ -61,19 +63,19 @@ void BasicCartesianControl::run()
 
     switch (currentState)
     {
-    case VOCAB_CC_MOVJ_CONTROLLING:
+    case State::MOVEJ:
         handleMovj(q, watcher);
         break;
-    case VOCAB_CC_MOVL_CONTROLLING:
+    case State::MOVEL:
         m_usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
         break;
-    case VOCAB_CC_MOVV_CONTROLLING:
+    case State::MOVEV:
         handleMovv(q, watcher);
         break;
-    case VOCAB_CC_GCMP_CONTROLLING:
+    case State::GCMP:
         handleGcmp(q, watcher);
         break;
-    case VOCAB_CC_FORC_CONTROLLING:
+    case State::FORCE:
         handleForc(q, qdot, qdotdot, watcher);
         break;
     default:
@@ -93,7 +95,11 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
     bool done;
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!iPositionControl->checkMotionDone(done))
+#else
     if (!iPositionControl->checkMotionDone(&done))
+#endif
     {
         yCError(BCC) << "Unable to query current robot state";
         return;
@@ -103,12 +109,19 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
     if (done)
     {
-        setCurrentState(VOCAB_CC_NOT_CONTROLLING);
+        setCurrentState(State::NONE);
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        if (!iPositionControl->setTrajSpeeds(vmoStored.data()))
+        {
+             yCWarning(BCC) << "setTrajSpeeds() (to restore) failed";
+        }
+#else
         if (!iPositionControl->setRefSpeeds(vmoStored.data()))
         {
              yCWarning(BCC) << "setRefSpeeds() (to restore) failed";
         }
+#endif
     }
 }
 
@@ -148,9 +161,9 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
 
     std::vector<double> currentX;
 
-    if (!iCartesianSolver->fwdKin(q, currentX))
+    if (!iCartesianSolver->forwardKinematics(q, currentX))
     {
-        yCWarning(BCC) << "fwdKin() failed";
+        yCWarning(BCC) << "forwardKinematics() failed";
         return;
     }
 
@@ -167,17 +180,17 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot))
+    if (!iCartesianSolver->diffInverseKinematics(q, commandXdot, commandQdot))
     {
-        yCWarning(BCC) << "diffInvKin() failed";
+        yCWarning(BCC) << "diffInverseKinematics() failed";
         return;
     }
 
-    yCDebug(BCC) << "[MOVL]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVEL]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
-        yCError(BCC) << "diffInvKin() too dangerous";
+        yCError(BCC) << "diffInverseKinematics() too dangerous";
         return;
     }
 
@@ -221,13 +234,13 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
     //-- Compute joint position commands and send to robot.
     std::vector<double> commandQ;
 
-    if (!iCartesianSolver->invKin(desiredX, q, commandQ))
+    if (!iCartesianSolver->inverseKinematics(desiredX, q, commandQ))
     {
-        yCWarning(BCC) << "invKin() failed";
+        yCWarning(BCC) << "inverseKinematics() failed";
         return;
     }
 
-    yCDebug(BCC) << "[MOVL]" << movementTime << "[s] ||" << desiredX << "->" << commandQ << "[deg]";
+    yCDebug(BCC) << "[MOVEL]" << movementTime << "[s] ||" << desiredX << "->" << commandQ << "[deg]";
 
     watcher.suppress();
 
@@ -251,9 +264,9 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
 
     std::vector<double> currentX;
 
-    if (!iCartesianSolver->fwdKin(q, currentX))
+    if (!iCartesianSolver->forwardKinematics(q, currentX))
     {
-        yCWarning(BCC) << "fwdKin() failed";
+        yCWarning(BCC) << "forwardKinematics() failed";
         return;
     }
 
@@ -286,17 +299,17 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, referenceFrame))
+    if (!iCartesianSolver->diffInverseKinematics(q, commandXdot, commandQdot, referenceFrame))
     {
-        yCWarning(BCC) << "diffInvKin() failed";
+        yCWarning(BCC) << "diffInverseKinematics() failed";
         return;
     }
 
-    yCDebug(BCC) << "[MOVV]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
+    yCDebug(BCC) << "[MOVEV]" << movementTime << "[s] ||" << commandXdot << "->" << commandQdot << "[deg/s]";
 
     if (!checkJointVelocities(commandQdot))
     {
-        yCError(BCC) << "diffInvKin() too dangerous";
+        yCError(BCC) << "diffInverseKinematics() too dangerous";
         return;
     }
 
@@ -320,9 +333,9 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const State
 
     std::vector<double> t(numJoints);
 
-    if (!iCartesianSolver->invDyn(q, t))
+    if (!iCartesianSolver->inverseDynamics(q, t))
     {
-        yCWarning(BCC) << "invDyn() failed";
+        yCWarning(BCC) << "inverseDynamics() failed";
         return;
     }
 
@@ -347,9 +360,9 @@ void BasicCartesianControl::handleForc(const std::vector<double> &q, const std::
 
     std::vector<double> t(numJoints);
 
-    if (!iCartesianSolver->invDyn(q, qdot, qdotdot, fd, t, referenceFrame))
+    if (!iCartesianSolver->inverseDynamics(q, qdot, qdotdot, fd, t, referenceFrame))
     {
-        yCWarning(BCC) << "invDyn() failed";
+        yCWarning(BCC) << "inverseDynamics() failed";
         return;
     }
 

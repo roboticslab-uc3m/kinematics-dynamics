@@ -32,7 +32,7 @@ public:
 
     bool transformData(double scaling) override;
 
-    int getActuatorState() override;
+    ICartesianControl::Actuator getActuatorState() override;
 
     void sendMovementCommand(double timestamp) override;
 

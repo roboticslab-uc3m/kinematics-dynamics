@@ -14,12 +14,6 @@
 %include "std_map.i"
 %include "typemaps.i"
 
-%apply int *OUTPUT { int *state };
-%apply double *OUTPUT { double *timestamp };
-%apply double *OUTPUT { double *value };
-
-%template(IntDoubleMap) std::map<int, double>;
-
 %define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS %enddef
 
 %{
@@ -28,28 +22,49 @@
 #include "ICartesianControl.h"
 %}
 
+%template(DVector) std::vector<double>;
+
+%typemap(in, numinputs=0) roboticslab::ICartesianControl::State & (roboticslab::ICartesianControl::State temp) {
+    $1 = &temp;
+}
+
+%typemap(argout) roboticslab::ICartesianControl::State & {
+    %append_output(PyLong_FromLong(static_cast<long>(*$1)));
+}
+
+%apply std::vector<double> & OUTPUT { std::vector<double> & x };
+%apply std::vector<double> & OUTPUT { std::vector<double> & q };
+%apply double & OUTPUT { double & timestamp };
+%apply double * OUTPUT { double * value };
+
 /* Parse the header file to generate wrappers */
 %include "ICartesianSolver.h"
 %include "ICartesianControl.h"
 
-%{
-#include <yarp/dev/PolyDriver.h>
-roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d)
-{
-    roboticslab::ICartesianSolver *result;
-    d.view(result);
-    return result;
-}
-%}
-extern roboticslab::ICartesianSolver *viewICartesianSolver(yarp::dev::PolyDriver& d);
+%template(ConfigMap) std::map<roboticslab::ICartesianControl::Config, double>;
 
 %{
 #include <yarp/dev/PolyDriver.h>
-roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d)
+
+roboticslab::ICartesianSolver * viewICartesianSolver(yarp::dev::PolyDriver & d)
 {
-    roboticslab::ICartesianControl *result;
+    roboticslab::ICartesianSolver * result;
     d.view(result);
     return result;
 }
 %}
-extern roboticslab::ICartesianControl *viewICartesianControl(yarp::dev::PolyDriver& d);
+
+extern roboticslab::ICartesianSolver * viewICartesianSolver(yarp::dev::PolyDriver & d);
+
+%{
+#include <yarp/dev/PolyDriver.h>
+
+roboticslab::ICartesianControl * viewICartesianControl(yarp::dev::PolyDriver & d)
+{
+    roboticslab::ICartesianControl * result;
+    d.view(result);
+    return result;
+}
+%}
+
+extern roboticslab::ICartesianControl * viewICartesianControl(yarp::dev::PolyDriver & d);

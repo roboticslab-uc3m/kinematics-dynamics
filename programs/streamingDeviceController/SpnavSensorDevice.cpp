@@ -2,6 +2,8 @@
 
 #include <algorithm> // std::copy
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
@@ -22,19 +24,31 @@ bool SpnavSensorDevice::acquireInterfaces()
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (std::size_t stickCount; !iJoypadController->getStickCount(stickCount) || stickCount < 1)
+#else
     if (unsigned int stickCount; !iJoypadController->getStickCount(stickCount) || stickCount < 1)
+#endif
     {
         yCWarning(SDC) << "Unable to query number of sticks or wrong value";
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (std::size_t stickDoF; !iJoypadController->getStickDoF(0, stickDoF) || stickDoF < 6)
+#else
     if (unsigned int stickDoF; !iJoypadController->getStickDoF(0, stickDoF) || stickDoF < 6)
+#endif
     {
         yCWarning(SDC) << "Unable to query number of stick DoF or wrong value";
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (std::size_t buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 2)
+#else
     if (unsigned int buttonCount; !iJoypadController->getButtonCount(buttonCount) || buttonCount < 2)
+#endif
     {
         yCWarning(SDC) << "Unable to query number of buttons or wrong value";
         return false;
@@ -53,24 +67,27 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
     if (usingStreamingPreset)
     {
-        int cmd = usingPose ? VOCAB_CC_POSE : VOCAB_CC_TWIST;
+        auto cmd = usingPose ? ICartesianControl::Streaming::POSE : ICartesianControl::Streaming::TWIST;
 
-        if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_STREAMING_CMD, cmd))
+        if (!iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(cmd)))
         {
             yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
-    if (!iCartesianControl->setParameter(VOCAB_CC_CONFIG_FRAME, ICartesianSolver::BASE_FRAME))
+    if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::BASE)))
     {
         yCWarning(SDC) << "Unable to set inertial reference frame";
         return false;
     }
 
-    if (usingPose && !iCartesianControl->stat(currentX))
+    ICartesianControl::State state;
+    double timestamp;
+
+    if (usingPose && !iCartesianControl->getState(currentX, state, timestamp))
     {
-        yCWarning(SDC) << "Unable to stat initial position, assuming zero";
+        yCWarning(SDC) << "Unable to getState initial position, assuming zero";
         currentX.resize(6, 0.0);
     }
 
@@ -79,15 +96,27 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
 
 bool SpnavSensorDevice::acquireData()
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    yarp::dev::StickData stick;
+#else
     yarp::sig::Vector stick;
+#endif
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!iJoypadController->getStick(0, stick, yarp::dev::IJoypadController::JoypadCtrl_coordinateMode::JypCtrlcoord_CARTESIAN))
+#else
     if (!iJoypadController->getStick(0, stick, yarp::dev::IJoypadController::JypCtrlcoord_CARTESIAN))
+#endif
     {
         yCWarning(SDC) << "Unable to acquire data from IJoypadController stick";
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    double button1, button2;
+#else
     float button1, button2;
+#endif
 
     if (!iJoypadController->getButton(0, button1) ||
         !iJoypadController->getButton(1, button2))
@@ -96,12 +125,18 @@ bool SpnavSensorDevice::acquireData()
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    // FIXME: https://github.com/robotology/yarp/issues/3370
+    data[0] = stick.s1;
+    data[1] = stick.s2;
+#else
     std::copy(stick.begin(), stick.begin() + 6, data.begin());
+#endif
 
-    buttonClose = (button1 != 0.f);
-    buttonOpen = (button2 != 0.f);
+    buttonClose = (button1 != 0.0);
+    buttonOpen = (button2 != 0.0);
 
-    yCDebug(SDC) << "stick:" << stick.toString(4, 1) << "|| buttons:" << buttonClose << buttonOpen;
+    yCDebug(SDC) << "stick:" << stick.toString() << "|| buttons:" << buttonClose << buttonOpen;
 
     return true;
 }
@@ -130,30 +165,30 @@ bool SpnavSensorDevice::transformData(double scaling)
     }
 }
 
-int SpnavSensorDevice::getActuatorState()
+ICartesianControl::Actuator SpnavSensorDevice::getActuatorState()
 {
     if (buttonClose)
     {
-        actuatorState = VOCAB_CC_ACTUATOR_CLOSE_GRIPPER;
+        actuatorState = ICartesianControl::Actuator::CLOSE;
     }
     else if (buttonOpen)
     {
-        actuatorState = VOCAB_CC_ACTUATOR_OPEN_GRIPPER;
+        actuatorState = ICartesianControl::Actuator::OPEN;
     }
-    else if (actuatorState != VOCAB_CC_ACTUATOR_NONE)
+    else if (actuatorState != ICartesianControl::Actuator::NONE)
     {
-        if (actuatorState != VOCAB_CC_ACTUATOR_STOP_GRIPPER)
+        if (actuatorState != ICartesianControl::Actuator::STOP)
         {
-            actuatorState = VOCAB_CC_ACTUATOR_STOP_GRIPPER;
+            actuatorState = ICartesianControl::Actuator::STOP;
         }
         else
         {
-            actuatorState = VOCAB_CC_ACTUATOR_NONE;
+            actuatorState = ICartesianControl::Actuator::NONE;
         }
     }
     else
     {
-        actuatorState = VOCAB_CC_ACTUATOR_NONE;
+        actuatorState = ICartesianControl::Actuator::NONE;
     }
 
     return actuatorState;

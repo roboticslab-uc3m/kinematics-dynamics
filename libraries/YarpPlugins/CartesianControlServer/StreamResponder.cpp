@@ -12,7 +12,7 @@ using namespace roboticslab;
 
 // ------------------- StreamResponder Related ------------------------------------
 
-void StreamResponder::onRead(yarp::os::Bottle& b)
+void StreamResponder::onRead(yarp::os::Bottle & b)
 {
     yCDebug(CCS, "Got: %s", b.toString().c_str());
 
@@ -22,15 +22,15 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
         return;
     }
 
-    switch (b.get(0).asVocab32())
+    switch (static_cast<ICartesianControl::Streaming>(b.get(0).asVocab32()))
     {
-    case VOCAB_CC_POSE:
+    case ICartesianControl::Streaming::POSE:
         handleConsumerCmdMsg(b, &ICartesianControl::pose);
         break;
-    case VOCAB_CC_TWIST:
+    case ICartesianControl::Streaming::TWIST:
         handleConsumerCmdMsg(b, &ICartesianControl::twist);
         break;
-    case VOCAB_CC_WRENCH:
+    case ICartesianControl::Streaming::WRENCH:
         handleConsumerCmdMsg(b, &ICartesianControl::wrench);
         break;
     default:
@@ -41,7 +41,7 @@ void StreamResponder::onRead(yarp::os::Bottle& b)
 
 // -----------------------------------------------------------------------------
 
-void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerFun cmd)
+void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle & in, ConsumerFun cmd)
 {
     if (in.size() > 1)
     {
@@ -53,28 +53,6 @@ void StreamResponder::handleConsumerCmdMsg(const yarp::os::Bottle& in, ConsumerF
         }
 
         std::invoke(cmd, iCartesianControl, v);
-    }
-    else
-    {
-        yCError(CCS) << "Size error:" << in.size();
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-void StreamResponder::handleBiConsumerCmdMsg(const yarp::os::Bottle& in, BiConsumerFun cmd)
-{
-    if (in.size() > 2)
-    {
-        double d = in.get(1).asFloat64();
-        std::vector<double> v;
-
-        for (size_t i = 2; i < in.size(); i++)
-        {
-            v.push_back(in.get(i).asFloat64());
-        }
-
-        std::invoke(cmd, iCartesianControl, v, d);
     }
     else
     {

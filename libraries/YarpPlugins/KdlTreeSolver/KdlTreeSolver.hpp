@@ -36,38 +36,38 @@ public:
     // -- ICartesianSolver declarations. Implementation in ICartesianSolverImpl.cpp --
 
     // Get number of joints for which the solver has been configured.
-    int getNumJoints() override;
+    yarp::dev::ReturnValue getNumJoints(std::size_t & numJoints) override;
 
     // Get number of TCPs for which the solver has been configured.
-    int getNumTcps() override;
+    yarp::dev::ReturnValue getNumTcps(std::size_t & numTcps) override;
 
     // Append an additional link.
-    bool appendLink(const std::vector<double> & x) override;
+    yarp::dev::ReturnValue appendLink(const std::vector<double> & x) override;
 
     // Restore original kinematic chain.
-    bool restoreOriginalChain() override;
+    yarp::dev::ReturnValue restoreOriginalChain() override;
 
     // Change reference frame.
-    bool changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj) override;
+    yarp::dev::ReturnValue changeOrigin(const std::vector<double> & x_old_obj, const std::vector<double> & x_new_old, std::vector<double> & x_new_obj) override;
 
     // Perform forward kinematics.
-    bool fwdKin(const std::vector<double> & q, std::vector<double> & x) override;
+    yarp::dev::ReturnValue forwardKinematics(const std::vector<double> & q, std::vector<double> & x) override;
 
     // Obtain difference between supplied pose inputs.
-    bool poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut) override;
+    yarp::dev::ReturnValue poseDiff(const std::vector<double> & xLhs, const std::vector<double> & xRhs, std::vector<double> & xOut) override;
 
     // Perform inverse kinematics.
-    bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame) override;
+    yarp::dev::ReturnValue inverseKinematics(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, Frame frame) override;
 
     // Perform differential inverse kinematics.
-    bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, reference_frame frame) override;
+    yarp::dev::ReturnValue diffInverseKinematics(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, Frame frame) override;
 
     // Perform inverse dynamics.
-    bool invDyn(const std::vector<double> & q, std::vector<double> & t) override;
+    yarp::dev::ReturnValue inverseDynamics(const std::vector<double> & q, std::vector<double> & t) override;
 
     // Perform inverse dynamics.
-    bool invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
-                const std::vector<double> & ftip, std::vector<double> & t, reference_frame frame) override;
+    yarp::dev::ReturnValue inverseDynamics(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                                           const std::vector<double> & ftip, std::vector<double> & t, Frame frame) override;
 
     // -------- DeviceDriver declarations. Implementation in IDeviceImpl.cpp --------
 

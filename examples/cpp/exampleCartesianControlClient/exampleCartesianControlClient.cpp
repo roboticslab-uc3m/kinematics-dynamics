@@ -21,10 +21,27 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
 #include <yarp/os/Property.h>
+#include <yarp/os/SystemClock.h>
 
 #include <yarp/dev/PolyDriver.h>
 
 #include <ICartesianControl.h>
+
+namespace
+{
+    void awaitMotionCompletion(roboticslab::ICartesianControl * iCartesianControl)
+    {
+        std::vector<double> vector;
+        roboticslab::ICartesianControl::State state;
+        double ts;
+
+        do
+        {
+            yarp::os::SystemClock::delaySystem(0.1);
+        }
+        while (iCartesianControl->getState(vector, state, ts) && state != roboticslab::ICartesianControl::State::NONE);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -50,7 +67,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    roboticslab::ICartesianControl *iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl;
 
     if (!dd.view(iCartesianControl))
     {
@@ -59,79 +76,81 @@ int main(int argc, char *argv[])
     }
 
     std::vector<double> vector;
-    iCartesianControl->stat(vector);
+    roboticslab::ICartesianControl::State state;
+    double timestamp;
+    iCartesianControl->getState(vector, state, timestamp);
 
     yInfo() << "Controller status (forward kinematics):" << vector;
 
     yInfo() << "Position 1: poss (0 0 0 90 0 0)";
 
-    if (!iCartesianControl->movj({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 2: move forward along axis X";
 
-    if (!iCartesianControl->movj({0.5, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.5, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 3: move right along axis Y";
 
-    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.5, -0.4, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 4: rotate -12 degrees about global axis Y";
 
-    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.0, 1.36, 0.0}))
+    if (!iCartesianControl->moveJoint({0.5, -0.4, 0.1692, 0.0, 1.36, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 5: rotate 45 degrees about global axis X";
 
-    if (!iCartesianControl->movj({0.5, -0.4, 0.1692, 0.6139, 1.4822, 0.6139}))
+    if (!iCartesianControl->moveJoint({0.5, -0.4, 0.1692, 0.6139, 1.4822, 0.6139}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 6: poss (0 0 0 -90 0 0)";
 
-    if (!iCartesianControl->movj({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
+    if (!iCartesianControl->moveJoint({0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     yInfo() << "Position 7: homing";
 
-    if (!iCartesianControl->movj({0.0, -0.3469, -0.2333, 0.0, 3.1416, 0.0}))
+    if (!iCartesianControl->moveJoint({0.0, -0.3469, -0.2333, 0.0, 3.1416, 0.0}))
     {
         yError() << "failure";
         return 1;
     }
 
-    iCartesianControl->wait();
+    awaitMotionCompletion(iCartesianControl);
 
     dd.close();
     return 0;

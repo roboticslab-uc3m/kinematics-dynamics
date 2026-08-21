@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import time
 import yarp
 import roboticslab_kinematics_dynamics as kd
 
@@ -23,27 +24,27 @@ if not dd.isValid():
 cc = kd.viewICartesianControl(dd)
 
 print('> getParameters')
-params = kd.IntDoubleMap()
+params = kd.ConfigMap()
 ret = cc.getParameters(params)
 
-for key, value in params.items():
-    print(f'< {yarp.decode(key)}: {value}')
+# TODO: uncomment when ConfigMap is iterable
+# for key, value in params.items():
+#     print(f'< {yarp.decode(int(key))}: {value}')
 
 print('> setParameters')
-params[kd.VOCAB_CC_CONFIG_TRAJ_DURATION] = 5.0
+params[kd.ICartesianControl.Config_TRAJ_DURATION] = 5.0
 cc.setParameters(params)
 
 print('> getParameter')
-ret, value = cc.getParameter(kd.VOCAB_CC_CONFIG_TRAJ_DURATION)
+ret, value = cc.getParameter(kd.ICartesianControl.Config_TRAJ_DURATION)
 print('<', value)
 
 print('> setParameter')
-cc.setParameter(kd.VOCAB_CC_CONFIG_TRAJ_DURATION, 6.0)
+cc.setParameter(kd.ICartesianControl.Config_TRAJ_DURATION, 6.0)
 
-print('> stat')
-x = yarp.DVector()
-ret, state, ts = cc.stat(x)
-print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
+print('> getState')
+ret, x, state, ts = cc.getState()
+print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)), ts)
 
 xd = [
     [0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0],
@@ -57,23 +58,30 @@ xd = [
 
 for i in range(len(xd)):
     print('-- movement ' + str(i + 1) + ':')
-    print('> inv [%s]' % ', '.join(map(str, xd[i])))
-    xd_vector = yarp.DVector(xd[i])
-    qd_vector = yarp.DVector()
+    print('> solvePose [%s]' % ', '.join(map(str, xd[i])))
+    ret, qd = cc.solvePose(xd[i])
 
-    if cc.inv(xd_vector, qd_vector):
-        print('< [%s]' % ', '.join(map(str, qd_vector)))
+    if ret:
+        print('< [%s]' % ', '.join(map(str, qd)))
     else:
         print('< [fail]')
         continue
 
-    print('> movj [%s]' % ', '.join(map(str, xd[i])))
-    xd_vector = yarp.DVector(xd[i])
+    print('> movej [%s]' % ', '.join(map(str, xd[i])))
 
-    if cc.movj(xd_vector):
+    if cc.moveJoint(xd[i]):
         print('< [ok]')
         print('< [wait...]')
-        cc.wait()
+
+        while True:
+            time.sleep(0.1)
+            ret, x, state, ts = cc.getState()
+
+            if state == kd.ICartesianControl.State_MOVEJ:
+                print('< [moving...]')
+            else:
+                print('< [done]')
+                break
     else:
         print('< [fail]')
 
