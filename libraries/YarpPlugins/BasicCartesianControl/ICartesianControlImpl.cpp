@@ -10,7 +10,7 @@
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Time.h>
+#include <yarp/os/SystemClock.h>
 #include <yarp/os/Vocab.h>
 
 #include <kdl/path_line.hpp>
@@ -30,7 +30,7 @@ namespace
 {
     inline double getTimestamp(yarp::dev::IPreciselyTimed * iPreciselyTimed)
     {
-        return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
+        return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::SystemClock::nowSystem();
     }
 }
 
@@ -262,7 +262,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    movementStartTime = yarp::os::Time::now();
+    movementStartTime = yarp::os::SystemClock::nowSystem();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEL";
 
@@ -317,7 +317,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
-    movementStartTime = yarp::os::Time::now();
+    movementStartTime = yarp::os::SystemClock::nowSystem();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEV";
 
@@ -404,18 +404,18 @@ yarp::dev::ReturnValue BasicCartesianControl::wait(double timeout)
         return yarp::dev::ReturnValue::return_code::return_value_ok;
     }
 
-    double start = yarp::os::Time::now();
+    double start = yarp::os::SystemClock::nowSystem();
 
     while (state != State::NONE)
     {
-        if (timeout != 0.0 && yarp::os::Time::now() - start > timeout)
+        if (timeout != 0.0 && yarp::os::SystemClock::nowSystem() - start > timeout)
         {
             yCWarning(BCC, "Timeout reached (%f seconds), stopping control", timeout);
             stopControl();
             break;
         }
 
-        yarp::os::Time::delay(m_waitPeriodMs / 1000.0);
+        yarp::os::SystemClock::delaySystem(m_waitPeriodMs / 1000.0);
         state = getCurrentState();
     }
 
