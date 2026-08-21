@@ -21,6 +21,10 @@
 %define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS %enddef
 
 %{
+#define SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+%}
+
+%{
 /* Includes the header in the wrapper code */
 #include "ICartesianSolver.h"
 #include "ICartesianControl.h"

@@ -155,30 +155,6 @@ public:
      */
     virtual yarp::dev::ReturnValue invDyn(const std::vector<double> & q, std::vector<double> & t) = 0;
 
-#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
-    /**
-     * @brief Perform inverse dynamics
-     *
-     * @param q Vector describing current position in joint space (meters or degrees).
-     * @param qdot Vector describing current velocity in joint space (meters/second or degrees/second).
-     * @param qdotdot Vector describing current acceleration in joint space (meters/second² or degrees/second²).
-     * @param fexts vector of external forces applied to each robot segment, expressed in
-     * cartesian space; first three elements denote translational acceleration (meters/second²),
-     * last three denote angular acceleration (radians/second²).
-     * @param t 6-element vector describing desired forces in cartesian space; first
-     * three elements denote translational acceleration (meters/second²), last three denote
-     * angular acceleration (radians/second²).
-     *
-     * @return true on success, false otherwise
-     */
-    [[deprecated("use `const std::vector<double> &ftip` signature instead")]]
-    virtual yarp::dev::ReturnValue invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
-                                          const std::vector<std::vector<double>> & fexts, std::vector<double> & t)
-    {
-        return invDyn(q, qdot, qdotdot, fexts.back(), t);
-    }
-#endif
-
     /**
      * @brief Perform inverse dynamics
      *
@@ -197,6 +173,28 @@ public:
      */
     virtual yarp::dev::ReturnValue invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
                                           const std::vector<double> & ftip, std::vector<double> & t, Frame frame = Frame::BASE) = 0;
+
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+    enum reference_frame
+    {
+        BASE_FRAME [[deprecated("use `ICartesianSolver::Frame::Base` instead")]] = static_cast<int>(Frame::BASE),
+        TCP_FRAME  [[deprecated("use `ICartesianSolver::Frame::TCP` instead")]]  = static_cast<int>(Frame::TCP)
+    };
+
+    [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
+    bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
+    { return invKin(xd, qGuess, q, static_cast<Frame>(frame)); }
+
+    [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
+    bool diffInvKin(const std::vector<double> & q, const std::vector<double> & xdot, std::vector<double> & qdot, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
+    { return diffInvKin(q, xdot, qdot, static_cast<Frame>(frame)); }
+
+    [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
+    bool invDyn(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
+                const std::vector<double> & ftip, std::vector<double> & t, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
+    { return invDyn(q, qdot, qdotdot, ftip, t, static_cast<Frame>(frame)); }
+#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 };
 
 } // namespace roboticslab

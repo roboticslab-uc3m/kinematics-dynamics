@@ -180,7 +180,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
     //-- Compute joint velocity commands and send to robot.
     std::vector<double> commandQdot;
 
-    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot))
+    if (!iCartesianSolver->diffInvKin(q, commandXdot, commandQdot, ICartesianSolver::Frame::BASE))
     {
         yCWarning(BCC) << "diffInvKin() failed";
         return;
@@ -234,7 +234,7 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
     //-- Compute joint position commands and send to robot.
     std::vector<double> commandQ;
 
-    if (!iCartesianSolver->invKin(desiredX, q, commandQ))
+    if (!iCartesianSolver->invKin(desiredX, q, commandQ, ICartesianSolver::Frame::BASE))
     {
         yCWarning(BCC) << "invKin() failed";
         return;

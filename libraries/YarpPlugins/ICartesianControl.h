@@ -3,6 +3,7 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
+#include <algorithm> // std::all_of
 #include <map>
 #include <vector>
 
@@ -10,11 +11,6 @@
 #include <yarp/dev/ReturnValue.h>
 
 #include <ICartesianSolver.h>
-
-//---------------------------------------------------------------------------------------------------------------
-// KEEP VOCAB LIST AND DOCUMENTATION IN SYNC WITH roboticslab::RpcResponder::makeUsage AT CartesianControlServer/
-// and roboticslab::CartesianControlServerROS2::configureRosParameters AT CartesianControlServerROS2/
-//-----------------------------------------------------------------------------------------------------------------------------------
 
 namespace roboticslab
 {
@@ -32,11 +28,11 @@ public:
      */
     enum class Vocabs
     {
-        OK = yarp::os::createVocab32('o','k'),              ///< Success
-        FAILED = yarp::os::createVocab32('f','a','i','l'),  ///< Failure
-        SET = yarp::os::createVocab32('s','e','t'),         ///< Setter
-        GET = yarp::os::createVocab32('g','e','t'),         ///< Getter
-        NOT_SET = yarp::os::createVocab32('n','s','e','t')  ///< State: not set
+        OK = yarp::os::createVocab32('o','k'),             ///< Success
+        FAILED = yarp::os::createVocab32('f','a','i','l'), ///< Failure
+        SET = yarp::os::createVocab32('s','e','t'),        ///< Setter
+        GET = yarp::os::createVocab32('g','e','t'),        ///< Getter
+        NOT_SET = yarp::os::createVocab32('n','s','e','t') ///< State: not set
     };
 
     /**
@@ -394,8 +390,156 @@ public:
     virtual yarp::dev::ReturnValue getParameters(std::map<Config, double> & params) = 0;
 
     /** @} */
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+    // bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr)
+    // { return stat(x, reinterpret_cast<State *>(state), timestamp); }
+
+    [[deprecated("use `ICartesianControl::Actuator` signature instead")]]
+    bool act(int command)
+    { return act(static_cast<Actuator>(command)); }
+
+    [[deprecated("use `ICartesianControl::Config` signature instead")]]
+    bool setParameter(int vocab, double value)
+    { return setParameter(static_cast<Config>(vocab), value); }
+
+    [[deprecated("use `ICartesianControl::Config` signature instead")]]
+    bool getParameter(int vocab, double * value)
+    { return getParameter(static_cast<Config>(vocab), value); }
+
+    [[deprecated("use `ICartesianControl::Config` signature instead")]]
+    bool setParameters(const std::map<int, double> & params)
+    { return std::all_of(params.begin(), params.end(), [this](const auto & kv) { return setParameter(static_cast<Config>(kv.first), kv.second); }); }
+
+    [[deprecated("use `ICartesianControl::Config` signature instead")]]
+    bool getParameters(std::map<int, double> & params)
+    { return std::all_of(params.begin(), params.end(), [this](auto & kv) { return getParameter(static_cast<Config>(kv.first), &kv.second); }); }
+#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 };
 
 } // namespace roboticslab
+
+
+#ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
+[[deprecated("use `ICartesianControl::Vocabs::OK` instead")]]
+constexpr auto VOCAB_CC_OK = static_cast<int>(roboticslab::ICartesianControl::Vocabs::OK);
+
+[[deprecated("use `ICartesianControl::Vocabs::FAILED` instead")]]
+constexpr auto VOCAB_CC_FAILED = static_cast<int>(roboticslab::ICartesianControl::Vocabs::FAILED);
+
+[[deprecated("use `ICartesianControl::Vocabs::SET` instead")]]
+constexpr auto VOCAB_CC_SET = static_cast<int>(roboticslab::ICartesianControl::Vocabs::SET);
+
+[[deprecated("use `ICartesianControl::Vocabs::GET` instead")]]
+constexpr auto VOCAB_CC_GET = static_cast<int>(roboticslab::ICartesianControl::Vocabs::GET);
+
+[[deprecated("use `ICartesianControl::Vocabs::NOT_SET` instead")]]
+constexpr auto VOCAB_CC_NOT_SET = static_cast<int>(roboticslab::ICartesianControl::Vocabs::NOT_SET);
+
+[[deprecated("use `ICartesianControl::RPC::STAT` instead")]]
+constexpr auto VOCAB_CC_STAT = static_cast<int>(roboticslab::ICartesianControl::RPC::STAT);
+
+[[deprecated("use `ICartesianControl::RPC::INV` instead")]]
+constexpr auto VOCAB_CC_INV = static_cast<int>(roboticslab::ICartesianControl::RPC::INV);
+
+[[deprecated("use `ICartesianControl::RPC::MOVJ` instead")]]
+constexpr auto VOCAB_CC_MOVJ = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVJ);
+
+[[deprecated("use `ICartesianControl::RPC::RELJ` instead")]]
+constexpr auto VOCAB_CC_RELJ = static_cast<int>(roboticslab::ICartesianControl::RPC::RELJ);
+
+[[deprecated("use `ICartesianControl::RPC::MOVL` instead")]]
+constexpr auto VOCAB_CC_MOVL = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVL);
+
+[[deprecated("use `ICartesianControl::RPC::MOVV` instead")]]
+constexpr auto VOCAB_CC_MOVV = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVV);
+
+[[deprecated("use `ICartesianControl::RPC::GCMP` instead")]]
+constexpr auto VOCAB_CC_GCMP = static_cast<int>(roboticslab::ICartesianControl::RPC::GCMP);
+
+[[deprecated("use `ICartesianControl::RPC::FORC` instead")]]
+constexpr auto VOCAB_CC_FORC = static_cast<int>(roboticslab::ICartesianControl::RPC::FORC);
+
+[[deprecated("use `ICartesianControl::RPC::STOP` instead")]]
+constexpr auto VOCAB_CC_STOP = static_cast<int>(roboticslab::ICartesianControl::RPC::STOP);
+
+[[deprecated("use `ICartesianControl::RPC::WAIT` instead")]]
+constexpr auto VOCAB_CC_WAIT = static_cast<int>(roboticslab::ICartesianControl::RPC::WAIT);
+
+[[deprecated("use `ICartesianControl::RPC::TOOL` instead")]]
+constexpr auto VOCAB_CC_TOOL = static_cast<int>(roboticslab::ICartesianControl::RPC::TOOL);
+
+[[deprecated("use `ICartesianControl::RPC::ACT` instead")]]
+constexpr auto VOCAB_CC_ACT = static_cast<int>(roboticslab::ICartesianControl::RPC::ACT);
+
+[[deprecated("use `ICartesianControl::Streaming::POSE` instead")]]
+constexpr auto VOCAB_CC_POSE = static_cast<int>(roboticslab::ICartesianControl::Streaming::POSE);
+
+[[deprecated("use `ICartesianControl::Streaming::TWIST` instead")]]
+constexpr auto VOCAB_CC_TWIST = static_cast<int>(roboticslab::ICartesianControl::Streaming::TWIST);
+
+[[deprecated("use `ICartesianControl::Streaming::WRENCH` instead")]]
+constexpr auto VOCAB_CC_WRENCH = static_cast<int>(roboticslab::ICartesianControl::Streaming::WRENCH);
+
+[[deprecated("use `ICartesianControl::State::NONE` instead")]]
+constexpr auto VOCAB_CC_NOT_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::NONE);
+
+[[deprecated("use `ICartesianControl::State::MOVJ` instead")]]
+constexpr auto VOCAB_CC_MOVJ_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVJ);
+
+[[deprecated("use `ICartesianControl::State::MOVL` instead")]]
+constexpr auto VOCAB_CC_MOVL_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVL);
+
+[[deprecated("use `ICartesianControl::State::MOVV` instead")]]
+constexpr auto VOCAB_CC_MOVV_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVV);
+
+[[deprecated("use `ICartesianControl::State::GCMP` instead")]]
+constexpr auto VOCAB_CC_GCMP_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::GCMP);
+
+[[deprecated("use `ICartesianControl::State::FORC` instead")]]
+constexpr auto VOCAB_CC_FORC_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::FORC);
+
+[[deprecated("use `ICartesianControl::Actuator::NONE` instead")]]
+constexpr auto VOCAB_CC_ACTUATOR_NONE = static_cast<int>(roboticslab::ICartesianControl::Actuator::NONE);
+
+[[deprecated("use `ICartesianControl::Actuator::CLOSE` instead")]]
+constexpr auto VOCAB_CC_ACTUATOR_CLOSE_GRIPPER = static_cast<int>(roboticslab::ICartesianControl::Actuator::CLOSE);
+
+[[deprecated("use `ICartesianControl::Actuator::OPEN` instead")]]
+constexpr auto VOCAB_CC_ACTUATOR_OPEN_GRIPPER = static_cast<int>(roboticslab::ICartesianControl::Actuator::OPEN);
+
+[[deprecated("use `ICartesianControl::Actuator::STOP` instead")]]
+constexpr auto VOCAB_CC_ACTUATOR_STOP_GRIPPER = static_cast<int>(roboticslab::ICartesianControl::Actuator::STOP);
+
+[[deprecated("use `ICartesianControl::Actuator::GENERIC` instead")]]
+constexpr auto VOCAB_CC_ACTUATOR_GENERIC = static_cast<int>(roboticslab::ICartesianControl::Actuator::GENERIC);
+
+[[deprecated("use `ICartesianControl::Config::PARAMS` instead")]]
+constexpr auto VOCAB_CC_CONFIG_PARAMS = static_cast<int>(roboticslab::ICartesianControl::Config::PARAMS);
+
+[[deprecated("use `ICartesianControl::Config::GAIN` instead")]]
+constexpr auto VOCAB_CC_CONFIG_GAIN = static_cast<int>(roboticslab::ICartesianControl::Config::GAIN);
+
+[[deprecated("use `ICartesianControl::Config::TRAJ_DURATION` instead")]]
+constexpr auto VOCAB_CC_CONFIG_TRAJ_DURATION = static_cast<int>(roboticslab::ICartesianControl::Config::TRAJ_DURATION);
+
+[[deprecated("use `ICartesianControl::Config::TRAJ_REF_SPD` instead")]]
+constexpr auto VOCAB_CC_CONFIG_TRAJ_REF_SPD = static_cast<int>(roboticslab::ICartesianControl::Config::TRAJ_REF_SPD);
+
+[[deprecated("use `ICartesianControl::Config::TRAJ_REF_ACC` instead")]]
+constexpr auto VOCAB_CC_CONFIG_TRAJ_REF_ACC = static_cast<int>(roboticslab::ICartesianControl::Config::TRAJ_REF_ACC);
+
+[[deprecated("use `ICartesianControl::Config::CMC_PERIOD` instead")]]
+constexpr auto VOCAB_CC_CONFIG_CMC_PERIOD = static_cast<int>(roboticslab::ICartesianControl::Config::CMC_PERIOD);
+
+[[deprecated("use `ICartesianControl::Config::WAIT_PERIOD` instead")]]
+constexpr auto VOCAB_CC_CONFIG_WAIT_PERIOD = static_cast<int>(roboticslab::ICartesianControl::Config::WAIT_PERIOD);
+
+[[deprecated("use `ICartesianControl::Config::FRAME` instead")]]
+constexpr auto VOCAB_CC_CONFIG_FRAME = static_cast<int>(roboticslab::ICartesianControl::Config::FRAME);
+
+[[deprecated("use `ICartesianControl::Config::STREAMING_CMD` instead")]]
+constexpr auto VOCAB_CC_CONFIG_STREAMING_CMD = static_cast<int>(roboticslab::ICartesianControl::Config::STREAMING_CMD);
+#endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 
 #endif // __I_CARTESIAN_CONTROL__

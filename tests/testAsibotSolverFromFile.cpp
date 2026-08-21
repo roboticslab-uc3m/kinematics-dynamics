@@ -265,7 +265,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin1)
 
     ASSERT_TRUE(encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -291,7 +291,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin2)
 
     ASSERT_TRUE(encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -318,7 +318,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 
     ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -334,7 +334,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin3)
 
     ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_NEAR(q[0], -50.0, EPS_JOINT);
     ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
@@ -358,7 +358,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 
     ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -373,7 +373,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin4)
 
     ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q, ICartesianSolver::Frame::BASE));
 
     // selects elbow-down on LeastOverallAngularDisplacement strategy
     ASSERT_NEAR(q[0], 140.0, EPS_JOINT);
@@ -399,7 +399,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
 
     ASSERT_TRUE(encodePose(xd, xd_encoded, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -413,7 +413,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     qGuess[1] = -30.0;
     qGuess[2] = 90.0;
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd_encoded, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
     ASSERT_NEAR(q[1], -68.57454095, EPS_JOINT);
@@ -441,7 +441,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKinTool)
 
     ASSERT_TRUE(encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
 
-    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q));
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
 
@@ -463,7 +463,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKin)
     xdot[2] = 0.005;  //- m/step
     xdot[3] = 0.017453292;  //-- 1º/step
 
-    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot));
+    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
 
@@ -512,7 +512,7 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverDiffInvKinTool)
     // no rotation in 'xdot', so 'tool' may take whatever value
     ASSERT_TRUE(iCartesianSolver->appendLink(tool));
 
-    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot));
+    ASSERT_TRUE(iCartesianSolver->diffInvKin(q, xdot, qdot, ICartesianSolver::Frame::BASE));
 
     ASSERT_EQ(qdot.size(), 5);  //-- NUM_MOTORS
 
