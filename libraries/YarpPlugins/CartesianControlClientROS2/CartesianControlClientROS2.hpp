@@ -47,7 +47,7 @@ public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
     // RPC commands
-    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State * state = nullptr, double * timestamp = nullptr) override;
+    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State & state, double & timestamp) override;
     yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;

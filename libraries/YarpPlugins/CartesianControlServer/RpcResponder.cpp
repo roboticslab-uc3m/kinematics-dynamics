@@ -9,7 +9,7 @@ using namespace roboticslab;
 return_get_state RpcResponder::getState()
 {
     return_get_state ret;
-    ret.ret = iCartesianControl->getState(ret.x, &ret.state, &ret.timestamp);
+    ret.ret = iCartesianControl->getState(ret.x, ret.state, ret.timestamp);
     return ret;
 }
 

@@ -69,7 +69,7 @@ public:
     /**
      * @brief Control state vocabs
      *
-     * Used by ICartesianControl::stat to reflect current control state.
+     * Used by ICartesianControl::getState to reflect current control state.
      */
     enum class State
     {
@@ -140,7 +140,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue getState(std::vector<double> & x, State * state = nullptr, double * timestamp = nullptr) = 0;
+    virtual yarp::dev::ReturnValue getState(std::vector<double> & x, State & state, double & timestamp) = 0;
 
     /**
      * @brief Inverse kinematics
@@ -361,7 +361,7 @@ public:
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
     [[deprecated("use `ICartesianControl::getState` instead")]]
     virtual bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr)
-    { return getState(x, reinterpret_cast<State *>(state), timestamp); }
+    { return getState(x, *reinterpret_cast<State *>(state), *timestamp); }
 
     [[deprecated("use `ICartesianControl::solvePose` instead")]]
     virtual bool inv(const std::vector<double> & xd, std::vector<double> & q)

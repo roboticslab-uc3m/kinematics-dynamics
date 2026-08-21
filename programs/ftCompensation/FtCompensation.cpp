@@ -304,8 +304,10 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         }
 
         std::vector<double> x;
+        ICartesianControl::State state;
+        double timestamp;
 
-        if (enableImpedance && !iCartesianControl->getState(x))
+        if (enableImpedance && !iCartesianControl->getState(x, state, timestamp))
         {
             yCError(FTC) << "Failed to retrieve initial pose";
             return false;
@@ -345,8 +347,10 @@ bool FtCompensation::readSensor(KDL::Wrench & wrench) const
 bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 {
     std::vector<double> currentX;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!iCartesianControl->getState(currentX))
+    if (!iCartesianControl->getState(currentX, state, timestamp))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;
@@ -363,8 +367,10 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 bool FtCompensation::applyImpedance(KDL::Wrench & wrench)
 {
     std::vector<double> x;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!iCartesianControl->getState(x))
+    if (!iCartesianControl->getState(x, state, timestamp))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;

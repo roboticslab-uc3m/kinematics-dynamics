@@ -33,12 +33,13 @@ namespace
     {
         std::vector<double> vector;
         roboticslab::ICartesianControl::State state;
+        double ts;
 
         do
         {
             yarp::os::SystemClock::delaySystem(0.1);
         }
-        while (iCartesianControl->getState(vector, &state) && state != roboticslab::ICartesianControl::State::NONE);
+        while (iCartesianControl->getState(vector, state, ts) && state != roboticslab::ICartesianControl::State::NONE);
     }
 }
 
@@ -75,7 +76,9 @@ int main(int argc, char *argv[])
     }
 
     std::vector<double> vector;
-    iCartesianControl->getState(vector);
+    roboticslab::ICartesianControl::State state;
+    double timestamp;
+    iCartesianControl->getState(vector, state, timestamp);
 
     yInfo() << "Controller status (forward kinematics):" << vector;
 

@@ -183,7 +183,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::getState(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClientROS2::getState(std::vector<double> & x, State & state, double & timestamp)
 {
     std::lock_guard lock(m_mutex_state);
 
@@ -199,10 +199,8 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getState(std::vector<double> 
         axisAngle.x(), axisAngle.y(), axisAngle.z()
     };
 
-    if (timestamp)
-    {
-        *timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
-    }
+    // FIXME: handle state
+    timestamp = m_pose_last.header.stamp.sec + m_pose_last.header.stamp.nanosec * 1e-9;
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }

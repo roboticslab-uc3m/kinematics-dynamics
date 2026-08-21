@@ -66,10 +66,12 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
     }
 
     std::vector<double> x;
+    ICartesianControl::State state;
+    double timestamp;
 
-    if (!iCartesianControl->getState(x))
+    if (!iCartesianControl->getState(x, state, timestamp))
     {
-        yCError(KC) << "stat failed";
+        yCError(KC) << "getState failed";
         return false;
     }
 

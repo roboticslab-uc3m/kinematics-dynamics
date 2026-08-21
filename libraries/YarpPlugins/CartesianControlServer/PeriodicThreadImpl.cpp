@@ -14,7 +14,7 @@ void CartesianControlServer::run()
         ICartesianControl::State state;
         double timestamp;
 
-        if (!iCartesianControl->getState(x, &state, &timestamp))
+        if (!iCartesianControl->getState(x, state, timestamp))
         {
             return;
         }

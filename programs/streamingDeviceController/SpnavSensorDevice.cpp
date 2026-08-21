@@ -82,9 +82,12 @@ bool SpnavSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    if (usingPose && !iCartesianControl->getState(currentX))
+    ICartesianControl::State state;
+    double timestamp;
+
+    if (usingPose && !iCartesianControl->getState(currentX, state, timestamp))
     {
-        yCWarning(SDC) << "Unable to stat initial position, assuming zero";
+        yCWarning(SDC) << "Unable to getState initial position, assuming zero";
         currentX.resize(6, 0.0);
     }
 

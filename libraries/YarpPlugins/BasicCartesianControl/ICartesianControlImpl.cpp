@@ -36,7 +36,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, State & state, double & timestamp)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -46,21 +46,14 @@ yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, 
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (timestamp)
-    {
-        *timestamp = getTimestamp(iPreciselyTimed);
-    }
-
     if (!iCartesianSolver->forwardKinematics(currentQ, x))
     {
         yCError(BCC) << "forwardKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (state)
-    {
-        *state = getCurrentState();
-    }
+    state = getCurrentState();
+    timestamp = getTimestamp(iPreciselyTimed);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }

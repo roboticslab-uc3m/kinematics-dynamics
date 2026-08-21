@@ -34,21 +34,13 @@ void FkStreamResponder::onRead(yarp::os::Bottle & b)
 
 // -----------------------------------------------------------------------------
 
-bool FkStreamResponder::getLastStatData(std::vector<double> & x, ICartesianControl::State * state, double * timestamp, const double timeout)
+bool FkStreamResponder::getLastStatData(std::vector<double> & x, ICartesianControl::State & state, double & timestamp, const double timeout)
 {
     std::lock_guard lock(mtx);
 
     x = this->x;
-
-    if (state != nullptr)
-    {
-        *state = static_cast<ICartesianControl::State>(this->state);
-    }
-
-    if (timestamp != nullptr)
-    {
-        *timestamp = this->timestamp;
-    }
+    state = static_cast<ICartesianControl::State>(this->state);
+    timestamp = this->timestamp;
 
     return yarp::os::SystemClock::nowSystem() - localArrivalTime <= timeout;
 }

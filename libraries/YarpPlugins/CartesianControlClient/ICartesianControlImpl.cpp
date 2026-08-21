@@ -27,7 +27,7 @@ void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const s
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x, State * state, double * timestamp)
+yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x, State & state, double & timestamp)
 {
     if (!fkInPort.isClosed())
     {
@@ -43,16 +43,8 @@ yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x,
 
     auto ret = rpcSender.getState();
     x = ret.x;
-
-    if (state != nullptr)
-    {
-        *state = ret.state;
-    }
-
-    if (timestamp != nullptr)
-    {
-        *timestamp = ret.timestamp;
-    }
+    state = ret.state;
+    timestamp = ret.timestamp;
 
     return ret.ret;
 }

@@ -765,7 +765,9 @@ void KeyboardController::printCartesianPositions()
     }
 
     std::vector<double> x;
-    iCartesianControl->getState(x);
+    ICartesianControl::State state;
+    double timestamp;
+    iCartesianControl->getState(x, state, timestamp);
     KinRepresentation::decodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, orient, KinRepresentation::angular_units::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
