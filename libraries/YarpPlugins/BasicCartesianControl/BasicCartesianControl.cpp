@@ -35,22 +35,6 @@ constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
-ICartesianControl::Mode BasicCartesianControl::getCurrentMode() const
-{
-    std::lock_guard lock(stateMutex);
-    return currentMode;
-}
-
-// -----------------------------------------------------------------------------
-
-void BasicCartesianControl::setCurrentMode(Mode value)
-{
-    std::lock_guard lock(stateMutex);
-    currentMode = value;
-}
-
-// -----------------------------------------------------------------------------
-
 bool BasicCartesianControl::checkJointLimits(const std::vector<double> &q)
 {
     for (unsigned int joint = 0; joint < numJoints; joint++)
@@ -276,7 +260,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
 bool BasicCartesianControl::presetStreamingCommand(Streaming command)
 {
-    setCurrentMode(Mode::NONE);
+    currentMode = Mode::NONE;
 
     switch (command)
     {

@@ -6,7 +6,6 @@
 #include <atomic>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <utility>
 #include <vector>
 
@@ -163,9 +162,6 @@ private:
         mutable std::function<void()> handler;
     };
 
-    roboticslab::ICartesianControl::Mode getCurrentMode() const;
-    void setCurrentMode(roboticslab::ICartesianControl::Mode value);
-
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
     bool checkJointVelocities(const std::vector<double> & qdot);
@@ -201,10 +197,8 @@ private:
 #else
     int numJoints {0};
 #endif
-    roboticslab::ICartesianControl::Mode currentMode {roboticslab::ICartesianControl::Mode::NONE};
+    std::atomic<roboticslab::ICartesianControl::Mode> currentMode {roboticslab::ICartesianControl::Mode::NONE};
     roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::POSE};
-
-    mutable std::mutex stateMutex;
 
     /** MOVEJ store previous reference speeds */
     std::vector<double> vmoStored;
@@ -220,6 +214,7 @@ private:
 
     int encoderErrors {0};
     std::atomic<bool> cmcSuccess {true};
+    std::atomic<float> cmcProgress {1.0f}; // only meaningful for MOVEJ and MOVEL
 
     std::vector<double> qMin, qMax;
     std::vector<double> qdotMin, qdotMax;

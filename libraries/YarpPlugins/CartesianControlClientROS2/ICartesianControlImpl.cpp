@@ -239,7 +239,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<d
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<double> & xd)
+yarp::dev::ReturnValue CartesianControlClientROS2::sendTrajectoryGoal(ICartesianControl::Mode mode, const std::vector<double> & xd)
 {
     geometry_msgs::msg::Pose poseMsg;
     poseMsg.position.x = xd[0];
@@ -257,10 +257,47 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<d
     );
 
     auto goalMsg = rl_cartesian_control_msgs::action::Trajectory::Goal();
-    goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::JOINT;
+
+    switch (mode)
+    {
+    case ICartesianControl::Mode::MOVEJ:
+        goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::JOINT;
+        break;
+    case ICartesianControl::Mode::MOVEL:
+        goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::LINEAR;
+        break;
+    default:
+        yCError(CCC) << "Invalid mode for trajectory goal";
+        return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+    }
+
     goalMsg.x = poseMsg;
 
-    auto result = m_trajectory->async_send_goal(goalMsg);
+    auto goalOptions = rclcpp_action::Client<rl_cartesian_control_msgs::action::Trajectory>::SendGoalOptions();
+
+    goalOptions.goal_response_callback = [this](auto handle)
+    {
+        if (handle)
+        {
+            m_progress = 0.0f;
+            m_success = true;
+        }
+    };
+
+    goalOptions.feedback_callback = [this](auto handle, const auto feedback)
+    {
+        m_progress = feedback->progress;
+    };
+
+    goalOptions.result_callback = [this](const auto & result)
+    {
+        if (result.code != rclcpp_action::ResultCode::SUCCEEDED)
+        {
+            m_success = false;
+        }
+    };
+
+    auto result = m_trajectory->async_send_goal(goalMsg, goalOptions);
     m_goalHandle = result.get();
 
     return m_goalHandle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED
@@ -270,33 +307,16 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<d
 
 // -----------------------------------------------------------------------------
 
+yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<double> & xd)
+{
+    return sendTrajectoryGoal(ICartesianControl::Mode::MOVEJ, xd);
+}
+
+// -----------------------------------------------------------------------------
+
 yarp::dev::ReturnValue CartesianControlClientROS2::moveLinear(const std::vector<double> & xd)
 {
-    geometry_msgs::msg::Pose poseMsg;
-    poseMsg.position.x = xd[0];
-    poseMsg.position.y = xd[1];
-    poseMsg.position.z = xd[2];
-
-    KDL::Vector axis(xd[3], xd[4], xd[5]);
-    double angle = axis.Norm();
-
-    KDL::Rotation::Rot(axis, angle).GetQuaternion(
-        poseMsg.orientation.x,
-        poseMsg.orientation.y,
-        poseMsg.orientation.z,
-        poseMsg.orientation.w
-    );
-
-    auto goalMsg = rl_cartesian_control_msgs::action::Trajectory::Goal();
-    goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::LINEAR;
-    goalMsg.x = poseMsg;
-
-    auto result = m_trajectory->async_send_goal(goalMsg);
-    m_goalHandle = result.get();
-
-    return m_goalHandle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED
-        ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    return sendTrajectoryGoal(ICartesianControl::Mode::MOVEL, xd);
 }
 
 // -----------------------------------------------------------------------------

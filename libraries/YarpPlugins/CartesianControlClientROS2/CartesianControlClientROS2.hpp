@@ -3,6 +3,7 @@
 #ifndef __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 #define __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 
+#include <atomic>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -78,6 +79,7 @@ public:
 private:
     bool configureRosHandlers();
     bool populateRosParameters();
+    yarp::dev::ReturnValue sendTrajectoryGoal(roboticslab::ICartesianControl::Mode mode, const std::vector<double> & xd);
 
     rclcpp::Node::SharedPtr m_node;
     roboticslab::ros2utils::Spinner::Ptr m_spinner;
@@ -105,6 +107,8 @@ private:
 
     std::mutex m_mutex_state;
     geometry_msgs::msg::PoseStamped m_pose_last;
+    std::atomic<float> m_progress {1.0f};
+    std::atomic<bool> m_success {false};
 
     std::vector<std::string> m_supported_parameters;
 

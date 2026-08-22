@@ -19,9 +19,9 @@ constexpr double ENCODER_THROTTLE = 1.0; // [s]
 
 void BasicCartesianControl::run()
 {
-    const auto currentMode = getCurrentMode();
+    const auto currentModeLocal = currentMode.load();
 
-    if (currentMode == Mode::NONE)
+    if (currentModeLocal == Mode::NONE)
     {
         return;
     }
@@ -61,7 +61,7 @@ void BasicCartesianControl::run()
         return;
     }
 
-    switch (currentMode)
+    switch (currentModeLocal)
     {
     case Mode::MOVEJ:
         handleMovj(q, watcher);
@@ -109,7 +109,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
     if (done)
     {
-        setCurrentMode(Mode::NONE);
+        currentMode = Mode::NONE;
 
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         if (!iPositionControl->setTrajSpeeds(vmoStored.data()))

@@ -30,37 +30,46 @@ void CartesianControlServerROS2::run()
     const auto rot = KDL::Vector(state.x[3], state.x[4], state.x[5]);
     const auto ori = KDL::Rotation::Rot(rot, rot.Norm());
 
-    geometry_msgs::msg::PoseStamped msg;
-    msg.header.stamp.sec = sec;
-    msg.header.stamp.nanosec = nsec;
+    geometry_msgs::msg::PoseStamped state_msg;
+    state_msg.header.stamp.sec = sec;
+    state_msg.header.stamp.nanosec = nsec;
 
-    msg.pose.position.x = state.x[0];
-    msg.pose.position.y = state.x[1];
-    msg.pose.position.z = state.x[2];
+    state_msg.pose.position.x = state.x[0];
+    state_msg.pose.position.y = state.x[1];
+    state_msg.pose.position.z = state.x[2];
 
-    ori.GetQuaternion(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+    ori.GetQuaternion(state_msg.pose.orientation.x, state_msg.pose.orientation.y, state_msg.pose.orientation.z, state_msg.pose.orientation.w);
 
-    m_state->publish(msg);
+    m_state->publish(state_msg);
 
-    if (m_goalHandle && m_goalHandle->is_executing())
+    if (m_goalHandle)
     {
-        auto result_msg = std::make_shared<rl_cartesian_control_msgs::action::Trajectory::Result>();
+        using Trajectory = rl_cartesian_control_msgs::action::Trajectory;
+        using Mode = ICartesianControl::Mode;
 
-        if (m_goalHandle->is_canceling())
+        if (m_goalHandle->is_executing())
         {
-            // TODO: this can also happen if stopControl() is called or the internal controller decides to stop by itself
-            yCInfo(CCS) << "Trajectory goal canceled";
+            if (m_goalHandle->get_goal()->type == Trajectory::Goal::JOINT && state.mode == Mode::MOVEJ ||
+                m_goalHandle->get_goal()->type == Trajectory::Goal::LINEAR && state.mode == Mode::MOVEL)
+            {
+                auto feedback_msg = std::make_shared<Trajectory::Feedback>();
+                feedback_msg->progress = state.progress;
+                m_goalHandle->publish_feedback(feedback_msg);
+            }
+            else
+            {
+                yCInfo(CCS) << "Trajectory execution finished, success:" << state.success;
+                auto result_msg = std::make_shared<Trajectory::Result>();
+                result_msg->success = state.success;
+                state.success ? m_goalHandle->succeed(result_msg) : m_goalHandle->abort(result_msg);
+            }
+        }
+        else if (m_goalHandle->is_canceling())
+        {
+            yCInfo(CCS) << "Trajectory execution canceled";
+            auto result_msg = std::make_shared<Trajectory::Result>();
+            result_msg->success = true; // not a failure, just a user-requested cancel
             m_goalHandle->canceled(result_msg);
-        }
-        else if (state.mode == ICartesianControl::Mode::NONE)
-        {
-            yCInfo(CCS) << "Trajectory goal succeeded";
-            m_goalHandle->succeed(result_msg);
-        }
-        else
-        {
-            // TODO: handle progress feedback
-            // m_goalHandle->publish_feedback(progress);
         }
     }
 }
