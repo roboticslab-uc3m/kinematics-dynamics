@@ -67,11 +67,11 @@ public:
     };
 
     /**
-     * @brief Control state vocabs
+     * @brief Controller mode vocabs
      *
-     * Used by ICartesianControl::getState to reflect current control state.
+     * Used by ICartesianControl::getState to reflect current control mode.
      */
-    enum class State
+    enum class Mode
     {
         NONE = yarp::os::createVocab32('n','c','t','l'),  ///< Not controlling
         MOVEJ = yarp::os::createVocab32('m','o','v','j'), ///< Executing MOVEJ command
@@ -112,6 +112,20 @@ public:
         STREAMING_CMD = yarp::os::createVocab32('c','p','s','c')  ///< Preset streaming command
     };
 
+    /**
+     * @brief Controller state structure
+     *
+     * Used by ICartesianControl::getState to return the current state of the controller.
+     */
+    struct ControllerState
+    {
+        std::vector<double> x; ///< Current pose: translation (3, meters) + rotation (3, radians, scaled axis-angle)
+        Mode mode;             ///< Current controller mode
+        double timestamp;      ///< Timestamp of the last received pose
+        float progress;        ///< Progress of the current trajectory, if any (0.0 to 1.0)
+        bool success;          ///< Whether the last trajectory command was successful
+    };
+
     //! Destructor
     virtual ~ICartesianControl() = default;
 
@@ -131,15 +145,11 @@ public:
      *
      * Inform on control state, get robot position and perform forward kinematics.
      *
-     * @param x 6-element vector describing current position in cartesian space; first
-     * three elements denote translation (meters), last three denote rotation in scaled
-     * axis-angle representation (radians).
-     * @param state Identifier for a cartesian control vocab.
-     * @param timestamp Remote encoder acquisition time.
+     * @param state Controller state data.
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue getState(std::vector<double> & x, State & state, double & timestamp) = 0;
+    virtual yarp::dev::ReturnValue getState(ControllerState & state) = 0;
 
     /**
      * @brief Inverse kinematics
@@ -360,7 +370,14 @@ public:
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
     [[deprecated("use `ICartesianControl::getState` instead")]]
     virtual bool stat(std::vector<double> & x, int * state = nullptr, double * timestamp = nullptr)
-    { return getState(x, *reinterpret_cast<State *>(state), *timestamp); }
+    {
+        ControllerState controllerState;
+        auto ret = getState(controllerState);
+        x = controllerState.x;
+        if (state != nullptr) *state = static_cast<int>(controllerState.mode);
+        if (timestamp != nullptr) *timestamp = controllerState.timestamp;
+        return ret;
+    }
 
     [[deprecated("use `ICartesianControl::solvePose` instead")]]
     virtual bool inv(const std::vector<double> & xd, std::vector<double> & q)
@@ -485,22 +502,22 @@ constexpr auto VOCAB_CC_TWIST = static_cast<int>(roboticslab::ICartesianControl:
 constexpr auto VOCAB_CC_WRENCH = static_cast<int>(roboticslab::ICartesianControl::Streaming::WRENCH);
 
 [[deprecated("use `ICartesianControl::State::NONE` instead")]]
-constexpr auto VOCAB_CC_NOT_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::NONE);
+constexpr auto VOCAB_CC_NOT_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::Mode::NONE);
 
 [[deprecated("use `ICartesianControl::State::MOVEJ` instead")]]
-constexpr auto VOCAB_CC_MOVJ_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVEJ);
+constexpr auto VOCAB_CC_MOVJ_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::Mode::MOVEJ);
 
 [[deprecated("use `ICartesianControl::State::MOVEL` instead")]]
-constexpr auto VOCAB_CC_MOVL_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVEL);
+constexpr auto VOCAB_CC_MOVL_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::Mode::MOVEL);
 
 [[deprecated("use `ICartesianControl::State::MOVEV` instead")]]
-constexpr auto VOCAB_CC_MOVV_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::MOVEV);
+constexpr auto VOCAB_CC_MOVV_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::Mode::MOVEV);
 
 [[deprecated("use `ICartesianControl::State::GCMP` instead")]]
-constexpr auto VOCAB_CC_GCMP_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::GCMP);
+constexpr auto VOCAB_CC_GCMP_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::Mode::GCMP);
 
 [[deprecated("use `ICartesianControl::State::FORCE` instead")]]
-constexpr auto VOCAB_CC_FORC_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::State::FORCE);
+constexpr auto VOCAB_CC_FORC_CONTROLLING = static_cast<int>(roboticslab::ICartesianControl::Mode::FORCE);
 
 [[deprecated("use `ICartesianControl::Actuator::NONE` instead")]]
 constexpr auto VOCAB_CC_ACTUATOR_NONE = static_cast<int>(roboticslab::ICartesianControl::Actuator::NONE);

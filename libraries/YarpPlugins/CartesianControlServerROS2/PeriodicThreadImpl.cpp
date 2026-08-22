@@ -16,29 +16,27 @@ using namespace roboticslab;
 
 void CartesianControlServerROS2::run()
 {
-    std::vector<double> x;
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
-    if (!m_iCartesianControl->getState(x, state, timestamp))
+    if (!m_iCartesianControl->getState(state))
     {
         yCWarning(CCS) << "Failed to getState";
         return;
     }
 
     double sec;
-    double nsec = std::modf(timestamp, &sec) * 1e9;
+    double nsec = std::modf(state.timestamp, &sec) * 1e9;
 
-    const auto rot = KDL::Vector(x[3], x[4], x[5]);
+    const auto rot = KDL::Vector(state.x[3], state.x[4], state.x[5]);
     const auto ori = KDL::Rotation::Rot(rot, rot.Norm());
 
     geometry_msgs::msg::PoseStamped msg;
     msg.header.stamp.sec = sec;
     msg.header.stamp.nanosec = nsec;
 
-    msg.pose.position.x = x[0];
-    msg.pose.position.y = x[1];
-    msg.pose.position.z = x[2];
+    msg.pose.position.x = state.x[0];
+    msg.pose.position.y = state.x[1];
+    msg.pose.position.z = state.x[2];
 
     ori.GetQuaternion(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
 
@@ -54,7 +52,7 @@ void CartesianControlServerROS2::run()
             yCInfo(CCS) << "Trajectory goal canceled";
             m_goalHandle->canceled(result_msg);
         }
-        else if (state == ICartesianControl::State::NONE)
+        else if (state.mode == ICartesianControl::Mode::NONE)
         {
             yCInfo(CCS) << "Trajectory goal succeeded";
             m_goalHandle->succeed(result_msg);

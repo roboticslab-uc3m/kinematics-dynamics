@@ -35,18 +35,18 @@ constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
-ICartesianControl::State BasicCartesianControl::getCurrentState() const
+ICartesianControl::Mode BasicCartesianControl::getCurrentMode() const
 {
     std::lock_guard lock(stateMutex);
-    return currentState;
+    return currentMode;
 }
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::setCurrentState(State value)
+void BasicCartesianControl::setCurrentMode(Mode value)
 {
     std::lock_guard lock(stateMutex);
-    currentState = value;
+    currentMode = value;
 }
 
 // -----------------------------------------------------------------------------
@@ -276,7 +276,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
 bool BasicCartesianControl::presetStreamingCommand(Streaming command)
 {
-    setCurrentState(State::NONE);
+    setCurrentMode(Mode::NONE);
 
     switch (command)
     {

@@ -43,7 +43,7 @@ print('> setParameter')
 cc.setParameter(kd.ICartesianControl.Config_TRAJ_DURATION, 6.0)
 
 print('> getState')
-ret, x, state, ts = cc.getState()
+ret, x, state, ts, progress, success = cc.getState()
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)), ts)
 
 xd = [

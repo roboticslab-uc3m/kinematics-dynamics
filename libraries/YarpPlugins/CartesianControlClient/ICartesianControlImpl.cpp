@@ -27,11 +27,11 @@ void CartesianControlClient::handleStreamingConsumerCmd(Streaming vocab, const s
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x, State & state, double & timestamp)
+yarp::dev::ReturnValue CartesianControlClient::getState(ICartesianControl::ControllerState & state)
 {
     if (!fkInPort.isClosed())
     {
-        if (!fkStreamResponder.getLastStatData(x, state, timestamp, m_fkStreamTimeoutSecs))
+        if (!fkStreamResponder.getLastStateData(state, m_fkStreamTimeoutSecs))
         {
             yCWarning(CCC) << "FK stream timeout, falling back to RPC request";
         }
@@ -42,9 +42,11 @@ yarp::dev::ReturnValue CartesianControlClient::getState(std::vector<double> & x,
     }
 
     auto ret = rpcSender.getState();
-    x = ret.x;
-    state = ret.state;
-    timestamp = ret.timestamp;
+    state.x = ret.x;
+    state.mode = ret.mode;
+    state.timestamp = ret.timestamp;
+    state.progress = ret.progress;
+    state.success = ret.success;
 
     return ret.ret;
 }

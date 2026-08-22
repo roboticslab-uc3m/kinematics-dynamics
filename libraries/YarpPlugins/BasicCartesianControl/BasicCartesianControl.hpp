@@ -116,7 +116,7 @@ public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
     // RPC commands
-    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State & state, double & timestamp) override;
+    yarp::dev::ReturnValue getState(roboticslab::ICartesianControl::ControllerState & state) override;
     yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
@@ -163,8 +163,8 @@ private:
         mutable std::function<void()> handler;
     };
 
-    roboticslab::ICartesianControl::State getCurrentState() const;
-    void setCurrentState(roboticslab::ICartesianControl::State value);
+    roboticslab::ICartesianControl::Mode getCurrentMode() const;
+    void setCurrentMode(roboticslab::ICartesianControl::Mode value);
 
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
@@ -201,7 +201,7 @@ private:
 #else
     int numJoints {0};
 #endif
-    roboticslab::ICartesianControl::State currentState {roboticslab::ICartesianControl::State::NONE};
+    roboticslab::ICartesianControl::Mode currentMode {roboticslab::ICartesianControl::Mode::NONE};
     roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::POSE};
 
     mutable std::mutex stateMutex;

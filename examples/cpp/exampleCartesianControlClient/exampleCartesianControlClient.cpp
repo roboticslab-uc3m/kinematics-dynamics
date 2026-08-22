@@ -27,19 +27,19 @@
 
 #include <ICartesianControl.h>
 
+using namespace roboticslab;
+
 namespace
 {
-    void awaitMotionCompletion(roboticslab::ICartesianControl * iCartesianControl)
+    void awaitMotionCompletion(ICartesianControl * iCartesianControl)
     {
-        std::vector<double> vector;
-        roboticslab::ICartesianControl::State state;
-        double ts;
+        ICartesianControl::ControllerState state;
 
         do
         {
             yarp::os::SystemClock::delaySystem(0.1);
         }
-        while (iCartesianControl->getState(vector, state, ts) && state != roboticslab::ICartesianControl::State::NONE);
+        while (iCartesianControl->getState(state) && state.mode != ICartesianControl::Mode::NONE);
     }
 }
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    roboticslab::ICartesianControl * iCartesianControl;
+    ICartesianControl * iCartesianControl;
 
     if (!dd.view(iCartesianControl))
     {
@@ -75,12 +75,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::vector<double> vector;
-    roboticslab::ICartesianControl::State state;
-    double timestamp;
-    iCartesianControl->getState(vector, state, timestamp);
+    ICartesianControl::ControllerState state;
+    iCartesianControl->getState(state);
 
-    yInfo() << "Controller status (forward kinematics):" << vector;
+    yInfo() << "Controller status (forward kinematics):" << state.x;
 
     yInfo() << "Position 1: poss (0 0 0 90 0 0)";
 

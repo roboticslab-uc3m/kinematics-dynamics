@@ -62,14 +62,12 @@ protected:
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlStat)
 {
-    std::vector<double> x;
-    ICartesianControl::State state;
-    double timestamp;
-    ASSERT_TRUE(iCartesianControl->getState(x, state, timestamp));
-    ASSERT_EQ(state, ICartesianControl::State::NONE);
-    ASSERT_NEAR(x[0], 1, eps);
-    ASSERT_NEAR(x[1], 0, eps);
-    ASSERT_NEAR(x[2], 0, eps);
+    ICartesianControl::ControllerState state;
+    ASSERT_TRUE(iCartesianControl->getState(state));
+    ASSERT_EQ(state.mode, ICartesianControl::Mode::NONE);
+    ASSERT_NEAR(state.x[0], 1, eps);
+    ASSERT_NEAR(state.x[1], 0, eps);
+    ASSERT_NEAR(state.x[2], 0, eps);
 }
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlInv1)
@@ -92,43 +90,41 @@ TEST_F(BasicCartesianControlTest, BasicCartesianControlInv2)
 
 TEST_F(BasicCartesianControlTest, BasicCartesianControlTool)
 {
-    std::vector<double> xToolA, xToolB, xNoTool;
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
     std::vector<double> x = {0, 0, 1, M_PI / 4, 0, 0};
 
     // add tool ('A')
     ASSERT_TRUE(iCartesianControl->changeTool(x));
-    ASSERT_TRUE(iCartesianControl->getState(xToolA, state, timestamp));
-    ASSERT_NEAR(xToolA[0], 1, eps);
-    ASSERT_NEAR(xToolA[1], 0, eps);
-    ASSERT_NEAR(xToolA[2], 1, eps);
-    ASSERT_NEAR(xToolA[3], M_PI / 4, eps);
-    ASSERT_NEAR(xToolA[4], 0, eps);
-    ASSERT_NEAR(xToolA[5], 0, eps);
+    ASSERT_TRUE(iCartesianControl->getState(state));
+    ASSERT_NEAR(state.x[0], 1, eps);
+    ASSERT_NEAR(state.x[1], 0, eps);
+    ASSERT_NEAR(state.x[2], 1, eps);
+    ASSERT_NEAR(state.x[3], M_PI / 4, eps);
+    ASSERT_NEAR(state.x[4], 0, eps);
+    ASSERT_NEAR(state.x[5], 0, eps);
 
     // change tool ('b')
     x = {1, 0, 0, 0, M_PI / 4, 0};
     ASSERT_TRUE(iCartesianControl->changeTool(x));
-    ASSERT_TRUE(iCartesianControl->getState(xToolB, state, timestamp));
-    ASSERT_NEAR(xToolB[0], 2, eps);
-    ASSERT_NEAR(xToolB[1], 0, eps);
-    ASSERT_NEAR(xToolB[2], 0, eps);
-    ASSERT_NEAR(xToolB[3], 0, eps);
-    ASSERT_NEAR(xToolB[4], M_PI / 4, eps);
-    ASSERT_NEAR(xToolB[5], 0, eps);
+    ASSERT_TRUE(iCartesianControl->getState(state));
+    ASSERT_NEAR(state.x[0], 2, eps);
+    ASSERT_NEAR(state.x[1], 0, eps);
+    ASSERT_NEAR(state.x[2], 0, eps);
+    ASSERT_NEAR(state.x[3], 0, eps);
+    ASSERT_NEAR(state.x[4], M_PI / 4, eps);
+    ASSERT_NEAR(state.x[5], 0, eps);
 
     // remove tool
     std::fill(x.begin(), x.end(), 0);
     ASSERT_TRUE(iCartesianControl->changeTool(x));
-    ASSERT_TRUE(iCartesianControl->getState(xNoTool, state, timestamp));
-    ASSERT_NEAR(xNoTool[0], 1, eps);
-    ASSERT_NEAR(xNoTool[1], 0, eps);
-    ASSERT_NEAR(xNoTool[2], 0, eps);
-    ASSERT_NEAR(xNoTool[3], 0, eps);
-    ASSERT_NEAR(xNoTool[4], 0, eps);
-    ASSERT_NEAR(xNoTool[5], 0, eps);
+    ASSERT_TRUE(iCartesianControl->getState(state));
+    ASSERT_NEAR(state.x[0], 1, eps);
+    ASSERT_NEAR(state.x[1], 0, eps);
+    ASSERT_NEAR(state.x[2], 0, eps);
+    ASSERT_NEAR(state.x[3], 0, eps);
+    ASSERT_NEAR(state.x[4], 0, eps);
+    ASSERT_NEAR(state.x[5], 0, eps);
 }
 
 } // namespace roboticslab::test

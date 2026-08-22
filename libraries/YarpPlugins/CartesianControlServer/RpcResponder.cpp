@@ -8,8 +8,14 @@ using namespace roboticslab;
 
 return_get_state RpcResponder::getState()
 {
+    ICartesianControl::ControllerState state;
     return_get_state ret;
-    ret.ret = iCartesianControl->getState(ret.x, ret.state, ret.timestamp);
+    ret.ret = iCartesianControl->getState(state);
+    ret.x = state.x;
+    ret.mode = state.mode;
+    ret.timestamp = state.timestamp;
+    ret.progress = state.progress;
+    ret.success = state.success;
     return ret;
 }
 

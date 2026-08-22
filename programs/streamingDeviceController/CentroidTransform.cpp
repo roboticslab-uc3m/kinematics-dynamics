@@ -63,17 +63,15 @@ bool CentroidTransform::processStoredBottle() const
     double cx = lastBottle.get(0).asFloat64(); // points right
     double cy = lastBottle.get(1).asFloat64(); // points down
 
-    std::vector<double> x;
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
-    if (!streamingDevice->iCartesianControl->getState(x, state, timestamp))
+    if (!streamingDevice->iCartesianControl->getState(state))
     {
         yCWarning(SDC) << "getState failed";
         return false;
     }
 
-    KDL::Frame H_base_tcp = KdlVectorConverter::vectorToFrame(x);
+    KDL::Frame H_base_tcp = KdlVectorConverter::vectorToFrame(state.x);
 
     // express camera's z axis (points "forward") in base frame
     KDL::Vector v_base = H_base_tcp.M * rot_tcp_camera * KDL::Vector(0, 0, 1);

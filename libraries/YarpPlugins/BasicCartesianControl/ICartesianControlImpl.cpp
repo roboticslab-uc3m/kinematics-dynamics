@@ -36,7 +36,7 @@ namespace
 
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, State & state, double & timestamp)
+yarp::dev::ReturnValue BasicCartesianControl::getState(roboticslab::ICartesianControl::ControllerState & state)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -46,14 +46,14 @@ yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, 
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (!iCartesianSolver->forwardKinematics(currentQ, x))
+    if (!iCartesianSolver->forwardKinematics(currentQ, state.x))
     {
         yCError(BCC) << "forwardKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    state = getCurrentState();
-    timestamp = getTimestamp(iPreciselyTimed);
+    state.mode = getCurrentMode();
+    state.timestamp = getTimestamp(iPreciselyTimed);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -144,7 +144,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
         cmcSuccess = true;
         yCInfo(BCC) << "Performing MOVEJ";
 
-        setCurrentState(State::MOVEJ);
+        setCurrentMode(Mode::MOVEJ);
     }
     else
     {
@@ -234,7 +234,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEL";
 
-    setCurrentState(State::MOVEL);
+    setCurrentMode(Mode::MOVEL);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -289,7 +289,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEV";
 
-    setCurrentState(State::MOVEV);
+    setCurrentMode(Mode::MOVEV);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -304,7 +304,7 @@ yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    setCurrentState(State::GCMP);
+    setCurrentMode(Mode::GCMP);
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
@@ -332,7 +332,7 @@ yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<dou
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    setCurrentState(State::FORCE);
+    setCurrentMode(Mode::FORCE);
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
@@ -342,7 +342,7 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 {
     yCDebug(BCC) << "Stopping control";
 
-    setCurrentState(State::NONE);
+    setCurrentMode(Mode::NONE);
 
     // first switch control so that manipulators don't fall due to e.g. gravity
     if (!setControlModes(VOCAB_CM_POSITION))
@@ -392,7 +392,7 @@ yarp::dev::ReturnValue BasicCartesianControl::actuateTool(Actuator command)
 
 void BasicCartesianControl::pose(const std::vector<double> &x)
 {
-    if (getCurrentState() != State::NONE ||
+    if (getCurrentMode() != Mode::NONE ||
         streamingCommand != Streaming::POSE ||
         !checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
@@ -438,7 +438,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
 
 void BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
-    if (getCurrentState() != State::NONE ||
+    if (getCurrentMode() != Mode::NONE ||
         streamingCommand != Streaming::TWIST ||
         !checkControlModes(VOCAB_CM_VELOCITY))
     {
@@ -480,7 +480,7 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 void BasicCartesianControl::wrench(const std::vector<double> &w)
 {
-    if (getCurrentState() != State::NONE ||
+    if (getCurrentMode() != Mode::NONE ||
         streamingCommand != Streaming::WRENCH ||
         !checkControlModes(VOCAB_CM_TORQUE))
     {
@@ -540,7 +540,7 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
 
 yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double value)
 {
-    if (getCurrentState() != State::NONE)
+    if (getCurrentMode() != Mode::NONE)
     {
         yCError(BCC) << "Unable to set config parameter while controlling";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -700,7 +700,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double 
 
 yarp::dev::ReturnValue BasicCartesianControl::setParameters(const std::map<Config, double> & params)
 {
-    if (getCurrentState() != State::NONE)
+    if (getCurrentMode() != Mode::NONE)
     {
         yCError(BCC) << "Unable to set config parameters while controlling";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;

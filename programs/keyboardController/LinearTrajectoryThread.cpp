@@ -65,17 +65,15 @@ bool LinearTrajectoryThread::configure(const std::vector<double> & vels)
         return true;
     }
 
-    std::vector<double> x;
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
-    if (!iCartesianControl->getState(x, state, timestamp))
+    if (!iCartesianControl->getState(state))
     {
         yCError(KC) << "getState failed";
         return false;
     }
 
-    auto H = KdlVectorConverter::vectorToFrame(x);
+    auto H = KdlVectorConverter::vectorToFrame(state.x);
     auto tw = KdlVectorConverter::vectorToTwist(vels);
 
     std::lock_guard lock(mtx);

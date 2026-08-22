@@ -764,14 +764,12 @@ void KeyboardController::printCartesianPositions()
         return;
     }
 
-    std::vector<double> x;
-    ICartesianControl::State state;
-    double timestamp;
-    iCartesianControl->getState(x, state, timestamp);
-    KinRepresentation::decodePose(x, x, KinRepresentation::coordinate_system::CARTESIAN, orient, KinRepresentation::angular_units::DEGREES);
+    ICartesianControl::ControllerState state;
+    iCartesianControl->getState(state);
+    KinRepresentation::decodePose(state.x, state.x, KinRepresentation::coordinate_system::CARTESIAN, orient, KinRepresentation::angular_units::DEGREES);
 
     std::cout << "Current cartesian positions [meters, degrees (" << angleRepr << ")]: " << std::endl;
-    std::cout << roundZeroes(x) << std::endl;
+    std::cout << roundZeroes(state.x) << std::endl;
 }
 
 void KeyboardController::issueStop()
