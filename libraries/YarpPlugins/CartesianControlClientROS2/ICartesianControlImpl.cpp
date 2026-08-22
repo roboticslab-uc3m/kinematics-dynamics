@@ -256,9 +256,16 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<d
         poseMsg.orientation.w
     );
 
-    m_movej->publish(poseMsg);
+    auto goalMsg = rl_cartesian_control_msgs::action::Trajectory::Goal();
+    goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::JOINT;
+    goalMsg.x = poseMsg;
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    auto result = m_trajectory->async_send_goal(goalMsg);
+    m_goalHandle = result.get();
+
+    return m_goalHandle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
@@ -280,9 +287,16 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveLinear(const std::vector<
         poseMsg.orientation.w
     );
 
-    m_movel->publish(poseMsg);
+    auto goalMsg = rl_cartesian_control_msgs::action::Trajectory::Goal();
+    goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::LINEAR;
+    goalMsg.x = poseMsg;
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    auto result = m_trajectory->async_send_goal(goalMsg);
+    m_goalHandle = result.get();
+
+    return m_goalHandle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
@@ -336,6 +350,16 @@ yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vecto
 
 yarp::dev::ReturnValue CartesianControlClientROS2::stopControl()
 {
+    if (m_goalHandle && m_goalHandle->get_status() == action_msgs::msg::GoalStatus::STATUS_EXECUTING)
+    {
+        auto result = m_trajectory->async_cancel_goal(m_goalHandle);
+        auto response = result.get();
+
+        response->return_code == action_msgs::srv::CancelGoal::Response::ERROR_NONE
+            ? yarp::dev::ReturnValue::return_code::return_value_ok
+            : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
+
     std_srvs::srv::Trigger::Request request;
     auto result = m_client_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();

@@ -19,8 +19,6 @@ bool CartesianControlClientROS2::configureRosHandlers()
     m_pose = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/pose", 10);
     m_twist = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/twist", 10);
     m_wrench = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/wrench", 10);
-    m_movej = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movej", 10);
-    m_movel = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/movel", 10);
     m_movev = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/movev", 10);
     m_force = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/force", 10);
     m_tool = m_node->create_publisher<geometry_msgs::msg::Pose>(m_remote + "/command/tool", 10);
@@ -79,6 +77,19 @@ bool CartesianControlClientROS2::configureRosHandlers()
         }
 
         yCInfo(CCC) << "Stop service not available, waiting again...";
+    }
+
+    m_trajectory = rclcpp_action::create_client<rl_cartesian_control_msgs::action::Trajectory>(m_node, m_remote + "/trajectory");
+
+    while (!m_trajectory->wait_for_action_server(TIMEOUT))
+    {
+        if (!rclcpp::ok())
+        {
+            yCError(CCC) << "Interrupted while waiting for trajectory action server. Exiting.";
+            return false;
+        }
+
+        yCInfo(CCC) << "Trajectory action server not available, waiting again...";
     }
 
     m_client_get_params = m_node->create_client<rcl_interfaces::srv::GetParameters>(m_remote + "/get_parameters");

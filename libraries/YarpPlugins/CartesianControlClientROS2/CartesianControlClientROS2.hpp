@@ -10,6 +10,7 @@
 #include <yarp/dev/Drivers.h>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 
 #include <std_msgs/msg/int32.hpp>
 #include <std_srvs/srv/trigger.hpp>
@@ -23,6 +24,7 @@
 #include <rcl_interfaces/srv/set_parameters.hpp>
 
 #include <rl_cartesian_control_msgs/srv/inv.hpp>
+#include <rl_cartesian_control_msgs/action/trajectory.hpp>
 
 #include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
@@ -84,14 +86,15 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movej;
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movel;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_movev;
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_force;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_tool;
     rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr m_act;
 
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
+
+    rclcpp_action::Client<rl_cartesian_control_msgs::action::Trajectory>::SharedPtr m_trajectory;
+    std::shared_ptr<rclcpp_action::ClientGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> m_goalHandle;
 
     rclcpp::Client<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_client_inv;
     rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_client_gcmp;
