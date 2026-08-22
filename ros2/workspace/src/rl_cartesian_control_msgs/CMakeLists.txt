@@ -8,6 +8,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   srv/Inv.srv
+  action/Trajectory.action
   DEPENDENCIES std_msgs geometry_msgs
 )
 

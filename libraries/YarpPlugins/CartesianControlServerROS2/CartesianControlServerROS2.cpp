@@ -3,6 +3,7 @@
 #include "CartesianControlServerROS2.hpp"
 
 #include <algorithm> // std::transform
+#include <utility> // std::invoke
 #include <vector>
 
 #include <kdl/frames.hpp>
@@ -93,36 +94,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
     if (!m_wrench)
     {
         yCError(CCS) << "Could not initialize the wrench command subscription";
-        return false;
-    }
-
-    m_movej = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/movej", 10,
-        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
-        {
-            const auto v = pose_to_vector(msg.get());
-            yCDebug(CCS) << "Received movj command:" << v;
-            m_iCartesianControl->moveJoint(v);
-        });
-
-    if (!m_movej)
-    {
-        yCError(CCS) << "Could not initialize the movj command subscription";
-        return false;
-    }
-
-    m_movel = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/movel", 10,
-        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
-        {
-            const auto v = pose_to_vector(msg.get());
-            yCDebug(CCS) << "Received movl command:" << v;
-            m_iCartesianControl->moveLinear(v);
-        });
-
-    if (!m_movel)
-    {
-        yCError(CCS) << "Could not initialize the movl command subscription";
         return false;
     }
 
@@ -243,6 +214,61 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
+    m_trajectory = rclcpp_action::create_server<rl_cartesian_control_msgs::action::Trajectory>(
+        m_node,
+        prefix + "/trajectory",
+        [this](const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const rl_cartesian_control_msgs::action::Trajectory::Goal> goal)
+        {
+            yCDebug(CCS) << "Received trajectory goal request";
+
+            if (m_goalHandle && m_goalHandle->is_active())
+            {
+                yCError(CCS) << "A trajectory goal is already active, rejecting new goal";
+                return rclcpp_action::GoalResponse::REJECT;
+            }
+
+            using command_t = yarp::dev::ReturnValue (ICartesianControl::*)(const std::vector<double> &);
+            command_t command = nullptr;
+
+            switch (goal->type)
+            {
+            case rl_cartesian_control_msgs::action::Trajectory::Goal::JOINT:
+                yCDebug(CCS) << "Trajectory type: JOINT";
+                command = &ICartesianControl::moveJoint;
+                break;
+            case rl_cartesian_control_msgs::action::Trajectory::Goal::LINEAR:
+                yCDebug(CCS) << "Trajectory type: LINEAR";
+                command = &ICartesianControl::moveLinear;
+                break;
+            default:
+                yCError(CCS) << "Unknown trajectory type:" << goal->type;
+                return rclcpp_action::GoalResponse::REJECT;
+            }
+
+            return std::invoke(command, m_iCartesianControl, pose_to_vector(&goal->x))
+                ? rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE
+                : rclcpp_action::GoalResponse::REJECT;
+        },
+        [this](const std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> goalHandle)
+        {
+            yCDebug(CCS) << "Received trajectory cancel request";
+
+            return m_iCartesianControl->stopControl()
+                ? rclcpp_action::CancelResponse::ACCEPT
+                : rclcpp_action::CancelResponse::REJECT;
+        },
+        [this](const std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> goalHandle)
+        {
+            yCDebug(CCS) << "Executing trajectory goal";
+            m_goalHandle = goalHandle;
+        });
+
+    if (!m_trajectory)
+    {
+        yCError(CCS) << "Could not initialize the trajectory action server";
+        return false;
+    }
+
     return true;
 }
 
@@ -350,6 +376,12 @@ bool CartesianControlServerROS2::configureRosParameters()
 
     m_params = m_node->add_on_set_parameters_callback([this](const auto & parameters) { return params_cb(parameters); });
 
+    if (!m_params)
+    {
+        yCError(CCS) << "Could not register parameter callback";
+        return false;
+    }
+
     return true;
 }
 
@@ -358,8 +390,6 @@ bool CartesianControlServerROS2::configureRosParameters()
 void CartesianControlServerROS2::destroyRosHandlers()
 {
     m_state.reset();
-    m_movej.reset();
-    m_movel.reset();
     m_movev.reset();
     m_force.reset();
     m_tool.reset();
@@ -372,12 +402,15 @@ void CartesianControlServerROS2::destroyRosHandlers()
     m_gcmp.reset();
     m_stop.reset();
 
+    m_trajectory.reset();
+    m_goalHandle.reset();
+
     m_params.reset();
 }
 
 // -----------------------------------------------------------------------------
 
-rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(const std::vector<rclcpp::Parameter> &parameters)
+rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(const std::vector<rclcpp::Parameter> & parameters)
 {
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;

@@ -17,9 +17,10 @@ using namespace roboticslab;
 void CartesianControlServerROS2::run()
 {
     std::vector<double> x;
+    ICartesianControl::State state;
     double timestamp;
 
-    if (ICartesianControl::State state; !m_iCartesianControl->getState(x, state, timestamp))
+    if (!m_iCartesianControl->getState(x, state, timestamp))
     {
         yCWarning(CCS) << "Failed to getState";
         return;
@@ -42,6 +43,28 @@ void CartesianControlServerROS2::run()
     ori.GetQuaternion(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
 
     m_state->publish(msg);
+
+    if (m_goalHandle && m_goalHandle->is_executing())
+    {
+        auto result_msg = std::make_shared<rl_cartesian_control_msgs::action::Trajectory::Result>();
+
+        if (m_goalHandle->is_canceling())
+        {
+            // TODO: this can also happen if stopControl() is called or the internal controller decides to stop by itself
+            yCInfo(CCS) << "Trajectory goal canceled";
+            m_goalHandle->canceled(result_msg);
+        }
+        else if (state == ICartesianControl::State::NONE)
+        {
+            yCInfo(CCS) << "Trajectory goal succeeded";
+            m_goalHandle->succeed(result_msg);
+        }
+        else
+        {
+            // TODO: handle progress feedback
+            // m_goalHandle->publish_feedback(progress);
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------

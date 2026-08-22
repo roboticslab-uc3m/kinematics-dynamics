@@ -4,7 +4,7 @@
   <name>spacenav_device</name>
   <version>0.0.0</version>
   <description>Streaming device for 3Dconnexion SpaceNavigator 6DOF joystick.</description>
-  <maintainer email="mercerebo1@gmail.com">merce</maintainer>
+  <maintainer email="mercerebo1@gmail.com">Mercedes Rebollo</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -24,4 +24,3 @@
     <build_type>ament_cmake</build_type>
   </export>
 </package>
-
