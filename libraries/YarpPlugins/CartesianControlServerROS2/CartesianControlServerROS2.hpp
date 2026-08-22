@@ -68,16 +68,16 @@ private:
 
     rclcpp::Node::SharedPtr m_node;
 
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_stat;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_state;
 
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_pose;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movj;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movl;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_movv;
-    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_forc;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movej;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movel;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_movev;
+    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_force;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_tool;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_act;
 

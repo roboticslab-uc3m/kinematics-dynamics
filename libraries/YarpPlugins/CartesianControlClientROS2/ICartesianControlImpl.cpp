@@ -256,7 +256,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveJoint(const std::vector<d
         poseMsg.orientation.w
     );
 
-    m_movj->publish(poseMsg);
+    m_movej->publish(poseMsg);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -280,7 +280,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveLinear(const std::vector<
         poseMsg.orientation.w
     );
 
-    m_movl->publish(poseMsg);
+    m_movel->publish(poseMsg);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -297,7 +297,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vecto
     twistMsg.angular.y = xdotd[4];
     twistMsg.angular.z = xdotd[5];
 
-    m_movv->publish(twistMsg);
+    m_movev->publish(twistMsg);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -327,7 +327,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vecto
     wrenchMsg.torque.y = fd[4];
     wrenchMsg.torque.z = fd[5];
 
-    m_forc->publish(wrenchMsg);
+    m_force->publish(wrenchMsg);
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }

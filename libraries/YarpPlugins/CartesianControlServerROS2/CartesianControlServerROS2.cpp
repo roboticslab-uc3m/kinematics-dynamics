@@ -49,7 +49,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 {
     const auto prefix = "/" + m_name;
 
-    m_stat = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
+    m_state = m_node->create_publisher<geometry_msgs::msg::PoseStamped>(prefix + "/state/pose", 10);
 
     m_pose = m_node->create_subscription<geometry_msgs::msg::Pose>(
         prefix + "/command/pose", 10,
@@ -96,8 +96,8 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movj = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/movj", 10,
+    m_movej = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/movej", 10,
         [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
@@ -105,14 +105,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->moveJoint(v);
         });
 
-    if (!m_movj)
+    if (!m_movej)
     {
         yCError(CCS) << "Could not initialize the movj command subscription";
         return false;
     }
 
-    m_movl = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/movl", 10,
+    m_movel = m_node->create_subscription<geometry_msgs::msg::Pose>(
+        prefix + "/command/movel", 10,
         [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
             const auto v = pose_to_vector(msg.get());
@@ -120,14 +120,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->moveLinear(v);
         });
 
-    if (!m_movl)
+    if (!m_movel)
     {
         yCError(CCS) << "Could not initialize the movl command subscription";
         return false;
     }
 
-    m_movv = m_node->create_subscription<geometry_msgs::msg::Twist>(
-        prefix + "/command/movv", 10,
+    m_movev = m_node->create_subscription<geometry_msgs::msg::Twist>(
+        prefix + "/command/movev", 10,
         [this](geometry_msgs::msg::Twist::ConstSharedPtr msg)
         {
             const auto v = twist_to_vector(msg.get());
@@ -135,14 +135,14 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->moveVelocity(v);
         });
 
-    if (!m_movv)
+    if (!m_movev)
     {
         yCError(CCS) << "Could not initialize the movv command subscription";
         return false;
     }
 
-    m_forc = m_node->create_subscription<geometry_msgs::msg::Wrench>(
-        prefix + "/command/forc", 10,
+    m_force = m_node->create_subscription<geometry_msgs::msg::Wrench>(
+        prefix + "/command/force", 10,
         [this](geometry_msgs::msg::Wrench::ConstSharedPtr msg)
         {
             const auto v = wrench_to_vector(msg.get());
@@ -150,7 +150,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->forceControl(v);
         });
 
-    if (!m_forc)
+    if (!m_force)
     {
         yCError(CCS) << "Could not initialize the forc command subscription";
         return false;
@@ -357,11 +357,11 @@ bool CartesianControlServerROS2::configureRosParameters()
 
 void CartesianControlServerROS2::destroyRosHandlers()
 {
-    m_stat.reset();
-    m_movj.reset();
-    m_movl.reset();
-    m_movv.reset();
-    m_forc.reset();
+    m_state.reset();
+    m_movej.reset();
+    m_movel.reset();
+    m_movev.reset();
+    m_force.reset();
     m_tool.reset();
     m_act.reset();
     m_pose.reset();

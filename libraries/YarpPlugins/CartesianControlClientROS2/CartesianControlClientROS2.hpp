@@ -84,10 +84,10 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movj;
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movl;
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_movv;
-    rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_forc;
+    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movej;
+    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movel;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_movev;
+    rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_force;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_tool;
     rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr m_act;
 
