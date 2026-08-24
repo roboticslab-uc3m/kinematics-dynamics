@@ -22,6 +22,7 @@ void CartesianControlServer::run()
         }
 
         out.addFloat64(state.timestamp);
+        out.addFloat64(state.duration);
         out.addFloat32(state.progress);
         out.addInt8(static_cast<std::int8_t>(state.success));
 

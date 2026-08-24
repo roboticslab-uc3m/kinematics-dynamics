@@ -122,6 +122,7 @@ public:
         std::vector<double> x; ///< Current pose: translation (3, meters) + rotation (3, radians, scaled axis-angle)
         Mode mode;             ///< Current controller mode
         double timestamp;      ///< Timestamp of the last received pose
+        double duration;       ///< Duration of the current trajectory, if any (seconds)
         float progress;        ///< Progress of the current trajectory, if any (0.0 to 1.0)
         bool success;          ///< Whether the last trajectory command was successful
     };

@@ -14,6 +14,7 @@ return_get_state RpcResponder::getState()
     ret.x = state.x;
     ret.mode = state.mode;
     ret.timestamp = state.timestamp;
+    ret.duration = state.duration;
     ret.progress = state.progress;
     ret.success = state.success;
     return ret;

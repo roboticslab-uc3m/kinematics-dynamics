@@ -210,9 +210,9 @@ private:
     std::vector<double> fd;
 
     int encoderErrors {0};
-    double maxTrajectoryDuration {0.0};
     double trajectoryStartTime {0.0};
 
+    std::atomic<double> maxTrajectoryDuration {0.0};
     std::atomic<bool> cmcSuccess {true};
     std::atomic<float> cmcProgress {1.0f}; // only meaningful for MOVEJ and MOVEL
 

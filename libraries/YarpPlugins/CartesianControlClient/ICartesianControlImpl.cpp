@@ -45,6 +45,7 @@ yarp::dev::ReturnValue CartesianControlClient::getState(ICartesianControl::Contr
     state.x = ret.x;
     state.mode = ret.mode;
     state.timestamp = ret.timestamp;
+    state.duration = ret.duration;
     state.progress = ret.progress;
     state.success = ret.success;
 

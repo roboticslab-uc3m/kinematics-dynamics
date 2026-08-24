@@ -34,8 +34,9 @@ struct return_get_state {
     2: list<double> x;
     3: CartesianControlMode mode;
     4: double timestamp;
-    5: double progress;
-    6: bool success;
+    5: double duration;
+    6: double progress;
+    7: bool success;
 }
 
 struct return_solve_pose {

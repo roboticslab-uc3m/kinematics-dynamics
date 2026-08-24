@@ -13,9 +13,9 @@ using namespace roboticslab;
 
 void FkStreamResponder::onRead(yarp::os::Bottle & b)
 {
-    if (b.size() != 10)
+    if (b.size() != 11)
     {
-        yCWarningThrottle(CCC, 1.0) << "Received FK stream message with incorrect size (should be 10):" << b.size();
+        yCWarningThrottle(CCC, 1.0) << "Received FK stream message with incorrect size (should be 11):" << b.size();
         return;
     }
 
@@ -31,8 +31,9 @@ void FkStreamResponder::onRead(yarp::os::Bottle & b)
     }
 
     timestamp = b.get(7).asFloat64();
-    progress = b.get(8).asFloat32();
-    success = b.get(9).asInt8() != 0;
+    duration = b.get(8).asFloat64();
+    progress = b.get(9).asFloat32();
+    success = b.get(10).asInt8() != 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -44,6 +45,7 @@ bool FkStreamResponder::getLastStateData(ICartesianControl::ControllerState & st
     state.x = x;
     state.mode = static_cast<ICartesianControl::Mode>(mode);
     state.timestamp = timestamp;
+    state.duration = duration;
     state.progress = progress;
     state.success = success;
 

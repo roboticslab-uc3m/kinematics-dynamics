@@ -55,6 +55,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getState(roboticslab::ICartesianCo
 
     state.mode = currentMode;
     state.timestamp = getTimestamp(iPreciselyTimed);
+    state.duration = maxTrajectoryDuration;
     state.progress = cmcProgress;
     state.success = cmcSuccess;
 

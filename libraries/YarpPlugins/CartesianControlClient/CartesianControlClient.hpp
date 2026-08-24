@@ -34,13 +34,14 @@
 class FkStreamResponder : public yarp::os::TypedReaderCallback<yarp::os::Bottle>
 {
 public:
-    void onRead(yarp::os::Bottle& b) override;
+    void onRead(yarp::os::Bottle & b) override;
     bool getLastStateData(ICartesianControl::ControllerState & state, const double timeout);
 
 private:
     double localArrivalTime {0.0};
     int mode {0};
     double timestamp {0.0};
+    double duration {0.0};
     float progress {0.0f};
     bool success {false};
     std::vector<double> x;
