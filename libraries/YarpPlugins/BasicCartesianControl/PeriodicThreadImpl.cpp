@@ -85,9 +85,13 @@ void BasicCartesianControl::run()
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovj(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovj(const std::vector<double> & q, const StateWatcher & watcher)
 {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_POSITION))
+#else
     if (!checkControlModes(VOCAB_CM_POSITION))
+#endif
     {
         yCError(BCC) << "Not in position control mode";
         return;
@@ -127,9 +131,13 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovlVel(const std::vector<double> & q, const StateWatcher & watcher)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_VELOCITY))
+#else
     if (!checkControlModes(VOCAB_CM_VELOCITY))
+#endif
     {
         yCError(BCC) << "Not in velocity control mode";
         return;
@@ -204,9 +212,13 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovlPosd(const std::vector<double> & q, const StateWatcher & watcher)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_POSITION_DIRECT))
+#else
     if (!checkControlModes(VOCAB_CM_POSITION_DIRECT))
+#endif
     {
         yCError(BCC) << "Not in position direct control mode";
         return;
@@ -252,9 +264,13 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovv(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovv(const std::vector<double> & q, const StateWatcher & watcher)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_VELOCITY))
+#else
     if (!checkControlModes(VOCAB_CM_VELOCITY))
+#endif
     {
         yCError(BCC) << "Not in velocity control mode";
         return;
@@ -323,9 +339,13 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleGcmp(const std::vector<double> & q, const StateWatcher & watcher)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_TORQUE))
+#else
     if (!checkControlModes(VOCAB_CM_TORQUE))
+#endif
     {
         yCError(BCC) << "Not in torque control mode";
         return;
@@ -349,10 +369,14 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleForc(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
+void BasicCartesianControl::handleForc(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
                                        const StateWatcher & watcher)
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_TORQUE))
+#else
     if (!checkControlModes(VOCAB_CM_TORQUE))
+#endif
     {
         yCError(BCC) << "Not in torque control mode";
         return;

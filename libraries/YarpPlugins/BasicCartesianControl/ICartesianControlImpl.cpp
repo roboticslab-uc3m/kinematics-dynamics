@@ -127,8 +127,11 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
         }
 #endif
 
-        //-- Enter position mode and perform movement
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (!setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION))
+#else
         if (!setControlModes(VOCAB_CM_POSITION))
+#endif
         {
             yCError(BCC) << "Unable to set position mode";
             return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -140,7 +143,6 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
             return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
-        //-- Set state, enable CMC thread and wait for movement to be done
         cmcSuccess = true;
         yCInfo(BCC) << "Performing MOVEJ";
 
@@ -224,7 +226,13 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!setControlModes(m_usePosdMovl
+            ? yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION_DIRECT
+            : yarp::dev::SelectableControlModeEnum::VOCAB_CM_VELOCITY))
+#else
     if (!setControlModes(m_usePosdMovl ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
+#endif
     {
         yCError(BCC) << "Unable to set" << (m_usePosdMovl ? "position direct" : "velocity") << "control mode";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -277,14 +285,16 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
-    //-- Set velocity mode and set state which makes periodic thread implement control
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_VELOCITY))
+#else
     if (!setControlModes(VOCAB_CM_VELOCITY))
+#endif
     {
         yCError(BCC) << "Unable to set velocity mode";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    //-- Set state, enable CMC thread and wait for movement to be done
     movementStartTime = yarp::os::SystemClock::nowSystem();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEV";
@@ -298,7 +308,11 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
 
 yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
 {
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_TORQUE))
+#else
     if (!setControlModes(VOCAB_CM_TORQUE))
+#endif
     {
         yCError(BCC) << "Unable to set torque mode";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -326,7 +340,11 @@ yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<dou
     // the end-effector, while the controller's contract interprets it as a force exerted by us
     std::transform(fd.cbegin(), fd.cend(), std::back_inserter(this->fd), std::negate<>());
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_TORQUE))
+#else
     if (!setControlModes(VOCAB_CM_TORQUE))
+#endif
     {
         yCError(BCC) << "Unable to set torque mode";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -345,7 +363,11 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
     setCurrentState(State::NONE);
 
     // first switch control so that manipulators don't fall due to e.g. gravity
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    if (!setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION))
+#else
     if (!setControlModes(VOCAB_CM_POSITION))
+#endif
     {
         yCWarning(BCC) << "setControlModes(VOCAB_CM_POSITION) failed";
     }
@@ -394,7 +416,11 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::POSE ||
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        !checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_POSITION_DIRECT))
+#else
         !checkControlModes(VOCAB_CM_POSITION_DIRECT))
+#endif
     {
         yCError(BCC) << "Streaming command not preset";
         return;
@@ -440,7 +466,11 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::TWIST ||
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        !checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_VELOCITY))
+#else
         !checkControlModes(VOCAB_CM_VELOCITY))
+#endif
     {
         yCError(BCC) << "Streaming command not preset";
         return;
@@ -482,7 +512,11 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
 {
     if (getCurrentState() != State::NONE ||
         streamingCommand != Streaming::WRENCH ||
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        !checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_TORQUE))
+#else
         !checkControlModes(VOCAB_CM_TORQUE))
+#endif
     {
         yCError(BCC) << "Streaming command not preset";
         return;

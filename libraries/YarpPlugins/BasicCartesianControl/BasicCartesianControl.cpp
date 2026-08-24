@@ -185,7 +185,11 @@ bool BasicCartesianControl::doFailFastChecks(const std::vector<double> & initial
 
 // -----------------------------------------------------------------------------
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+bool BasicCartesianControl::checkControlModes(yarp::dev::ControlModeEnum mode)
+#else
 bool BasicCartesianControl::checkControlModes(int mode)
+#endif
 {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     std::vector<yarp::dev::ControlModeEnum> modes(numJoints);
@@ -203,12 +207,16 @@ bool BasicCartesianControl::checkControlModes(int mode)
         return false;
     }
 
-    return std::all_of(modes.begin(), modes.end(), [mode](auto retrievedMode) { return static_cast<int>(retrievedMode) == mode; });
+    return std::all_of(modes.begin(), modes.end(), [mode](auto retrievedMode) { return retrievedMode == mode; });
 }
 
 // -----------------------------------------------------------------------------
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+bool BasicCartesianControl::setControlModes(yarp::dev::SelectableControlModeEnum mode)
+#else
 bool BasicCartesianControl::setControlModes(int mode)
+#endif
 {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     std::vector<yarp::dev::ControlModeEnum> modes(numJoints);
@@ -230,7 +238,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     for (unsigned int i = 0; i < modes.size(); i++)
     {
-        if (static_cast<int>(modes[i]) != mode)
+        if (static_cast<int>(modes[i]) != static_cast<int>(mode))
         {
             jointIds.push_back(i);
         }
@@ -239,19 +247,14 @@ bool BasicCartesianControl::setControlModes(int mode)
     if (!jointIds.empty())
     {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
-        auto modeSet = static_cast<yarp::dev::SelectableControlModeEnum>(mode);
-        std::vector modesSet(jointIds.size(), modeSet);
+        if (!iControlMode->setControlModes(jointIds, std::vector(jointIds.size(), mode)))
 #else
         modes.assign(jointIds.size(), mode);
-#endif
 
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-        if (!iControlMode->setControlModes(jointIds, modesSet))
-#else
         if (!iControlMode->setControlModes(jointIds.size(), jointIds.data(), modes.data()))
 #endif
         {
-            yCWarning(BCC) << "setControlModes() failed for mode:" << yarp::os::Vocab32::decode(mode);
+            yCWarning(BCC) << "setControlModes() failed for mode:" << yarp::os::Vocab32::decode(static_cast<int>(mode));
             return false;
         }
     }
@@ -262,13 +265,18 @@ bool BasicCartesianControl::setControlModes(int mode)
     {
         yarp::os::SystemClock::delaySystem(0.1);
 
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        if (checkControlModes(static_cast<yarp::dev::ControlModeEnum>(mode)))
+#else
         if (checkControlModes(mode))
+#endif
         {
             return true;
         }
-    } while (retry++ < 10);
+    }
+    while (retry++ < 10);
 
-    yCWarning(BCC) << "Max retries exceeded for mode change:" << yarp::os::Vocab32::decode(mode);
+    yCWarning(BCC) << "Max retries exceeded for mode change:" << yarp::os::Vocab32::decode(static_cast<int>(mode));
     return false;
 }
 
@@ -281,11 +289,23 @@ bool BasicCartesianControl::presetStreamingCommand(Streaming command)
     switch (command)
     {
     case Streaming::POSE:
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        return setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION_DIRECT);
+#else
         return setControlModes(VOCAB_CM_POSITION_DIRECT);
+#endif
     case Streaming::TWIST:
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        return setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_VELOCITY);
+#else
         return setControlModes(VOCAB_CM_VELOCITY);
+#endif
     case Streaming::WRENCH:
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+        return setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_TORQUE);
+#else
         return setControlModes(VOCAB_CM_TORQUE);
+#endif
     default:
         yCError(BCC) << "Unrecognized or unsupported streaming command vocab:"
                      << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));

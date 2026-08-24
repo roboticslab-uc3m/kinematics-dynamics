@@ -170,8 +170,13 @@ private:
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
     bool checkJointVelocities(const std::vector<double> & qdot);
     bool doFailFastChecks(const std::vector<double> & initialQ);
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+    bool checkControlModes(yarp::dev::ControlModeEnum mode);
+    bool setControlModes(yarp::dev::SelectableControlModeEnum mode);
+#else
     bool checkControlModes(int mode);
     bool setControlModes(int mode);
+#endif
     bool presetStreamingCommand(roboticslab::ICartesianControl::Streaming command);
     bool computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
