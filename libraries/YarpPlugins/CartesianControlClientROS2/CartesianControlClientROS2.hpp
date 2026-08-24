@@ -96,7 +96,6 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
 
     rclcpp_action::Client<rl_cartesian_control_msgs::action::Trajectory>::SharedPtr m_trajectory;
-    std::shared_ptr<rclcpp_action::ClientGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> m_goalHandle;
 
     rclcpp::Client<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_client_inv;
     rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_client_gcmp;
