@@ -59,16 +59,24 @@ void CartesianControlServerROS2::run()
             else
             {
                 yCInfo(CCS) << "Trajectory execution finished, success:" << state.success;
+
                 auto result_msg = std::make_shared<Trajectory::Result>();
                 result_msg->success = state.success;
+                result_msg->duration = state.duration;
+                result_msg->progress = state.progress;
+
                 state.success ? m_goalHandle->succeed(result_msg) : m_goalHandle->abort(result_msg);
             }
         }
         else if (m_goalHandle->is_canceling())
         {
             yCInfo(CCS) << "Trajectory execution canceled";
+
             auto result_msg = std::make_shared<Trajectory::Result>();
             result_msg->success = true; // not a failure, just a user-requested cancel
+            result_msg->duration = state.duration;
+            result_msg->progress = state.progress;
+
             m_goalHandle->canceled(result_msg);
         }
     }

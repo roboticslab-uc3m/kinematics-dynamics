@@ -171,8 +171,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(
         prefix + "/inv",
-        [this](const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request,
-               rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
+        [this](const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
         {
             std::vector<double> q;
             response->success = m_iCartesianControl->solvePose(pose_to_vector(&request->x), q);
@@ -210,8 +209,15 @@ bool CartesianControlServerROS2::configureRosHandlers()
             if (m_goalHandle && m_goalHandle->is_active())
             {
                 yCDebug(CCS) << "Canceling active trajectory goal due to stop request";
+
+                ICartesianControl::ControllerState state;
+                m_iCartesianControl->getState(state);
+
                 auto result_msg = std::make_shared<rl_cartesian_control_msgs::action::Trajectory::Result>();
                 result_msg->success = true; // not a failure, just a user-requested stop
+                result_msg->duration = state.duration;
+                result_msg->progress = state.progress;
+
                 m_goalHandle->canceled(result_msg);
             }
         });
