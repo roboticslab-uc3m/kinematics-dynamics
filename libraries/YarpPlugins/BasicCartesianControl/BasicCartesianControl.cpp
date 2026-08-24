@@ -324,6 +324,8 @@ bool BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
         }
     }
 
+    maxTrajectoryDuration = maxTime;
+
     return maxTime != 0.0; // true: will move
 }
 

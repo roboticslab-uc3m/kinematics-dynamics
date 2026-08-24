@@ -5,6 +5,7 @@
 #include <algorithm> // std::transform
 #include <functional> // std::negate
 #include <iterator> // std::back_inserter
+#include <limits>
 #include <vector>
 
 #include <yarp/conf/version.h>
@@ -192,6 +193,8 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
 
     trajectories.clear();
 
+    maxTrajectoryDuration = std::numeric_limits<double>::max();
+
     //-- Create line trajectories (one per endpoint if robot is a kin-tree)
     for (unsigned int i = 0; i < xd.size() / 6; i++)
     {
@@ -216,6 +219,13 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
             profile->SetProfile(0.0, path->PathLength());
         }
 
+        auto duration = profile->Duration();
+
+        if (duration < maxTrajectoryDuration)
+        {
+            maxTrajectoryDuration = duration;
+        }
+
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
@@ -231,7 +241,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    movementStartTime = yarp::os::SystemClock::nowSystem();
+    trajectoryStartTime = yarp::os::SystemClock::nowSystem();
     cmcSuccess = true;
     cmcProgress = 0.0f;
     yCInfo(BCC) << "Performing MOVEL";
@@ -263,6 +273,8 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
 
     trajectories.clear();
 
+    maxTrajectoryDuration = std::numeric_limits<double>::max();
+
     for (unsigned int i = 0; i < xdotd.size() / 6; i++)
     {
         std::vector<double> xd_base_tcp_sub(x_base_tcp.cbegin() + i * 6, x_base_tcp.cbegin() + (i + 1) * 6);
@@ -276,6 +288,13 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
         auto * profile = new KDL::VelocityProfile_Rectangular(m_trajectoryRefSpeed);
         profile->SetProfileDuration(0.0, m_trajectoryRefSpeed, m_trajectoryRefSpeed / path->PathLength());
 
+        auto duration = profile->Duration();
+
+        if (duration < maxTrajectoryDuration)
+        {
+            maxTrajectoryDuration = duration;
+        }
+
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
@@ -287,7 +306,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
-    movementStartTime = yarp::os::SystemClock::nowSystem();
+    trajectoryStartTime = yarp::os::SystemClock::nowSystem();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEV";
 

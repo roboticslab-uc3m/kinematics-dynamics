@@ -203,9 +203,6 @@ private:
     /** MOVEJ store previous reference speeds */
     std::vector<double> vmoStored;
 
-    /** MOVEL keep track of movement start time to know at what time of trajectory movement we are */
-    double movementStartTime {0.0};
-
     /** MOVEL store Cartesian trajectory */
     std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
 
@@ -213,6 +210,9 @@ private:
     std::vector<double> fd;
 
     int encoderErrors {0};
+    double maxTrajectoryDuration {0.0};
+    double trajectoryStartTime {0.0};
+
     std::atomic<bool> cmcSuccess {true};
     std::atomic<float> cmcProgress {1.0f}; // only meaningful for MOVEJ and MOVEL
 

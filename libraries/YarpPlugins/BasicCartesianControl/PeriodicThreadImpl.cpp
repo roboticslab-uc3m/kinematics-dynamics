@@ -93,6 +93,9 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
         return;
     }
 
+    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
+
     bool done;
 
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
@@ -135,7 +138,8 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - movementStartTime;
+    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> desiredX, desiredXdot;
 
@@ -144,6 +148,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
         if (movementTime > trajectory->Duration())
         {
             watcher.suppress();
+            cmcProgress = 1.0f;
             stopControl();
             return;
         }
@@ -212,7 +217,8 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - movementStartTime;
+    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> desiredX;
 
@@ -221,6 +227,7 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
         if (movementTime > trajectory->Duration())
         {
             watcher.suppress();
+            cmcProgress = 1.0f;
             stopControl();
             return;
         }
@@ -260,7 +267,8 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - movementStartTime;
+    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> currentX;
 
