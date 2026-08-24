@@ -1,5 +1,6 @@
 int8 JOINT=0
 int8 LINEAR=1
+
 int8 type
 geometry_msgs/Pose x
 ---

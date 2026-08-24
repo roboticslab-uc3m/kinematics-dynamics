@@ -97,28 +97,28 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_movev = m_node->create_subscription<geometry_msgs::msg::Twist>(
-        prefix + "/command/movev", 10,
-        [this](geometry_msgs::msg::Twist::ConstSharedPtr msg)
+    m_move_v = m_node->create_service<rl_cartesian_control_msgs::srv::MoveV>(
+        prefix + "/command/movev",
+        [this](const rl_cartesian_control_msgs::srv::MoveV::Request::SharedPtr request, rl_cartesian_control_msgs::srv::MoveV::Response::SharedPtr response)
         {
-            const auto v = twist_to_vector(msg.get());
+            const auto v = twist_to_vector(&request->xdot);
             yCDebug(CCS) << "Received movv command:" << v;
-            m_iCartesianControl->moveVelocity(v);
+            response->success = m_iCartesianControl->moveVelocity(v);
         });
 
-    if (!m_movev)
+    if (!m_move_v)
     {
         yCError(CCS) << "Could not initialize the movv command subscription";
         return false;
     }
 
-    m_force = m_node->create_subscription<geometry_msgs::msg::Wrench>(
-        prefix + "/command/force", 10,
-        [this](geometry_msgs::msg::Wrench::ConstSharedPtr msg)
+    m_force = m_node->create_service<rl_cartesian_control_msgs::srv::Force>(
+        prefix + "/command/force",
+        [this](const rl_cartesian_control_msgs::srv::Force::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Force::Response::SharedPtr response)
         {
-            const auto v = wrench_to_vector(msg.get());
-            yCDebug(CCS) << "Received forc command:" << v;
-            m_iCartesianControl->forceControl(v);
+            const auto v = wrench_to_vector(&request->f);
+            yCDebug(CCS) << "Received force command:" << v;
+            response->success = m_iCartesianControl->forceControl(v);
         });
 
     if (!m_force)
@@ -127,45 +127,18 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_tool = m_node->create_subscription<geometry_msgs::msg::Pose>(
-        prefix + "/command/tool", 10,
-        [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
+    m_tool = m_node->create_service<rl_cartesian_control_msgs::srv::Tool>(
+        prefix + "/command/tool",
+        [this](const rl_cartesian_control_msgs::srv::Tool::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Tool::Response::SharedPtr response)
         {
-            const auto v = pose_to_vector(msg.get());
+            const auto v = pose_to_vector(&request->x);
             yCDebug(CCS) << "Received tool command:" << v;
-            m_iCartesianControl->changeTool(v);
+            response->success = m_iCartesianControl->changeTool(v);
         });
 
     if (!m_tool)
     {
         yCError(CCS) << "Could not initialize the tool command subscription";
-        return false;
-    }
-
-    m_act = m_node->create_subscription<std_msgs::msg::Int32>(
-        prefix + "/command/gripper", 10,
-        [this](std_msgs::msg::Int32::ConstSharedPtr msg)
-        {
-            switch (msg->data)
-            {
-            case GRIPPER_CLOSE:
-                yCDebug(CCS) << "Gripper close";
-                m_iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
-                break;
-            case GRIPPER_OPEN:
-                yCDebug(CCS) << "Gripper open";
-                m_iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN);
-                break;
-            case GRIPPER_STOP:
-                yCDebug(CCS) << "Gripper stop";
-                m_iCartesianControl->actuateTool(ICartesianControl::Actuator::STOP);
-                break;
-            }
-        });
-
-    if (!m_act)
-    {
-        yCError(CCS) << "Could not initialize the gripper command subscription";
         return false;
     }
 
@@ -182,6 +155,37 @@ bool CartesianControlServerROS2::configureRosHandlers()
     if (!m_inv)
     {
         yCError(CCS) << "Could not initialize the inv service";
+        return false;
+    }
+
+    m_act = m_node->create_service<rl_cartesian_control_msgs::srv::Act>(
+        prefix + "/command/gripper",
+        [this](const rl_cartesian_control_msgs::srv::Act::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Act::Response::SharedPtr response)
+        {
+            yarp::dev::ReturnValue ret;
+
+            switch (request->cmd)
+            {
+            case rl_cartesian_control_msgs::srv::Act::Request::CLOSE:
+                yCDebug(CCS) << "Gripper close";
+                ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
+                break;
+            case rl_cartesian_control_msgs::srv::Act::Request::OPEN:
+                yCDebug(CCS) << "Gripper open";
+                ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN);
+                break;
+            case rl_cartesian_control_msgs::srv::Act::Request::STOP:
+                yCDebug(CCS) << "Gripper stop";
+                ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::STOP);
+                break;
+            }
+
+            response->success = ret;
+        });
+
+    if (!m_act)
+    {
+        yCError(CCS) << "Could not initialize the gripper command subscription";
         return false;
     }
 
@@ -404,15 +408,17 @@ bool CartesianControlServerROS2::configureRosParameters()
 void CartesianControlServerROS2::destroyRosHandlers()
 {
     m_state.reset();
-    m_movev.reset();
-    m_force.reset();
-    m_tool.reset();
-    m_act.reset();
+
     m_pose.reset();
     m_twist.reset();
     m_wrench.reset();
 
+    m_move_v.reset();
+    m_force.reset();
+    m_tool.reset();
     m_inv.reset();
+    m_act.reset();
+
     m_gcmp.reset();
     m_stop.reset();
 

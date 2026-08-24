@@ -226,7 +226,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<d
         request.x.orientation.w
     );
 
-    auto result = m_client_inv->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Inv::Request>(request));
+    auto result = m_inv->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Inv::Request>(request));
     auto response = result.get();
 
     if (!response->success)
@@ -337,9 +337,15 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vecto
     twistMsg.angular.y = xdotd[4];
     twistMsg.angular.z = xdotd[5];
 
-    m_movev->publish(twistMsg);
+    rl_cartesian_control_msgs::srv::MoveV::Request request;
+    request.xdot = twistMsg;
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    auto result = m_move_v->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::MoveV::Request>(request));
+    auto response = result.get();
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
@@ -347,7 +353,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vecto
 yarp::dev::ReturnValue CartesianControlClientROS2::gravityCompensation()
 {
     std_srvs::srv::Trigger::Request request;
-    auto result = m_client_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
+    auto result = m_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
 
     return response->success
@@ -367,9 +373,15 @@ yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vecto
     wrenchMsg.torque.y = fd[4];
     wrenchMsg.torque.z = fd[5];
 
-    m_force->publish(wrenchMsg);
+    rl_cartesian_control_msgs::srv::Force::Request request;
+    request.f = wrenchMsg;
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    auto result = m_force->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Force::Request>(request));
+    auto response = result.get();
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
@@ -377,7 +389,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vecto
 yarp::dev::ReturnValue CartesianControlClientROS2::stopControl()
 {
     std_srvs::srv::Trigger::Request request;
-    auto result = m_client_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
+    auto result = m_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
 
     return response->success
@@ -404,38 +416,51 @@ yarp::dev::ReturnValue CartesianControlClientROS2::changeTool(const std::vector<
         poseMsg.orientation.w
     );
 
-    m_tool->publish(poseMsg);
+    rl_cartesian_control_msgs::srv::Tool::Request request;
+    request.x = poseMsg;
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    auto result = m_tool->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Tool::Request>(request));
+    auto response = result.get();
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
 yarp::dev::ReturnValue CartesianControlClientROS2::actuateTool(Actuator command)
 {
-    std_msgs::msg::Int32 actMsg;
+    std::int8_t cmd;
 
     switch (command)
     {
     case Actuator::NONE:
-        actMsg.data = GRIPPER_NONE;
+        cmd = rl_cartesian_control_msgs::srv::Act::Request::NONE;
         break;
     case Actuator::OPEN:
-        actMsg.data = GRIPPER_OPEN;
+        cmd = rl_cartesian_control_msgs::srv::Act::Request::OPEN;
         break;
     case Actuator::CLOSE:
-        actMsg.data = GRIPPER_CLOSE;
+        cmd = rl_cartesian_control_msgs::srv::Act::Request::CLOSE;
         break;
     case Actuator::STOP:
-        actMsg.data = GRIPPER_STOP;
+        cmd = rl_cartesian_control_msgs::srv::Act::Request::STOP;
         break;
     default:
         yCError(CCC) << "Invalid actuator command:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    m_act->publish(actMsg);
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    rl_cartesian_control_msgs::srv::Act::Request request;
+    request.cmd = cmd;
+
+    auto result = m_act->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Act::Request>(request));
+    auto response = result.get();
+
+    return response->success
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
@@ -504,7 +529,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, do
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
     request->parameters.push_back(param);
 
-    auto result = m_client_set_params->async_send_request(request);
+    auto result = m_set_params->async_send_request(request);
     auto response = result.get();
 
     return response->results.size() == 1 && response->results[0].successful
@@ -527,7 +552,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, do
     const auto & name = vocabToParamName.at(vocab);
     request->names.push_back(name);
 
-    auto result = m_client_get_params->async_send_request(request);
+    auto result = m_get_params->async_send_request(request);
     auto response = result.get();
 
     if (response->values.size() != 1)
@@ -559,7 +584,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const std::map<
         request->parameters.push_back(param);
     }
 
-    auto result = m_client_set_params->async_send_request(request);
+    auto result = m_set_params->async_send_request(request);
     auto response = result.get();
     const auto & results = response->results;
 
@@ -575,7 +600,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(std::map<Config
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names = m_supported_parameters;
 
-    auto result = m_client_get_params->async_send_request(request);
+    auto result = m_get_params->async_send_request(request);
     auto response = result.get();
 
     for (auto i = 0; i < response->values.size(); ++i)

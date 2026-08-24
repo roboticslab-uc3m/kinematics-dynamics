@@ -13,10 +13,10 @@
 
 #include <sensor_msgs/msg/joy.hpp>
 
-#include <std_msgs/msg/int32.hpp>
-
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2/LinearMath/Vector3.hpp>
+
+#include <rl_cartesian_control_msgs/srv/act.hpp>
 
 using SetParameters = rcl_interfaces::srv::SetParameters;
 using Parameter = rcl_interfaces::msg::Parameter;
@@ -46,7 +46,8 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_spnav_twist_;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr publisher_spnav_pose_;
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr publisher_spnav_wrench_;
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr publisher_spnav_gripper_;
+
+    rclcpp::Client<rl_cartesian_control_msgs::srv::Act>::SharedPtr client_spnav_gripper_;
 
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
     rclcpp::Client<SetParameters>::SharedPtr client_param_;
@@ -67,13 +68,11 @@ private:
     tf2::Quaternion current_orientation_ {0, 0, 0, 1};
 
     bool initial_pose_set_ {false};
-    bool virtual_pose_set {false};
+    bool virtual_pose_set_ {false};
     bool position_changed_ {false};
 
     double scale_ {0.0};
     std::string streaming_msg_;
 
-    /* Notice that order of gripper_state enum values matches the same order from CartesianControlServerROS2. If ever modified, please, update this. */
-    enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
-    gripper_state gripper_state_ {GRIPPER_NONE};
+    std::int8_t gripper_state_ {rl_cartesian_control_msgs::srv::Act::Request::NONE};
 };

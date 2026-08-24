@@ -7,7 +7,11 @@ find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  srv/Act.srv
+  srv/Force.srv
   srv/Inv.srv
+  srv/MoveV.srv
+  srv/Tool.srv
   action/Trajectory.action
   DEPENDENCIES std_msgs geometry_msgs
 )
