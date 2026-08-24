@@ -5,6 +5,8 @@
 #include <algorithm> // std::all_of
 #include <unordered_map>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
 
@@ -268,7 +270,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::sendTrajectoryGoal(ICartesian
         break;
     default:
         yCError(CCC) << "Invalid mode for trajectory goal";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     goalMsg.x = poseMsg;
