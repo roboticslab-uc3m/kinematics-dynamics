@@ -174,8 +174,8 @@ private:
     bool computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> & q, const StateWatcher & watcher);
-    void handleMovlVel(const std::vector<double> & q, const StateWatcher & watcher);
-    void handleMovlPosd(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleMovelVel(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleMovelPosd(const std::vector<double> & q, const StateWatcher & watcher);
     void handleMovv(const std::vector<double> & q, const StateWatcher & watcher);
     void handleGcmp(const std::vector<double> & q, const StateWatcher & watcher);
     void handleForc(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const StateWatcher & watcher);

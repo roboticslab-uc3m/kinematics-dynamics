@@ -53,7 +53,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getState(roboticslab::ICartesianCo
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double> &xd, std::vector<double> &q)
+yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -74,7 +74,7 @@ yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double> & xd)
 {
     std::vector<double> currentQ(numJoints), qd;
 
@@ -149,7 +149,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<double> & xd)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -226,9 +226,9 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (!setControlModes(m_usePosdMovl ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
+    if (!setControlModes(m_usePosdMovel ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
     {
-        yCError(BCC) << "Unable to set" << (m_usePosdMovl ? "position direct" : "velocity") << "control mode";
+        yCError(BCC) << "Unable to set" << (m_usePosdMovel ? "position direct" : "velocity") << "control mode";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -244,7 +244,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<double> &xdotd)
+yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<double> & xdotd)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -323,7 +323,7 @@ yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<double> &fd)
+yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<double> & fd)
 {
     yCWarning(BCC) << "FORCE mode still experimental";
 
@@ -377,7 +377,7 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::changeTool(const std::vector<double> &x)
+yarp::dev::ReturnValue BasicCartesianControl::changeTool(const std::vector<double> & x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
     {
@@ -404,7 +404,7 @@ yarp::dev::ReturnValue BasicCartesianControl::actuateTool(Actuator command)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::pose(const std::vector<double> &x)
+void BasicCartesianControl::pose(const std::vector<double> & x)
 {
     if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::POSE ||
@@ -450,7 +450,7 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::twist(const std::vector<double> &xdot)
+void BasicCartesianControl::twist(const std::vector<double> & xdot)
 {
     if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::TWIST ||
@@ -492,7 +492,7 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::wrench(const std::vector<double> &w)
+void BasicCartesianControl::wrench(const std::vector<double> & w)
 {
     if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::WRENCH ||

@@ -66,7 +66,7 @@ void BasicCartesianControl::run()
         handleMovj(q, watcher);
         break;
     case Mode::MOVEL:
-        m_usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
+        m_usePosdMovel ? handleMovelPosd(q, watcher) : handleMovelVel(q, watcher);
         break;
     case Mode::MOVEV:
         handleMovv(q, watcher);
@@ -84,7 +84,7 @@ void BasicCartesianControl::run()
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovj(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovj(const std::vector<double> & q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_POSITION))
     {
@@ -129,7 +129,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovelVel(const std::vector<double> & q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
@@ -208,7 +208,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovelPosd(const std::vector<double> & q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_POSITION_DIRECT))
     {
@@ -258,7 +258,7 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovv(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovv(const std::vector<double> & q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_VELOCITY))
     {
@@ -330,7 +330,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const StateWatcher & watcher)
+void BasicCartesianControl::handleGcmp(const std::vector<double> & q, const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
     {
@@ -356,7 +356,7 @@ void BasicCartesianControl::handleGcmp(const std::vector<double> &q, const State
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleForc(const std::vector<double> &q, const std::vector<double> &qdot, const std::vector<double> &qdotdot,
+void BasicCartesianControl::handleForc(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot,
                                        const StateWatcher & watcher)
 {
     if (!checkControlModes(VOCAB_CM_TORQUE))
