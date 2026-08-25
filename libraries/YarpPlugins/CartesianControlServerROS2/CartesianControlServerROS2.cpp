@@ -61,12 +61,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->pose(v);
         });
 
-    if (!m_pose)
-    {
-        yCError(CCS) << "Could not initialize the pose command subscription";
-        return false;
-    }
-
     m_twist = m_node->create_subscription<geometry_msgs::msg::Twist>(
         prefix + "/command/twist", 10,
         [this](geometry_msgs::msg::Twist::ConstSharedPtr msg)
@@ -75,12 +69,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             yCDebug(CCS) << "Received twist command:" << v;
             m_iCartesianControl->twist(v);
         });
-
-    if (!m_twist)
-    {
-        yCError(CCS) << "Could not initialize the twist command subscription";
-        return false;
-    }
 
     m_wrench = m_node->create_subscription<geometry_msgs::msg::Wrench>(
         prefix + "/command/wrench", 10,
@@ -91,12 +79,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->wrench(v);
         });
 
-    if (!m_wrench)
-    {
-        yCError(CCS) << "Could not initialize the wrench command subscription";
-        return false;
-    }
-
     m_move_v = m_node->create_service<rl_cartesian_control_msgs::srv::MoveV>(
         prefix + "/move_velocity",
         [this](const rl_cartesian_control_msgs::srv::MoveV::Request::SharedPtr request, rl_cartesian_control_msgs::srv::MoveV::Response::SharedPtr response)
@@ -106,12 +88,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             response->success = m_iCartesianControl->moveVelocity(v);
         });
 
-    if (!m_move_v)
-    {
-        yCError(CCS) << "Could not initialize the velocity move service";
-        return false;
-    }
-
     m_force = m_node->create_service<rl_cartesian_control_msgs::srv::Force>(
         prefix + "/force_control",
         [this](const rl_cartesian_control_msgs::srv::Force::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Force::Response::SharedPtr response)
@@ -120,12 +96,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             yCDebug(CCS) << "Received force control request:" << v;
             response->success = m_iCartesianControl->forceControl(v);
         });
-
-    if (!m_force)
-    {
-        yCError(CCS) << "Could not initialize the force control service";
-        return false;
-    }
 
     m_tool = m_node->create_service<rl_cartesian_control_msgs::srv::Tool>(
         prefix + "/change_tool",
@@ -153,12 +123,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             std::transform(q.begin(), q.end(), std::back_inserter(response->q.data), [](double val) { return val * KDL::deg2rad; });
         });
 
-    if (!m_inv)
-    {
-        yCError(CCS) << "Could not initialize the solve pose service";
-        return false;
-    }
-
     m_act = m_node->create_service<rl_cartesian_control_msgs::srv::Act>(
         prefix + "/actuate_tool",
         [this](const rl_cartesian_control_msgs::srv::Act::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Act::Response::SharedPtr response)
@@ -184,12 +148,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             response->success = ret;
         });
 
-    if (!m_act)
-    {
-        yCError(CCS) << "Could not initialize the actuate tool service";
-        return false;
-    }
-
     m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(
         prefix + "/gravity_compensation",
         [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
@@ -198,12 +156,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             response->success = m_iCartesianControl->gravityCompensation();
         });
 
-    if (!m_gcmp)
-    {
-        yCError(CCS) << "Could not initialize the gravity compensation service";
-        return false;
-    }
-
     m_stop = m_node->create_service<std_srvs::srv::Trigger>(
         prefix + "/stop_control",
         [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
@@ -211,12 +163,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             yCDebug(CCS) << "Received stop control request";
             response->success = m_iCartesianControl->stopControl();
         });
-
-    if (!m_stop)
-    {
-        yCError(CCS) << "Could not initialize the stop control service";
-        return false;
-    }
 
     m_trajectory = rclcpp_action::create_server<rl_cartesian_control_msgs::action::Trajectory>(
         m_node,
@@ -266,12 +212,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             yCDebug(CCS) << "Executing trajectory goal";
             m_goalHandle = goalHandle;
         });
-
-    if (!m_trajectory)
-    {
-        yCError(CCS) << "Could not initialize the trajectory action server";
-        return false;
-    }
 
     return true;
 }
@@ -379,12 +319,6 @@ bool CartesianControlServerROS2::configureRosParameters()
     }
 
     m_params = m_node->add_on_set_parameters_callback([this](const auto & parameters) { return params_cb(parameters); });
-
-    if (!m_params)
-    {
-        yCError(CCS) << "Could not register parameter callback";
-        return false;
-    }
 
     return true;
 }
