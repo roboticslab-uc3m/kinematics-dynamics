@@ -43,8 +43,8 @@ print('> setParameter')
 cc.setParameter(kd.ICartesianControl.Config_TRAJ_DURATION, 6.0)
 
 print('> getState')
-ret, x, state, ts = cc.getState()
-print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)), ts)
+ret, x, state, ts, duration, progress, success = cc.getState()
+print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)), ts, duration, progress, success)
 
 xd = [
     [0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0],
@@ -75,7 +75,7 @@ for i in range(len(xd)):
 
         while True:
             time.sleep(0.1)
-            ret, x, state, ts = cc.getState()
+            ret, x, state, ts, duration, progress, success = cc.getState()
 
             if state == kd.ICartesianControl.State_MOVEJ:
                 print('< [moving...]')

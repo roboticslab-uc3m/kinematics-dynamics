@@ -6,7 +6,6 @@
 #include <atomic>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <utility>
 #include <vector>
 
@@ -116,7 +115,7 @@ public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
     // RPC commands
-    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State & state, double & timestamp) override;
+    yarp::dev::ReturnValue getState(roboticslab::ICartesianControl::ControllerState & state) override;
     yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
@@ -163,8 +162,7 @@ private:
         mutable std::function<void()> handler;
     };
 
-    roboticslab::ICartesianControl::State getCurrentState() const;
-    void setCurrentState(roboticslab::ICartesianControl::State value);
+    double getTimestamp();
 
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
@@ -181,8 +179,8 @@ private:
     bool computeIsocronousSpeeds(const std::vector<double> & q, const std::vector<double> & qd, std::vector<double> & qdot);
 
     void handleMovj(const std::vector<double> & q, const StateWatcher & watcher);
-    void handleMovlVel(const std::vector<double> & q, const StateWatcher & watcher);
-    void handleMovlPosd(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleMovelVel(const std::vector<double> & q, const StateWatcher & watcher);
+    void handleMovelPosd(const std::vector<double> & q, const StateWatcher & watcher);
     void handleMovv(const std::vector<double> & q, const StateWatcher & watcher);
     void handleGcmp(const std::vector<double> & q, const StateWatcher & watcher);
     void handleForc(const std::vector<double> & q, const std::vector<double> & qdot, const std::vector<double> & qdotdot, const StateWatcher & watcher);
@@ -206,16 +204,11 @@ private:
 #else
     int numJoints {0};
 #endif
-    roboticslab::ICartesianControl::State currentState {roboticslab::ICartesianControl::State::NONE};
+    std::atomic<roboticslab::ICartesianControl::Mode> currentMode {roboticslab::ICartesianControl::Mode::NONE};
     roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::POSE};
-
-    mutable std::mutex stateMutex;
 
     /** MOVEJ store previous reference speeds */
     std::vector<double> vmoStored;
-
-    /** MOVEL keep track of movement start time to know at what time of trajectory movement we are */
-    double movementStartTime {0.0};
 
     /** MOVEL store Cartesian trajectory */
     std::vector<std::unique_ptr<KDL::Trajectory>> trajectories;
@@ -224,7 +217,11 @@ private:
     std::vector<double> fd;
 
     int encoderErrors {0};
+    double trajectoryStartTime {0.0};
+
+    std::atomic<double> maxTrajectoryDuration {0.0};
     std::atomic<bool> cmcSuccess {true};
+    std::atomic<float> cmcProgress {1.0f}; // only meaningful for MOVEJ and MOVEL
 
     std::vector<double> qMin, qMax;
     std::vector<double> qdotMin, qdotMax;

@@ -5,12 +5,12 @@
 #include <algorithm> // std::transform
 #include <functional> // std::negate
 #include <iterator> // std::back_inserter
+#include <limits>
 #include <vector>
 
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/SystemClock.h>
 #include <yarp/os/Vocab.h>
 
 #include <kdl/path_line.hpp>
@@ -24,19 +24,9 @@
 
 using namespace roboticslab;
 
-// -----------------------------------------------------------------------------
-
-namespace
-{
-    inline double getTimestamp(yarp::dev::IPreciselyTimed * iPreciselyTimed)
-    {
-        return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::SystemClock::nowSystem();
-    }
-}
-
 // ------------------- ICartesianControl Related ------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, State & state, double & timestamp)
+yarp::dev::ReturnValue BasicCartesianControl::getState(roboticslab::ICartesianControl::ControllerState & state)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -46,21 +36,24 @@ yarp::dev::ReturnValue BasicCartesianControl::getState(std::vector<double> & x, 
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    if (!iCartesianSolver->forwardKinematics(currentQ, x))
+    if (!iCartesianSolver->forwardKinematics(currentQ, state.x))
     {
         yCError(BCC) << "forwardKinematics() failed";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    state = getCurrentState();
-    timestamp = getTimestamp(iPreciselyTimed);
+    state.mode = currentMode;
+    state.timestamp = getTimestamp();
+    state.duration = maxTrajectoryDuration;
+    state.progress = cmcProgress;
+    state.success = cmcSuccess;
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double> &xd, std::vector<double> &q)
+yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -81,7 +74,7 @@ yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double> & xd)
 {
     std::vector<double> currentQ(numJoints), qd;
 
@@ -143,10 +136,12 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
             return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
+        trajectoryStartTime = getTimestamp();
         cmcSuccess = true;
+        cmcProgress = 0.0f;
         yCInfo(BCC) << "Performing MOVEJ";
 
-        setCurrentState(State::MOVEJ);
+        currentMode = Mode::MOVEJ;
     }
     else
     {
@@ -158,7 +153,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<double> &xd)
+yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<double> & xd)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -193,6 +188,8 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
 
     trajectories.clear();
 
+    maxTrajectoryDuration = std::numeric_limits<double>::max();
+
     //-- Create line trajectories (one per endpoint if robot is a kin-tree)
     for (unsigned int i = 0; i < xd.size() / 6; i++)
     {
@@ -217,6 +214,13 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
             profile->SetProfile(0.0, path->PathLength());
         }
 
+        auto duration = profile->Duration();
+
+        if (duration < maxTrajectoryDuration)
+        {
+            maxTrajectoryDuration = duration;
+        }
+
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
 
@@ -227,29 +231,30 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
     }
 
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
-    if (!setControlModes(m_usePosdMovl
+    if (!setControlModes(m_usePosdMovel
             ? yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION_DIRECT
             : yarp::dev::SelectableControlModeEnum::VOCAB_CM_VELOCITY))
 #else
-    if (!setControlModes(m_usePosdMovl ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
+    if (!setControlModes(m_usePosdMovel ? VOCAB_CM_POSITION_DIRECT : VOCAB_CM_VELOCITY))
 #endif
     {
-        yCError(BCC) << "Unable to set" << (m_usePosdMovl ? "position direct" : "velocity") << "control mode";
+        yCError(BCC) << "Unable to set" << (m_usePosdMovel ? "position direct" : "velocity") << "control mode";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    movementStartTime = yarp::os::SystemClock::nowSystem();
+    trajectoryStartTime = getTimestamp();
     cmcSuccess = true;
+    cmcProgress = 0.0f;
     yCInfo(BCC) << "Performing MOVEL";
 
-    setCurrentState(State::MOVEL);
+    currentMode = Mode::MOVEL;
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<double> &xdotd)
+yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<double> & xdotd)
 {
     std::vector<double> currentQ(numJoints);
 
@@ -269,6 +274,8 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
 
     trajectories.clear();
 
+    maxTrajectoryDuration = std::numeric_limits<double>::max();
+
     for (unsigned int i = 0; i < xdotd.size() / 6; i++)
     {
         std::vector<double> xd_base_tcp_sub(x_base_tcp.cbegin() + i * 6, x_base_tcp.cbegin() + (i + 1) * 6);
@@ -281,6 +288,13 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
         auto * path = new KDL::Path_Line(H_base_start, twist_in_base, interpolator, 1.0);
         auto * profile = new KDL::VelocityProfile_Rectangular(m_trajectoryRefSpeed);
         profile->SetProfileDuration(0.0, m_trajectoryRefSpeed, m_trajectoryRefSpeed / path->PathLength());
+
+        auto duration = profile->Duration();
+
+        if (duration < maxTrajectoryDuration)
+        {
+            maxTrajectoryDuration = duration;
+        }
 
         trajectories.emplace_back(new KDL::Trajectory_Segment(path, profile));
     }
@@ -295,11 +309,12 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    movementStartTime = yarp::os::SystemClock::nowSystem();
+    //-- Set state, enable CMC thread and wait for movement to be done
+    trajectoryStartTime = getTimestamp();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEV";
 
-    setCurrentState(State::MOVEV);
+    currentMode = Mode::MOVEV;
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
@@ -318,13 +333,14 @@ yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    setCurrentState(State::GCMP);
+    currentMode = Mode::GCMP;
+
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<double> &fd)
+yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<double> & fd)
 {
     yCWarning(BCC) << "FORCE mode still experimental";
 
@@ -350,7 +366,8 @@ yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<dou
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    setCurrentState(State::FORCE);
+    currentMode = Mode::FORCE;
+
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
@@ -360,7 +377,7 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 {
     yCDebug(BCC) << "Stopping control";
 
-    setCurrentState(State::NONE);
+    currentMode = Mode::NONE;
 
     // first switch control so that manipulators don't fall due to e.g. gravity
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
@@ -385,7 +402,7 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::changeTool(const std::vector<double> &x)
+yarp::dev::ReturnValue BasicCartesianControl::changeTool(const std::vector<double> & x)
 {
     if (!iCartesianSolver->restoreOriginalChain())
     {
@@ -412,9 +429,9 @@ yarp::dev::ReturnValue BasicCartesianControl::actuateTool(Actuator command)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::pose(const std::vector<double> &x)
+void BasicCartesianControl::pose(const std::vector<double> & x)
 {
-    if (getCurrentState() != State::NONE ||
+    if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::POSE ||
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
         !checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_POSITION_DIRECT))
@@ -462,9 +479,9 @@ void BasicCartesianControl::pose(const std::vector<double> &x)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::twist(const std::vector<double> &xdot)
+void BasicCartesianControl::twist(const std::vector<double> & xdot)
 {
-    if (getCurrentState() != State::NONE ||
+    if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::TWIST ||
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
         !checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_VELOCITY))
@@ -508,9 +525,9 @@ void BasicCartesianControl::twist(const std::vector<double> &xdot)
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::wrench(const std::vector<double> &w)
+void BasicCartesianControl::wrench(const std::vector<double> & w)
 {
-    if (getCurrentState() != State::NONE ||
+    if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::WRENCH ||
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
         !checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_TORQUE))
@@ -574,7 +591,7 @@ void BasicCartesianControl::wrench(const std::vector<double> &w)
 
 yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double value)
 {
-    if (getCurrentState() != State::NONE)
+    if (currentMode != Mode::NONE)
     {
         yCError(BCC) << "Unable to set config parameter while controlling";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
@@ -734,7 +751,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double 
 
 yarp::dev::ReturnValue BasicCartesianControl::setParameters(const std::map<Config, double> & params)
 {
-    if (getCurrentState() != State::NONE)
+    if (currentMode != Mode::NONE)
     {
         yCError(BCC) << "Unable to set config parameters while controlling";
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;

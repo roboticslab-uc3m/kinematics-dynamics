@@ -1,8 +1,8 @@
 if(NOT DEFINED ENABLE_CartesianControlServerROS2 OR ENABLE_CartesianControlServerROS2)
     if(NOT rclcpp_FOUND)
         message(WARNING "rclcpp package not found, disabling CartesianControlServerROS2")
-    elseif(NOT std_msgs_FOUND)
-        message(WARNING "std_msgs package not found, disabling CartesianControlServerROS2")
+    elseif(NOT rclcpp_action_FOUND)
+        message(WARNING "rclcpp_action package not found, disabling CartesianControlServerROS2")
     elseif(NOT std_srvs_FOUND)
         message(WARNING "std_srvs package not found, disabling CartesianControlServerROS2")
     elseif(NOT geometry_msgs_FOUND)
@@ -20,7 +20,7 @@ yarp_prepare_plugin(CartesianControlServerROS2
                     INCLUDE CartesianControlServerROS2.hpp
                     EXTRA_CONFIG WRAPPER=CartesianControlServerROS2
                     DEFAULT ON
-                    DEPENDS "rclcpp_FOUND;std_msgs_FOUND;std_srvs_FOUND;geometry_msgs_FOUND;rl_cartesian_control_msgs_FOUND OR TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp;orocos_kdl_FOUND"
+                    DEPENDS "rclcpp_FOUND;rclcpp_action_FOUND;std_srvs_FOUND;geometry_msgs_FOUND;rl_cartesian_control_msgs_FOUND OR TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp;orocos_kdl_FOUND"
                     GENERATE_PARSER)
 
 if(NOT SKIP_CartesianControlServerROS2)
@@ -40,7 +40,7 @@ if(NOT SKIP_CartesianControlServerROS2)
     target_link_libraries(CartesianControlServerROS2 YARP::YARP_os
                                                      YARP::YARP_dev
                                                      rclcpp::rclcpp
-                                                     std_msgs::std_msgs__rosidl_typesupport_cpp
+                                                     rclcpp_action::rclcpp_action
                                                      std_srvs::std_srvs__rosidl_typesupport_cpp
                                                      geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
                                                      rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp

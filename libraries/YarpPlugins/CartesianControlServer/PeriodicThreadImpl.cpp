@@ -8,27 +8,24 @@ using namespace roboticslab;
 
 void CartesianControlServer::run()
 {
-    if (iCartesianControl)
+    ICartesianControl::ControllerState state;
+
+    if (iCartesianControl && iCartesianControl->getState(state))
     {
-        std::vector<double> x;
-        ICartesianControl::State state;
-        double timestamp;
-
-        if (!iCartesianControl->getState(x, state, timestamp))
-        {
-            return;
-        }
-
         yarp::os::Bottle & out = fkOutPort.prepare();
         out.clear();
-        out.addVocab32(static_cast<yarp::conf::vocab32_t>(state));
+        out.addVocab32(static_cast<yarp::conf::vocab32_t>(state.mode));
 
-        for (auto i = 0; i < x.size(); i++)
+        for (auto i = 0; i < state.x.size(); i++)
         {
-            out.addFloat64(x[i]);
+            out.addFloat64(state.x[i]);
         }
 
-        out.addFloat64(timestamp);
+        out.addFloat64(state.timestamp);
+        out.addFloat64(state.duration);
+        out.addFloat32(state.progress);
+        out.addInt8(static_cast<std::int8_t>(state.success));
+
         fkOutPort.write();
     }
 }

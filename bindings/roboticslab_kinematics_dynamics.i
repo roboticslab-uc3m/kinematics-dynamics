@@ -24,11 +24,11 @@
 
 %template(DVector) std::vector<double>;
 
-%typemap(in, numinputs=0) roboticslab::ICartesianControl::State & (roboticslab::ICartesianControl::State temp) {
+%typemap(in, numinputs=0) roboticslab::ICartesianControl::Mode & (roboticslab::ICartesianControl::Mode temp) {
     $1 = &temp;
 }
 
-%typemap(argout) roboticslab::ICartesianControl::State & {
+%typemap(argout) roboticslab::ICartesianControl::Mode & {
     %append_output(PyLong_FromLong(static_cast<long>(*$1)));
 }
 

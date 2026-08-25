@@ -20,9 +20,9 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (m_enableFailFast && !m_usePosdMovl)
+    if (m_enableFailFast && !m_usePosdMovel)
     {
-        yCError(BCC) << "Cannot use --enableFailFast without --usePosdMovl";
+        yCError(BCC) << "Cannot use --enableFailFast without --usePosdMovel";
         return false;
     }
 

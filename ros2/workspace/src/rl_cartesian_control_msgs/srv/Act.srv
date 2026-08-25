@@ -1,0 +1,9 @@
+int8 NONE=0
+int8 CLOSE=1
+int8 OPEN=2
+int8 STOP=3
+int8 GENERIC=4
+
+int8 cmd
+---
+bool success

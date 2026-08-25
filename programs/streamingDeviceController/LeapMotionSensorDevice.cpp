@@ -75,14 +75,15 @@ bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
-    if (!iCartesianControl->getState(initialTcpOffset, state, timestamp))
+    if (!iCartesianControl->getState(state))
     {
         yCWarning(SDC) << "getState failed";
         return false;
     }
+
+    initialTcpOffset = state.x;
 
     yCInfo(SDC, "Initial TCP offset: %f %f %f [m], %f %f %f [rad]",
            initialTcpOffset[0], initialTcpOffset[1], initialTcpOffset[2],

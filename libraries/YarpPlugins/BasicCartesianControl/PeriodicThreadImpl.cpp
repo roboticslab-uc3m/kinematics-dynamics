@@ -5,7 +5,6 @@
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Time.h>
 
 #include "KdlVectorConverter.hpp"
 #include "LogComponent.hpp"
@@ -19,9 +18,9 @@ constexpr double ENCODER_THROTTLE = 1.0; // [s]
 
 void BasicCartesianControl::run()
 {
-    const auto currentState = getCurrentState();
+    const auto currentModeLocal = currentMode.load();
 
-    if (currentState == State::NONE)
+    if (currentModeLocal == Mode::NONE)
     {
         return;
     }
@@ -61,21 +60,21 @@ void BasicCartesianControl::run()
         return;
     }
 
-    switch (currentState)
+    switch (currentModeLocal)
     {
-    case State::MOVEJ:
+    case Mode::MOVEJ:
         handleMovj(q, watcher);
         break;
-    case State::MOVEL:
-        m_usePosdMovl ? handleMovlPosd(q, watcher) : handleMovlVel(q, watcher);
+    case Mode::MOVEL:
+        m_usePosdMovel ? handleMovelPosd(q, watcher) : handleMovelVel(q, watcher);
         break;
-    case State::MOVEV:
+    case Mode::MOVEV:
         handleMovv(q, watcher);
         break;
-    case State::GCMP:
+    case Mode::GCMP:
         handleGcmp(q, watcher);
         break;
-    case State::FORCE:
+    case Mode::FORCE:
         handleForc(q, qdot, qdotdot, watcher);
         break;
     default:
@@ -97,6 +96,9 @@ void BasicCartesianControl::handleMovj(const std::vector<double> & q, const Stat
         return;
     }
 
+    double movementTime = getTimestamp() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
+
     bool done;
 
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
@@ -113,7 +115,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> & q, const Stat
 
     if (done)
     {
-        setCurrentState(State::NONE);
+        currentMode = Mode::NONE;
 
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         if (!iPositionControl->setTrajSpeeds(vmoStored.data()))
@@ -131,7 +133,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> & q, const Stat
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovlVel(const std::vector<double> & q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovelVel(const std::vector<double> & q, const StateWatcher & watcher)
 {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_VELOCITY))
@@ -143,7 +145,8 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> & q, const S
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - movementStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> desiredX, desiredXdot;
 
@@ -152,6 +155,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> & q, const S
         if (movementTime > trajectory->Duration())
         {
             watcher.suppress();
+            cmcProgress = 1.0f;
             stopControl();
             return;
         }
@@ -212,7 +216,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> & q, const S
 
 // -----------------------------------------------------------------------------
 
-void BasicCartesianControl::handleMovlPosd(const std::vector<double> & q, const StateWatcher & watcher)
+void BasicCartesianControl::handleMovelPosd(const std::vector<double> & q, const StateWatcher & watcher)
 {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     if (!checkControlModes(yarp::dev::ControlModeEnum::VOCAB_CM_POSITION_DIRECT))
@@ -224,7 +228,8 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> & q, const 
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - movementStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> desiredX;
 
@@ -233,6 +238,7 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> & q, const 
         if (movementTime > trajectory->Duration())
         {
             watcher.suppress();
+            cmcProgress = 1.0f;
             stopControl();
             return;
         }
@@ -276,7 +282,8 @@ void BasicCartesianControl::handleMovv(const std::vector<double> & q, const Stat
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - movementStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
+    cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> currentX;
 

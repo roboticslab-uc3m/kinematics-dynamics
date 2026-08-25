@@ -11,6 +11,7 @@
 #include <yarp/dev/WrapperSingle.h>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 
 #include <rcl_interfaces/msg/set_parameters_result.hpp>
 
@@ -19,12 +20,17 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
 
-#include <std_msgs/msg/int32.hpp>
 #include <std_srvs/srv/trigger.hpp>
 
 #include <kdl/frames.hpp>
 
+#include <rl_cartesian_control_msgs/srv/act.hpp>
+#include <rl_cartesian_control_msgs/srv/force.hpp>
 #include <rl_cartesian_control_msgs/srv/inv.hpp>
+#include <rl_cartesian_control_msgs/srv/move_v.hpp>
+#include <rl_cartesian_control_msgs/srv/tool.hpp>
+
+#include <rl_cartesian_control_msgs/action/trajectory.hpp>
 
 #include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
@@ -74,23 +80,21 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movej;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_movel;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_movev;
-    rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_force;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_tool;
-    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr m_act;
-
+    rclcpp::Service<rl_cartesian_control_msgs::srv::MoveV>::SharedPtr m_move_v;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::Force>::SharedPtr m_force;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::Tool>::SharedPtr m_tool;
     rclcpp::Service<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_inv;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::Act>::SharedPtr m_act;
+
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;
 
+    rclcpp_action::Server<rl_cartesian_control_msgs::action::Trajectory>::SharedPtr m_trajectory;
+    std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> m_goalHandle;
+
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_params;
 
-    rcl_interfaces::msg::SetParametersResult params_cb(const std::vector<rclcpp::Parameter> &parameters);
-
-    // Note that the order of gripper_state enum values must match the order from CCC and spacenav_device.
-    enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
+    rcl_interfaces::msg::SetParametersResult params_cb(const std::vector<rclcpp::Parameter> & parameters);
 };
 
 #endif // __CARTESIAN_CONTROL_SERVER_ROS2_HPP__

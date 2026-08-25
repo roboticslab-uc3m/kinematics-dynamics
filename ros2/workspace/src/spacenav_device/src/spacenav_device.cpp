@@ -102,7 +102,9 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
     publisher_spnav_twist_ = create_publisher<geometry_msgs::msg::Twist>(prefix + "/command/twist", 10);
     publisher_spnav_pose_ = create_publisher<geometry_msgs::msg::Pose>(prefix + "/command/pose", 10);
     publisher_spnav_wrench_ = create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10);
-    publisher_spnav_gripper_ = create_publisher<std_msgs::msg::Int32>(prefix + "/command/gripper", 10);
+
+    // Gripper client
+    client_spnav_gripper_ = create_client<rl_cartesian_control_msgs::srv::Act>(prefix + "/actuate_tool");
 
     // Parameters validation with exceptions to avoid runtime errors
     if (streaming_msg_ == "twist" && !set_preset_streaming_cmd("twist"))
@@ -135,48 +137,50 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
 
 void SpacenavSubscriber::spnav_callback(sensor_msgs::msg::Joy::ConstSharedPtr msg)
 {
+    using Act = rl_cartesian_control_msgs::srv::Act::Request;
+
     std::vector<float> a = msg->axes;
     std::vector<int> b = msg->buttons;
 
     if (b[0] == 1)
     {
-        if (gripper_state_ != GRIPPER_CLOSE)
+        if (gripper_state_ != Act::CLOSE)
         {
-            auto msg_gripper = std::make_shared<std_msgs::msg::Int32>();
-            msg_gripper->data = GRIPPER_CLOSE;
-            publisher_spnav_gripper_->publish(*msg_gripper);
+            Act request;
+            request.cmd = Act::CLOSE;
+            client_spnav_gripper_->async_send_request(std::make_shared<Act>(request));
         }
 
-        gripper_state_ = GRIPPER_CLOSE;
+        gripper_state_ = Act::CLOSE;
     }
     else if (b[1] == 1)
     {
-        if (gripper_state_ != GRIPPER_OPEN)
+        if (gripper_state_ != Act::OPEN)
         {
-            auto msg_gripper = std::make_shared<std_msgs::msg::Int32>();
-            msg_gripper->data = GRIPPER_OPEN;
-            publisher_spnav_gripper_->publish(*msg_gripper);
+            Act request;
+            request.cmd = Act::OPEN;
+            client_spnav_gripper_->async_send_request(std::make_shared<Act>(request));
         }
 
-        gripper_state_ = GRIPPER_OPEN;
+        gripper_state_ = Act::OPEN;
     }
-    else if (gripper_state_ != GRIPPER_NONE)
+    else if (gripper_state_ != Act::NONE)
     {
-        if (gripper_state_ != GRIPPER_STOP)
+        if (gripper_state_ != Act::STOP)
         {
-            gripper_state_ = GRIPPER_STOP;
-            auto msg_gripper = std::make_shared<std_msgs::msg::Int32>();
-            msg_gripper->data = GRIPPER_STOP;
-            publisher_spnav_gripper_->publish(*msg_gripper);
+            Act request;
+            request.cmd = Act::STOP;
+            client_spnav_gripper_->async_send_request(std::make_shared<Act>(request));
+            gripper_state_ = Act::STOP;
         }
         else
         {
-            gripper_state_ = GRIPPER_NONE;
+            gripper_state_ = Act::NONE;
         }
     }
     else
     {
-        gripper_state_ = GRIPPER_NONE;
+        gripper_state_ = Act::NONE;
     }
 
     for (int i = 0; i < 6; i++)
@@ -217,12 +221,12 @@ void SpacenavSubscriber::spnav_callback(sensor_msgs::msg::Joy::ConstSharedPtr ms
             return;
         }
         // Set initial position as a virtual point to avoid PID compensation
-        else if (initial_pose_set_ && !virtual_pose_set)
+        else if (initial_pose_set_ && !virtual_pose_set_)
         {
             current_orientation_ = initial_orientation_;
             current_position_ = initial_position_;
 
-            virtual_pose_set = true;
+            virtual_pose_set_ = true;
         }
 
         // Transform linear and angular velocities into space translations (de = v*dt)
@@ -381,7 +385,7 @@ rcl_interfaces::msg::SetParametersResult SpacenavSubscriber::parameter_callback(
 
                         // Reset initial pose
                         initial_pose_set_ = false;
-                        virtual_pose_set = false;
+                        virtual_pose_set_ = false;
                     }
                 }
                 else if (param.value_to_string() == "wrench")

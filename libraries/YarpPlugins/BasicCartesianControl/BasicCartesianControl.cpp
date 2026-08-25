@@ -10,7 +10,7 @@
 
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
-#include <yarp/os/SystemClock.h>
+#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include "KdlVectorConverter.hpp"
@@ -35,18 +35,9 @@ constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
-ICartesianControl::State BasicCartesianControl::getCurrentState() const
+double BasicCartesianControl::getTimestamp()
 {
-    std::lock_guard lock(stateMutex);
-    return currentState;
-}
-
-// -----------------------------------------------------------------------------
-
-void BasicCartesianControl::setCurrentState(State value)
-{
-    std::lock_guard lock(stateMutex);
-    currentState = value;
+    return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
 }
 
 // -----------------------------------------------------------------------------
@@ -263,7 +254,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     do
     {
-        yarp::os::SystemClock::delaySystem(0.1);
+        yarp::os::Time::delay(0.1);
 
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
         if (checkControlModes(static_cast<yarp::dev::ControlModeEnum>(mode)))
@@ -284,7 +275,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
 bool BasicCartesianControl::presetStreamingCommand(Streaming command)
 {
-    setCurrentState(State::NONE);
+    currentMode = Mode::NONE;
 
     switch (command)
     {
@@ -359,6 +350,8 @@ bool BasicCartesianControl::computeIsocronousSpeeds(const std::vector<double> & 
             yCInfo(BCC, "qdot[%d] = %f", joint, qdot[joint]);
         }
     }
+
+    maxTrajectoryDuration = maxTime;
 
     return maxTime != 0.0; // true: will move
 }

@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun May  3 12:50:24 2026
+// Generated on: Tue Aug 25 12:56:21 2026
 
 
 #include "BasicCartesianControl_ParamsParser.h"
@@ -34,7 +34,7 @@ std::vector<std::string> BasicCartesianControl_ParamsParser::getListOfParams() c
     params.push_back("trajectoryRefAccel");
     params.push_back("cmcPeriodMs");
     params.push_back("waitPeriodMs");
-    params.push_back("usePosdMovl");
+    params.push_back("usePosdMovel");
     params.push_back("enableFailFast");
     params.push_back("referenceFrame");
     params.push_back("robot");
@@ -75,9 +75,9 @@ bool BasicCartesianControl_ParamsParser::getParamValue(const std::string& paramN
         paramValue = std::to_string(m_waitPeriodMs);
         return true;
     }
-    if (paramName =="usePosdMovl")
+    if (paramName =="usePosdMovel")
     {
-        if (m_usePosdMovl==true) paramValue = "true";
+        if (m_usePosdMovel==true) paramValue = "true";
         else paramValue = "false";
         return true;
     }
@@ -213,18 +213,18 @@ bool      BasicCartesianControl_ParamsParser::parseParams(const yarp::os::Search
         prop_check.unput("waitPeriodMs");
     }
 
-    //Parser of parameter usePosdMovl
+    //Parser of parameter usePosdMovel
     {
-        if (config.check("usePosdMovl"))
+        if (config.check("usePosdMovel"))
         {
-            m_usePosdMovl = config.find("usePosdMovl").asBool();
-            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'usePosdMovl' using value:" << m_usePosdMovl;
+            m_usePosdMovel = config.find("usePosdMovel").asBool();
+            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'usePosdMovel' using value:" << m_usePosdMovel;
         }
         else
         {
-            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'usePosdMovl' using DEFAULT value:" << m_usePosdMovl;
+            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'usePosdMovel' using DEFAULT value:" << m_usePosdMovel;
         }
-        prop_check.unput("usePosdMovl");
+        prop_check.unput("usePosdMovel");
     }
 
     //Parser of parameter enableFailFast
@@ -325,14 +325,14 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("'trajectoryRefAccel': trajectory reference linear acceleration\n");
     doc = doc + std::string("'cmcPeriodMs': CMC rate\n");
     doc = doc + std::string("'waitPeriodMs': wait command period\n");
-    doc = doc + std::string("'usePosdMovl': execute MOVEL commands in POSD mode using IK\n");
-    doc = doc + std::string("'enableFailFast': enable fail-fast mode for MOVEL commands\n");
+    doc = doc + std::string("'usePosdMovel': execute MOVEL commands in POSD mode using IK\n");
+    doc = doc + std::string("'enableFailFast': enable fail-fast mode for MOVL commands\n");
     doc = doc + std::string("'referenceFrame': reference frame\n");
     doc = doc + std::string("'robot': robot device\n");
     doc = doc + std::string("'solver': cartesian solver device\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovl false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
+    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovel false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device BasicCartesianControl\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

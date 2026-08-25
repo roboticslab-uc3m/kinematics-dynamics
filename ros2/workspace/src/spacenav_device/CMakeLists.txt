@@ -16,19 +16,22 @@ include_directories(include)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 # avoid due to conflict with ROS-vendored orocos-kdl package
 # find_package(tf2_geometry_msgs REQUIRED)
 
+if(NOT TARGET rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp)
+  find_package(rl_cartesian_control_msgs REQUIRED)
+endif()
+
 add_executable(spacenav_device src/spacenav_device.cpp)
 
 target_link_libraries(spacenav_device PUBLIC rclcpp::rclcpp
-                                             std_msgs::std_msgs__rosidl_typesupport_cpp
                                              sensor_msgs::sensor_msgs__rosidl_typesupport_cpp
                                              geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
+                                             rl_cartesian_control_msgs::rl_cartesian_control_msgs__rosidl_typesupport_cpp
                                              tf2::tf2)
 
 install(TARGETS

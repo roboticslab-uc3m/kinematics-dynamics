@@ -303,17 +303,15 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        std::vector<double> x;
-        ICartesianControl::State state;
-        double timestamp;
+        ICartesianControl::ControllerState state;
 
-        if (enableImpedance && !iCartesianControl->getState(x, state, timestamp))
+        if (enableImpedance && !iCartesianControl->getState(state))
         {
             yCError(FTC) << "Failed to retrieve initial pose";
             return false;
         }
 
-        initialPose = KdlVectorConverter::vectorToFrame(x);
+        initialPose = KdlVectorConverter::vectorToFrame(state.x);
         previousPose = initialPose;
     }
     else if (dryRun)
@@ -346,17 +344,15 @@ bool FtCompensation::readSensor(KDL::Wrench & wrench) const
 
 bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 {
-    std::vector<double> currentX;
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
-    if (!iCartesianControl->getState(currentX, state, timestamp))
+    if (!iCartesianControl->getState(state))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;
     }
 
-    auto H_0_N = KdlVectorConverter::vectorToFrame(currentX);
+    auto H_0_N = KdlVectorConverter::vectorToFrame(state.x);
     auto toolWrench = H_0_N.M.Inverse() * toolWeight_0;
     auto toolWrench_N = toolWrench.RefPoint(-toolCoM_N);
 
@@ -366,17 +362,15 @@ bool FtCompensation::compensateTool(KDL::Wrench & wrench) const
 
 bool FtCompensation::applyImpedance(KDL::Wrench & wrench)
 {
-    std::vector<double> x;
-    ICartesianControl::State state;
-    double timestamp;
+    ICartesianControl::ControllerState state;
 
-    if (!iCartesianControl->getState(x, state, timestamp))
+    if (!iCartesianControl->getState(state))
     {
         yCWarning(FTC) << "Failed to retrieve current position";
         return false;
     }
 
-    KDL::Frame currentPose = KdlVectorConverter::vectorToFrame(x);
+    KDL::Frame currentPose = KdlVectorConverter::vectorToFrame(state.x);
     KDL::Twist displacement = KDL::diff(initialPose, currentPose);
     KDL::Twist twist = KDL::diff(previousPose, currentPose, yarp::os::PeriodicThread::getPeriod());
 

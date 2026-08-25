@@ -3,6 +3,7 @@
 #ifndef __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 #define __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__
 
+#include <atomic>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -10,8 +11,8 @@
 #include <yarp/dev/Drivers.h>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 
-#include <std_msgs/msg/int32.hpp>
 #include <std_srvs/srv/trigger.hpp>
 
 #include <geometry_msgs/msg/pose.hpp>
@@ -22,7 +23,13 @@
 #include <rcl_interfaces/srv/get_parameters.hpp>
 #include <rcl_interfaces/srv/set_parameters.hpp>
 
+#include <rl_cartesian_control_msgs/srv/move_v.hpp>
+#include <rl_cartesian_control_msgs/srv/force.hpp>
+#include <rl_cartesian_control_msgs/srv/tool.hpp>
 #include <rl_cartesian_control_msgs/srv/inv.hpp>
+#include <rl_cartesian_control_msgs/srv/act.hpp>
+
+#include <rl_cartesian_control_msgs/action/trajectory.hpp>
 
 #include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
@@ -47,7 +54,7 @@ public:
     // -- ICartesianControl declarations. Implementation in ICartesianControlImpl.cpp --
 
     // RPC commands
-    yarp::dev::ReturnValue getState(std::vector<double> & x, roboticslab::ICartesianControl::State & state, double & timestamp) override;
+    yarp::dev::ReturnValue getState(roboticslab::ICartesianControl::ControllerState & state) override;
     yarp::dev::ReturnValue solvePose(const std::vector<double> & xd, std::vector<double> & q) override;
     yarp::dev::ReturnValue moveJoint(const std::vector<double> & xd) override;
     yarp::dev::ReturnValue moveLinear(const std::vector<double> & xd) override;
@@ -76,6 +83,7 @@ public:
 private:
     bool configureRosHandlers();
     bool populateRosParameters();
+    yarp::dev::ReturnValue sendTrajectoryGoal(roboticslab::ICartesianControl::Mode mode, const std::vector<double> & xd);
 
     rclcpp::Node::SharedPtr m_node;
     roboticslab::ros2utils::Spinner::Ptr m_spinner;
@@ -84,28 +92,28 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movej;
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_movel;
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_movev;
-    rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr m_force;
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_tool;
-    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr m_act;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_state;
 
-    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_subscription_state;
+    rclcpp_action::Client<rl_cartesian_control_msgs::action::Trajectory>::SharedPtr m_trajectory;
 
-    rclcpp::Client<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_client_inv;
-    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_client_gcmp;
-    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_client_stop;
+    rclcpp::Client<rl_cartesian_control_msgs::srv::MoveV>::SharedPtr m_move_v;
+    rclcpp::Client<rl_cartesian_control_msgs::srv::Force>::SharedPtr m_force;
+    rclcpp::Client<rl_cartesian_control_msgs::srv::Tool>::SharedPtr m_tool;
+    rclcpp::Client<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_inv;
+    rclcpp::Client<rl_cartesian_control_msgs::srv::Act>::SharedPtr m_act;
 
-    rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr m_client_get_params;
-    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr m_client_set_params;
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_stop;
+
+    rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr m_get_params;
+    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr m_set_params;
 
     std::mutex m_mutex_state;
     geometry_msgs::msg::PoseStamped m_pose_last;
+    std::atomic<float> m_progress {1.0f};
+    std::atomic<bool> m_success {false};
 
     std::vector<std::string> m_supported_parameters;
-
-    enum gripper_state { GRIPPER_NONE, GRIPPER_OPEN, GRIPPER_CLOSE, GRIPPER_STOP };
 };
 
 #endif // __CARTESIAN_CONTROL_CLIENT_ROS2_HPP__

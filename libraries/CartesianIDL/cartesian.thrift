@@ -6,9 +6,9 @@ struct yReturnValue {
     yarp.includefile = "yarp/dev/ReturnValue.h"
 )
 
-enum CartesianControlState {
+enum CartesianControlMode {
 } (
-    yarp.name = "roboticslab::ICartesianControl::State"
+    yarp.name = "roboticslab::ICartesianControl::Mode"
     yarp.includefile = "ICartesianControl.h"
     yarp.enumbase = "int32_t"
 )
@@ -27,11 +27,16 @@ enum CartesianControlActuator {
     yarp.enumbase = "int32_t"
 )
 
+// Cannot wrap ICartesianControl::ControllerState because it is not a
+// yarp::os::Portable (not doable, must live in a header-only CMake target).
 struct return_get_state {
     1: yReturnValue ret;
     2: list<double> x;
-    3: CartesianControlState state;
+    3: CartesianControlMode mode;
     4: double timestamp;
+    5: double duration;
+    6: double progress;
+    7: bool success;
 }
 
 struct return_solve_pose {
