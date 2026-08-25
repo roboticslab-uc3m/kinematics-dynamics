@@ -5,7 +5,6 @@
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Time.h>
 
 #include "KdlVectorConverter.hpp"
 #include "LogComponent.hpp"
@@ -93,7 +92,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> &q, const State
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
     cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     bool done;
@@ -138,7 +137,7 @@ void BasicCartesianControl::handleMovlVel(const std::vector<double> &q, const St
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
     cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> desiredX, desiredXdot;
@@ -217,7 +216,7 @@ void BasicCartesianControl::handleMovlPosd(const std::vector<double> &q, const S
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
     cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> desiredX;
@@ -267,7 +266,7 @@ void BasicCartesianControl::handleMovv(const std::vector<double> &q, const State
         return;
     }
 
-    double movementTime = yarp::os::Time::now() - trajectoryStartTime;
+    double movementTime = getTimestamp() - trajectoryStartTime;
     cmcProgress = static_cast<float>(movementTime / maxTrajectoryDuration);
 
     std::vector<double> currentX;

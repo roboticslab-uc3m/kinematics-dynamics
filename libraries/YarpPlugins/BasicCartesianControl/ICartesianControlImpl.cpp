@@ -11,7 +11,6 @@
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/SystemClock.h>
 #include <yarp/os/Vocab.h>
 
 #include <kdl/path_line.hpp>
@@ -24,16 +23,6 @@
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
-
-// -----------------------------------------------------------------------------
-
-namespace
-{
-    inline double getTimestamp(yarp::dev::IPreciselyTimed * iPreciselyTimed)
-    {
-        return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::SystemClock::nowSystem();
-    }
-}
 
 // ------------------- ICartesianControl Related ------------------------------------
 
@@ -54,7 +43,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getState(roboticslab::ICartesianCo
     }
 
     state.mode = currentMode;
-    state.timestamp = getTimestamp(iPreciselyTimed);
+    state.timestamp = getTimestamp();
     state.duration = maxTrajectoryDuration;
     state.progress = cmcProgress;
     state.success = cmcSuccess;
@@ -143,6 +132,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
             return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
+        trajectoryStartTime = getTimestamp();
         cmcSuccess = true;
         cmcProgress = 0.0f;
         yCInfo(BCC) << "Performing MOVEJ";
@@ -242,7 +232,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    trajectoryStartTime = yarp::os::SystemClock::nowSystem();
+    trajectoryStartTime = getTimestamp();
     cmcSuccess = true;
     cmcProgress = 0.0f;
     yCInfo(BCC) << "Performing MOVEL";
@@ -307,7 +297,7 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
     }
 
     //-- Set state, enable CMC thread and wait for movement to be done
-    trajectoryStartTime = yarp::os::SystemClock::nowSystem();
+    trajectoryStartTime = getTimestamp();
     cmcSuccess = true;
     yCInfo(BCC) << "Performing MOVEV";
 

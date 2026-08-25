@@ -162,6 +162,8 @@ private:
         mutable std::function<void()> handler;
     };
 
+    double getTimestamp();
+
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
     bool checkJointVelocities(const std::vector<double> & qdot);

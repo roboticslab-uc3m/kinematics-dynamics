@@ -10,7 +10,7 @@
 
 #include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
-#include <yarp/os/SystemClock.h>
+#include <yarp/os/Time.h>
 #include <yarp/os/Vocab.h>
 
 #include "KdlVectorConverter.hpp"
@@ -32,6 +32,13 @@ namespace
 }
 
 constexpr double epsilon = 1e-5;
+
+// -----------------------------------------------------------------------------
+
+double BasicCartesianControl::getTimestamp()
+{
+    return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
+}
 
 // -----------------------------------------------------------------------------
 
@@ -244,7 +251,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
     do
     {
-        yarp::os::SystemClock::delaySystem(0.1);
+        yarp::os::Time::delay(0.1);
 
         if (checkControlModes(mode))
         {
