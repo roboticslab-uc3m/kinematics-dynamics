@@ -69,7 +69,6 @@ include(CMakeDependentOption)
 enable_testing()
 
 # Add main contents.
-add_subdirectory(ros2)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(tests)
