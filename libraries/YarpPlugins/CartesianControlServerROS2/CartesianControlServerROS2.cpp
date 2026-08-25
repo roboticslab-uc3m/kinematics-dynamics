@@ -149,7 +149,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
             std::vector<double> q;
             response->success = m_iCartesianControl->solvePose(pose_to_vector(&request->x), q);
             std::transform(q.begin(), q.end(), std::back_inserter(response->q.data), [](double val) { return val * KDL::deg2rad; });
-            response->q.data = q;
         });
 
     if (!m_inv)
