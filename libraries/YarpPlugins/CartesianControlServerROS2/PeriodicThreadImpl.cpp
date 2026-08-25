@@ -42,42 +42,28 @@ void CartesianControlServerROS2::run()
 
     m_state->publish(state_msg);
 
-    if (m_goalHandle)
+    if (m_goalHandle && m_goalHandle->is_executing()) // CCC will never cancel a goal
     {
         using Trajectory = rl_cartesian_control_msgs::action::Trajectory;
         using Mode = ICartesianControl::Mode;
 
-        if (m_goalHandle->is_executing())
+        if (m_goalHandle->get_goal()->type == Trajectory::Goal::JOINT && state.mode == Mode::MOVEJ ||
+            m_goalHandle->get_goal()->type == Trajectory::Goal::LINEAR && state.mode == Mode::MOVEL)
         {
-            if (m_goalHandle->get_goal()->type == Trajectory::Goal::JOINT && state.mode == Mode::MOVEJ ||
-                m_goalHandle->get_goal()->type == Trajectory::Goal::LINEAR && state.mode == Mode::MOVEL)
-            {
-                auto feedback_msg = std::make_shared<Trajectory::Feedback>();
-                feedback_msg->progress = state.progress;
-                m_goalHandle->publish_feedback(feedback_msg);
-            }
-            else
-            {
-                yCInfo(CCS) << "Trajectory execution finished, success:" << state.success;
-
-                auto result_msg = std::make_shared<Trajectory::Result>();
-                result_msg->success = state.success;
-                result_msg->duration = state.duration;
-                result_msg->progress = state.progress;
-
-                state.success ? m_goalHandle->succeed(result_msg) : m_goalHandle->abort(result_msg);
-            }
+            auto feedback_msg = std::make_shared<Trajectory::Feedback>();
+            feedback_msg->progress = state.progress;
+            m_goalHandle->publish_feedback(feedback_msg);
         }
-        else if (m_goalHandle->is_canceling())
+        else
         {
-            yCInfo(CCS) << "Trajectory execution canceled";
+            yCInfo(CCS) << "Trajectory execution finished, success:" << state.success;
 
             auto result_msg = std::make_shared<Trajectory::Result>();
-            result_msg->success = true; // not a failure, just a user-requested cancel
+            result_msg->success = state.success;
             result_msg->duration = state.duration;
             result_msg->progress = state.progress;
 
-            m_goalHandle->canceled(result_msg);
+            state.success ? m_goalHandle->succeed(result_msg) : m_goalHandle->abort(result_msg);
         }
     }
 }

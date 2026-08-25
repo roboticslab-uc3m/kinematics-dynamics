@@ -208,21 +208,6 @@ bool CartesianControlServerROS2::configureRosHandlers()
         {
             yCDebug(CCS) << "Received stop request";
             response->success = m_iCartesianControl->stopControl();
-
-            if (m_goalHandle && m_goalHandle->is_active())
-            {
-                yCDebug(CCS) << "Canceling active trajectory goal due to stop request";
-
-                ICartesianControl::ControllerState state;
-                m_iCartesianControl->getState(state);
-
-                auto result_msg = std::make_shared<rl_cartesian_control_msgs::action::Trajectory::Result>();
-                result_msg->success = true; // not a failure, just a user-requested stop
-                result_msg->duration = state.duration;
-                result_msg->progress = state.progress;
-
-                m_goalHandle->canceled(result_msg);
-            }
         });
 
     if (!m_stop)
