@@ -17,29 +17,29 @@ using namespace roboticslab;
 
 namespace
 {
-    inline std::vector<double> pose_to_vector(const geometry_msgs::msg::Pose * msg)
+    inline std::vector<double> pose_to_vector(const geometry_msgs::msg::Pose & msg)
     {
-        auto rot = KDL::Rotation::Quaternion(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w).GetRot();
+        auto rot = KDL::Rotation::Quaternion(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w).GetRot();
 
         return {
-            msg->position.x, msg->position.y, msg->position.z,
+            msg.position.x, msg.position.y, msg.position.z,
             rot.x(), rot.y(), rot.z()
         };
     }
 
-    inline std::vector<double> twist_to_vector(const geometry_msgs::msg::Twist * msg)
+    inline std::vector<double> twist_to_vector(const geometry_msgs::msg::Twist & msg)
     {
         return {
-            msg->linear.x, msg->linear.y, msg->linear.z,
-            msg->angular.x, msg->angular.y, msg->angular.z
+            msg.linear.x, msg.linear.y, msg.linear.z,
+            msg.angular.x, msg.angular.y, msg.angular.z
         };
     }
 
-    inline std::vector<double> wrench_to_vector(const geometry_msgs::msg::Wrench * msg)
+    inline std::vector<double> wrench_to_vector(const geometry_msgs::msg::Wrench & msg)
     {
         return {
-            msg->force.x, msg->force.y, msg->force.z,
-            msg->torque.x, msg->torque.y, msg->torque.z
+            msg.force.x, msg.force.y, msg.force.z,
+            msg.torque.x, msg.torque.y, msg.torque.z
         };
     }
 }
@@ -56,7 +56,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         prefix + "/command/pose", 10,
         [this](geometry_msgs::msg::Pose::ConstSharedPtr msg)
         {
-            const auto v = pose_to_vector(msg.get());
+            const auto v = pose_to_vector(*msg);
             yCDebug(CCS) << "Received pose command:" << v;
             m_iCartesianControl->pose(v);
         });
@@ -71,9 +71,9 @@ bool CartesianControlServerROS2::configureRosHandlers()
         prefix + "/command/twist", 10,
         [this](geometry_msgs::msg::Twist::ConstSharedPtr msg)
         {
-            const auto v = twist_to_vector(msg.get());
+            const auto v = twist_to_vector(*msg);
             yCDebug(CCS) << "Received twist command:" << v;
-            m_iCartesianControl->twist(twist_to_vector(msg.get()));
+            m_iCartesianControl->twist(v);
         });
 
     if (!m_twist)
@@ -86,7 +86,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
         prefix + "/command/wrench", 10,
         [this](geometry_msgs::msg::Wrench::ConstSharedPtr msg)
         {
-            const auto v = wrench_to_vector(msg.get());
+            const auto v = wrench_to_vector(*msg);
             yCDebug(CCS) << "Received wrench command:" << v;
             m_iCartesianControl->wrench(v);
         });
@@ -98,67 +98,69 @@ bool CartesianControlServerROS2::configureRosHandlers()
     }
 
     m_move_v = m_node->create_service<rl_cartesian_control_msgs::srv::MoveV>(
-        prefix + "/command/movev",
+        prefix + "/move_velocity",
         [this](const rl_cartesian_control_msgs::srv::MoveV::Request::SharedPtr request, rl_cartesian_control_msgs::srv::MoveV::Response::SharedPtr response)
         {
-            const auto v = twist_to_vector(&request->xdot);
-            yCDebug(CCS) << "Received movv command:" << v;
+            const auto v = twist_to_vector(request->xdot);
+            yCDebug(CCS) << "Received velocity move request:" << v;
             response->success = m_iCartesianControl->moveVelocity(v);
         });
 
     if (!m_move_v)
     {
-        yCError(CCS) << "Could not initialize the movv command subscription";
+        yCError(CCS) << "Could not initialize the velocity move service";
         return false;
     }
 
     m_force = m_node->create_service<rl_cartesian_control_msgs::srv::Force>(
-        prefix + "/command/force",
+        prefix + "/force_control",
         [this](const rl_cartesian_control_msgs::srv::Force::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Force::Response::SharedPtr response)
         {
-            const auto v = wrench_to_vector(&request->f);
-            yCDebug(CCS) << "Received force command:" << v;
+            const auto v = wrench_to_vector(request->f);
+            yCDebug(CCS) << "Received force control request:" << v;
             response->success = m_iCartesianControl->forceControl(v);
         });
 
     if (!m_force)
     {
-        yCError(CCS) << "Could not initialize the forc command subscription";
+        yCError(CCS) << "Could not initialize the force control service";
         return false;
     }
 
     m_tool = m_node->create_service<rl_cartesian_control_msgs::srv::Tool>(
-        prefix + "/command/tool",
+        prefix + "/change_tool",
         [this](const rl_cartesian_control_msgs::srv::Tool::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Tool::Response::SharedPtr response)
         {
-            const auto v = pose_to_vector(&request->x);
-            yCDebug(CCS) << "Received tool command:" << v;
+            const auto v = pose_to_vector(request->x);
+            yCDebug(CCS) << "Received change tool request:" << v;
             response->success = m_iCartesianControl->changeTool(v);
         });
 
     if (!m_tool)
     {
-        yCError(CCS) << "Could not initialize the tool command subscription";
+        yCError(CCS) << "Could not initialize the change tool service";
         return false;
     }
 
     m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(
-        prefix + "/inv",
+        prefix + "/solve_pose",
         [this](const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
         {
+            const auto v = pose_to_vector(request->x);
+            yCDebug(CCS) << "Received solve pose request:" << v;
             std::vector<double> q;
-            response->success = m_iCartesianControl->solvePose(pose_to_vector(&request->x), q);
+            response->success = m_iCartesianControl->solvePose(v, q);
             std::transform(q.begin(), q.end(), std::back_inserter(response->q.data), [](double val) { return val * KDL::deg2rad; });
         });
 
     if (!m_inv)
     {
-        yCError(CCS) << "Could not initialize the inv service";
+        yCError(CCS) << "Could not initialize the solve pose service";
         return false;
     }
 
     m_act = m_node->create_service<rl_cartesian_control_msgs::srv::Act>(
-        prefix + "/command/gripper",
+        prefix + "/actuate_tool",
         [this](const rl_cartesian_control_msgs::srv::Act::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Act::Response::SharedPtr response)
         {
             yarp::dev::ReturnValue ret;
@@ -166,15 +168,15 @@ bool CartesianControlServerROS2::configureRosHandlers()
             switch (request->cmd)
             {
             case rl_cartesian_control_msgs::srv::Act::Request::CLOSE:
-                yCDebug(CCS) << "Gripper close";
+                yCDebug(CCS) << "Received actuate tool (close) request";
                 ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
                 break;
             case rl_cartesian_control_msgs::srv::Act::Request::OPEN:
-                yCDebug(CCS) << "Gripper open";
+                yCDebug(CCS) << "Received actuate tool (open) request";
                 ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN);
                 break;
             case rl_cartesian_control_msgs::srv::Act::Request::STOP:
-                yCDebug(CCS) << "Gripper stop";
+                yCDebug(CCS) << "Received actuate tool (stop) request";
                 ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::STOP);
                 break;
             }
@@ -184,41 +186,41 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
     if (!m_act)
     {
-        yCError(CCS) << "Could not initialize the gripper command subscription";
+        yCError(CCS) << "Could not initialize the actuate tool service";
         return false;
     }
 
     m_gcmp = m_node->create_service<std_srvs::srv::Trigger>(
-        prefix + "/gcmp",
+        prefix + "/gravity_compensation",
         [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
         {
-            yCDebug(CCS) << "Received gcmp request";
+            yCDebug(CCS) << "Received gravity compensation request";
             response->success = m_iCartesianControl->gravityCompensation();
         });
 
     if (!m_gcmp)
     {
-        yCError(CCS) << "Could not initialize the gcmp service";
+        yCError(CCS) << "Could not initialize the gravity compensation service";
         return false;
     }
 
     m_stop = m_node->create_service<std_srvs::srv::Trigger>(
-        prefix + "/stop",
+        prefix + "/stop_control",
         [this](const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)
         {
-            yCDebug(CCS) << "Received stop request";
+            yCDebug(CCS) << "Received stop control request";
             response->success = m_iCartesianControl->stopControl();
         });
 
     if (!m_stop)
     {
-        yCError(CCS) << "Could not initialize the stop service";
+        yCError(CCS) << "Could not initialize the stop control service";
         return false;
     }
 
     m_trajectory = rclcpp_action::create_server<rl_cartesian_control_msgs::action::Trajectory>(
         m_node,
-        prefix + "/trajectory",
+        prefix + "/trajectory/pose",
         [this](const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const rl_cartesian_control_msgs::action::Trajectory::Goal> goal)
         {
             yCDebug(CCS) << "Received trajectory goal request";
@@ -247,7 +249,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
                 return rclcpp_action::GoalResponse::REJECT;
             }
 
-            return std::invoke(command, m_iCartesianControl, pose_to_vector(&goal->x))
+            return std::invoke(command, m_iCartesianControl, pose_to_vector(goal->x))
                 ? rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE
                 : rclcpp_action::GoalResponse::REJECT;
         },

@@ -104,7 +104,7 @@ SpacenavSubscriber::SpacenavSubscriber() : Node("spacenav_device")
     publisher_spnav_wrench_ = create_publisher<geometry_msgs::msg::Wrench>(prefix + "/command/wrench", 10);
 
     // Gripper client
-    client_spnav_gripper_ = create_client<rl_cartesian_control_msgs::srv::Act>(prefix + "/act");
+    client_spnav_gripper_ = create_client<rl_cartesian_control_msgs::srv::Act>(prefix + "/actuate_tool");
 
     // Parameters validation with exceptions to avoid runtime errors
     if (streaming_msg_ == "twist" && !set_preset_streaming_cmd("twist"))

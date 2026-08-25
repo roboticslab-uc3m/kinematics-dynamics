@@ -36,7 +36,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         return false;
     }
 
-    m_trajectory = rclcpp_action::create_client<rl_cartesian_control_msgs::action::Trajectory>(m_node, m_remote + "/trajectory");
+    m_trajectory = rclcpp_action::create_client<rl_cartesian_control_msgs::action::Trajectory>(m_node, m_remote + "/trajectory/pose");
 
     while (!m_trajectory->wait_for_action_server(TIMEOUT))
     {
@@ -49,7 +49,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Trajectory action server not available, waiting again...";
     }
 
-    m_move_v = m_node->create_client<rl_cartesian_control_msgs::srv::MoveV>(m_remote + "/move_v");
+    m_move_v = m_node->create_client<rl_cartesian_control_msgs::srv::MoveV>(m_remote + "/move_velocity");
 
     while (!m_move_v->wait_for_service(TIMEOUT))
     {
@@ -62,7 +62,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "MoveV service not available, waiting again...";
     }
 
-    m_force = m_node->create_client<rl_cartesian_control_msgs::srv::Force>(m_remote + "/force");
+    m_force = m_node->create_client<rl_cartesian_control_msgs::srv::Force>(m_remote + "/force_control");
 
     while (!m_force->wait_for_service(TIMEOUT))
     {
@@ -75,7 +75,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Force service not available, waiting again...";
     }
 
-    m_tool = m_node->create_client<rl_cartesian_control_msgs::srv::Tool>(m_remote + "/tool");
+    m_tool = m_node->create_client<rl_cartesian_control_msgs::srv::Tool>(m_remote + "/change_tool");
 
     while (!m_tool->wait_for_service(TIMEOUT))
     {
@@ -88,7 +88,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Tool service not available, waiting again...";
     }
 
-    m_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(m_remote + "/inv");
+    m_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(m_remote + "/solve_pose");
 
     while (!m_inv->wait_for_service(TIMEOUT))
     {
@@ -101,7 +101,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Inverse kinematics service not available, waiting again...";
     }
 
-    m_act = m_node->create_client<rl_cartesian_control_msgs::srv::Act>(m_remote + "/act");
+    m_act = m_node->create_client<rl_cartesian_control_msgs::srv::Act>(m_remote + "/actuate_tool");
 
     while (!m_act->wait_for_service(TIMEOUT))
     {
@@ -114,7 +114,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Actuate tool service not available, waiting again...";
     }
 
-    m_gcmp = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/gcmp");
+    m_gcmp = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/gravity_compensation");
 
     while (!m_gcmp->wait_for_service(TIMEOUT))
     {
@@ -127,7 +127,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
         yCInfo(CCC) << "Gravity compensation service not available, waiting again...";
     }
 
-    m_stop = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/stop");
+    m_stop = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/stop_control");
 
     while (!m_stop->wait_for_service(TIMEOUT))
     {
