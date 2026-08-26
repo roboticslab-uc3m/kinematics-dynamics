@@ -2,7 +2,7 @@
 
 #include "CartesianControlClientROS2.hpp"
 
-#include <algorithm> // std::all_of
+#include <algorithm> // std::all_of, std::find
 #include <unordered_map>
 
 #include <yarp/conf/version.h>
@@ -519,6 +519,12 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, do
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
+    if (std::find(m_supported_parameters.begin(), m_supported_parameters.end(), param.name) == m_supported_parameters.end())
+    {
+        yCError(CCC) << "Parameter not supported:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
+
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
     request->parameters.push_back(param);
 
@@ -534,8 +540,6 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, do
 
 yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, double * value)
 {
-    auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
-
     if (vocabToParamName.find(vocab) == vocabToParamName.end())
     {
         yCError(CCC) << "Invalid parameter vocab:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
@@ -543,6 +547,14 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, do
     }
 
     const auto & name = vocabToParamName.at(vocab);
+
+    if (std::find(m_supported_parameters.begin(), m_supported_parameters.end(), name) == m_supported_parameters.end())
+    {
+        yCError(CCC) << "Parameter not supported:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
+
+    auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names.push_back(name);
 
     auto result = m_get_params->async_send_request(request);
@@ -550,7 +562,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, do
 
     if (response->values.size() != 1)
     {
-        yCError(CCC) << "Unexpected number of parameter values received";
+        yCError(CCC) << "Unexpected number of parameter values received:" << response->values.size();
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -571,6 +583,12 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const std::map<
 
         if (!parameterFromVocab(vocab, value, param))
         {
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        }
+
+        if (std::find(m_supported_parameters.begin(), m_supported_parameters.end(), vocabToParamName.at(vocab)) == m_supported_parameters.end())
+        {
+            yCError(CCC) << "Parameter not supported:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
             return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
 
