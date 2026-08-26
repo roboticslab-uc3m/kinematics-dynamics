@@ -29,7 +29,7 @@
 #include <rl_cartesian_control_msgs/srv/inv.hpp>
 #include <rl_cartesian_control_msgs/srv/act.hpp>
 
-#include <rl_cartesian_control_msgs/action/trajectory.hpp>
+#include <rl_cartesian_control_msgs/action/pose_trajectory.hpp>
 
 #include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
@@ -94,7 +94,7 @@ private:
 
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_state;
 
-    rclcpp_action::Client<rl_cartesian_control_msgs::action::Trajectory>::SharedPtr m_trajectory;
+    rclcpp_action::Client<rl_cartesian_control_msgs::action::PoseTrajectory>::SharedPtr m_trajectory;
 
     rclcpp::Client<rl_cartesian_control_msgs::srv::MoveV>::SharedPtr m_move_v;
     rclcpp::Client<rl_cartesian_control_msgs::srv::Force>::SharedPtr m_force;

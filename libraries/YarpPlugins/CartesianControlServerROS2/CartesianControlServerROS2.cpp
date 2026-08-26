@@ -164,10 +164,10 @@ bool CartesianControlServerROS2::configureRosHandlers()
             response->success = m_iCartesianControl->stopControl();
         });
 
-    m_trajectory = rclcpp_action::create_server<rl_cartesian_control_msgs::action::Trajectory>(
+    m_trajectory = rclcpp_action::create_server<rl_cartesian_control_msgs::action::PoseTrajectory>(
         m_node,
         prefix + "/trajectory/pose",
-        [this](const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const rl_cartesian_control_msgs::action::Trajectory::Goal> goal)
+        [this](const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const rl_cartesian_control_msgs::action::PoseTrajectory::Goal> goal)
         {
             yCDebug(CCS) << "Received trajectory goal request";
 
@@ -182,11 +182,11 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
             switch (goal->type)
             {
-            case rl_cartesian_control_msgs::action::Trajectory::Goal::JOINT:
+            case rl_cartesian_control_msgs::action::PoseTrajectory::Goal::JOINT:
                 yCDebug(CCS) << "Trajectory type: JOINT";
                 command = &ICartesianControl::moveJoint;
                 break;
-            case rl_cartesian_control_msgs::action::Trajectory::Goal::LINEAR:
+            case rl_cartesian_control_msgs::action::PoseTrajectory::Goal::LINEAR:
                 yCDebug(CCS) << "Trajectory type: LINEAR";
                 command = &ICartesianControl::moveLinear;
                 break;
@@ -195,11 +195,11 @@ bool CartesianControlServerROS2::configureRosHandlers()
                 return rclcpp_action::GoalResponse::REJECT;
             }
 
-            return std::invoke(command, m_iCartesianControl, pose_to_vector(goal->x))
+            return std::invoke(command, m_iCartesianControl, pose_to_vector(goal->pose))
                 ? rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE
                 : rclcpp_action::GoalResponse::REJECT;
         },
-        [this](const std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> goalHandle)
+        [this](const std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::PoseTrajectory>> goalHandle)
         {
             yCDebug(CCS) << "Received trajectory cancel request";
 
@@ -207,7 +207,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
                 ? rclcpp_action::CancelResponse::ACCEPT
                 : rclcpp_action::CancelResponse::REJECT;
         },
-        [this](const std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> goalHandle)
+        [this](const std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::PoseTrajectory>> goalHandle)
         {
             yCDebug(CCS) << "Executing trajectory goal";
             m_goalHandle = goalHandle;

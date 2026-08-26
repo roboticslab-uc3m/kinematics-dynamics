@@ -44,7 +44,7 @@ void CartesianControlServerROS2::run()
 
     if (m_goalHandle && m_goalHandle->is_executing()) // CCC will never cancel a goal
     {
-        using Trajectory = rl_cartesian_control_msgs::action::Trajectory;
+        using Trajectory = rl_cartesian_control_msgs::action::PoseTrajectory;
         using Mode = ICartesianControl::Mode;
 
         if (m_goalHandle->get_goal()->type == Trajectory::Goal::JOINT && state.mode == Mode::MOVEJ ||

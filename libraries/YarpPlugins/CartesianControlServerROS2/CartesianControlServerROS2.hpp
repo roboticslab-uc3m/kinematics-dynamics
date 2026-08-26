@@ -30,7 +30,7 @@
 #include <rl_cartesian_control_msgs/srv/move_v.hpp>
 #include <rl_cartesian_control_msgs/srv/tool.hpp>
 
-#include <rl_cartesian_control_msgs/action/trajectory.hpp>
+#include <rl_cartesian_control_msgs/action/pose_trajectory.hpp>
 
 #include "Ros2Utils.hpp"
 #include "ICartesianControl.h"
@@ -89,8 +89,8 @@ private:
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;
 
-    rclcpp_action::Server<rl_cartesian_control_msgs::action::Trajectory>::SharedPtr m_trajectory;
-    std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::Trajectory>> m_goalHandle;
+    rclcpp_action::Server<rl_cartesian_control_msgs::action::PoseTrajectory>::SharedPtr m_trajectory;
+    std::shared_ptr<rclcpp_action::ServerGoalHandle<rl_cartesian_control_msgs::action::PoseTrajectory>> m_goalHandle;
 
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr m_params;
 

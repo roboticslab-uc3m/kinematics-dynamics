@@ -258,15 +258,15 @@ yarp::dev::ReturnValue CartesianControlClientROS2::sendTrajectoryGoal(ICartesian
         poseMsg.orientation.w
     );
 
-    auto goalMsg = rl_cartesian_control_msgs::action::Trajectory::Goal();
+    auto goalMsg = rl_cartesian_control_msgs::action::PoseTrajectory::Goal();
 
     switch (mode)
     {
     case ICartesianControl::Mode::MOVEJ:
-        goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::JOINT;
+        goalMsg.type = rl_cartesian_control_msgs::action::PoseTrajectory::Goal::JOINT;
         break;
     case ICartesianControl::Mode::MOVEL:
-        goalMsg.type = rl_cartesian_control_msgs::action::Trajectory::Goal::LINEAR;
+        goalMsg.type = rl_cartesian_control_msgs::action::PoseTrajectory::Goal::LINEAR;
         break;
     default:
         yCError(CCC) << "Invalid mode for trajectory goal";
@@ -277,9 +277,9 @@ yarp::dev::ReturnValue CartesianControlClientROS2::sendTrajectoryGoal(ICartesian
 #endif
     }
 
-    goalMsg.x = poseMsg;
+    goalMsg.pose = poseMsg;
 
-    auto goalOptions = rclcpp_action::Client<rl_cartesian_control_msgs::action::Trajectory>::SendGoalOptions();
+    auto goalOptions = rclcpp_action::Client<rl_cartesian_control_msgs::action::PoseTrajectory>::SendGoalOptions();
 
     goalOptions.goal_response_callback = [this](auto handle)
     {

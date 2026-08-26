@@ -41,7 +41,7 @@ bool CartesianControlClientROS2::configureRosHandlers()
     m_get_params = m_node->create_client<rcl_interfaces::srv::GetParameters>(m_remote + "/get_parameters");
     m_set_params = m_node->create_client<rcl_interfaces::srv::SetParameters>(m_remote + "/set_parameters");
 
-    m_trajectory = rclcpp_action::create_client<rl_cartesian_control_msgs::action::Trajectory>(m_node, m_remote + "/trajectory/pose");
+    m_trajectory = rclcpp_action::create_client<rl_cartesian_control_msgs::action::PoseTrajectory>(m_node, m_remote + "/trajectory/pose");
 
     return true;
 }
