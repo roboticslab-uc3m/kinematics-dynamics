@@ -235,7 +235,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<d
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    q = response->q.data;
+    q = response->q;
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 

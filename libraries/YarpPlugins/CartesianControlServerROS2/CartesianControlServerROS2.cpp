@@ -120,7 +120,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
             yCDebug(CCS) << "Received solve pose request:" << v;
             std::vector<double> q;
             response->success = m_iCartesianControl->solvePose(v, q);
-            std::transform(q.begin(), q.end(), std::back_inserter(response->q.data), [](double val) { return val * KDL::deg2rad; });
+            std::transform(q.begin(), q.end(), std::back_inserter(response->q), [](double val) { return val * KDL::deg2rad; });
         });
 
     m_act = m_node->create_service<rl_cartesian_control_msgs::srv::Act>(
