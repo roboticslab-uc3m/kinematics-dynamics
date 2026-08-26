@@ -52,7 +52,7 @@ bool WiimoteDevice::acquireInterfaces()
     return true;
 }
 
-bool WiimoteDevice::initialize(bool usingStreamingPreset)
+bool WiimoteDevice::initialize(const std::map<ICartesianControl::Config, double> & params)
 {
     if (usingPose && step <= 0.0)
     {
@@ -60,21 +60,28 @@ bool WiimoteDevice::initialize(bool usingStreamingPreset)
         return false;
     }
 
-    if (usingStreamingPreset)
+    if (params.find(ICartesianControl::Config::STREAMING_CMD) != params.end())
     {
         auto cmd = usingPose ? ICartesianControl::Streaming::POSE : ICartesianControl::Streaming::TWIST;
 
-        if (!iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(cmd)))
+        if (auto value = static_cast<double>(cmd);
+            params.at(ICartesianControl::Config::STREAMING_CMD) != value &&
+            !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, value))
         {
             yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
-    if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::TCP)))
+    if (params.find(ICartesianControl::Config::FRAME) != params.end())
     {
-        yCWarning(SDC) << "Unable to set TCP reference frame";
-        return false;
+        if (auto value = static_cast<double>(ICartesianSolver::Frame::TCP);
+            params.at(ICartesianControl::Config::FRAME) != value &&
+            !iCartesianControl->setParameter(ICartesianControl::Config::FRAME, value))
+        {
+            yCWarning(SDC) << "Unable to set TCP reference frame";
+            return false;
+        }
     }
 
     return true;

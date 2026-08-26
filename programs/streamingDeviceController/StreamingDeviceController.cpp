@@ -85,11 +85,9 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    bool usingStreamingPreset = params.find(ICartesianControl::Config::STREAMING_CMD) != params.end();
-
     streamingDevice->setCartesianControllerHandle(iCartesianControl);
 
-    if (!streamingDevice->initialize(usingStreamingPreset))
+    if (!streamingDevice->initialize(params))
     {
         yCError(SDC) << "Device initialization failed";
         return false;

@@ -1,6 +1,7 @@
 #ifndef __STREAMING_DEVICE_HPP__
 #define __STREAMING_DEVICE_HPP__
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -68,11 +69,10 @@ public:
      * @brief Perform any custom initialization needed.
      * This method is called after the successful creation of the device
      * and once all interface handles are acquired.
-     * @param usingStreamingPreset Whether the cartesian controller supports
-     * streaming command presets or not.
+     * @param params Configuration parameters for the cartesian controller.
      * @return true on success, false otherwise
      */
-    virtual bool initialize(bool usingStreamingPreset)
+    virtual bool initialize(const std::map<ICartesianControl::Config, double> & params)
     {
         return true;
     }

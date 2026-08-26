@@ -56,23 +56,30 @@ bool LeapMotionSensorDevice::acquireInterfaces()
     return ok;
 }
 
-bool LeapMotionSensorDevice::initialize(bool usingStreamingPreset)
+bool LeapMotionSensorDevice::initialize(const std::map<ICartesianControl::Config, double> & params)
 {
-    if (usingStreamingPreset)
+    if (params.find(ICartesianControl::Config::STREAMING_CMD) != params.end())
     {
         auto cmd = usingPose ? ICartesianControl::Streaming::POSE : ICartesianControl::Streaming::TWIST;
 
-        if (!iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(cmd)))
+        if (auto value = static_cast<double>(cmd);
+            params.at(ICartesianControl::Config::STREAMING_CMD) != value &&
+            !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, value))
         {
             yCWarning(SDC) << "Unable to preset streaming command";
             return false;
         }
     }
 
-    if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::BASE)))
+    if (params.find(ICartesianControl::Config::FRAME) != params.end())
     {
-        yCWarning(SDC) << "Unable to set inertial reference frame";
-        return false;
+        if (auto value = static_cast<double>(ICartesianSolver::Frame::BASE);
+            params.at(ICartesianControl::Config::FRAME) != value &&
+            !iCartesianControl->setParameter(ICartesianControl::Config::FRAME, value))
+        {
+            yCWarning(SDC) << "Unable to set inertial reference frame";
+            return false;
+        }
     }
 
     ICartesianControl::ControllerState state;

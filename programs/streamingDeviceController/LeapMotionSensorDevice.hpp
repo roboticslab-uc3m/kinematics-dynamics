@@ -26,7 +26,7 @@ public:
 
     bool acquireInterfaces() override;
 
-    bool initialize(bool usingStreamingPreset) override;
+    bool initialize(const std::map<ICartesianControl::Config, double> & params) override;
 
     bool acquireData() override;
 

@@ -21,7 +21,7 @@ public:
     WiimoteDevice(yarp::os::Searchable & config, bool usingPose);
 
     bool acquireInterfaces() override;
-    bool initialize(bool usingStreamingPreset) override;
+    bool initialize(const std::map<ICartesianControl::Config, double> & params) override;
     bool acquireData() override;
     bool transformData(double scaling) override;
     bool hasValidMovementData() const override;
