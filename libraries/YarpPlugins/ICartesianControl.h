@@ -107,7 +107,6 @@ public:
         TRAJ_REF_SPD = yarp::os::createVocab32('c','p','t','s'),  ///< Trajectory reference speed [m/s]
         TRAJ_REF_ACC = yarp::os::createVocab32('c','p','t','a'),  ///< Trajectory reference acceleration [m/s^2]
         CMC_PERIOD = yarp::os::createVocab32('c','p','c','p'),    ///< CMC period [ms]
-        WAIT_PERIOD = yarp::os::createVocab32('c','p','w','p'),   ///< Check period of 'wait' command [ms]
         FRAME = yarp::os::createVocab32('c','p','f'),             ///< Reference frame
         STREAMING_CMD = yarp::os::createVocab32('c','p','s','c')  ///< Preset streaming command
     };
@@ -553,8 +552,8 @@ constexpr auto VOCAB_CC_CONFIG_TRAJ_REF_ACC = static_cast<int>(roboticslab::ICar
 [[deprecated("use `ICartesianControl::Config::CMC_PERIOD` instead")]]
 constexpr auto VOCAB_CC_CONFIG_CMC_PERIOD = static_cast<int>(roboticslab::ICartesianControl::Config::CMC_PERIOD);
 
-[[deprecated("use `ICartesianControl::Config::WAIT_PERIOD` instead")]]
-constexpr auto VOCAB_CC_CONFIG_WAIT_PERIOD = static_cast<int>(roboticslab::ICartesianControl::Config::WAIT_PERIOD);
+[[deprecated("unused")]]
+constexpr auto VOCAB_CC_CONFIG_WAIT_PERIOD = 0;
 
 [[deprecated("use `ICartesianControl::Config::FRAME` instead")]]
 constexpr auto VOCAB_CC_CONFIG_FRAME = static_cast<int>(roboticslab::ICartesianControl::Config::FRAME);

@@ -24,7 +24,6 @@ namespace
         {ICartesianControl::Config::TRAJ_REF_SPD, "trajectory_reference_speed"},
         {ICartesianControl::Config::TRAJ_REF_ACC, "trajectory_reference_acceleration"},
         {ICartesianControl::Config::CMC_PERIOD, "cmc_period"},
-        {ICartesianControl::Config::WAIT_PERIOD, "wait_period"},
         {ICartesianControl::Config::FRAME, "frame"},
         {ICartesianControl::Config::STREAMING_CMD, "preset_streaming_cmd"}
     };
@@ -38,7 +37,6 @@ namespace
         case ICartesianControl::Config::TRAJ_REF_SPD:
         case ICartesianControl::Config::TRAJ_REF_ACC:
         case ICartesianControl::Config::CMC_PERIOD:
-        case ICartesianControl::Config::WAIT_PERIOD:
             param.value.type = rclcpp::ParameterType::PARAMETER_DOUBLE;
             param.value.double_value = value;
             break;
@@ -121,11 +119,6 @@ namespace
         else if (name == "cmc_period")
         {
             *vocab = ICartesianControl::Config::CMC_PERIOD;
-            *value = paramValue.double_value;
-        }
-        else if (name == "wait_period")
-        {
-            *vocab = ICartesianControl::Config::WAIT_PERIOD;
             *value = paramValue.double_value;
         }
         else if (name == "frame")

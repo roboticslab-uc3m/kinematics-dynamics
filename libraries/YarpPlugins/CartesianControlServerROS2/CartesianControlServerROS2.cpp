@@ -311,10 +311,6 @@ bool CartesianControlServerROS2::configureRosParameters()
             descriptor.description = "Cartesian controller period (seconds).";
             m_node->declare_parameter("cmc_period", value, descriptor);
             break;
-        case ICartesianControl::Config::WAIT_PERIOD:
-            descriptor.description = "Wait period for motion completion (seconds).";
-            m_node->declare_parameter("wait_period", value, descriptor);
-            break;
         }
     }
 
@@ -432,11 +428,6 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
         else if (name == "cmc_period")
         {
             vocab = ICartesianControl::Config::CMC_PERIOD;
-            value = param.as_double();
-        }
-        else if (name == "wait_period")
-        {
-            vocab = ICartesianControl::Config::WAIT_PERIOD;
             value = param.as_double();
         }
         else

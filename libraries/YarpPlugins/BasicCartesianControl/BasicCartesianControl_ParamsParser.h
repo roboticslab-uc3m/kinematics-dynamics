@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Tue Aug 25 12:56:21 2026
+// Generated on: Wed Aug 26 23:50:17 2026
 
 
 #ifndef BASICCARTESIANCONTROL_PARAMSPARSER_H
@@ -30,7 +30,6 @@
 * | -          | trajectoryRefSpeed | double | m/s   | 0.05                | 0        | trajectory reference linear speed            | -                                        |
 * | -          | trajectoryRefAccel | double | m/s^2 | 0.02                | 0        | trajectory reference linear acceleration     | -                                        |
 * | -          | cmcPeriodMs        | int    | ms    | 50                  | 0        | CMC rate                                     | -                                        |
-* | -          | waitPeriodMs       | int    | ms    | 30                  | 0        | wait command period                          | -                                        |
 * | -          | usePosdMovel       | bool   | -     | false               | 0        | execute MOVEL commands in POSD mode using IK | -                                        |
 * | -          | enableFailFast     | bool   | -     | false               | 0        | enable fail-fast mode for MOVL commands      | -                                        |
 * | -          | referenceFrame     | string | -     | base                | 0        | reference frame                              | base, tcp                                |
@@ -39,7 +38,7 @@
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovel false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver
+* yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --usePosdMovel false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver
 * \endcode
 *
 * \code{.unparsed}
@@ -72,7 +71,6 @@ public:
     const std::string m_trajectoryRefSpeed_defaultValue = {"0.05"};
     const std::string m_trajectoryRefAccel_defaultValue = {"0.02"};
     const std::string m_cmcPeriodMs_defaultValue = {"50"};
-    const std::string m_waitPeriodMs_defaultValue = {"30"};
     const std::string m_usePosdMovel_defaultValue = {"false"};
     const std::string m_enableFailFast_defaultValue = {"false"};
     const std::string m_referenceFrame_defaultValue = {"base"};
@@ -84,7 +82,6 @@ public:
     double m_trajectoryRefSpeed = {0.05};
     double m_trajectoryRefAccel = {0.02};
     int m_cmcPeriodMs = {50};
-    int m_waitPeriodMs = {30};
     bool m_usePosdMovel = {false};
     bool m_enableFailFast = {false};
     std::string m_referenceFrame = {"base"};

@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Tue Aug 25 12:56:21 2026
+// Generated on: Wed Aug 26 23:50:17 2026
 
 
 #include "BasicCartesianControl_ParamsParser.h"
@@ -33,7 +33,6 @@ std::vector<std::string> BasicCartesianControl_ParamsParser::getListOfParams() c
     params.push_back("trajectoryRefSpeed");
     params.push_back("trajectoryRefAccel");
     params.push_back("cmcPeriodMs");
-    params.push_back("waitPeriodMs");
     params.push_back("usePosdMovel");
     params.push_back("enableFailFast");
     params.push_back("referenceFrame");
@@ -68,11 +67,6 @@ bool BasicCartesianControl_ParamsParser::getParamValue(const std::string& paramN
     if (paramName =="cmcPeriodMs")
     {
         paramValue = std::to_string(m_cmcPeriodMs);
-        return true;
-    }
-    if (paramName =="waitPeriodMs")
-    {
-        paramValue = std::to_string(m_waitPeriodMs);
         return true;
     }
     if (paramName =="usePosdMovel")
@@ -199,20 +193,6 @@ bool      BasicCartesianControl_ParamsParser::parseParams(const yarp::os::Search
         prop_check.unput("cmcPeriodMs");
     }
 
-    //Parser of parameter waitPeriodMs
-    {
-        if (config.check("waitPeriodMs"))
-        {
-            m_waitPeriodMs = config.find("waitPeriodMs").asInt64();
-            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'waitPeriodMs' using value:" << m_waitPeriodMs;
-        }
-        else
-        {
-            yCInfo(BasicCartesianControlParamsCOMPONENT) << "Parameter 'waitPeriodMs' using DEFAULT value:" << m_waitPeriodMs;
-        }
-        prop_check.unput("waitPeriodMs");
-    }
-
     //Parser of parameter usePosdMovel
     {
         if (config.check("usePosdMovel"))
@@ -324,7 +304,6 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("'trajectoryRefSpeed': trajectory reference linear speed\n");
     doc = doc + std::string("'trajectoryRefAccel': trajectory reference linear acceleration\n");
     doc = doc + std::string("'cmcPeriodMs': CMC rate\n");
-    doc = doc + std::string("'waitPeriodMs': wait command period\n");
     doc = doc + std::string("'usePosdMovel': execute MOVEL commands in POSD mode using IK\n");
     doc = doc + std::string("'enableFailFast': enable fail-fast mode for MOVL commands\n");
     doc = doc + std::string("'referenceFrame': reference frame\n");
@@ -332,7 +311,7 @@ std::string      BasicCartesianControl_ParamsParser::getDocumentationOfDevicePar
     doc = doc + std::string("'solver': cartesian solver device\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --waitPeriodMs 30 --usePosdMovel false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
+    doc = doc + " yarpdev --device BasicCartesianControl --controllerGain 0.05 --trajectoryDuration 0.0 --trajectoryRefSpeed 0.05 --trajectoryRefAccel 0.02 --cmcPeriodMs 50 --usePosdMovel false --enableFailFast false --referenceFrame base --robot remote_controlboard --solver KdlSolver\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device BasicCartesianControl\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

@@ -78,12 +78,6 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         return false;
     }
 
-    if (m_waitPeriodMs <= 0)
-    {
-        yCError(BCC) << "Wait period must be positive";
-        return false;
-    }
-
     yarp::os::Property robotOptions;
     robotOptions.fromString(config.toString());
     robotOptions.put("device", m_robot);

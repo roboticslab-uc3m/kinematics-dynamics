@@ -5,7 +5,6 @@
 |       | trajectoryRefSpeed | double |  m/s  |        0.05         |    no    |      trajectory reference linear speed       |                                          |
 |       | trajectoryRefAccel | double | m/s^2 |        0.02         |    no    |   trajectory reference linear acceleration   |                                          |
 |       |    cmcPeriodMs     |  int   |   ms  |         50          |    no    |                   CMC rate                   |                                          |
-|       |    waitPeriodMs    |  int   |   ms  |         30          |    no    |             wait command period              |                                          |
 |       |    usePosdMovel    |  bool  |       |        false        |    no    | execute MOVEL commands in POSD mode using IK |                                          |
 |       |   enableFailFast   |  bool  |       |        false        |    no    |   enable fail-fast mode for MOVL commands    |                                          |
 |       |   referenceFrame   | string |       |        base         |    no    |               reference frame                |                base, tcp                 |

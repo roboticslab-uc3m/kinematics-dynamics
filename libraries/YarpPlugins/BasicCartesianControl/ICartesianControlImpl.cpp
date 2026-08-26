@@ -670,18 +670,6 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double 
         }
         m_cmcPeriodMs = value;
         break;
-    case Config::WAIT_PERIOD:
-        if (value <= 0.0)
-        {
-            yCError(BCC) << "Wait period cannot be negative nor zero";
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
-#else
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#endif
-        }
-        m_waitPeriodMs = value;
-        break;
     case Config::FRAME:
         if (value != static_cast<double>(ICartesianSolver::Frame::BASE) &&
             value != static_cast<double>(ICartesianSolver::Frame::TCP))
@@ -729,9 +717,6 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double 
     case Config::CMC_PERIOD:
         *value = m_cmcPeriodMs;
         break;
-    case Config::WAIT_PERIOD:
-        *value = m_waitPeriodMs;
-        break;
     case Config::FRAME:
         *value = static_cast<double>(referenceFrame);
         break;
@@ -777,7 +762,6 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameters(std::map<Config, dou
     params.emplace(Config::TRAJ_REF_SPD, m_trajectoryRefSpeed);
     params.emplace(Config::TRAJ_REF_ACC, m_trajectoryRefAccel);
     params.emplace(Config::CMC_PERIOD, m_cmcPeriodMs);
-    params.emplace(Config::WAIT_PERIOD, m_waitPeriodMs);
     params.emplace(Config::FRAME, static_cast<double>(referenceFrame));
     params.emplace(Config::STREAMING_CMD, static_cast<double>(streamingCommand));
     return yarp::dev::ReturnValue::return_code::return_value_ok;
