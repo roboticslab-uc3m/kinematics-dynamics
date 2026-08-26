@@ -257,22 +257,38 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        double frameDouble;
+        std::map<ICartesianControl::Config, double> params;
 
-        if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, &frameDouble))
+        if (!iCartesianControl->getParameters(params))
         {
-            yCError(KC) << "Could not retrieve current frame";
+            yCError(KC) << "Could not retrieve configuration parameters";
             return false;
         }
 
-        if (frameDouble != static_cast<double>(ICartesianSolver::Frame::BASE) &&
-            frameDouble != static_cast<double>(ICartesianSolver::Frame::TCP))
+        if (params.find(ICartesianControl::Config::FRAME) != params.end())
         {
-            yCError(KC) << "Unrecognized or unsupported frame";
-            return false;
-        }
+            double frameDouble;
 
-        cartFrame = static_cast<ICartesianSolver::Frame>(frameDouble);
+            if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, &frameDouble))
+            {
+                yCError(KC) << "Could not retrieve current frame";
+                return false;
+            }
+
+            if (frameDouble != static_cast<double>(ICartesianSolver::Frame::BASE) &&
+                frameDouble != static_cast<double>(ICartesianSolver::Frame::TCP))
+            {
+                yCError(KC) << "Unrecognized or unsupported frame";
+                return false;
+            }
+
+            cartFrame = static_cast<ICartesianSolver::Frame>(frameDouble);
+            supportsFrameToggle = true;
+        }
+        else
+        {
+            cartFrame = ICartesianSolver::Frame::BASE;
+        }
 
         angleRepr = rf.check("angleRepr", yarp::os::Value(DEFAULT_ANGLE_REPR), "angle representation").asString();
 
@@ -675,6 +691,11 @@ void KeyboardController::toggleJointMode()
 
 void KeyboardController::toggleReferenceFrame()
 {
+    if (!supportsFrameToggle)
+    {
+        return;
+    }
+
     if (!cartesianControlDevice.isValid())
     {
         yCWarning(KC) << "Unrecognized command (you chose not to launch cartesian controller client)";
@@ -891,8 +912,11 @@ void KeyboardController::printHelp()
         std::cout << " 'g'/'b' - rotate about y axis (+/-)" << std::endl;
         std::cout << " 'h'/'n' - rotate about z axis (+/-)" << std::endl;
 
-        std::cout << " 'm' - toggle reference frame (current: ";
-        std::cout << (cartFrame == ICartesianSolver::Frame::BASE ? "inertial" : "end effector") << ")" << std::endl;
+        if (supportsFrameToggle)
+        {
+            std::cout << " 'm' - toggle reference frame (current: ";
+            std::cout << (cartFrame == ICartesianSolver::Frame::BASE ? "inertial" : "end effector") << ")" << std::endl;
+        }
 
         std::cout << " 'k'/'l' - open/close gripper" << std::endl;
     }

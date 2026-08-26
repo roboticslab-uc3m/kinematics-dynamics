@@ -92,6 +92,7 @@ private:
     control_modes controlMode {NOT_CONTROLLING};
     joint_mode jointMode {VELOCITY};
 
+    bool supportsFrameToggle {false};
     bool usingThread {false};
     LinearTrajectoryThread * linTrajThread {nullptr};
 
