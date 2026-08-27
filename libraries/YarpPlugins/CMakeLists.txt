@@ -2,7 +2,8 @@
 add_library(KinematicsDynamicsInterfaces INTERFACE)
 
 # Configure usage requirements.
-target_link_libraries(KinematicsDynamicsInterfaces INTERFACE YARP::YARP_os)
+target_link_libraries(KinematicsDynamicsInterfaces INTERFACE YARP::YARP_os
+                                                             YARP::YARP_dev)
 
 target_include_directories(KinematicsDynamicsInterfaces INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                                                   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
