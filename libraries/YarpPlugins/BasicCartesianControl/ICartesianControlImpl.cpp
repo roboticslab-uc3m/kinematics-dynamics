@@ -659,7 +659,7 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double 
         m_trajectoryRefAccel = value;
         break;
     case Config::CMC_PERIOD:
-        if (!yarp::os::PeriodicThread::setPeriod(value * 0.001))
+        if (!yarp::os::PeriodicThread::setPeriod(value))
         {
             yCError(BCC) << "Cannot set new CMC period";
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
@@ -668,7 +668,7 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double 
             return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #endif
         }
-        m_cmcPeriodMs = value;
+        m_cmcPeriodMs = value * 1000.0;
         break;
     case Config::FRAME:
         if (value != static_cast<double>(ICartesianSolver::Frame::BASE) &&
@@ -715,7 +715,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double 
         *value = m_trajectoryRefAccel;
         break;
     case Config::CMC_PERIOD:
-        *value = m_cmcPeriodMs;
+        *value = m_cmcPeriodMs * 0.001;
         break;
     case Config::FRAME:
         *value = static_cast<double>(referenceFrame);
@@ -761,7 +761,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameters(std::map<Config, dou
     params.emplace(Config::TRAJ_DURATION, m_trajectoryDuration);
     params.emplace(Config::TRAJ_REF_SPD, m_trajectoryRefSpeed);
     params.emplace(Config::TRAJ_REF_ACC, m_trajectoryRefAccel);
-    params.emplace(Config::CMC_PERIOD, m_cmcPeriodMs);
+    params.emplace(Config::CMC_PERIOD, m_cmcPeriodMs * 0.001);
     params.emplace(Config::FRAME, static_cast<double>(referenceFrame));
     params.emplace(Config::STREAMING_CMD, static_cast<double>(streamingCommand));
     return yarp::dev::ReturnValue::return_code::return_value_ok;

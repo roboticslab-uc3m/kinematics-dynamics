@@ -106,7 +106,7 @@ public:
         TRAJ_DURATION = yarp::os::createVocab32('c','p','t','d'), ///< Trajectory duration [s]
         TRAJ_REF_SPD = yarp::os::createVocab32('c','p','t','s'),  ///< Trajectory reference speed [m/s]
         TRAJ_REF_ACC = yarp::os::createVocab32('c','p','t','a'),  ///< Trajectory reference acceleration [m/s^2]
-        CMC_PERIOD = yarp::os::createVocab32('c','p','c','p'),    ///< CMC period [ms]
+        CMC_PERIOD = yarp::os::createVocab32('c','p','c','p'),    ///< CMC period [s]
         FRAME = yarp::os::createVocab32('c','p','f'),             ///< Reference frame
         STREAMING_CMD = yarp::os::createVocab32('c','p','s','c')  ///< Preset streaming command
     };
