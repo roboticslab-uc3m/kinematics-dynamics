@@ -24,11 +24,11 @@
 
 #include <kdl/frames.hpp>
 
-#include <rl_cartesian_control_msgs/srv/act.hpp>
-#include <rl_cartesian_control_msgs/srv/force.hpp>
-#include <rl_cartesian_control_msgs/srv/inv.hpp>
-#include <rl_cartesian_control_msgs/srv/move_v.hpp>
-#include <rl_cartesian_control_msgs/srv/tool.hpp>
+#include <rl_cartesian_control_msgs/srv/actuate_tool.hpp>
+#include <rl_cartesian_control_msgs/srv/change_tool.hpp>
+#include <rl_cartesian_control_msgs/srv/force_control.hpp>
+#include <rl_cartesian_control_msgs/srv/move_velocity.hpp>
+#include <rl_cartesian_control_msgs/srv/solve_pose.hpp>
 
 #include <rl_cartesian_control_msgs/action/pose_trajectory.hpp>
 
@@ -80,11 +80,11 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_twist;
     rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr m_wrench;
 
-    rclcpp::Service<rl_cartesian_control_msgs::srv::MoveV>::SharedPtr m_move_v;
-    rclcpp::Service<rl_cartesian_control_msgs::srv::Force>::SharedPtr m_force;
-    rclcpp::Service<rl_cartesian_control_msgs::srv::Tool>::SharedPtr m_tool;
-    rclcpp::Service<rl_cartesian_control_msgs::srv::Inv>::SharedPtr m_inv;
-    rclcpp::Service<rl_cartesian_control_msgs::srv::Act>::SharedPtr m_act;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::MoveVelocity>::SharedPtr m_move_v;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::ForceControl>::SharedPtr m_force;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::ChangeTool>::SharedPtr m_tool;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::SolvePose>::SharedPtr m_inv;
+    rclcpp::Service<rl_cartesian_control_msgs::srv::ActuateTool>::SharedPtr m_act;
 
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_gcmp;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_stop;

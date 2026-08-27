@@ -30,11 +30,12 @@ bool CartesianControlClientROS2::configureRosHandlers()
     m_twist = m_node->create_publisher<geometry_msgs::msg::Twist>(m_remote + "/command/twist", 10);
     m_wrench = m_node->create_publisher<geometry_msgs::msg::Wrench>(m_remote + "/command/wrench", 10);
 
-    m_move_v = m_node->create_client<rl_cartesian_control_msgs::srv::MoveV>(m_remote + "/move_velocity");
-    m_force = m_node->create_client<rl_cartesian_control_msgs::srv::Force>(m_remote + "/force_control");
-    m_tool = m_node->create_client<rl_cartesian_control_msgs::srv::Tool>(m_remote + "/change_tool");
-    m_inv = m_node->create_client<rl_cartesian_control_msgs::srv::Inv>(m_remote + "/solve_pose");
-    m_act = m_node->create_client<rl_cartesian_control_msgs::srv::Act>(m_remote + "/actuate_tool");
+    m_move_v = m_node->create_client<rl_cartesian_control_msgs::srv::MoveVelocity>(m_remote + "/move_velocity");
+    m_force = m_node->create_client<rl_cartesian_control_msgs::srv::ForceControl>(m_remote + "/force_control");
+    m_tool = m_node->create_client<rl_cartesian_control_msgs::srv::ChangeTool>(m_remote + "/change_tool");
+    m_inv = m_node->create_client<rl_cartesian_control_msgs::srv::SolvePose>(m_remote + "/solve_pose");
+    m_act = m_node->create_client<rl_cartesian_control_msgs::srv::ActuateTool>(m_remote + "/actuate_tool");
+
     m_gcmp = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/gravity_compensation");
     m_stop = m_node->create_client<std_srvs::srv::Trigger>(m_remote + "/stop_control");
 

@@ -204,22 +204,22 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getState(ICartesianControl::C
 
 yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<double> & xd, std::vector<double> & q)
 {
-    rl_cartesian_control_msgs::srv::Inv::Request request;
-    request.x.position.x = xd[0];
-    request.x.position.y = xd[1];
-    request.x.position.z = xd[2];
+    rl_cartesian_control_msgs::srv::SolvePose::Request request;
+    request.pose.position.x = xd[0];
+    request.pose.position.y = xd[1];
+    request.pose.position.z = xd[2];
 
     KDL::Vector axis(xd[3], xd[4], xd[5]);
     double angle = axis.Norm();
 
     KDL::Rotation::Rot(axis, angle).GetQuaternion(
-        request.x.orientation.x,
-        request.x.orientation.y,
-        request.x.orientation.z,
-        request.x.orientation.w
+        request.pose.orientation.x,
+        request.pose.orientation.y,
+        request.pose.orientation.z,
+        request.pose.orientation.w
     );
 
-    auto result = m_inv->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Inv::Request>(request));
+    auto result = m_inv->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::SolvePose::Request>(request));
     auto response = result.get();
 
     if (!response->success)
@@ -228,7 +228,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<d
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    q = response->q;
+    q = response->position;
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
@@ -330,10 +330,10 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vecto
     twistMsg.angular.y = xdotd[4];
     twistMsg.angular.z = xdotd[5];
 
-    rl_cartesian_control_msgs::srv::MoveV::Request request;
-    request.xdot = twistMsg;
+    rl_cartesian_control_msgs::srv::MoveVelocity::Request request;
+    request.twist = twistMsg;
 
-    auto result = m_move_v->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::MoveV::Request>(request));
+    auto result = m_move_v->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::MoveVelocity::Request>(request));
     auto response = result.get();
 
     return response->success
@@ -366,10 +366,10 @@ yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vecto
     wrenchMsg.torque.y = fd[4];
     wrenchMsg.torque.z = fd[5];
 
-    rl_cartesian_control_msgs::srv::Force::Request request;
-    request.f = wrenchMsg;
+    rl_cartesian_control_msgs::srv::ForceControl::Request request;
+    request.wrench = wrenchMsg;
 
-    auto result = m_force->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Force::Request>(request));
+    auto result = m_force->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::ForceControl::Request>(request));
     auto response = result.get();
 
     return response->success
@@ -409,10 +409,10 @@ yarp::dev::ReturnValue CartesianControlClientROS2::changeTool(const std::vector<
         poseMsg.orientation.w
     );
 
-    rl_cartesian_control_msgs::srv::Tool::Request request;
-    request.x = poseMsg;
+    rl_cartesian_control_msgs::srv::ChangeTool::Request request;
+    request.pose = poseMsg;
 
-    auto result = m_tool->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Tool::Request>(request));
+    auto result = m_tool->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::ChangeTool::Request>(request));
     auto response = result.get();
 
     return response->success
@@ -429,26 +429,26 @@ yarp::dev::ReturnValue CartesianControlClientROS2::actuateTool(Actuator command)
     switch (command)
     {
     case Actuator::NONE:
-        cmd = rl_cartesian_control_msgs::srv::Act::Request::NONE;
+        cmd = rl_cartesian_control_msgs::srv::ActuateTool::Request::NONE;
         break;
     case Actuator::OPEN:
-        cmd = rl_cartesian_control_msgs::srv::Act::Request::OPEN;
+        cmd = rl_cartesian_control_msgs::srv::ActuateTool::Request::OPEN;
         break;
     case Actuator::CLOSE:
-        cmd = rl_cartesian_control_msgs::srv::Act::Request::CLOSE;
+        cmd = rl_cartesian_control_msgs::srv::ActuateTool::Request::CLOSE;
         break;
     case Actuator::STOP:
-        cmd = rl_cartesian_control_msgs::srv::Act::Request::STOP;
+        cmd = rl_cartesian_control_msgs::srv::ActuateTool::Request::STOP;
         break;
     default:
         yCError(CCC) << "Invalid actuator command:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
-    rl_cartesian_control_msgs::srv::Act::Request request;
-    request.cmd = cmd;
+    rl_cartesian_control_msgs::srv::ActuateTool::Request request;
+    request.command = cmd;
 
-    auto result = m_act->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::Act::Request>(request));
+    auto result = m_act->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::ActuateTool::Request>(request));
     auto response = result.get();
 
     return response->success

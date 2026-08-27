@@ -79,29 +79,29 @@ bool CartesianControlServerROS2::configureRosHandlers()
             m_iCartesianControl->wrench(v);
         });
 
-    m_move_v = m_node->create_service<rl_cartesian_control_msgs::srv::MoveV>(
+    m_move_v = m_node->create_service<rl_cartesian_control_msgs::srv::MoveVelocity>(
         prefix + "/move_velocity",
-        [this](const rl_cartesian_control_msgs::srv::MoveV::Request::SharedPtr request, rl_cartesian_control_msgs::srv::MoveV::Response::SharedPtr response)
+        [this](const rl_cartesian_control_msgs::srv::MoveVelocity::Request::SharedPtr request, rl_cartesian_control_msgs::srv::MoveVelocity::Response::SharedPtr response)
         {
-            const auto v = twist_to_vector(request->xdot);
+            const auto v = twist_to_vector(request->twist);
             yCDebug(CCS) << "Received velocity move request:" << v;
             response->success = m_iCartesianControl->moveVelocity(v);
         });
 
-    m_force = m_node->create_service<rl_cartesian_control_msgs::srv::Force>(
+    m_force = m_node->create_service<rl_cartesian_control_msgs::srv::ForceControl>(
         prefix + "/force_control",
-        [this](const rl_cartesian_control_msgs::srv::Force::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Force::Response::SharedPtr response)
+        [this](const rl_cartesian_control_msgs::srv::ForceControl::Request::SharedPtr request, rl_cartesian_control_msgs::srv::ForceControl::Response::SharedPtr response)
         {
-            const auto v = wrench_to_vector(request->f);
+            const auto v = wrench_to_vector(request->wrench);
             yCDebug(CCS) << "Received force control request:" << v;
             response->success = m_iCartesianControl->forceControl(v);
         });
 
-    m_tool = m_node->create_service<rl_cartesian_control_msgs::srv::Tool>(
+    m_tool = m_node->create_service<rl_cartesian_control_msgs::srv::ChangeTool>(
         prefix + "/change_tool",
-        [this](const rl_cartesian_control_msgs::srv::Tool::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Tool::Response::SharedPtr response)
+        [this](const rl_cartesian_control_msgs::srv::ChangeTool::Request::SharedPtr request, rl_cartesian_control_msgs::srv::ChangeTool::Response::SharedPtr response)
         {
-            const auto v = pose_to_vector(request->x);
+            const auto v = pose_to_vector(request->pose);
             yCDebug(CCS) << "Received change tool request:" << v;
             response->success = m_iCartesianControl->changeTool(v);
         });
@@ -112,34 +112,34 @@ bool CartesianControlServerROS2::configureRosHandlers()
         return false;
     }
 
-    m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::Inv>(
+    m_inv = m_node->create_service<rl_cartesian_control_msgs::srv::SolvePose>(
         prefix + "/solve_pose",
-        [this](const rl_cartesian_control_msgs::srv::Inv::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Inv::Response::SharedPtr response)
+        [this](const rl_cartesian_control_msgs::srv::SolvePose::Request::SharedPtr request, rl_cartesian_control_msgs::srv::SolvePose::Response::SharedPtr response)
         {
-            const auto v = pose_to_vector(request->x);
+            const auto v = pose_to_vector(request->pose);
             yCDebug(CCS) << "Received solve pose request:" << v;
             std::vector<double> q;
             response->success = m_iCartesianControl->solvePose(v, q);
-            std::transform(q.begin(), q.end(), std::back_inserter(response->q), [](double val) { return val * KDL::deg2rad; });
+            std::transform(q.begin(), q.end(), std::back_inserter(response->position), [](double val) { return val * KDL::deg2rad; });
         });
 
-    m_act = m_node->create_service<rl_cartesian_control_msgs::srv::Act>(
+    m_act = m_node->create_service<rl_cartesian_control_msgs::srv::ActuateTool>(
         prefix + "/actuate_tool",
-        [this](const rl_cartesian_control_msgs::srv::Act::Request::SharedPtr request, rl_cartesian_control_msgs::srv::Act::Response::SharedPtr response)
+        [this](const rl_cartesian_control_msgs::srv::ActuateTool::Request::SharedPtr request, rl_cartesian_control_msgs::srv::ActuateTool::Response::SharedPtr response)
         {
             yarp::dev::ReturnValue ret;
 
-            switch (request->cmd)
+            switch (request->command)
             {
-            case rl_cartesian_control_msgs::srv::Act::Request::CLOSE:
+            case rl_cartesian_control_msgs::srv::ActuateTool::Request::CLOSE:
                 yCDebug(CCS) << "Received actuate tool (close) request";
                 ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::CLOSE);
                 break;
-            case rl_cartesian_control_msgs::srv::Act::Request::OPEN:
+            case rl_cartesian_control_msgs::srv::ActuateTool::Request::OPEN:
                 yCDebug(CCS) << "Received actuate tool (open) request";
                 ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::OPEN);
                 break;
-            case rl_cartesian_control_msgs::srv::Act::Request::STOP:
+            case rl_cartesian_control_msgs::srv::ActuateTool::Request::STOP:
                 yCDebug(CCS) << "Received actuate tool (stop) request";
                 ret = m_iCartesianControl->actuateTool(ICartesianControl::Actuator::STOP);
                 break;
