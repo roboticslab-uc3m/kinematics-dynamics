@@ -26,7 +26,7 @@ public:
 
     bool acquireInterfaces() override;
 
-    bool initialize(const std::map<ICartesianControl::Config, double> & params) override;
+    bool initialize(const ICartesianControl::config_map_t & params) override;
 
     bool acquireData() override;
 

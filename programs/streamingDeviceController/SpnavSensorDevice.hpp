@@ -20,7 +20,7 @@ public:
     SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain = 0.0);
 
     bool acquireInterfaces() override;
-    bool initialize(const std::map<ICartesianControl::Config, double> & params) override;
+    bool initialize(const ICartesianControl::config_map_t & params) override;
     bool acquireData() override;
     bool transformData(double scaling) override;
     ICartesianControl::Actuator getActuatorState() override;

@@ -28,7 +28,7 @@ namespace
         {ICartesianControl::Config::STREAMING_CMD, "preset_streaming_cmd"}
     };
 
-    bool parameterFromVocab(ICartesianControl::Config vocab, double value, rcl_interfaces::msg::Parameter & param)
+    bool parameterFromVocab(ICartesianControl::Config vocab, ICartesianControl::config_value_t value, rcl_interfaces::msg::Parameter & param)
     {
         switch (vocab)
         {
@@ -37,13 +37,26 @@ namespace
         case ICartesianControl::Config::TRAJ_REF_SPD:
         case ICartesianControl::Config::TRAJ_REF_ACC:
         case ICartesianControl::Config::CMC_PERIOD:
+            if (!std::holds_alternative<double>(value))
+            {
+                yCError(CCC) << "setParameter: expected double value for vocab"
+                             << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+                return false;
+            }
             param.value.type = rclcpp::ParameterType::PARAMETER_DOUBLE;
-            param.value.double_value = value;
+            param.value.double_value = std::get<double>(value);
             break;
         case ICartesianControl::Config::FRAME:
+            if (!std::holds_alternative<yarp::conf::vocab32_t>(value))
+            {
+                yCError(CCC) << "setParameter: expected vocab32_t value for vocab"
+                             << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+                return false;
+            }
+
             param.value.type = rclcpp::ParameterType::PARAMETER_STRING;
 
-            switch (static_cast<ICartesianSolver::Frame>(value))
+            switch (static_cast<ICartesianSolver::Frame>(std::get<yarp::conf::vocab32_t>(value)))
             {
             case ICartesianSolver::Frame::BASE:
                 param.value.string_value = "base";
@@ -58,9 +71,16 @@ namespace
 
             break;
         case ICartesianControl::Config::STREAMING_CMD:
+            if (!std::holds_alternative<yarp::conf::vocab32_t>(value))
+            {
+                yCError(CCC) << "setParameter: expected vocab32_t value for vocab"
+                             << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+                return false;
+            }
+
             param.value.type = rclcpp::ParameterType::PARAMETER_STRING;
 
-            switch (static_cast<ICartesianControl::Streaming>(value))
+            switch (static_cast<ICartesianControl::Streaming>(std::get<yarp::conf::vocab32_t>(value)))
             {
             case ICartesianControl::Streaming::POSE:
                 param.value.string_value = "pose";
@@ -72,7 +92,7 @@ namespace
                 param.value.string_value = "wrench";
                 break;
             default:
-                if (value == static_cast<double>(ICartesianControl::Vocabs::NOT_SET))
+                if (std::get<yarp::conf::vocab32_t>(value) == static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET))
                 {
                     param.value.string_value = "none";
                 }
@@ -94,7 +114,8 @@ namespace
         return true;
     }
 
-    bool vocabFromParameter(const std::string & name, const rcl_interfaces::msg::ParameterValue & paramValue, ICartesianControl::Config * vocab, double * value)
+    bool vocabFromParameter(const std::string & name, const rcl_interfaces::msg::ParameterValue & paramValue,
+                            ICartesianControl::Config * vocab, ICartesianControl::config_value_t * value)
     {
         if (name == "gain")
         {
@@ -127,11 +148,11 @@ namespace
 
             if (paramValue.string_value == "base")
             {
-                *value = static_cast<double>(ICartesianSolver::Frame::BASE);
+                *value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE);
             }
             else if (paramValue.string_value == "tcp")
             {
-                *value = static_cast<double>(ICartesianSolver::Frame::TCP);
+                *value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP);
             }
             else
             {
@@ -145,19 +166,19 @@ namespace
 
             if (paramValue.string_value == "pose")
             {
-                *value = static_cast<double>(ICartesianControl::Streaming::POSE);
+                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::POSE);
             }
             else if (paramValue.string_value == "twist")
             {
-                *value = static_cast<double>(ICartesianControl::Streaming::TWIST);
+                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::TWIST);
             }
             else if (paramValue.string_value == "wrench")
             {
-                *value = static_cast<double>(ICartesianControl::Streaming::WRENCH);
+                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::WRENCH);
             }
             else if (paramValue.string_value == "none")
             {
-                *value = static_cast<double>(ICartesianControl::Vocabs::NOT_SET);
+                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET);
             }
             else
             {
@@ -510,7 +531,7 @@ void CartesianControlClientROS2::wrench(const std::vector<double> & w)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, double value)
+yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, config_value_t value)
 {
     rcl_interfaces::msg::Parameter param;
 
@@ -538,7 +559,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, do
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, double * value)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, config_value_t * value)
 {
     if (vocabToParamName.find(vocab) == vocabToParamName.end())
     {
@@ -573,7 +594,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, do
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const config_map_t & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
 
@@ -606,7 +627,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const std::map<
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(config_map_t & params)
 {
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names = m_supported_parameters;
@@ -620,7 +641,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(std::map<Config
         const auto & responseValue = response->values[i];
 
         Config vocab;
-        double value;
+        config_value_t value;
 
         if (vocabFromParameter(name, responseValue, &vocab, &value))
         {

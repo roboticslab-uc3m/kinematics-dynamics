@@ -589,107 +589,117 @@ void BasicCartesianControl::wrench(const std::vector<double> & w)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double value)
+yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, config_value_t value)
 {
-    if (currentMode != Mode::NONE)
+    try
     {
-        yCError(BCC) << "Unable to set config parameter while controlling";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-    }
+        if (currentMode != Mode::NONE)
+        {
+            yCError(BCC) << "Unable to set config parameter while controlling";
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        }
 
-    switch (vocab)
+        switch (vocab)
+        {
+        case Config::GAIN:
+            if (std::get<double>(value) < 0.0)
+            {
+                yCError(BCC) << "Controller gain cannot be negative";
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+                return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
+            }
+            m_controllerGain = std::get<double>(value);
+            break;
+        case Config::TRAJ_DURATION:
+            if (std::get<double>(value) < 0.0)
+            {
+                yCError(BCC) << "Trajectory duration cannot be negative";
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+                return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
+            }
+            else if ((m_trajectoryDuration == 0.0) ^ (std::get<double>(value) == 0.0))
+            {
+                if (std::get<double>(value) == 0.0)
+                {
+                    yCInfo(BCC) << "Duration set to zero, therefore trajectory execution time will depend on reference speed and acceleration";
+                }
+                else
+                {
+                    yCInfo(BCC) << "Trajectory duration forced to" << std::get<double>(value) << "seconds regardless of velocity profile";
+                }
+            }
+            m_trajectoryDuration = std::get<double>(value);
+            break;
+        case Config::TRAJ_REF_SPD:
+            if (std::get<double>(value) <= 0.0)
+            {
+                yCError(BCC) << "Trajectory reference speed cannot be negative nor zero";
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+                return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
+            }
+            m_trajectoryRefSpeed = std::get<double>(value);
+            break;
+        case Config::TRAJ_REF_ACC:
+            if (std::get<double>(value) <= 0.0)
+            {
+                yCError(BCC) << "Trajectory reference acceleration cannot be negative nor zero";
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+                return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
+            }
+            m_trajectoryRefAccel = std::get<double>(value);
+            break;
+        case Config::CMC_PERIOD:
+            if (!yarp::os::PeriodicThread::setPeriod(std::get<double>(value)))
+            {
+                yCError(BCC) << "Cannot set new CMC period";
+#if YARP_VERSION_COMPARE(>=, 4,0,0)
+                return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
+            }
+            m_cmcPeriodMs = std::get<double>(value) * 1000.0;
+            break;
+        case Config::FRAME:
+            if (std::get<yarp::conf::vocab32_t>(value) != static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE) &&
+                std::get<yarp::conf::vocab32_t>(value) != static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP))
+            {
+                yCError(BCC) << "Unrecognized or unsupported reference frame vocab";
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            }
+            referenceFrame = static_cast<ICartesianSolver::Frame>(std::get<yarp::conf::vocab32_t>(value));
+            break;
+        case Config::STREAMING_CMD:
+            if (!presetStreamingCommand(static_cast<Streaming>(std::get<yarp::conf::vocab32_t>(value))))
+            {
+                yCError(BCC) << "Unable to preset streaming command";
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            }
+            streamingCommand = static_cast<Streaming>(std::get<yarp::conf::vocab32_t>(value));
+            break;
+        default:
+            yCError(BCC) << "Unrecognized or unsupported config parameter key:"
+                         << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        }
+
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
+    }
+    catch (const std::bad_variant_access & e)
     {
-    case Config::GAIN:
-        if (value < 0.0)
-        {
-            yCError(BCC) << "Controller gain cannot be negative";
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
-#else
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#endif
-        }
-        m_controllerGain = value;
-        break;
-    case Config::TRAJ_DURATION:
-        if (value < 0.0)
-        {
-            yCError(BCC) << "Trajectory duration cannot be negative";
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
-#else
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#endif
-        }
-        else if ((m_trajectoryDuration == 0.0) ^ (value == 0.0))
-        {
-            if (value == 0.0)
-            {
-                yCInfo(BCC) << "Duration set to zero, therefore trajectory execution time will depend on reference speed and acceleration";
-            }
-            else
-            {
-                yCInfo(BCC) << "Trajectory duration forced to" << value << "seconds regardless of velocity profile";
-            }
-        }
-        m_trajectoryDuration = value;
-        break;
-    case Config::TRAJ_REF_SPD:
-        if (value <= 0.0)
-        {
-            yCError(BCC) << "Trajectory reference speed cannot be negative nor zero";
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
-#else
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#endif
-        }
-        m_trajectoryRefSpeed = value;
-        break;
-    case Config::TRAJ_REF_ACC:
-        if (value <= 0.0)
-        {
-            yCError(BCC) << "Trajectory reference acceleration cannot be negative nor zero";
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
-#else
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#endif
-        }
-        m_trajectoryRefAccel = value;
-        break;
-    case Config::CMC_PERIOD:
-        if (!yarp::os::PeriodicThread::setPeriod(value))
-        {
-            yCError(BCC) << "Cannot set new CMC period";
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-            return yarp::dev::ReturnValue::return_code::return_value_error_input_out_of_bounds;
-#else
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#endif
-        }
-        m_cmcPeriodMs = value * 1000.0;
-        break;
-    case Config::FRAME:
-        if (value != static_cast<double>(ICartesianSolver::Frame::BASE) &&
-            value != static_cast<double>(ICartesianSolver::Frame::TCP))
-        {
-            yCError(BCC) << "Unrecognized or unsupported reference frame vocab";
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-        }
-        referenceFrame = static_cast<ICartesianSolver::Frame>(value);
-        break;
-    case Config::STREAMING_CMD:
-        if (!presetStreamingCommand(static_cast<Streaming>(value)))
-        {
-            yCError(BCC) << "Unable to preset streaming command";
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-        }
-        streamingCommand = static_cast<Streaming>(value);
-        break;
-    default:
-        yCError(BCC) << "Unrecognized or unsupported config parameter key:"
-                     << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+        yCError(BCC) << "Bad variant access:" << e.what();
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
@@ -698,7 +708,7 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, double 
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double * value)
+yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, config_value_t * value)
 {
     switch (vocab)
     {
@@ -718,10 +728,10 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double 
         *value = m_cmcPeriodMs * 0.001;
         break;
     case Config::FRAME:
-        *value = static_cast<double>(referenceFrame);
+        *value = static_cast<yarp::conf::vocab32_t>(referenceFrame);
         break;
     case Config::STREAMING_CMD:
-        *value = static_cast<double>(streamingCommand);
+        *value = static_cast<yarp::conf::vocab32_t>(streamingCommand);
         break;
     default:
         yCError(BCC) << "Unrecognized or unsupported config parameter key:"
@@ -734,7 +744,7 @@ yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, double 
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::setParameters(const std::map<Config, double> & params)
+yarp::dev::ReturnValue BasicCartesianControl::setParameters(const config_map_t & params)
 {
     if (currentMode != Mode::NONE)
     {
@@ -755,15 +765,15 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameters(const std::map<Confi
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::getParameters(std::map<Config, double> & params)
+yarp::dev::ReturnValue BasicCartesianControl::getParameters(config_map_t & params)
 {
     params.emplace(Config::GAIN, m_controllerGain);
     params.emplace(Config::TRAJ_DURATION, m_trajectoryDuration);
     params.emplace(Config::TRAJ_REF_SPD, m_trajectoryRefSpeed);
     params.emplace(Config::TRAJ_REF_ACC, m_trajectoryRefAccel);
     params.emplace(Config::CMC_PERIOD, m_cmcPeriodMs * 0.001);
-    params.emplace(Config::FRAME, static_cast<double>(referenceFrame));
-    params.emplace(Config::STREAMING_CMD, static_cast<double>(streamingCommand));
+    params.emplace(Config::FRAME, static_cast<yarp::conf::vocab32_t>(referenceFrame));
+    params.emplace(Config::STREAMING_CMD, static_cast<yarp::conf::vocab32_t>(streamingCommand));
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 

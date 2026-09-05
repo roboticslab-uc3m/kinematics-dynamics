@@ -77,7 +77,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    std::map<ICartesianControl::Config, double> params;
+    ICartesianControl::config_map_t params;
 
     if (!iCartesianControl->getParameters(params))
     {

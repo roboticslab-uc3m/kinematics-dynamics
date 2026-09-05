@@ -2,6 +2,10 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <yarp/os/LogStream.h>
+
+#include "LogComponent.hpp"
+
 using namespace roboticslab;
 
 // ------------------- RpcResponder Related ------------------------------------
@@ -80,24 +84,80 @@ yarp::dev::ReturnValue RpcResponder::changeTool(const std::vector<double> & x)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::actuateTool(const roboticslab::ICartesianControl::Actuator command)
+yarp::dev::ReturnValue RpcResponder::actuateTool(roboticslab::ICartesianControl::Actuator command)
 {
     return iCartesianControl->actuateTool(command);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue RpcResponder::setParameter(const roboticslab::ICartesianControl::Config vocab, const double value)
+yarp::dev::ReturnValue RpcResponder::setParameterDouble(roboticslab::ICartesianControl::Config vocab, double value)
 {
-    return iCartesianControl->setParameter(vocab, value);
+    try
+    {
+        return iCartesianControl->setParameter(vocab, value);
+    }
+    catch (const std::bad_variant_access & e)
+    {
+        yCError(CCS) << e.what();
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
-return_get_parameter RpcResponder::getParameter(const roboticslab::ICartesianControl::Config vocab)
+yarp::dev::ReturnValue RpcResponder::setParameterVocab(roboticslab::ICartesianControl::Config vocab, std::int32_t value)
 {
-    return_get_parameter ret;
-    ret.ret = iCartesianControl->getParameter(vocab, &ret.value);
+    try
+    {
+        return iCartesianControl->setParameter(vocab, value);
+    }
+    catch (const std::bad_variant_access & e)
+    {
+        yCError(CCS) << e.what();
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+return_get_parameter_double RpcResponder::getParameterDouble(roboticslab::ICartesianControl::Config vocab)
+{
+    return_get_parameter_double ret;
+    ICartesianControl::config_value_t value;
+    ret.ret = iCartesianControl->getParameter(vocab, &value);
+
+    try
+    {
+        ret.value = std::get<double>(value);
+    }
+    catch (const std::bad_variant_access & e)
+    {
+        yCError(CCS) << e.what();
+        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
+
+    return ret;
+}
+
+// -----------------------------------------------------------------------------
+
+return_get_parameter_vocab RpcResponder::getParameterVocab(roboticslab::ICartesianControl::Config vocab)
+{
+    return_get_parameter_vocab ret;
+    ICartesianControl::config_value_t value;
+    ret.ret = iCartesianControl->getParameter(vocab, &value);
+
+    try
+    {
+        ret.value = std::get<yarp::conf::vocab32_t>(value);
+    }
+    catch (const std::bad_variant_access & e)
+    {
+        yCError(CCS) << e.what();
+        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
+
     return ret;
 }
 
@@ -105,7 +165,22 @@ return_get_parameter RpcResponder::getParameter(const roboticslab::ICartesianCon
 
 yarp::dev::ReturnValue RpcResponder::setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params)
 {
-    return iCartesianControl->setParameters(params);
+    ICartesianControl::config_map_t configMap;
+
+    for (const auto & [vocab, value] : params)
+    {
+        configMap[vocab] = value;
+    }
+
+    try
+    {
+        return iCartesianControl->setParameters(configMap);
+    }
+    catch (const std::bad_variant_access & e)
+    {
+        yCError(CCS) << e.what();
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -113,7 +188,27 @@ yarp::dev::ReturnValue RpcResponder::setParameters(const std::map<roboticslab::I
 return_get_parameters RpcResponder::getParameters()
 {
     return_get_parameters ret;
-    ret.ret = iCartesianControl->getParameters(ret.params);
+    ICartesianControl::config_map_t configMap;
+    ret.ret = iCartesianControl->getParameters(configMap);
+
+    for (const auto & [vocab, value] : configMap)
+    {
+        if (std::holds_alternative<double>(value))
+        {
+            ret.params[vocab] = std::get<double>(value);
+        }
+        else if (std::holds_alternative<yarp::conf::vocab32_t>(value))
+        {
+            ret.params[vocab] = static_cast<double>(std::get<yarp::conf::vocab32_t>(value));
+        }
+        else
+        {
+            yCError(CCS) << "getParameters: unexpected value type for vocab"
+                         << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+            ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        }
+    }
+
     return ret;
 }
 

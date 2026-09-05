@@ -220,7 +220,7 @@ bool CartesianControlServerROS2::configureRosHandlers()
 
 bool CartesianControlServerROS2::configureRosParameters()
 {
-    std::map<ICartesianControl::Config, double> params;
+    ICartesianControl::config_map_t params;
 
     if (!m_iCartesianControl->getParameters(params))
     {
@@ -237,7 +237,7 @@ bool CartesianControlServerROS2::configureRosParameters()
         {
         case ICartesianControl::Config::STREAMING_CMD:
         {
-            auto vocab = static_cast<ICartesianControl::Streaming>(value);
+            auto vocab = static_cast<ICartesianControl::Streaming>(std::get<yarp::conf::vocab32_t>(value));
             std::string normalizedValue;
 
             switch (vocab)
@@ -252,13 +252,13 @@ bool CartesianControlServerROS2::configureRosParameters()
                 normalizedValue = "wrench";
                 break;
             default:
-                if (value == static_cast<double>(ICartesianControl::Vocabs::NOT_SET))
+                if (std::get<yarp::conf::vocab32_t>(value) == static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET))
                 {
                     normalizedValue = "none";
                 }
                 else
                 {
-                    yCError(CCS) << "Unknown preset streaming command value:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(value));
+                    yCError(CCS) << "Unknown preset streaming command value:" << yarp::os::Vocab32::decode(std::get<yarp::conf::vocab32_t>(value));
                     return false;
                 }
             }
@@ -270,7 +270,7 @@ bool CartesianControlServerROS2::configureRosParameters()
         }
         case ICartesianControl::Config::FRAME:
         {
-            auto vocab = static_cast<ICartesianSolver::Frame>(value);
+            auto vocab = static_cast<ICartesianSolver::Frame>(std::get<yarp::conf::vocab32_t>(value));
             std::string normalizedValue;
 
             switch (vocab)
@@ -282,7 +282,7 @@ bool CartesianControlServerROS2::configureRosParameters()
                 normalizedValue = "tcp";
                 break;
             default:
-                yCError(CCS) << "Unknown reference frame value:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(value));
+                yCError(CCS) << "Unknown reference frame value:" << yarp::os::Vocab32::decode(std::get<yarp::conf::vocab32_t>(value));
                 return false;
             }
 
@@ -293,23 +293,23 @@ bool CartesianControlServerROS2::configureRosParameters()
         }
         case ICartesianControl::Config::GAIN:
             descriptor.description = "Gain for the cartesian controller.";
-            m_node->declare_parameter("gain", value, descriptor);
+            m_node->declare_parameter("gain", std::get<double>(value), descriptor);
             break;
         case ICartesianControl::Config::TRAJ_DURATION:
             descriptor.description = "Default trajectory duration (seconds).";
-            m_node->declare_parameter("trajectory_duration", value, descriptor);
+            m_node->declare_parameter("trajectory_duration", std::get<double>(value), descriptor);
             break;
         case ICartesianControl::Config::TRAJ_REF_SPD:
             descriptor.description = "Default trajectory reference speed (meters/second).";
-            m_node->declare_parameter("trajectory_reference_speed", value, descriptor);
+            m_node->declare_parameter("trajectory_reference_speed", std::get<double>(value), descriptor);
             break;
         case ICartesianControl::Config::TRAJ_REF_ACC:
             descriptor.description = "Default trajectory reference acceleration (meters/second^2).";
-            m_node->declare_parameter("trajectory_reference_acceleration", value, descriptor);
+            m_node->declare_parameter("trajectory_reference_acceleration", std::get<double>(value), descriptor);
             break;
         case ICartesianControl::Config::CMC_PERIOD:
             descriptor.description = "Cartesian controller period (seconds).";
-            m_node->declare_parameter("cmc_period", value, descriptor);
+            m_node->declare_parameter("cmc_period", std::get<double>(value), descriptor);
             break;
         }
     }
@@ -355,7 +355,7 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
     {
         const auto & name = param.get_name();
         ICartesianControl::Config vocab;
-        double value;
+        ICartesianControl::config_value_t value;
 
         if (name == "preset_streaming_cmd")
         {
@@ -363,19 +363,19 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
 
             if (const auto strValue = param.value_to_string(); strValue == "twist")
             {
-                value = static_cast<double>(ICartesianControl::Streaming::TWIST);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::TWIST);
             }
             else if (strValue == "pose")
             {
-                value = static_cast<double>(ICartesianControl::Streaming::POSE);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::POSE);
             }
             else if (strValue == "wrench")
             {
-                value = static_cast<double>(ICartesianControl::Streaming::WRENCH);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::WRENCH);
             }
             else if (strValue == "none")
             {
-                value = static_cast<double>(ICartesianControl::Vocabs::NOT_SET);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET);
             }
             else
             {
@@ -391,11 +391,11 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
 
             if (const auto strValue = param.value_to_string(); strValue == "base")
             {
-                value = static_cast<double>(ICartesianSolver::Frame::BASE);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE);
             }
             else if (strValue == "tcp")
             {
-                value = static_cast<double>(ICartesianSolver::Frame::TCP);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP);
             }
             else
             {

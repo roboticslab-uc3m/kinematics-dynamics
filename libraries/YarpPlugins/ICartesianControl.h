@@ -3,8 +3,8 @@
 #ifndef __I_CARTESIAN_CONTROL__
 #define __I_CARTESIAN_CONTROL__
 
-#include <algorithm> // std::all_of
 #include <map>
+#include <variant>
 #include <vector>
 
 #include <yarp/os/Vocab.h>
@@ -319,6 +319,9 @@ public:
      * @{
      */
 
+    using config_value_t = std::variant<double, yarp::conf::vocab32_t>;
+    using config_map_t = std::map<Config, config_value_t>;
+
     /**
      * @brief Set a configuration parameter.
      *
@@ -329,19 +332,19 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue setParameter(Config vocab, double value) = 0;
+    virtual yarp::dev::ReturnValue setParameter(Config vocab, config_value_t value) = 0;
 
     /**
      * @brief Retrieve a configuration parameter.
      *
-     * Ask the controller to retrieve a parameter of 'double' type.
+     * Ask the controller to retrieve a parameter of 'double' or 'vocab32_t' type.
      *
      * @param vocab YARP-encoded vocab (parameter key).
-     * @param value Parameter value encoded as a double.
+     * @param value Parameter value encoded as a double or vocab32_t.
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue getParameter(Config vocab, double * value) = 0;
+    virtual yarp::dev::ReturnValue getParameter(Config vocab, config_value_t * value) = 0;
 
     /**
      * @brief Set multiple configuration parameters.
@@ -352,18 +355,18 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue setParameters(const std::map<Config, double> & params) = 0;
+    virtual yarp::dev::ReturnValue setParameters(const config_map_t & params) = 0;
 
     /**
      * @brief Retrieve multiple configuration parameters.
      *
      * Ask the controller to retrieve all available parameters at once.
      *
-     * @param params Dictionary of YARP-encoded vocabs as keys and their values.
+     * @param params Dictionary of YARP-encoded vocabs as keys and their values encoded as double or vocab32_t.
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue getParameters(std::map<Config, double> & params) = 0;
+    virtual yarp::dev::ReturnValue getParameters(config_map_t & params) = 0;
 
     /** @} */
 
@@ -421,24 +424,23 @@ public:
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
     virtual bool setParameter(int vocab, double value)
-    { return setParameter(static_cast<Config>(vocab), value); }
+    { return false; }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
     virtual bool getParameter(int vocab, double * value)
-    { return getParameter(static_cast<Config>(vocab), value); }
+    { return false; }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
     virtual bool setParameters(const std::map<int, double> & params)
-    { return std::all_of(params.begin(), params.end(), [this](const auto & kv) { return setParameter(static_cast<Config>(kv.first), kv.second); }); }
+    { return false; }
 
     [[deprecated("use `ICartesianControl::Config` signature instead")]]
     virtual bool getParameters(std::map<int, double> & params)
-    { return std::all_of(params.begin(), params.end(), [this](auto & kv) { return getParameter(static_cast<Config>(kv.first), &kv.second); }); }
+    { return false; }
 #endif // SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 };
 
 } // namespace roboticslab
-
 
 #ifndef SWIG_PREPROCESSOR_SHOULD_SKIP_THIS
 [[deprecated("use `ICartesianControl::Vocabs::OK` instead")]]

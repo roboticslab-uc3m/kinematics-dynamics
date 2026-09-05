@@ -109,9 +109,11 @@ public:
     yarp::dev::ReturnValue forceControl(const std::vector<double> & fd) override;
     yarp::dev::ReturnValue stopControl() override;
     yarp::dev::ReturnValue changeTool(const std::vector<double> & x) override;
-    yarp::dev::ReturnValue actuateTool(const roboticslab::ICartesianControl::Actuator command) override;
-    yarp::dev::ReturnValue setParameter(const roboticslab::ICartesianControl::Config vocab, const double value) override;
-    return_get_parameter getParameter(const roboticslab::ICartesianControl::Config vocab) override;
+    yarp::dev::ReturnValue actuateTool(roboticslab::ICartesianControl::Actuator command) override;
+    yarp::dev::ReturnValue setParameterDouble(roboticslab::ICartesianControl::Config vocab, double value) override;
+    yarp::dev::ReturnValue setParameterVocab(roboticslab::ICartesianControl::Config vocab, std::int32_t value) override;
+    return_get_parameter_double getParameterDouble(roboticslab::ICartesianControl::Config vocab) override;
+    return_get_parameter_vocab getParameterVocab(roboticslab::ICartesianControl::Config vocab) override;
     yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
     return_get_parameters getParameters() override;
 
