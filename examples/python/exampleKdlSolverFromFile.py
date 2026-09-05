@@ -9,14 +9,16 @@ rf = yarp.ResourceFinder()
 rf.setVerbose(False)
 rf.setDefaultContext("testKdlSolverFromFile")
 rf.setDefaultConfigFile("testKdlSolverFromFile.ini")
-kinematicsFileFullPath = rf.findFileByName("testKdlSolverFromFile.ini")
 
 #-- Load the solver device with this configuration, view the interface
 
 solverOptions = yarp.Property()
-solverOptions.fromConfigFile(kinematicsFileFullPath)
 solverOptions.put("device", "KdlSolver")
 solverOptions.fromString("(mins (-70 -15 -10 -100 -90 -100)) (maxs (45 70 75 10 90 10))", False)
+
+kinematicsGroup = solverOptions.addGroup("KINEMATICS")
+kinematicsFileFullPath = rf.findFileByName("testKdlSolverFromFile.ini")
+kinematicsGroup.fromConfigFile(kinematicsFileFullPath)
 
 solverDevice = yarp.PolyDriver(solverOptions)
 

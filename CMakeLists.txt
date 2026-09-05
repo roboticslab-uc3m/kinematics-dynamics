@@ -45,7 +45,8 @@ find_package(std_srvs QUIET)
 find_package(geometry_msgs QUIET)
 find_package(rl_cartesian_control_msgs QUIET)
 find_package(GTestSources 1.8 QUIET)
-find_package(SWIG 3.0.12 QUIET)
+find_package(Python3 COMPONENTS Interpreter Development QUIET)
+find_package(pybind11 QUIET)
 find_package(Doxygen QUIET)
 
 # Always build YARP devices as MODULE libraries.

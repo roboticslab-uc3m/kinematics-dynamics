@@ -24,44 +24,7 @@ sudo make install; sudo ldconfig  # install
 
 Use `ccmake` instead of `cmake` for additional options.
 
-## Install Bindings
-
-Swig is needed in order to build all language bindings. Refer to [Install SWIG](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-swig.md/).
-
-### Install Python Bindings
-
-First, install Python development packages.
-
-```bash
-sudo apt update
-sudo apt install libpython3-dev  # not installed by default on clean distros
-```
-
-You can follow these steps after installing kinematics-dynamics, or just activate the correct CMake options during the initial build.
-
-```bash
-cd  # go home
-cd repos/kinematics-dynamics/build  # this should already exist, see previous section
-cmake .. -DCREATE_PYTHON=ON -DCREATE_BINDINGS_PYTHON=ON  # enable Python bindings
-make -j  # compile
-sudo make install; sudo ldconfig; cd  # install and go home
-```
-
-Note: You'll probably want [YARP Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-yarp.md/#install-python-bindings) ([perma](https://github.com/roboticslab-uc3m/installation-guides/blob/33c93b68ab34a63157b1dc940dfb154a8504fff8/install-yarp.md#install-python-bindings)), too.
-
-#### Install Python bindings (checking)
-
-Check your installation via (should output nothing; if bad, you will see a `ModuleNotFoundError`):
-
-```bash
-python3 -c "import kinematics_dynamics"
-```
-
-#### Install Python bindings (troubleshooting)
-
-CMake may not detect the correct Python3 installation directory. Toggle `t` in `ccmake` to see additional configuration. The `CMAKE_INSTALL_PYTHONDIR` variable may point to a wrong path such as `lib/python3/dist-packages` (relative to `CMAKE_INSTALL_PREFIX`, which usually resolves to `/usr/local`). You must pick the python3.x directory instead (check via `python3 -V`); on Ubuntu 20.04 and Python 3.8, this configuration variable should be changed to `lib/python3.8/dist-packages`.
-
 ## Even more!
 
 Done! You are now probably interested in one of the following links:
-- [Simulation and Basic Control: Now what can I do?]( teo-post-install.md )
+- [Simulation and Basic Control: Now what can I do?](teo-post-install.md)

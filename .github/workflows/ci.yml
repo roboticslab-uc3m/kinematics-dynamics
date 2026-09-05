@@ -71,14 +71,6 @@ jobs:
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
-    - name: Check out SWIG
-      if: ${{matrix.system.os == 'ubuntu-24.04'}}
-      uses: actions/checkout@v7
-      with:
-        repository: swig/swig
-        ref: v4.2.1
-        path: .deps/swig
-
     - name: Check out rl_cartesian_controllers
       uses: actions/checkout@v7
       with:
@@ -86,7 +78,7 @@ jobs:
         path: .deps/ws/src/rl_cartesian_controllers
 
     - name: Install dependencies via apt
-      run: apt-get update && apt-get install -qq ccache ${{matrix.system.compiler.apt}} bison swig
+      run: apt-get update && apt-get install -qq ccache ${{matrix.system.compiler.apt}} pybind11-dev
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
@@ -114,14 +106,6 @@ jobs:
         cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON -DENABLE_yarpmod_fakeMotionControl=ON
         cmake --build .deps/yarp/build
         cmake --install .deps/yarp/build
-
-    - name: Build SWIG
-      if: ${{matrix.system.os == 'ubuntu-24.04'}}
-      run: |
-        cmake -S .deps/swig -B .deps/swig/build -DWITH_PCRE=OFF
-        cmake --build .deps/swig/build
-        cmake --install .deps/swig/build
-        ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
 
     - name: Build rl_cartesian_controllers
       working-directory: .deps/ws
