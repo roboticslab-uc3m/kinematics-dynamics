@@ -25,22 +25,12 @@ bool SpnavSensorDevice::acquireInterfaces()
     }
 
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
-    if (std::size_t stickCount; !iJoypadController->getStickCount(stickCount) || stickCount < 1)
+    if (std::size_t axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount != 6)
 #else
-    if (unsigned int stickCount; !iJoypadController->getStickCount(stickCount) || stickCount < 1)
+    if (unsigned int axisCount; !iJoypadController->getAxisCount(axisCount) || axisCount != 6)
 #endif
     {
-        yCWarning(SDC) << "Unable to query number of sticks or wrong value";
-        return false;
-    }
-
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-    if (std::size_t stickDoF; !iJoypadController->getStickDoF(0, stickDoF) || stickDoF < 6)
-#else
-    if (unsigned int stickDoF; !iJoypadController->getStickDoF(0, stickDoF) || stickDoF < 6)
-#endif
-    {
-        yCWarning(SDC) << "Unable to query number of stick DoF or wrong value";
+        yCWarning(SDC) << "Unable to query number of axes or wrong value";
         return false;
     }
 
@@ -104,20 +94,21 @@ bool SpnavSensorDevice::initialize(const std::map<ICartesianControl::Config, dou
 bool SpnavSensorDevice::acquireData()
 {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
-    yarp::dev::StickData stick;
-#else
-    yarp::sig::Vector stick;
-#endif
-
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-    if (!iJoypadController->getStick(0, stick, yarp::dev::IJoypadController::JoypadCtrl_coordinateMode::JypCtrlcoord_CARTESIAN))
-#else
-    if (!iJoypadController->getStick(0, stick, yarp::dev::IJoypadController::JypCtrlcoord_CARTESIAN))
-#endif
+    if (!iJoypadController->getAllAxes(data))
     {
-        yCWarning(SDC) << "Unable to acquire data from IJoypadController stick";
+        yCWarning(SDC) << "Unable to acquire data from IJoypadController axes";
         return false;
     }
+#else
+    for (int i = 0; i < data.size(); i++)
+    {
+        if (!iJoypadController->getAxis(i, data[i]))
+        {
+            yCWarning(SDC) << "Unable to acquire data from IJoypadController axis" << i;
+            return false;
+        }
+    }
+#endif
 
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     double button1, button2;
@@ -132,18 +123,10 @@ bool SpnavSensorDevice::acquireData()
         return false;
     }
 
-#if YARP_VERSION_COMPARE(>=, 4,0,0)
-    // FIXME: https://github.com/robotology/yarp/issues/3370
-    data[0] = stick.s1;
-    data[1] = stick.s2;
-#else
-    std::copy(stick.begin(), stick.begin() + 6, data.begin());
-#endif
-
     buttonClose = (button1 != 0.0);
     buttonOpen = (button2 != 0.0);
 
-    yCDebug(SDC) << "stick:" << stick.toString() << "|| buttons:" << buttonClose << buttonOpen;
+    yCDebug(SDC) << "stick:" << data << "|| buttons:" << buttonClose << buttonOpen;
 
     return true;
 }
