@@ -24,12 +24,11 @@ if not dd.isValid():
 cc = kd.viewICartesianControl(dd)
 
 print('> getParameters')
-params = kd.ConfigMap()
-ret = cc.getParameters(params)
+ret, params = cc.getParameters()
 
-# TODO: uncomment when ConfigMap is iterable
+# TODO: not working
 # for key, value in params.items():
-#     print(f'< {yarp.decode(int(key))}: {value}')
+#     print(key, value)
 
 print('> setParameters')
 params[kd.ICartesianControl.Config_TRAJ_DURATION] = 5.0
@@ -43,8 +42,8 @@ print('> setParameter')
 cc.setParameter(kd.ICartesianControl.Config_TRAJ_DURATION, 6.0)
 
 print('> getState')
-ret, x, state, ts, duration, progress, success = cc.getState()
-print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)), ts, duration, progress, success)
+ret, state = cc.getState()
+print('<', yarp.decode(state.mode), '[%s]' % ', '.join(map(str, state.x)), state.timestamp, state.duration, state.progress, state.success)
 
 xd = [
     [0.4025, -0.3469, 0.1692, 0.0, 1.5708, 0.0],
@@ -75,9 +74,9 @@ for i in range(len(xd)):
 
         while True:
             time.sleep(0.1)
-            ret, x, state, ts, duration, progress, success = cc.getState()
+            ret, state = cc.getState()
 
-            if state == kd.ICartesianControl.State_MOVEJ:
+            if state.mode == kd.ICartesianControl.Mode_MOVEJ:
                 print('< [moving...]')
             else:
                 print('< [done]')
