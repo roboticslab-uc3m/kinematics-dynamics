@@ -274,7 +274,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
         if (!dryRun)
         {
-            std::map<ICartesianControl::Config, double> params;
+            ICartesianControl::config_map_t params;
 
             if (!iCartesianControl->getParameters(params))
             {
@@ -282,15 +282,17 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
                 return false;
             }
 
-            bool usingStreamingPreset = params.find(ICartesianControl::Config::STREAMING_CMD) != params.end();
-
-            if (usingStreamingPreset && !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, static_cast<double>(modeVocab)))
+            if (auto value = static_cast<yarp::conf::vocab32_t>(modeVocab);
+                params.find(ICartesianControl::Config::STREAMING_CMD) != params.end() &&
+                !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, value))
             {
                 yCWarning(FTC) << "Unable to preset streaming command";
                 return false;
             }
 
-            if (!iCartesianControl->setParameter(ICartesianControl::Config::FRAME, static_cast<double>(ICartesianSolver::Frame::TCP)))
+            if (auto value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP);
+                params.find(ICartesianControl::Config::FRAME) != params.end() &&
+                !iCartesianControl->setParameter(ICartesianControl::Config::FRAME, value))
             {
                 yCWarning(FTC) << "Unable to set TCP frame";
                 return false;

@@ -47,7 +47,7 @@ bool SpnavSensorDevice::acquireInterfaces()
     return true;
 }
 
-bool SpnavSensorDevice::initialize(const std::map<ICartesianControl::Config, double> & params)
+bool SpnavSensorDevice::initialize(const ICartesianControl::config_map_t & params)
 {
     if (usingPose && gain <= 0.0)
     {
@@ -59,8 +59,8 @@ bool SpnavSensorDevice::initialize(const std::map<ICartesianControl::Config, dou
     {
         auto cmd = usingPose ? ICartesianControl::Streaming::POSE : ICartesianControl::Streaming::TWIST;
 
-        if (auto value = static_cast<double>(cmd);
-            params.at(ICartesianControl::Config::STREAMING_CMD) != value &&
+        if (auto value = static_cast<yarp::conf::vocab32_t>(cmd);
+            std::get<yarp::conf::vocab32_t>(params.at(ICartesianControl::Config::STREAMING_CMD)) != value &&
             !iCartesianControl->setParameter(ICartesianControl::Config::STREAMING_CMD, value))
         {
             yCWarning(SDC) << "Unable to preset streaming command";
@@ -70,8 +70,8 @@ bool SpnavSensorDevice::initialize(const std::map<ICartesianControl::Config, dou
 
     if (params.find(ICartesianControl::Config::FRAME) != params.end())
     {
-        if (auto value = static_cast<double>(ICartesianSolver::Frame::BASE);
-            params.at(ICartesianControl::Config::FRAME) != value &&
+        if (auto value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE);
+            std::get<yarp::conf::vocab32_t>(params.at(ICartesianControl::Config::FRAME)) != value &&
             !iCartesianControl->setParameter(ICartesianControl::Config::FRAME, value))
         {
             yCWarning(SDC) << "Unable to set inertial reference frame";

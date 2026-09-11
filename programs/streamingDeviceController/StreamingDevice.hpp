@@ -72,7 +72,7 @@ public:
      * @param params Configuration parameters for the cartesian controller.
      * @return true on success, false otherwise
      */
-    virtual bool initialize(const std::map<ICartesianControl::Config, double> & params)
+    virtual bool initialize(const ICartesianControl::config_map_t & params)
     {
         return true;
     }

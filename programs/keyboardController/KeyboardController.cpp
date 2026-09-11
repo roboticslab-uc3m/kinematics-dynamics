@@ -257,7 +257,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        std::map<ICartesianControl::Config, double> params;
+        ICartesianControl::config_map_t params;
 
         if (!iCartesianControl->getParameters(params))
         {
@@ -267,22 +267,22 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
         if (params.find(ICartesianControl::Config::FRAME) != params.end())
         {
-            double frameDouble;
+            ICartesianControl::config_value_t frame;
 
-            if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, &frameDouble))
+            if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, &frame))
             {
                 yCError(KC) << "Could not retrieve current frame";
                 return false;
             }
 
-            if (frameDouble != static_cast<double>(ICartesianSolver::Frame::BASE) &&
-                frameDouble != static_cast<double>(ICartesianSolver::Frame::TCP))
+            if (std::get<yarp::conf::vocab32_t>(frame) != static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE) &&
+                std::get<yarp::conf::vocab32_t>(frame) != static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP))
             {
                 yCError(KC) << "Unrecognized or unsupported frame";
                 return false;
             }
 
-            cartFrame = static_cast<ICartesianSolver::Frame>(frameDouble);
+            cartFrame = static_cast<ICartesianSolver::Frame>(std::get<yarp::conf::vocab32_t>(frame));
             supportsFrameToggle = true;
         }
         else

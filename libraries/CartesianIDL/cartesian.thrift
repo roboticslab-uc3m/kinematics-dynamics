@@ -44,9 +44,14 @@ struct return_solve_pose {
     2: list<double> q;
 }
 
-struct return_get_parameter {
+struct return_get_parameter_double {
     1: yReturnValue ret;
     2: double value;
+}
+
+struct return_get_parameter_vocab {
+    1: yReturnValue ret;
+    2: i32 value;
 }
 
 struct return_get_parameters {
@@ -107,14 +112,24 @@ service CartesianControlMsgs
     yReturnValue actuateTool(1: CartesianControlActuator command);
 
     /**
-     * Set a configuration parameter.
+     * Set a configuration parameter of double type.
      */
-    yReturnValue setParameter(1: CartesianControlConfig vocab, 2: double value);
+    yReturnValue setParameterDouble(1: CartesianControlConfig vocab, 2: double value);
 
     /**
-     * Retrieve a configuration parameter.
+     * Set a configuration parameter of vocab type.
      */
-    return_get_parameter getParameter(1: CartesianControlConfig vocab);
+    yReturnValue setParameterVocab(1: CartesianControlConfig vocab, 2: i32 value);
+
+    /**
+     * Retrieve a configuration parameter of double type.
+     */
+    return_get_parameter_double getParameterDouble(1: CartesianControlConfig vocab);
+
+    /**
+     * Retrieve a configuration parameter of vocab type.
+     */
+    return_get_parameter_vocab getParameterVocab(1: CartesianControlConfig vocab);
 
     /**
      * Set multiple configuration parameters.

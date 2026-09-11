@@ -3,6 +3,7 @@
 #include "CartesianControlClient.hpp"
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/Vocab.h>
 
 #include "LogComponent.hpp"
 
@@ -140,33 +141,125 @@ void CartesianControlClient::wrench(const std::vector<double> & w)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, double value)
+yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, config_value_t value)
 {
-    return rpcSender.setParameter(vocab, value);
+    switch (vocab)
+    {
+        case Config::GAIN:
+        case Config::TRAJ_DURATION:
+        case Config::TRAJ_REF_SPD:
+        case Config::TRAJ_REF_ACC:
+        case Config::CMC_PERIOD:
+            if (!std::holds_alternative<double>(value))
+            {
+                yCError(CCC) << "setParameter: expected double value for vocab"
+                             << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            }
+
+            return rpcSender.setParameterDouble(vocab, std::get<double>(value));
+        case Config::FRAME:
+        case Config::STREAMING_CMD:
+            if (!std::holds_alternative<yarp::conf::vocab32_t>(value))
+            {
+                yCError(CCC) << "setParameter: expected vocab32_t value for vocab"
+                             << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            }
+
+            return rpcSender.setParameterVocab(vocab, std::get<yarp::conf::vocab32_t>(value));
+        default:
+            yCError(CCC) << "setParameter: unknown vocab"
+                         << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, double * value)
+yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, config_value_t * value)
 {
-    auto ret = rpcSender.getParameter(vocab);
-    *value = ret.value;
-    return ret.ret;
+    switch (vocab)
+    {
+        case Config::GAIN:
+        case Config::TRAJ_DURATION:
+        case Config::TRAJ_REF_SPD:
+        case Config::TRAJ_REF_ACC:
+        case Config::CMC_PERIOD:
+        {
+            auto ret = rpcSender.getParameterDouble(vocab);
+            *value = ret.value;
+            return ret.ret;
+        }
+        case Config::FRAME:
+        case Config::STREAMING_CMD:
+        {
+            auto ret = rpcSender.getParameterVocab(vocab);
+            *value = ret.value;
+            return ret.ret;
+        }
+        default:
+            yCError(CCC) << "getParameter: unknown vocab"
+                         << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::setParameters(const std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClient::setParameters(const config_map_t & params)
 {
-    return rpcSender.setParameters(params);
+    std::map<roboticslab::ICartesianControl::Config, double> doubleParams;
+
+    for (const auto & [vocab, value] : params)
+    {
+        if (std::holds_alternative<double>(value))
+        {
+            doubleParams[vocab] = std::get<double>(value);
+        }
+        else if (std::holds_alternative<yarp::conf::vocab32_t>(value))
+        {
+            doubleParams[vocab] = static_cast<double>(std::get<yarp::conf::vocab32_t>(value));
+        }
+        else
+        {
+            yCError(CCC) << "setParameters: unknown value type for vocab"
+                         << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        }
+    }
+
+    return rpcSender.setParameters(doubleParams);
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::getParameters(std::map<Config, double> & params)
+yarp::dev::ReturnValue CartesianControlClient::getParameters(config_map_t & params)
 {
     auto ret = rpcSender.getParameters();
-    params = ret.params;
+
+    for (const auto & [vocab, value] : ret.params)
+    {
+        switch (vocab)
+        {
+            case Config::GAIN:
+            case Config::TRAJ_DURATION:
+            case Config::TRAJ_REF_SPD:
+            case Config::TRAJ_REF_ACC:
+            case Config::CMC_PERIOD:
+                params[vocab] = value;
+                break;
+            case Config::FRAME:
+            case Config::STREAMING_CMD:
+                params[vocab] = static_cast<yarp::conf::vocab32_t>(value);
+                break;
+            default:
+                yCError(CCC) << "getParameters: unknown vocab"
+                             << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        }
+    }
+
     return ret.ret;
 }
 

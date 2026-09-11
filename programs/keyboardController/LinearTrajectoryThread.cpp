@@ -32,7 +32,7 @@ LinearTrajectoryThread::~LinearTrajectoryThread()
 
 bool LinearTrajectoryThread::checkStreamingConfig()
 {
-    std::map<ICartesianControl::Config, double> params;
+    ICartesianControl::config_map_t params;
 
     if (!iCartesianControl->getParameters(params))
     {
