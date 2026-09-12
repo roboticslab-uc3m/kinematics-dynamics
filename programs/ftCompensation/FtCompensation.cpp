@@ -4,6 +4,8 @@
 
 #include <functional> // std::invoke
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
@@ -167,11 +169,21 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     sensorIndex = -1;
 
-    for (auto i = 0; i < sensor->getNrOfSixAxisForceTorqueSensors(); i++)
-    {
-        std::string temp;
+#if YARP_VERSION_COMPARE(>=, 4, 1, 0)
+    std::size_t numSensors;
 
-        if (sensor->getSixAxisForceTorqueSensorName(i, temp) && temp == sensorName)
+    if (!sensor->getNrOfSixAxisForceTorqueSensors(numSensors))
+    {
+        yCError(FTC) << "Failed to get number of sensors";
+        return false;
+    }
+#else
+    auto numSensors = sensor->getNrOfSixAxisForceTorqueSensors();
+#endif
+
+    for (auto i = 0; i < numSensors; i++)
+    {
+        if (std::string temp; sensor->getSixAxisForceTorqueSensorName(i, temp) && temp == sensorName)
         {
             sensorIndex = i;
             break;
