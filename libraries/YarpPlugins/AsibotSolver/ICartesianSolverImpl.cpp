@@ -188,7 +188,7 @@ namespace
 yarp::dev::ReturnValue AsibotSolver::getNumJoints(std::size_t & numJoints)
 {
     numJoints = 5;
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -196,7 +196,7 @@ yarp::dev::ReturnValue AsibotSolver::getNumJoints(std::size_t & numJoints)
 yarp::dev::ReturnValue AsibotSolver::getNumTcps(std::size_t & numTcps)
 {
     numTcps = 1;
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -210,7 +210,7 @@ yarp::dev::ReturnValue AsibotSolver::appendLink(const std::vector<double> &x)
     tcpFrameStruct.frameTcp *= newFrame;
     setTcpFrame(tcpFrameStruct);
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // --------------------------------------------------------------------------
@@ -221,7 +221,7 @@ yarp::dev::ReturnValue AsibotSolver::restoreOriginalChain()
     tcpFrameStruct.hasFrame = false;
     tcpFrameStruct.frameTcp = yarp::math::eye(4);
     setTcpFrame(tcpFrameStruct);
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -234,7 +234,7 @@ yarp::dev::ReturnValue AsibotSolver::changeOrigin(const std::vector<double> &x_o
 
     matrixToVector(H_new_obj, x_new_obj, true);
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -282,7 +282,7 @@ yarp::dev::ReturnValue AsibotSolver::forwardKinematics(const std::vector<double>
         matrixToVector(H_base_tcp, x, true);
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -308,7 +308,7 @@ yarp::dev::ReturnValue AsibotSolver::poseDiff(const std::vector<double> &xLhs, c
     xOut[4] = rotd[1];
     xOut[5] = rotd[2];
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -330,7 +330,7 @@ yarp::dev::ReturnValue AsibotSolver::inverseKinematics(const std::vector<double>
     else
     {
         yCError(ASIBOT) << "Unsupported reference frame";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     const AsibotTcpFrame & tcpFrameStruct = getTcpFrame();
@@ -346,7 +346,7 @@ yarp::dev::ReturnValue AsibotSolver::inverseKinematics(const std::vector<double>
     if (!decodePose(xd_base_obj, xd_eYZ, coordinate_system::CARTESIAN, orientation_system::EULER_YZ))
     {
         yCError(ASIBOT) << "Unable to convert to eulerYZ angle representation";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     double ozdRad = std::atan2(xd_eYZ[1], xd_eYZ[0]);
@@ -358,7 +358,7 @@ yarp::dev::ReturnValue AsibotSolver::inverseKinematics(const std::vector<double>
     if (std::sqrt(prPd * prPd + phPd * phPd) > m_A1 + m_A2 + m_A3)
     {
         yCError(ASIBOT) << "Target out of reach";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     double prWd = prPd - m_A3 * std::sin(oyPdRad);
@@ -369,7 +369,7 @@ yarp::dev::ReturnValue AsibotSolver::inverseKinematics(const std::vector<double>
     if (std::sqrt(len_2) > m_A1 + m_A2)
     {
         yCError(ASIBOT) << "Target out of reach";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     double ct2 = (len_2 - m_A1 * m_A1 - m_A2 * m_A2) / (2 * m_A1 * m_A2);
@@ -404,18 +404,18 @@ yarp::dev::ReturnValue AsibotSolver::inverseKinematics(const std::vector<double>
             radToDeg(xd_eYZ[4])))
     {
         yCError(ASIBOT) << "Unable to find a valid configuration within joint limits";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     if (!conf->findOptimalConfiguration(qGuess))
     {
         yCError(ASIBOT) << "findOptimalConfiguration() failed";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     conf->retrieveAngles(q);
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -442,7 +442,7 @@ yarp::dev::ReturnValue AsibotSolver::diffInverseKinematics(const std::vector<dou
     else
     {
         yCWarning(ASIBOT) << "Unsupported frame";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     const AsibotTcpFrame & tcpFrameStruct = getTcpFrame();
@@ -481,7 +481,7 @@ yarp::dev::ReturnValue AsibotSolver::diffInverseKinematics(const std::vector<dou
         qdot[i] = radToDeg(qdotv[i]);
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -489,7 +489,7 @@ yarp::dev::ReturnValue AsibotSolver::diffInverseKinematics(const std::vector<dou
 yarp::dev::ReturnValue AsibotSolver::inverseDynamics(const std::vector<double> &q, std::vector<double> &t)
 {
     yCWarning(ASIBOT) << "inverseDynamics() not implemented";
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
@@ -498,7 +498,7 @@ yarp::dev::ReturnValue AsibotSolver::inverseDynamics(const std::vector<double> &
                                                      const std::vector<double> &ftip, std::vector<double> &t, Frame frame)
 {
     yCWarning(ASIBOT) << "inverseDynamics() not implemented";
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------

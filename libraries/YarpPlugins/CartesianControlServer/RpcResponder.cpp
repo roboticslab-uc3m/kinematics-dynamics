@@ -100,7 +100,7 @@ yarp::dev::ReturnValue RpcResponder::setParameterDouble(roboticslab::ICartesianC
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 }
 
@@ -115,7 +115,7 @@ yarp::dev::ReturnValue RpcResponder::setParameterVocab(roboticslab::ICartesianCo
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 }
 
@@ -134,7 +134,7 @@ return_get_parameter_double RpcResponder::getParameterDouble(roboticslab::ICarte
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
-        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        ret.ret = yarp::dev::ReturnValue_error_method_failed;
     }
 
     return ret;
@@ -155,7 +155,7 @@ return_get_parameter_vocab RpcResponder::getParameterVocab(roboticslab::ICartesi
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
-        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        ret.ret = yarp::dev::ReturnValue_error_method_failed;
     }
 
     return ret;
@@ -179,7 +179,7 @@ yarp::dev::ReturnValue RpcResponder::setParameters(const std::map<roboticslab::I
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 }
 
@@ -205,7 +205,7 @@ return_get_parameters RpcResponder::getParameters()
         {
             yCError(CCS) << "getParameters: unexpected value type for vocab"
                          << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
-            ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            ret.ret = yarp::dev::ReturnValue_error_method_failed;
         }
     }
 

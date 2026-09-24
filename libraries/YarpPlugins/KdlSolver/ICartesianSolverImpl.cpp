@@ -19,7 +19,7 @@ using namespace roboticslab;
 yarp::dev::ReturnValue KdlSolver::getNumJoints(std::size_t & numJoints)
 {
     numJoints = chain.getNrOfJoints();
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -27,7 +27,7 @@ yarp::dev::ReturnValue KdlSolver::getNumJoints(std::size_t & numJoints)
 yarp::dev::ReturnValue KdlSolver::getNumTcps(std::size_t & numTcps)
 {
     numTcps = 1;
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ yarp::dev::ReturnValue KdlSolver::appendLink(const std::vector<double> & x)
     ikSolverVel->updateInternalDataStructures();
     idSolver->updateInternalDataStructures();
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ yarp::dev::ReturnValue KdlSolver::restoreOriginalChain()
     ikSolverVel->updateInternalDataStructures();
     idSolver->updateInternalDataStructures();
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ yarp::dev::ReturnValue KdlSolver::changeOrigin(const std::vector<double> & x_old
 
     x_new_obj = KdlVectorConverter::frameToVector(H_new_obj);
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -97,7 +97,7 @@ yarp::dev::ReturnValue KdlSolver::forwardKinematics(const std::vector<double> & 
 
     x = KdlVectorConverter::frameToVector(fOutCart);
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ yarp::dev::ReturnValue KdlSolver::poseDiff(const std::vector<double> & xLhs, con
     KDL::Twist diff = KDL::diff(fRhs, fLhs); // [fLhs - fRhs] for translation
     xOut = KdlVectorConverter::twistToVector(diff);
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -140,7 +140,7 @@ yarp::dev::ReturnValue KdlSolver::inverseKinematics(const std::vector<double> & 
         else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         ret = ikSolverPos->CartToJnt(qGuessInRad, frameXd, kdlq);
@@ -149,7 +149,7 @@ yarp::dev::ReturnValue KdlSolver::inverseKinematics(const std::vector<double> & 
     if (ret < 0)
     {
         yCError(logc, "inverseKinematics(): %s", ikSolverPos->strError(ret));
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -163,7 +163,7 @@ yarp::dev::ReturnValue KdlSolver::inverseKinematics(const std::vector<double> & 
         q[motor] = kdlq(motor) * KDL::rad2deg;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -196,7 +196,7 @@ yarp::dev::ReturnValue KdlSolver::diffInverseKinematics(const std::vector<double
         else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         ret = ikSolverVel->CartToJnt(qInRad, kdlxdot, qDotOutRadS);
@@ -205,7 +205,7 @@ yarp::dev::ReturnValue KdlSolver::diffInverseKinematics(const std::vector<double
     if (ret < 0)
     {
         yCError(logc, "diffInverseKinematics(): %s", ikSolverVel->strError(ret));
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -219,7 +219,7 @@ yarp::dev::ReturnValue KdlSolver::diffInverseKinematics(const std::vector<double
         qdot[motor] = qDotOutRadS(motor) * KDL::rad2deg;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -248,7 +248,7 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
     if (ret < 0)
     {
         yCError(logc, "inverseDynamics(): %s", idSolver->strError(ret));
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -262,7 +262,7 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
         t[motor] = kdlt(motor);
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -306,7 +306,7 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
     else if (frame != Frame::TCP)
     {
         yCWarning(logc, "Unsupported frame");
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     wrenches.back() = kdlftip; // must be expressed in the HN frame
@@ -322,7 +322,7 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
     if (ret < 0)
     {
         yCError(logc, "inverseDynamics(): %s", idSolver->strError(ret));
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
     else if (ret > 0)
     {
@@ -336,7 +336,7 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
         t[motor] = kdlt(motor);
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------

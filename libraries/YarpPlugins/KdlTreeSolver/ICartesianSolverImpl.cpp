@@ -20,7 +20,7 @@ using namespace roboticslab;
 yarp::dev::ReturnValue KdlTreeSolver::getNumJoints(std::size_t & numJoints)
 {
     numJoints = tree.getNrOfJoints();
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -28,7 +28,7 @@ yarp::dev::ReturnValue KdlTreeSolver::getNumJoints(std::size_t & numJoints)
 yarp::dev::ReturnValue KdlTreeSolver::getNumTcps(std::size_t & numTcps)
 {
     numTcps = endpoints.size();
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ yarp::dev::ReturnValue KdlTreeSolver::getNumTcps(std::size_t & numTcps)
 yarp::dev::ReturnValue KdlTreeSolver::appendLink(const std::vector<double> & x)
 {
     yCError(KDLS) << "Not supported: appendLink";
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ yarp::dev::ReturnValue KdlTreeSolver::appendLink(const std::vector<double> & x)
 yarp::dev::ReturnValue KdlTreeSolver::restoreOriginalChain()
 {
     yCError(KDLS) << "Not supported: restoreOriginalChain";
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ yarp::dev::ReturnValue KdlTreeSolver::changeOrigin(const std::vector<double> & x
         x_new_obj.insert(x_new_obj.end(), temp_new_obj.cbegin(), temp_new_obj.cend());
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -90,14 +90,14 @@ yarp::dev::ReturnValue KdlTreeSolver::forwardKinematics(const std::vector<double
 
         if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
         {
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         auto temp = KdlVectorConverter::frameToVector(fOutCart);
         x.insert(x.end(), temp.cbegin(), temp.cend());
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -121,7 +121,7 @@ yarp::dev::ReturnValue KdlTreeSolver::poseDiff(const std::vector<double> & xLhs,
         xOut.insert(xOut.end(), temp_xOut.cbegin(), temp_xOut.cend());
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseKinematics(const std::vector<double
 
             if (fkSolverPos->JntToCart(qGuessInRad, fOutCart, endpoint) < 0)
             {
-                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+                return yarp::dev::ReturnValue_error_method_failed;
             }
 
             auto it = frames.find(endpoint);
@@ -170,14 +170,14 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseKinematics(const std::vector<double
     else if (frame != Frame::BASE)
     {
         yCWarning(KDLS) << "Unsupported frame";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     KDL::JntArray kdlq(tree.getNrOfJoints());
 
     if (ikSolverPos->CartToJnt(qGuessInRad, frames, kdlq) < 0)
     {
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     q.resize(tree.getNrOfJoints());
@@ -187,7 +187,7 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseKinematics(const std::vector<double
         q[motor] = kdlq(motor) * KDL::rad2deg;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -226,7 +226,7 @@ yarp::dev::ReturnValue KdlTreeSolver::diffInverseKinematics(const std::vector<do
 
             if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
             {
-                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+                return yarp::dev::ReturnValue_error_method_failed;
             }
 
             auto it = twists.find(endpoint);
@@ -239,14 +239,14 @@ yarp::dev::ReturnValue KdlTreeSolver::diffInverseKinematics(const std::vector<do
     else if (frame != Frame::BASE)
     {
         yCWarning(KDLS) << "Unsupported frame";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     KDL::JntArray qDotOutRadS(tree.getNrOfJoints());
 
     if (ikSolverVel->CartToJnt(qInRad, twists, qDotOutRadS) < 0)
     {
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     qdot.resize(tree.getNrOfJoints());
@@ -256,7 +256,7 @@ yarp::dev::ReturnValue KdlTreeSolver::diffInverseKinematics(const std::vector<do
         qdot[motor] = qDotOutRadS(motor) * KDL::rad2deg;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -283,7 +283,7 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> 
 
     if (idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt) < 0)
     {
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     t.resize(tree.getNrOfJoints());
@@ -293,7 +293,7 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> 
         t[motor] = kdlt(motor);
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -347,7 +347,7 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> 
 
             if (fkSolverPos->JntToCart(qInRad, fOutCart, endpoint) < 0)
             {
-                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+                return yarp::dev::ReturnValue_error_method_failed;
             }
 
             auto it = wrenches.find(endpoint);
@@ -360,14 +360,14 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> 
     else if (frame != Frame::TCP)
     {
         yCWarning(KDLS) << "Unsupported frame";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     KDL::JntArray kdlt(tree.getNrOfJoints());
 
     if (idSolver->CartToJnt(qInRad, qdotInRad, qdotdotInRad, wrenches, kdlt) < 0)
     {
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     t.resize(tree.getNrOfJoints());
@@ -377,7 +377,7 @@ yarp::dev::ReturnValue KdlTreeSolver::inverseDynamics(const std::vector<double> 
         t[motor] = kdlt(motor);
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
