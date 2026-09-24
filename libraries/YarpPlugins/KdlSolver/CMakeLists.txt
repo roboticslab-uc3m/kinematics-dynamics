@@ -7,7 +7,7 @@ yarp_prepare_plugin(KdlSolver
                     TYPE KdlSolver
                     INCLUDE KdlSolver.hpp
                     DEFAULT ON
-                    DEPENDS "ENABLE_ScrewTheoryLib;ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
+                    DEPENDS "ENABLE_KdlVectorConverterLib;orocos_kdl_FOUND"
                     GENERATE_PARSER)
 
 if(NOT SKIP_KdlSolver)
@@ -17,10 +17,6 @@ if(NOT SKIP_KdlSolver)
     target_sources(KdlSolver PRIVATE KdlSolver.hpp
                                      DeviceDriverImpl.cpp
                                      ICartesianSolverImpl.cpp
-                                     ChainFkSolverPos_ST.hpp
-                                     ChainFkSolverPos_ST.cpp
-                                     ChainIkSolverPos_ST.hpp
-                                     ChainIkSolverPos_ST.cpp
                                      ChainIkSolverPos_ID.hpp
                                      ChainIkSolverPos_ID.cpp
                                      KdlSolver_ParamsParser.h
@@ -30,10 +26,15 @@ if(NOT SKIP_KdlSolver)
 
     target_link_libraries(KdlSolver YARP::YARP_os
                                     YARP::YARP_dev
-                                    ROBOTICSLAB::ScrewTheoryLib
                                     ROBOTICSLAB::KdlVectorConverterLib
                                     ROBOTICSLAB::KinematicsDynamicsInterfaces
                                     ROBOTICSLAB::KdlSolverUtils)
+
+    if(TARGET ROBOTICSLAB::ScrewTheoryForKdl)
+        target_link_libraries(KdlSolver ROBOTICSLAB::ScrewTheoryForKdl)
+        target_compile_definitions(KdlSolver PRIVATE HAS_ST4KDL)
+        message(STATUS "Screw Theory for KDL found, enabling related IK solver")
+    endif()
 
     yarp_install(TARGETS KdlSolver
                  LIBRARY DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_DYNAMIC_PLUGINS_INSTALL_DIR}

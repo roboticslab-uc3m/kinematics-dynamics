@@ -22,17 +22,6 @@ if(ENABLE_tests)
         gtest_discover_tests(testKinRepresentation)
     endif()
 
-    # testScrewTheory
-
-    if(ENABLE_ScrewTheoryLib)
-        add_executable(testScrewTheory testScrewTheory.cpp)
-
-        target_link_libraries(testScrewTheory ROBOTICSLAB::ScrewTheoryLib
-                                              gtest_main)
-
-        gtest_discover_tests(testScrewTheory)
-    endif()
-
     # testKdlSolver
 
     if(ENABLE_KdlSolver)

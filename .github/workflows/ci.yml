@@ -79,6 +79,12 @@ jobs:
         ref: v4.2.1
         path: .deps/swig
 
+    - name: Check out screw-theory-solvers
+      uses: actions/checkout@v7
+      with:
+        repository: roboticslab-uc3m/screw-theory-solvers
+        path: .deps/screw-theory-solvers
+
     - name: Check out rl_cartesian_controllers
       uses: actions/checkout@v7
       with:
@@ -122,6 +128,12 @@ jobs:
         cmake --build .deps/swig/build
         cmake --install .deps/swig/build
         ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
+
+    - name: Build screw-theory-solvers
+      run: |
+        cmake -S .deps/screw-theory-solvers -B .deps/screw-theory-solvers/build -DENABLE_TESTS=OFF
+        cmake --build .deps/screw-theory-solvers/build
+        cmake --install .deps/screw-theory-solvers/build
 
     - name: Build rl_cartesian_controllers
       working-directory: .deps/ws
