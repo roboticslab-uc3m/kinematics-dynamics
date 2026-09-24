@@ -2,6 +2,8 @@
 
 #include "CartesianControlClient.hpp"
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Vocab.h>
 
@@ -154,7 +156,11 @@ yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, config
             {
                 yCError(CCC) << "setParameter: expected double value for vocab"
                              << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
                 return yarp::dev::ReturnValue_error_method_failed;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
             }
 
             return rpcSender.setParameterDouble(vocab, std::get<double>(value));
@@ -164,14 +170,22 @@ yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, config
             {
                 yCError(CCC) << "setParameter: expected vocab32_t value for vocab"
                              << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
                 return yarp::dev::ReturnValue_error_method_failed;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
             }
 
             return rpcSender.setParameterVocab(vocab, std::get<yarp::conf::vocab32_t>(value));
         default:
             yCError(CCC) << "setParameter: unknown vocab"
                          << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 }
 
@@ -201,7 +215,11 @@ yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, config
         default:
             yCError(CCC) << "getParameter: unknown vocab"
                          << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 }
 
@@ -225,7 +243,11 @@ yarp::dev::ReturnValue CartesianControlClient::setParameters(const config_map_t 
         {
             yCError(CCC) << "setParameters: unknown value type for vocab"
                          << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
     }
 
@@ -256,7 +278,11 @@ yarp::dev::ReturnValue CartesianControlClient::getParameters(config_map_t & para
             default:
                 yCError(CCC) << "getParameters: unknown vocab"
                              << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
                 return yarp::dev::ReturnValue_error_method_failed;
+#else
+                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
     }
 

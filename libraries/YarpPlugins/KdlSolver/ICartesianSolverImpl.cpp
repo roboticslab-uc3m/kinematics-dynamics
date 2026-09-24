@@ -8,6 +8,8 @@
 #include <kdl/segment.hpp>
 #include <kdl/utilities/utility.h> // KDL::deg2rad, KDL::rad2deg
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/Log.h>
 
 #include "KdlVectorConverter.hpp"
@@ -140,7 +142,11 @@ yarp::dev::ReturnValue KdlSolver::inverseKinematics(const std::vector<double> & 
         else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
 
         ret = ikSolverPos->CartToJnt(qGuessInRad, frameXd, kdlq);
@@ -149,7 +155,11 @@ yarp::dev::ReturnValue KdlSolver::inverseKinematics(const std::vector<double> & 
     if (ret < 0)
     {
         yCError(logc, "inverseKinematics(): %s", ikSolverPos->strError(ret));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
     else if (ret > 0)
     {
@@ -196,7 +206,11 @@ yarp::dev::ReturnValue KdlSolver::diffInverseKinematics(const std::vector<double
         else if (frame != Frame::BASE)
         {
             yCWarning(logc, "Unsupported frame");
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
 
         ret = ikSolverVel->CartToJnt(qInRad, kdlxdot, qDotOutRadS);
@@ -205,7 +219,11 @@ yarp::dev::ReturnValue KdlSolver::diffInverseKinematics(const std::vector<double
     if (ret < 0)
     {
         yCError(logc, "diffInverseKinematics(): %s", ikSolverVel->strError(ret));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
     else if (ret > 0)
     {
@@ -248,7 +266,11 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
     if (ret < 0)
     {
         yCError(logc, "inverseDynamics(): %s", idSolver->strError(ret));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
     else if (ret > 0)
     {
@@ -306,7 +328,11 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
     else if (frame != Frame::TCP)
     {
         yCWarning(logc, "Unsupported frame");
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     wrenches.back() = kdlftip; // must be expressed in the HN frame
@@ -322,7 +348,11 @@ yarp::dev::ReturnValue KdlSolver::inverseDynamics(const std::vector<double> & q,
     if (ret < 0)
     {
         yCError(logc, "inverseDynamics(): %s", idSolver->strError(ret));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
     else if (ret > 0)
     {

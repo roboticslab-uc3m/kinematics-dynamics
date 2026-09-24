@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
@@ -100,7 +102,11 @@ yarp::dev::ReturnValue RpcResponder::setParameterDouble(roboticslab::ICartesianC
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 }
 
@@ -115,7 +121,11 @@ yarp::dev::ReturnValue RpcResponder::setParameterVocab(roboticslab::ICartesianCo
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 }
 
@@ -134,7 +144,11 @@ return_get_parameter_double RpcResponder::getParameterDouble(roboticslab::ICarte
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         ret.ret = yarp::dev::ReturnValue_error_method_failed;
+#else
+        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return ret;
@@ -155,7 +169,11 @@ return_get_parameter_vocab RpcResponder::getParameterVocab(roboticslab::ICartesi
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         ret.ret = yarp::dev::ReturnValue_error_method_failed;
+#else
+        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return ret;
@@ -179,7 +197,11 @@ yarp::dev::ReturnValue RpcResponder::setParameters(const std::map<roboticslab::I
     catch (const std::bad_variant_access & e)
     {
         yCError(CCS) << e.what();
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 }
 
@@ -205,7 +227,11 @@ return_get_parameters RpcResponder::getParameters()
         {
             yCError(CCS) << "getParameters: unexpected value type for vocab"
                          << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             ret.ret = yarp::dev::ReturnValue_error_method_failed;
+#else
+            ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
     }
 

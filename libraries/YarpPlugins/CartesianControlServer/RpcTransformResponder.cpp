@@ -2,6 +2,8 @@
 
 #include "CartesianControlServer.hpp"
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
@@ -16,7 +18,11 @@ return_get_state RpcTransformResponder::getState()
 
     if (ret.ret && !transformOutgoingData(ret.x, ret.x))
     {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         ret.ret = yarp::dev::ReturnValue_error_method_failed;
+#else
+        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return ret;
@@ -31,7 +37,11 @@ return_solve_pose RpcTransformResponder::solvePose(const std::vector<double> & x
     if (!transformIncomingData(xd, transformed))
     {
         return_solve_pose ret;
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         ret.ret = yarp::dev::ReturnValue_error_method_failed;
+#else
+        ret.ret = yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         return ret;
     }
 
@@ -46,7 +56,11 @@ yarp::dev::ReturnValue RpcTransformResponder::moveJoint(const std::vector<double
 
     if (!transformIncomingData(xd, transformed))
     {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return RpcResponder::moveJoint(transformed);
@@ -60,7 +74,11 @@ yarp::dev::ReturnValue RpcTransformResponder::moveLinear(const std::vector<doubl
 
     if (!transformIncomingData(xd, transformed))
     {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return RpcResponder::moveLinear(transformed);
@@ -74,7 +92,11 @@ yarp::dev::ReturnValue RpcTransformResponder::changeTool(const std::vector<doubl
 
     if (!transformIncomingData(x, transformed))
     {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return RpcResponder::changeTool(transformed);

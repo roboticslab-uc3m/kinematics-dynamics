@@ -246,7 +246,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::solvePose(const std::vector<d
     if (!response->success)
     {
         yCError(CCC) << "Inverse kinematics service call failed";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     q = response->position;
@@ -287,7 +291,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::sendTrajectoryGoal(ICartesian
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_input_out_of_bounds;
 #else
-        return yarp::dev::ReturnValue_error_method_failed;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #endif
     }
 
@@ -322,7 +326,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::sendTrajectoryGoal(ICartesian
 
     return goalHandle->get_status() == action_msgs::msg::GoalStatus::STATUS_ACCEPTED
         ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -357,7 +365,13 @@ yarp::dev::ReturnValue CartesianControlClientROS2::moveVelocity(const std::vecto
     auto result = m_move_v->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::MoveVelocity::Request>(request));
     auto response = result.get();
 
-    return response->success ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
+    return response->success
+        ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -368,7 +382,13 @@ yarp::dev::ReturnValue CartesianControlClientROS2::gravityCompensation()
     auto result = m_gcmp->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
 
-    return response->success ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
+    return response->success
+        ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -389,7 +409,13 @@ yarp::dev::ReturnValue CartesianControlClientROS2::forceControl(const std::vecto
     auto result = m_force->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::ForceControl::Request>(request));
     auto response = result.get();
 
-    return response->success ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
+    return response->success
+        ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -399,7 +425,13 @@ yarp::dev::ReturnValue CartesianControlClientROS2::stopControl()
     std_srvs::srv::Trigger::Request request;
     auto result = m_stop->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(request));
     auto response = result.get();
-    return response->success ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
+    return response->success
+        ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -427,7 +459,13 @@ yarp::dev::ReturnValue CartesianControlClientROS2::changeTool(const std::vector<
     auto result = m_tool->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::ChangeTool::Request>(request));
     auto response = result.get();
 
-    return response->success ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
+    return response->success
+        ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -452,7 +490,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::actuateTool(Actuator command)
         break;
     default:
         yCError(CCC) << "Invalid actuator command:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(command));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     rl_cartesian_control_msgs::srv::ActuateTool::Request request;
@@ -461,7 +503,13 @@ yarp::dev::ReturnValue CartesianControlClientROS2::actuateTool(Actuator command)
     auto result = m_act->async_send_request(std::make_shared<rl_cartesian_control_msgs::srv::ActuateTool::Request>(request));
     auto response = result.get();
 
-    return response->success ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
+    return response->success
+        ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -524,13 +572,21 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, co
 
     if (!parameterFromVocab(vocab, value, param))
     {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     if (std::find(m_supported_parameters.begin(), m_supported_parameters.end(), param.name) == m_supported_parameters.end())
     {
         yCError(CCC) << "Parameter not supported:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
@@ -541,7 +597,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, co
 
     return response->results.size() == 1 && response->results[0].successful
         ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -551,7 +611,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, co
     if (vocabToParamName.find(vocab) == vocabToParamName.end())
     {
         yCError(CCC) << "Invalid parameter vocab:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     const auto & name = vocabToParamName.at(vocab);
@@ -559,7 +623,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, co
     if (std::find(m_supported_parameters.begin(), m_supported_parameters.end(), name) == m_supported_parameters.end())
     {
         yCError(CCC) << "Parameter not supported:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
@@ -571,12 +639,20 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, co
     if (response->values.size() != 1)
     {
         yCError(CCC) << "Unexpected number of parameter values received:" << response->values.size();
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return vocabFromParameter(name, response->values[0], &vocab, value)
         ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -591,13 +667,21 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const config_ma
 
         if (!parameterFromVocab(vocab, value, param))
         {
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
 
         if (std::find(m_supported_parameters.begin(), m_supported_parameters.end(), vocabToParamName.at(vocab)) == m_supported_parameters.end())
         {
             yCError(CCC) << "Parameter not supported:" << yarp::os::Vocab32::decode(static_cast<yarp::conf::vocab32_t>(vocab));
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
             return yarp::dev::ReturnValue_error_method_failed;
+#else
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
         }
 
         request->parameters.push_back(param);
@@ -609,7 +693,11 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameters(const config_ma
 
     return std::all_of(results.begin(), results.end(), [](const auto & r) { return r.successful; })
         ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
