@@ -182,6 +182,10 @@ public:
         TCP_FRAME  [[deprecated("use `ICartesianSolver::Frame::TCP` instead")]]  = static_cast<int>(Frame::TCP)
     };
 
+    [[deprecated("use `ICartesianSolver::forwardKinematics` instead")]]
+    virtual bool fwdKin(const std::vector<double> & q, std::vector<double> & x)
+    { return forwardKinematics(q, x); }
+
     [[deprecated("use `ICartesianSolver::Frame` signature instead")]]
     virtual bool invKin(const std::vector<double> & xd, const std::vector<double> & qGuess, std::vector<double> & q, reference_frame frame = static_cast<reference_frame>(Frame::BASE))
     { return inverseKinematics(xd, qGuess, q, static_cast<Frame>(frame)); }
