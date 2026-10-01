@@ -1,8 +1,0 @@
-#ifndef __SCREW_THEORY_LOG_COMPONENT_HPP__
-#define __SCREW_THEORY_LOG_COMPONENT_HPP__
-
-#include <yarp/os/LogComponent.h>
-
-YARP_DECLARE_LOG_COMPONENT(ST)
-
-#endif // __SCREW_THEORY_LOG_COMPONENT_HPP__

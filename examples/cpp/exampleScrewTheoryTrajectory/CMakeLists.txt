@@ -10,8 +10,8 @@ if(NOT YARP_FOUND)
     endif()
 endif()
 
-if(NOT TARGET ROBOTICSLAB::ScrewTheoryLib)
-    find_package(ROBOTICSLAB_KINEMATICS_DYNAMICS REQUIRED)
+if(NOT TARGET ROBOTICSLAB::ScrewTheorySolvers)
+    find_package(roboticslab-screw-theory-solvers REQUIRED)
 endif()
 
 find_package(orocos_kdl 1.4 QUIET)
@@ -24,6 +24,6 @@ target_link_libraries(exampleScrewTheoryTrajectory YARP::YARP_os
                                                    YARP::YARP_init
                                                    YARP::YARP_dev
                                                    ${orocos_kdl_LIBRARIES}
-                                                   ROBOTICSLAB::ScrewTheoryLib)
+                                                   ROBOTICSLAB::ScrewTheorySolvers)
 
 target_include_directories(exampleScrewTheoryTrajectory PRIVATE ${orocos_kdl_INCLUDE_DIRS})

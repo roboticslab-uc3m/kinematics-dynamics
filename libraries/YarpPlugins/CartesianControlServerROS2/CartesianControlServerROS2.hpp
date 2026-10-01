@@ -41,6 +41,8 @@
  * @defgroup CartesianControlServerROS2
  *
  * @brief Contains CartesianControlServerROS2.
+ *
+ * @see @cite lukawski2025jjaa
  */
 
 class CartesianControlServerROS2 : public yarp::dev::DeviceDriver,

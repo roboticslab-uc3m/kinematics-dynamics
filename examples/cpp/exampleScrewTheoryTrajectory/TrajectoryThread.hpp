@@ -12,8 +12,8 @@
 
 #include <kdl/trajectory.hpp>
 
-#include <ScrewTheoryIkProblem.hpp>
-#include <ConfigurationSelector.hpp>
+#include <roboticslab/ScrewTheoryIkProblem.hpp>
+#include <roboticslab/ConfigurationSelector.hpp>
 
 class TrajectoryThread : public yarp::os::PeriodicThread
 {

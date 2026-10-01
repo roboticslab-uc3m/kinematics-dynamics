@@ -39,6 +39,7 @@ endif()
 
 # Soft dependencies.
 find_package(orocos_kdl 1.4 QUIET)
+find_package(roboticslab-screw-theory-solvers QUIET)
 find_package(rclcpp QUIET)
 find_package(rclcpp_action QUIET)
 find_package(std_srvs QUIET)

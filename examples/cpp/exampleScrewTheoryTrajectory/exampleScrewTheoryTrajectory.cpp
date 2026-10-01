@@ -55,10 +55,10 @@ make -j$(nproc)
 #include <kdl/trajectory_segment.hpp>
 #include <kdl/velocityprofile_trap.hpp>
 
-#include <ConfigurationSelector.hpp>
-#include <MatrixExponential.hpp>
-#include <ProductOfExponentials.hpp>
-#include <ScrewTheoryIkProblem.hpp>
+#include <roboticslab/ConfigurationSelector.hpp>
+#include <roboticslab/MatrixExponential.hpp>
+#include <roboticslab/ProductOfExponentials.hpp>
+#include <roboticslab/ScrewTheoryIkProblem.hpp>
 
 #include "TrajectoryThread.hpp"
 

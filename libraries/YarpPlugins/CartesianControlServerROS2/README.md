@@ -40,7 +40,7 @@ This Cartesian Control Server was initially created to use BasicCartesianControl
 
 * **Block 3:** Current Cartesian Control Server ROS 2 which is able to communicate to other ROS 2 nodes and wrap a YARP subdevice (BasicCartesianControl).
 
-* **Block 4:** Joint control from cartesian control applying Inverse Kinematics solver 'Screw Theory' from [kinematics-dynamics](https://github.com/roboticslab-uc3m/kinematics-dynamics/tree/master/libraries/ScrewTheoryLib).
+* **Block 4:** Joint control from cartesian control applying Inverse Kinematics solver 'Screw Theory' from [screw-theory-solvers](https://github.com/roboticslab-uc3m/screw-theory-solvers/tree/master/libraries/ScrewTheorySolvers).
 
 * Block 5: Actuation control accessed by Motor Control Interfaces differentiating between simulated and real environment.
 

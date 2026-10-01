@@ -18,9 +18,11 @@
 #include <kdl/chainiksolvervel_wdls.hpp>
 #include <kdl/chainidsolver_recursive_newton_euler.hpp>
 
-#include "ConfigurationSelector.hpp"
+#ifdef HAS_ST4KDL
+# include <roboticslab/ConfigurationSelector.hpp>
+# include <roboticslab/ChainIkSolverPos_ST.hpp>
+#endif
 
-#include "ChainIkSolverPos_ST.hpp"
 #include "ChainIkSolverPos_ID.hpp"
 
 #include "KdlSolverUtils.hpp"
@@ -111,6 +113,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
 
         ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, m_maxIterPos, m_epsPos);
     }
+#ifdef HAS_ST4KDL
     else if (m_ikPos == "st")
     {
         KDL::JntArray qMax = KdlSolverUtils::getJntArrayFromVector(m_maxs);
@@ -138,6 +141,7 @@ bool KdlSolver::open(yarp::os::Searchable & config)
             return false;
         }
     }
+#endif // HAS_ST4KDL
     else if (m_ikPos == "id")
     {
         KDL::JntArray qMax = KdlSolverUtils::getJntArrayFromVector(m_maxs);

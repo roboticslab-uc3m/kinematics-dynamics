@@ -5,7 +5,7 @@ if(ENABLE_examples)
         add_subdirectory(exampleCartesianControlClient)
     endif()
 
-    if(TARGET ROBOTICSLAB::ScrewTheoryLib)
+    if(TARGET ROBOTICSLAB::ScrewTheorySolvers)
         add_subdirectory(exampleScrewTheoryTrajectory)
     endif()
 
