@@ -191,7 +191,7 @@ yarp::dev::ReturnValue CartesianControlClient::setParameter(Config vocab, config
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, config_value_t * value)
+yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, config_value_t & value)
 {
     switch (vocab)
     {
@@ -202,14 +202,14 @@ yarp::dev::ReturnValue CartesianControlClient::getParameter(Config vocab, config
         case Config::CMC_PERIOD:
         {
             auto ret = rpcSender.getParameterDouble(vocab);
-            *value = ret.value;
+            value = ret.value;
             return ret.ret;
         }
         case Config::FRAME:
         case Config::STREAMING_CMD:
         {
             auto ret = rpcSender.getParameterVocab(vocab);
-            *value = ret.value;
+            value = ret.value;
             return ret.ret;
         }
         default:

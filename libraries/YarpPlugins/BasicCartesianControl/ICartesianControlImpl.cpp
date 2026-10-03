@@ -832,30 +832,30 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, config_
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, config_value_t * value)
+yarp::dev::ReturnValue BasicCartesianControl::getParameter(Config vocab, config_value_t & value)
 {
     switch (vocab)
     {
     case Config::GAIN:
-        *value = m_controllerGain;
+        value = m_controllerGain;
         break;
     case Config::TRAJ_DURATION:
-        *value = m_trajectoryDuration;
+        value = m_trajectoryDuration;
         break;
     case Config::TRAJ_REF_SPD:
-        *value = m_trajectoryRefSpeed;
+        value = m_trajectoryRefSpeed;
         break;
     case Config::TRAJ_REF_ACC:
-        *value = m_trajectoryRefAccel;
+        value = m_trajectoryRefAccel;
         break;
     case Config::CMC_PERIOD:
-        *value = m_cmcPeriodMs * 0.001;
+        value = m_cmcPeriodMs * 0.001;
         break;
     case Config::FRAME:
-        *value = static_cast<yarp::conf::vocab32_t>(referenceFrame);
+        value = static_cast<yarp::conf::vocab32_t>(referenceFrame);
         break;
     case Config::STREAMING_CMD:
-        *value = static_cast<yarp::conf::vocab32_t>(streamingCommand);
+        value = static_cast<yarp::conf::vocab32_t>(streamingCommand);
         break;
     default:
         yCError(BCC) << "Unrecognized or unsupported config parameter key:"

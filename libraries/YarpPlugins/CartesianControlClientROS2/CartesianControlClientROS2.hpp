@@ -72,7 +72,7 @@ public:
 
     // configuration getters/setters
     yarp::dev::ReturnValue setParameter(roboticslab::ICartesianControl::Config vocab, roboticslab::ICartesianControl::config_value_t value) override;
-    yarp::dev::ReturnValue getParameter(roboticslab::ICartesianControl::Config vocab, roboticslab::ICartesianControl::config_value_t * value) override;
+    yarp::dev::ReturnValue getParameter(roboticslab::ICartesianControl::Config vocab, roboticslab::ICartesianControl::config_value_t & value) override;
     yarp::dev::ReturnValue setParameters(const roboticslab::ICartesianControl::config_map_t & params) override;
     yarp::dev::ReturnValue getParameters(roboticslab::ICartesianControl::config_map_t & params) override;
 

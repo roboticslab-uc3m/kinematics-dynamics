@@ -115,44 +115,44 @@ namespace
     }
 
     bool vocabFromParameter(const std::string & name, const rcl_interfaces::msg::ParameterValue & paramValue,
-                            ICartesianControl::Config * vocab, ICartesianControl::config_value_t * value)
+                            ICartesianControl::Config & vocab, ICartesianControl::config_value_t & value)
     {
         if (name == "gain")
         {
-            *vocab = ICartesianControl::Config::GAIN;
-            *value = paramValue.double_value;
+            vocab = ICartesianControl::Config::GAIN;
+            value = paramValue.double_value;
         }
         else if (name == "trajectory_duration")
         {
-            *vocab = ICartesianControl::Config::TRAJ_DURATION;
-            *value = paramValue.double_value;
+            vocab = ICartesianControl::Config::TRAJ_DURATION;
+            value = paramValue.double_value;
         }
         else if (name == "trajectory_reference_speed")
         {
-            *vocab = ICartesianControl::Config::TRAJ_REF_SPD;
-            *value = paramValue.double_value;
+            vocab = ICartesianControl::Config::TRAJ_REF_SPD;
+            value = paramValue.double_value;
         }
         else if (name == "trajectory_reference_acceleration")
         {
-            *vocab = ICartesianControl::Config::TRAJ_REF_ACC;
-            *value = paramValue.double_value;
+            vocab = ICartesianControl::Config::TRAJ_REF_ACC;
+            value = paramValue.double_value;
         }
         else if (name == "cmc_period")
         {
-            *vocab = ICartesianControl::Config::CMC_PERIOD;
-            *value = paramValue.double_value;
+            vocab = ICartesianControl::Config::CMC_PERIOD;
+            value = paramValue.double_value;
         }
         else if (name == "frame")
         {
-            *vocab = ICartesianControl::Config::FRAME;
+            vocab = ICartesianControl::Config::FRAME;
 
             if (paramValue.string_value == "base")
             {
-                *value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::BASE);
             }
             else if (paramValue.string_value == "tcp")
             {
-                *value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianSolver::Frame::TCP);
             }
             else
             {
@@ -162,23 +162,23 @@ namespace
         }
         else if (name == "preset_streaming_cmd")
         {
-            *vocab = ICartesianControl::Config::STREAMING_CMD;
+            vocab = ICartesianControl::Config::STREAMING_CMD;
 
             if (paramValue.string_value == "pose")
             {
-                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::POSE);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::POSE);
             }
             else if (paramValue.string_value == "twist")
             {
-                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::TWIST);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::TWIST);
             }
             else if (paramValue.string_value == "wrench")
             {
-                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::WRENCH);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::WRENCH);
             }
             else if (paramValue.string_value == "none")
             {
-                *value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET);
             }
             else
             {
@@ -606,7 +606,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::setParameter(Config vocab, co
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, config_value_t * value)
+yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, config_value_t & value)
 {
     if (vocabToParamName.find(vocab) == vocabToParamName.end())
     {
@@ -646,7 +646,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameter(Config vocab, co
 #endif
     }
 
-    return vocabFromParameter(name, response->values[0], &vocab, value)
+    return vocabFromParameter(name, response->values[0], vocab, value)
         ? yarp::dev::ReturnValue_ok
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
@@ -718,7 +718,7 @@ yarp::dev::ReturnValue CartesianControlClientROS2::getParameters(config_map_t & 
         Config vocab;
         config_value_t value;
 
-        if (vocabFromParameter(name, responseValue, &vocab, &value))
+        if (vocabFromParameter(name, responseValue, vocab, value))
         {
             params[vocab] = value;
         }

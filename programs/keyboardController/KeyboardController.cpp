@@ -269,7 +269,7 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
         {
             ICartesianControl::config_value_t frame;
 
-            if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, &frame))
+            if (!iCartesianControl->getParameter(ICartesianControl::Config::FRAME, frame))
             {
                 yCError(KC) << "Could not retrieve current frame";
                 return false;

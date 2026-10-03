@@ -135,7 +135,7 @@ return_get_parameter_double RpcResponder::getParameterDouble(roboticslab::ICarte
 {
     return_get_parameter_double ret;
     ICartesianControl::config_value_t value;
-    ret.ret = iCartesianControl->getParameter(vocab, &value);
+    ret.ret = iCartesianControl->getParameter(vocab, value);
 
     try
     {
@@ -160,7 +160,7 @@ return_get_parameter_vocab RpcResponder::getParameterVocab(roboticslab::ICartesi
 {
     return_get_parameter_vocab ret;
     ICartesianControl::config_value_t value;
-    ret.ret = iCartesianControl->getParameter(vocab, &value);
+    ret.ret = iCartesianControl->getParameter(vocab, value);
 
     try
     {

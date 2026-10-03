@@ -344,7 +344,7 @@ public:
      *
      * @return true on success, false otherwise
      */
-    virtual yarp::dev::ReturnValue getParameter(Config vocab, config_value_t * value) = 0;
+    virtual yarp::dev::ReturnValue getParameter(Config vocab, config_value_t & value) = 0;
 
     /**
      * @brief Set multiple configuration parameters.
