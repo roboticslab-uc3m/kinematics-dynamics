@@ -169,7 +169,7 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
 
     sensorIndex = -1;
 
-#if YARP_VERSION_COMPARE(>=, 4, 1, 0)
+#if YARP_VERSION_COMPARE(>=, 4, 1, 0) || defined(YARP_NEXT)
     std::size_t numSensors;
 
     if (!sensor->getNrOfSixAxisForceTorqueSensors(numSensors))
