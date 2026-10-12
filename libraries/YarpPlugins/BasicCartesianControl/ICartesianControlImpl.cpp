@@ -92,6 +92,16 @@ yarp::dev::ReturnValue BasicCartesianControl::solvePose(const std::vector<double
 
 yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double> & xd)
 {
+    if (!iPositionControl)
+    {
+        yCError(BCC) << "iPositionControl not available";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        return yarp::dev::ReturnValue_error_not_implemented_by_device;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+#endif
+    }
+
     std::vector<double> currentQ(numJoints), qd;
 
     if (!iEncoders->getEncoders(currentQ.data()))
@@ -324,6 +334,16 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
 
 yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<double> & xdotd)
 {
+    if (!iVelocityControl)
+    {
+        yCError(BCC) << "iVelocityControl not available";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        return yarp::dev::ReturnValue_error_not_implemented_by_device;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+#endif
+    }
+
     std::vector<double> currentQ(numJoints);
 
     if (!iEncoders->getEncoders(currentQ.data()))
@@ -403,6 +423,16 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
 
 yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
 {
+    if (!iTorqueControl)
+    {
+        yCError(BCC) << "iTorqueControl not available";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        return yarp::dev::ReturnValue_error_not_implemented_by_device;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+#endif
+    }
+
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     if (!setControlModes(yarp::dev::SelectableControlModeEnum::VOCAB_CM_TORQUE))
 #else
@@ -426,7 +456,15 @@ yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
 
 yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<double> & fd)
 {
-    yCWarning(BCC) << "FORCE mode still experimental";
+    if (!iTorqueControl)
+    {
+        yCError(BCC) << "iTorqueControl not available";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        return yarp::dev::ReturnValue_error_not_implemented_by_device;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+#endif
+    }
 
     if (referenceFrame == ICartesianSolver::Frame::TCP)
     {
@@ -535,6 +573,12 @@ yarp::dev::ReturnValue BasicCartesianControl::actuateTool(Actuator command)
 
 void BasicCartesianControl::pose(const std::vector<double> & x)
 {
+    if (!iPositionDirect)
+    {
+        yCError(BCC) << "iPositionDirect not available";
+        return;
+    }
+
     if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::POSE ||
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
@@ -585,6 +629,12 @@ void BasicCartesianControl::pose(const std::vector<double> & x)
 
 void BasicCartesianControl::twist(const std::vector<double> & xdot)
 {
+    if (!iVelocityControl)
+    {
+        yCError(BCC) << "iVelocityControl not available";
+        return;
+    }
+
     if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::TWIST ||
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
@@ -631,6 +681,12 @@ void BasicCartesianControl::twist(const std::vector<double> & xdot)
 
 void BasicCartesianControl::wrench(const std::vector<double> & w)
 {
+    if (!iTorqueControl)
+    {
+        yCError(BCC) << "iTorqueControl not available";
+        return;
+    }
+
     if (currentMode != Mode::NONE ||
         streamingCommand != Streaming::WRENCH ||
 #if YARP_VERSION_COMPARE(>=, 4,0,0)

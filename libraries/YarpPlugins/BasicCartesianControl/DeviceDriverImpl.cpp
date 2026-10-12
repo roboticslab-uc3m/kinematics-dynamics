@@ -96,26 +96,22 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
 
     if (!robotDevice.view(iPositionControl))
     {
-        yCError(BCC) << "Could not view iPositionControl in:" << m_robot;
-        return false;
+        yCWarning(BCC) << "Could not view iPositionControl in:" << m_robot;
     }
 
     if (!robotDevice.view(iPositionDirect))
     {
-        yCError(BCC) << "Could not view iPositionDirect in:" << m_robot;
-        return false;
+        yCWarning(BCC) << "Could not view iPositionDirect in:" << m_robot;
     }
 
     if (!robotDevice.view(iVelocityControl))
     {
-        yCError(BCC) << "Could not view iVelocityControl in:" << m_robot;
-        return false;
+        yCWarning(BCC) << "Could not view iVelocityControl in:" << m_robot;
     }
 
     if (!robotDevice.view(iTorqueControl))
     {
-        yCError(BCC) << "Could not view iTorqueControl in:" << m_robot;
-        return false;
+        yCWarning(BCC) << "Could not view iTorqueControl in:" << m_robot;
     }
 
     if (!robotDevice.view(iControlMode))
@@ -129,6 +125,18 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
         yCWarning(BCC, "Could not view iPreciselyTimed in: %s, using local timestamps", m_robot.c_str());
     }
 
+    if (m_usePosdMovel && !iPositionDirect)
+    {
+        yCError(BCC) << "iPositionDirect not available, you must unset --usePosdMovel";
+        return false;
+    }
+
+    if (!m_usePosdMovel && !iVelocityControl)
+    {
+        yCError(BCC) << "iVelocityControl not available, you must set --usePosdMovel";
+        return false;
+    }
+
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     iEncoders->getAxes(numJoints);
 #else
@@ -139,13 +147,12 @@ bool BasicCartesianControl::open(yarp::os::Searchable& config)
     qRefSpeeds.resize(numJoints);
 
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
-    if (!iPositionControl->getTrajSpeeds(qRefSpeeds.data()))
+    if (iPositionControl && !iPositionControl->getTrajSpeeds(qRefSpeeds.data()))
 #else
-    if (!iPositionControl->getRefSpeeds(qRefSpeeds.data()))
+    if (iPositionControl && !iPositionControl->getRefSpeeds(qRefSpeeds.data()))
 #endif
     {
-        yCError(BCC) << "Could not retrieve reference speeds";
-        return false;
+        yCWarning(BCC) << "Could not retrieve reference speeds";
     }
 
     yarp::os::Property solverOptions;
