@@ -116,7 +116,8 @@ public:
     /**
      * @brief Sends a movement command that would stop motion.
      */
-    virtual void stopMotion() = 0;
+    virtual void stopMotion()
+    {}
 
     /**
      * @brief Stores handle to an ICartesianControl instance

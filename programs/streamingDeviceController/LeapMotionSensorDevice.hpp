@@ -36,9 +36,6 @@ public:
 
     void sendMovementCommand(double timestamp) override;
 
-    void stopMotion() override
-    {}
-
 private:
     yarp::dev::IAnalogSensor * iAnalogSensor;
 

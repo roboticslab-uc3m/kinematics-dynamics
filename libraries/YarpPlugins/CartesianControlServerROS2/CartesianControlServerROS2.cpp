@@ -252,7 +252,7 @@ bool CartesianControlServerROS2::configureRosParameters()
                 normalizedValue = "wrench";
                 break;
             default:
-                if (std::get<yarp::conf::vocab32_t>(value) == static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET))
+                if (std::get<yarp::conf::vocab32_t>(value) == static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::NOT_SET))
                 {
                     normalizedValue = "none";
                 }
@@ -375,7 +375,7 @@ rcl_interfaces::msg::SetParametersResult CartesianControlServerROS2::params_cb(c
             }
             else if (strValue == "none")
             {
-                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Vocabs::NOT_SET);
+                value = static_cast<yarp::conf::vocab32_t>(ICartesianControl::Streaming::NOT_SET);
             }
             else
             {

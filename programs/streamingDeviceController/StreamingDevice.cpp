@@ -9,6 +9,7 @@
 #include "SpaceNavigatorDevice.hpp"
 // #include "LeapMotionSensorDevice.hpp"
 #include "WiimoteDevice.hpp"
+#include "XTrainerDevice.hpp"
 
 using namespace roboticslab;
 
@@ -34,6 +35,10 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     else if (deviceName == "Wiimote")
     {
         return new WiimoteDevice(deviceConfig, usingPose);
+    }
+    else if (deviceName == "XTrainer")
+    {
+        return new XTrainerDevice(deviceConfig);
     }
     else
     {

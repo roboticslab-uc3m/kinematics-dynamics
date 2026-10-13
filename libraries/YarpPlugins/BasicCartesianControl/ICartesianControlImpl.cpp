@@ -197,9 +197,9 @@ yarp::dev::ReturnValue BasicCartesianControl::moveJoint(const std::vector<double
         trajectoryStartTime = getTimestamp();
         cmcSuccess = true;
         cmcProgress = 0.0f;
-        yCInfo(BCC) << "Performing MOVEJ";
 
-        currentMode = Mode::MOVEJ;
+        yCInfo(BCC) << "Performing MOVEJ";
+        setCurrentMode(Mode::MOVEJ);
     }
     else
     {
@@ -323,9 +323,9 @@ yarp::dev::ReturnValue BasicCartesianControl::moveLinear(const std::vector<doubl
     trajectoryStartTime = getTimestamp();
     cmcSuccess = true;
     cmcProgress = 0.0f;
-    yCInfo(BCC) << "Performing MOVEL";
 
-    currentMode = Mode::MOVEL;
+    yCInfo(BCC) << "Performing MOVEL";
+    setCurrentMode(Mode::MOVEL);
 
     return yarp::dev::ReturnValue_ok;
 }
@@ -412,9 +412,9 @@ yarp::dev::ReturnValue BasicCartesianControl::moveVelocity(const std::vector<dou
     //-- Set state, enable CMC thread and wait for movement to be done
     trajectoryStartTime = getTimestamp();
     cmcSuccess = true;
-    yCInfo(BCC) << "Performing MOVEV";
 
-    currentMode = Mode::MOVEV;
+    yCInfo(BCC) << "Performing MOVEV";
+    setCurrentMode(Mode::MOVEV);
 
     return yarp::dev::ReturnValue_ok;
 }
@@ -447,7 +447,7 @@ yarp::dev::ReturnValue BasicCartesianControl::gravityCompensation()
 #endif
     }
 
-    currentMode = Mode::GCMP;
+    setCurrentMode(Mode::GCMP);
 
     return yarp::dev::ReturnValue_ok;
 }
@@ -496,7 +496,7 @@ yarp::dev::ReturnValue BasicCartesianControl::forceControl(const std::vector<dou
 #endif
     }
 
-    currentMode = Mode::FORCE;
+    setCurrentMode(Mode::FORCE);
 
     return yarp::dev::ReturnValue_ok;
 }
@@ -507,7 +507,7 @@ yarp::dev::ReturnValue BasicCartesianControl::stopControl()
 {
     yCDebug(BCC) << "Stopping control";
 
-    currentMode = Mode::NONE;
+    setCurrentMode(Mode::NONE);
 
     // first switch control so that manipulators don't fall due to e.g. gravity
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
@@ -757,9 +757,9 @@ yarp::dev::ReturnValue BasicCartesianControl::setParameter(Config vocab, config_
         {
             yCError(BCC) << "Unable to set config parameter while controlling";
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
-        return yarp::dev::ReturnValue_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
 #else
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #endif
         }
 

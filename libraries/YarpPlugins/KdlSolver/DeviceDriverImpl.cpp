@@ -13,6 +13,7 @@
 
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_lma.hpp>
+#include <kdl/chainiksolverpos_nr.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainiksolvervel_wdls.hpp>
@@ -57,9 +58,9 @@ bool KdlSolver::open(yarp::os::Searchable & config)
         return false;
     }
 
-    if (m_mins.size() != m_maxs.size() || m_mins.size() != chain.getNrOfJoints())
+    if (m_mins.size() != m_maxs.size() || (!m_mins.empty() && m_mins.size() != chain.getNrOfJoints()))
     {
-        yCError(KDLS) << "Vectors of joints limits must have exactly" << chain.getNrOfJoints() << "elements";
+        yCError(KDLS) << "Vectors of joints limits, if provided, must have exactly" << chain.getNrOfJoints() << "elements";
         return false;
     }
 
@@ -104,15 +105,29 @@ bool KdlSolver::open(yarp::os::Searchable & config)
         Eigen::Matrix<double, 6, 1> L(m_weightsLMA.data());
         ikSolverPos = new KDL::ChainIkSolverPos_LMA(chain, L, m_epsPos, m_maxIterPos);
     }
-    else if (m_ikPos == "nrjl")
+    else if (m_ikPos == "nr" || m_ikPos == "nrjl")
     {
-        KDL::JntArray qMax = KdlSolverUtils::getJntArrayFromVector(m_maxs);
-        KDL::JntArray qMin = KdlSolverUtils::getJntArrayFromVector(m_mins);
+        if (m_ikPos == "nrjl" && (m_mins.empty() || m_maxs.empty()))
+        {
+            yCWarning(KDLS) << "Joint limits not provided for the 'nrjl' IK solver, using 'nr' instead";
+            ikSolverPos = new KDL::ChainIkSolverPos_NR(chain, *fkSolverPos, *ikSolverVel, m_maxIterPos, m_epsPos);
+        }
+        else
+        {
+            KDL::JntArray qMax = KdlSolverUtils::getJntArrayFromVector(m_maxs);
+            KDL::JntArray qMin = KdlSolverUtils::getJntArrayFromVector(m_mins);
 
-        ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, m_maxIterPos, m_epsPos);
+            ikSolverPos = new KDL::ChainIkSolverPos_NR_JL(chain, qMin, qMax, *fkSolverPos, *ikSolverVel, m_maxIterPos, m_epsPos);
+        }
     }
     else if (m_ikPos == "st")
     {
+        if (m_mins.empty() || m_maxs.empty())
+        {
+            yCError(KDLS) << "Joint limits must be provided for the 'st' IK solver";
+            return false;
+        }
+
         KDL::JntArray qMax = KdlSolverUtils::getJntArrayFromVector(m_maxs);
         KDL::JntArray qMin = KdlSolverUtils::getJntArrayFromVector(m_mins);
 
@@ -140,6 +155,12 @@ bool KdlSolver::open(yarp::os::Searchable & config)
     }
     else if (m_ikPos == "id")
     {
+        if (m_mins.empty() || m_maxs.empty())
+        {
+            yCError(KDLS) << "Joint limits must be provided for the 'id' IK solver";
+            return false;
+        }
+
         KDL::JntArray qMax = KdlSolverUtils::getJntArrayFromVector(m_maxs);
         KDL::JntArray qMin = KdlSolverUtils::getJntArrayFromVector(m_mins);
 
