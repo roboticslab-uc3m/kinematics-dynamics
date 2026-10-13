@@ -163,6 +163,7 @@ private:
     };
 
     double getTimestamp();
+    void setCurrentMode(roboticslab::ICartesianControl::Mode value);
 
     bool checkJointLimits(const std::vector<double> & q);
     bool checkJointLimits(const std::vector<double> & q, const std::vector<double> & qdot);
@@ -205,7 +206,7 @@ private:
     int numJoints {0};
 #endif
     std::atomic<roboticslab::ICartesianControl::Mode> currentMode {roboticslab::ICartesianControl::Mode::NONE};
-    roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::POSE};
+    roboticslab::ICartesianControl::Streaming streamingCommand {roboticslab::ICartesianControl::Streaming::NOT_SET};
 
     /** MOVEJ store previous reference speeds */
     std::vector<double> vmoStored;

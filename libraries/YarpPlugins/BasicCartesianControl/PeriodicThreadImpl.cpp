@@ -115,7 +115,7 @@ void BasicCartesianControl::handleMovj(const std::vector<double> & q, const Stat
 
     if (done)
     {
-        currentMode = Mode::NONE;
+        setCurrentMode(Mode::NONE);
 
 #if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         if (!iPositionControl->setTrajSpeeds(vmoStored.data()))

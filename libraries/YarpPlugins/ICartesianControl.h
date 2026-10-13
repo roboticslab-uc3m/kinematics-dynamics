@@ -36,40 +36,22 @@ public:
     };
 
     /**
-     * @brief RPC vocabs
-     *
-     * Used by @ref ICartesianControl_RPC_commands "RPC commands".
-     */
-    enum class RPC
-    {
-        STATE = yarp::os::createVocab32('s','t','a','t'), ///< Current state and position
-        INV = yarp::os::createVocab32('i','n','v'),       ///< Inverse kinematics
-        MOVEJ = yarp::os::createVocab32('m','o','v','j'), ///< Move in joint space, absolute coordinates
-        MOVEL = yarp::os::createVocab32('m','o','v','l'), ///< Linear move to target position
-        MOVEV = yarp::os::createVocab32('m','o','v','v'), ///< Linear move with given velocity
-        GCMP = yarp::os::createVocab32('g','c','m','p'),  ///< Gravity compensation
-        FORCE = yarp::os::createVocab32('f','o','r','c'), ///< Force control
-        STOP = yarp::os::createVocab32('s','t','o','p'),  ///< Stop control
-        TOOL = yarp::os::createVocab32('t','o','o','l'),  ///< Change tool
-        ACT = yarp::os::createVocab32('a','c','t')        ///< Actuate tool
-    };
-
-    /**
      * @brief Streaming vocabs
      *
-     * Used by @ref ICartesianControl_streaming_commands "streaming commands".
+     * Used by @ref ICartesianControl::Config_commands "configuration accessors" to preset streaming commands.
      */
     enum class Streaming
     {
-        POSE = yarp::os::createVocab32('p','o','s','e'),  ///< Achieve pose
-        TWIST = yarp::os::createVocab32('t','w','s','t'), ///< Instantaneous velocity steps
-        WRENCH = yarp::os::createVocab32('w','r','n','c') ///< Exert force
+        NOT_SET = yarp::os::createVocab32('n','s','e','t'), ///< Streaming command not set
+        POSE = yarp::os::createVocab32('p','o','s','e'),    ///< Achieve pose
+        TWIST = yarp::os::createVocab32('t','w','s','t'),   ///< Instantaneous velocity steps
+        WRENCH = yarp::os::createVocab32('w','r','n','c')   ///< Exert force
     };
 
     /**
      * @brief Controller mode vocabs
      *
-     * Used by ICartesianControl::getState to reflect current control mode.
+     * Used by @ref ICartesianControl::getState to reflect current control mode.
      */
     enum class Mode
     {
@@ -84,7 +66,7 @@ public:
     /**
      * @brief Actuator control vocabs
      *
-     * Used by ICartesianControl::act to control the actuator.
+     * Used by @ref ICartesianControl::act to control the actuator.
      */
     enum class Actuator
     {
@@ -114,7 +96,7 @@ public:
     /**
      * @brief Controller state structure
      *
-     * Used by ICartesianControl::getState to return the current state of the controller.
+     * Used by @ref ICartesianControl::getState to return the current state of the controller.
      */
     struct ControllerState
     {
@@ -458,41 +440,41 @@ constexpr auto VOCAB_CC_GET = static_cast<int>(roboticslab::ICartesianControl::V
 [[deprecated("use `ICartesianControl::Vocabs::NOT_SET` instead")]]
 constexpr auto VOCAB_CC_NOT_SET = static_cast<int>(roboticslab::ICartesianControl::Vocabs::NOT_SET);
 
-[[deprecated("use `ICartesianControl::RPC::STATE` instead")]]
-constexpr auto VOCAB_CC_STAT = static_cast<int>(roboticslab::ICartesianControl::RPC::STATE);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_STAT = 0;
 
-[[deprecated("use `ICartesianControl::RPC::INV` instead")]]
-constexpr auto VOCAB_CC_INV = static_cast<int>(roboticslab::ICartesianControl::RPC::INV);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_INV = 0;
 
-[[deprecated("use `ICartesianControl::RPC::MOVEJ` instead")]]
-constexpr auto VOCAB_CC_MOVJ = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEJ);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_MOVJ = 0;
 
-[[deprecated("use `ICartesianControl::RPC::MOVJ` instead")]]
+[[deprecated("not used anymore")]]
 constexpr auto VOCAB_CC_RELJ = 0;
 
-[[deprecated("use `ICartesianControl::RPC::MOVEL` instead")]]
-constexpr auto VOCAB_CC_MOVL = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEL);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_MOVL = 0;
 
-[[deprecated("use `ICartesianControl::RPC::MOVEV` instead")]]
-constexpr auto VOCAB_CC_MOVV = static_cast<int>(roboticslab::ICartesianControl::RPC::MOVEV);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_MOVV = 0;
 
-[[deprecated("use `ICartesianControl::RPC::GCMP` instead")]]
-constexpr auto VOCAB_CC_GCMP = static_cast<int>(roboticslab::ICartesianControl::RPC::GCMP);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_GCMP = 0;
 
-[[deprecated("use `ICartesianControl::RPC::FORCE` instead")]]
-constexpr auto VOCAB_CC_FORC = static_cast<int>(roboticslab::ICartesianControl::RPC::FORCE);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_FORC = 0;
 
-[[deprecated("use `ICartesianControl::RPC::STOP` instead")]]
-constexpr auto VOCAB_CC_STOP = static_cast<int>(roboticslab::ICartesianControl::RPC::STOP);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_STOP = 0;
 
-[[deprecated("use `ICartesianControl::RPC::STATE` instead")]]
+[[deprecated("not used anymore")]]
 constexpr auto VOCAB_CC_WAIT = 0;
 
-[[deprecated("use `ICartesianControl::RPC::TOOL` instead")]]
-constexpr auto VOCAB_CC_TOOL = static_cast<int>(roboticslab::ICartesianControl::RPC::TOOL);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_TOOL = 0;
 
-[[deprecated("use `ICartesianControl::RPC::ACT` instead")]]
-constexpr auto VOCAB_CC_ACT = static_cast<int>(roboticslab::ICartesianControl::RPC::ACT);
+[[deprecated("not used anymore")]]
+constexpr auto VOCAB_CC_ACT = 0;
 
 [[deprecated("use `ICartesianControl::Streaming::POSE` instead")]]
 constexpr auto VOCAB_CC_POSE = static_cast<int>(roboticslab::ICartesianControl::Streaming::POSE);

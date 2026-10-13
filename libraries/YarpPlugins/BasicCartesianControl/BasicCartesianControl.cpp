@@ -35,6 +35,14 @@ constexpr double epsilon = 1e-5;
 
 // -----------------------------------------------------------------------------
 
+void BasicCartesianControl::setCurrentMode(Mode mode)
+{
+    currentMode = mode;
+    streamingCommand = Streaming::NOT_SET;
+}
+
+// -----------------------------------------------------------------------------
+
 double BasicCartesianControl::getTimestamp()
 {
     return iPreciselyTimed ? iPreciselyTimed->getLastInputStamp().getTime() : yarp::os::Time::now();
@@ -275,7 +283,7 @@ bool BasicCartesianControl::setControlModes(int mode)
 
 bool BasicCartesianControl::presetStreamingCommand(Streaming command)
 {
-    currentMode = Mode::NONE;
+    setCurrentMode(Mode::NONE);
 
     switch (command)
     {
