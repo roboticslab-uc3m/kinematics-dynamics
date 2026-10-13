@@ -15,7 +15,7 @@
 #include <yarp/sig/Vector.h>
 
 #include "LogComponent.hpp"
-#include "SpnavSensorDevice.hpp" // for typeid() check
+#include "SpaceNavigatorDevice.hpp" // for typeid() check
 
 using namespace roboticslab;
 
@@ -134,7 +134,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     if (rf.check("remoteCentroid", "remote centroid port"))
     {
-        const auto & spnavType = typeid(SpnavSensorDevice);
+        const auto & spnavType = typeid(SpaceNavigatorDevice);
 
         if (typeid(*streamingDevice) != spnavType)
         {

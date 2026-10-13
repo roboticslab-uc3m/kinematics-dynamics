@@ -1,5 +1,5 @@
-#ifndef __SPNAV_SENSOR_DEVICE_HPP__
-#define __SPNAV_SENSOR_DEVICE_HPP__
+#ifndef __SPACE_NAVIGATOR_DEVICE_HPP__
+#define __SPACE_NAVIGATOR_DEVICE_HPP__
 
 #include "StreamingDevice.hpp"
 
@@ -14,10 +14,10 @@ namespace roboticslab
  * @brief Represents a spacenav-compatible device, like the SpaceNavigator
  * 6-DOF mouse from 3Dconnexion.
  */
-class SpnavSensorDevice : public StreamingDevice
+class SpaceNavigatorDevice : public StreamingDevice
 {
 public:
-    SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain = 0.0);
+    SpaceNavigatorDevice(yarp::os::Searchable & config, bool usingPose, double gain = 0.0);
 
     bool acquireInterfaces() override;
     bool initialize(const ICartesianControl::config_map_t & params) override;
@@ -39,4 +39,4 @@ private:
 
 } // namespace roboticslab
 
-#endif // __SPNAV_SENSOR_DEVICE_HPP__
+#endif // __SPACE_NAVIGATOR_DEVICE_HPP__

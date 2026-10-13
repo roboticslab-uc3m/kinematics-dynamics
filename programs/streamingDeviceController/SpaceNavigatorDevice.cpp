@@ -1,4 +1,4 @@
-#include "SpnavSensorDevice.hpp"
+#include "SpaceNavigatorDevice.hpp"
 
 #include <algorithm> // std::copy
 
@@ -10,13 +10,13 @@
 
 using namespace roboticslab;
 
-SpnavSensorDevice::SpnavSensorDevice(yarp::os::Searchable & config, bool usingPose, double gain)
+SpaceNavigatorDevice::SpaceNavigatorDevice(yarp::os::Searchable & config, bool usingPose, double gain)
     : StreamingDevice(config),
-        usingPose(usingPose),
-        gain(gain)
+      usingPose(usingPose),
+      gain(gain)
 {}
 
-bool SpnavSensorDevice::acquireInterfaces()
+bool SpaceNavigatorDevice::acquireInterfaces()
 {
     if (!yarp::dev::PolyDriver::view(iJoypadController))
     {
@@ -47,7 +47,7 @@ bool SpnavSensorDevice::acquireInterfaces()
     return true;
 }
 
-bool SpnavSensorDevice::initialize(const ICartesianControl::config_map_t & params)
+bool SpaceNavigatorDevice::initialize(const ICartesianControl::config_map_t & params)
 {
     if (usingPose && gain <= 0.0)
     {
@@ -91,7 +91,7 @@ bool SpnavSensorDevice::initialize(const ICartesianControl::config_map_t & param
     return true;
 }
 
-bool SpnavSensorDevice::acquireData()
+bool SpaceNavigatorDevice::acquireData()
 {
 #if YARP_VERSION_COMPARE(>=, 4,0,0)
     if (!iJoypadController->getAllAxes(data))
@@ -131,7 +131,7 @@ bool SpnavSensorDevice::acquireData()
     return true;
 }
 
-bool SpnavSensorDevice::transformData(double scaling)
+bool SpaceNavigatorDevice::transformData(double scaling)
 {
     if (usingPose)
     {
@@ -155,7 +155,7 @@ bool SpnavSensorDevice::transformData(double scaling)
     }
 }
 
-ICartesianControl::Actuator SpnavSensorDevice::getActuatorState()
+ICartesianControl::Actuator SpaceNavigatorDevice::getActuatorState()
 {
     if (buttonClose)
     {
@@ -184,7 +184,7 @@ ICartesianControl::Actuator SpnavSensorDevice::getActuatorState()
     return actuatorState;
 }
 
-bool SpnavSensorDevice::hasValidMovementData() const
+bool SpaceNavigatorDevice::hasValidMovementData() const
 {
     if (usingPose)
     {
@@ -204,7 +204,7 @@ bool SpnavSensorDevice::hasValidMovementData() const
     }
 }
 
-void SpnavSensorDevice::sendMovementCommand(double timestamp)
+void SpaceNavigatorDevice::sendMovementCommand(double timestamp)
 {
     if (usingPose)
     {
@@ -221,7 +221,7 @@ void SpnavSensorDevice::sendMovementCommand(double timestamp)
     }
 }
 
-void SpnavSensorDevice::stopMotion()
+void SpaceNavigatorDevice::stopMotion()
 {
     if (!usingPose)
     {

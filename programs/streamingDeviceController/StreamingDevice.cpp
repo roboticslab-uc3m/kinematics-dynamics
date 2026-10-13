@@ -6,7 +6,7 @@
 #include <yarp/os/Property.h>
 
 #include "LogComponent.hpp"
-#include "SpnavSensorDevice.hpp"
+#include "SpaceNavigatorDevice.hpp"
 // #include "LeapMotionSensorDevice.hpp"
 #include "WiimoteDevice.hpp"
 
@@ -25,7 +25,7 @@ StreamingDevice * StreamingDeviceFactory::makeDevice(const std::string & deviceN
     if (deviceName == "SpaceNavigator")
     {
         double gain = config.check("gain", yarp::os::Value(0.0)).asFloat64();
-        return new SpnavSensorDevice(deviceConfig, usingPose, gain);
+        return new SpaceNavigatorDevice(deviceConfig, usingPose, gain);
     }
     // else if (deviceName == "LeapMotionSensor")
     // {

@@ -14,8 +14,8 @@ if(ENABLE_streamingDeviceController)
     add_executable(streamingDeviceController main.cpp
                                              StreamingDevice.hpp
                                              StreamingDevice.cpp
-                                             SpnavSensorDevice.hpp
-                                             SpnavSensorDevice.cpp
+                                             SpaceNavigatorDevice.hpp
+                                             SpaceNavigatorDevice.cpp
                                             #  LeapMotionSensorDevice.hpp
                                             #  LeapMotionSensorDevice.cpp
                                              WiimoteDevice.hpp

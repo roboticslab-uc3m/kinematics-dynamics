@@ -128,7 +128,7 @@ public:
     }
 
 protected:
-    ICartesianControl * iCartesianControl;
+    ICartesianControl * iCartesianControl {nullptr};
 
     std::vector<double> data;
     std::vector<bool> fixedAxes;
