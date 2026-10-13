@@ -20,6 +20,8 @@ if(ENABLE_streamingDeviceController)
                                             #  LeapMotionSensorDevice.cpp
                                              WiimoteDevice.hpp
                                              WiimoteDevice.cpp
+                                             XTrainerDevice.hpp
+                                             XTrainerDevice.cpp
                                              StreamingDeviceController.hpp
                                              StreamingDeviceController.cpp
                                              CentroidTransform.hpp
