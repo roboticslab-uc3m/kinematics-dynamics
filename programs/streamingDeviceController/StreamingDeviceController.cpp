@@ -44,6 +44,7 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asFloat64();
+    smoothFactor = rf.check("smoothFactor", yarp::os::Value(1.0)).asFloat64();
 
     streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf);
 
