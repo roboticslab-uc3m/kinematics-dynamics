@@ -34,7 +34,7 @@ constexpr auto DEFAULT_THRESHOLD_ALERT_HIGH = 800;
 constexpr auto DEFAULT_THRESHOLD_ALERT_LOW = 100;
 constexpr auto SCALING_FACTOR_ON_ALERT = 2.0;
 
-bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
+bool StreamingDeviceController::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(SDC) << "Config:" << rf.toString();
 
@@ -44,6 +44,18 @@ bool StreamingDeviceController::configure(yarp::os::ResourceFinder &rf)
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "data acquisition period").asFloat64();
     scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor").asFloat64();
+
+    if (period <= 0.0)
+    {
+        yCError(SDC) << "Invalid period value:" << period;
+        return false;
+    }
+
+    if (scaling <= 0.0)
+    {
+        yCError(SDC) << "Invalid scaling value:" << scaling;
+        return false;
+    }
 
     streamingDevice = StreamingDeviceFactory::makeDevice(deviceName, rf);
 

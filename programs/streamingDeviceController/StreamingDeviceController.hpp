@@ -43,24 +43,24 @@ public:
 private:
     bool update(double timestamp);
 
-    StreamingDevice * streamingDevice;
+    StreamingDevice * streamingDevice {nullptr};
 
     yarp::dev::PolyDriver cartesianControlClientDevice;
-    roboticslab::ICartesianControl * iCartesianControl;
+    roboticslab::ICartesianControl * iCartesianControl {nullptr};
 
     yarp::os::BufferedPort<yarp::os::Bottle> proximityPort;
-    int thresholdAlertHigh;
-    int thresholdAlertLow;
-    bool disableSensorsLowLevel;
+    int thresholdAlertHigh {0};
+    int thresholdAlertLow {0};
+    bool disableSensorsLowLevel {false};
 
     yarp::os::BufferedPort<yarp::os::Bottle> centroidPort;
     CentroidTransform centroidTransform;
 
     yarp::os::BufferedPort<yarp::os::Bottle> syncPort;
 
-    double period;
-    double scaling;
-    bool isStopped;
+    double period {0.0};
+    double scaling {1.0};
+    bool isStopped {true};
 };
 
 } // namespace roboticslab
