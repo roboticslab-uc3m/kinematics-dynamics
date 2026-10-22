@@ -14,6 +14,10 @@ using namespace roboticslab;
 XTrainerDevice::XTrainerDevice(yarp::os::Searchable & config)
     : StreamingDevice(config)
 {
+    smoothFactor = config.check("smoothFactor", yarp::os::Value(1.0)).asFloat64();
+
+    yCInfo(SDC) << "Using smooth factor:" << smoothFactor;
+
     kinematics = config.check("kinematics", yarp::os::Value("")).asString();
 
     yCInfo(SDC) << "Using kinematics file:" << kinematics;
@@ -132,6 +136,8 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
         return false;
     }
 
+    prevData = data;
+
     if (!iCartesianSolver->forwardKinematics(data, initialDeviceOffset))
     {
         yCWarning(SDC) << "Initial forwardKinematics failed";
@@ -186,6 +192,17 @@ bool XTrainerDevice::acquireData()
 
 bool XTrainerDevice::transformData(double scaling)
 {
+    if (smoothFactor != 1.0)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (!fixedAxes[i])
+            {
+                data[i] += smoothFactor * (data[i] - prevData[i]);
+            }
+        }
+    }
+
     if (!iCartesianSolver->forwardKinematics(data, data))
     {
         yCWarning(SDC) << "forwardKinematics failed";

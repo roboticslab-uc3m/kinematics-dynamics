@@ -35,10 +35,12 @@ private:
     ICartesianSolver * iCartesianSolver {nullptr};
     yarp::dev::PolyDriver solverDevice;
 
+    double smoothFactor {1.0};
     std::string kinematics;
 
     std::vector<double> initialTcpOffset;
     std::vector<double> initialDeviceOffset;
+    std::vector<double> prevData;
 
     KDL::Frame H_base_device, H_ee_device, H_device_ee;
 
