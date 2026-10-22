@@ -1,6 +1,6 @@
 #include "XTrainerDevice.hpp"
 
-#include <algorithm> // std::copy
+#include <algorithm> // std::clamp, std::copy
 
 #include <yarp/conf/version.h>
 
@@ -15,6 +15,7 @@ XTrainerDevice::XTrainerDevice(yarp::os::Searchable & config)
     : StreamingDevice(config)
 {
     smoothFactor = config.check("smoothFactor", yarp::os::Value(1.0)).asFloat64();
+    smoothFactor = std::clamp(smoothFactor, 0.0, 1.0);
 
     yCInfo(SDC) << "Using smooth factor:" << smoothFactor;
 
@@ -136,7 +137,7 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
         return false;
     }
 
-    prevData = data;
+    prevJointData = data;
 
     if (!iCartesianSolver->forwardKinematics(data, initialDeviceOffset))
     {
@@ -192,15 +193,10 @@ bool XTrainerDevice::acquireData()
 
 bool XTrainerDevice::transformData(double scaling)
 {
-    if (smoothFactor != 1.0)
+    for (int i = 0; i < 6; i++)
     {
-        for (int i = 0; i < 6; i++)
-        {
-            if (!fixedAxes[i])
-            {
-                data[i] += smoothFactor * (data[i] - prevData[i]);
-            }
-        }
+        data[i] = smoothFactor * data[i] + (1.0 - smoothFactor) * prevJointData[i];
+        prevJointData[i] = data[i];
     }
 
     if (!iCartesianSolver->forwardKinematics(data, data))
