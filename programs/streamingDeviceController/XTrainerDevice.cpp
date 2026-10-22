@@ -43,6 +43,7 @@ XTrainerDevice::XTrainerDevice(yarp::os::Searchable & config)
     }
 
     data.resize(7); // although unused, make room for the trigger joint
+    prevPoseData.resize(6);
 }
 
 bool XTrainerDevice::acquireInterfaces()
@@ -138,6 +139,7 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
     }
 
     prevJointData = data;
+    prevPoseData = initialTcpOffset;
 
     if (!iCartesianSolver->forwardKinematics(data, initialDeviceOffset))
     {
@@ -237,6 +239,23 @@ bool XTrainerDevice::transformData(double scaling)
     KDL::Frame H_base_hand = H_base_device * H_device * H_device_ee;
 
     data = KdlVectorConverter::frameToVector(H_base_hand);
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (fixedAxes[i])
+        {
+            data[i] = prevPoseData[i];
+        }
+        else
+        {
+            data[i] -= initialDeviceOffset[i];
+
+            if (i < 3)
+            {
+                data[i] /= scaling;
+            }
+        }
+    }
 
     return true;
 }

@@ -41,6 +41,7 @@ private:
     std::vector<double> initialTcpOffset;
     std::vector<double> initialDeviceOffset;
     std::vector<double> prevJointData;
+    std::vector<double> prevPoseData;
 
     KDL::Frame H_base_device, H_ee_device, H_device_ee;
 
