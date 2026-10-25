@@ -37,8 +37,8 @@ XTrainerDevice::XTrainerDevice(yarp::os::Searchable & config)
 
             yCInfo(SDC) << "deviceFrameRPY [rad]:" << roll << pitch << yaw;
 
-            H_ee_device = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
-            H_device_ee = H_ee_device.Inverse();
+            H_robot_device = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
+            H_device_robot = H_robot_device.Inverse();
         }
     }
 
@@ -121,15 +121,13 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
         return false;
     }
 
-    initialTcpOffset = state.x;
-
     yCInfo(SDC) << "Initial TCP offset:"
-                << initialTcpOffset[0] << initialTcpOffset[1] << initialTcpOffset[2] << "[m],"
-                << initialTcpOffset[3] << initialTcpOffset[4] << initialTcpOffset[5] << "[rad]";
+                << state.x[0] << state.x[1] << state.x[2] << "[m],"
+                << state.x[3] << state.x[4] << state.x[5] << "[rad]";
 
-    auto H_base_ee = KdlVectorConverter::vectorToFrame(initialTcpOffset);
+    KDL::Frame H_robot_initial = KdlVectorConverter::vectorToFrame(state.x);
 
-    H_base_device = H_base_ee * H_ee_device;
+    H_robot_device_initial = H_robot_initial * H_robot_device;
 
     if (!acquireData())
     {
@@ -138,6 +136,8 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
     }
 
     prevJointData = data;
+
+    std::vector<double> initialDeviceOffset;
 
     if (!iCartesianSolver->forwardKinematics(data, initialDeviceOffset))
     {
@@ -148,6 +148,8 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
     yCInfo(SDC) << "Initial device offset:"
                 << initialDeviceOffset[0] << initialDeviceOffset[1] << initialDeviceOffset[2] << "[m],"
                 << initialDeviceOffset[3] << initialDeviceOffset[4] << initialDeviceOffset[5] << "[rad]";
+
+    H_device_initial_inv = KdlVectorConverter::vectorToFrame(initialDeviceOffset).Inverse();
 
     return true;
 }
@@ -205,38 +207,38 @@ bool XTrainerDevice::transformData(double scaling)
         return false;
     }
 
-    for (int i = 0; i < 6; i++)
-    {
-        if (fixedAxes[i])
-        {
-            data[i] = 0.0;
-        }
-        else
-        {
-            data[i] -= initialDeviceOffset[i];
+    KDL::Frame H_device = KdlVectorConverter::vectorToFrame(data);
 
-            if (i < 3)
+    // current pose wrt. the initial pose (device)
+    KDL::Frame H_device_diff = H_device_initial_inv * H_device;
+
+    if (hasFixedAxes)
+    {
+        auto vec = KdlVectorConverter::frameToVector(H_device_diff);
+
+        for (int i = 0; i < 6; i++)
+        {
+            if (fixedAxes[i])
             {
-                data[i] /= scaling;
+                vec[i] = 0.0;
             }
         }
+
+        H_device_diff = KdlVectorConverter::vectorToFrame(vec);
     }
-
-    KDL::Rotation R_device;
-
-    if (!fixedAxes[3] && !fixedAxes[4] && !fixedAxes[5])
+    else if (scaling != 1.0)
     {
-        KDL::Vector vec(data[3], data[4], data[5]);
-        R_device = KDL::Rotation::Rot(vec, vec.Norm());
+        H_device_diff.p.x(H_device_diff.p.x() / scaling);
+        H_device_diff.p.y(H_device_diff.p.y() / scaling);
+        H_device_diff.p.z(H_device_diff.p.z() / scaling);
     }
 
-    KDL::Vector p_device(data[0], data[1], data[2]);
-    KDL::Frame H_device(R_device, p_device);
+    // H_robot_device_initial: robot base-to-TCP where TCP follows the device TCP orientation (initial)
+    // H_device_diff: difference between current device pose and initial device pose
+    // H_device_robot: device TCP to robot TCP (inverse of H_robot_device in order to refer to the robot base)
+    KDL::Frame H_robot = H_robot_device_initial * H_device_diff * H_device_robot;
 
-    // undo device frame rotation with H_device_ee
-    KDL::Frame H_base_hand = H_base_device * H_device * H_device_ee;
-
-    data = KdlVectorConverter::frameToVector(H_base_hand);
+    data = KdlVectorConverter::frameToVector(H_robot);
 
     return true;
 }

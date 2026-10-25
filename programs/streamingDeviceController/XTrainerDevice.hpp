@@ -37,12 +37,12 @@ private:
 
     double smoothFactor {1.0};
     std::string kinematics;
-
-    std::vector<double> initialTcpOffset;
-    std::vector<double> initialDeviceOffset;
     std::vector<double> prevJointData;
 
-    KDL::Frame H_base_device, H_ee_device, H_device_ee;
+    KDL::Frame H_robot_device;
+    KDL::Frame H_device_robot;
+    KDL::Frame H_robot_device_initial;
+    KDL::Frame H_device_initial_inv;
 
     bool buttonClose {false};
     bool buttonOpen {false};

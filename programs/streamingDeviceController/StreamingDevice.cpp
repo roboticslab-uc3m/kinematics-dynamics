@@ -105,35 +105,35 @@ void StreamingDevice::configureFixedAxes(const yarp::os::Value & v)
         return;
     }
 
-    yarp::os::Bottle * axesList = v.asList();
+    const auto * axesList = v.asList();
 
-    for (int i = 0; i < axesList->size(); i++)
+    for (auto i = 0; i < axesList->size(); i++)
     {
-        std::string str = axesList->get(i).asString();
+        auto str = axesList->get(i).asString();
 
         if (str == "x")
         {
-            fixedAxes[0] = true;
+            fixedAxes[0] = hasFixedAxes = true;
         }
         else if (str == "y")
         {
-            fixedAxes[1] = true;
+            fixedAxes[1] = hasFixedAxes = true;
         }
         else if (str == "z")
         {
-            fixedAxes[2] = true;
+            fixedAxes[2] = hasFixedAxes = true;
         }
         else if (str == "rotx")
         {
-            fixedAxes[3] = true;
+            fixedAxes[3] = hasFixedAxes = true;
         }
         else if (str == "roty")
         {
-            fixedAxes[4] = true;
+            fixedAxes[4] = hasFixedAxes = true;
         }
         else if (str == "rotz")
         {
-            fixedAxes[5] = true;
+            fixedAxes[5] = hasFixedAxes = true;
         }
         else
         {

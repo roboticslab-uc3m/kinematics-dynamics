@@ -133,6 +133,7 @@ protected:
 
     std::vector<double> data;
     std::vector<bool> fixedAxes;
+    bool hasFixedAxes {false};
 
     ICartesianControl::Actuator actuatorState;
 
