@@ -1,10 +1,11 @@
 #include "XTrainerDevice.hpp"
 
-#include <algorithm> // std::clamp, std::copy
+#include <algorithm> // std::all_of, std::clamp, std::copy
 
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/SystemClock.h>
 
 #include "KdlVectorConverter.hpp"
 #include "LogComponent.hpp"
@@ -115,11 +116,19 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
 
     ICartesianControl::ControllerState state;
 
-    if (!iCartesianControl->getState(state))
+    do
     {
-        yCWarning(SDC) << "getState failed";
-        return false;
+        yCDebugThrottle(SDC, 1.0) << "Querying current robot state...";
+
+        if (!iCartesianControl->getState(state))
+        {
+            yCWarning(SDC) << "getState failed";
+            return false;
+        }
+
+        yarp::os::SystemClock::delaySystem(0.1);
     }
+    while (state.x.empty() || std::all_of(state.x.begin(), state.x.end(), [](double v) { return v == 0.0; }));
 
     yCInfo(SDC) << "Initial TCP offset:"
                 << state.x[0] << state.x[1] << state.x[2] << "[m],"
