@@ -116,6 +116,9 @@ public:
     return_get_parameter_vocab getParameterVocab(roboticslab::ICartesianControl::Config vocab) override;
     yarp::dev::ReturnValue setParameters(const std::map<roboticslab::ICartesianControl::Config, double> & params) override;
     return_get_parameters getParameters() override;
+    void pose(const std::vector<double> & x) override;
+    void twist(const std::vector<double> & xdot) override;
+    void wrench(const std::vector<double> & w) override;
 
 private:
     using ResponderBase::iCartesianControl;

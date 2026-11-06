@@ -140,4 +140,19 @@ service CartesianControlMsgs
      * Retrieve multiple configuration parameters.
      */
     return_get_parameters getParameters();
+
+    /**
+     * Move to desired position instantaneously (open loop).
+     */
+    oneway void pose(1: list<double> x);
+
+    /**
+     * Move in instantaneous velocity increments.
+     */
+    oneway void twist(1: list<double> xdot);
+
+    /**
+     * Make the TCP exert the desired force instantaneously.
+     */
+    oneway void wrench(1: list<double> w);
 }

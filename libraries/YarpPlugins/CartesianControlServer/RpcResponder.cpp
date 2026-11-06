@@ -239,3 +239,24 @@ return_get_parameters RpcResponder::getParameters()
 }
 
 // -----------------------------------------------------------------------------
+
+void RpcResponder::pose(const std::vector<double> & x)
+{
+    iCartesianControl->pose(x);
+}
+
+// -----------------------------------------------------------------------------
+
+void RpcResponder::twist(const std::vector<double> & xdot)
+{
+    iCartesianControl->twist(xdot);
+}
+
+// -----------------------------------------------------------------------------
+
+void RpcResponder::wrench(const std::vector<double> & w)
+{
+    iCartesianControl->wrench(w);
+}
+
+// -----------------------------------------------------------------------------
