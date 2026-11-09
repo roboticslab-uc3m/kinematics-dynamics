@@ -14,7 +14,8 @@ constexpr auto DEFAULT_LOCAL_PORT_PREFIX = "/hapticFeedback";
 constexpr auto DEFAULT_PERIOD = 0.01;
 constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
 constexpr auto DEFAULT_SCALING = 0.001;
-constexpr auto DEFAULT_THRESHOLD = 0.1;
+constexpr auto DEFAULT_THRESHOLD_LOW = 0.01;
+constexpr auto DEFAULT_THRESHOLD_HIGH = 0.1;
 
 bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
 {
@@ -38,11 +39,25 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    threshold = rf.check("threshold", yarp::os::Value(DEFAULT_THRESHOLD), "threshold for sensor measurements").asFloat64();
+    thresholdLow = rf.check("thresholdLow", yarp::os::Value(DEFAULT_THRESHOLD_LOW), "low threshold for sensor measurements").asFloat64();
 
-    if (threshold < 0.0)
+    if (thresholdLow < 0.0)
     {
-        yCError(HF) << "Invalid threshold specified:" << threshold;
+        yCError(HF) << "Invalid threshold specified:" << thresholdLow;
+        return false;
+    }
+
+    thresholdHigh = rf.check("thresholdHigh", yarp::os::Value(DEFAULT_THRESHOLD_HIGH), "high threshold for sensor measurements").asFloat64();
+
+    if (thresholdHigh < 0.0)
+    {
+        yCError(HF) << "Invalid threshold specified:" << thresholdHigh;
+        return false;
+    }
+
+    if (thresholdLow > thresholdHigh)
+    {
+        yCError(HF) << "Invalid thresholds: thresholdLow" << thresholdLow << "is greater than thresholdHigh" << thresholdHigh;
         return false;
     }
 
@@ -201,7 +216,9 @@ bool HapticFeedback::updateModule()
     KDL::Frame H_sensor = KdlVectorConverter::vectorToFrame(reaction);
     KDL::Frame H_tcp = H_device_sensor * H_sensor;
 
-    if (double norm = H_tcp.p.Norm(); norm > threshold)
+    double norm = H_tcp.p.Norm();
+
+    if (controlling || norm > thresholdHigh)
     {
         ICartesianControl::ControllerState state;
 
@@ -215,8 +232,16 @@ bool HapticFeedback::updateModule()
         KDL::Frame H_device_tcp = H_device * H_tcp;
 
         auto pose = KdlVectorConverter::frameToVector(H_device_tcp);
-        yCDebug(HF) << "Norm above threshold, updating pose:" << norm;
+
+        yCDebug(HF) << "Norm above threshold, updating pose";
         iCartesianControl->pose(pose);
+        controlling = true;
+    }
+    else if (controlling && norm < thresholdLow)
+    {
+        yCDebug(HF) << "Norm below low threshold, stopping control";
+        iCartesianControl->stopControl();
+        controlling = false;
     }
 
     return true;
@@ -226,6 +251,7 @@ bool HapticFeedback::interruptModule()
 {
     if (iCartesianControl)
     {
+        controlling = false;
         return iCartesianControl->stopControl();
     }
 

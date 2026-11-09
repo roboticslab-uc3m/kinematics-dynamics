@@ -38,7 +38,11 @@ private:
 
     double period {0.0};
     double scaling {0.0};
-    double threshold {0.0};
+
+    double thresholdLow {0.0};
+    double thresholdHigh {0.0};
+
+    bool controlling {false};
 
     KDL::Frame H_device_sensor;
 };
