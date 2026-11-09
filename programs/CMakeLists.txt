@@ -1,4 +1,5 @@
 add_subdirectory(ftCompensation)
+add_subdirectory(hapticFeedback)
 add_subdirectory(keyboardController)
 add_subdirectory(streamingDeviceController)
 add_subdirectory(visualServoController)
