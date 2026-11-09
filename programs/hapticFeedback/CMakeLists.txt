@@ -10,6 +10,8 @@ if(ENABLE_hapticFeedback)
     add_executable(hapticFeedback main.cpp
                                   HapticFeedback.hpp
                                   HapticFeedback.cpp
+                                  FakeSensor.hpp
+                                  FakeSensor.cpp
                                   LogComponent.hpp
                                   LogComponent.cpp)
 
