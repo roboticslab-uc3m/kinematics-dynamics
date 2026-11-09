@@ -9,6 +9,8 @@
 #include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include <kdl/frames.hpp>
+
 #include "ICartesianControl.h"
 #include "FakeSensor_ParamsParser.h"
 
@@ -44,8 +46,13 @@ public:
 #endif
 
 private:
+    double getDistance(const KDL::Vector & p) const;
+    double getForce(double distance) const;
+
     yarp::dev::PolyDriver cartesianClientDevice;
     ICartesianControl * iCartesianControl {nullptr};
+
+    KDL::Vector planeN;
 };
 
 } // namespace roboticslab
