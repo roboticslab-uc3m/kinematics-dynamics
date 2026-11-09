@@ -7,11 +7,15 @@ cmake_dependent_option(ENABLE_hapticFeedback "Enable/disable hapticFeedback prog
 
 if(ENABLE_hapticFeedback)
 
+    generateDeviceParamsParser(FakeSensor FakeSensor)
+
     add_executable(hapticFeedback main.cpp
                                   HapticFeedback.hpp
                                   HapticFeedback.cpp
                                   FakeSensor.hpp
                                   FakeSensor.cpp
+                                  FakeSensor_ParamsParser.h
+                                  FakeSensor_ParamsParser.cpp
                                   LogComponent.hpp
                                   LogComponent.cpp)
 

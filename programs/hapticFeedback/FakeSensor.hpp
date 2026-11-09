@@ -8,6 +8,8 @@
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
 
+#include "FakeSensor_ParamsParser.h"
+
 namespace roboticslab
 {
 
@@ -16,7 +18,8 @@ namespace roboticslab
  * @brief Simulates an FT sensor for testing purposes.
  */
 class FakeSensor : public yarp::dev::DeviceDriver,
-                   public yarp::dev::ISixAxisForceTorqueSensors
+                   public yarp::dev::ISixAxisForceTorqueSensors,
+                   public FakeSensor_ParamsParser
 {
 public:
     //  --------- DeviceDriver ---------
