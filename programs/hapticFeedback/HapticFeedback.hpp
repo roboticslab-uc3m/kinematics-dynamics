@@ -38,9 +38,7 @@ private:
 
     double period {0.0};
     double scaling {0.0};
-
-    yarp::sig::Vector sensorMeasure;
-    double sensorTimestamp {0.0};
+    double threshold {0.0};
 
     KDL::Frame H_device_sensor;
 };
