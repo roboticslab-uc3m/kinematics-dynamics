@@ -75,7 +75,7 @@ bool FakeSensor::open(yarp::os::Searchable & config)
 
     yarp::os::Property options {
         {"device", yarp::os::Value(m_device)},
-        {"local", yarp::os::Value(m_local)},
+        {"local", yarp::os::Value(m_local + "/sensor")},
         {"remote", yarp::os::Value(m_remote)}
     };
 
