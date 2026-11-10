@@ -47,7 +47,7 @@ private:
     roboticslab::IProximitySensors * iProximitySensors {nullptr};
 #endif
 
-    double period;
+    double period {0.0};
 };
 
 } // namespace roboticslab

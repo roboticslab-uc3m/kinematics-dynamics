@@ -49,11 +49,11 @@ private:
     bool applyImpedance(KDL::Wrench & wrench);
 
     yarp::dev::PolyDriver cartesianDevice;
-    ICartesianControl * iCartesianControl;
+    ICartesianControl * iCartesianControl {nullptr};
 
-    int sensorIndex;
+    int sensorIndex {-1};
     yarp::dev::PolyDriver sensorDevice;
-    yarp::dev::ISixAxisForceTorqueSensors * sensor;
+    yarp::dev::ISixAxisForceTorqueSensors * sensor {nullptr};
 
     KDL::Rotation R_N_sensor;
     KDL::Vector toolCoM_N;
@@ -65,21 +65,21 @@ private:
     using cartesian_cmd = void (ICartesianControl::*)(const std::vector<double> &);
     cartesian_cmd command;
 
-    bool dryRun;
-    bool usingTool;
-    bool enableImpedance;
+    bool dryRun {false};
+    bool usingTool {false};
+    bool enableImpedance {false};
 
-    double linGain;
-    double rotGain;
+    double linGain {0.0};
+    double rotGain {0.0};
 
-    double linStiffness;
-    double rotStiffness;
+    double linStiffness {0.0};
+    double rotStiffness {0.0};
 
-    double linDamping;
-    double rotDamping;
+    double linDamping {0.0};
+    double rotDamping {0.0};
 
-    double forceDeadband;
-    double torqueDeadband;
+    double forceDeadband {0.0};
+    double torqueDeadband {0.0};
 };
 
 } // namespace roboticslab

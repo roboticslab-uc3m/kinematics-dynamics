@@ -22,7 +22,6 @@ namespace
     YARP_LOG_COMPONENT(FTC, "rl.FtCompensation")
 }
 
-constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
 constexpr auto DEFAULT_LOCAL_PREFIX = "/ftCompensation";
 constexpr auto DEFAULT_PERIOD = 0.02;
 constexpr auto DEFAULT_LIN_GAIN = 0.01;
@@ -146,14 +145,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    auto sensorRemote = rf.find("sensorRemote").asString();
-
-    yarp::os::Property sensorOptions {
-        {"device", yarp::os::Value("multipleanalogsensorsclient")},
-        {"remote", yarp::os::Value(sensorRemote)},
-        {"local", yarp::os::Value(localPrefix + sensorRemote)},
-        {"timeout", yarp::os::Value(period)}
-    };
+    yarp::os::Property sensorOptions;
+    sensorOptions.fromString(rf.findGroup("SENSOR").toString());
 
     if (!sensorDevice.open(sensorOptions))
     {
@@ -166,8 +159,6 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
         yCError(FTC) << "Failed to view sensor interface";
         return false;
     }
-
-    sensorIndex = -1;
 
 #if YARP_VERSION_COMPARE(>=, 4, 1, 0) || defined(YARP_NEXT)
     std::size_t numSensors;
@@ -266,11 +257,8 @@ bool FtCompensation::configure(yarp::os::ResourceFinder & rf)
             return false;
         }
 
-        yarp::os::Property cartesianOptions {
-            {"device", rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name")},
-            {"remote", rf.find("cartesianRemote")},
-            {"local", yarp::os::Value(localPrefix + "/ccs")}
-        };
+        yarp::os::Property cartesianOptions;
+        cartesianOptions.fromString(rf.findGroup("CARTESIAN").toString());
 
         if (!cartesianDevice.open(cartesianOptions))
         {

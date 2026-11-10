@@ -18,24 +18,35 @@ bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
         return false;
     }
 
-    if (m_local.empty() || m_remote.empty())
+    if (m_name.empty())
     {
-        yCError(CCC) << "Non-empty local and remote names must be specified";
+        yCError(CCC) << "Non-empty local node name must be specified";
         return false;
     }
 
-    if (m_local[0] == '/')
+    if (m_name[0] == '/')
     {
-        m_local = m_local.substr(1);
+        m_name = m_name.substr(1);
     }
 
-    if (std::size_t pos = m_local.find('/'); pos != std::string::npos)
+    if (auto pos = m_name.find('/'); pos != std::string::npos)
     {
         while (pos != std::string::npos)
         {
-            m_local.replace(pos, 1, "_");
-            pos = m_local.find('/', pos + 1);
+            m_name.replace(pos, 1, "_");
+            pos = m_name.find('/', pos + 1);
         }
+    }
+
+    if (!m_ns.empty() && m_ns[0] != '/')
+    {
+        m_ns = '/' + m_ns;
+    }
+
+    if (m_remote.empty())
+    {
+        yCError(CCC) << "Non-empty remote node name must be specified";
+        return false;
     }
 
     if (m_remote[0] != '/')
@@ -43,7 +54,7 @@ bool CartesianControlClientROS2::open(yarp::os::Searchable & config)
         m_remote = '/' + m_remote;
     }
 
-    m_node = createNode(m_local);
+    m_node = createNode(m_name);
     m_spinner = std::make_unique<Spinner>(m_node);
 
     return m_spinner->start() && configureRosHandlers() && populateRosParameters();

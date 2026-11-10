@@ -13,10 +13,8 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
-constexpr auto DEFAULT_LOCAL_PORT = "/VisualServoController";
-constexpr auto DEFAULT_REMOTE_VISION = "/haarDetection2D";
-constexpr auto DEFAULT_REMOTE_CARTESIAN = "/CartesianControl";
+constexpr auto DEFAULT_LOCAL_PORT = "/visualServoController";
+constexpr auto DEFAULT_REMOTE_DETECTOR = "/haarDetection2D";
 #if 0
 constexpr auto DEFAULT_PROXIMITY_SENSORS = "/sensor_reader";
 #endif
@@ -29,18 +27,13 @@ bool VisualServoController::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(VSC) << "Config:" << rf.toString();
 
-    auto cartesianDeviceName = rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name").asString();
     auto localPort = rf.check("local", yarp::os::Value(DEFAULT_LOCAL_PORT), "local cartesian port").asString();
-    auto remoteVision = rf.check("remoteVision", yarp::os::Value(DEFAULT_REMOTE_VISION), "remote vision port").asString();
-    auto remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(DEFAULT_REMOTE_CARTESIAN), "remote cartesian port").asString();
+    auto detectorPort = rf.check("detector", yarp::os::Value(DEFAULT_REMOTE_DETECTOR), "remote detector port").asString();
 
     period = rf.check("period", yarp::os::Value(DEFAULT_PERIOD), "period [s]").asFloat64();
 
-    yarp::os::Property cartesianControlClientOptions {
-        {"device", yarp::os::Value(cartesianDeviceName)},
-        {"local", yarp::os::Value(localPort)},
-        {"remote", yarp::os::Value(remoteCartesian)}
-    };
+    yarp::os::Property cartesianControlClientOptions;
+    cartesianControlClientOptions.fromString(rf.findGroup("CARTESIAN").toString());
 
     if (!cartesianControlDevice.open(cartesianControlClientOptions))
     {
@@ -102,9 +95,9 @@ bool VisualServoController::configure(yarp::os::ResourceFinder & rf)
         grabberPort.useCallback(grabberResponder);
         grabberPort.open(localPort + "/state:i");
 
-        if (!yarp::os::Network::connect(remoteVision + "/state:o", localPort + "/state:i"))
+        if (!yarp::os::Network::connect(detectorPort + "/state:o", localPort + "/state:i"))
         {
-            yCError(VSC) << "Unable to connect to remote vision port with prefix:" << remoteVision;
+            yCError(VSC) << "Unable to connect to remote vision port with prefix:" << detectorPort;
             return false;
         }
     }

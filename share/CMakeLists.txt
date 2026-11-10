@@ -7,9 +7,20 @@ if(ENABLE_ftCompensation)
                  DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/ftCompensation)
 endif()
 
+if(ENABLE_keyboardController)
+    yarp_install(FILES contexts/keyboardController.ini
+                       contexts/keyboardController-gofa.ini
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/keyboardController)
+endif()
+
 if(ENABLE_streamingDeviceController)
     yarp_install(FILES contexts/streamingDeviceController.ini
                  DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/streamingDeviceController)
+endif()
+
+if(ENABLE_visualServoController)
+    yarp_install(FILES contexts/visualServoController.ini
+                 DESTINATION ${ROBOTICSLAB-KINEMATICS-DYNAMICS_CONTEXTS_INSTALL_DIR}/visualServoController)
 endif()
 
 if(ENABLE_tests AND ENABLE_AsibotSolver)

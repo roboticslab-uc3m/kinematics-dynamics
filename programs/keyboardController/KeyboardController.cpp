@@ -26,8 +26,6 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
-
 constexpr auto DEFAULT_LOCAL_PREFIX = "/keyboardController";
 
 constexpr auto DEFAULT_ANGLE_REPR = "axisAngle"; // keep in sync with KinRepresentation::parseEnumerator's
@@ -118,8 +116,8 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 {
     yCDebug(KC) << "Config:" << rf.toString();
 
-    auto usingRemoteRobot = rf.check("remoteRobot", "remote robot port");
-    auto usingRemoteCartesian = rf.check("remoteCartesian", "remote cartesian port");
+    auto usingRemoteRobot = rf.check("ROBOT");
+    auto usingRemoteCartesian = rf.check("CARTESIAN");
 
     if (!usingRemoteRobot && !usingRemoteCartesian)
     {
@@ -131,11 +129,8 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
     if (usingRemoteRobot)
     {
-        yarp::os::Property controlBoardClientOptions {
-            {"device", yarp::os::Value("remote_controlboard")},
-            {"local", yarp::os::Value(localPrefix + "/joint")},
-            {"remote", yarp::os::Value(rf.find("remoteRobot"))}
-        };
+        yarp::os::Property controlBoardClientOptions;
+        controlBoardClientOptions.fromString(rf.findGroup("ROBOT").toString());
 
         if (!controlBoardDevice.open(controlBoardClientOptions))
         {
@@ -239,11 +234,8 @@ bool KeyboardController::configure(yarp::os::ResourceFinder & rf)
 
     if (usingRemoteCartesian)
     {
-        yarp::os::Property cartesianControlClientOptions {
-            {"device", rf.check("cartesianDevice", yarp::os::Value(DEFAULT_CARTESIAN_DEVICE), "cartesian device name")},
-            {"local", yarp::os::Value(localPrefix + "/cartesian")},
-            {"remote", rf.find("remoteCartesian")},
-        };
+        yarp::os::Property cartesianControlClientOptions;
+        cartesianControlClientOptions.fromString(rf.findGroup("CARTESIAN").toString());
 
         if (!cartesianControlDevice.open(cartesianControlClientOptions))
         {
