@@ -38,8 +38,7 @@ XTrainerDevice::XTrainerDevice(yarp::os::Searchable & config)
 
             yCInfo(SDC) << "deviceFrameRPY [rad]:" << roll << pitch << yaw;
 
-            H_robot_device = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
-            H_device_robot = H_robot_device.Inverse();
+            H_0_robot_device = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
         }
     }
 
@@ -134,9 +133,7 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
                 << state.x[0] << state.x[1] << state.x[2] << "[m],"
                 << state.x[3] << state.x[4] << state.x[5] << "[rad]";
 
-    KDL::Frame H_robot_initial = KdlVectorConverter::vectorToFrame(state.x);
-
-    H_robot_device_initial = H_robot_initial * H_robot_device;
+    KDL::Frame H_0_N_robot = KdlVectorConverter::vectorToFrame(state.x);
 
     if (!acquireData())
     {
@@ -158,7 +155,13 @@ bool XTrainerDevice::initialize(const ICartesianControl::config_map_t & params)
                 << initialDeviceOffset[0] << initialDeviceOffset[1] << initialDeviceOffset[2] << "[m],"
                 << initialDeviceOffset[3] << initialDeviceOffset[4] << initialDeviceOffset[5] << "[rad]";
 
-    H_device_initial_inv = KdlVectorConverter::vectorToFrame(initialDeviceOffset).Inverse();
+    H_0_N_device = KdlVectorConverter::vectorToFrame(initialDeviceOffset);
+
+    // H_0_N_device: device tool frame wrt. device base frame (initial, queried from controller)
+    // H_0_robot_device: device base frame wrt. robot base frame (static, from .ini)
+    // H_0_N_robot: robot tool frame wrt. robot base frame (initial, queried from controller)
+    // H_N_device_robot: robot tool frame wrt. device tool frame (initial, cached)
+    H_N_device_robot = H_0_N_device.Inverse() * H_0_robot_device.Inverse() * H_0_N_robot;
 
     return true;
 }
@@ -216,36 +219,44 @@ bool XTrainerDevice::transformData(double scaling)
         return false;
     }
 
+    // this is H_0_N_device, but the name is already taken to refer to the initial state
     KDL::Frame H_device = KdlVectorConverter::vectorToFrame(data);
 
-    // current pose wrt. the initial pose (device)
-    KDL::Frame H_device_diff = H_device_initial_inv * H_device;
-
-    if (hasFixedAxes)
+    if (hasFixedAxes || scaling != 1.0)
     {
-        auto vec = KdlVectorConverter::frameToVector(H_device_diff);
+        // current device tool frame wrt. initial device tool frame
+        KDL::Frame H_device_diff = H_0_N_device.Inverse() * H_device;
 
-        for (int i = 0; i < 6; i++)
+        if (hasFixedAxes)
         {
-            if (fixedAxes[i])
+            auto vec = KdlVectorConverter::frameToVector(H_device_diff);
+
+            for (int i = 0; i < 6; i++)
             {
-                vec[i] = 0.0;
+                if (fixedAxes[i])
+                {
+                    vec[i] = 0.0;
+                }
             }
+
+            H_device_diff = KdlVectorConverter::vectorToFrame(vec);
         }
 
-        H_device_diff = KdlVectorConverter::vectorToFrame(vec);
-    }
-    else if (scaling != 1.0)
-    {
-        H_device_diff.p = H_device_diff.p / scaling;
+        if (scaling != 1.0)
+        {
+            H_device_diff.p = H_device_diff.p / scaling;
+        }
+
+        H_device = H_0_N_device * H_device_diff;
     }
 
-    // H_robot_device_initial: robot base-to-TCP where TCP follows the device TCP orientation (initial)
-    // H_device_diff: difference between current device pose and initial device pose
-    // H_device_robot: device TCP to robot TCP (inverse of H_robot_device in order to refer to the robot base)
-    KDL::Frame H_robot = H_robot_device_initial * H_device_diff * H_device_robot;
+    // H_0_robot_device: device base frame wrt. robot base frame (static, from .ini)
+    // H_device: device tool frame wrt. device base frame (current, updated on each iteration)
+    // H_N_device_robot: robot tool frame wrt. device tool frame (initial, cached)
+    // H_0_N_robot: robot tool frame wrt. robot base frame (current, staged for next robot command)
+    KDL::Frame H_0_N_robot = H_0_robot_device * H_device * H_N_device_robot;
 
-    data = KdlVectorConverter::frameToVector(H_robot);
+    data = KdlVectorConverter::frameToVector(H_0_N_robot);
 
     return true;
 }
