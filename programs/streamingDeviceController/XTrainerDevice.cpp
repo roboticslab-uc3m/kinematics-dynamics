@@ -237,9 +237,7 @@ bool XTrainerDevice::transformData(double scaling)
     }
     else if (scaling != 1.0)
     {
-        H_device_diff.p.x(H_device_diff.p.x() / scaling);
-        H_device_diff.p.y(H_device_diff.p.y() / scaling);
-        H_device_diff.p.z(H_device_diff.p.z() / scaling);
+        H_device_diff.p = H_device_diff.p / scaling;
     }
 
     // H_robot_device_initial: robot base-to-TCP where TCP follows the device TCP orientation (initial)
