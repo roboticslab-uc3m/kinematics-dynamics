@@ -4,7 +4,7 @@
 #define __GRABBER_RESPONDER_HPP__
 
 #include <yarp/os/Bottle.h>
-#include <yarp/os/PortReaderBuffer.h>
+#include <yarp/os/TypedReaderCallback.h>
 
 #include "ICartesianControl.h"
 

@@ -8,8 +8,8 @@
 
 #include <yarp/os/Bottle.h>
 #include <yarp/os/BufferedPort.h>
-#include <yarp/os/PortReaderBuffer.h>
 #include <yarp/os/RpcClient.h>
+#include <yarp/os/TypedReaderCallback.h>
 
 #include <yarp/dev/Drivers.h>
 
