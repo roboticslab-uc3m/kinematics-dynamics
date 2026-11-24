@@ -39,10 +39,12 @@ private:
     std::string kinematics;
     std::vector<double> prevJointData;
 
-    KDL::Frame H_robot_device;
-    KDL::Frame H_device_robot;
-    KDL::Frame H_robot_device_initial;
-    KDL::Frame H_device_initial_inv;
+    KDL::Rotation R_0_robot_device; // from .ini
+
+    // cached at initialization
+    KDL::Frame H_pre;
+    KDL::Frame H_post;
+    KDL::Frame H_0_N_device;
 
     bool buttonClose {false};
     bool buttonOpen {false};
