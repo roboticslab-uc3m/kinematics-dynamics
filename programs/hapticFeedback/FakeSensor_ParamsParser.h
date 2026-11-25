@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GENERATION is ON.
 
-// Generated on: Tue Oct 27 11:27:20 2026
+// Generated on: Tue Oct 27 11:50:28 2026
 
 
 #ifndef FAKESENSOR_PARAMSPARSER_H
@@ -23,17 +23,17 @@
 * This class is the parameters parser for class FakeSensor.
 *
 * These are the used parameters:
-* | Group name | Parameter name | Type   | Units | Default Value          | Required | Description                                            | Notes                      |
-* |:----------:|:--------------:|:------:|:-----:|:----------------------:|:--------:|:------------------------------------------------------:|:--------------------------:|
-* | -          | planeA         | double | m     | 0.0                    | 1        | First coefficient for the plane equation               | -                          |
-* | -          | planeB         | double | m     | 0.0                    | 1        | Second coefficient for the plane equation              | -                          |
-* | -          | planeC         | double | m     | 0.0                    | 1        | Third coefficient for the plane equation               | -                          |
-* | -          | planeD         | double | m     | 0.0                    | 1        | Fourth coefficient for the plane equation              | -                          |
-* | -          | threshold      | double | m     | 0.1                    | 1        | Distance from the plane at which to trigger the sensor | y = threshold + factor / x |
-* | -          | factor         | double | -     | 1.0                    | 1        | Scaling factor for the sensor reading                  | y = threshold + factor / x |
-* | -          | local          | string | -     | /FakeSensor            | 1        | Port prefix of the local Cartesian control client      | -                          |
-* | -          | remote         | string | -     | -                      | 1        | Port prefix of the remote Cartesian control server     | -                          |
-* | -          | device         | string | -     | CartesianControlClient | 1        | Device name for the Cartesian control client           | -                          |
+* | Group name | Parameter name | Type   | Units | Default Value          | Required | Description                                            | Notes                    |
+* |:----------:|:--------------:|:------:|:-----:|:----------------------:|:--------:|:------------------------------------------------------:|:------------------------:|
+* | -          | planeA         | double | m     | 0.0                    | 1        | First coefficient for the plane equation               | -                        |
+* | -          | planeB         | double | m     | 0.0                    | 1        | Second coefficient for the plane equation              | -                        |
+* | -          | planeC         | double | m     | 0.0                    | 1        | Third coefficient for the plane equation               | -                        |
+* | -          | planeD         | double | m     | 0.0                    | 1        | Fourth coefficient for the plane equation              | -                        |
+* | -          | threshold      | double | m     | 0.1                    | 1        | Distance from the plane at which to trigger the sensor | y = (factor / x) - coeff |
+* | -          | factor         | double | -     | 1.0                    | 1        | Scaling factor for the sensor reading                  | y = (factor / x) - coeff |
+* | -          | local          | string | -     | /FakeSensor            | 1        | Port prefix of the local Cartesian control client      | -                        |
+* | -          | remote         | string | -     | -                      | 1        | Port prefix of the remote Cartesian control server     | -                        |
+* | -          | device         | string | -     | CartesianControlClient | 1        | Device name for the Cartesian control client           | -                        |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}

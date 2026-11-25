@@ -1,11 +1,14 @@
 #include "FakeSensor.hpp"
 
+#include <cmath>
+
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/SystemClock.h>
 
+#include "KdlVectorConverter.hpp"
 #include "LogComponent.hpp"
 
 #if YARP_VERSION_COMPARE(>=, 4, 1, 0) || defined(YARP_NEXT)
@@ -26,9 +29,11 @@ bool FakeSensor::open(yarp::os::Searchable & config)
         return false;
     }
 
-    if (m_planeA == 0.0 && m_planeB == 0.0 && m_planeC == 0.0)
+    planeN = KDL::Vector(m_planeA, m_planeB, m_planeC);
+
+    if (planeN.Normalize() == 0.0)
     {
-        yCError(FS) << "Plane ABC coefficients cannot all be zero";
+        yCError(FS) << "Plane ABC norm cannot be zero";
         return false;
     }
 
@@ -158,13 +163,57 @@ bool FakeSensor::getSixAxisForceTorqueSensorMeasure(std::size_t sens_index, yarp
 #else
     CHECK_SENSOR(sens_index, false);
 #endif
-    out = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    ICartesianControl::ControllerState state;
+
+    if (!iCartesianControl->getState(state))
+    {
+        yCError(FS) << "Failed to get Cartesian control state";
+#if YARP_VERSION_COMPARE(>=, 4, 1, 0) || defined(YARP_NEXT)
+        return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return false;
+#endif
+    }
+
+    auto H_0_N = KdlVectorConverter::vectorToFrame(state.x);
+    auto distance = getDistance(H_0_N.p);
+
+    out = yarp::sig::Vector(6, 0.0);
+
+    if (distance > m_threshold)
+    {
+        auto force = getForce(distance);
+        auto p_N = H_0_N.M.Inverse() * (planeN * force); // planeN is referred to frame 0 (base)
+
+        out[0] = p_N[0];
+        out[1] = p_N[1];
+        out[2] = p_N[2];
+    }
+
     timestamp = yarp::os::SystemClock::nowSystem();
+
 #if YARP_VERSION_COMPARE(>=, 4, 1, 0) || defined(YARP_NEXT)
     return yarp::dev::ReturnValue_ok;
 #else
     return true;
 #endif
+}
+
+// -----------------------------------------------------------------------------
+
+inline double FakeSensor::getDistance(const KDL::Vector & p) const
+{
+    return std::abs(KDL::dot(planeN, p) + m_planeD) / planeN.Norm();
+}
+
+// -----------------------------------------------------------------------------
+
+inline double FakeSensor::getForce(double distance) const
+{
+    // y = (factor / x) - coeff
+    // if x = threshold, then y = 0, so coeff = factor / threshold
+    return (m_factor / distance) - (m_factor / m_threshold); // FIXME: division by zero
 }
 
 // -----------------------------------------------------------------------------
