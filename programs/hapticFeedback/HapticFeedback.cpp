@@ -14,6 +14,7 @@ constexpr auto DEFAULT_LOCAL_PORT_PREFIX = "/hapticFeedback";
 constexpr auto DEFAULT_PERIOD = 0.01;
 constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
 constexpr auto DEFAULT_SCALING = 0.001;
+constexpr auto DEFAULT_THRESHOLD = 0.1;
 
 bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
 {
@@ -34,6 +35,14 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
     if (scaling <= 0.0)
     {
         yCError(HF) << "Invalid scaling factor specified:" << scaling;
+        return false;
+    }
+
+    threshold = rf.check("threshold", yarp::os::Value(DEFAULT_THRESHOLD), "threshold for sensor measurements").asFloat64();
+
+    if (threshold < 0.0)
+    {
+        yCError(HF) << "Invalid threshold specified:" << threshold;
         return false;
     }
 
@@ -172,7 +181,9 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
 
 bool HapticFeedback::updateModule()
 {
-    if (!iSensor->getSixAxisForceTorqueSensorMeasure(0, sensorMeasure, sensorTimestamp))
+    yarp::sig::Vector sensorMeasure;
+
+    if (double ts; !iSensor->getSixAxisForceTorqueSensorMeasure(0, sensorMeasure, ts))
     {
         yCError(HF) << "Failed to get sensor measure";
         return false;
@@ -188,11 +199,26 @@ bool HapticFeedback::updateModule()
     yCDebug(HF) << "Reaction:" << reaction;
 
     KDL::Frame H_sensor = KdlVectorConverter::vectorToFrame(reaction);
-    KDL::Frame H_device = H_device_sensor * H_sensor;
+    KDL::Frame H_tcp = H_device_sensor * H_sensor;
 
-    auto pose = KdlVectorConverter::frameToVector(H_device);
+    if (double norm = H_tcp.p.Norm(); norm > threshold)
+    {
+        ICartesianControl::ControllerState state;
 
-    iCartesianControl->pose(pose);
+        if (!iCartesianControl->getState(state))
+        {
+            yCError(HF) << "Failed to get controller state";
+            return false;
+        }
+
+        KDL::Frame H_device = KdlVectorConverter::vectorToFrame(state.x);
+        KDL::Frame H_device_tcp = H_device * H_tcp;
+
+        auto pose = KdlVectorConverter::frameToVector(H_device_tcp);
+        yCDebug(HF) << "Norm above threshold, updating pose:" << norm;
+        iCartesianControl->pose(pose);
+    }
+
     return true;
 }
 
