@@ -5,7 +5,10 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
+#include <yarp/dev/Drivers.h>
+
 #include "KdlVectorConverter.hpp"
+#include "FakeSensor.hpp"
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
@@ -88,17 +91,26 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
     {
         auto remoteSensor = rf.check("remoteSensor", yarp::os::Value(""), "remote sensor port prefix").asString();
 
-        if (remoteSensor.empty())
-        {
-            yCError(HF) << "Remote sensor port prefix not specified";
-            return false;
-        }
+        yarp::os::Property options;
 
-        yarp::os::Property options {
-            {"device", yarp::os::Value("multipleanalogsensorsclient")},
-            {"local", yarp::os::Value(local + "/mas")},
-            {"remote", yarp::os::Value(remoteSensor)}
-        };
+        if (!remoteSensor.empty())
+        {
+            yCInfo(HF) << "Using remote sensor";
+
+            options = {
+                {"device", yarp::os::Value("multipleanalogsensorsclient")},
+                {"local", yarp::os::Value(local + "/sensor")},
+                {"remote", yarp::os::Value(remoteSensor)}
+            };
+        }
+        else
+        {
+            yCInfo(HF) << "Using fake sensor";
+            yarp::dev::Drivers::factory().add(new yarp::dev::DriverCreatorOf<FakeSensor>("FakeSensor", "", "FakeSensor"));
+            options.fromString(rf.toString());
+            options.put("device", "FakeSensor");
+            options.put("remote", rf.check("remoteCartesianRobot"));
+        }
 
         if (!sensorClientDevice.open(options))
         {
@@ -132,7 +144,7 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
     }
 
     {
-        auto remoteCartesian = rf.check("remoteCartesian", yarp::os::Value(""), "remote cartesian port prefix").asString();
+        auto remoteCartesian = rf.check("remoteCartesianDevice", yarp::os::Value(""), "remote cartesian port prefix").asString();
 
         if (remoteCartesian.empty())
         {
