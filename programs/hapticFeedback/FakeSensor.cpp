@@ -19,6 +19,30 @@ using namespace roboticslab;
 
 bool FakeSensor::open(yarp::os::Searchable & config)
 {
+    if (!parseParams(config))
+    {
+        yCError(FS) << "Invalid parameters";
+        return false;
+    }
+
+    if (m_planeA == 0.0 && m_planeB == 0.0 && m_planeC == 0.0)
+    {
+        yCError(FS) << "Plane ABC coefficients cannot all be zero";
+        return false;
+    }
+
+    if (m_threshold <= 0.0)
+    {
+        yCError(FS) << "Threshold must be positive:" << m_threshold;
+        return false;
+    }
+
+    if (m_factor <= 0.0)
+    {
+        yCError(FS) << "Factor must be positive:" << m_factor;
+        return false;
+    }
+
     return true;
 }
 
