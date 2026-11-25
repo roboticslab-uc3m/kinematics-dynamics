@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GENERATION is ON.
 
-// Generated on: Tue Oct 27 11:50:28 2026
+// Generated on: Tue Oct 27 14:03:25 2026
 
 
 #include "FakeSensor_ParamsParser.h"
@@ -34,6 +34,7 @@ std::vector<std::string> FakeSensor_ParamsParser::getListOfParams() const
     params.push_back("planeD");
     params.push_back("threshold");
     params.push_back("factor");
+    params.push_back("saturation");
     params.push_back("local");
     params.push_back("remote");
     params.push_back("device");
@@ -71,6 +72,11 @@ bool FakeSensor_ParamsParser::getParamValue(const std::string& paramName, std::s
     if (paramName =="factor")
     {
         paramValue = std::to_string(m_factor);
+        return true;
+    }
+    if (paramName =="saturation")
+    {
+        paramValue = std::to_string(m_saturation);
         return true;
     }
     if (paramName =="local")
@@ -216,6 +222,22 @@ bool      FakeSensor_ParamsParser::parseParams(const yarp::os::Searchable & conf
         prop_check.unput("factor");
     }
 
+    //Parser of parameter saturation
+    {
+        if (config.check("saturation"))
+        {
+            m_saturation = config.find("saturation").asFloat64();
+            yCInfo(FakeSensorParamsCOMPONENT) << "Parameter 'saturation' using value:" << m_saturation;
+        }
+        else
+        {
+            yCError(FakeSensorParamsCOMPONENT) << "Mandatory parameter 'saturation' not found!";
+            yCError(FakeSensorParamsCOMPONENT) << "Description of the parameter: Maximum allowed sensor reading";
+            return false;
+        }
+        prop_check.unput("saturation");
+    }
+
     //Parser of parameter local
     {
         if (config.check("local"))
@@ -306,13 +328,14 @@ std::string      FakeSensor_ParamsParser::getDocumentationOfDeviceParams() const
     doc = doc + std::string("'planeD': Fourth coefficient for the plane equation\n");
     doc = doc + std::string("'threshold': Distance from the plane at which to trigger the sensor\n");
     doc = doc + std::string("'factor': Scaling factor for the sensor reading\n");
+    doc = doc + std::string("'saturation': Maximum allowed sensor reading\n");
     doc = doc + std::string("'local': Port prefix of the local Cartesian control client\n");
     doc = doc + std::string("'remote': Port prefix of the remote Cartesian control server\n");
     doc = doc + std::string("'device': Device name for the Cartesian control client\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient\n";
+    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --saturation 10.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient\n";
+    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --saturation 10.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }

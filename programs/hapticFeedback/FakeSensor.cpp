@@ -1,6 +1,6 @@
 #include "FakeSensor.hpp"
 
-#include <cmath>
+#include <cmath> // std::abs, std::min, std::sqrt
 
 #include <yarp/conf/version.h>
 
@@ -46,6 +46,12 @@ bool FakeSensor::open(yarp::os::Searchable & config)
     if (m_factor <= 0.0)
     {
         yCError(FS) << "Factor must be positive:" << m_factor;
+        return false;
+    }
+
+    if (m_saturation <= 0.0)
+    {
+        yCError(FS) << "Saturation must be positive:" << m_saturation;
         return false;
     }
 
@@ -211,9 +217,11 @@ inline double FakeSensor::getDistance(const KDL::Vector & p) const
 
 inline double FakeSensor::getForce(double distance) const
 {
-    // y = (factor / x) - coeff
-    // if x = threshold, then y = 0, so coeff = factor / threshold
-    return (m_factor / distance) - (m_factor / m_threshold); // FIXME: division by zero
+    // f(x) = (factor / x) - coeff
+    // f(threshold) = 0 -> coeff = factor / threshold
+    return distance > 0
+        ? std::min((m_factor / distance) - (m_factor / m_threshold), m_saturation)
+        : m_saturation;
 }
 
 // -----------------------------------------------------------------------------
