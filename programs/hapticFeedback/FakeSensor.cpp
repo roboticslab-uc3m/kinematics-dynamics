@@ -3,6 +3,7 @@
 #include <yarp/conf/version.h>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/Property.h>
 #include <yarp/os/SystemClock.h>
 
 #include "LogComponent.hpp"
@@ -40,6 +41,42 @@ bool FakeSensor::open(yarp::os::Searchable & config)
     if (m_factor <= 0.0)
     {
         yCError(FS) << "Factor must be positive:" << m_factor;
+        return false;
+    }
+
+    if (m_local.empty())
+    {
+        yCError(FS) << "Local port prefix cannot be empty";
+        return false;
+    }
+
+    if (m_remote.empty())
+    {
+        yCError(FS) << "Remote port prefix cannot be empty";
+        return false;
+    }
+
+    if (m_device.empty())
+    {
+        yCError(FS) << "Device name cannot be empty";
+        return false;
+    }
+
+    yarp::os::Property options {
+        {"device", yarp::os::Value(m_device)},
+        {"local", yarp::os::Value(m_local)},
+        {"remote", yarp::os::Value(m_remote)}
+    };
+
+    if (!cartesianClientDevice.open(options))
+    {
+        yCError(FS) << "Failed to open Cartesian client device";
+        return false;
+    }
+
+    if (!cartesianClientDevice.view(iCartesianControl))
+    {
+        yCError(FS) << "Failed to view Cartesian control interface";
         return false;
     }
 

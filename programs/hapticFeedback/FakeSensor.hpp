@@ -7,7 +7,9 @@
 
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
+#include <yarp/dev/PolyDriver.h>
 
+#include "ICartesianControl.h"
 #include "FakeSensor_ParamsParser.h"
 
 namespace roboticslab
@@ -42,6 +44,8 @@ public:
 #endif
 
 private:
+    yarp::dev::PolyDriver cartesianClientDevice;
+    ICartesianControl * iCartesianControl {nullptr};
 };
 
 } // namespace roboticslab

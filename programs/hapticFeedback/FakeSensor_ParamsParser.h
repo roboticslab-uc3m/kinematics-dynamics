@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GENERATION is ON.
 
-// Generated on: Tue Oct 27 10:57:32 2026
+// Generated on: Tue Oct 27 11:27:20 2026
 
 
 #ifndef FAKESENSOR_PARAMSPARSER_H
@@ -23,22 +23,25 @@
 * This class is the parameters parser for class FakeSensor.
 *
 * These are the used parameters:
-* | Group name | Parameter name | Type   | Units | Default Value | Required | Description                                            | Notes                      |
-* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:------------------------------------------------------:|:--------------------------:|
-* | -          | planeA         | double | m     | 0.0           | 1        | First coefficient for the plane equation               | -                          |
-* | -          | planeB         | double | m     | 0.0           | 1        | Second coefficient for the plane equation              | -                          |
-* | -          | planeC         | double | m     | 0.0           | 1        | Third coefficient for the plane equation               | -                          |
-* | -          | planeD         | double | m     | 0.0           | 1        | Fourth coefficient for the plane equation              | -                          |
-* | -          | threshold      | double | m     | 0.1           | 1        | Distance from the plane at which to trigger the sensor | y = threshold + factor / x |
-* | -          | factor         | double | -     | 1.0           | 1        | Scaling factor for the sensor reading                  | y = threshold + factor / x |
+* | Group name | Parameter name | Type   | Units | Default Value          | Required | Description                                            | Notes                      |
+* |:----------:|:--------------:|:------:|:-----:|:----------------------:|:--------:|:------------------------------------------------------:|:--------------------------:|
+* | -          | planeA         | double | m     | 0.0                    | 1        | First coefficient for the plane equation               | -                          |
+* | -          | planeB         | double | m     | 0.0                    | 1        | Second coefficient for the plane equation              | -                          |
+* | -          | planeC         | double | m     | 0.0                    | 1        | Third coefficient for the plane equation               | -                          |
+* | -          | planeD         | double | m     | 0.0                    | 1        | Fourth coefficient for the plane equation              | -                          |
+* | -          | threshold      | double | m     | 0.1                    | 1        | Distance from the plane at which to trigger the sensor | y = threshold + factor / x |
+* | -          | factor         | double | -     | 1.0                    | 1        | Scaling factor for the sensor reading                  | y = threshold + factor / x |
+* | -          | local          | string | -     | /FakeSensor            | 1        | Port prefix of the local Cartesian control client      | -                          |
+* | -          | remote         | string | -     | -                      | 1        | Port prefix of the remote Cartesian control server     | -                          |
+* | -          | device         | string | -     | CartesianControlClient | 1        | Device name for the Cartesian control client           | -                          |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0
+* yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient
 * \endcode
 *
 * \code{.unparsed}
-* yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0
+* yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient
 * \endcode
 *
 */
@@ -68,6 +71,9 @@ public:
     const std::string m_planeD_defaultValue = {"0.0"};
     const std::string m_threshold_defaultValue = {"0.1"};
     const std::string m_factor_defaultValue = {"1.0"};
+    const std::string m_local_defaultValue = {"/FakeSensor"};
+    const std::string m_remote_defaultValue = {""};
+    const std::string m_device_defaultValue = {"CartesianControlClient"};
 
     double m_planeA = {0.0};
     double m_planeB = {0.0};
@@ -75,6 +81,9 @@ public:
     double m_planeD = {0.0};
     double m_threshold = {0.1};
     double m_factor = {1.0};
+    std::string m_local = {"/FakeSensor"};
+    std::string m_remote = {}; //This default value is autogenerated. It is highly recommended to provide a suggested value also for mandatory parameters.
+    std::string m_device = {"CartesianControlClient"};
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }

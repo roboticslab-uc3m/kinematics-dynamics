@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GENERATION is ON.
 
-// Generated on: Tue Oct 27 10:57:32 2026
+// Generated on: Tue Oct 27 11:27:20 2026
 
 
 #include "FakeSensor_ParamsParser.h"
@@ -34,6 +34,9 @@ std::vector<std::string> FakeSensor_ParamsParser::getListOfParams() const
     params.push_back("planeD");
     params.push_back("threshold");
     params.push_back("factor");
+    params.push_back("local");
+    params.push_back("remote");
+    params.push_back("device");
     return params;
 }
 
@@ -68,6 +71,21 @@ bool FakeSensor_ParamsParser::getParamValue(const std::string& paramName, std::s
     if (paramName =="factor")
     {
         paramValue = std::to_string(m_factor);
+        return true;
+    }
+    if (paramName =="local")
+    {
+        paramValue = m_local;
+        return true;
+    }
+    if (paramName =="remote")
+    {
+        paramValue = m_remote;
+        return true;
+    }
+    if (paramName =="device")
+    {
+        paramValue = m_device;
         return true;
     }
 
@@ -198,6 +216,54 @@ bool      FakeSensor_ParamsParser::parseParams(const yarp::os::Searchable & conf
         prop_check.unput("factor");
     }
 
+    //Parser of parameter local
+    {
+        if (config.check("local"))
+        {
+            m_local = config.find("local").asString();
+            yCInfo(FakeSensorParamsCOMPONENT) << "Parameter 'local' using value:" << m_local;
+        }
+        else
+        {
+            yCError(FakeSensorParamsCOMPONENT) << "Mandatory parameter 'local' not found!";
+            yCError(FakeSensorParamsCOMPONENT) << "Description of the parameter: Port prefix of the local Cartesian control client";
+            return false;
+        }
+        prop_check.unput("local");
+    }
+
+    //Parser of parameter remote
+    {
+        if (config.check("remote"))
+        {
+            m_remote = config.find("remote").asString();
+            yCInfo(FakeSensorParamsCOMPONENT) << "Parameter 'remote' using value:" << m_remote;
+        }
+        else
+        {
+            yCError(FakeSensorParamsCOMPONENT) << "Mandatory parameter 'remote' not found!";
+            yCError(FakeSensorParamsCOMPONENT) << "Description of the parameter: Port prefix of the remote Cartesian control server";
+            return false;
+        }
+        prop_check.unput("remote");
+    }
+
+    //Parser of parameter device
+    {
+        if (config.check("device"))
+        {
+            m_device = config.find("device").asString();
+            yCInfo(FakeSensorParamsCOMPONENT) << "Parameter 'device' using value:" << m_device;
+        }
+        else
+        {
+            yCError(FakeSensorParamsCOMPONENT) << "Mandatory parameter 'device' not found!";
+            yCError(FakeSensorParamsCOMPONENT) << "Description of the parameter: Device name for the Cartesian control client";
+            return false;
+        }
+        prop_check.unput("device");
+    }
+
     /*
     //This code check if the user set some parameter which are not check by the parser
     //If the parser is set in strict mode, this will generate an error
@@ -240,10 +306,13 @@ std::string      FakeSensor_ParamsParser::getDocumentationOfDeviceParams() const
     doc = doc + std::string("'planeD': Fourth coefficient for the plane equation\n");
     doc = doc + std::string("'threshold': Distance from the plane at which to trigger the sensor\n");
     doc = doc + std::string("'factor': Scaling factor for the sensor reading\n");
+    doc = doc + std::string("'local': Port prefix of the local Cartesian control client\n");
+    doc = doc + std::string("'remote': Port prefix of the remote Cartesian control server\n");
+    doc = doc + std::string("'device': Device name for the Cartesian control client\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0\n";
+    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0\n";
+    doc = doc + " yarpdev --device FakeSensor --planeA 0.0 --planeB 0.0 --planeC 0.0 --planeD 0.0 --threshold 0.1 --factor 1.0 --local /FakeSensor --remote <mandatory_value> --device CartesianControlClient\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }
