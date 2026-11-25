@@ -6,6 +6,8 @@
 #include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
 #include <yarp/dev/PolyDriver.h>
 
+#include <kdl/frames.hpp>
+
 #include "ICartesianControl.h"
 
 namespace roboticslab
@@ -35,6 +37,12 @@ private:
     ICartesianControl * iCartesianControl {nullptr};
 
     double period {0.0};
+    double scaling {0.0};
+
+    yarp::sig::Vector sensorMeasure;
+    double sensorTimestamp {0.0};
+
+    KDL::Frame H_device_sensor;
 };
 
 } // namespace roboticslab

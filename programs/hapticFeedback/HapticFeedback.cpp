@@ -5,6 +5,7 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
+#include "KdlVectorConverter.hpp"
 #include "LogComponent.hpp"
 
 using namespace roboticslab;
@@ -12,6 +13,7 @@ using namespace roboticslab;
 constexpr auto DEFAULT_LOCAL_PORT_PREFIX = "/hapticFeedback";
 constexpr auto DEFAULT_PERIOD = 0.01;
 constexpr auto DEFAULT_CARTESIAN_DEVICE = "CartesianControlClient";
+constexpr auto DEFAULT_SCALING = 0.001;
 
 bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
 {
@@ -25,6 +27,38 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
     {
         yCError(HF) << "Invalid period specified:" << period;
         return false;
+    }
+
+    scaling = rf.check("scaling", yarp::os::Value(DEFAULT_SCALING), "scaling factor for sensor measurements").asFloat64();
+
+    if (scaling <= 0.0)
+    {
+        yCError(HF) << "Invalid scaling factor specified:" << scaling;
+        return false;
+    }
+
+    const auto & v = rf.find("deviceFrameRPY");
+
+    if (!v.isNull())
+    {
+        const auto * deviceFrameRPY = v.asList();
+
+        if (!deviceFrameRPY->isNull() && deviceFrameRPY->size() == 3)
+        {
+            auto roll = deviceFrameRPY->get(0).asFloat64() * KDL::deg2rad;
+            auto pitch = deviceFrameRPY->get(1).asFloat64() * KDL::deg2rad;
+            auto yaw = deviceFrameRPY->get(2).asFloat64() * KDL::deg2rad;
+
+            yCInfo(HF) << "deviceFrameRPY [rad]:" << roll << pitch << yaw;
+
+            KDL::Frame H_sensor_device = KDL::Frame(KDL::Rotation::RPY(roll, pitch, yaw));
+            H_device_sensor = H_sensor_device.Inverse();
+        }
+        else
+        {
+            yCError(HF) << "Invalid deviceFrameRPY specified:" << v.toString();
+            return false;
+        }
     }
 
     {
@@ -138,6 +172,27 @@ bool HapticFeedback::configure(yarp::os::ResourceFinder & rf)
 
 bool HapticFeedback::updateModule()
 {
+    if (!iSensor->getSixAxisForceTorqueSensorMeasure(0, sensorMeasure, sensorTimestamp))
+    {
+        yCError(HF) << "Failed to get sensor measure";
+        return false;
+    }
+
+    std::vector<double> reaction(sensorMeasure.size());
+
+    for (auto i = 0; i < sensorMeasure.size(); i++)
+    {
+        reaction[i] = sensorMeasure[i] * scaling;
+    }
+
+    yCDebug(HF) << "Reaction:" << reaction;
+
+    KDL::Frame H_sensor = KdlVectorConverter::vectorToFrame(reaction);
+    KDL::Frame H_device = H_device_sensor * H_sensor;
+
+    auto pose = KdlVectorConverter::frameToVector(H_device);
+
+    iCartesianControl->pose(pose);
     return true;
 }
 
