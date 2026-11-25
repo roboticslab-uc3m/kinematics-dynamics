@@ -3,6 +3,7 @@
 
 #include <yarp/os/RFModule.h>
 
+#include <yarp/dev/MultipleAnalogSensorsInterfaces.h>
 #include <yarp/dev/PolyDriver.h>
 
 #include "ICartesianControl.h"
@@ -27,6 +28,13 @@ public:
     double getPeriod() override;
 
 private:
+    yarp::dev::PolyDriver sensorClientDevice;
+    yarp::dev::ISixAxisForceTorqueSensors * iSensor {nullptr};
+
+    yarp::dev::PolyDriver cartesianClientDevice;
+    ICartesianControl * iCartesianControl {nullptr};
+
+    double period {0.0};
 };
 
 } // namespace roboticslab
